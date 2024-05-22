@@ -1,5 +1,5 @@
 <%@ page import="de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.storage.RDStore" %>
-<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyResult.label')})" serviceInjection="true"/>
+<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyPackagesEvaluation.label')})" serviceInjection="true"/>
 <laser:javascript src="echarts.js"/>
 
 <ui:breadcrumbs>
@@ -43,7 +43,7 @@
     <g:else>
         ${surveyConfig.getConfigNameShort()}
     </g:else>
-    : ${message(code: 'surveyResult.label')}
+    : ${message(code: 'surveyPackagesEvaluation.label')}
 </h2>
 
 <g:if test="${surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
@@ -55,21 +55,21 @@
 <div class="ui top attached stackable tabular la-tab-with-js menu">
 
     <g:link class="item ${params.tab == 'participantsViewAllFinish' ? 'active' : ''}"
-            controller="survey" action="surveyEvaluation"
+            controller="survey" action="surveyEvaluationPackages"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllFinish']">
         ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
         <span class="ui floating blue circular label">${participantsFinishTotal}</span>
     </g:link>
 
     <g:link class="item ${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}"
-            controller="survey" action="surveyEvaluation"
+            controller="survey" action="surveyEvaluationPackages"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllNotFinish']">
         ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
         <span class="ui floating blue circular label">${participantsNotFinishTotal}</span>
     </g:link>
 
     <g:link class="item ${params.tab == 'participantsView' ? 'active' : ''}"
-            controller="survey" action="surveyEvaluation"
+            controller="survey" action="surveyEvaluationPackages"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsView']">
         ${message(code: 'surveyEvaluation.participantsView')}
         <span class="ui floating blue circular label">${participantsTotal}</span>
@@ -80,21 +80,15 @@
 
     <div id="chartWrapper" style="width:100%; min-height:500px"></div>
 
-    <g:if test="${surveyConfig.pickAndChoose}">
-        <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'finishedDate', 'surveyTitlesCount', 'uploadTitleListDoc', 'surveyProperties', 'commentOnlyForOwner', 'downloadTitleList']}"/>
-    </g:if>
-    <g:else>
-        <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'commentOnlyForOwner']}"/>
-    </g:else>
+    <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyPackages', 'surveyCostItemsPackages', 'commentOnlyForOwner']}"/>
 
     <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess: false,
                                                                 showCheckboxForParticipantsHasNoAccess: false,
-                                                                tmplConfigShow   : tmplConfigShowList]"/>
+                                                        tmplConfigShow   : tmplConfigShowList]"/>
 </div>
 
 
 </g:else>
-
 
 <laser:script file="${this.getGroovyPageFileName()}">
     let chartDom = $('#chartWrapper')[0];
@@ -120,21 +114,21 @@
             },
             dataset: {
             source: [
-            <g:each in="${charts}" var="data">
-                [
-                <g:each in="${data}" var="value">
-                    <%
-                        print '"'
-                        print value
-                        print '",'
-                    %>
-                </g:each>
-                ],
-            </g:each>
+    <g:each in="${charts}" var="data">
+        [
+        <g:each in="${data}" var="value">
+            <%
+                print '"'
+                print value
+                print '",'
+            %>
+        </g:each>
+        ],
+    </g:each>
     ]
   },
   xAxis: {name: "${g.message(code: 'surveyEvaluation.participants')}", max: "${participants.size()}"},
-  yAxis: {  name: "${g.message(code: 'surveyProperty.plural.label')}", type: 'category' },
+  yAxis: {  name: "${g.message(code: 'surveyPackages.selectedPackages')}", type: 'category' },
   series: [
     {
       type: 'bar',
@@ -148,4 +142,5 @@
 };
 surveyEvChart.setOption(option);
 </laser:script>
+
 <laser:htmlEnd />

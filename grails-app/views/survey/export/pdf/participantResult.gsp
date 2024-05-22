@@ -125,7 +125,6 @@
 
     %{-- EXPORT PROBLEM @ laser:render in call stack - ERMS-5437 --}%
     <g:render template="/templates/survey/export/subscriptionSurveyPDF" model="[surveyConfig       : surveyConfig,
-                                                                                costItemSums       : costItemSums,
                                                                                 subscription       : subscription,
                                                                                 visibleProviders: providerRoles,
                                                                                 surveyResults      : surveyResults,
@@ -137,7 +136,6 @@
 <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
 
     <g:render template="/templates/survey/export/generalSurveyPDF" model="[surveyConfig       : surveyConfig,
-                                                                           costItemSums       : costItemSums,
                                                                            subscription       : surveyConfig.subscription,
                                                                            tasks              : tasks,
                                                                            visibleProviders: providerRoles,
@@ -149,7 +147,6 @@
 
     %{-- EXPORT PROBLEM @ laser:render in call stack - ERMS-5437 --}%
     <g:render template="/templates/survey/export/subscriptionSurveyPDF" model="[surveyConfig       : surveyConfig,
-                                                                                costItemSums       : costItemSums,
                                                                                 subscription       : subscription,
                                                                                 visibleProviders: providerRoles,
                                                                                 surveyResults      : surveyResults,

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.Vendor; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.Package; de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.Vendor; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
 <laser:serviceInjection/>
 <g:if test="${'surveySubCostItem' in tmplConfigShow}">
     <g:set var="oldCostItem" value="${0.0}"/>
@@ -7,7 +7,7 @@
     <g:set var="sumOldCostItem" value="${0.0}"/>
 </g:if>
 
-<g:if test="${'surveyCostItem' in tmplConfigShow}">
+<g:if test="${'surveyCostItem' in tmplConfigShow || 'surveyCostItemPackage' in tmplConfigShow}">
     <g:set var="sumNewCostItem" value="${0.0}"/>
     <g:set var="sumSurveyCostItem" value="${0.0}"/>
     <g:set var="sumNewCostItemAfterTax" value="${0.0}"/>
@@ -182,8 +182,14 @@
                                    optionValue="value"
                                    value="${selectedCostItemElementID}"
                                    class="ui dropdown"
-                                   id="selectedCostItemElementID"/>
+                                   id="selectedCostItemElementID"
+                                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                     </g:if>
+                </th>
+            </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemPackage') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+                <th>
+                    ${message(code: 'surveyCostItems.label')}
                 </th>
             </g:if>
 
@@ -849,8 +855,14 @@
                                         </td>
 
                                         <td>
-                                            <button onclick="JSPC.app.addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${costItem.id})"
-                                                    class="ui icon circular button right floated trigger-modal"
+                                            <button class="ui icon circular button right floated triggerSurveyCostItemModal"
+                                                    href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                                                                                                                surveyConfigID: surveyConfig.id,
+                                                                                                                participant              : org.id,
+                                                                                                                costItem                 : costItem.id,
+                                                                                                                selectedCostItemElementID: selectedCostItemElementID,
+                                                                                                                selectedPackageID        : selectedPackageID,
+                                                                                                                selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                                 <i aria-hidden="true" class="write icon"></i>
@@ -871,8 +883,13 @@
 
                         </g:if>
                         <g:else>
-                            <button onclick="JSPC.app.addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${'null'})"
-                                    class="ui icon circular button right floated trigger-modal"
+                            <button class="ui icon circular button right floated triggerSurveyCostItemModal"
+                                    href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                                                                                                surveyConfigID: surveyConfig.id,
+                                                                                                participant              : org.id,
+                                                                                                selectedCostItemElementID: selectedCostItemElementID,
+                                                                                                selectedPackageID        : selectedPackageID,
+                                                                                                selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="write icon"></i>
@@ -882,6 +899,103 @@
                     </g:else>
                 </td>
             </g:if>
+
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemPackage') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+            %{-- // TODO Moe - date.minusDays() --}%
+                <td class="center aligned" style="${(existSubforOrg && orgSub && orgSub.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(orgSub.startDate), DateUtils.dateToLocalDate(orgSub.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
+
+                    <g:if test="${selectedPackageID}">
+                        <g:set var="costItems" scope="request"
+                               value="${CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, RefdataValue.get(Long.valueOf(selectedCostItemElementID)), Package.get(Long.valueOf(selectedPackageID)))}"/>
+
+                        <g:if test="${costItems}">
+                            <table class="ui very basic compact table">
+                                <tbody>
+                                <g:each in="${costItems}"
+                                        var="costItem">
+                                    <g:set var="sumSurveyCostItem"
+                                           value="${sumSurveyCostItem + costItem.costInBillingCurrency ?: 0}"/>
+                                    <g:set var="sumSurveyCostItemAfterTax"
+                                           value="${sumSurveyCostItemAfterTax + costItem.costInBillingCurrencyAfterTax ?: 0}"/>
+
+                                    <tr>
+                                        <td>
+                                            <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}" minFractionDigits="2"
+                                                                    maxFractionDigits="2" type="number"/></strong>
+
+                                            (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
+                                                             maxFractionDigits="2" type="number"/>)
+
+                                        </td>
+                                        <td>
+                                            ${costItem.billingCurrency?.getI10n('value')}
+                                        </td>
+
+                                        <td>
+                                            <g:if test="${oldCostItem || oldCostItemAfterTax}">
+
+                                                <strong><g:formatNumber
+                                                        number="${((costItem.costInBillingCurrencyAfterTax - oldCostItemAfterTax) / oldCostItemAfterTax) * 100}"
+                                                        minFractionDigits="2"
+                                                        maxFractionDigits="2" type="number"/>%</strong>
+
+                                                (<g:formatNumber number="${((costItem.costInBillingCurrency - oldCostItem) / oldCostItem) * 100}"
+                                                                 minFractionDigits="2"
+                                                                 maxFractionDigits="2" type="number"/>%)
+
+                                            </g:if>
+                                        </td>
+                                        <td>
+                                            <g:if test="${costItem.startDate || costItem.endDate}">
+                                                ${costItem.startDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.startDate) : ''} - ${costItem.endDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.endDate) : ''}
+                                            </g:if>
+                                        </td>
+
+                                        <td>
+                                            <button class="ui icon circular button right floated triggerSurveyCostItemModal"
+                                                    href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                                                                                                                surveyConfigID: surveyConfig.id,
+                                                                                                                participant              : org.id,
+                                                                                                                costItem                 : costItem.id,
+                                                                                                                selectedCostItemElementID: selectedCostItemElementID,
+                                                                                                                selectedPackageID        : selectedPackageID,
+                                                                                                                selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
+                                                    role="button"
+                                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                                <i aria-hidden="true" class="write icon"></i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <g:if test="${costItem && costItem.costDescription}">
+
+                                                <div class="ui icon la-popup-tooltip la-delay" data-content="${costItem.costDescription}">
+                                                    <i class="info circular inverted icon"></i>
+                                                </div>
+                                            </g:if>
+                                        </td>
+                                    </tr>
+                                </g:each>
+                                </tbody>
+                            </table>
+
+                        </g:if>
+                        <g:else>
+                            <button class="ui icon circular button right floated triggerSurveyCostItemModal"
+                                    href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                                                                                                surveyConfigID: surveyConfig.id,
+                                                                                                participant              : org.id,
+                                                                                                selectedCostItemElementID: selectedCostItemElementID,
+                                                                                                selectedPackageID        : selectedPackageID,
+                                                                                                selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                <i aria-hidden="true" class="write icon"></i>
+                            </button>
+                        </g:else>
+                    </g:if>
+                </td>
+            </g:if>
+
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('marker')}">
                 <td class="center aligned">
@@ -920,7 +1034,7 @@
         </tr>
     </g:each><!-- orgList -->
     </tbody>
-    <g:if test="${orgList && ('surveySubCostItem' in tmplConfigShow || 'surveyCostItem' in tmplConfigShow)}">
+    <g:if test="${orgList && ('surveySubCostItem' in tmplConfigShow || 'surveyCostItem' in tmplConfigShow || 'surveyCostItemPackage' in tmplConfigShow)}">
         <tfoot>
         <tr>
             <g:if test="${tmplShowCheckbox}">
@@ -937,7 +1051,7 @@
                                      maxFractionDigits="2" type="number"/>)
                 </td>
             </g:if>
-            <g:if test="${'surveyCostItem' in tmplConfigShow}">
+            <g:if test="${'surveyCostItem' in tmplConfigShow || 'surveyCostItemPackage' in tmplConfigShow}">
                 <td>
                     <strong><g:formatNumber number="${sumSurveyCostItemAfterTax}" minFractionDigits="2"
                                        maxFractionDigits="2" type="number"/></strong>
@@ -985,65 +1099,36 @@
     </laser:script>
 
 </g:if>
-<g:if test="${tmplConfigShow?.contains('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+<g:if test="${(tmplConfigShow?.contains('surveyCostItem') || tmplConfigShow?.contains('surveyCostItemPackage')) && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
     <laser:script file="${this.getGroovyPageFileName()}">
-   $('table[id^=costTable] .x .trigger-modal').on('click', function(e) {
-                    e.preventDefault();
+        $('.triggerSurveyCostItemModal').on('click', function(e) {
+            e.preventDefault();
 
-                    $.ajax({
-                        url: $(this).attr('href')
-                    }).done( function(data) {
-                        $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
-                        $('#dynamicModalContainer').empty().html(data);
-
-                        $('#dynamicModalContainer .ui.modal').modal({
-                            onVisible: function () {
-                                r2d2.initDynamicUiStuff('#costItem_ajaxModal');
-                                r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
-                            },
-                            detachable: true,
-                            closable: false,
-                            transition: 'scale',
-                            onApprove : function() {
-                                $(this).find('.ui.form').submit();
-                                return false;
-                            }
-                        }).modal('show');
-                    })
-                });
-
-        JSPC.app.addEditSurveyCostItem = function (id, surveyConfigID, participant, costItem) {
-            event.preventDefault();
             $.ajax({
-                url: "<g:createLink controller='survey' action='editSurveyCostItem'/>",
-                                data: {
-                                    id: id,
-                                    surveyConfigID: surveyConfigID,
-                                    participant: participant,
-                                    costItem: costItem,
-                                    selectedCostItemElementID: "${selectedCostItemElementID}"
-                                }
-            }).done( function(data) {
-                $('.ui.dimmer.modals > #modalSurveyCostItem').remove();
+                url: $(this).attr('href')
+            }).done( function (data) {
+                $('.ui.dimmer.modals > #surveyCostItemModal').remove();
                 $('#dynamicModalContainer').empty().html(data);
 
                 $('#dynamicModalContainer .ui.modal').modal({
-                    onVisible: function () {
-                        r2d2.initDynamicUiStuff('#modalSurveyCostItem');
-                        r2d2.initDynamicXEditableStuff('#modalSurveyCostItem');
+                   onShow: function () {
+                        r2d2.initDynamicUiStuff('#surveyCostItemModal');
+                        r2d2.initDynamicXEditableStuff('#surveyCostItemModal');
+                        $("html").css("cursor", "auto");
                     },
                     detachable: true,
+                    autofocus: false,
                     closable: false,
                     transition: 'scale',
                     onApprove : function() {
-                        $(this).find('.ui.form').submit();
+                        $(this).find('#surveyCostItemModal .ui.form').submit();
                         return false;
                     }
                 }).modal('show');
             })
-        };
-
+        });
     </laser:script>
+
 </g:if>
 <g:if test="${tmplConfigShow?.contains('surveySubCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
     <laser:script file="${this.getGroovyPageFileName()}">

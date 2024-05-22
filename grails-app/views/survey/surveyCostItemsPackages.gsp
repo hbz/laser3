@@ -44,39 +44,12 @@
     <g:else>
         ${surveyConfig.getConfigNameShort()}
     </g:else>
-    : ${message(code: 'surveyCostItems.label')}
+    : ${message(code: 'surveyCostItemsPackages.label')}
 </h2>
 
 <br />
 
 <g:if test="${surveyConfig}">
-    <ui:modal id="bulkCostItemsUpload" message="menu.institutions.financeImport"
-              refreshModal="true"
-              msgSave="${g.message(code: 'menu.institutions.financeImport')}">
-
-        <g:form action="processSurveyCostItemsBulkWithUpload" controller="survey" method="post" class="ui form" enctype="multipart/form-data"
-                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
-
-            <g:link controller="survey" action="templateForSurveyCostItemsBulkWithUpload" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
-                <p>${message(code:'myinst.financeImport.template')}</p>
-            </g:link>
-
-            <br>
-            <div class="ui field">
-                <div class="ui action input">
-                    <input type="text" readonly="readonly"
-                           placeholder="${message(code: 'template.addDocument.selectFile')}">
-                    <input type="file" name="costItemsFile" accept="text/tab-separated-values"
-                           style="display: none;">
-                    <div class="ui icon button">
-                        <i class="attach icon"></i>
-                    </div>
-                </div>
-            </div>
-
-        </g:form>
-    </ui:modal>
-
     <div class="ui grid">
 
         <div class="sixteen wide stretched column">
@@ -84,7 +57,7 @@
                 <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
                         controller="survey" action="surveyCostItems"
                         id="${surveyConfig.surveyInfo.id}"
-                        params="[surveyConfigID: surveyConfig.id, tab: 'selectedSubParticipants', selectedCostItemElementID: selectedCostItemElementID]">
+                        params="[surveyConfigID: surveyConfig.id, tab: 'selectedSubParticipants', selectedCostItemElementID: selectedCostItemElementID, selectedPackageID: selectedPackageID]">
                     ${message(code: 'surveyParticipants.selectedSubParticipants')}
                     <span class="ui floating blue circular label">${selectedSubParticipants?.size() ?: 0}</span>
                 </g:link>
@@ -92,7 +65,7 @@
                 <g:link class="item ${params.tab == 'selectedParticipants' ? 'active' : ''}"
                         controller="survey" action="surveyCostItems"
                         id="${surveyConfig.surveyInfo.id}"
-                        params="[surveyConfigID: surveyConfig.id, tab: 'selectedParticipants', selectedCostItemElementID: selectedCostItemElementID]">
+                        params="[surveyConfigID: surveyConfig.id, tab: 'selectedParticipants', selectedCostItemElementID: selectedCostItemElementID, selectedPackageID: selectedPackageID]">
                     ${message(code: 'surveyParticipants.selectedParticipants')}
                     <span class="ui floating blue circular label">${selectedParticipants?.size() ?: 0}</span>
                 </g:link>
@@ -119,7 +92,7 @@
 
                 <br>
                 <br>
-                <a class="ui right floated button" data-ui="modal" href="#bulkCostItemsUpload"><g:message code="menu.institutions.financeImport"/></a>
+                %{--<a class="ui right floated button" data-ui="modal" href="#bulkCostItemsUpload"><g:message code="menu.institutions.financeImport"/></a>--}%
                 <br>
                 <br>
             </div
@@ -131,7 +104,7 @@
 
             <ui:filter>
                 <g:form action="surveyCostItems" method="post" class="ui form"
-                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, selectedCostItemElementID: selectedCostItemElementID]">
+                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, selectedCostItemElementID: selectedCostItemElementID, selectedPackageID: selectedPackageID]">
                 <laser:render template="/templates/filter/orgFilter"
                 model="[
                                   tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex']],
@@ -140,9 +113,86 @@
                 </g:form>
             </ui:filter>
 
-            <br><br>
+            <g:set var="sumCostInBillingCurrencyAfterTax" value="${0}"/>
+            <g:set var="sumCostInBillingCurrency" value="${0}"/>
+            <g:set var="sumCostItems" value="${0}"/>
 
-            <g:render template="costItemsByCostItemElementTable"/>
+            <div class="ui segment">
+                <h3>
+                    <g:message code="surveyCostItemsPackages.label"/> in <g:message code="survey.label"/>
+                </h3>
+                <table class="ui sortable celled la-js-responsive-table la-table table">
+                    <thead>
+                    <tr>
+                        <th>${message(code: 'sidewide.number')}</th>
+                        <th>${message(code: 'default.name.label')}</th>
+                        <th>${message(code: 'financials.costItemElement')}</th>
+                        <th>${message(code: 'default.count.label')}</th>
+                        <th>${message(code: 'costItem.costInBillingCurrency.label')}</th>
+                        <th>${message(code: 'costItem.costInBillingCurrencyAfterTax.label')}</th>
+                        <th>${message(code: 'default.selected.label')}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <g:each in="${costItemsByPackages}" var="costItemsByPackage">
+                    <g:each in="${costItemsByPackage.costItemsByCostItemElement}" var="ctByCostItemElement" status="i">
+                        <g:set var="costItemElement"
+                               value="${RefdataValue.findByValueAndOwner(ctByCostItemElement.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT))}"/>
+                        <g:set var="sumCostInBillingCurrencyAfterTaxByElement" value="${0}"/>
+                        <g:set var="sumCostInBillingCurrencyByElement" value="${0}"/>
+                        <g:each in="${ctByCostItemElement.value}" var="costItem">
+                            <g:set var="sumCostInBillingCurrencyAfterTaxByElement"
+                                   value="${sumCostInBillingCurrencyAfterTaxByElement + costItem.costInBillingCurrencyAfterTax}"/>
+                            <g:set var="sumCostInBillingCurrencyByElement" value="${sumCostInBillingCurrencyByElement + costItem.costInBillingCurrency}"/>
+                        </g:each>
+
+                        <g:set var="sumCostInBillingCurrencyAfterTax" value="${sumCostInBillingCurrencyAfterTax + sumCostInBillingCurrencyAfterTaxByElement}"/>
+                        <g:set var="sumCostInBillingCurrency" value="${sumCostInBillingCurrency + sumCostInBillingCurrencyByElement}"/>
+                        <g:set var="sumCostItems" value="${sumCostItems + ctByCostItemElement.value.size()}"/>
+                        <tr>
+                            <td>${i + 1}</td>
+                            <td>${costItemsByPackage.pkg.name}</td>
+                            <td>${costItemElement.getI10n('value')}</td>
+                            <td>${ctByCostItemElement.value.size()}</td>
+                            <td><g:formatNumber number="${sumCostInBillingCurrencyByElement}" minFractionDigits="2"
+                                                maxFractionDigits="2" type="number"/></td>
+                            <td><g:formatNumber number="${sumCostInBillingCurrencyAfterTaxByElement}" minFractionDigits="2"
+                                                maxFractionDigits="2" type="number"/></td>
+                            <td>
+                                <g:if test="${selectedCostItemElementID == costItemElement.id && costItemsByPackage.pkg.id == selectedPackageID}">
+                                    <g:link controller="survey" action="$actionName"
+                                            params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedCostItemElementID: costItemElement.id, selectedPackageID: costItemsByPackage.pkg.id]}">
+                                        <i class="check bordered large green icon"></i>
+                                    </g:link>
+                                </g:if>
+                                <g:else>
+                                    <g:link controller="survey" action="$actionName"
+                                            params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedCostItemElementID: costItemElement.id, selectedPackageID: costItemsByPackage.pkg.id]}">
+                                        <i class="close bordered large red icon"></i>
+                                    </g:link>
+                                </g:else>
+                            </td>
+                        </tr>
+                    </g:each>
+                    </g:each>
+                    </tbody>
+                    <tfoot>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>${sumCostItems}</td>
+                    <td>
+                        <g:formatNumber number="${sumCostInBillingCurrency}" minFractionDigits="2"
+                                        maxFractionDigits="2" type="number"/>
+                    </td>
+                    <td>
+                        <g:formatNumber number="${sumCostInBillingCurrencyAfterTax}" minFractionDigits="2"
+                                        maxFractionDigits="2" type="number"/>
+                    </td>
+                    <td></td>
+                    </tfoot>
+                </table>
+            </div>
 
             <br/>
             <div class="field" style="text-align: right;">
@@ -161,7 +211,7 @@
             </div>
 
             <g:form action="processSurveyCostItemsBulk" data-confirm-id="processSurveyCostItemsBulk_form" name="editCost_${idSuffix}" method="post" class="ui form"
-                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, selectedCostItemElementID: selectedCostItemElementID]">
+                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, selectedCostItemElementID: selectedCostItemElementID, selectedPackageID: selectedPackageID]">
 
                 <div id="bulkCostItems" class="hidden">
                     <g:if test="${countCostItems == 0}">
@@ -261,7 +311,7 @@
                         <laser:render template="/templates/filter/orgFilterTable"
                                   model="[orgList         : surveyParticipantsHasAccess,
                                           tmplShowCheckbox: true,
-                                          tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
+                                          tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveyCostItemPackage'],
                                           tableID         : 'costTable'
                                   ]"/>
 
@@ -285,7 +335,7 @@
                         <laser:render template="/templates/filter/orgFilterTable"
                                   model="[orgList       : surveyParticipantsHasNotAccess,
                                           tmplShowCheckbox: true,
-                                          tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
+                                          tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveyCostItemPackage'],
                                           tableID       : 'costTable'
                                   ]"/>
 
@@ -403,7 +453,8 @@ JSPC.app.addForAllSurveyCostItem = function(orgsIDs) {
                                 data: {
                                     id: "${params.id}",
                                     surveyConfigID: "${surveyConfig.id}",
-                                    orgsIDs: orgsIDs
+                                    orgsIDs: orgsIDs,
+                                    selectedPkg: true
                                 }
                             }).done(function (data) {
                                 $('#dynamicModalContainer').html(data);
@@ -427,18 +478,7 @@ JSPC.app.addForAllSurveyCostItem = function(orgsIDs) {
                                 JSPC.app.isClicked = false;
                             }, 800);
                         }
-                    };
-
-
-        $('.action .icon.button').click(function () {
-             $(this).parent('.action').find('input:file').click();
-         });
-
-         $('input:file', '.ui.action.input').on('change', function (e) {
-             var name = e.target.files[0].name;
-             $('input:text', $(e.target).parent()).val(name);
-         });
-
+                    }
 
 </laser:script>
 

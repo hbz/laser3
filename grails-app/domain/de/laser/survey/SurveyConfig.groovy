@@ -73,6 +73,8 @@ class SurveyConfig {
 
     boolean pickAndChoosePerpetualAccess = false
 
+    boolean packageSurvey = false
+
     String issueEntitlementGroupName
 
     String transferWorkflow
@@ -82,7 +84,8 @@ class SurveyConfig {
             surveyProperties: SurveyConfigProperties,
             orgs            : SurveyOrg,
             propertySet      : SurveyResult,
-            surveyUrls         : SurveyUrl
+            surveyUrls         : SurveyUrl,
+            surveyPackages      : SurveyConfigPackage,
     ]
 
     static constraints = {
@@ -124,6 +127,7 @@ class SurveyConfig {
         subSurveyUseForTransfer column: 'surconf_is_subscription_survey_fix'
 
         pickAndChoosePerpetualAccess column: 'surconf_pac_perpetualaccess'
+        packageSurvey column: 'surconf_package_survey'
 
         scheduledStartDate column: 'surconf_scheduled_startdate'
         scheduledEndDate column: 'surconf_scheduled_enddate'
@@ -436,7 +440,7 @@ class SurveyConfig {
      */
     List<CostItem> getSurveyConfigCostItems(){
 
-        return this.orgs ? CostItem.findAllBySurveyOrgInListAndCostItemStatusNotEqual(this.orgs, RDStore.COST_ITEM_DELETED) : []
+        return this.orgs ? CostItem.findAllBySurveyOrgInListAndCostItemStatusNotEqualAndPkgIsNull(this.orgs, RDStore.COST_ITEM_DELETED) : []
     }
 
     /**
@@ -501,6 +505,9 @@ class SurveyConfig {
      * @return the list of {@link PropertyDefinition} or an empty list, if none are available
      */
     List<PropertyDefinition> getSortedProperties() {
+
+
+
         List<SurveyConfigProperties> surveyConfigPropertiesList = this.surveyProperties.sort{it.propertyOrder}
         return surveyConfigPropertiesList.size() > 0 ? surveyConfigPropertiesList.surveyProperty : []
     }
@@ -560,7 +567,7 @@ class SurveyConfig {
             }
         }
 
-        properties = properties.sort { this.getSortedProperties().indexOf(it)}
+        //properties = properties.sort { this.getSortedProperties().indexOf(it)}
 
         return properties
 

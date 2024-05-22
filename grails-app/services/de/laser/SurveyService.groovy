@@ -15,9 +15,11 @@ import de.laser.storage.BeanStore
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyConfigPackage
 import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyPackageResult
 import de.laser.survey.SurveyResult
 import de.laser.survey.SurveyUrl
 import de.laser.config.ConfigMapper
@@ -2123,7 +2125,7 @@ class SurveyService {
 
     }
 
-    List generateDataForCharts(SurveyConfig surveyConfig, List<Org> orgList){
+    List generatePropertyDataForCharts(SurveyConfig surveyConfig, List<Org> orgList){
         List chartSource = [['property', 'value']]
 
         List<PropertyDefinition> propList = SurveyConfigProperties.executeQuery("select scp.surveyProperty from SurveyConfigProperties scp where scp.surveyConfig = :surveyConfig", [surveyConfig: surveyConfig])
@@ -2152,6 +2154,38 @@ class SurveyService {
         }
         chartSource = chartSource.reverse()
         return chartSource.reverse()
+    }
+
+    List generateSurveyPackageDataForCharts(SurveyConfig surveyConfig, List<Org> orgList){
+        List chartSource = [['property', 'value']]
+
+        List<Package> packages = SurveyConfigPackage.executeQuery("select scp.pkg from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig order by scp.pkg.name", [surveyConfig: surveyConfig])
+
+        packages.each {Package pkg ->
+            chartSource << ["${pkg.name.replace('"', '')}", SurveyPackageResult.executeQuery("select count(*) from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant in (:participants) and spr.pkg = :pkg", [pkg: pkg, surveyConfig: surveyConfig, participants: orgList])[0]]
+        }
+
+        chartSource = chartSource.reverse()
+        return chartSource.reverse()
+    }
+
+    Map getCostItemSumBySelectSurveyPackageOfParticipant(SurveyConfig surveyConfig, Org participant){
+        Double sumCostInBillingCurrency = 0.0
+        Double sumCostInBillingCurrencyAfterTax = 0.0
+
+        List<SurveyPackageResult> surveyPackageResultList = SurveyPackageResult.findAllBySurveyConfigAndParticipant(surveyConfig, participant)
+
+        if(surveyPackageResultList){
+            List<CostItem> costItemList = CostItem.findAllBySurveyOrgAndPkgInList(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), surveyPackageResultList.pkg)
+            costItemList.each { CostItem costItem ->
+
+                sumCostInBillingCurrency = sumCostInBillingCurrency+ costItem.costInBillingCurrency
+                sumCostInBillingCurrencyAfterTax = sumCostInBillingCurrencyAfterTax+ costItem.costInBillingCurrencyAfterTax
+            }
+        }
+
+        [sumCostInBillingCurrency: sumCostInBillingCurrency, sumCostInBillingCurrencyAfterTax: sumCostInBillingCurrencyAfterTax]
+
     }
 
 }

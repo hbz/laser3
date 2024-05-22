@@ -885,7 +885,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
-    def packages() {
+    def surveyPackages() {
         Map<String,Object> ctrlResult = surveyControllerService.packages(params)
         if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
@@ -1164,6 +1164,28 @@ class SurveyController {
     }
 
     /**
+     * Call to evaluate the given survey's results; the results may be displayed as HTML or
+     * exported as (configurable) Excel worksheet
+     * @return the survey evaluation view, either as HTML or as (configurable) Excel worksheet
+     */
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    def surveyEvaluationPackages() {
+        //TODO: TODO MOE 2024
+        Map<String,Object> ctrlResult = surveyControllerService.surveyEvaluationPackages(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }else {
+            ctrlResult.result
+        }
+    }
+
+    /**
      * Call to open the participant transfer view
      * @return the participant list with their selections
      */
@@ -1325,7 +1347,6 @@ class SurveyController {
         if(result.surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
             result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(result.participant)
             result.visibleOrgRelations = []
-            result.costItemSums = [:]
             if(result.subscription) {
                 result.subscription.orgRelations.each { OrgRole or ->
                     if (!(or.org.id == result.institution.id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
@@ -1334,18 +1355,7 @@ class SurveyController {
                 }
                 result.visibleOrgRelations.sort { it.org.sortname }
 
-                result.dataToDisplay = ['subscr']
-                result.offsets = [subscrOffset:0]
-                result.sortConfig = [subscrSort:'sub.name',subscrOrder:'asc']
-
                 result.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
-
-                LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
-                result.costItemSums = [:]
-
-                if (costItems?.subscr) {
-                    result.costItemSums.subscrCosts = costItems.subscr.costItems
-                }
                 result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
 
                 if (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
@@ -2360,7 +2370,7 @@ class SurveyController {
         if (!result.editable) {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
-        result.costItem = CostItem.findById(params.costItem)
+        result.costItem = params.costItem ? CostItem.findById(params.costItem) : null
 
 
         Map<Long,Object> orgConfigurations = [:]
@@ -2377,8 +2387,11 @@ class SurveyController {
 
         result.mode = result.costItem ? "edit" : ""
         result.selectedCostItemElementID = params.selectedCostItemElementID
+        result.selectedPackageID = params.selectedPackageID
+        result.selectedPkg = params.selectedPkg
         result.taxKey = result.costItem ? result.costItem.taxKey : null
         result.idSuffix = "edit_${result.costItem ? result.costItem.id : result.participant.id}"
+        result.modalID = 'surveyCostItemModal'
         render(template: "/survey/costItemModal", model: result)
     }
 
@@ -2420,6 +2433,10 @@ class SurveyController {
             List<Long> idList = Params.getLongList_forCommaSeparatedString(params, 'orgsIDs')
             List<Org> orgList = Org.findAllByIdInList(idList)
             result.surveyOrgList = orgList.isEmpty() ? [] : SurveyOrg.findAllByOrgInListAndSurveyConfig(orgList, result.surveyConfig)
+        }
+
+        if(params.selectedPkg){
+            result.selectedPkg = true
         }
 
         render(template: "/survey/costItemModal", model: result)

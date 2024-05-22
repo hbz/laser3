@@ -28,10 +28,12 @@ import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyConfigPackage
 import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyLinks
 import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyPackageResult
 import de.laser.survey.SurveyResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -2557,6 +2559,7 @@ class MyInstitutionController  {
         params.viewTab = params.viewTab ?: 'overview'
 
         result.ownerId = result.surveyInfo.owner?.id
+        result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, result.surveyConfig)
 
         if(result.surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
 
@@ -2565,7 +2568,6 @@ class MyInstitutionController  {
                 result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(result.institution)
                 result.formalOrg = result.user.formalOrg as Org
                 // restrict visible for templates/links/orgLinksAsList
-                result.costItemSums = [:]
                 result.visibleOrgRelations = []
                 if (result.subscription) {
                     result.subscription.orgRelations.each { OrgRole or ->
@@ -2574,19 +2576,7 @@ class MyInstitutionController  {
                         }
                     }
                     result.visibleOrgRelations.sort { it.org.sortname }
-
-                    //costs dataToDisplay
-                    result.dataToDisplay = ['subscr']
-                    result.offsets = [subscrOffset: 0]
-                    result.sortConfig = [subscrSort: 'sub.name', subscrOrder: 'asc']
-
                     result.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
-                    //cost items
-                    //params.forExport = true
-                    LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
-                    if (costItems?.subscr) {
-                        result.costItemSums.subscrCosts = costItems.subscr.costItems
-                    }
                     result.links = linksGenerationService.getSourcesAndDestinations(result.subscription, result.user)
                 }
 
@@ -2635,7 +2625,6 @@ class MyInstitutionController  {
                 }
 
             }else if(params.viewTab == 'invoicingInformation') {
-                result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, result.surveyConfig)
                 params.sort = params.sort ?: 'pr.org.sortname'
                 params.org = result.institution
                 result.visiblePersons = addressbookService.getVisiblePersons("contacts", params)
@@ -2713,6 +2702,51 @@ class MyInstitutionController  {
                             result.error = 'noCustomerId'
                         }
                     }
+                }
+            }else if(params.viewTab == 'packageSurvey') {
+                params.subTab = params.subTab ?: 'allPackages'
+
+                if(result.editable) {
+                    switch (params.actionsForSurveyPackages) {
+                        case "addSurveyPackage":
+                            Package pkg = Package.findByGokbId(params.pkgUUID)
+                            if (SurveyConfigPackage.findBySurveyConfigAndPkg(result.surveyConfig, pkg) && !SurveyPackageResult.findBySurveyConfigAndParticipantAndPkg(result.surveyConfig, result.institution, pkg)) {
+                                SurveyPackageResult surveyPackageResult = new SurveyPackageResult(surveyConfig: result.surveyConfig, participant: result.participant, pkg: pkg, owner: result.surveyInfo.owner)
+                                surveyPackageResult.save()
+                            }
+
+                            break
+                        case "removeSurveyPackage":
+                            Package pkg = Package.findByGokbId(params.pkgUUID)
+                            SurveyPackageResult surveyPackageResult = SurveyPackageResult.findBySurveyConfigAndParticipantAndPkg(result.surveyConfig, result.institution, pkg)
+                            if (SurveyConfigPackage.findBySurveyConfigAndPkg(result.surveyConfig, pkg) && surveyPackageResult) {
+                                surveyPackageResult.delete()
+                            }
+                            break
+                    }
+                }
+
+                if(result.surveyConfig.surveyPackages){
+                    List uuidPkgs
+                    if(params.subTab == 'allPackages'){
+                        result.uuidPkgs = SurveyPackageResult.executeQuery("select spr.pkg.gokbId from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant", [participant: result.institution, surveyConfig: result.surveyConfig])
+                        uuidPkgs = SurveyConfigPackage.executeQuery("select scg.pkg.gokbId from SurveyConfigPackage scg where scg.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
+                    }else if(params.subTab == 'selectPackages'){
+                        List<Long> ids = SurveyPackageResult.executeQuery("select spr.pkg.gokbId from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant", [participant: result.institution, surveyConfig: result.surveyConfig])
+                        if(ids.size() > 0){
+                            uuidPkgs = ids
+                        }else {
+                            uuidPkgs = ['fakeUuids']
+                        }
+                    }
+
+                    params.uuids = uuidPkgs
+                    params.max = params.size()
+                    params.offset = 0
+                    result.putAll(packageService.getWekbPackages(params))
+                }else{
+                    result.records = []
+                    result.recordsCount = 0
                 }
             }
 

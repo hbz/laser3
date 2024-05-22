@@ -1,4 +1,4 @@
-<%@page import="de.laser.Vendor; de.laser.convenience.Marker; de.laser.utils.DateUtils; de.laser.storage.RDConstants; de.laser.Package; de.laser.Org; de.laser.Platform; de.laser.RefdataValue" %>
+<%@page import="de.laser.CustomerTypeService; de.laser.survey.SurveyPackageResult; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.Vendor; de.laser.convenience.Marker; de.laser.utils.DateUtils; de.laser.storage.RDConstants; de.laser.Package; de.laser.Org; de.laser.Platform; de.laser.RefdataValue" %>
 <laser:serviceInjection/>
 <table class="ui sortable celled la-js-responsive-table la-table table">
     <thead>
@@ -61,7 +61,40 @@
                 <g:if test="${tmplConfigItem == 'marker'}">
                     <th class="center aligned"><ui:markerIcon type="WEKB_CHANGES" /></th>
                 </g:if>
-                <g:if test="${tmplConfigItem == 'linkPackage' || tmplConfigItem == 'linkSurveyPackage' || tmplConfigItem == 'unLinkSurveyPackage'}">
+                <g:if test="${tmplConfigItem == 'surveyCostItemsPackages'}">
+                    <th>${message(code:'surveyCostItemsPackages.label')}</th>
+                </g:if>
+                <g:if test="${tmplConfigItem == 'surveyPackagesComments'}">
+                    <th>
+                        <g:if test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                            ${message(code: 'surveyResult.participantComment')}
+                        </g:if>
+                        <g:else>
+                            ${message(code: 'surveyResult.commentParticipant')}
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${message(code: 'surveyResult.commentParticipant.info')}">
+                                <i class="question circle icon"></i>
+                            </span>
+                        </g:else>
+                    </th>
+                    <th>
+                        <g:if test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                            ${message(code: 'surveyResult.commentOnlyForOwner')}
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
+                                <i class="question circle icon"></i>
+                            </span>
+                        </g:if>
+                        <g:else>
+                            ${message(code: 'surveyResult.commentOnlyForParticipant')}
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
+                                <i class="question circle icon"></i>
+                            </span>
+                        </g:else>
+                    </th>
+                </g:if>
+                <g:if test="${tmplConfigItem == 'linkPackage' || tmplConfigItem == 'linkSurveyPackage' || tmplConfigItem == 'unLinkSurveyPackage' || tmplConfigItem == 'removeSurveyPackageResult' || tmplConfigItem == 'addSurveyPackageResult'}">
                     <th class="center aligned">${message(code: 'default.actions.label')}</th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'markPerpetualAccess'}">
@@ -290,6 +323,59 @@
                             </ul>
                         </td>
                     </g:if>
+                    <g:if test="${tmplConfigItem == 'surveyCostItemsPackages'}">
+                        <td class="center aligned">
+                                    <table class="ui very basic compact table">
+                                        <tbody>
+                                        <g:each in="${CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, pkg)}"
+                                                var="costItem">
+                                            <tr>
+                                                <td>
+                                                    ${costItem.costItemElement.getI10n('value')}
+                                                </td>
+                                                <td>
+                                                    <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}"
+                                                                            minFractionDigits="2"
+                                                                            maxFractionDigits="2" type="number"/></strong>
+
+                                                    (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
+                                                                     maxFractionDigits="2" type="number"/>)
+                                                </td>
+                                                <td>
+                                                    ${costItem.billingCurrency?.getI10n('value')}
+                                                </td>
+                                                <td>
+                                                    <g:if test="${costItem.startDate || costItem.endDate}">
+                                                        ${costItem.startDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.startDate) : ''} - ${costItem.endDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.endDate) : ''}
+                                                    </g:if>
+                                                </td>
+                                            </tr>
+                                        </g:each>
+                                        </tbody>
+                                    </table>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem == 'surveyPackagesComments'}">
+                        <g:set var="surveyPackageResult"
+                               value="${SurveyPackageResult.findByParticipantAndSurveyConfigAndPkg(participant, surveyConfig, pkg)}"/>
+                        <g:if test="${surveyPackageResult}">
+                            <td>
+                                <ui:xEditable owner="${surveyPackageResult}" type="textarea" field="comment"/>
+                            </td>
+                            <td>
+                                <g:if test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                                    <ui:xEditable owner="${surveyPackageResult}" type="textarea" field="ownerComment"/>
+                                </g:if>
+                                <g:else>
+                                    <ui:xEditable owner="${surveyPackageResult}" type="textarea" field="participantComment"/>
+                                </g:else>
+                            </td>
+                        </g:if>
+                        <g:else>
+                            <td></td>
+                            <td></td>
+                        </g:else>
+                    </g:if>
                     <g:if test="${tmplConfigItem == 'my'}">
                         <td class="center aligned">
                             <g:if test="${pkg && pkg.id in currentPackageIdSet}">
@@ -344,6 +430,25 @@
                             <g:if test="${editable && (!uuidPkgs || !(record.uuid in uuidPkgs))}">
                                 <g:link type="button" class="ui button negative" controller="survey" action="packages" id="${params.id}"
                                         params="[removeUUID: record.uuid, surveyConfigID: surveyConfig.id]"><g:message
+                                        code="surveyPackages.unlinkPackage"/></g:link>
+
+                            </g:if>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem == 'addSurveyPackageResult'}">
+                        <td class="right aligned">
+                            <g:if test="${editable && (!uuidPkgs || !(record.uuid in uuidPkgs))}">
+                                <g:link type="button" class="ui button" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                        params="${parame+ [viewTab: 'packageSurvey', actionsForSurveyPackages: 'addSurveyPackage', pkgUUID: record.uuid]}"><g:message
+                                        code="surveyPackages.linkPackage"/></g:link>
+                            </g:if>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem == 'removeSurveyPackageResult'}">
+                        <td class="right aligned">
+                            <g:if test="${editable && (!uuidPkgs || !(record.uuid in uuidPkgs))}">
+                                <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                        params="${parame+ [viewTab: 'packageSurvey', actionsForSurveyPackages: 'removeSurveyPackage', pkgUUID: record.uuid]}"><g:message
                                         code="surveyPackages.unlinkPackage"/></g:link>
 
                             </g:if>
