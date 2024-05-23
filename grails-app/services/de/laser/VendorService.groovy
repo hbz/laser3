@@ -111,11 +111,22 @@ class VendorService {
      */
     void migrateVendors() {
         PropertyDefinition.findAllByDescr(PropertyDefinition.ORG_PROP).each { PropertyDefinition orgPropDef ->
-            if(!PropertyDefinition.findByNameAndDescr(orgPropDef.name, PropertyDefinition.VEN_PROP)) {
-                PropertyDefinition venPropDef = new PropertyDefinition()
-                InvokerHelper.setProperties(venPropDef, orgPropDef.properties)
-                venPropDef.propDefGroupItems = null
-                venPropDef.descr = PropertyDefinition.VEN_PROP
+            if(!PropertyDefinition.findByNameAndDescrAndTenant(orgPropDef.name, PropertyDefinition.VEN_PROP, orgPropDef.tenant)) {
+                PropertyDefinition venPropDef = new PropertyDefinition(
+                        name: orgPropDef.name,
+                        name_de: orgPropDef.name_de,
+                        name_en: orgPropDef.name_en,
+                        expl_de: orgPropDef.expl_de,
+                        expl_en: orgPropDef.expl_en,
+                        descr: PropertyDefinition.VEN_PROP,
+                        type: orgPropDef.type,
+                        refdataCategory: orgPropDef.refdataCategory,
+                        multipleOccurrence: orgPropDef.multipleOccurrence,
+                        mandatory: orgPropDef.mandatory,
+                        isUsedForLogic: orgPropDef.isUsedForLogic,
+                        isHardData: orgPropDef.isHardData,
+                        tenant: orgPropDef.tenant
+                )
                 venPropDef.save()
             }
         }

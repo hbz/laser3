@@ -269,7 +269,7 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         //those property definitions should not exist actually ...
         PropertyDefinition.executeUpdate('delete from PropertyDefinition pd where pd.tenant = :provider', [provider: provider])
         OrgProperty.findAllByOwner(provider).each { OrgProperty op ->
-            PropertyDefinition type = PropertyDefinition.findByNameAndDescr(op.type.name, PropertyDefinition.PRV_PROP)
+            PropertyDefinition type = PropertyDefinition.findByNameAndDescrAndTenant(op.type.name, PropertyDefinition.PRV_PROP, op.type.tenant)
             ProviderProperty pp = new ProviderProperty(owner: p, type: type)
             if(op.dateValue)
                 pp.dateValue = op.dateValue

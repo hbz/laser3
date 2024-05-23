@@ -22,6 +22,7 @@ class ProviderController {
     ExportClickMeService exportClickMeService
     FilterService filterService
     GokbService gokbService
+    LinksGenerationService linksGenerationService
     ProviderService providerService
     TaskService taskService
     DocstoreService docstoreService
@@ -248,5 +249,23 @@ class ProviderController {
         }
         //workflowService.executeCmdAndUpdateResult(result, params)
         result
+    }
+
+    /**
+     * Links two providers with the given params
+     */
+    @Secured(['ROLE_USER'])
+    def link() {
+        linksGenerationService.link(params)
+        redirect action: 'show', id: params.context
+    }
+
+    /**
+     * Removes the given link between two providers
+     */
+    @Secured(['ROLE_USER'])
+    def unlink() {
+        linksGenerationService.unlink(params)
+        redirect action: 'show', id: params.id
     }
 }

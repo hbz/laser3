@@ -112,11 +112,22 @@ class ProviderService {
      */
     void migrateProviders() {
         PropertyDefinition.findAllByDescr(PropertyDefinition.ORG_PROP).each { PropertyDefinition orgPropDef ->
-            if(!PropertyDefinition.findByNameAndDescr(orgPropDef.name, PropertyDefinition.PRV_PROP)) {
-                PropertyDefinition prvPropDef = new PropertyDefinition()
-                InvokerHelper.setProperties(prvPropDef, orgPropDef.properties)
-                prvPropDef.propDefGroupItems = null
-                prvPropDef.descr = PropertyDefinition.PRV_PROP
+            if(!PropertyDefinition.findByNameAndDescrAndTenant(orgPropDef.name, PropertyDefinition.PRV_PROP, orgPropDef.tenant)) {
+                PropertyDefinition prvPropDef = new PropertyDefinition(
+                        name: orgPropDef.name,
+                        name_de: orgPropDef.name_de,
+                        name_en: orgPropDef.name_en,
+                        expl_de: orgPropDef.expl_de,
+                        expl_en: orgPropDef.expl_en,
+                        descr: PropertyDefinition.PRV_PROP,
+                        type: orgPropDef.type,
+                        refdataCategory: orgPropDef.refdataCategory,
+                        multipleOccurrence: orgPropDef.multipleOccurrence,
+                        mandatory: orgPropDef.mandatory,
+                        isUsedForLogic: orgPropDef.isUsedForLogic,
+                        isHardData: orgPropDef.isHardData,
+                        tenant: orgPropDef.tenant
+                )
                 prvPropDef.save()
             }
         }

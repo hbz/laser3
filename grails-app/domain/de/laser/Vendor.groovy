@@ -296,7 +296,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         SurveyResult.executeUpdate('delete from SurveyResult sr where sr.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
         PropertyDefinition.executeUpdate('delete from PropertyDefinition pd where pd.tenant = :agency', [agency: agency])
         OrgProperty.findAllByOwner(agency).each { OrgProperty op ->
-            PropertyDefinition type = PropertyDefinition.findByNameAndDescr(op.type.name, PropertyDefinition.VEN_PROP)
+            PropertyDefinition type = PropertyDefinition.findByNameAndDescrAndTenant(op.type.name, PropertyDefinition.VEN_PROP, op.type.tenant)
             VendorProperty vp = new VendorProperty(owner: v, type: type)
             if(op.dateValue)
                 vp.dateValue = op.dateValue

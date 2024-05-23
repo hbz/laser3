@@ -65,14 +65,14 @@
             lookupName = "lookupproviders"
             instanceType = message(code:"default.provider.label")
             urlParams.controller = 'provider'
-            urlParams.action = 'linkProviders'
+            urlParams.action = 'link'
             break
         case Vendor.class.name: header = message(code:"vendor.linking.header")
             thisString = context.name
             lookupName = "lookupVendors"
             instanceType = message(code:"default.agency.label")
             urlParams.controller = 'vendor'
-            urlParams.action = 'linkVendors'
+            urlParams.action = 'link'
             break
     }
 %>
