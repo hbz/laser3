@@ -61,7 +61,7 @@
         <laser:render template="/templates/filter/orgFilterTable"
                       model="[orgList         : surveyParticipantsHasAccess,
                               tmplShowCheckbox: editable,
-                              tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', 'surveySubInfo']
+                              tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', (surveyConfig.subscription ? 'surveySubInfo' : '')]
                       ]"/>
 
 
@@ -85,7 +85,7 @@
         <laser:render template="/templates/filter/orgFilterTable"
                       model="[orgList         : surveyParticipantsHasNotAccess,
                               tmplShowCheckbox: editable,
-                              tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', 'surveySubInfo']
+                              tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', (surveyConfig.subscription ? 'surveySubInfo' : '')]
                       ]"/>
 
         <br/>

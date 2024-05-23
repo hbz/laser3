@@ -16,7 +16,7 @@
     <uiSurvey:status object="${surveyInfo}"/>
 </ui:h1HeaderWithIcon>
 
-<g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_TITLE_SELECTION]}">
+<g:if test="${surveyConfig.subscription}">
     <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 

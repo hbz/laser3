@@ -150,7 +150,7 @@ class SurveyControllerService {
 
             result.navigation = surveyService.getConfigNavigation(result.surveyInfo, result.surveyConfig)
 
-            if (result.surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
+            if (result.surveyConfig.subscription) {
 
                 // restrict visible for templates/links/orgLinksAsList
                 result.visibleOrgRelations = []
@@ -314,8 +314,6 @@ class SurveyControllerService {
 
             result.orgConfigurations = orgConfigurations as JSON
 
-            params.tab = params.tab ?: 'selectedSubParticipants'
-
             // new: filter preset
             params.orgType = RDStore.OT_INSTITUTION.id
             params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
@@ -383,6 +381,11 @@ class SurveyControllerService {
             String query = 'from CostItem ct where ct.pkg is null and ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.org.id in (:orgIds) and surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null'
             Set<Long> orgsId = surveyOrgs.orgsWithoutSubIDs
 
+            result.selectedParticipantsCount = surveyOrgs.orgsWithoutSubIDs ? surveyOrgs.orgsWithoutSubIDs.size() : 0
+            result.selectedSubParticipantsCount = surveyOrgs.orgsWithSubIDs ? surveyOrgs.orgsWithSubIDs.size() : 0
+
+            params.tab = params.tab ?: (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY ? 'selectedParticipants' : ((result.selectedSubParticipantsCount == 0) ? 'selectedParticipants' : 'selectedSubParticipants'))
+
             if (params.tab == 'selectedSubParticipants') {
                 orgsId = surveyOrgs.orgsWithSubIDs
             }
@@ -413,8 +416,6 @@ class SurveyControllerService {
             }
 
             result.orgConfigurations = orgConfigurations as JSON
-
-            params.tab = params.tab ?: 'selectedSubParticipants'
 
             // new: filter preset
             params.orgType = RDStore.OT_INSTITUTION.id
@@ -482,6 +483,11 @@ class SurveyControllerService {
 
             String query = 'from CostItem ct where ct.pkg != null and ct.sub is null and ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.org.id in (:orgIds) and surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null '
             Set<Long> orgsId = surveyOrgs.orgsWithoutSubIDs
+
+            result.selectedParticipantsCount = surveyOrgs.orgsWithoutSubIDs ? surveyOrgs.orgsWithoutSubIDs.size() : 0
+            result.selectedSubParticipantsCount = surveyOrgs.orgsWithSubIDs ? surveyOrgs.orgsWithSubIDs.size() : 0
+
+            params.tab = params.tab ?: (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY ? 'selectedParticipants' : ((result.selectedSubParticipantsCount == 0) ? 'selectedParticipants' : 'selectedSubParticipants'))
 
             if (params.tab == 'selectedSubParticipants') {
                 orgsId = surveyOrgs.orgsWithSubIDs
@@ -929,10 +935,10 @@ class SurveyControllerService {
                                         }
                                     }
                                     if (colMap.description != null) {
-                                        costItem.costDescription = cols[colMap.description]
+                                        costItem.costDescription = cols[colMap.description] ?: null
                                     }
                                     if (colMap.title != null) {
-                                        costItem.costTitle = cols[colMap.title]
+                                        costItem.costTitle = cols[colMap.title] ?: null
                                     }
                                     if (colMap.invoiceTotal != null && cols[colMap.invoiceTotal] != null) {
                                         try {
@@ -1026,6 +1032,8 @@ class SurveyControllerService {
 
                                     if(costItem.save()){
                                         costItemsCreatedCount++
+                                    }else {
+                                        log.error("CostItem not create because: "+ costItem.errors.toString())
                                     }
                                 }
                             }
@@ -2118,7 +2126,7 @@ class SurveyControllerService {
 
             params.viewTab = params.viewTab ?: 'overview'
 
-            if (result.surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
+            if (result.surveyConfig.subscription) {
 
                 if(params.viewTab == 'overview') {
 

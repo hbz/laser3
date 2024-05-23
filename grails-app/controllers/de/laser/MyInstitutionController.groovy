@@ -2560,7 +2560,7 @@ class MyInstitutionController  {
         result.ownerId = result.surveyInfo.owner?.id
         result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, result.surveyConfig)
 
-        if(result.surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
+        if(result.surveyConfig.subscription) {
 
             if(params.viewTab == 'overview') {
 

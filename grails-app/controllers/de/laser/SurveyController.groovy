@@ -971,7 +971,7 @@ class SurveyController {
                        message(code: 'financials.costItemElement'),
                        message(code: 'default.status.label'),
                        message(code: 'myinst.financeImport.elementSign'),
-                       message(code: 'myinst.financeImport.invoiceTotal'), message(code: 'default.currency.label'), message(code: 'myinst.financeImport.taxRate'), message(code: 'myinst.financeImport.taxType'),
+                       message(code: 'myinst.financeImport.invoiceTotal'), message(code: 'default.currency.label.utf'), message(code: 'myinst.financeImport.taxRate'), message(code: 'myinst.financeImport.taxType'),
                        message(code: 'myinst.financeImport.dateFrom'), message(code: 'myinst.financeImport.dateTo'), message(code: 'myinst.financeImport.title'), message(code: 'myinst.financeImport.description')])
 
         ArrayList rowData = []
@@ -1396,7 +1396,7 @@ class SurveyController {
 
         result.ownerId = result.surveyInfo.owner.id
 
-        if(result.surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
+        if(result.surveyConfig.subscription) {
             result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(result.participant)
             result.visibleOrgRelations = []
             if(result.subscription) {
