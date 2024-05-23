@@ -211,7 +211,7 @@ class GlobalExportHelper extends BaseExportHelper {
                 List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
                 label += (selList ? ': ' + selList.collect{it -> RefdataValue.get(it).getI10n('value') }.join(', ') : '') // TODO - export
             }
-            else if (fieldName == '@-org-contact') {
+            else if (fieldName in ['@-org-contact', '@-provider-contact', '@-vendor-contact']) {
                 List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
                 label += (selList ? ': ' + selList.collect{it -> RefdataValue.get(it).getI10n('value') }.join(', ') : '') // TODO - export
             }

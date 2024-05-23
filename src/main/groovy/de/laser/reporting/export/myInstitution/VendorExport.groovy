@@ -26,8 +26,8 @@ class VendorExport extends BaseDetailsExport {
                             default: [
                                     'globalUID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     '+sortname+name'    : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
-//                                    'orgType'           : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE ],
-//                                    'country'           : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'homepage'          : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'status'            : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     '@-vendor-contact'  : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     'x-property'        : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL_QDP ],
                                     'x-identifier'      : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
@@ -55,6 +55,7 @@ class VendorExport extends BaseDetailsExport {
 
         ApplicationTagLib g = BeanStore.getApplicationTagLib()
         ContextService contextService = BeanStore.getContextService()
+        VendorService vendorService = BeanStore.getVendorService()
         MessageSource messageSource = BeanStore.getMessageSource()
 
         Vendor ven = obj as Vendor
@@ -89,8 +90,9 @@ class VendorExport extends BaseDetailsExport {
                     List<Identifier> ids = []
 
                     if (f.value) {
-                        ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.ven = :ven and i.ns.id in (:idnsList)",
-                                [ven: ven, idnsList: f.value] )
+                        ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.vendor = :ven and i.ns.id in (:idnsList)",
+                                [ven: ven, idnsList: f.value]
+                        )
                     }
                     content.add( ids.collect{ (it.ns.getI10n('name') ?: GenericHelper.flagUnmatched( it.ns.ns )) + ':' + it.value }.join( BaseDetailsExport.CSV_VALUE_SEPARATOR ))
                 }
@@ -99,13 +101,12 @@ class VendorExport extends BaseDetailsExport {
 
                     if (RDStore.REPORTING_CONTACT_TYPE_CONTACTS.id in f.value) {
                         List<RefdataValue> functionTypes = Person.executeQuery(
-                                "select distinct pr.functionType from Person p inner join p.roleLinks pr where p.isPublic = true and pr.ven = :ven", [ven: ven]
+                                "select distinct pr.functionType from Person p inner join p.roleLinks pr where p.isPublic = true and pr.vendor = :ven", [ven: ven]
                         )
                         List personList = []
-                        // List<RefdataValue> funcTypes = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT]
 
                         functionTypes.each{ ft ->
-                            List<Person> persons = ven.getContactPersonsByFunctionType(true, ft)
+                            List<Person> persons = vendorService.getContactPersonsByFunctionType(ven, contextService.getOrg(), true, ft as RefdataValue)
                             persons.each {p ->
                                 String p1 = [
                                         ft.getI10n('value') + ':',
@@ -128,7 +129,7 @@ class VendorExport extends BaseDetailsExport {
 //                        String sql = "select distinct type from Address addr join addr.type type join addr.ven ven where ven = :ven order by type.value_" + LocaleUtils.getCurrentLang()
 //                        List<RefdataValue> addressTypes = Address.executeQuery( sql, [ven: ven] )
 
-                        String sql = "select distinct type from Address addr join addr.type type join addr.ven ven where ven = :ven and (addr.tenant is null or addr.tenant = :ctxOrg) order by type.value_" + LocaleUtils.getCurrentLang()
+                        String sql = "select distinct type from Address addr join addr.type type join addr.vendor ven where ven = :ven and (addr.tenant is null or addr.tenant = :ctxOrg) order by type.value_" + LocaleUtils.getCurrentLang()
                         List<RefdataValue> addressTypes = Address.executeQuery( sql, [ven: ven, ctxOrg: contextService.getOrg()] )
                         List addressList = []
 
@@ -139,7 +140,7 @@ class VendorExport extends BaseDetailsExport {
 //                                    "select distinct addr from Address addr join addr.ven ven join addr.type addrType where ven = :ven and addrType = :at", [ven: ven, at: at]
 //                            )
 
-                            String sql2 = "select distinct addr from Address addr join addr.ven ven join addr.type addrType where ven = :ven and addrType = :at and (addr.tenant is null or addr.tenant = :ctxOrg)"
+                            String sql2 = "select distinct addr from Address addr join addr.vendor ven join addr.type addrType where ven = :ven and addrType = :at and (addr.tenant is null or addr.tenant = :ctxOrg)"
                             List<Address> addresses = Address.executeQuery(sql2, [ven: ven, at: at, ctxOrg: contextService.getOrg()])
                             addresses.each{ addr ->
                                 String a1 = [

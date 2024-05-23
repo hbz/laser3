@@ -61,7 +61,11 @@ abstract class BaseDetailsExport {
      * common nested fields
      */
     static List<String> CUSTOM_MULTIPLE_FIELDS = [
-            'x-identifier', '@-org-accessPoint', '@-org-contact', '@-org-readerNumber', '@-entitlement-tippIdentifier'
+            'x-identifier',
+            '@-org-accessPoint', '@-org-contact', '@-org-readerNumber',
+            '@-entitlement-tippIdentifier',
+            '@-provider-contact',
+            '@-vendor-contact'
     ]
 
     /**
@@ -343,7 +347,7 @@ abstract class BaseDetailsExport {
         else if (key == '@-org-accessPoint') {
             getAccessPointMethodsforDropdown()
         }
-        else if (key == '@-org-contact') {
+        else if (key in ['@-org-contact', '@-provider-contact', '@-vendor-contact']) {
             getContactOptionsforDropdown()
         }
         else if (key == '@-org-readerNumber') {
