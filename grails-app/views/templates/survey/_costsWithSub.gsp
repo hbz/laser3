@@ -356,7 +356,7 @@
                  </g:if>--}%
                     <g:if test="${consCosts}">
                         <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.consCosts')} ${message(code: 'surveyCostItem.info')}</h2>
-                        <laser:render template="/subscription/financials" model="[data: [consCosts]]"/>
+                        <laser:render template="/subscription/financials" model="[data: consCosts]"/>
                     </g:if>
                 </div>
             </div>
