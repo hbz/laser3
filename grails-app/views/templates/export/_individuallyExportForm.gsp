@@ -309,8 +309,12 @@
                         <input type=checkbox id="exportOnlyContactPersonForInstitution" name="exportOnlyContactPersonForInstitution" value="true" checked="checked"/>
                     </div>
                     <div class="ui checkbox">
-                        <label for="exportOnlyContactPersonForProviderAgency"><g:message code="person.contactPersonForProviderAgency.label"/></label>
-                        <input type="checkbox" id="exportOnlyContactPersonForProviderAgency" name="exportOnlyContactPersonForProviderAgency" value="true" checked="checked"/>
+                        <label for="exportOnlyContactPersonForProvider"><g:message code="person.contactPersonForProvider.label"/></label>
+                        <input type="checkbox" id="exportOnlyContactPersonForProvider" name="exportOnlyContactPersonForProvider" value="true" checked="checked"/>
+                    </div>
+                    <div class="ui checkbox">
+                        <label for="exportOnlyContactPersonForVendor"><g:message code="person.contactPersonForVendor.label"/></label>
+                        <input type="checkbox" id="exportOnlyContactPersonForVendor" name="exportOnlyContactPersonForVendor" value="true" checked="checked"/>
                     </div>
                 </div>
             </div>

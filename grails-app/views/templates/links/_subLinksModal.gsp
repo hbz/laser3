@@ -60,6 +60,20 @@
             urlParams.controller = 'organisation'
             urlParams.action = 'linkOrgs'
             break
+        case Provider.class.name: header = message(code:"provider.linking.header")
+            thisString = context.name
+            lookupName = "lookupproviders"
+            instanceType = message(code:"default.provider.label")
+            urlParams.controller = 'provider'
+            urlParams.action = 'link'
+            break
+        case Vendor.class.name: header = message(code:"vendor.linking.header")
+            thisString = context.name
+            lookupName = "lookupVendors"
+            instanceType = message(code:"default.agency.label")
+            urlParams.controller = 'vendor'
+            urlParams.action = 'link'
+            break
     }
 %>
 
@@ -72,6 +86,9 @@
                 List<RefdataValue> refdataValues = []
                 if(linkInstanceType == Combo.class.name) {
                     refdataValues << RDStore.COMBO_TYPE_FOLLOWS
+                }
+                else if(linkInstanceType in [ProviderLink.class.name, VendorLink.class.name]) {
+                    refdataValues << RDStore.PROVIDER_LINK_FOLLOWS
                 }
                 else {
                     refdataValues.addAll(RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)-RDStore.LINKTYPE_LICENSE)
@@ -90,6 +107,16 @@
                             if(context == link.fromOrg)
                                 perspIndex = 0
                             else if(context == link.toOrg)
+                                perspIndex = 1
+                            else perspIndex = 0
+                            linkType = "${genericOIDService.getOID(rv)}§${perspIndex}"
+                        }
+                    }
+                    else if(linkInstanceType in [Provider.class.name, Vendor.class.name]) {
+                        if(link && link.type == rv) {
+                            if(context == link.from)
+                                perspIndex = 0
+                            else if(context == link.to)
                                 perspIndex = 1
                             else perspIndex = 0
                             linkType = "${genericOIDService.getOID(rv)}§${perspIndex}"
@@ -119,6 +146,9 @@
             <g:if test="${linkInstanceType == Combo.class.name}">
                 <g:set var="pair" value="${context == link.fromOrg ? link.toOrg : link.fromOrg}"/>
             </g:if>
+            <g:if test="${linkInstanceType in [Provider.class.name, Vendor.class.name]}">
+                <g:set var="pair" value="${context == link.from ? link.to : link.from}"/>
+            </g:if>
             <g:else>
                 <g:set var="pair" value="${link.getOther(context)}"/>
                 <g:set var="comment" value="${DocContext.findByLink(link)}"/>
@@ -139,7 +169,7 @@
         <g:else>
             <g:set var="selectPair" value="pair_new"/>
             <g:set var="selectLink" value="linkType_new"/>
-            <g:if test="${linkInstanceType != Combo.class.name}">
+            <g:if test="${linkInstanceType == Links.class.name}">
                 <g:set var="linkComment" value="linkComment_new"/>
             </g:if>
         </g:else>
@@ -149,7 +179,7 @@
                     <g:hiddenField name="${selectLink}" value="${genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)}§${1}"/>
                 </g:if>
                 <g:else>
-                    <g:if test="${linkInstanceType != Combo.class.name && !link}">
+                    <g:if test="${linkInstanceType == Links.class.name && !link}">
                         <div class="row">
                             <div class="four wide column">
                                 <g:message code="default.provider.label"/>
@@ -180,7 +210,7 @@
                     </div>
                     <div class="twelve wide column">
                         <g:if test="${link}">
-                            <input type="hidden" name="${selectPair}" value="${linkInstanceType == Combo.class.name ? pair : genericOIDService.getOID(pair)}"/>
+                            <input type="hidden" name="${selectPair}" value="${linkInstanceType in [Combo.class.name, ProviderLink.class.name, VendorLink.class.name] ? pair : genericOIDService.getOID(pair)}"/>
                             ${pair}
                         </g:if>
                         <g:else>
@@ -193,7 +223,7 @@
                         </g:else>
                     </div>
                 </div>
-                <g:if test="${linkInstanceType != Combo.class.name}">
+                <g:if test="${linkInstanceType == Links.class.name}">
                     <div class="row">
                         <div class="four wide column">
                             <g:message code="default.linking.comment" />

@@ -358,7 +358,7 @@
                                 </div>
                                 <div class="item">
                                     <strong><g:message code="package.plural" /></strong>
-                                    &nbsp;<div class="ui blue circular label">${vendor.packages.size()}</div>
+                                    &nbsp;<div class="ui blue circular label">${packages.size()}</div>
                                 </div>
                                 <div class="item">
                                     <strong><g:message code="subscription.plural" /></strong>
@@ -388,7 +388,7 @@
                             <p class="ui header"><g:message code="package.plural" /></p>
 
                             <div class="ui divided middle aligned selection list la-flex-list">
-                                <g:each in="${vendor.packages}" var="vp">
+                                <g:each in="${packages}" var="vp">
                                     <div class="ui item">
                                         <div class="content la-space-right">
                                             <g:link controller="package" action="show" id="${vp.pkg.id}">${vp.pkg.name}</g:link>

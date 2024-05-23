@@ -75,12 +75,12 @@
                           </g:if>
                         <g:if test="${'provider' in licenseFilterTable}">
                           <td>
-                              <g:set var="licensors" value="${l.getProviders()}"/>
-                              <g:each in="${licensors}" var="licensor">
-                                  <g:link controller="organisation" action="show" id="${licensor.id}">
-                                      ${fieldValue(bean: licensor, field: "name")}
-                                      <g:if test="${licensor.sortname}">
-                                          (${fieldValue(bean: licensor, field: "sortname")})
+                              <g:set var="providers" value="${l.getProviders()}"/>
+                              <g:each in="${providers}" var="provider">
+                                  <g:link controller="provider" action="show" id="${provider.id}">
+                                      ${fieldValue(bean: provider, field: "name")}
+                                      <g:if test="${provider.sortname}">
+                                          (${fieldValue(bean: provider, field: "sortname")})
                                       </g:if>
                                   </g:link>
                                   <br>

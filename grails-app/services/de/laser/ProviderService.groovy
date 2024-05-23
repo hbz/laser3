@@ -2,12 +2,14 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.helper.Params
+import de.laser.properties.PropertyDefinition
 import de.laser.properties.ProviderProperty
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
 import de.laser.traces.DeletedObject
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
 
@@ -109,6 +111,26 @@ class ProviderService {
      * Changes provider orgs ({@link Org}s defined as such) into {@link Provider}s
      */
     void migrateProviders() {
+        PropertyDefinition.findAllByDescr(PropertyDefinition.ORG_PROP).each { PropertyDefinition orgPropDef ->
+            if(!PropertyDefinition.findByNameAndDescrAndTenant(orgPropDef.name, PropertyDefinition.PRV_PROP, orgPropDef.tenant)) {
+                PropertyDefinition prvPropDef = new PropertyDefinition(
+                        name: orgPropDef.name,
+                        name_de: orgPropDef.name_de,
+                        name_en: orgPropDef.name_en,
+                        expl_de: orgPropDef.expl_de,
+                        expl_en: orgPropDef.expl_en,
+                        descr: PropertyDefinition.PRV_PROP,
+                        type: orgPropDef.type,
+                        refdataCategory: orgPropDef.refdataCategory,
+                        multipleOccurrence: orgPropDef.multipleOccurrence,
+                        mandatory: orgPropDef.mandatory,
+                        isUsedForLogic: orgPropDef.isUsedForLogic,
+                        isHardData: orgPropDef.isHardData,
+                        tenant: orgPropDef.tenant
+                )
+                prvPropDef.save()
+            }
+        }
         Org.withTransaction { TransactionStatus ts ->
             Platform.findAllByOrgIsNotNull().each { Platform plat ->
                 plat.provider = Provider.convertFromOrg(plat.org)

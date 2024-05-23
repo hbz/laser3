@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.helper.Params
+import de.laser.properties.PropertyDefinition
 import de.laser.properties.ProviderProperty
 import de.laser.properties.VendorProperty
 import de.laser.remote.ApiSource
@@ -11,6 +12,7 @@ import de.laser.traces.DeletedObject
 import de.laser.utils.SwissKnife
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.codehaus.groovy.runtime.InvokerHelper
 import org.hibernate.Session
 import org.springframework.transaction.TransactionStatus
 
@@ -108,6 +110,26 @@ class VendorService {
      * Changes agencies ({@link Org}s defined as such) into {@link Vendor}s
      */
     void migrateVendors() {
+        PropertyDefinition.findAllByDescr(PropertyDefinition.ORG_PROP).each { PropertyDefinition orgPropDef ->
+            if(!PropertyDefinition.findByNameAndDescrAndTenant(orgPropDef.name, PropertyDefinition.VEN_PROP, orgPropDef.tenant)) {
+                PropertyDefinition venPropDef = new PropertyDefinition(
+                        name: orgPropDef.name,
+                        name_de: orgPropDef.name_de,
+                        name_en: orgPropDef.name_en,
+                        expl_de: orgPropDef.expl_de,
+                        expl_en: orgPropDef.expl_en,
+                        descr: PropertyDefinition.VEN_PROP,
+                        type: orgPropDef.type,
+                        refdataCategory: orgPropDef.refdataCategory,
+                        multipleOccurrence: orgPropDef.multipleOccurrence,
+                        mandatory: orgPropDef.mandatory,
+                        isUsedForLogic: orgPropDef.isUsedForLogic,
+                        isHardData: orgPropDef.isHardData,
+                        tenant: orgPropDef.tenant
+                )
+                venPropDef.save()
+            }
+        }
         Org.withTransaction { TransactionStatus ts ->
             Set<Combo> agencyCombos = Combo.executeQuery('select c from Combo c, Org o join o.orgType ot where (c.fromOrg = o or c.toOrg = o) and ot = :agency', [agency: RDStore.OT_AGENCY])
             agencyCombos.each { Combo ac ->

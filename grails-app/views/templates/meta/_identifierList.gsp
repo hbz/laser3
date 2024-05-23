@@ -38,8 +38,13 @@
                                     <span class="js-copyTopic">${ident.value}</span>
                             </span>
                         </g:else>
+                        <%--
                         <g:if test="${ident.ns.urlPrefix}">
                             <a target="_blank" href="${ident.ns.urlPrefix}${ident.value}"><i title="${ident.ns.getI10n('name')} Link" class="external alternate icon"></i></a>
+                        </g:if>
+                        --%>
+                        <g:if test="${ident.getURL()}">
+                            <ui:linkWithIcon href="${ident.getURL()}" />
                         </g:if>
                     </g:if>
                     <g:else>
