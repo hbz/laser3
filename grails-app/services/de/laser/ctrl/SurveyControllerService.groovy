@@ -789,7 +789,8 @@ class SurveyControllerService {
                 Map<String, IdentifierNamespace> namespaces = [gnd : IdentifierNamespace.findByNsAndNsType('gnd_org_nr', Org.class.name),
                                                                isil: IdentifierNamespace.findByNsAndNsType('ISIL', Org.class.name),
                                                                ror : IdentifierNamespace.findByNsAndNsType('ROR ID', Org.class.name),
-                                                               wib : IdentifierNamespace.findByNsAndNsType('wibid', Org.class.name)]
+                                                               wib : IdentifierNamespace.findByNsAndNsType('wibid', Org.class.name),
+                                                               dealId : IdentifierNamespace.findByNsAndNsType('deal_id', Org.class.name)]
                 String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
 
                 if(encoding in ["UTF-8", "WINDOWS-1252"]) {
@@ -808,6 +809,8 @@ class SurveyControllerService {
                             case "ror-id": colMap.rorCol = c
                                 break
                             case "wib-id": colMap.wibCol = c
+                                break
+                            case "deal-id": colMap.dealCol = c
                                 break
                             case ["kundennummer", "customer identifier"]: colMap.customerIdentifier = c
                                 break
@@ -868,6 +871,12 @@ class SurveyControllerService {
 
                         if (!match && colMap.customerIdentifier >= 0 && cols[colMap.customerIdentifier] != null && !cols[colMap.customerIdentifier].trim().isEmpty()) {
                             List matchList =  Org.executeQuery('select ci.customer from CustomerIdentifier ci join ci.platform plat where ci.value = :customerIdentifier and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription.instanceOf = :subscription)', [customerIdentifier: cols[colMap.customerIdentifier].trim(), subscription: result.surveyConfig.subscription])
+                            if (matchList.size() == 1)
+                                match = matchList[0] as Org
+                        }
+
+                        if (colMap.dealCol >= 0 && cols[colMap.dealCol] != null && !cols[colMap.dealCol].trim().isEmpty()) {
+                            List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.dealCol].trim(), ns: namespaces.dealId, removed: RDStore.TIPP_STATUS_REMOVED])
                             if (matchList.size() == 1)
                                 match = matchList[0] as Org
                         }
