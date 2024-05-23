@@ -15,9 +15,11 @@ import de.laser.storage.BeanStore
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyConfigPackage
 import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyPackageResult
 import de.laser.survey.SurveyResult
 import de.laser.survey.SurveyUrl
 import de.laser.config.ConfigMapper
@@ -2120,6 +2122,69 @@ class SurveyService {
         }
 
         return countModification
+
+    }
+
+    List generatePropertyDataForCharts(SurveyConfig surveyConfig, List<Org> orgList){
+        List chartSource = [['property', 'value']]
+
+        List<PropertyDefinition> propList = SurveyConfigProperties.executeQuery("select scp.surveyProperty from SurveyConfigProperties scp where scp.surveyConfig = :surveyConfig", [surveyConfig: surveyConfig])
+        propList.sort {it.getI10n('name')}.eachWithIndex {PropertyDefinition prop, int i ->
+            if (prop.isRefdataValueType()) {
+                def refDatas = SurveyResult.executeQuery("select sr.refValue from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and sr.refValue is not null and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList]).groupBy {it.getI10n('value')}
+                refDatas.each {
+                    chartSource << ["${prop.getI10n('name')}: ${it.key}", it.value.size()]
+                }
+            }
+            if (prop.isIntegerType()) {
+                chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.intValue is not null or sr.intValue != '') and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
+            }
+            else if (prop.isStringType()) {
+                chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.stringValue is not null or sr.stringValue != '') and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
+            }
+            else if (prop.isBigDecimalType()) {
+                chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.decValue is not null or sr.decValue != '') and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
+            }
+            else if (prop.isDateType()) {
+                chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.dateValue is not null or sr.dateValue != '') and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
+            }
+            else if (prop.isURLType()) {
+                chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.urlValue is not null or sr.urlValue != '') and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
+            }
+        }
+        chartSource = chartSource.reverse()
+        return chartSource.reverse()
+    }
+
+    List generateSurveyPackageDataForCharts(SurveyConfig surveyConfig, List<Org> orgList){
+        List chartSource = [['property', 'value']]
+
+        List<Package> packages = SurveyConfigPackage.executeQuery("select scp.pkg from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig order by scp.pkg.name", [surveyConfig: surveyConfig])
+
+        packages.each {Package pkg ->
+            chartSource << ["${pkg.name.replace('"', '')}", SurveyPackageResult.executeQuery("select count(*) from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant in (:participants) and spr.pkg = :pkg", [pkg: pkg, surveyConfig: surveyConfig, participants: orgList])[0]]
+        }
+
+        chartSource = chartSource.reverse()
+        return chartSource.reverse()
+    }
+
+    Map getCostItemSumBySelectSurveyPackageOfParticipant(SurveyConfig surveyConfig, Org participant){
+        Double sumCostInBillingCurrency = 0.0
+        Double sumCostInBillingCurrencyAfterTax = 0.0
+
+        List<SurveyPackageResult> surveyPackageResultList = SurveyPackageResult.findAllBySurveyConfigAndParticipant(surveyConfig, participant)
+
+        if(surveyPackageResultList){
+            List<CostItem> costItemList = CostItem.findAllBySurveyOrgAndPkgInList(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), surveyPackageResultList.pkg)
+            costItemList.each { CostItem costItem ->
+
+                sumCostInBillingCurrency = sumCostInBillingCurrency+ costItem.costInBillingCurrency
+                sumCostInBillingCurrencyAfterTax = sumCostInBillingCurrencyAfterTax+ costItem.costInBillingCurrencyAfterTax
+            }
+        }
+
+        [sumCostInBillingCurrency: sumCostInBillingCurrency, sumCostInBillingCurrencyAfterTax: sumCostInBillingCurrencyAfterTax]
 
     }
 

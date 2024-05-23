@@ -93,6 +93,15 @@
                                    tabindex="0">
                         </div>
                     </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkPackageSurvey">${message(code: 'surveyconfig.packageSurvey.label')}</label>
+                            <input id="checkPackageSurvey" name="checkPackageSurvey" type="checkbox"
+                                   <g:if test="${params.checkPackageSurvey}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -144,24 +153,24 @@
 
         <ui:tabs actionName="${actionName}">
             <ui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
-                         params="${[id: params.id, tab: 'open', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer]}" text="${message(code: "surveys.tabs.open")}" tab="open"
+                         params="${[id: params.id, tab: 'open', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer, checkPackageSurvey: params.checkPackageSurvey]}" text="${message(code: "surveys.tabs.open")}" tab="open"
                          counts="${countSurveys?.open}"/>
            %{-- <ui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
-                            params="${[id: params.id, tab: 'new', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer]}" text="${message(code: "surveys.tabs.new")}" tab="new"
+                            params="${[id: params.id, tab: 'new', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer, checkPackageSurvey: params.checkPackageSurvey]}" text="${message(code: "surveys.tabs.new")}" tab="new"
                             counts="${countSurveys?.new}"/>
             <ui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
-                            params="${[id: params.id, tab: 'processed', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer]}" text="${message(code: "surveys.tabs.processed")}" tab="processed"
+                            params="${[id: params.id, tab: 'processed', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer, checkPackageSurvey: params.checkPackageSurvey]}" text="${message(code: "surveys.tabs.processed")}" tab="processed"
                             counts="${countSurveys?.processed}"/>--}%
             <ui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
-                            params="${[id: params.id, tab: 'finish', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer]}" text="${message(code: "surveys.tabs.finish")}" tab="finish"
+                            params="${[id: params.id, tab: 'finish', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer, checkPackageSurvey: params.checkPackageSurvey]}" text="${message(code: "surveys.tabs.finish")}" tab="finish"
                             counts="${countSurveys?.finish}"/>
             <ui:tabsItem controller="myInstitution" action="manageParticipantSurveys" class="ui red"
                             countsClass="red"
-                            params="${[id: params.id, tab: 'termination', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer]}" text="${message(code: "surveys.tabs.termination")}"
+                            params="${[id: params.id, tab: 'termination', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer, checkPackageSurvey: params.checkPackageSurvey]}" text="${message(code: "surveys.tabs.termination")}"
                             tab="termination"
                             counts="${countSurveys?.termination}"/>
             <ui:tabsItem controller="myInstitution" action="manageParticipantSurveys" class="ui orange" countsClass="orange"
-                            params="${[id: params.id, tab: 'notFinish', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer]}" text="${message(code: "surveys.tabs.notFinish")}" tab="notFinish"
+                            params="${[id: params.id, tab: 'notFinish', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer, checkPackageSurvey: params.checkPackageSurvey]}" text="${message(code: "surveys.tabs.notFinish")}" tab="notFinish"
                             counts="${countSurveys?.notFinish}"/>
         </ui:tabs>
 

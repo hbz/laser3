@@ -154,6 +154,15 @@
                                    tabindex="0">
                         </div>
                     </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkPackageSurvey">${message(code: 'surveyconfig.packageSurvey.label')}</label>
+                            <input id="checkPackageSurvey" name="checkPackageSurvey" type="checkbox"
+                                   <g:if test="${params.checkPackageSurvey}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -368,7 +377,7 @@
 
                     <g:if test="${editable}">
                         <g:link controller="survey" action="copySurvey" id="${surveyInfo.id}"
-                                params="[surveyConfigID: surveyConfig.id]"
+                                params="[surveyConfigID: surveyConfig.id, q: surveyConfig?.subscription?.providers ? surveyConfig.subscription.providers[0].name : '']"
                                 class="ui icon blue button la-modern-button">
                             <i class="icon copy"></i>
                             </div>

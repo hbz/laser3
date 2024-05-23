@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
+import grails.plugins.orm.auditable.Auditable
 import groovy.util.logging.Slf4j
 
 /**
@@ -14,11 +15,12 @@ import groovy.util.logging.Slf4j
  * </ul>
  */
 @Slf4j
-class AlternativeName implements CalculatedLastUpdated, Comparable<AlternativeName> {
+class AlternativeName implements CalculatedLastUpdated, Comparable<AlternativeName>, Auditable {
 
     Long id
     Long version
     String name
+    AlternativeName instanceOf
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading
@@ -43,6 +45,7 @@ class AlternativeName implements CalculatedLastUpdated, Comparable<AlternativeNa
         subscription (nullable: true)
         tipp (nullable: true)
         vendor (nullable: true)
+        instanceOf (nullable: true)
         lastUpdated (nullable: true)
         lastUpdatedCascading (nullable: true)
     }
@@ -51,6 +54,7 @@ class AlternativeName implements CalculatedLastUpdated, Comparable<AlternativeNa
         id                    column: 'altname_id'
         version               column: 'altname_version'
         name                  column: 'altname_name', type: "text"
+        instanceOf            column: 'altname_instance_of_fk', index: 'altname_instanceof_idx'
         license               column: 'altname_lic_fk'
         org                   column: 'altname_org_fk'
         pkg                   column: 'altname_pkg_fk'
@@ -64,6 +68,15 @@ class AlternativeName implements CalculatedLastUpdated, Comparable<AlternativeNa
         lastUpdatedCascading  column: 'altname_last_updated_cascading'
     }
 
+    @Override
+    Collection<String> getLogIncluded() {
+        [ 'name' ]
+    }
+    @Override
+    Collection<String> getLogExcluded() {
+        [ 'version', 'lastUpdated', 'lastUpdatedCascading' ]
+    }
+
     /**
      * Compares this name to a given alternative name
      * @param o the alternative name to compare against
@@ -75,6 +88,23 @@ class AlternativeName implements CalculatedLastUpdated, Comparable<AlternativeNa
         if(!result)
             result = id <=> altName2.id
         result
+    }
+
+    /**
+     * Triggers before the database update of the alternative name
+     */
+    def beforeUpdate() {
+        log.debug("beforeUpdate")
+        name = name?.trim()
+        Map<String, Object> changes = [
+                oldMap: [:],
+                newMap: [:]
+        ]
+        this.getDirtyPropertyNames().each { prop ->
+            changes.oldMap.put( prop, this.getPersistentValue(prop) )
+            changes.newMap.put( prop, this.getProperty(prop) )
+        }
+        BeanStore.getAuditService().beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
 
     @Override
@@ -106,8 +136,10 @@ class AlternativeName implements CalculatedLastUpdated, Comparable<AlternativeNa
      * @return the new alternative name, null if no reference object has been specified
      */
     static AlternativeName construct(Map<String, Object> configMap) {
-        if(configMap.license || configMap.org || configMap.pkg || configMap.platform || configMap.provider || configMap.subscription || configMap.tipp) {
+        if(configMap.license || configMap.org || configMap.pkg || configMap.platform || configMap.provider || configMap.subscription || configMap.tipp || configMap.vendor) {
             AlternativeName altName = new AlternativeName(name: configMap.name)
+            if(configMap.instanceOf)
+                altName.instanceOf = configMap.instanceOf
             if(configMap.license)
                 altName.license = configMap.license
             else if(configMap.org)
@@ -122,6 +154,8 @@ class AlternativeName implements CalculatedLastUpdated, Comparable<AlternativeNa
                 altName.subscription = configMap.subscription
             else if(configMap.tipp)
                 altName.tipp = configMap.tipp
+            else if(configMap.vendor)
+                altName.vendor = configMap.vendor
             if(!altName.save()) {
                 log.error("error on creating alternative name: ${altName.getErrors().getAllErrors().toListString()}")
             }

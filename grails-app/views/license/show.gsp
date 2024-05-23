@@ -73,16 +73,77 @@
                                             <g:if test="${license.altnames}">
                                                 <div class="title" id="altname_title">
                                                     <div data-objId="${genericOIDService.getOID(license.altnames[0])}">
-                                                        <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                                      data_confirm_term_how="ok"
-                                                                      class="js-open-confirm-modal-xEditable"
-                                                                      owner="${license.altnames[0]}" field="name"/>
+                                                        <div class="content la-space-right">
+                                                            <g:if test="${!license.altnames[0].instanceOf}">
+                                                                <ui:xEditable owner="${subscription.altnames[0]}" field="name"/>
+                                                            </g:if>
+                                                        </div>
                                                         <g:if test="${editable}">
-                                                            <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: license.altnames[0].id]"
-                                                                           data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [license.altnames[0].name])}"
-                                                                           data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(license.altnames[0])}')">
-                                                                <i class="trash alternate outline icon"></i>
-                                                            </ui:remoteLink>
+                                                            <g:if test="${showConsortiaFunctions}">
+                                                                <g:if test="${!license.altnames[0].instanceOf}">
+                                                                    <g:if test="${! AuditConfig.getConfig(license.altnames[0])}">
+                                                                        <ui:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                                                                 controller="ajax"
+                                                                                 action="toggleAlternativeNameAuditConfig"
+                                                                                 params='[ownerId: "${license.id}",
+                                                                                          ownerClass: "${license.class}",
+                                                                                          showConsortiaFunctions: true,
+                                                                                          (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
+                                                                                 ]'
+                                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.altname", args: [license.altnames[0].name])}"
+                                                                                 data-confirm-term-how="inherit"
+                                                                                 id="${license.altnames[0].id}"
+                                                                                 data-content="${message(code:'property.audit.off.tooltip')}"
+                                                                                 role="button"
+                                                                        >
+                                                                            <i class="icon la-thumbtack slash"></i>
+                                                                        </ui:link>
+                                                                        <div class="ui buttons">
+                                                                            <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: license.altnames[0].id]"
+                                                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [license.altnames[0].name])}"
+                                                                                     data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                                <i class="trash alternate outline icon"></i>
+                                                                            </ui:remoteLink>
+                                                                        </div>
+                                                                    </g:if>
+                                                                    <g:else>
+                                                                        <ui:link class="ui icon green button la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                                                                 controller="ajax" action="toggleAlternativeNameAuditConfig"
+                                                                                 params='[ownerId: "${license.altnames[0].id}",
+                                                                                          ownerClass: "${license.altnames[0].class}",
+                                                                                          showConsortiaFunctions: true,
+                                                                                          (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
+                                                                                 ]'
+                                                                                 id="${license.altnames[0].id}"
+                                                                                 data-content="${message(code:'property.audit.on.tooltip')}"
+                                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.identifier", args: [license.altnames[0].name])}"
+                                                                                 data-confirm-term-how="inherit"
+                                                                                 role="button"
+                                                                        >
+                                                                            <i class="thumbtack icon"></i>
+                                                                        </ui:link>
+                                                                    </g:else>
+                                                                </g:if>
+                                                                <g:else>
+                                                                    <div class="ui buttons">
+                                                                        <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: license.altnames[0].id]"
+                                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [license.altnames[0].name])}"
+                                                                                 data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(subscription.altnames[0])}')">
+                                                                            <i class="trash alternate outline icon"></i>
+                                                                        </ui:remoteLink>
+                                                                    </div>
+                                                                </g:else>
+                                                            </g:if>
+                                                            <g:elseif test="${license.altnames[0].instanceOf}">
+                                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
+                                                            </g:elseif>
+                                                            <g:else>
+                                                                <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: license.altnames[0].id]"
+                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [license.altnames[0].name])}"
+                                                                         data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(subscription.altnames[0])}')">
+                                                                    <i class="trash alternate outline icon"></i>
+                                                                </ui:remoteLink>
+                                                            </g:else>
                                                         </g:if>
                                                     </div>
                                                     <i class="dropdown icon"></i>
@@ -91,30 +152,91 @@
                                                     <g:each in="${license.altnames.drop(1)}" var="altname">
                                                         <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
                                                             <div class="content la-space-right">
-                                                                <ui:xEditable
-                                                                        data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                                        data_confirm_term_how="ok"
-                                                                        class="js-open-confirm-modal-xEditable"
-                                                                        owner="${altname}" field="name" overwriteEditable="${editable}"/>
+                                                                <g:if test="${!altname.instanceOf}">
+                                                                    <ui:xEditable owner="${altname}" field="name"/>
+                                                                </g:if>
                                                             </div>
                                                             <g:if test="${editable}">
-                                                                <div class="content la-space-right">
+                                                                <g:if test="${showConsortiaFunctions}">
+                                                                    <g:if test="${!altname.instanceOf}">
+                                                                        <g:if test="${! AuditConfig.getConfig(altname)}">
+                                                                            <ui:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                                                                     controller="ajax"
+                                                                                     action="toggleAlternativeNameAuditConfig"
+                                                                                     params='[ownerId: "${license.id}",
+                                                                                              ownerClass: "${license.class}",
+                                                                                              showConsortiaFunctions: true,
+                                                                                              (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
+                                                                                     ]'
+                                                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.altname", args: [altname.name])}"
+                                                                                     data-confirm-term-how="inherit"
+                                                                                     id="${altname.id}"
+                                                                                     data-content="${message(code:'property.audit.off.tooltip')}"
+                                                                                     role="button"
+                                                                            >
+                                                                                <i class="icon la-thumbtack slash"></i>
+                                                                            </ui:link>
+                                                                            <div class="ui buttons">
+                                                                                <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
+                                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
+                                                                                         data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                                    <i class="trash alternate outline icon"></i>
+                                                                                </ui:remoteLink>
+                                                                            </div>
+                                                                        </g:if>
+                                                                        <g:else>
+                                                                            <ui:link class="ui icon green button la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                                                                     controller="ajax" action="toggleAlternativeNameAuditConfig"
+                                                                                     params='[ownerId: "${altname.id}",
+                                                                                              ownerClass: "${altname.class}",
+                                                                                              showConsortiaFunctions: true,
+                                                                                              (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
+                                                                                     ]'
+                                                                                     id="${altname.id}"
+                                                                                     data-content="${message(code:'property.audit.on.tooltip')}"
+                                                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.altname", args: [altname.name])}"
+                                                                                     data-confirm-term-how="inherit"
+                                                                                     role="button"
+                                                                            >
+                                                                                <i class="thumbtack icon"></i>
+                                                                            </ui:link>
+                                                                        </g:else>
+                                                                    </g:if>
+                                                                    <g:else>
+                                                                        <div class="ui buttons">
+                                                                            <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
+                                                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
+                                                                                     data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                                <i class="trash alternate outline icon"></i>
+                                                                            </ui:remoteLink>
+                                                                        </div>
+                                                                    </g:else>
+                                                                </g:if>
+                                                                <g:elseif test="${altname.instanceOf}">
+                                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
+                                                                </g:elseif>
+                                                                <g:else>
                                                                     <div class="ui buttons">
                                                                         <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
-                                                                                       data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
-                                                                                       data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
+                                                                                 data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
                                                                             <i class="trash alternate outline icon"></i>
                                                                         </ui:remoteLink>
                                                                     </div>
-                                                                </div>
+                                                                </g:else>
                                                             </g:if>
+                                                            <g:elseif test="${altname.instanceOf}">
+                                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
+                                                            </g:elseif>
                                                         </div>
                                                     </g:each>
                                                 </div>
                                             </g:if>
                                         </div>
-                                        <input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}">
                                     </dd>
+                                </dl>
+                                <dl>
+                                    <input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}">
                                 </dl>
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.startDate.label')}</dt>

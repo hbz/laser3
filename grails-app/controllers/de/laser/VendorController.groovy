@@ -59,9 +59,9 @@ class VendorController {
                 [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
         ]
         List<String> queryArgs = []
-        if(params.containsKey('nameContains')) {
+        if(params.containsKey('vendorNameContains')) {
             queryArgs << "(genfunc_filter_matcher(v.name, :name) = true or genfunc_filter_matcher(v.sortname, :name) = true)"
-            queryParams.name = params.nameContains
+            queryParams.name = params.vendorNameContains
         }
         if(params.containsKey('venStatus')) {
             queryArgs << "v.status in (:status)"

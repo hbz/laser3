@@ -17,7 +17,7 @@
     </g:if>
 
         <%-- --%>
-    <g:form controller="admin" action="mergeProviders">
+    <g:form controller="admin" action="mergeVendors">
         <table class="ui celled la-js-responsive-table la-table compact table">
             <thead>
                 <tr>

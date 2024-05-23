@@ -25,6 +25,7 @@ class PackageService {
     GokbService gokbService
     LinkGenerator grailsLinkGenerator
     MessageSource messageSource
+    GlobalSourceSyncService globalSourceSyncService
 
     boolean titleCleanupRunning = false
 
@@ -301,5 +302,34 @@ class PackageService {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         result
+    }
+
+    Package createPackageWithWEKB(String pkgUUID){
+        Package pkg
+            try {
+                Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',tippPackageUuid:pkgUUID,max:GlobalSourceSyncService.MAX_TIPP_COUNT_PER_PAGE,sort:'lastUpdated'])
+                if(queryResult.error && queryResult.error == 404) {
+                    log.error("we:kb server currently unavailable")
+                }
+                else {
+                    Package.withNewTransaction {
+                        if(queryResult.records && queryResult.count > 0) {
+                            if(queryResult.count >= GlobalSourceSyncService.MAX_TIPP_COUNT_PER_PAGE)
+                                globalSourceSyncService.processScrollPage(queryResult, 'TitleInstancePackagePlatform', null, pkgUUID)
+                            else
+                                globalSourceSyncService.updateRecords(queryResult.records, 0)
+                        }
+                        else {
+                            globalSourceSyncService.createOrUpdatePackage(pkgUUID)
+                        }
+                    }
+                    pkg = Package.findByGokbId(pkgUUID)
+                }
+            }
+            catch (Exception e) {
+                log.error("sync job has failed, please consult stacktrace as follows: ")
+                e.printStackTrace()
+            }
+        return pkg
     }
 }

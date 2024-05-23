@@ -3015,9 +3015,8 @@ join sub.orgRelations or_sub where
                 owner.getClass().findAllByInstanceOf(owner).each { member ->
                     Identifier existingIdentifier = Identifier.executeQuery('select id from Identifier id where id.'+memberType+' = :member and id.instanceOf = :id', [member: member, id: identifier])[0]
                     if (! existingIdentifier) {
-                        //List<Identifier> matchingProps = Identifier.findAllByOwnerAndTypeAndTenant(member, property.type, contextOrg)
                         List<Identifier> matchingIds = Identifier.executeQuery('select id from Identifier id where id.'+memberType+' = :member and id.value = :value and id.ns = :ns',[member: member, value: identifier.value, ns: identifier.ns])
-                        // unbound prop found with matching type, set backref
+                        // unbound id found with matching type, set backref
                         if (matchingIds) {
                             matchingIds.each { Identifier memberId ->
                                 memberId.instanceOf = identifier
@@ -3025,12 +3024,58 @@ join sub.orgRelations or_sub where
                             }
                         }
                         else {
-                            // no match found, creating new prop with backref
+                            // no match found, creating new id with backref
                             Identifier.constructWithFactoryResult([value: identifier.value, note: identifier.note, parent: identifier, reference: member, namespace: identifier.ns])
                         }
                     }
                 }
                 AuditConfig.addConfig(identifier, AuditConfig.COMPLETE_OBJECT)
+            }
+        }
+    }
+    /**
+     * Processes the inheritance (or clears it) of the alternative names for the given owner object
+     * @param owner the {@link Subscription} or {@link License}
+     * @param altName the {@link AlternativeName} to be copied into or removed from the child objects
+     */
+    void inheritAlternativeName(owner, AlternativeName altName) {
+        if (AuditConfig.getConfig(altName, AuditConfig.COMPLETE_OBJECT)) {
+            AuditConfig.removeAllConfigs(altName)
+
+            AlternativeName.findAllByInstanceOf(altName).each{ AlternativeName a ->
+                a.delete()
+            }
+        }
+        else {
+            String memberType
+            if(owner instanceof Subscription)
+                memberType = 'subscription'
+            else if(owner instanceof License)
+                memberType = 'license'
+            if(memberType) {
+                owner.getClass().findAllByInstanceOf(owner).each { member ->
+                    AlternativeName existingAltName = AlternativeName.executeQuery('select altName from AlternativeName altName where altName.'+memberType+' = :member and altName.instanceOf = :altName', [member: member, altName: altName])[0]
+                    if (! existingAltName) {
+                        List<AlternativeName> matchingAltNames = AlternativeName.executeQuery('select altName from AlternativeName altName where altName.'+memberType+' = :member and altName.name = :name',[member: member, name: altName.name])
+                        // unbound prop found with matching type, set backref
+                        if (matchingAltNames) {
+                            matchingAltNames.each { AlternativeName memberId ->
+                                memberId.instanceOf = altName
+                                memberId.save()
+                            }
+                        }
+                        else {
+                            // no match found, creating new prop with backref
+                            Map<String, Object> configMap = [name: altName.name, instanceOf: altName]
+                            if(owner instanceof Subscription)
+                                configMap.subscription = member
+                            else if(owner instanceof License)
+                                configMap.license = member
+                            AlternativeName.construct(configMap)
+                        }
+                    }
+                }
+                AuditConfig.addConfig(altName, AuditConfig.COMPLETE_OBJECT)
             }
         }
     }

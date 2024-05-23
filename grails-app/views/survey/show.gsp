@@ -121,7 +121,14 @@
 
                         <dl>
                             <dt class="control-label">${message(code: 'surveyconfig.packageSurvey.label')}</dt>
-                            <dd><ui:xEditableBoolean owner="${surveyConfig}" field="packageSurvey"/></dd>
+                            <dd>
+                                <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">
+                                    <ui:xEditableBoolean owner="${surveyConfig}" field="packageSurvey"/>
+                                </g:if><g:else>
+                                    <ui:xEditableBoolean owner="${surveyConfig}" field="packageSurvey" overwriteEditable="false"/>
+                                </g:else>
+
+                                </dd>
                         </dl>
 
                         <g:if test="${surveyInfo.type == RDStore.SURVEY_TYPE_TITLE_SELECTION}">
@@ -209,7 +216,6 @@
                 <g:if test="${surveyConfig.isTypeSubscriptionOrIssueEntitlement()}">
 
                     <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
-                                                                costItemSums: costItemSums,
                                                                 subscription: surveyConfig.subscription,
                                                                 tasks: tasks,
                                                                 visibleProviders: providerRoles]"/>
@@ -219,7 +225,6 @@
                 <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
 
                     <laser:render template="/templates/survey/generalSurvey" model="[surveyConfig: surveyConfig,
-                                                                    costItemSums: costItemSums,
                                                                     subscription: surveyConfig.subscription,
                                                                     tasks: tasks,
                                                                     visibleProviders: providerRoles]"/>

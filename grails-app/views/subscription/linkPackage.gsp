@@ -51,7 +51,7 @@
 <g:if test="${records}">
     <laser:render template="/templates/filter/packageGokbFilterTable"
                   model="[
-                          tmplConfigShow: ['lineNumber', 'name', 'status', 'titleCount', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatesDisplay', 'linkPackage'],
+                          tmplConfigShow: ['lineNumber', 'name', 'status', 'titleCount', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'linkPackage'],
                           pkgs: pkgs,
                           bulkProcessRunning: bulkProcessRunning
                   ]"

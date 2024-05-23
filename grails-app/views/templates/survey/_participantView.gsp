@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition;" %>
+<%@ page import="de.laser.survey.SurveyPackageResult; de.laser.survey.SurveyConfigPackage; de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition;" %>
 
 
 <div class="ui stackable grid">
@@ -42,6 +42,17 @@
                 <g:else>
                     <div class="item disabled"><div class="la-popup-tooltip la-delay" data-content="${message(code: 'default.stats.noStatsForSubscription')}"><g:message code="default.stats.label"/></div></div>
                 </g:else>
+            </g:if>
+
+            <g:if test="${surveyConfig.packageSurvey}">
+                    <g:link class="item ${params.viewTab == 'packageSurvey' ? 'active' : ''}"
+                            controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                            params="${parame+[viewTab: 'packageSurvey']}">
+
+                        ${message(code: 'surveyconfig.packageSurvey.label')}
+
+                        <span class="ui floating blue circular label">${SurveyPackageResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}/${SurveyConfigPackage.countBySurveyConfig(surveyConfig)}</span>
+                    </g:link>
             </g:if>
 
         </div>
@@ -168,7 +179,6 @@
                     <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
 
                         <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig       : surveyConfig,
-                                                                                              costItemSums       : costItemSums,
                                                                                               subscription       : subscription,
                                                                                               visibleProviders: providerRoles,
                                                                                               surveyResults      : surveyResults]"/>
@@ -184,7 +194,6 @@
                     <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
 
                         <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig       : surveyConfig,
-                                                                                              costItemSums       : costItemSums,
                                                                                               subscription       : subscription,
                                                                                               visibleProviders: providerRoles,
                                                                                               surveyResults      : surveyResults]"/>
@@ -194,8 +203,52 @@
 
                 </div>
             </g:if>
-            <g:if test="${params.viewTab == 'stats'}">
+            <g:if test="${params.viewTab == 'stats' && surveyConfig.subSurveyUseForTransfer && surveyConfig.subscription && surveyConfig.subscription.packages}">
                 <g:render template="/templates/stats/stats"/>
+            </g:if>
+
+            <g:if test="${params.viewTab == 'packageSurvey' && surveyConfig.packageSurvey}">
+
+                <div class="la-inline-lists">
+                <g:render template="/templates/survey/costsWithSurveyPackages"/>
+                </div>
+
+
+                <div class="ui top attached stackable tabular menu">
+                    <g:link class="item ${params.viewTab == 'packageSurvey' && params.subTab == 'allPackages' ? 'active' : ''}"
+                            controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                            params="${parame + [viewTab: 'packageSurvey', subTab: 'allPackages']}">
+                        ${message(code: 'surveyPackages.all')}
+                        <span class="ui floating blue circular label">${SurveyConfigPackage.countBySurveyConfig(surveyConfig)}</span>
+                    </g:link>
+                    <g:link class="item ${params.viewTab == 'packageSurvey' && params.subTab == 'selectPackages' ? 'active' : ''}"
+                            controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                            params="${parame + [viewTab: 'packageSurvey', subTab: 'selectPackages']}">
+                        ${message(code: 'surveyPackages.selectedPackages')}
+                        <span class="ui floating blue circular label">${SurveyPackageResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}</span>
+                    </g:link>
+                </div>
+
+                <div class="ui bottom attached tab segment active">
+
+                    <h2 class="ui left floated aligned icon header la-clear-before">${message(code: params.subTab == 'selectPackages' ? 'surveyPackages.selectedPackages' : 'surveyPackages.all')}
+                    <ui:totalNumber total="${recordsCount}"/>
+                    </h2>
+
+                    <g:if test="${params.subTab == 'selectPackages'}">
+                        <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'status', 'titleCount', 'provider', 'automaticUpdates', 'lastUpdatedDisplay', 'surveyCostItemsPackages', 'surveyPackagesComments', 'removeSurveyPackageResult']}"/>
+                    </g:if>
+                    <g:else>
+                        <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'status', 'titleCount', 'provider', 'automaticUpdates', 'lastUpdatedDisplay', 'surveyCostItemsPackages', 'addSurveyPackageResult']}"/>
+                    </g:else>
+
+                    <g:render template="/templates/survey/packages" model="[
+                            processController: controllerName,
+                            processAction    : actionName,
+                            tmplShowCheckbox : false,
+                            tmplConfigShow   : tmplConfigShowList]"/>
+                </div>
+
             </g:if>
         </div>
     </div>
