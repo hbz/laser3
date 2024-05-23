@@ -17,7 +17,7 @@
         <div class="ui divider"></div>
     </g:if>
 
-    <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+    <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
         <ui:actionsDropdownItem class="triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
                                 params="[exportController: 'survey', exportAction: 'exportSurCostItems', exportParams: params, clickMeType: ExportClickMeService.SURVEY_COST_ITEMS, id: params.id, surveyConfigID: surveyConfig.id, exportFileName: exportFileName]"
                                 message="survey.exportSurveyCostItems"/>

@@ -142,7 +142,7 @@
                     ${message(code: 'exportClickMe.subscription.costItems')}
                 </th>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
                 <th>
                     ${message(code: 'surveyCostItems.label')}
 
@@ -187,7 +187,7 @@
                     </g:if>
                 </th>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemPackage') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemPackage') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
                 <th>
                     ${message(code: 'surveyCostItems.label')}
                 </th>
@@ -799,7 +799,7 @@
 
                 </td>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
                 %{-- // TODO Moe - date.minusDays() --}%
                 <td class="center aligned" style="${(existSubforOrg && orgSub && orgSub.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(orgSub.startDate), DateUtils.dateToLocalDate(orgSub.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
 
@@ -900,7 +900,7 @@
                 </td>
             </g:if>
 
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemPackage') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemPackage') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
             %{-- // TODO Moe - date.minusDays() --}%
                 <td class="center aligned" style="${(existSubforOrg && orgSub && orgSub.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(orgSub.startDate), DateUtils.dateToLocalDate(orgSub.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
 
@@ -1099,7 +1099,7 @@
     </laser:script>
 
 </g:if>
-<g:if test="${(tmplConfigShow?.contains('surveyCostItem') || tmplConfigShow?.contains('surveyCostItemPackage')) && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+<g:if test="${(tmplConfigShow?.contains('surveyCostItem') || tmplConfigShow?.contains('surveyCostItemPackage')) && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
     <laser:script file="${this.getGroovyPageFileName()}">
         $('.triggerSurveyCostItemModal').on('click', function(e) {
             e.preventDefault();
@@ -1130,7 +1130,7 @@
     </laser:script>
 
 </g:if>
-<g:if test="${tmplConfigShow?.contains('surveySubCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+<g:if test="${tmplConfigShow?.contains('surveySubCostItem') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
     <laser:script file="${this.getGroovyPageFileName()}">
         $('#selectedCostItemElementID').on('change', function() {
             var selectedCostItemElementID = $(this).val()

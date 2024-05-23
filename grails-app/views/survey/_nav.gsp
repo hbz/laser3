@@ -30,7 +30,7 @@
                 </g:each>
             </ui:menuDropdownItems>
 
-            <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+            <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
                 <ui:menuDropdownItems actionName="surveyCostItems" message="surveyCostItems.label">
                     <g:each in="${surveyInfo.surveyConfigs.sort { it.getConfigNameShort() }}" var="surveyConfig">
                         <ui:menuDropdownItem controller="survey" action="surveyCostItems"
@@ -107,7 +107,7 @@
                                message="surveyPackages.label"/>
              </g:if>
 
-            <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+            <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
                 <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyCostItems"
                                params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${surveyCostItemsCount}"
                                message="surveyCostItems.label"/>
