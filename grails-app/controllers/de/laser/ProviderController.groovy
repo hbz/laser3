@@ -24,6 +24,7 @@ class ProviderController {
     GokbService gokbService
     LinksGenerationService linksGenerationService
     ProviderService providerService
+    PropertyService propertyService
     TaskService taskService
     DocstoreService docstoreService
     WorkflowService workflowService
@@ -123,6 +124,11 @@ class ProviderController {
         String providerQuery = 'select p from Provider p'
         if(queryArgs) {
             providerQuery += ' where '+queryArgs.join(' and ')
+        }
+        if (params.filterPropDef) {
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, providerQuery, 'p', queryParams)
+            providerQuery = efq.query
+            queryParams = efq.queryParams as Map<String, Object>
         }
         if(params.containsKey('sort')) {
             providerQuery += " order by ${params.sort} ${params.order ?: 'asc'}, p.name ${params.order ?: 'asc'} "
