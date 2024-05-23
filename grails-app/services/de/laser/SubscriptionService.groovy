@@ -3368,10 +3368,11 @@ join sub.orgRelations or_sub where
         Map<String, IdentifierNamespace> namespaces = [gnd  : IdentifierNamespace.findByNsAndNsType('gnd_org_nr', Org.class.name),
                                                        isil: IdentifierNamespace.findByNsAndNsType('ISIL', Org.class.name),
                                                        ror: IdentifierNamespace.findByNsAndNsType('ROR ID',Org.class.name),
-                                                       wib : IdentifierNamespace.findByNsAndNsType('wibid', Org.class.name)]
+                                                       wib : IdentifierNamespace.findByNsAndNsType('wibid', Org.class.name),
+                                                       dealId : IdentifierNamespace.findByNsAndNsType('deal_id', Org.class.name)]
 
         ArrayList<String> rows = stream.text.split('\n')
-        Map<String, Integer> colMap = [gndCol: -1, isilCol: -1, rorCol: -1, wibCol: -1,
+        Map<String, Integer> colMap = [gndCol: -1, isilCol: -1, rorCol: -1, wibCol: -1, dealCol: -1,
                                        startDateCol: -1, endDateCol: -1, ]
 
         //read off first line of KBART file
@@ -3385,6 +3386,8 @@ join sub.orgRelations or_sub where
                 case "ror-id": colMap.rorCol = c
                     break
                 case "wib-id": colMap.wibCol = c
+                    break
+                case "deal-id": colMap.dealCol = c
                     break
                 case "start date":
                 case "laufzeit-beginn":
@@ -3420,6 +3423,11 @@ join sub.orgRelations or_sub where
                 }
                 if (!match && colMap.rorCol >= 0 && cols[colMap.rorCol] != null && !cols[colMap.rorCol].trim().isEmpty()) {
                     List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.rorCol].trim(), ns: namespaces.ror, removed: RDStore.TIPP_STATUS_REMOVED])
+                    if (matchList.size() == 1)
+                        match = matchList[0] as Org
+                }
+                if (colMap.dealCol >= 0 && cols[colMap.dealCol] != null && !cols[colMap.dealCol].trim().isEmpty()) {
+                    List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.dealCol].trim(), ns: namespaces.dealId, removed: RDStore.TIPP_STATUS_REMOVED])
                     if (matchList.size() == 1)
                         match = matchList[0] as Org
                 }
