@@ -1,5 +1,5 @@
 <%@ page import="de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.utils.LocaleUtils" %>
-
+<laser:serviceInjection/>
 <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_TITLE_SELECTION.id]}">
     <g:set var="costItemsSurvey"
            value="${surveyOrg ? CostItem.findAllBySurveyOrgAndPkgIsNull(surveyOrg) : null}"/>
