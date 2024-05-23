@@ -3,14 +3,14 @@
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyPackages.linkPackage')}</h1>
-
+<ui:h1HeaderWithIcon message="surveyPackages.linkPackage"/>
+<br>
+<br>
 <ui:messages data="${flash}"/>
 
 <h2 class="ui left floated aligned icon header la-clear-before">${message(code: 'package.plural')}
 <ui:totalNumber total="${recordsCount}"/>
 </h2>
-
 
 <g:render template="/templates/survey/packages" model="[
         processController: 'survey',

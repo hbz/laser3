@@ -30,7 +30,7 @@
         <g:if test="${!(SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true))}">
             <div class="field">
                 <label>${message(code: 'surveyconfig.subSurveyUseForTransfer.label.info')}</label>
-                <div>
+                <div class="ui checkbox">
                     <input type="checkbox" id="subSurveyUseForTransfer" name="subSurveyUseForTransfer"  ${params.subSurveyUseForTransfer? 'checked':''}>
                 </div>
             </div>
@@ -48,8 +48,15 @@
 
         <div class="field">
             <label>${message(code: 'surveyInfo.isMandatory.label.info')}</label>
-            <div>
+            <div class="ui checkbox">
                 <input type="checkbox" id="mandatory" name="mandatory" ${params.mandatory? 'checked':''}>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>${message(code: 'surveyconfig.packageSurvey.label')}</label>
+            <div class="ui checkbox">
+                <input type="checkbox" id="packageSurvey" name="packageSurvey" ${params.packageSurvey? 'checked':''}>
             </div>
         </div>
 

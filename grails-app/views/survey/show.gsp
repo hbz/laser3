@@ -119,17 +119,19 @@
 
                         </g:if>
 
-                        <dl>
-                            <dt class="control-label">${message(code: 'surveyconfig.packageSurvey.label')}</dt>
-                            <dd>
-                                <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">
-                                    <ui:xEditableBoolean owner="${surveyConfig}" field="packageSurvey"/>
-                                </g:if><g:else>
-                                    <ui:xEditableBoolean owner="${surveyConfig}" field="packageSurvey" overwriteEditable="false"/>
-                                </g:else>
+                        <g:if test="${surveyInfo.type != RDStore.SURVEY_TYPE_TITLE_SELECTION}">
+                            <dl>
+                                <dt class="control-label">${message(code: 'surveyconfig.packageSurvey.label')}</dt>
+                                <dd>
+                                    <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">
+                                        <ui:xEditableBoolean owner="${surveyConfig}" field="packageSurvey"/>
+                                    </g:if><g:else>
+                                        <ui:xEditableBoolean owner="${surveyConfig}" field="packageSurvey" overwriteEditable="false"/>
+                                    </g:else>
 
-                                </dd>
-                        </dl>
+                                    </dd>
+                            </dl>
+                        </g:if>
 
                         <g:if test="${surveyInfo.type == RDStore.SURVEY_TYPE_TITLE_SELECTION}">
                             <dl>

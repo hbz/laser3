@@ -26,6 +26,7 @@ import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.transaction.TransactionStatus
@@ -313,7 +314,8 @@ class SurveyController {
                 SurveyConfig surveyConfig = new SurveyConfig(
                         type: 'GeneralSurvey',
                         surveyInfo: surveyInfo,
-                        configOrder: 1
+                        configOrder: 1,
+                        packageSurvey: (params.packageSurvey ?: false)
                 )
                 if(!(surveyConfig.save())){
                     surveyInfo.delete()
@@ -594,7 +596,8 @@ class SurveyController {
                         configOrder: surveyInfo.surveyConfigs ? surveyInfo.surveyConfigs.size() + 1 : 1,
                         type: 'Subscription',
                         surveyInfo: surveyInfo,
-                        subSurveyUseForTransfer: subSurveyUseForTransfer
+                        subSurveyUseForTransfer: subSurveyUseForTransfer,
+                        packageSurvey: (params.packageSurvey ?: false)
 
                 )
 
@@ -886,7 +889,7 @@ class SurveyController {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def surveyPackages() {
-        Map<String,Object> ctrlResult = surveyControllerService.packages(params)
+        Map<String,Object> ctrlResult = surveyControllerService.surveyPackages(params)
         if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
