@@ -43,27 +43,28 @@
         <g:if test="${editable}">
 
             <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForProvider');"><g:message
+               onclick="JSPC.app.personCreate('contactPersonForProvider');"><i class="address card outline icon"></i><g:message
                     code="person.create_new.contactPersonForProvider.label"/></a>
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProvider');"><i class="map marked alternate icon"></i><g:message code="address.add.addressForProvider.label"/></a>
+
             <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForVendor');"><g:message
+               onclick="JSPC.app.personCreate('contactPersonForVendor');"><i class="address card outline icon"></i><g:message
                     code="person.create_new.contactPersonForVendor.label"/></a>
 
-            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProvider');"><g:message code="address.add.addressForProvider.label"/></a>
-            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForVendor');"><g:message code="address.add.addressForVendor.label"/></a>
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForVendor');"><i class="map marked alternate icon"></i><g:message code="address.add.addressForVendor.label"/></a>
             <g:if test="${institution.isCustomerType_Consortium()}">
                 <a href="#createPersonModal" class="item" data-ui="modal"
-                   onclick="JSPC.app.personCreate('contactPersonForInstitution');"><g:message
+                   onclick="JSPC.app.personCreate('contactPersonForInstitution');"><i class="address card outline icon"></i><g:message
                         code="person.create_new.contactPersonForInstitution.label"/></a>
 
-                <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution');"><g:message code="address.add.addressForInstitution.label"/></a>
+                <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution');"><i class="map marked alternate icon"></i><g:message code="address.add.addressForInstitution.label"/></a>
             </g:if>
 
             <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message
+               onclick="JSPC.app.personCreate('contactPersonForPublic');"><i class="address card outline icon"></i><g:message
                     code="person.create_new.contactPersonForPublic.label"/></a>
 
-            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForPublic');"><g:message code="address.add.addressForPublic.label"/></a>
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForPublic');"><i class="map marked alternate icon"></i><g:message code="address.add.addressForPublic.label"/></a>
 
         </g:if>
 
