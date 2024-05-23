@@ -1396,7 +1396,7 @@ class SurveyController {
 
         result.ownerId = result.surveyInfo.owner.id
 
-        if(result.surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
+        if(result.surveyConfig.subscription) {
             result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(result.participant)
             result.visibleOrgRelations = []
             if(result.subscription) {

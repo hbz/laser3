@@ -192,7 +192,7 @@ class SurveyService {
                 titles.addAll([messageSource.getMessage('org.sortname.label', null, locale),
                                messageSource.getMessage('surveyParticipants.label', null, locale),
                                messageSource.getMessage('surveyOrg.ownerComment.export.label', null, locale)])
-                if (surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
+                if (surveyConfig.subscription) {
                     titles.add(messageSource.getMessage('surveyProperty.subName', null, locale))
                 }
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
@@ -207,7 +207,7 @@ class SurveyService {
                 }
                 titles.addAll([messageSource.getMessage('surveyConfigsInfo.comment', null, locale)])
 
-                if (surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
+                if (surveyConfig.subscription) {
                     titles.addAll([messageSource.getMessage('subscription.comment.label', null, locale),
                                    messageSource.getMessage('surveyProperty.subProvider', null, locale),
                                    messageSource.getMessage('surveyProperty.subAgency', null, locale),
@@ -240,7 +240,7 @@ class SurveyService {
                 titles.add(messageSource.getMessage('surveyInfo.owner.label', null, locale))
                 titles.add(messageSource.getMessage('surveyConfigsInfo.comment', null, locale))
                 titles.add(messageSource.getMessage('surveyInfo.endDate.label', null, locale))
-                if (surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
+                if (surveyConfig.subscription) {
                     surveyConfig.surveyUrls.eachWithIndex { SurveyUrl surveyUrl, int i ->
                         Object[] args = ["${i+1}"]
                         titles.addAll([
@@ -287,7 +287,7 @@ class SurveyService {
                     row.add([field: surveyOrg.org.name ?: '', style: null])
                     row.add([field: surveyOrg.ownerComment ?: '', style: null])
 
-                    if (surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
+                    if (surveyConfig.subscription) {
 
                         //OrgRole orgRole = Subscription.findAllByInstanceOf(surveyConfig.subscription) ? OrgRole.findByOrgAndRoleTypeAndSubInList(surveyOrg.org, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyConfig.subscription)) : null
                         //subscription =  orgRole ? orgRole.sub : null
@@ -303,7 +303,7 @@ class SurveyService {
 
                     row.add([field: surveyConfig.comment ?: '', style: null])
 
-                    if (surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
+                    if (surveyConfig.subscription) {
                         row.add([field: subscription.comment, style: null])
                         //Performance lastig providers und vendors
                         row.add([field: subscription.providers.join(", "), style: null])
@@ -373,7 +373,7 @@ class SurveyService {
                 row.add([field: surveyConfig.comment ?: '', style: null])
                 row.add([field: surveyConfig.surveyInfo.endDate ? DateUtils.getSDF_ddMMyyy().format( DateUtils.getSDF_yyyyMMdd_hhmmSSS().parse(surveyConfig.surveyInfo.endDate.toString()) ) : '', style: null])
 
-                if (surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
+                if (surveyConfig.subscription) {
                     surveyConfig.surveyUrls.each { SurveyUrl surveyUrl->
                         row.add([field: surveyUrl.url ?: '', style: null])
                         row.add([field: surveyUrl.urlComment ?: '', style: null])
@@ -490,7 +490,7 @@ class SurveyService {
 
                 titles.addAll([messageSource.getMessage('org.sortname.label', null, locale),
                                messageSource.getMessage('surveyParticipants.label', null, locale)])
-                if (surveyConfig.isTypeSubscriptionOrIssueEntitlement() ) {
+                if (surveyConfig.subscription ) {
                     titles.add(messageSource.getMessage('surveyProperty.subName', null, locale))
                 }
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
@@ -504,7 +504,7 @@ class SurveyService {
                             messageSource.getMessage('surveyconfig.urlComment.label', args, locale)])
                 }
 
-                if (surveyConfig.isTypeSubscriptionOrIssueEntitlement() ) {
+                if (surveyConfig.subscription ) {
                     titles.addAll([messageSource.getMessage('surveyProperty.subProvider', null, locale),
                                    messageSource.getMessage('surveyProperty.subAgency', null, locale),
                                    messageSource.getMessage('default.status.label', null, locale),
@@ -527,7 +527,7 @@ class SurveyService {
                     row.add([field: surveyOrg.org.sortname ?: '', style: null])
                     row.add([field: surveyOrg.org.name ?: '', style: null])
 
-                    if (surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
+                    if (surveyConfig.subscription) {
 
                         //OrgRole orgRole = Subscription.findAllByInstanceOf(surveyConfig.subscription) ? OrgRole.findByOrgAndRoleTypeAndSubInList(surveyOrg.org, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyConfig.subscription)) : null
                         //subscription =  orgRole ? orgRole.sub : null
@@ -542,7 +542,7 @@ class SurveyService {
                         row.add([field: surveyUrl.urlComment ?: '', style: null])
                     }
 
-                    if (surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
+                    if (surveyConfig.subscription) {
                         row.add([field: subscription.providers.join(", "), style: null])
                         row.add([field: subscription.vendors.join(", "), style: null])
 
@@ -620,7 +620,7 @@ class SurveyService {
                 row.add([field: surveyName ?: '', style: null])
                 row.add([field: surveyConfig.surveyInfo.type?.getI10n('value') ?: '', style: null])
 
-                if (surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
+                if (surveyConfig.subscription) {
                     subscription = surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(contextOrg) ?: null
                     row.add([field: subscription.providers.join(", "), style: null])
                     row.add([field: subscription.vendors.join(", "), style: null])
@@ -720,7 +720,7 @@ class SurveyService {
                         row.add([field: surveyResult.participant.sortname ?: '', style: null])
                         row.add([field: surveyResult.participant.name ?: '', style: null])
 
-                        if (surveyResult.surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
+                        if (surveyResult.surveyConfig.subscription) {
 
                             //OrgRole orgRole = Subscription.findAllByInstanceOf(surveyResult.surveyConfig.subscription) ? OrgRole.findByOrgAndRoleTypeAndSubInList(participant, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyResult.surveyConfig.subscription)) : null
                             //subscription =  orgRole ? orgRole.sub : null
@@ -738,7 +738,7 @@ class SurveyService {
 
                         row.add([field: surveyResult.surveyConfig.comment ?: '', style: null])
 
-                        if (surveyResult.surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
+                        if (surveyResult.surveyConfig.subscription) {
                             //Performance lastig providers und vendors
                             row.add([field: subscription.providers.join(", "), style: null])
                             row.add([field: subscription.vendors.join(", "), style: null])

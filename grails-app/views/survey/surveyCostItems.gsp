@@ -21,7 +21,7 @@
 
 <uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="${actionName}"/>
 
-<g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_TITLE_SELECTION]}">
+<g:if test="${surveyConfig.subscription}">
     <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
@@ -34,7 +34,7 @@
 <br />
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.isTypeSubscriptionOrIssueEntitlement()}">
+    <g:if test="${surveyConfig.subscription}">
         <i class="icon clipboard outline la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
             ${surveyConfig.getConfigNameShort()}
@@ -117,11 +117,13 @@
                     </button>
                 </g:if>
 
+                <g:if test="${(params.tab == 'selectedSubParticipants' && selectedSubParticipants.size() > 0) || (params.tab == 'selectedParticipants' && selectedParticipants.size() > 0)}">
                 <br>
                 <br>
                 <a class="ui right floated button" data-ui="modal" href="#bulkCostItemsUpload"><g:message code="menu.institutions.financeImport"/></a>
                 <br>
                 <br>
+                </g:if>
             </div
 
 
@@ -145,20 +147,22 @@
             <g:render template="costItemsByCostItemElementTable"/>
 
             <br/>
-            <div class="field" style="text-align: right;">
-                <button id="bulkCostItems-toggle"
-                        class="ui button"><g:message code="financials.bulkCostItems.show"/></button>
-                <laser:script file="${this.getGroovyPageFileName()}">
-                    $('#bulkCostItems-toggle').on('click', function () {
-                        $('#bulkCostItems').toggleClass('hidden')
-                        if ($('#bulkCostItems').hasClass('hidden')) {
-                            $(this).text("${g.message(code: 'financials.bulkCostItems.show')}")
+            <g:if test="${(params.tab == 'selectedSubParticipants' && selectedSubParticipants.size() > 0) || (params.tab == 'selectedParticipants' && selectedParticipants.size() > 0)}">
+                <div class="field" style="text-align: right;">
+                    <button id="bulkCostItems-toggle"
+                            class="ui button"><g:message code="financials.bulkCostItems.show"/></button>
+                    <laser:script file="${this.getGroovyPageFileName()}">
+                        $('#bulkCostItems-toggle').on('click', function () {
+                            $('#bulkCostItems').toggleClass('hidden')
+                            if ($('#bulkCostItems').hasClass('hidden')) {
+                                $(this).text("${g.message(code: 'financials.bulkCostItems.show')}")
                                                     } else {
                                                         $(this).text("${g.message(code: 'financials.bulkCostItems.hidden')}")
                                                     }
                                                 })
-                </laser:script>
-            </div>
+                    </laser:script>
+                </div>
+            </g:if>
 
             <g:form action="processSurveyCostItemsBulk" data-confirm-id="processSurveyCostItemsBulk_form" name="editCost_${idSuffix}" method="post" class="ui form"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, selectedCostItemElementID: selectedCostItemElementID]">
@@ -261,7 +265,7 @@
                         <laser:render template="/templates/filter/orgFilterTable"
                                   model="[orgList         : surveyParticipantsHasAccess,
                                           tmplShowCheckbox: true,
-                                          tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
+                                          tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', (surveyConfig.subscription ? 'surveySubCostItem' : ''), 'surveyCostItem'],
                                           tableID         : 'costTable'
                                   ]"/>
 
@@ -285,7 +289,7 @@
                         <laser:render template="/templates/filter/orgFilterTable"
                                   model="[orgList       : surveyParticipantsHasNotAccess,
                                           tmplShowCheckbox: true,
-                                          tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
+                                          tmplConfigShow: ['lineNumber', 'sortname', 'name', (surveyConfig.subscription ? 'surveySubInfoStartEndDate' : ''), (surveyConfig.subscription ? 'surveySubCostItem' : ''), 'surveyCostItem'],
                                           tableID       : 'costTable'
                                   ]"/>
 

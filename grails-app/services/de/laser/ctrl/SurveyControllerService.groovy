@@ -150,7 +150,7 @@ class SurveyControllerService {
 
             result.navigation = surveyService.getConfigNavigation(result.surveyInfo, result.surveyConfig)
 
-            if (result.surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
+            if (result.surveyConfig.subscription) {
 
                 // restrict visible for templates/links/orgLinksAsList
                 result.visibleOrgRelations = []
@@ -2118,7 +2118,7 @@ class SurveyControllerService {
 
             params.viewTab = params.viewTab ?: 'overview'
 
-            if (result.surveyConfig.isTypeSubscriptionOrIssueEntitlement()) {
+            if (result.surveyConfig.subscription) {
 
                 if(params.viewTab == 'overview') {
 

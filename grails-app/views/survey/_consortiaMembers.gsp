@@ -29,7 +29,7 @@
                       model="[orgList          : consortiaMembers,
                               tmplShowCheckbox : (surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]),
                               tmplDisableOrgIds: surveyConfig.orgs?.org?.id,
-                              tmplConfigShow   : ['lineNumber', 'sortname', 'name', 'libraryType', (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION ? 'surveySubInfo' : '')]
+                              tmplConfigShow   : ['lineNumber', 'sortname', 'name', 'libraryType', (surveyConfig.subscription ? 'surveySubInfo' : '')]
                       ]"/>
 
         <br/>

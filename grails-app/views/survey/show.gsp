@@ -21,7 +21,7 @@
 </ui:h1HeaderWithIcon>
 <uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="${actionName}"/>
 
-<g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_TITLE_SELECTION]}">
+<g:if test="${surveyConfig.subscription}">
 <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
@@ -215,7 +215,7 @@
 
             <br />
             <g:if test="${surveyConfig}">
-                <g:if test="${surveyConfig.isTypeSubscriptionOrIssueEntitlement()}">
+                <g:if test="${surveyConfig.subscription}">
 
                     <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
                                                                 subscription: surveyConfig.subscription,
