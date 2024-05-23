@@ -126,9 +126,6 @@ class ProviderExport extends BaseDetailsExport {
                         coList.addAll( personList )
                     }
                     if (RDStore.REPORTING_CONTACT_TYPE_ADDRESSES.id in f.value) {
-//                        String sql = "select distinct type from Address addr join addr.type type join addr.pro pro where pro = :pro order by type.value_" + LocaleUtils.getCurrentLang()
-//                        List<RefdataValue> addressTypes = Address.executeQuery( sql, [pro: pro] )
-
                         String sql = "select distinct type from Address addr join addr.type type join addr.provider pro where pro = :pro and (addr.tenant is null or addr.tenant = :ctxOrg) order by type.value_" + LocaleUtils.getCurrentLang()
                         List<RefdataValue> addressTypes = Address.executeQuery( sql, [pro: pro, ctxOrg: contextService.getOrg()] )
                         List addressList = []
@@ -136,10 +133,6 @@ class ProviderExport extends BaseDetailsExport {
                         String pob = messageSource.getMessage('address.pob.label',null, LocaleUtils.getCurrentLocale())
 
                         addressTypes.each { at ->
-//                            List<Address> addresses = Address.executeQuery(
-//                                    "select distinct addr from Address addr join addr.pro pro join addr.type addrType where pro = :pro and addrType = :at", [pro: pro, at: at]
-//                            )
-
                             String sql2 = "select distinct addr from Address addr join addr.provider pro join addr.type addrType where pro = :pro and addrType = :at and (addr.tenant is null or addr.tenant = :ctxOrg)"
                             List<Address> addresses = Address.executeQuery(sql2, [pro: pro, at: at, ctxOrg: contextService.getOrg()])
                             addresses.each{ addr ->

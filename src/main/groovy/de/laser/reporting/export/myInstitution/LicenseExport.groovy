@@ -3,7 +3,9 @@ package de.laser.reporting.export.myInstitution
 import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.License
+import de.laser.Provider
 import de.laser.Subscription
+import de.laser.Vendor
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.reporting.export.GlobalExportHelper
@@ -35,6 +37,8 @@ class LicenseExport extends BaseDetailsExport {
                                     'endDate'           : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'status'            : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'licenseCategory'   : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'x-provider+sortname+name' : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
+                                    'x-vendor+sortname+name'   : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     '@-license-subscriptionCount'       : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-license-memberCount'             : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-license-memberSubscriptionCount' : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
@@ -59,6 +63,8 @@ class LicenseExport extends BaseDetailsExport {
                                     'endDate'           : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'status'            : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'licenseCategory'   : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'x-provider+sortname+name' : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
+                                    'x-vendor+sortname+name'   : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     'x-identifier'      : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     'x-property'        : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL_QDP ]
                             ]
@@ -193,6 +199,18 @@ class LicenseExport extends BaseDetailsExport {
                 else {
                     content.add( '- ' + key + ' not implemented -' )
                 }
+            }
+            // --> combined properties : TODO
+            else if (key in ['x-provider+sortname', 'x-provider+name']) {
+                List<Provider> providers = Provider.executeQuery('select pr.provider from ProviderRole pr where pr.license.id = :id', [id: lic.id])
+                String prop = key.split('\\+')[1]
+                content.add( providers.collect{ it.getProperty(prop) ?: '' }.join( BaseDetailsExport.CSV_VALUE_SEPARATOR ))
+            }
+            // --> combined properties : TODO
+            else if (key in ['x-vendor+sortname', 'x-vendor+name']) {
+                List<Vendor> vendors = Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.license.id = :id', [id: lic.id])
+                String prop = key.split('\\+')[1]
+                content.add( vendors.collect{ it.getProperty(prop) ?: '' }.join( BaseDetailsExport.CSV_VALUE_SEPARATOR ))
             }
             else {
                 content.add( '- ' + key + ' not implemented -' )

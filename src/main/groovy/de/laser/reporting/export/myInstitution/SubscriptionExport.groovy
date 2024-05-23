@@ -3,7 +3,9 @@ package de.laser.reporting.export.myInstitution
 import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.Org
+import de.laser.Provider
 import de.laser.Subscription
+import de.laser.Vendor
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.reporting.export.GlobalExportHelper
@@ -40,6 +42,7 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'resource'              : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     '@-subscription-memberCount' : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     'x-provider+sortname+name'   : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
+                                    'x-vendor+sortname+name'     : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     'hasPerpetualAccess'    : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'hasPublishComponent'   : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'isPublicForApi'        : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
@@ -58,6 +61,7 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'form'                  : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'resource'              : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'x-provider+sortname+name' : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
+                                    'x-vendor+sortname+name'   : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     'hasPerpetualAccess'    : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'hasPublishComponent'   : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'isPublicForApi'        : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
@@ -68,7 +72,7 @@ class SubscriptionExport extends BaseDetailsExport {
             ]
     ]
 
-    static Map<String, Object> CONFIG_ORG_INST = [
+    static Map<String, Object> CONFIG_ORG_INST = [ // TODO
 
             base : [
                     meta : [
@@ -86,6 +90,7 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'form'                  : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'resource'              : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'x-provider+sortname+name' : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
+                                    'x-vendor+sortname+name'   : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     'hasPerpetualAccess'    : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'hasPublishComponent'   : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'isPublicForApi'        : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
@@ -210,11 +215,15 @@ class SubscriptionExport extends BaseDetailsExport {
             }
             // --> combined properties : TODO
             else if (key in ['x-provider+sortname', 'x-provider+name']) {
-                List<Org> plts = Org.executeQuery('select ro.org from OrgRole ro where ro.sub.id = :id and ro.roleType in (:roleTypes)',
-                        [id: sub.id, roleTypes: [RDStore.OR_PROVIDER]]
-                )
+                List<Provider> providers = Provider.executeQuery('select pr.provider from ProviderRole pr where pr.subscription.id = :id', [id: sub.id])
                 String prop = key.split('\\+')[1]
-                content.add( plts.collect{ it.getProperty(prop) ?: '' }.join( BaseDetailsExport.CSV_VALUE_SEPARATOR ))
+                content.add( providers.collect{ it.getProperty(prop) ?: '' }.join( BaseDetailsExport.CSV_VALUE_SEPARATOR ))
+            }
+            // --> combined properties : TODO
+            else if (key in ['x-vendor+sortname', 'x-vendor+name']) {
+                List<Vendor> vendors = Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription.id = :id', [id: sub.id])
+                String prop = key.split('\\+')[1]
+                content.add( vendors.collect{ it.getProperty(prop) ?: '' }.join( BaseDetailsExport.CSV_VALUE_SEPARATOR ))
             }
             else {
                 content.add( '- ' + key + ' not implemented -' )
