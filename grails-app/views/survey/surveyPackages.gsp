@@ -34,6 +34,8 @@
     <g:link class="ui icon button right floated" controller="survey" action="linkSurveyPackage"
             id="${surveyInfo.id}"
             params="[surveyConfigID: surveyConfig.id]"><g:message code="surveyPackages.linkPackage"/></g:link>
+    <br>
+    <br>
 </g:if>
 
 <g:render template="/templates/survey/packages" model="[

@@ -26,6 +26,7 @@ import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.transaction.TransactionStatus
@@ -313,7 +314,8 @@ class SurveyController {
                 SurveyConfig surveyConfig = new SurveyConfig(
                         type: 'GeneralSurvey',
                         surveyInfo: surveyInfo,
-                        configOrder: 1
+                        configOrder: 1,
+                        packageSurvey: (params.packageSurvey ?: false)
                 )
                 if(!(surveyConfig.save())){
                     surveyInfo.delete()
@@ -594,7 +596,8 @@ class SurveyController {
                         configOrder: surveyInfo.surveyConfigs ? surveyInfo.surveyConfigs.size() + 1 : 1,
                         type: 'Subscription',
                         surveyInfo: surveyInfo,
-                        subSurveyUseForTransfer: subSurveyUseForTransfer
+                        subSurveyUseForTransfer: subSurveyUseForTransfer,
+                        packageSurvey: (params.packageSurvey ?: false)
 
                 )
 
@@ -886,7 +889,7 @@ class SurveyController {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def surveyPackages() {
-        Map<String,Object> ctrlResult = surveyControllerService.packages(params)
+        Map<String,Object> ctrlResult = surveyControllerService.surveyPackages(params)
         if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
@@ -999,6 +1002,54 @@ class SurveyController {
             row.add('')
             row.add('')
             row.add('')
+            rowData.add(row)
+        }
+
+        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.tsv\"")
+        response.contentType = "text/csv"
+        ServletOutputStream out = response.outputStream
+        out.withWriter { writer ->
+            writer.write(exportService.generateSeparatorTableString(titles, rowData, '\t'))
+        }
+        out.close()
+        return
+
+    }
+
+
+    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN()
+    })
+    def templateForSurveyParticipantsBulkWithUpload() {
+        log.debug("templateForSurveyParticipantsBulkWithUpload :: ${params}")
+        Map<String, Object> ctrlResult = surveyControllerService.getResultGenericsAndCheckAccess(params)
+
+        String filename = "template_survey_participants_import"
+
+        params.orgType = RDStore.OT_INSTITUTION.id
+        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
+        params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
+        params.sub = ctrlResult.subscription
+
+        FilterService.Result fsr = filterService.getOrgComboQuery(params, ctrlResult.institution as Org)
+
+        List<Org> members = Org.executeQuery(fsr.query, fsr.queryParams, params)
+
+        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-NR", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label')]
+
+        ArrayList rowData = []
+        ArrayList row
+        members.each { Org org ->
+            row = []
+            row.add(org.getIdentifierByType('wibid')?.value)
+            row.add(org.getIdentifierByType('ISIL')?.value)
+            row.add(org.getIdentifierByType('ROR ID')?.value)
+            row.add(org.getIdentifierByType('gnd_org_nr')?.value)
+            row.add(org.getIdentifierByType('deal_id')?.value)
+            row.add(org.sortname)
+            row.add(org.name)
+            row.add(org.libraryType.getI10n('value'))
             rowData.add(row)
         }
 

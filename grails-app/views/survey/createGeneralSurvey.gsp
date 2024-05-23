@@ -31,6 +31,13 @@
             </div>
         </div>
 
+        <div class="field">
+            <label>${message(code: 'surveyconfig.packageSurvey.label')}</label>
+            <div class="ui checkbox">
+                <input type="checkbox" id="packageSurvey" name="packageSurvey" ${params.packageSurvey? 'checked':''}>
+            </div>
+        </div>
+
         <div class="field ">
             <label>${message(code: 'surveyInfo.comment.label')}</label>
 
