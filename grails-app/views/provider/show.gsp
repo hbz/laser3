@@ -296,7 +296,7 @@
                                                                 tmplButtonText:message(code: 'provider.linking.addLink'),
                                                                 tmplModalID:'provider_add_link',
                                                                 editmode: editable,
-                                                                linkInstanceType: Combo.class.name,
+                                                                linkInstanceType: ProviderLink.class.name,
                                                                 context: provider
                                     ]
                                 %>
@@ -316,11 +316,11 @@
                                 <div class="ui horizontal relaxed list">
                                     <div class="item">
                                         <strong><g:message code="org.platforms.label" /></strong>
-                                        &nbsp;<div class="ui blue circular label">${provider.platforms.size()}</div>
+                                        &nbsp;<div class="ui blue circular label">${platforms.size()}</div>
                                     </div>
                                     <div class="item">
                                         <strong><g:message code="package.plural" /></strong>
-                                        &nbsp;<div class="ui blue circular label">${provider.packages.size()}</div>
+                                        &nbsp;<div class="ui blue circular label">${packages.size()}</div>
                                     </div>
                                     <div class="item">
                                         <strong><g:message code="subscription.plural" /></strong>
@@ -336,7 +336,7 @@
                                 <p class="ui header">%{--<i class="icon cloud"></i>--}% <g:message code="org.platforms.label" /></p>
 
                                 <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${provider.platforms.unique()}" var="platform">
+                                    <g:each in="${platforms}" var="platform">
                                         <g:if test="${platform.status == RDStore.PLATFORM_STATUS_CURRENT}">
                                             <div class="ui item">
                                                 <div class="content la-space-right">
@@ -350,7 +350,7 @@
                                 <p class="ui header">%{--<i class="icon gift"></i>--}% <g:message code="package.plural" /></p>
 
                                 <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${provider.packages}" var="pkg">
+                                    <g:each in="${packages}" var="pkg">
                                         <div class="ui item">
                                             <div class="content la-space-right">
                                                 <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>

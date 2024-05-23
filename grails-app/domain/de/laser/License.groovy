@@ -313,11 +313,11 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     /**
      * Retrieves all organisation linked as providers to this license
-     * @return a {@link List} of {@link Org}s linked as provider
+     * @return a {@link List} of {@link Provider}s linked as provider
      */
-    List<Org> getProviders() {
-        Org.executeQuery("select og.org from OrgRole og where og.lic =:lic and og.roleType in (:provider) order by og.org.sortname",
-                [lic: this, provider: [RDStore.OR_PROVIDER, RDStore.OR_LICENSOR]])
+    List<Provider> getProviders() {
+        Provider.executeQuery("select pvr.provider from ProviderRole pvr where pvr.license = :lic order by pvr.provider.sortname",
+                [lic: this])
     }
 
     /**

@@ -210,6 +210,19 @@ class CascadingUpdateService {
     }
 
     /**
+     * Updates the given provider timestamp
+     * @param obj the updated provider
+     * @param luc the timestamp of update
+     */
+    void update(Provider obj, Date luc) {
+        _log(obj, luc)
+
+        Provider.executeUpdate("update Provider p set p.lastUpdatedCascading = :luc where p = :obj", [
+                luc: luc, obj: obj
+        ])
+    }
+
+    /**
      * Logs the timestamp update
      * @param obj the object which has been updated
      * @param luc the timestamp of update

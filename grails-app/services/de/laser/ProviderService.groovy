@@ -2,12 +2,14 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.helper.Params
+import de.laser.properties.PropertyDefinition
 import de.laser.properties.ProviderProperty
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
 import de.laser.traces.DeletedObject
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
 
@@ -109,6 +111,15 @@ class ProviderService {
      * Changes provider orgs ({@link Org}s defined as such) into {@link Provider}s
      */
     void migrateProviders() {
+        PropertyDefinition.findAllByDescr(PropertyDefinition.ORG_PROP).each { PropertyDefinition orgPropDef ->
+            if(!PropertyDefinition.findByNameAndDescr(orgPropDef.name, PropertyDefinition.PRV_PROP)) {
+                PropertyDefinition prvPropDef = new PropertyDefinition()
+                InvokerHelper.setProperties(prvPropDef, orgPropDef.properties)
+                prvPropDef.propDefGroupItems = null
+                prvPropDef.descr = PropertyDefinition.PRV_PROP
+                prvPropDef.save()
+            }
+        }
         Org.withTransaction { TransactionStatus ts ->
             Platform.findAllByOrgIsNotNull().each { Platform plat ->
                 plat.provider = Provider.convertFromOrg(plat.org)

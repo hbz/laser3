@@ -9,6 +9,7 @@ import de.laser.interfaces.MarkerSupport
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import de.laser.properties.PropertyDefinition
+import de.laser.properties.ProviderProperty
 import de.laser.properties.SubscriptionProperty
 import de.laser.properties.VendorProperty
 import de.laser.storage.BeanStore
@@ -289,11 +290,14 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         //those property definitions should not exist actually ...
         LicenseProperty.executeUpdate('delete from LicenseProperty lp where lp.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
         OrgProperty.executeUpdate('delete from OrgProperty op where op.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
+        ProviderProperty.executeUpdate('delete from ProviderProperty pp where pp.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
+        VendorProperty.executeUpdate('delete from VendorProperty vp where vp.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
         SubscriptionProperty.executeUpdate('delete from SubscriptionProperty sp where sp.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
         SurveyResult.executeUpdate('delete from SurveyResult sr where sr.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
         PropertyDefinition.executeUpdate('delete from PropertyDefinition pd where pd.tenant = :agency', [agency: agency])
         OrgProperty.findAllByOwner(agency).each { OrgProperty op ->
-            VendorProperty vp = new VendorProperty(owner: v)
+            PropertyDefinition type = PropertyDefinition.findByNameAndDescr(op.type.name, PropertyDefinition.VEN_PROP)
+            VendorProperty vp = new VendorProperty(owner: v, type: type)
             if(op.dateValue)
                 vp.dateValue = op.dateValue
             if(op.decValue)
