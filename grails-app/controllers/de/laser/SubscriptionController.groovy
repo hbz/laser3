@@ -48,6 +48,7 @@ class SubscriptionController {
     ExecutorService executorService
     ExportClickMeService exportClickMeService
     ExportService exportService
+    FilterService filterService
     GenericOIDService genericOIDService
     GlobalService globalService
     GokbService gokbService
@@ -669,6 +670,50 @@ class SubscriptionController {
         else {
             ctrlResult.result
         }
+    }
+
+    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN()
+    })
+    def templateForSurveyParticipantsBulkWithUpload() {
+        log.debug("templateForSurveyParticipantsBulkWithUpload :: ${params}")
+        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+
+        String filename = "template_sub_members_import"
+
+        params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
+        FilterService.Result fsr = filterService.getOrgComboQuery(params, result.institution as Org)
+
+        List<Org> consortiaMembers = Org.executeQuery(fsr.query, fsr.queryParams, params)
+
+
+        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-NR", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label')]
+
+        ArrayList rowData = []
+        ArrayList row
+        consortiaMembers.each { Org org ->
+            row = []
+            row.add(org.getIdentifierByType('wibid')?.value)
+            row.add(org.getIdentifierByType('ISIL')?.value)
+            row.add(org.getIdentifierByType('ROR ID')?.value)
+            row.add(org.getIdentifierByType('gnd_org_nr')?.value)
+            row.add(org.getIdentifierByType('deal_id')?.value)
+            row.add(org.sortname)
+            row.add(org.name)
+            row.add(org.libraryType.getI10n('value'))
+            rowData.add(row)
+        }
+
+        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.tsv\"")
+        response.contentType = "text/csv"
+        ServletOutputStream out = response.outputStream
+        out.withWriter { writer ->
+            writer.write(exportService.generateSeparatorTableString(titles, rowData, '\t'))
+        }
+        out.close()
+        return
+
     }
 
     /**

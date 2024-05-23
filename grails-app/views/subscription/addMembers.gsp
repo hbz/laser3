@@ -356,6 +356,12 @@
 
             ${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.text')}
 
+            <br>
+
+            <g:link controller="subscription" action="templateForMembersBulkWithUpload" params="[id: params.id]">
+                <p>${message(code:'myinst.financeImport.template')}</p>
+            </g:link>
+
             <div class="ui action input">
                 <input type="text" readonly="readonly"
                        placeholder="${message(code: 'template.addDocument.selectFile')}">
