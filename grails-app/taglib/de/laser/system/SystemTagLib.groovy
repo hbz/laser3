@@ -23,6 +23,7 @@ class SystemTagLib {
         g.set( var:'escapeService',                 bean:'escapeService')
         g.set( var:'exportClickMeService',          bean:'exportClickMeService')
         g.set( var:'exportService',                 bean:'exportService')
+        g.set( var:'financeService',                 bean:'financeService')
         g.set( var:'filterService',                 bean:'filterService' )
         g.set( var:'formService',                   bean:'formService' )
         g.set( var:'genericOIDService',             bean:'genericOIDService' )
