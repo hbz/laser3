@@ -1,5 +1,5 @@
 <%@ page import="de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.utils.LocaleUtils" %>
-
+<laser:serviceInjection/>
 <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_TITLE_SELECTION.id]}">
     <g:set var="costItemsSurvey"
            value="${surveyOrg ? CostItem.findAllBySurveyOrgAndPkgIsNull(surveyOrg) : null}"/>
@@ -339,11 +339,12 @@
     </g:if>
 
     <g:if test="${surveyInfo.owner.id == institution.id}">
-        <g:set var="consCosts"
+        <g:set var="consCostItems"
                value="${CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElement cie ' +
                        'where ci.owner = :owner and sub.instanceOf = :sub and oo.roleType in (:roleTypes)  and ci.surveyOrg = null and ci.costItemStatus != :deleted' +
                        ' order by cie.value_' + LocaleUtils.getCurrentLang(),
                        [owner: [subscription.getConsortia()], sub: subscription, deleted: RDStore.COST_ITEM_DELETED, roleTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}"/>
+        <g:set var="consCosts" value="${consCostItems ? financeService.calculateResults(consCostItems.id) : null}"/>
         <g:if test="${consCosts}">
             <div class="ui card la-dl-no-table">
                 <div class="content">
@@ -355,7 +356,7 @@
                  </g:if>--}%
                     <g:if test="${consCosts}">
                         <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.consCosts')} ${message(code: 'surveyCostItem.info')}</h2>
-                        <laser:render template="/subscription/financials" model="[data: consCosts]"/>
+                        <laser:render template="/subscription/financials" model="[data: [consCosts]]"/>
                     </g:if>
                 </div>
             </div>
