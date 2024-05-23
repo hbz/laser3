@@ -42,37 +42,36 @@
     </g:if>
 
     <g:if test="${params.descr in [PropertyDefinition.ORG_PROP]}">
-        <div class="two fields">
-            <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
-
-                <div class="field">
-                    <div class="inline fields la-filter-inline">
-                        <div class="inline field">
-                            <div class="ui checkbox">
-                                <label for="checkMyInsts">${message(code: 'menu.my.insts')}</label>
-                                <input id="checkMyInsts" name="myInsts" type="checkbox"
-                                       <g:if test="${params.myInsts == "on"}">checked=""</g:if>
-                                       tabindex="0">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </g:if>
+        <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
 
             <div class="field">
                 <div class="inline fields la-filter-inline">
                     <div class="inline field">
                         <div class="ui checkbox">
-                            <label for="checkMyProviderAgency">${message(code: 'default.myProviderAgency.label')}</label>
-                            <input id="checkMyProviderAgency" name="myProviderAgency" type="checkbox"
-                                   <g:if test="${params.myProviderAgency == "on"}">checked=""</g:if>
+                            <label for="checkMyInsts">${message(code: 'menu.my.insts')}</label>
+                            <input id="checkMyInsts" name="myInsts" type="checkbox"
+                                   <g:if test="${params.myInsts == "on"}">checked=""</g:if>
                                    tabindex="0">
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </g:if>
     </g:if>
+    <g:elseif test="${params.descr in [PropertyDefinition.PRV_PROP, PropertyDefinition.VEN_PROP]}">
+        <div class="field">
+            <div class="inline fields la-filter-inline">
+                <div class="inline field">
+                    <div class="ui checkbox">
+                        <label for="checkMyProviderAgency">${message(code: 'default.myProviderAgency.label')}</label>
+                        <input id="checkMyProviderAgency" name="myProviderAgency" type="checkbox"
+                               <g:if test="${params.myProviderAgency == "on"}">checked=""</g:if>
+                               tabindex="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </g:elseif>
 </g:elseif>
 
 
