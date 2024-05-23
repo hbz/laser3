@@ -184,11 +184,38 @@ class SubscriptionQuery extends BaseQuery {
 //
 //                handleGenericNonMatchingData2Values_TMP(params.query, BaseQuery.NO_PLATFORM_LABEL, noDataList, result)
 //            }
-            else if (params.query in ['subscription-x-platform']) {
+            else if (params.query in ['subscription-x-platform'] && false) {
 
                 // TODO
                 // TODO subscription > subscriptionPackage > package > platform ?
                 // TODO
+
+                String query_sub_pr_prov_plt = '''select plt.id, plt.name, count(*) from ProviderRole pr 
+                    join pr.provider pro 
+                    join pro.platforms plt 
+                    where pro.id in (:providerIdList) and pr.subscription.id in (:idList) group by plt.id order by plt.name'''
+
+                String query_sub_subpkg_pkg_plt =  '''select plt.id, plt.name, count(*) from SubscriptionPackage subPkg 
+                    join subPkg.subscription sub 
+                    join subPkg.pkg pkg 
+                    join pkg.nominalPlatform plt 
+                    where (pkg.provider is null or pkg.provider.id in (:providerIdList)) and sub.id in (:idList) group by plt.id order by plt.name'''
+
+                String query_sub_subpkg_pkg_prov_plt =  '''select plt.id, plt.name, count(*) from SubscriptionPackage subPkg 
+                    join subPkg.subscription sub 
+                    join subPkg.pkg pkg 
+                    join pkg.provider pro
+                    join pro.platforms plt 
+                    where pro.id in (:providerIdList) and sub.id in (:idList) group by plt.id order by plt.name'''
+
+                println '\n--------------> query_sub_pr_prov_plt'
+                println Platform.executeQuery(query_sub_pr_prov_plt, [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList])
+
+                println '\n--------------> query_sub_subpkg_pkg_plt'
+                println Platform.executeQuery(query_sub_subpkg_pkg_plt, [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList])
+
+                println '\n--------------> query_sub_subpkg_pkg_prov_plt'
+                println Platform.executeQuery(query_sub_subpkg_pkg_prov_plt, [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList])
 
                 result.data = Platform.executeQuery(
                         'select plt.id, plt.name, count(*) from ProviderRole pr join pr.provider pro join pro.platforms plt where pro.id in (:providerIdList) and pr.subscription.id in (:idList) group by plt.id order by plt.name',
@@ -378,58 +405,139 @@ class SubscriptionQuery extends BaseQuery {
             }
             else if (params.query in ['subscription-x-provider']) {
 
-                // TODO
-                // TODO subscription > subscriptionPackage > package > provider ?
-                // TODO
+                List providerIdList = BaseFilter.getCachedFilterIdList('provider', params)
 
-                result.data = Provider.executeQuery(
+                List aList = Provider.executeQuery(
                         'select pro.id, pro.name, count(*) from ProviderRole pr join pr.provider pro where pro.id in (:providerIdList) and pr.subscription.id in (:idList) group by pro.id order by pro.name',
-                        [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
+                        [providerIdList: providerIdList, idList: idList]
                 )
+                List bList = Provider.executeQuery(
+                        'select pro.id, pro.name, count(*) from SubscriptionPackage subPkg join subPkg.subscription sub join subPkg.pkg pkg join pkg.provider pro where pro.id in (:providerIdList) and sub.id in (:idList) group by pro.id order by pro.name',
+                        [providerIdList: providerIdList, idList: idList]
+                )
+                result.data = []
+
+                // sorting
+                Provider.executeQuery('select id, name from Provider where id in (:providerIdList) order by name', [providerIdList: providerIdList]).each{ p ->
+                    aList.each { a -> if (p[0] == a[0]) { result.data << a } }
+                    bList.each { b -> if (p[0] == b[0]) { result.data << b } }
+                }
+
                 result.data.each { d ->
+                    List a = Subscription.executeQuery('select sub.id from ProviderRole pr join pr.subscription sub join pr.provider pro where sub.id in (:idList) and pro.id = :d', [idList: idList, d: d[0]])
+                    List b = Subscription.executeQuery('select sub.id from SubscriptionPackage subPkg join subPkg.subscription sub join subPkg.pkg pkg join pkg.provider pro where sub.id in (:idList) and pro.id = :d', [idList: idList, d: d[0]])
+
                     result.dataDetails.add([
                             query : params.query,
                             id    : d[0],
                             label : d[1],
-                            idList: Subscription.executeQuery(
-                                    'select sub.id from ProviderRole pr join pr.subscription sub join pr.provider pro where sub.id in (:idList) and pro.id = :d order by sub.name',
-                                    [idList: idList, d: d[0]]
-                            )
+                            idList: Subscription.executeQuery('select sub.id, sub.name from Subscription sub where sub.id in (:idList) order by sub.name', [idList: (a + b)]).collect{ it[0] }, // todo
+                            value2: a.size(),
+                            value1: b.size()
                     ])
                 }
 
                 List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
                 List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select sub.id from Subscription sub where sub.id in (:idList)', [idList: nonMatchingIdList]) : []
 
-                handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_PROVIDER_LABEL, noDataList, result)
+                handleGenericNonMatchingData2Values_TMP(params.query, BaseQuery.NO_PROVIDER_LABEL, noDataList, result)
             }
             else if (params.query in ['subscription-x-vendor']) {
 
-                // TODO
-                // TODO subscription > subscriptionPackage > package > packageVendor > vendor ?
-                // TODO
+                List vendorIdList = BaseFilter.getCachedFilterIdList('vendor', params)
 
-                result.data = Vendor.executeQuery(
+                List aList = Vendor.executeQuery(
                         'select v.id, v.name, count(*) from VendorRole vr join vr.vendor v where v.id in (:vendorIdList) and vr.subscription.id in (:idList) group by v.id order by v.name',
-                        [vendorIdList: BaseFilter.getCachedFilterIdList('vendor', params), idList: idList]
+                        [vendorIdList: vendorIdList, idList: idList]
                 )
+                List bList = Vendor.executeQuery(
+                        'select v.id, v.name, count(*) from SubscriptionPackage subPkg join subPkg.pkg pkg join pkg.vendors pv join pv.vendor v where v.id in (:vendorIdList) and subPkg.subscription.id in (:idList) group by v.id order by v.name',
+                        [vendorIdList: vendorIdList, idList: idList]
+                )
+                result.data = []
+
+                // sorting
+                Vendor.executeQuery('select id, name from Vendor where id in (:vendorIdList) order by name', [vendorIdList: vendorIdList]).each{ p ->
+                    aList.each { a -> if (p[0] == a[0]) { result.data << a } }
+                    bList.each { b -> if (p[0] == b[0]) { result.data << b } }
+                }
+
                 result.data.each { d ->
+                    List a = Subscription.executeQuery('select sub.id from VendorRole vr join vr.subscription sub join vr.vendor v where sub.id in (:idList) and v.id = :d', [idList: idList, d: d[0]])
+                    List b = Subscription.executeQuery('select sub.id from SubscriptionPackage subPkg join subPkg.subscription sub join subPkg.pkg pkg join pkg.vendors pv join pv.vendor v where sub.id in (:idList) and v.id = :d', [idList: idList, d: d[0]])
+
                     result.dataDetails.add([
                             query : params.query,
                             id    : d[0],
                             label : d[1],
-                            idList: Subscription.executeQuery(
-                                    'select sub.id from VendorRole vr join vr.subscription sub join vr.vendor v where sub.id in (:idList) and v.id = :d order by sub.name',
-                                    [idList: idList, d: d[0]]
-                            )
+                            idList: Subscription.executeQuery('select sub.id, sub.name from Subscription sub where sub.id in (:idList) order by sub.name', [idList: (a + b)]).collect{ it[0] }, // todo
+                            value2: a.size(),
+                            value1: b.size()
                     ])
                 }
 
                 List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
                 List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select sub.id from Subscription sub where sub.id in (:idList)', [idList: nonMatchingIdList]) : []
 
-                handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_VENDOR_LABEL, noDataList, result)
+                handleGenericNonMatchingData2Values_TMP(params.query, BaseQuery.NO_VENDOR_LABEL, noDataList, result)
             }
+//            else if (params.query in ['subscription-x-provider']) {
+//
+//                // TODO
+//                // TODO subscription > subscriptionPackage > package > provider ?
+//                // TODO
+//
+//
+//                result.data = Provider.executeQuery(
+//                        'select pro.id, pro.name, count(*) from ProviderRole pr join pr.provider pro where pro.id in (:providerIdList) and pr.subscription.id in (:idList) group by pro.id order by pro.name',
+//                        [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
+//                )
+//                result.data.each { d ->
+//                    result.dataDetails.add([
+//                            query : params.query,
+//                            id    : d[0],
+//                            label : d[1],
+//                            idList: Subscription.executeQuery(
+//                                    'select sub.id from ProviderRole pr join pr.subscription sub join pr.provider pro where sub.id in (:idList) and pro.id = :d order by sub.name',
+//                                    [idList: idList, d: d[0]]
+//                            ),
+//                            value2: a.size(),
+//                            value1: b.size()
+//                    ])
+//                }
+//
+//                List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
+//                List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select sub.id from Subscription sub where sub.id in (:idList)', [idList: nonMatchingIdList]) : []
+//
+//                handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_PROVIDER_LABEL, noDataList, result)
+//            }
+//            else if (params.query in ['subscription-x-vendor']) {
+//
+//                // TODO
+//                // TODO subscription > subscriptionPackage > package > packageVendor > vendor ?
+//                // TODO
+//
+//                result.data = Vendor.executeQuery(
+//                        'select v.id, v.name, count(*) from VendorRole vr join vr.vendor v where v.id in (:vendorIdList) and vr.subscription.id in (:idList) group by v.id order by v.name',
+//                        [vendorIdList: BaseFilter.getCachedFilterIdList('vendor', params), idList: idList]
+//                )
+//                result.data.each { d ->
+//                    result.dataDetails.add([
+//                            query : params.query,
+//                            id    : d[0],
+//                            label : d[1],
+//                            idList: Subscription.executeQuery(
+//                                    'select sub.id from VendorRole vr join vr.subscription sub join vr.vendor v where sub.id in (:idList) and v.id = :d order by sub.name',
+//                                    [idList: idList, d: d[0]]
+//                            )
+//                    ])
+//                }
+//
+//                List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
+//                List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select sub.id from Subscription sub where sub.id in (:idList)', [idList: nonMatchingIdList]) : []
+//
+//                handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_VENDOR_LABEL, noDataList, result)
+//            }
         }
 
         result

@@ -20,11 +20,13 @@ import de.laser.LinksGenerationService
 import de.laser.OrgTypeService
 import de.laser.OrganisationService
 import de.laser.PropertyService
+import de.laser.ProviderService
 import de.laser.ShareService
 import de.laser.SubscriptionService
 import de.laser.SubscriptionsQueryService
 import de.laser.SystemService
 import de.laser.UserService
+import de.laser.VendorService
 import de.laser.WorkflowService
 import de.laser.YodaService
 import de.laser.ctrl.FinanceControllerService
@@ -275,6 +277,10 @@ class BeanStore {
         Holders.grailsApplication.mainContext.getBean('pendingChangeService') as PendingChangeService
     }
 
+    static ProviderService getProviderService() {
+        Holders.grailsApplication.mainContext.getBean('providerService') as ProviderService
+    }
+
     /**
      * @return the currently holding {@link PropertyService}
      */
@@ -315,6 +321,10 @@ class BeanStore {
      */
     static UserService getUserService() {
         Holders.grailsApplication.mainContext.getBean('userService') as UserService
+    }
+
+    static VendorService getVendorService() {
+        Holders.grailsApplication.mainContext.getBean('vendorService') as VendorService
     }
 
     /**
