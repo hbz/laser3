@@ -84,7 +84,7 @@ class GenericHelper {
      */
     static String getFieldLabel(Map<String, Object> objConfig, String fieldName) {
         // println '- GenericHelper.getFieldLabel() : ' + fieldName
-        String label = fieldName + '(?)'
+        String label = '?' // -> BaseDetails.getFieldLabelforColumn() fallback
         Map<String, Object> field = getField(objConfig, fieldName)
         String type = field?.type
 
@@ -157,7 +157,7 @@ class GenericHelper {
             }
 
             //
-            if (fieldName.startsWith('org+')) { // plt
+            if (fieldName.startsWith('provider+')) { // 'platform/provider+sortname+name' // todo
                 base = messageSource.getMessage('platform.provider', null, locale)
             }
             //
