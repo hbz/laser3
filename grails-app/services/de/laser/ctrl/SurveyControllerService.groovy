@@ -929,10 +929,10 @@ class SurveyControllerService {
                                         }
                                     }
                                     if (colMap.description != null) {
-                                        costItem.costDescription = cols[colMap.description]
+                                        costItem.costDescription = cols[colMap.description] ?: null
                                     }
                                     if (colMap.title != null) {
-                                        costItem.costTitle = cols[colMap.title]
+                                        costItem.costTitle = cols[colMap.title] ?: null
                                     }
                                     if (colMap.invoiceTotal != null && cols[colMap.invoiceTotal] != null) {
                                         try {
@@ -1026,6 +1026,8 @@ class SurveyControllerService {
 
                                     if(costItem.save()){
                                         costItemsCreatedCount++
+                                    }else {
+                                        log.error("CostItem not create because: "+ costItem.errors.toString())
                                     }
                                 }
                             }
