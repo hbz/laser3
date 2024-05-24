@@ -1207,20 +1207,29 @@ class AjaxHtmlController {
 
             // myInstitution::action:WF_X:id
             // subscription:id:action:WF_X:id
-            if (key[0] in [License.class.name, Subscription.class.name, Org.class.name]) {
+            if (key[0] in [License.class.name, Org.class.name, Provider.class.name, Subscription.class.name, Vendor.class.name]) {
 
                 if (key[0] == License.class.name) {
                     result.targetObject = License.get( key[1] )
                     result.tmplFormUrl  = createLink(controller: 'lic', action: key[2], id: key[1])
                 }
+                else if (key[0] == Org.class.name){
+                    result.targetObject = Org.get( key[1] )
+                    result.tmplFormUrl  = createLink(controller: 'org', action: key[2], id: key[1])
+                }
+                else if (key[0] == Provider.class.name){
+                    result.targetObject = Provider.get( key[1] )
+                    result.tmplFormUrl  = createLink(controller: 'provider', action: key[2], id: key[1])
+                }
                 else if (key[0] == Subscription.class.name) {
                     result.targetObject = Subscription.get( key[1] )
                     result.tmplFormUrl  = createLink(controller: 'subscription', action: key[2], id: key[1])
                 }
-                else {
-                    result.targetObject = Org.get( key[1] )
-                    result.tmplFormUrl  = createLink(controller: 'org', action: key[2], id: key[1])
+                else if (key[0] == Vendor.class.name) {
+                    result.targetObject = Vendor.get( key[1] )
+                    result.tmplFormUrl  = createLink(controller: 'vendor', action: key[2], id: key[1])
                 }
+
             }
             else if (key[0] == 'myInstitution') {
                 result.tmplFormUrl  = createLink(controller: 'myInstitution', action: key[2])

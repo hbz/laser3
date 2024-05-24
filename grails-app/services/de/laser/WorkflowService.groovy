@@ -50,18 +50,24 @@ class WorkflowService {
         if (params.info) {
             result.info = params.info // @ flyout
         }
-
         result.checklist = []
 
         if (result.contextOrg) {
-            if (result.orgInstance) {
+
+            if (result.license) {
+                result.checklists = sortByLastUpdated( WfChecklist.findAllByLicenseAndOwner(result.license as License, result.contextOrg as Org))
+            }
+            else if (result.orgInstance) {
                 result.checklists = sortByLastUpdated(WfChecklist.findAllByOrgAndOwner(result.orgInstance as Org, result.contextOrg as Org))
             }
-            else if (result.license) {
-                result.checklists = sortByLastUpdated( WfChecklist.findAllByLicenseAndOwner(result.license as License, result.contextOrg as Org))
+            else if (result.provider) {
+                result.checklists = sortByLastUpdated( WfChecklist.findAllByProviderAndOwner(result.provider as Provider, result.contextOrg as Org))
             }
             else if (result.subscription) {
                 result.checklists = sortByLastUpdated(WfChecklist.findAllBySubscriptionAndOwner(result.subscription as Subscription, result.contextOrg as Org))
+            }
+            else if (result.vendor) {
+                result.checklists = sortByLastUpdated(WfChecklist.findAllByVendorAndOwner(result.vendor as Vendor, result.contextOrg as Org))
             }
         }
 
@@ -221,9 +227,11 @@ class WorkflowService {
 
         def target = ph.getTarget()
 
-        clist.subscription  = target instanceof Subscription ? target : null
         clist.license       = target instanceof License ? target : null
         clist.org           = target instanceof Org ? target : null
+        clist.provider      = target instanceof Provider ? target : null
+        clist.subscription  = target instanceof Subscription ? target : null
+        clist.vendor        = target instanceof Vendor ? target : null
 
         clist.owner         = contextService.getOrg()
         clist.template      = Boolean.parseBoolean(ph.getString('template'))
@@ -329,9 +337,11 @@ class WorkflowService {
 
                 def target = genericOIDService.resolveOID(params.target)
 
-                if (target instanceof Org)               { result.checklist.org = target }
-                else if (target instanceof License)      { result.checklist.license = target }
-                else if (target instanceof Subscription) { result.checklist.subscription = target }
+                if (target instanceof License)              { result.checklist.license = target }
+                else if (target instanceof Org)             { result.checklist.org = target }
+                else if (target instanceof Provider)        { result.checklist.provider = target }
+                else if (target instanceof Subscription)    { result.checklist.subscription = target }
+                else if (target instanceof Vendor)          { result.checklist.vendor = target }
 
                 result.status = OP_STATUS_ERROR
 
@@ -430,14 +440,20 @@ class WorkflowService {
      * @return a {@link List} of {@link WfChecklist} workflows attached to the given object
      */
     List<WfChecklist> getWorkflows(def obj, Org owner) {
-        if (obj instanceof Subscription) {
-            WfChecklist.executeQuery('select wf from WfChecklist wf where wf.subscription = :sub and wf.owner = :ctxOrg', [sub: obj, ctxOrg: owner])
-        }
-        else if (obj instanceof License) {
+        if (obj instanceof License) {
             WfChecklist.executeQuery('select wf from WfChecklist wf where wf.license = :lic and wf.owner = :ctxOrg', [lic: obj, ctxOrg: owner])
         }
         else if (obj instanceof Org) {
             WfChecklist.executeQuery('select wf from WfChecklist wf where wf.org = :org and wf.owner = :ctxOrg', [org: obj, ctxOrg: owner])
+        }
+        else if (obj instanceof Provider) {
+            WfChecklist.executeQuery('select wf from WfChecklist wf where wf.provider = :provider and wf.owner = :ctxOrg', [provider: obj, ctxOrg: owner])
+        }
+        else if (obj instanceof Subscription) {
+            WfChecklist.executeQuery('select wf from WfChecklist wf where wf.subscription = :sub and wf.owner = :ctxOrg', [sub: obj, ctxOrg: owner])
+        }
+        else if (obj instanceof Vendor) {
+            WfChecklist.executeQuery('select wf from WfChecklist wf where wf.vendor = :vendor and wf.owner = :ctxOrg', [vendor: obj, ctxOrg: owner])
         }
         else {
             return []
@@ -451,10 +467,7 @@ class WorkflowService {
      * @return the number of {@link WfChecklist} workflows attached to the given object
      */
     int getWorkflowCount(def obj, Org owner) {
-        if (obj instanceof Subscription) {
-            WfChecklist.executeQuery('select count(wf) from WfChecklist wf where wf.subscription = :sub and wf.owner = :ctxOrg', [sub: obj, ctxOrg: owner])[0]
-        }
-        else if (obj instanceof License) {
+        if (obj instanceof License) {
             WfChecklist.executeQuery('select count(wf) from WfChecklist wf where wf.license = :lic and wf.owner = :ctxOrg', [lic: obj, ctxOrg: owner])[0]
         }
         else if (obj instanceof Org) {
@@ -462,6 +475,9 @@ class WorkflowService {
         }
         else if (obj instanceof Provider) {
             WfChecklist.executeQuery('select count(wf) from WfChecklist wf where wf.provider = :provider and wf.owner = :ctxOrg', [provider: obj, ctxOrg: owner])[0]
+        }
+        else if (obj instanceof Subscription) {
+            WfChecklist.executeQuery('select count(wf) from WfChecklist wf where wf.subscription = :sub and wf.owner = :ctxOrg', [sub: obj, ctxOrg: owner])[0]
         }
         else if (obj instanceof Vendor) {
             WfChecklist.executeQuery('select count(wf) from WfChecklist wf where wf.vendor = :vendor and wf.owner = :ctxOrg', [vendor: obj, ctxOrg: owner])[0]
