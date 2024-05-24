@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5711    24.05.2024  dev     3.4         David   Feature     Reporting: Subscription > Jahresring - Einrichtungslizenz
+
 5703    24.05.2024  dev     3.4         David   Feature     Animierte Gifs in images/clips werden wieder gefunden
 
 5701    24.05.2024  dev     3.4         David   Feature     Reporting: Export von Lieferanten
