@@ -182,9 +182,9 @@ class VendorService {
             ts.flush()
             Set<DocContext> docTargetOrgContexts = DocContext.executeQuery('select dc from DocContext dc join dc.targetOrg o join o.orgType ot where ot = :agency', [agency: RDStore.OT_AGENCY])
             docTargetOrgContexts.each { DocContext dc ->
-                Vendor v = Vendor.findByGlobalUID(dc.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase()))
+                Vendor v = Vendor.findByGlobalUID(dc.targetOrg.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
                 if (!v) {
-                    v = Vendor.convertFromAgency(dc.org)
+                    v = Vendor.convertFromAgency(dc.targetOrg)
                 }
                 dc.targetOrg = null
                 dc.org = null
@@ -224,10 +224,12 @@ class VendorService {
                         log.debug("processed: ${vr.vendor}:${vr.subscription}:${vr.license} ex ${ar.org}:${ar.sub}:${ar.lic}")
                     } else log.error(vr.errors.getAllErrors().toListString())
                 } else if (ar.pkg) {
-                    PackageVendor pv = new PackageVendor(vendor: v, pkg: ar.pkg)
-                    if (pv.save())
-                        log.debug("processed: ${pv.vendor}:${pv.pkg} ex ${ar.org}:${ar.pkg}")
-                    else log.error(pv.errors.getAllErrors().toListString())
+                    if(!PackageVendor.findByVendorAndPkg(v, ar.pkg)) {
+                        PackageVendor pv = new PackageVendor(vendor: v, pkg: ar.pkg)
+                        if (pv.save())
+                            log.debug("processed: ${pv.vendor}:${pv.pkg} ex ${ar.org}:${ar.pkg}")
+                        else log.error(pv.errors.getAllErrors().toListString())
+                    }
                 }
                 ar.delete()
             }

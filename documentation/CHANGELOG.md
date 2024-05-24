@@ -13,6 +13,8 @@
 
 5711    24.05.2024  dev     3.4         David   Feature     Reporting: Subscription > Jahresring - Einrichtungslizenz
 
+5705    24.05.2024  dev     3.4         Andreas Bug         Lieferanten wurden nicht richtig gesucht
+
 5703    24.05.2024  dev     3.4         David   Feature     Animierte Gifs in images/clips werden wieder gefunden
 
 5701    24.05.2024  dev     3.4         David   Feature     Reporting: Export von Lieferanten
@@ -20,6 +22,8 @@
 5700    24.05.2024  dev     3.4         David   Feature     Reporting: Export von Anbietern
 
 5694    24.05.2024  dev     3.4         Andreas Bug         Korrekturen bei der Entknüpfung von Verträgen
+
+5630    24.05.2024  dev     3.4         Andreas Feature     Anleitung zum Lizenzupload angelegt
 
 5678    23.05.2024  dev     3.4         David   Feature     Reporting: Anbieter
 

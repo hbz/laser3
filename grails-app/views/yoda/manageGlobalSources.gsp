@@ -14,6 +14,7 @@
       <table class="ui celled la-js-responsive-table la-table table">
         <thead>
           <tr>
+              <th>${message(code:'sidewide.number')}</th>
               <th>${message(code:'default.identifier.label')}</th>
               <th>${message(code:'default.name.label')}</th>
               <th>${message(code:'default.type.label')}</th>
@@ -46,10 +47,11 @@
                   }
               %>
             <tr>
+                <td>${source.id}</td>
               <td>${source.identifier}</td>
               <td>${source.name}</td>
               <td>${source.type}</td>
-              <td>${source.haveUpTo}</td>
+              <td><ui:xEditable owner="${source}" field="haveUpTo" type="date"/></td>
               <td>${source.uri}</td>
               <td>${source.editUri}</td>
               <td>

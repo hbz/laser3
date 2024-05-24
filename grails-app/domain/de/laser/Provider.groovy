@@ -247,7 +247,6 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         }
         */
         Person.findAllByTenant(provider).each { Person pe ->
-
             pe.delete()
         }
         Marker.findAllByOrg(provider).each { Marker m ->

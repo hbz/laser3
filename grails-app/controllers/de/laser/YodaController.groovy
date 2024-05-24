@@ -1009,9 +1009,9 @@ class YodaController {
      */
     @Secured(['ROLE_YODA'])
     def manageGlobalSources() {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [editable: true]
         log.debug("manageGlobalSources ..")
-        result.sources = GlobalRecordSource.list()
+        result.sources = GlobalRecordSource.list([sort: 'id'])
 
         result
     }
