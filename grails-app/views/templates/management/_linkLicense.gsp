@@ -38,7 +38,8 @@
                               from="${validLicenses}" name="selectedLicense"
                               required=""
                               noSelection="['': message(code: 'subscriptionsManagement.noSelection.license')]"/>
-                </g:if><g:else>
+                </g:if>
+                <g:else>
                     <g:if test="${controllerName == 'subscription'}">
                         <g:message code="subscriptionsManagement.noValidLicenses" args="${args.superOrgType}"/>
                     </g:if>
@@ -69,6 +70,24 @@
                     </div>
                 </div>
             </g:if>
+            <g:else>
+                <div class="sixteen wide field" style="text-align: right;">
+                    <div class="ui buttons">
+                        <span class="la-popup-tooltip la-delay"
+                              data-content="${message(code: 'license.details.unlink')}">
+                            <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
+                                    data-confirm-tokenMsg="${message(code: "subscriptionsManagement.deleteLicenses.button.confirm")}"
+                                    data-confirm-term-how="unlink"
+                                    controller="subscription" action="unlinkAllLicenses"
+                                    params="${[id: params.id]}"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.unlink.universal')}">
+                                ${message(code: 'subscriptionsManagement.deleteAllLicenses.button')}
+                            </g:link>
+                        </span>
+                    </div>
+                </div>
+            </g:else>
         </div><!-- .segment -->
 
         <div class="ui segment">
