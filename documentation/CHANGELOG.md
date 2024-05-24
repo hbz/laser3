@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5712    24.05.2024  dev     3.4         Andreas Feature     Zuordnungsjahr bei Hinzufügen neuer Teilnehmer verteilen
+
 5711    24.05.2024  dev     3.4         David   Feature     Reporting: Subscription > Jahresring - Einrichtungslizenz
 
 5703    24.05.2024  dev     3.4         David   Feature     Animierte Gifs in images/clips werden wieder gefunden
@@ -14,6 +16,8 @@
 5701    24.05.2024  dev     3.4         David   Feature     Reporting: Export von Lieferanten
 
 5700    24.05.2024  dev     3.4         David   Feature     Reporting: Export von Anbietern
+
+5694    24.05.2024  dev     3.4         Andreas Bug         Korrekturen bei der Entknüpfung von Verträgen
 
 5678    23.05.2024  dev     3.4         David   Feature     Reporting: Anbieter
 

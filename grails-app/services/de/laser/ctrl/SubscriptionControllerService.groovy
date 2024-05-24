@@ -1609,6 +1609,7 @@ class SubscriptionControllerService {
                                 if (existSubForOrg == 0) {
                                     Date startDate = params.valid_from ? DateUtils.parseDateGeneric(params.valid_from) : null
                                     Date endDate = params.valid_to ? DateUtils.parseDateGeneric(params.valid_to) : null
+                                    Year referenceYear = params.reference_year ? Year.parse(params.reference_year) : null
 
                                     if(startEndDates){
                                         Map startAndEndDate = startEndDates.get("${cm.id}")
@@ -1625,6 +1626,7 @@ class SubscriptionControllerService {
                                             //name: result.subscription.name + " (" + (cm.get(0).sortname ?: cm.get(0).name) + ")",
                                             startDate: c == 0 ? startDate : currParent.startDate,
                                             endDate: c == 0 ? endDate : currParent.endDate,
+                                            referenceYear: c == 0 ? referenceYear : currParent.referenceYear,
                                             administrative: currParent._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
                                             manualRenewalDate: currParent.manualRenewalDate,
                                             /* manualCancellationDate: result.subscription.manualCancellationDate, */
