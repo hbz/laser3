@@ -2381,16 +2381,18 @@ class SurveyControllerService {
                         }
                         break
                     case "deleteSurveyPropFromConfig":
-                        SurveyConfigProperties surveyConfigProp = SurveyConfigProperties.get(params.id)
-                        SurveyInfo surveyInfo = surveyConfigProp.surveyConfig.surveyInfo
-                                try {
-                                    surveyConfigProp.delete()
-                                    //result.message = messageSource.getMessage("default.deleted.message", args: [messageSource.getMessage("surveyProperty.label"), ''])
-                                }
-                                catch (DataIntegrityViolationException e) {
-                                    Object[] args = [messageSource.getMessage("surveyProperty.label", null, result.locale)]
-                                    result.error = messageSource.getMessage("default.not.deleted.message", args, result.locale)
-                                }
+                        if (params.surveyPropertyConfigId) {
+                            SurveyConfigProperties surveyConfigProp = SurveyConfigProperties.get(params.surveyPropertyConfigId)
+                            SurveyInfo surveyInfo = surveyConfigProp.surveyConfig.surveyInfo
+                            try {
+                                surveyConfigProp.delete()
+                                //result.message = messageSource.getMessage("default.deleted.message", args: [messageSource.getMessage("surveyProperty.label"), ''])
+                            }
+                            catch (DataIntegrityViolationException e) {
+                                Object[] args = [messageSource.getMessage("surveyProperty.label", null, result.locale)]
+                                result.error = messageSource.getMessage("default.not.deleted.message", args, result.locale)
+                            }
+                        }
                         break
                     case "createSurveyProperty":
                         PropertyDefinition surveyProperty = PropertyDefinition.findWhere(
