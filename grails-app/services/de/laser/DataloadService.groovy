@@ -488,7 +488,7 @@ class DataloadService {
                 result.altnames = []
                 lic.altnames.each { AlternativeName altname ->
                     result.altnames << altname.name
-                }#
+                }
                 result.visible = 'Private'
                 result.rectype = lic.getClass().getSimpleName()
 
