@@ -230,6 +230,8 @@
 
 </div><!-- .grid -->
 
+<laser:render template="/templates/survey/costsGeneralSurvey"/>
+
 <laser:render template="/templates/survey/properties" model="${[surveyConfig: surveyConfig]}"/>
 
 <laser:script file="${this.getGroovyPageFileName()}">

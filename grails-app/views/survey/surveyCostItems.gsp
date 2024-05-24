@@ -66,7 +66,7 @@
                 <div class="ui action input">
                     <input type="text" readonly="readonly"
                            placeholder="${message(code: 'template.addDocument.selectFile')}">
-                    <input type="file" name="costItemsFile" accept="text/tab-separated-values"
+                    <input type="file" name="costItemsFile" accept="text/tab-separated-values,.txt,.csv"
                            style="display: none;">
                     <div class="ui icon button">
                         <i class="attach icon"></i>
@@ -165,7 +165,7 @@
             </g:if>
 
             <g:form action="processSurveyCostItemsBulk" data-confirm-id="processSurveyCostItemsBulk_form" name="editCost_${idSuffix}" method="post" class="ui form"
-                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, selectedCostItemElementID: selectedCostItemElementID]">
+                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, bulkSelectedCostItemElementID: selectedCostItemElementID]">
 
                 <div id="bulkCostItems" class="hidden">
                     <g:if test="${countCostItems == 0}">
@@ -265,7 +265,7 @@
                         <laser:render template="/templates/filter/orgFilterTable"
                                   model="[orgList         : surveyParticipantsHasAccess,
                                           tmplShowCheckbox: true,
-                                          tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', (surveyConfig.subscription ? 'surveySubCostItem' : ''), 'surveyCostItem'],
+                                          tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'surveySubInfo', (surveyConfig.subscription ? 'surveySubCostItem' : ''), 'surveyCostItem'],
                                           tableID         : 'costTable'
                                   ]"/>
 
@@ -289,7 +289,7 @@
                         <laser:render template="/templates/filter/orgFilterTable"
                                   model="[orgList       : surveyParticipantsHasNotAccess,
                                           tmplShowCheckbox: true,
-                                          tmplConfigShow: ['lineNumber', 'sortname', 'name', (surveyConfig.subscription ? 'surveySubInfoStartEndDate' : ''), (surveyConfig.subscription ? 'surveySubCostItem' : ''), 'surveyCostItem'],
+                                          tmplConfigShow: ['lineNumber', 'sortname', 'name', (surveyConfig.subscription ? 'surveySubInfo' : ''), (surveyConfig.subscription ? 'surveySubCostItem' : ''), 'surveyCostItem'],
                                           tableID       : 'costTable'
                                   ]"/>
 
@@ -407,7 +407,9 @@ JSPC.app.addForAllSurveyCostItem = function(orgsIDs) {
                                 data: {
                                     id: "${params.id}",
                                     surveyConfigID: "${surveyConfig.id}",
-                                    orgsIDs: orgsIDs
+                                    orgsIDs: orgsIDs,
+                                    selectedCostItemElementID: "${selectedCostItemElementID}"
+
                                 }
                             }).done(function (data) {
                                 $('#dynamicModalContainer').html(data);

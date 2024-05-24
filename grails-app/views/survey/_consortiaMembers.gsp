@@ -48,7 +48,7 @@
                 <div class="ui action input">
                     <input type="text" readonly="readonly"
                            placeholder="${message(code: 'template.addDocument.selectFile')}">
-                    <input type="file" name="selectMembersWithImport" accept="text/tab-separated-values"
+                    <input type="file" name="selectMembersWithImport" accept="text/tab-separated-values,.txt,.csv"
                            style="display: none;">
                     <div class="ui icon button">
                         <i class="attach icon"></i>

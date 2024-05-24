@@ -2431,15 +2431,15 @@ class SurveyController {
         }
 
         result.orgConfigurations = orgConfigurations as JSON
-        //result.selectedCostItemElementID = params.selectedCostItemElementID ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+        //result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
 
         result.participant = Org.get(params.participant)
         result.surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, result.participant)
 
 
         result.mode = result.costItem ? "edit" : ""
-        result.selectedCostItemElementID = params.selectedCostItemElementID
-        result.selectedPackageID = params.selectedPackageID
+        result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : null
+        result.selectedPackageID = params.selectedPackageID ? Long.valueOf(params.selectedPackageID) : null
         result.selectedPkg = params.selectedPkg
         result.taxKey = result.costItem ? result.costItem.taxKey : null
         result.idSuffix = "edit_${result.costItem ? result.costItem.id : result.participant.id}"
@@ -2475,7 +2475,7 @@ class SurveyController {
         }
 
         result.orgConfigurations = orgConfigurations as JSON
-        //result.selectedCostItemElementID = params.selectedCostItemElementID ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+        //result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
 
         result.setting = 'bulkForAll'
 
@@ -2490,6 +2490,9 @@ class SurveyController {
         if(params.selectedPkg){
             result.selectedPkg = true
         }
+
+        result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : null
+        result.selectedPackageID = params.selectedPackageID ? Long.valueOf(params.selectedPackageID) : null
 
         render(template: "/survey/costItemModal", model: result)
     }

@@ -5,10 +5,10 @@
     <g:set var="surveyPackages" value="${SurveyPackageResult.executeQuery("select spr.pkg from SurveyPackageResult spr where spr.participant = :participant and spr.surveyConfig = :surveyConfig", [participant: institution, surveyConfig: surveyConfig])}"/>
 
     <g:set var="costItemsSurvey"
-           value="${surveyOrg ? CostItem.findAllBySurveyOrgAndPkgInList(surveyOrg, surveyPackages) : null}"/>
+           value="${surveyOrg && surveyPackages ? CostItem.findAllBySurveyOrgAndPkgInList(surveyOrg, surveyPackages) : null}"/>
 
     <g:set var="costItemsSubsc"
-           value="${CostItem.executeQuery('select ci from CostItem as ci left join ci.costItemElement cie where ci.owner in :owner and ci.sub = :sub and ci.isVisibleForSubscriber = true and ci.surveyOrg = null and ci.costItemStatus != :deleted and ci.pkg in (:pkgs)' +
+           value="${CostItem.executeQuery('select ci from CostItem as ci left join ci.costItemElement cie where ci.owner in :owner and ci.sub = :sub and ci.isVisibleForSubscriber = true and ci.surveyOrg = null and ci.costItemStatus != :deleted and ci.subPkg.pkg in (:pkgs)' +
                    ' order by cie.value_' + LocaleUtils.getCurrentLang(),
                    [owner: [subscription.getConsortia()], sub: subscription, deleted: RDStore.COST_ITEM_DELETED, pkgs: surveyPackages])}"/>
 
