@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5713    24.05.2024  dev     3.4         David   Feature     Workflows anlegen für Anbieter und Lieferanten
+
 5711    24.05.2024  dev     3.4         David   Feature     Reporting: Subscription > Jahresring - Einrichtungslizenz
 
 5703    24.05.2024  dev     3.4         David   Feature     Animierte Gifs in images/clips werden wieder gefunden

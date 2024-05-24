@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
 import de.laser.helper.Params
@@ -251,9 +252,11 @@ class ProviderController {
             result.licLinks = ProviderRole.executeQuery('select pvr from ProviderRole pvr join pvr.license l join l.orgRelations oo where pvr.provider = :provider and l.status = :current and oo.org = :context '+licenseConsortiumFilter, [provider: provider, current: RDStore.LICENSE_CURRENT, context: result.institution])
             result.currentSubscriptionsCount = ProviderRole.executeQuery('select count(pvr) from ProviderRole pvr join pvr.subscription s join s.orgRelations oo where pvr.provider = :provider and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, context: result.institution])[0]
             result.currentLicensesCount = ProviderRole.executeQuery('select count(pvr) from ProviderRole pvr join pvr.license l join l.orgRelations oo where pvr.provider = :provider and oo.org = :context '+licenseConsortiumFilter, [provider: provider, context: result.institution])[0]
+
+            workflowService.executeCmdAndUpdateResult(result, params)
+
             result
         }
-        //workflowService.executeCmdAndUpdateResult(result, params)
         result
     }
 
@@ -273,5 +276,17 @@ class ProviderController {
     def unlink() {
         linksGenerationService.unlink(params)
         redirect action: 'show', id: params.id
+    }
+
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+    })
+    @Check404()
+    def workflows() {
+        Map<String, Object> result = providerService.getResultGenericsAndCheckAccess(params)
+
+        workflowService.executeCmdAndUpdateResult(result, params)
+        result
     }
 }

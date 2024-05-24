@@ -178,6 +178,9 @@ class VendorController {
             result.licLinks = VendorRole.executeQuery('select vr from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and l.status = :current and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, current: RDStore.LICENSE_CURRENT, context: result.institution])
             result.currentSubscriptionsCount = VendorRole.executeQuery('select count(vr) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, context: result.institution])[0]
             result.currentLicensesCount = VendorRole.executeQuery('select count(vr) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, context: result.institution])[0]
+
+            workflowService.executeCmdAndUpdateResult(result, params)
+
             result
         }
         else {
@@ -186,5 +189,15 @@ class VendorController {
         }
     }
 
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+    })
+    @Check404()
+    def workflows() {
+        Map<String, Object> result = vendorService.getResultGenerics(params)
 
+        workflowService.executeCmdAndUpdateResult(result, params)
+        result
+    }
 }
