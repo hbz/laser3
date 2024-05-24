@@ -150,12 +150,6 @@ class LicenseExport extends BaseDetailsExport {
                     content.add( ids.collect{ (it.ns.getI10n('name') ?: GenericHelper.flagUnmatched( it.ns.ns )) + ':' + it.value }.join( BaseDetailsExport.CSV_VALUE_SEPARATOR ))
                 }
                 else if (key == '@-license-subscriptionCount') { // TODO: query
-//                    int count = License.executeQuery(
-//                            'select count(distinct li.destinationSubscription) from Links li where li.sourceLicense = :lic and li.linkType = :linkType',
-//                            [lic: lic, linkType: RDStore.LINKTYPE_LICENSE]
-//                    )[0]
-//                    content.add( count )
-
                     String counts = Subscription.executeQuery(
                             'select status, count(status) from Links li join li.destinationSubscription sub join sub.status status where li.sourceLicense = :lic and li.linkType = :linkType group by status',
                             [lic: lic, linkType: RDStore.LINKTYPE_LICENSE]
@@ -168,13 +162,6 @@ class LicenseExport extends BaseDetailsExport {
                     content.add( count )
                 }
                 else if (key == '@-license-memberSubscriptionCount') {
-//                    int count = License.executeQuery('select count( distinct sub ) from Links li join li.destinationSubscription sub where li.sourceLicense in (' +
-//                            'select l from License l where l.instanceOf = :parent' +
-//                            ') and li.linkType = :linkType',
-//                                [parent: lic, linkType: RDStore.LINKTYPE_LICENSE]
-//                        )[0]
-//                    content.add( count )
-
                     String counts = License.executeQuery('select status, count(status) from Links li join li.destinationSubscription sub join sub.status status where li.sourceLicense in (' +
                             'select l from License l where l.instanceOf = :parent' +
                             ') and li.linkType = :linkType group by status',
