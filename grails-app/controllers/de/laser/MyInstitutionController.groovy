@@ -937,8 +937,8 @@ class MyInstitutionController  {
 
         result.filterSet = params.filterSet ? true : false
         if (params.filterPropDef) {
-            Map<String, Object> efq = propertyService.evalFilterQuery(params, providerQuery, 'o', queryParams)
-            queryArgs << efq.query
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, providerQuery, 'p', queryParams)
+            providerQuery = efq.query
             queryParams = efq.queryParams as Map<String, Object>
         }
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)

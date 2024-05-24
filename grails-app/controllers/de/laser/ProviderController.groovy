@@ -22,7 +22,9 @@ class ProviderController {
     ExportClickMeService exportClickMeService
     FilterService filterService
     GokbService gokbService
+    LinksGenerationService linksGenerationService
     ProviderService providerService
+    PropertyService propertyService
     TaskService taskService
     DocstoreService docstoreService
     WorkflowService workflowService
@@ -122,6 +124,11 @@ class ProviderController {
         String providerQuery = 'select p from Provider p'
         if(queryArgs) {
             providerQuery += ' where '+queryArgs.join(' and ')
+        }
+        if (params.filterPropDef) {
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, providerQuery, 'p', queryParams)
+            providerQuery = efq.query
+            queryParams = efq.queryParams as Map<String, Object>
         }
         if(params.containsKey('sort')) {
             providerQuery += " order by ${params.sort} ${params.order ?: 'asc'}, p.name ${params.order ?: 'asc'} "
@@ -238,6 +245,8 @@ class ProviderController {
                 licenseConsortiumFilter = 'and l.instanceOf = null'
             }
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, provider)
+            result.packages = Package.executeQuery('select pkg from SubscriptionPackage sp join sp.pkg pkg, OrgRole oo join oo.sub s where pkg.provider = :provider and s = sp.subscription and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Package>
+            result.platforms = Platform.executeQuery('select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg, OrgRole oo join oo.sub s where pkg.provider = :provider and oo.sub = sp.subscription and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Platform>
             result.subLinks = ProviderRole.executeQuery('select pvr from ProviderRole pvr join pvr.subscription s join s.orgRelations oo where pvr.provider = :provider and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])
             result.licLinks = ProviderRole.executeQuery('select pvr from ProviderRole pvr join pvr.license l join l.orgRelations oo where pvr.provider = :provider and l.status = :current and oo.org = :context '+licenseConsortiumFilter, [provider: provider, current: RDStore.LICENSE_CURRENT, context: result.institution])
             result.currentSubscriptionsCount = ProviderRole.executeQuery('select count(pvr) from ProviderRole pvr join pvr.subscription s join s.orgRelations oo where pvr.provider = :provider and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, context: result.institution])[0]
@@ -246,5 +255,23 @@ class ProviderController {
         }
         //workflowService.executeCmdAndUpdateResult(result, params)
         result
+    }
+
+    /**
+     * Links two providers with the given params
+     */
+    @Secured(['ROLE_USER'])
+    def link() {
+        linksGenerationService.link(params)
+        redirect action: 'show', id: params.context
+    }
+
+    /**
+     * Removes the given link between two providers
+     */
+    @Secured(['ROLE_USER'])
+    def unlink() {
+        linksGenerationService.unlink(params)
+        redirect action: 'show', id: params.id
     }
 }

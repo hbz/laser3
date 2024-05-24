@@ -526,7 +526,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return a {@link List} of linked {@link Vendor}s
      */
     List<Vendor> getVendors() {
-        Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription = :sub ',
+        Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription = :sub order by vr.vendor.sortname',
                 [sub: this])
     }
 

@@ -3,7 +3,7 @@
 <g:set var="queryPart" value="${query.split('-')[0]}" />
 
 <div style="text-align:right; margin-right:0.5em">
-    <g:if test="${!(queryPart in ['issueEntitlement', 'provider', 'vendor'])}">
+    <g:if test="${!(queryPart in ['issueEntitlement'])}">
         <button id="details-export-button" class="ui icon button la-modern-button" data-href="#detailsExportModal" data-ui="modal">
             <i class="ui icon download"></i>
         </button>

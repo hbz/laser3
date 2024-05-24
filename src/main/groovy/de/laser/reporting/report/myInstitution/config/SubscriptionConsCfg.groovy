@@ -34,8 +34,6 @@ class SubscriptionConsCfg extends BaseConfig {
                             'startDateLimit'        : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'status'                : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
                             //'type'                : [ type: FIELD_TYPE_REFDATA ],
-                            //'manualRenewalDate'       : [ type: FIELD_TYPE_PROPERTY ],
-                            //'manualCancellationDate'  : FIELD_TYPE_PROPERTY
                     ],
                     filter : [
                             default : [
@@ -109,13 +107,13 @@ class SubscriptionConsCfg extends BaseConfig {
                                      ],
                                      'subscription-x-provider' : [
                                              detailsTemplate     : 'subscription',
-                                             chartTemplate       : 'generic',
-                                             chartLabels         : []
+                                             chartTemplate       : '2axis2values_nonMatches', // generic
+                                             chartLabels         : [ 'x.providers.1', 'x.providers.2' ] // []
                                      ],
                                      'subscription-x-vendor' : [
                                              detailsTemplate     : 'subscription',
-                                             chartTemplate       : 'generic',
-                                             chartLabels         : []
+                                             chartTemplate       : '2axis2values_nonMatches', // generic
+                                             chartLabels         : [ 'x.vendors.1', 'x.vendors.2' ] // []
                                      ],
 //                                     'subscription-x-memberProvider' : [
 //                                             detailsTemplate    : 'subscription',
@@ -128,11 +126,11 @@ class SubscriptionConsCfg extends BaseConfig {
 //                                             chartTemplate      : 'generic',
 //                                             chartLabels        : []
 //                                     ],
-                                     'subscription-x-platform' : [ // TODO
-                                                                   detailsTemplate     : 'subscription',
-                                                                   chartTemplate       : '2axis2values_nonMatches',
-                                                                   chartLabels         : [ 'x.platforms.1', 'x.platforms.2' ]
-                                     ],
+//                                     'subscription-x-platform' : [ // TODO
+//                                                                   detailsTemplate     : 'subscription',
+//                                                                   chartTemplate       : '2axis2values_nonMatches',
+//                                                                   chartLabels         : [ 'x.platforms.1', 'x.platforms.2' ]
+//                                     ],
                             ]
                     ]
             ],

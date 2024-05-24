@@ -11,14 +11,14 @@
         <ol>
             <li><g:message code="myinst.financeImport.manual.li1"/></li>
             <li><g:message code="myinst.financeImport.manual.li2"/></li>
-            <li><g:message code="myinst.financeImport.manual.li3"/><p><a target="_blank" class="previewImage" href="/assets/manuals/Abbildung_Punkt_01_03.png"><g:img class="ui medium image" file="manuals/Abbildung_Punkt_01_03.png"/></a></p></li>
-            <li><g:message code="myinst.financeImport.manual.li4"/><p><a target="_blank" class="previewImage" href="/assets/manuals/Abbildung_Punkt_01_04.png"><g:img class="ui medium image" file="manuals/Abbildung_Punkt_01_04.png"/></a></p></li>
+            <li><g:message code="myinst.financeImport.manual.li3"/><p><a target="_blank" class="previewImage" href="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_01_03.png')}"><img class="ui medium image" alt="Abbildung_Punkt_01_03.png" src="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_01_03.png')}"/></a></p></li>
+            <li><g:message code="myinst.financeImport.manual.li4"/><p><a target="_blank" class="previewImage" href="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_01_04.png')}"><img class="ui medium image" alt="Abbildung_Punkt_01_04.png" src="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_01_04.png')}"/></a></p></li>
             <li><g:message code="myinst.financeImport.manual.li5"/></li>
-            <li><g:message code="myinst.financeImport.manual.li6"/><p><a target="_blank" class="previewImage" href="/assets/manuals/Abbildung_Punkt_01_06.png"><g:img class="ui medium image" file="manuals/Abbildung_Punkt_01_06.png"/></a></p></li>
+            <li><g:message code="myinst.financeImport.manual.li6"/><p><a target="_blank" class="previewImage" href="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_01_06.png')}"><img class="ui medium image" alt="Abbildung_Punkt_01_06.png" src="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_01_06.png')}"/></a></p></li>
             <li><g:message code="myinst.financeImport.manual.li7"/></li>
-            <li><g:message code="myinst.financeImport.manual.li8"/><p><a target="_blank" class="previewImage" href="/assets/manuals/Abbildung_Punkt_01_08.png"><g:img class="ui medium image" file="manuals/Abbildung_Punkt_01_08.png"/></a></p></li>
+            <li><g:message code="myinst.financeImport.manual.li8"/><p><a target="_blank" class="previewImage" href="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_01_08.png')}"><img class="ui medium image" alt="Abbildung_Punkt_01_08.png" src="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_01_08.png')}"/></a></p></li>
             <li><g:message code="myinst.financeImport.manual.li9"/></li>
-            <li><g:message code="myinst.financeImport.manual.li10"/><p><a target="_blank" class="previewImage" href="/assets/manuals/Abbildung_Punkt_01_10.png"><g:img class="ui medium image" file="manuals/Abbildung_Punkt_01_10.png"/></a></p></li>
+            <li><g:message code="myinst.financeImport.manual.li10"/><p><a target="_blank" class="previewImage" href="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_01_10.png')}"><img class="ui medium image" alt="Abbildung_Punkt_01_10.png" src="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_01_10.png')}"/></a></p></li>
         </ol>
     </p>
     <p>

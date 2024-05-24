@@ -18,6 +18,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 
 import java.text.SimpleDateFormat
+import java.time.Year
 
 /**
  * Report container for the data of a {@link Subscription}
@@ -409,15 +410,21 @@ class SubscriptionReport {
                     }
 
                     BaseQuery.handleGenericAnnualXQuery(params.query, 'Subscription', subIdLists, result)
+                    boolean isCurrentSet = false
+
                     List newData = []
                     result.data.each { d ->
                         boolean isCurrent = (sub.startDate && sub.endDate) ? DateUtils.getYearAsInteger(sub.startDate) <= d[0] && DateUtils.getYearAsInteger(sub.endDate) >= d[0] : false
                         if (isCurrent) {
                             timelineIsCurrentId = Long.valueOf(d[0] as String)
+                            isCurrentSet = true
                         }
                         newData.add([
                             d[0], d[1], d[2], isCurrent
                         ])
+                    }
+                    if (!isCurrentSet) {
+                        timelineIsCurrentId = Long.valueOf(Year.now().toString()) // fallback - year as id
                     }
                     result.data = newData
                 }

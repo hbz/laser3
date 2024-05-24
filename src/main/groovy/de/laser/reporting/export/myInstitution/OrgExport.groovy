@@ -59,24 +59,6 @@ class OrgExport extends BaseDetailsExport {
                                     '@-org-accessPoint' : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-org-readerNumber': [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     'subjectGroup'      : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ]   // TODO custom_impl
-                            ],
-                            provider: [
-                                    'globalUID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
-                                    '+sortname+name'    : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
-                                    'orgType'           : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE ],
-                                    'country'           : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
-                                    '@-org-contact'     : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
-                                    'x-property'        : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL_QDP ],
-                                    'x-identifier'      : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
-                            ],
-                            agency: [
-                                    'globalUID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
-                                    '+sortname+name'    : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
-                                    'orgType'           : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE ],
-                                    'country'           : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
-                                    '@-org-contact'     : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
-                                    'x-property'        : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL_QDP ],
-                                    'x-identifier'      : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                             ]
                     ]
             ]

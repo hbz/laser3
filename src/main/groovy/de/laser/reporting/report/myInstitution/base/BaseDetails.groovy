@@ -3,16 +3,13 @@ package de.laser.reporting.report.myInstitution.base
 import de.laser.License
 import de.laser.Org
 import de.laser.Platform
+import de.laser.Provider
 import de.laser.Subscription
 import de.laser.Vendor
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.properties.VendorProperty
 import de.laser.storage.BeanStore
 import de.laser.properties.PropertyDefinition
-import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
-import de.laser.properties.PlatformProperty
-import de.laser.properties.SubscriptionProperty
 import de.laser.reporting.report.GenericHelper
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
@@ -53,40 +50,21 @@ class BaseDetails {
     static List<AbstractPropertyWithCalculatedLastUpdated> getPropertiesGeneric(Object obj, Long pdId, Org ctxOrg) {
 
         List<AbstractPropertyWithCalculatedLastUpdated> properties = []
+        String xp = ''
 
-        if (obj instanceof License) {
-            properties = LicenseProperty.executeQuery(
-                    "select lp from LicenseProperty lp join lp.type pd where lp.owner = :lic and pd.id = :pdId " +
-                            "and (lp.isPublic = true or lp.tenant = :ctxOrg) and pd.descr like '%Property' ",
-                    [lic: obj, pdId: pdId, ctxOrg: ctxOrg]
-            )
-        }
-        else if (obj instanceof Org) {
+             if (obj instanceof License)        { xp = 'LicenseProperty' }
+        else if (obj instanceof Org)            { xp = 'OrgProperty' }
+        else if (obj instanceof Platform)       { xp = 'PlatformProperty' }
+        else if (obj instanceof Provider)       { xp = 'ProviderProperty' }
+        else if (obj instanceof Subscription)   { xp = 'SubscriptionProperty' }
+        else if (obj instanceof Vendor)         { xp = 'VendorProperty' }
+
+        if (xp) {
             properties = OrgProperty.executeQuery(
-                    "select op from OrgProperty op join op.type pd where op.owner = :org and pd.id = :pdId " +
-                            "and (op.isPublic = true or op.tenant = :ctxOrg) and pd.descr like '%Property' ",
-                    [org: obj, pdId: pdId, ctxOrg: ctxOrg]
-            )
-        }
-        else if (obj instanceof Platform) {
-            properties = PlatformProperty.executeQuery(
-                    "select pp from PlatformProperty pp join pp.type pd where pp.owner = :plt and pd.id = :pdId " +
-                            "and (pp.isPublic = true or pp.tenant = :ctxOrg) and pd.descr like '%Property' ",
-                    [plt: obj, pdId: pdId, ctxOrg: ctxOrg]
-            )
-        }
-        else if (obj instanceof Subscription) {
-            properties = SubscriptionProperty.executeQuery(
-                    "select sp from SubscriptionProperty sp join sp.type pd where sp.owner = :sub and pd.id = :pdId " +
-                            "and (sp.isPublic = true or sp.tenant = :ctxOrg) and pd.descr like '%Property' ",
-                    [sub: obj, pdId: pdId, ctxOrg: ctxOrg]
-            )
-        }
-        else if (obj instanceof Vendor) {
-            properties = VendorProperty.executeQuery(
-                    "select vp from VendorProperty vp join vp.type pd where vp.owner = :ven and pd.id = :pdId " +
-                            "and (vp.isPublic = true or vp.tenant = :ctxOrg) and pd.descr like '%Property' ",
-                    [ven: obj, pdId: pdId, ctxOrg: ctxOrg]
+                    "select xp from " + xp + " xp join xp.type pd "
+                        + "where xp.owner = :obj and (xp.isPublic = true or xp.tenant = :ctxOrg) "
+                        + "and pd.id = :pdId and pd.descr like '%Property' ",
+                    [obj: obj, pdId: pdId, ctxOrg: ctxOrg]
             )
         }
         properties

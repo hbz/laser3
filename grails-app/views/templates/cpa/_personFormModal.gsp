@@ -1,8 +1,9 @@
 <%@ page import="de.laser.properties.PropertyDefinition; de.laser.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.storage.RDConstants" %>
 <laser:serviceInjection/>
+
 <ui:modal  id="${modalID ?: 'personModal'}" formID="person_form"
+             modalSize="big"
              text="${modalText ?: message(code: 'person.create_new.label')}"
-             contentClass="scrolling "
              msgClose="${message(code: 'default.button.cancel')}"
              msgSave="${message(code: 'default.button.save.label')}">
     <g:form id="person_form" class="ui form" url="${url}" method="POST">

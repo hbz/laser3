@@ -270,7 +270,7 @@
                         title: '${message(code:"marketing.featureList.${mpg5}")}<button class="ui right floated button la-animatedGif-redo ">Animation wiederholen</button>',
                         class: 'large',
                         closeIcon: true,
-                        content: '<img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'images', file: "clips/${mpg5}.gif")}"/>',
+                        content: '<img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'showcase', file: "${mpg5}.gif")}"/>',
                         actions: [{
                             text: '${message(code:"default.button.close.label")}',
                             class: 'green'

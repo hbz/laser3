@@ -210,11 +210,11 @@ assets {
             targetLanguage: 'ES5_STRICT'
     ]
     skipNonDigests = true
+    maxThreads = 8
 
     from '/themes'
     excludes = [
             // images/*
-            'clips/**',
             // javascripts/*
             'libs/**',
             'modules/**',
