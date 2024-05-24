@@ -8,6 +8,8 @@ import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.MarkerSupport
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
+import de.laser.properties.PersonProperty
+import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.ProviderProperty
 import de.laser.properties.SubscriptionProperty
@@ -207,6 +209,8 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
                 v.globalUID = agency.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase())
         }
         if(!v)
+            v = Vendor.findByGlobalUID(agency.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
+        if(!v)
             v = new Vendor(globalUID: agency.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
         v.name = agency.name
         v.sortname = agency.sortname
@@ -262,19 +266,9 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             pr.org = null
             pr.save()
         }
-        Person.findAllByTenant(agency).each { Person pe ->
-            if(!Person.executeQuery('select p from Person p join p.roleLinks pr where p.tenant = null and p.isPublic = true and p.last_name = :contactType and :vendor in (pr.vendor)', [vendor: v, contactType: pe.last_name])) {
-                pe.tenant = null
-                pe.save()
-            }
-            else pe.delete()
-        }
         */
-        List<Person> oldPersons = Person.executeQuery('select p from Person p where p.tenant = :agency and p.isPublic = true',[agency: agency])
-        oldPersons.each { Person old ->
-            PersonRole.executeUpdate('delete from PersonRole pr where pr.prs = :oldPerson', [oldPerson: old])
-            Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: old])
-            Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: old])
+        Person.findAllByTenant(agency).each { Person pe ->
+            pe.delete()
         }
         Marker.findAllByOrg(agency).each { Marker m ->
             m.ven = v
