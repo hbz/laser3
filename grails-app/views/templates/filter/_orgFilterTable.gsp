@@ -715,7 +715,7 @@
                             <br />
                         </g:if>
 
-                        <g:link controller="subscription" action="show" id="${orgSub.id}">${orgSub.name}</g:link>
+                        <g:link controller="subscription" action="show" id="${orgSub.id}">${orgSub.getLabel()}</g:link>
 
                         <ui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
                     </g:if>

@@ -311,7 +311,7 @@
                         <laser:render template="/templates/filter/orgFilterTable"
                                   model="[orgList         : surveyParticipantsHasAccess,
                                           tmplShowCheckbox: true,
-                                          tmplConfigShow  : ['lineNumber', 'sortname', 'name', (surveyConfig.subscription ? 'surveySubInfoStartEndDate' : ''), 'surveyCostItemPackage'],
+                                          tmplConfigShow  : ['lineNumber', 'sortname', 'name', (surveyConfig.subscription ? 'surveySubInfo' : ''), 'surveyCostItemPackage'],
                                           tableID         : 'costTable'
                                   ]"/>
 
@@ -335,7 +335,7 @@
                         <laser:render template="/templates/filter/orgFilterTable"
                                   model="[orgList       : surveyParticipantsHasNotAccess,
                                           tmplShowCheckbox: true,
-                                          tmplConfigShow: ['lineNumber', 'sortname', 'name', (surveyConfig.subscription ? 'surveySubInfoStartEndDate' : ''), 'surveyCostItemPackage'],
+                                          tmplConfigShow: ['lineNumber', 'sortname', 'name', (surveyConfig.subscription ? 'surveySubInfo' : ''), 'surveyCostItemPackage'],
                                           tableID       : 'costTable'
                                   ]"/>
 

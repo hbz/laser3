@@ -44,7 +44,7 @@
                 <td><g:formatNumber number="${sumCostInBillingCurrencyAfterTaxByElement}" minFractionDigits="2"
                                     maxFractionDigits="2" type="number"/></td>
                 <td>
-                    <g:if test="${selectedCostItemElementID == costItemElement.id.toString()}">
+                    <g:if test="${selectedCostItemElementID == costItemElement.id}">
                         <g:link controller="survey" action="$actionName"
                                 params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedCostItemElementID: costItemElement.id]}">
                             <i class="check bordered large green icon"></i>
