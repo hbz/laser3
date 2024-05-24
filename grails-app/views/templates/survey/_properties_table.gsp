@@ -103,8 +103,8 @@
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyElements", args: [surveyPropertyConfig.surveyProperty.getI10n('name')])}"
                                 data-confirm-term-how="delete"
                                 controller="survey" action="actionsForSurveyProperty"
-                                id="${surveyPropertyConfig.id}"
-                                params="[actionForSurveyProperty: 'deleteSurveyPropFromConfig']"
+                                id="${params.id}"
+                                params="[actionForSurveyProperty: 'deleteSurveyPropFromConfig', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id]"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
                             <i class="trash alternate outline icon"></i>

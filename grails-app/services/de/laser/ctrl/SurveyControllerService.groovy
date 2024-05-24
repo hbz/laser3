@@ -342,7 +342,7 @@ class SurveyControllerService {
             result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsr.query, fsr.queryParams, params)
             result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsr.query, fsr.queryParams, params)
 
-            result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID): RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+            result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
 
             result.countCostItems = CostItem.executeQuery('select count(*) from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null and ct.costItemElement = :costItemElement', [costItemElement: RefdataValue.get(result.selectedCostItemElementID), status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig])[0]
 
@@ -447,7 +447,8 @@ class SurveyControllerService {
 
             result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
 
-            result.selectedPackageID = params.selectedPackageID ? Long.valueOf(params.selectedPackageID) : result.surveyConfig.surveyPackages?.pkg.id[0]
+            result.selectedPackageID = params.selectedPackageID ? Long.valueOf(params.selectedPackageID) : CostItem.executeQuery('select ct.pkg.id from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null and ct.costItemElement = :costItemElement and ct.pkg is not null order by pkg.name', [costItemElement: RefdataValue.get(result.selectedCostItemElementID), status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig])[0]
+
 
             if (result.selectedSubParticipants && (params.sortOnCostItemsDown || params.sortOnCostItemsUp) && !params.sort) {
                 List<Subscription> orgSubscriptions = result.surveyConfig.orgSubscriptions()
@@ -625,7 +626,7 @@ class SurveyControllerService {
 
             if (selectedMembers) {
 
-                RefdataValue selectedCostItemElement = params.selectedCostItemElementID ? (RefdataValue.get(Long.valueOf(params.selectedCostItemElementID))) : null
+                RefdataValue selectedCostItemElement = params.bulkSelectedCostItemElementID ? (RefdataValue.get(Long.valueOf(params.bulkSelectedCostItemElementID))) : null
 
                 RefdataValue billing_currency = null
                 if (params.long('newCostCurrency')) //GBP,etc
@@ -2380,16 +2381,18 @@ class SurveyControllerService {
                         }
                         break
                     case "deleteSurveyPropFromConfig":
-                        SurveyConfigProperties surveyConfigProp = SurveyConfigProperties.get(params.id)
-                        SurveyInfo surveyInfo = surveyConfigProp.surveyConfig.surveyInfo
-                                try {
-                                    surveyConfigProp.delete()
-                                    //result.message = messageSource.getMessage("default.deleted.message", args: [messageSource.getMessage("surveyProperty.label"), ''])
-                                }
-                                catch (DataIntegrityViolationException e) {
-                                    Object[] args = [messageSource.getMessage("surveyProperty.label", null, result.locale)]
-                                    result.error = messageSource.getMessage("default.not.deleted.message", args, result.locale)
-                                }
+                        if (params.surveyPropertyConfigId) {
+                            SurveyConfigProperties surveyConfigProp = SurveyConfigProperties.get(params.surveyPropertyConfigId)
+                            SurveyInfo surveyInfo = surveyConfigProp.surveyConfig.surveyInfo
+                            try {
+                                surveyConfigProp.delete()
+                                //result.message = messageSource.getMessage("default.deleted.message", args: [messageSource.getMessage("surveyProperty.label"), ''])
+                            }
+                            catch (DataIntegrityViolationException e) {
+                                Object[] args = [messageSource.getMessage("surveyProperty.label", null, result.locale)]
+                                result.error = messageSource.getMessage("default.not.deleted.message", args, result.locale)
+                            }
+                        }
                         break
                     case "createSurveyProperty":
                         PropertyDefinition surveyProperty = PropertyDefinition.findWhere(

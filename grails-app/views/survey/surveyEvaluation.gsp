@@ -93,9 +93,6 @@
 </div>
 
 
-</g:else>
-
-
 <laser:script file="${this.getGroovyPageFileName()}">
     let chartDom = $('#chartWrapper')[0];
     let surveyEvChart = echarts.init(chartDom);
@@ -148,4 +145,6 @@
 };
 surveyEvChart.setOption(option);
 </laser:script>
+
+    </g:else>
 <laser:htmlEnd />

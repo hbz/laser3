@@ -185,11 +185,11 @@ class SubscriptionsQueryService {
                             " or exists ( select pr from ProviderRole as pr where pr.subscription = s and ( " +
                                 " genfunc_filter_matcher(pr.provider.name, :name_filter) = true " +
                                 " or genfunc_filter_matcher(pr.provider.sortname, :name_filter) = true " +
-                            " ) " + // filter by Anbieter (Provider)
+                            " ) )" + // filter by Anbieter (Provider)
                             " or exists ( select vr from VendorRole as vr where vr.subscription = s and ( " +
                                 " genfunc_filter_matcher(vr.vendor.name, :name_filter) = true " +
                                 " or genfunc_filter_matcher(vr.vendor.sortname, :name_filter) = true " +
-                            " ) " + // filter by Lieferant (Vendor ex Agency)
+                            " ) )" + // filter by Lieferant (Vendor ex Agency)
                          " ) "
             )
             qry_params.put('name_filter', params.q)

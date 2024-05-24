@@ -140,6 +140,9 @@
                         <ui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to" value="" />
                     </div>
                     <div class="field">
+                        <ui:datepicker type="year" label="subscription.referenceYear.label" id="reference_year" name="reference_year" value="" />
+                    </div>
+                    <div class="field">
                         <label><g:message code="myinst.currentSubscriptions.subscription.runTime"/></label>
                         <div class="ui checkBoxSubRunTimeMultiYear checkbox">
                             <input type="checkbox" id="checkSubRunTimeMultiYear" name="checkSubRunTimeMultiYear">
@@ -365,7 +368,7 @@
             <div class="ui action input">
                 <input type="text" readonly="readonly"
                        placeholder="${message(code: 'template.addDocument.selectFile')}">
-                <input type="file" name="selectSubMembersWithImport" accept="text/tab-separated-values"
+                <input type="file" name="selectSubMembersWithImport" accept="text/tab-separated-values,.txt,.csv"
                        style="display: none;">
                 <div class="ui icon button">
                     <i class="attach icon"></i>

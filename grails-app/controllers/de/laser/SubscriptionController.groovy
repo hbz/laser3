@@ -410,9 +410,40 @@ class SubscriptionController {
         else {
             License lic = License.get(params.license)
             subscriptionService.setOrgLicRole(result.subscription,lic,true)
+            if(params.unlinkWithChildren) {
+                Subscription.findAllByInstanceOf(result.subscription).each { Subscription childSub ->
+                    License.findAllByInstanceOf(lic).each { License childLic ->
+                        subscriptionService.setOrgLicRole(childSub, childLic, true)
+                    }
+                    //eliminate stray connections - AWARE! It might cause blows later ...
+                    Links.findAllByDestinationSubscriptionAndLinkTypeAndOwner(childSub, RDStore.LINKTYPE_LICENSE, contextService.getOrg()).each { Links li ->
+                        li.delete()
+                    }
+                }
+            }
+            redirect(url: request.getHeader('referer'))
+        }
+    }
+
+    /**
+     * Call to unlink the given subscription from all linked license
+     * @return a redirect back to the referer
+     */
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
+    def unlinkAllLicenses() {
+        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        if(!result) {
+            response.sendError(401)
+            return
+        }
+        else {
             Subscription.findAllByInstanceOf(result.subscription).each { Subscription childSub ->
-                License.findAllByInstanceOf(lic).each { License childLic ->
-                    subscriptionService.setOrgLicRole(childSub, childLic, true)
+                //eliminate stray connections - AWARE! It might cause blows later ...
+                Links.findAllByDestinationSubscriptionAndLinkTypeAndOwner(childSub, RDStore.LINKTYPE_LICENSE, contextService.getOrg()).each { Links li ->
+                    li.delete()
                 }
             }
             redirect(url: request.getHeader('referer'))
