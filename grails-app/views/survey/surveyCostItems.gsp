@@ -165,7 +165,7 @@
             </g:if>
 
             <g:form action="processSurveyCostItemsBulk" data-confirm-id="processSurveyCostItemsBulk_form" name="editCost_${idSuffix}" method="post" class="ui form"
-                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, selectedCostItemElementID: selectedCostItemElementID]">
+                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, bulkSelectedCostItemElementID: selectedCostItemElementID]">
 
                 <div id="bulkCostItems" class="hidden">
                     <g:if test="${countCostItems == 0}">
@@ -407,7 +407,9 @@ JSPC.app.addForAllSurveyCostItem = function(orgsIDs) {
                                 data: {
                                     id: "${params.id}",
                                     surveyConfigID: "${surveyConfig.id}",
-                                    orgsIDs: orgsIDs
+                                    orgsIDs: orgsIDs,
+                                    selectedCostItemElementID: "${selectedCostItemElementID}"
+
                                 }
                             }).done(function (data) {
                                 $('#dynamicModalContainer').html(data);
