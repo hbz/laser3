@@ -39,7 +39,7 @@
     <div class="ui bottom attached tab segment" data-tab="platform-filter-tab-help">
         <div class="field">
             <div style="text-align:center; padding:2em 0">
-                <asset:image src="help/reporting.platforms.png" absolute="true" style="width:96%" />
+                <img class="ui fluid image" alt="${message(code:'reporting.ui.global.help')}" src="${resource(dir: 'help', file: 'reporting/global.platforms.png')}"/>
             </div>
         </div>
     </div><!-- .tab -->
