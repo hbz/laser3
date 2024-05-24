@@ -144,7 +144,7 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
                 <th>
-                    ${message(code: 'surveyCostItems.label')}
+                    ${message(code: 'surveyCostItems.label')}:
 
                     <g:set var="costItemElements"
                            value="${costItemsByCostItemElement.collect { RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT)) }}"/>
@@ -176,14 +176,15 @@
                         </g:if>
 
 
-                        <ui:select name="selectedCostItemElementID"
+                        %{--<ui:select name="selectedCostItemElementID"
                                    from="${costItemElements}"
                                    optionKey="id"
                                    optionValue="value"
                                    value="${selectedCostItemElementID}"
                                    class="ui dropdown"
                                    id="selectedCostItemElementID"
-                                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>--}%
+                            ${de.laser.RefdataValue.get(selectedCostItemElementID)?.getI10n('value')}
                     </g:if>
                 </th>
             </g:if>

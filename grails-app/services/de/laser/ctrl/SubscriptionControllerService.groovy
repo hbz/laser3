@@ -1380,7 +1380,7 @@ class SubscriptionControllerService {
         result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
         result.filterSet = params.filterSet ? true : false
 
-        result.selectedCostItemElementID = params.selectedCostItemElementID ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+        result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
 
         result.selectedCostItemElement = RefdataValue.get(result.selectedCostItemElementID)
 
