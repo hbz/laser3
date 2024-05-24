@@ -415,6 +415,7 @@
         $(JSPC.app.addressContainer).attr('id', 'addressElementsContainer');
         $(JSPC.app.contactContainer).attr('id', 'contactElementsContainer');
 
+        /* CONTACT START */
         $('#addContactElement').click(function () {
             $.ajax({
                 url: "<g:createLink controller="ajaxHtml" action="contactFields"/>",
@@ -427,6 +428,23 @@
                         $('#contactFields').attr('id', 'contactFields' + JSPC.app.contactElementCount);
 
                         $('#contactElements').after(JSPC.app.contactContainer);
+
+                        $('.removeContactElement').click(function () {
+
+                            if (JSPC.app.contactElementCount != 0) {
+                                // $('.contactField').last().remove();
+                                $(this).parents('.contactField').remove();
+
+                            }
+                            JSPC.app.contactElementCount = $(".contactField").length;
+
+                            if (JSPC.app.contactElementCount == 0) {
+                                $(JSPC.app.contactContainer).empty().remove();
+                                $('#addContactElement').removeAttr('disabled').attr('class', 'ui icon button');
+                            }
+                        });
+
+
                     } else {
                         $('#addContactElement').attr('class', 'ui icon button disable');
                         $('#addContactElement').attr('disabled', 'disabled');
@@ -439,9 +457,12 @@
             });
         });
 
-        $('#removeContactElement').click(function () {
+        %{--$('#removeContactElement').click(function () {
+            alert("test");
             if (JSPC.app.contactElementCount != 0) {
-                $('.contactField').last().remove();
+                // $('.contactField').last().remove();
+                $(this).parents('.contactField').remove();
+
             }
             JSPC.app.contactElementCount = $(".contactField").length;
 
@@ -449,8 +470,13 @@
                 $(JSPC.app.contactContainer).empty().remove();
                 $('#addContactElement').removeAttr('disabled').attr('class', 'ui icon button');
             }
-        });
+        });--}%
+        let test = function() {
 
+        }
+        /* CONTACT END */
+
+%{--        /* ADDRESS START */
         $('#addAddressElement').click(function () {
             $.ajax({
                 url: "<g:createLink controller="ajaxHtml" action="addressFields" params="[multipleAddresses: true]"/>",
@@ -486,7 +512,7 @@
                 $('#addAddressElement').removeAttr('disabled').attr('class', 'ui icon button');
             }
         });
-
+        /* ADDRESS END */--}%
         $('#cust_prop_add_value_private').submit(function(e) {
             e.preventDefault();
             console.log("redirect obstructed, continue implementing!");
