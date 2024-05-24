@@ -253,11 +253,11 @@ class AjaxHtmlController {
         result.editable = entry.isEditableBy(result.user)
         if(entry instanceof Subscription) {
             result.subscription = (Subscription) entry
-            result.atConsortialParent = result.contextOrg.id == result.subscription.getConsortia()?.id ? "true" : "false"
+            result.atConsortialParent = result.contextOrg.id == result.subscription.getConsortia()?.id && !result.subscription.instanceOf ? "true" : "false"
         }
         else if(entry instanceof License) {
             result.license = (License) entry
-            result.atConsortialParent = result.contextOrg == result.license.getLicensingConsortium() ? "true" : "false"
+            result.atConsortialParent = result.contextOrg == result.license.getLicensingConsortium() && !result.license.instanceOf ? "true" : "false"
         }
         List<RefdataValue> linkTypes = RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)
         if(result.subscriptionLicenseLink) {

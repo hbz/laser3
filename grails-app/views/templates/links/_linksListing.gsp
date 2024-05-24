@@ -128,19 +128,21 @@
                                                             <i class="unlink icon"></i>
                                                         </g:link>
                                                     </span>
-                                                    <div class="or" data-text="|"></div>
-                                                    <span class="la-popup-tooltip la-delay"
-                                                          data-content="${message(code: 'license.details.unlink.child')}">
-                                                        <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
-                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.child.license")}"
-                                                                data-confirm-term-how="unlink"
-                                                                controller="subscription" action="unlinkLicense"
-                                                                params="${[license: link.sourceLicense.id, id: subscription.id, unlinkWithChildren: true]}"
-                                                                role="button"
-                                                                aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                            <i class="la-share slash icon"></i>
-                                                        </g:link>
-                                                    </span>
+                                                    <g:if test="${atConsortialParent}">
+                                                        <div class="or" data-text="|"></div>
+                                                        <span class="la-popup-tooltip la-delay"
+                                                              data-content="${message(code: 'license.details.unlink.child')}">
+                                                            <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
+                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.child.license")}"
+                                                                    data-confirm-term-how="unlink"
+                                                                    controller="subscription" action="unlinkLicense"
+                                                                    params="${[license: link.sourceLicense.id, id: subscription.id, unlinkWithChildren: true]}"
+                                                                    role="button"
+                                                                    aria-label="${message(code: 'ariaLabel.unlink.universal')}">
+                                                                <i class="la-share slash icon"></i>
+                                                            </g:link>
+                                                        </span>
+                                                    </g:if>
                                                 </div>
                                             </g:if>
                                             <g:else>

@@ -485,9 +485,10 @@ class DataloadService {
                 result.dbId = lic.id
                 result.guid = lic.globalUID ?: ''
                 result.name = lic.reference
+                result.altnames = []
                 lic.altnames.each { AlternativeName altname ->
                     result.altnames << altname.name
-                }
+                }#
                 result.visible = 'Private'
                 result.rectype = lic.getClass().getSimpleName()
 
@@ -558,6 +559,7 @@ class DataloadService {
                 result.dbId = sub.id
                 result.guid = sub.globalUID ?: ''
                 result.name = sub.name
+                result.altnames = []
                 sub.altnames.each { AlternativeName altname ->
                     result.altnames << altname.name
                 }
