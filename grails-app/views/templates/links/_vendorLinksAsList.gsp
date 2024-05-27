@@ -77,7 +77,7 @@
 
             </tr>
 
-        <g:if test="${WfChecklist.getAllChecklistsByOwnerAndObjAndStatus(contextService.getOrg(), role.vendor, RDStore.WF_WORKFLOW_STATUS_OPEN)}">
+        <g:if test="${workflowService.hasUserPerm_read() && WfChecklist.getAllChecklistsByOwnerAndObjAndStatus(contextService.getOrg(), role.vendor, RDStore.WF_WORKFLOW_STATUS_OPEN)}">
             <tr>
                 <td colspan="2">
                     <span class="la-flexbox la-minor-object">
