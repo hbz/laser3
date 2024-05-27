@@ -594,10 +594,10 @@ class AjaxHtmlController {
                 result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - excludes
                 result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
                 if (result.provider) {
-                    result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label") + ' (' + result.provider.sortname + ')'
+                    result.modalText = message(code: "person.create_new.contactPersonForProvider.label") + ' (' + result.provider.sortname + ')'
                 }
                 else {
-                    result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label")
+                    result.modalText = message(code: "person.create_new.contactPersonForProvider.label")
                     result.provList = Provider.findAll([sort: 'sortname'])
                 }
                 break
@@ -639,6 +639,8 @@ class AjaxHtmlController {
 
         if (result.personInstance){
             result.org = result.personInstance.getBelongsToOrg()
+            result.vendor = PersonRole.executeQuery("select distinct(pr.vendor) from PersonRole as pr where pr.prs = :person ", [person: result.personInstance])[0]
+            result.provider = PersonRole.executeQuery("select distinct(pr.provider) from PersonRole as pr where pr.prs = :person ", [person: result.personInstance])[0]
             result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
             if(contextOrg.isCustomerType_Consortium()){
                 result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
@@ -648,15 +650,27 @@ class AjaxHtmlController {
             if (result.org || (params.org && params.org instanceof String)) {
                 result.org = params.org ? Org.get(params.long('org')) : result.org
                 List allOrgTypeIds =result.org.getAllOrgTypeIds()
-                if(RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds){
-                    result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
-                    result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
-                    result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForProviderAgency.label")]) + ' (' + result.org.toString() + ')'
-                    result.contactPersonForProviderAgencyPublic = result.personInstance.isPublic
-                }else{
-                    result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForInstitution.label")]) + ' (' + result.org.toString() + ')'
-                }
-            }else {
+                result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForInstitution.label")]) + ' (' + result.org.toString() + ')'
+            }
+            else if(result.provider != null || params.containsKey('provider')) {
+                Provider prv = Provider.get(params.long('provider'))
+                if(prv)
+                    result.provider = prv
+                result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
+                result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
+                result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForProvider.label")]) + ' (' + result.provider.toString() + ')'
+                result.contactPersonForProviderPublic = result.personInstance.isPublic
+            }
+            else if(result.vendor != null || params.containsKey('vendor')) {
+                Vendor ven = Provider.get(params.long('vendor'))
+                if(ven)
+                    result.provider = ven
+                result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
+                result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
+                result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForVendor.label")]) + ' (' + result.provider.toString() + ')'
+                result.contactPersonForVendorPublic = result.personInstance.isPublic
+            }
+            else {
                 result.modalText = message(code: 'default.edit.label', args: [message(code: 'person.label')])
             }
 

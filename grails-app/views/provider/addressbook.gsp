@@ -2,11 +2,7 @@
 
 <laser:htmlStart message="menu.institutions.myAddressbook" serviceInjection="true"/>
 
-<g:set var="allOrgTypeIds" value="${orgInstance.getAllOrgTypeIds()}"/>
-<g:set var="isProviderOrAgency"
-       value="${RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds}"/>
-
-<laser:render template="breadcrumb" model="${[orgInstance: orgInstance, params: params]}"/>
+<laser:render template="breadcrumb" model="${[provider: provider]}"/>
 
 <ui:controlButtons>
     <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
@@ -14,18 +10,18 @@
 
 <laser:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
 
-<ui:h1HeaderWithIcon text="${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}">
-    <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
+<ui:h1HeaderWithIcon text="${provider.name} - ${message(code: 'menu.institutions.myAddressbook')}">
+    <laser:render template="/templates/iconObjectIsMine" model="${[isMyProvider: isMyProvider]}"/>
 </ui:h1HeaderWithIcon>
 
-<laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[orgInstance: orgInstance]}"/>
+<laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[provider: provider]}"/>
 
 <ui:messages data="${flash}"/>
 
 <ui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.addressBook.visible"/>
 
 <ui:filter>
-    <g:form action="addressbook" controller="organisation" method="get" params="[id: orgInstance.id]" class="ui small form">
+    <g:form action="addressbook" controller="provider" method="get" params="[id: provider.id]" class="ui small form">
         <div class="three fields">
             <div class="field">
                 <label for="prs">${message(code: 'person.filter.name')}</label>
@@ -82,14 +78,14 @@
 <div class="ui bottom attached tab segment ${params.tab == 'contacts' ? 'active' : ''}" data-tab="contacts">
     <laser:render template="/templates/cpa/person_table" model="${[
             persons       : visiblePersons,
-            restrictToOrg : orgInstance,
+            restrictToProvider : provider,
             showContacts: true,
             showAddresses: true,
             showOptions : true,
             tmplConfigShow: ['lineNumber', 'name', 'function', 'position',  'showContacts', 'showAddresses']
     ]}"/>
 
-    <ui:paginate action="organisation" controller="myInstitution" params="${params+[tab: 'contacts']}"
+    <ui:paginate action="addressbook" controller="provider" params="${params+[tab: 'contacts']}"
                     max="${max}" offset="${personOffset}"
                     total="${num_visiblePersons}"/>
 </div>
@@ -104,7 +100,7 @@
             showOptions : true
     ]}"/>
 
-    <ui:paginate action="organisation" controller="myInstitution" params="${params+[tab: 'addresses']}"
+    <ui:paginate action="addressbook" controller="provider" params="${params+[tab: 'addresses']}"
                  max="${max}" offset="${addressOffset}"
                  total="${num_visibleAddresses}"/>
 </div>

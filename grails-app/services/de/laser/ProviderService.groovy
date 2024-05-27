@@ -449,7 +449,7 @@ class ProviderService {
             result.editable = userService.hasFormalAffiliation_or_ROLEADMIN(user, org,'INST_EDITOR')
             //set isMyOrg-flag for relations context -> provider
             int relationCheck = OrgRole.executeQuery('select count(oo) from ProviderRole pvr join pvr.subscription sub, OrgRole oo where pvr.subscription = oo.org and oo.org = :context and sub.status = :current', [context: org, current: RDStore.SUBSCRIPTION_CURRENT])[0]
-            result.isMyOrg = relationCheck > 0
+            result.isMyProvider = relationCheck > 0
 
             int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.provider).size()
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.provider).size()

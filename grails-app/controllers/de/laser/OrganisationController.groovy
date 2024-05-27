@@ -774,55 +774,6 @@ class OrganisationController  {
     }
 
     /**
-     * Creates a new provider organisation with the given parameters
-     * @return the details view of the provider or the creation view in case of an error
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
-    })
-    def createProvider() {
-        Org.withTransaction {
-
-            Org orgInstance = new Org(name: params.provider, sector: RDStore.O_SECTOR_PUBLISHER, status: RDStore.O_STATUS_CURRENT)
-            if (orgInstance.save()) {
-
-                orgInstance.addToOrgType(RDStore.OT_PROVIDER)
-                orgInstance.save()
-
-                flash.message = message(code: 'default.created.message', args: [message(code: 'org.label'), orgInstance.name]) as String
-                redirect action: 'show', id: orgInstance.id
-                return
-            }
-            else {
-                log.error("Problem creating org: ${orgInstance.errors}");
-                flash.message = message(code: 'org.error.createProviderError', args: [orgInstance.errors]) as String
-                redirect(action: 'findProviderMatches')
-                return
-            }
-        }
-    }
-
-    /**
-     * Call to create a new provider; offers first a query for the new name to insert in order to exclude duplicates
-     * @return the empty form (with a submit to proceed with the new organisation) or a list of eventual name matches
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
-    })
-    def findProviderMatches() {
-
-        Map<String, Object> result = [:]
-        if ( params.proposedProvider ) {
-
-            result.providerMatches= Org.executeQuery("from Org as o where exists (select roletype from o.orgType as roletype where roletype = :provider ) and (lower(o.name) like :searchName or lower(o.sortname) like :searchName ) ",
-                    [provider: RDStore.OT_PROVIDER, searchName: "%${params.proposedProvider.toLowerCase()}%"])
-        }
-        result
-    }
-
-    /**
      * Call to create a new member with the given parameter map
      * @return the details view of the new member in case of success, the creation page otherwise
      */
