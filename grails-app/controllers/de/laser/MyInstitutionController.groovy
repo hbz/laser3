@@ -40,7 +40,6 @@ import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
 import de.laser.workflow.WfChecklist
-import de.laser.workflow.WfCheckpoint
 import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.annotation.Secured
@@ -3541,10 +3540,8 @@ class MyInstitutionController  {
         if (result.filterTargetType) {
             Long filterTargetType = Long.valueOf(result.filterTargetType)
 
-            if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_AGENCY.id) {
-                idQuery = idQuery + ' and wf.org is not null'
-                idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
-                queryParams.put('orgType', RDStore.OT_AGENCY)
+            if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_VENDOR.id) {
+                idQuery = idQuery + ' and wf.vendor is not null'
             }
             if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION.id) {
                 idQuery = idQuery + ' and wf.org is not null'
@@ -3558,9 +3555,7 @@ class MyInstitutionController  {
                 idQuery = idQuery + ' and wf.org = :ctxOrg'
             }
             else if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER.id) {
-                idQuery = idQuery + ' and wf.org is not null'
-                idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
-                queryParams.put('orgType', RDStore.OT_PROVIDER)
+                idQuery = idQuery + ' and wf.provider is not null'
             }
             if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION.id) {
                 idQuery = idQuery + ' and wf.subscription is not null'

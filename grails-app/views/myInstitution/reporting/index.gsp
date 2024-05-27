@@ -120,6 +120,10 @@
                                   class="ui selection dropdown la-not-clearable"
                                   noSelection="${['': message(code: 'default.select.choose.label')]}" />
                     </div>
+                    <div class="field">
+                        <label></label>
+                        <div>${message(code:'reporting.cfg.filter.asterisk')}</div>
+                    </div>
                 </div>
             </div>
         </g:if>
