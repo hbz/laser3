@@ -1491,10 +1491,8 @@ class ControlledListService {
             qryParams.query = params.query
         }
         if(params.tableView) {
-            qryParams.context = institution
-            if(vendorNameFilter)
-                vendorNameFilter = "and ${vendorNameFilter}"
-            qryString = "select vendor from PackageVendor pv join pv.vendor vendor, SubscriptionPackage sp join sp.pkg pkg where sp.pkg = pv.pkg and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) ${vendorNameFilter} group by vendor.id order by vendor.sortname asc"
+            //qryParams.context = institution
+            qryString = "select vendor from Vendor vendor where ${vendorNameFilter} group by vendor.id order by vendor.sortname asc"
         }
         else {
             if(params.displayWekbFlag) {
