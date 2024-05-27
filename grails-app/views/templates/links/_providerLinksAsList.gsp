@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.workflow.WfChecklist; de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <laser:serviceInjection />
 <g:set var="wekbAPI" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 <table class="ui compact table">
@@ -13,7 +13,6 @@
                             ${role.provider.name}
                         </g:link>
                     </span>
-
                 </td>
 
                 <td class="right aligned eight wide column">
@@ -64,6 +63,18 @@
                 </td>
 
             </tr>
+
+            <g:if test="${WfChecklist.getAllChecklistsByOwnerAndObjAndStatus(contextService.getOrg(), role.provider, RDStore.WF_WORKFLOW_STATUS_OPEN)}">
+                <tr>
+                    <td colspan="2">
+                        <span class="la-flexbox la-minor-object">
+                            <i class="icon exclamation triangle orange" style="margin:.1rem .5rem 0 0"></i>
+                            <g:link controller="provider" action="workflows" id="${role.provider.id}">${message(code:'workflow.provider.someMore.info')}</g:link>
+                        </span>
+                    </td>
+                </tr>
+            </g:if>
+
             <g:if test="${showPersons && (Person.getPublicByOrgAndFunc(role.provider, 'General contact person') || (Person.getPublicByOrgAndFunc(role.provider, 'Technical Support')) || (Person.getPublicByOrgAndFunc(role.provider, 'Service Support')) || (Person.getPublicByOrgAndFunc(role.provider, 'Metadata Contact')) ||
                             Person.getPublicByOrgAndObjectResp(role.provider, roleObject, roleRespValue) ||
                             Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person', contextOrg) ||
