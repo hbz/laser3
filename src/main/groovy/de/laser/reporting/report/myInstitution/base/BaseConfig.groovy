@@ -101,9 +101,9 @@ class BaseConfig {
     static String CI_CTX_IE_SUBSCRIPTION        = 'issueEntitlement$subscription'       // IE
 
     static List<String> FILTER = [
-            KEY_ORGANISATION,
             KEY_SUBSCRIPTION,
             KEY_LICENSE,
+            KEY_ORGANISATION,
             KEY_PROVIDER,
             KEY_VENDOR,
             KEY_PLATFORM,
