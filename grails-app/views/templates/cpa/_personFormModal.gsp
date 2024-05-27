@@ -13,6 +13,12 @@
             <g:if test="${org}">
                 <input name="personRoleOrg" type="hidden" value="${org.id}"/>
             </g:if>
+            <g:if test="${provider}">
+                <input name="personRoleOrg" type="hidden" value="${provider.id}"/>
+            </g:if>
+            <g:if test="${vendor}">
+                <input name="personRoleOrg" type="hidden" value="${vendor.id}"/>
+            </g:if>
         </g:if>
 
     %{--Only for public contact person for Provider/Agency --}%
@@ -22,7 +28,7 @@
             <input name="last_name" type="hidden" value="${presetFunctionType.getI10n('value')}"/>
         </g:if>--%>
 
-        <g:if test="${!contactPersonForProviderAgencyPublic}">
+        <g:if test="${!contactPersonForProviderPublic && !contactPersonForVendorPublic}">
 
             <div class="field">
                 <div class="two fields">
@@ -47,6 +53,20 @@
                                 <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link>
                                 <input name="personRoleOrg" type="hidden" value="${org.id}"/>
                             </g:if>
+                            <g:elseif test="${provider}">
+                                <label for="personRoleProvider">
+                                    <g:message code="person.belongsTo"/>
+                                </label>
+                                <g:link controller="provider" action="show" id="${provider.id}">${provider.name}</g:link>
+                                <input name="personRoleProvider" type="hidden" value="${provider.id}"/>
+                            </g:elseif>
+                            <g:elseif test="${vendor}">
+                                <label for="personRoleVendor">
+                                    <g:message code="person.belongsTo"/>
+                                </label>
+                                <g:link controller="vendor" action="show" id="${vendor.id}">${vendor.name}</g:link>
+                                <input name="personRoleVendor" type="hidden" value="${vendor.id}"/>
+                            </g:elseif>
                         %{--<g:else>
                             <label for="personRoleOrg">
                                 <g:message code="contact.belongesTo.label"/>

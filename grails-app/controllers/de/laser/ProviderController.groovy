@@ -3,6 +3,8 @@ package de.laser
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
+import de.laser.base.AbstractBase
+import de.laser.cache.EhcacheWrapper
 import de.laser.helper.Params
 import de.laser.properties.PropertyDefinition
 import de.laser.remote.ApiSource
@@ -19,9 +21,11 @@ import java.text.SimpleDateFormat
 
 class ProviderController {
 
+    AddressbookService addressbookService
     ContextService contextService
     ExportClickMeService exportClickMeService
     FilterService filterService
+    GenericOIDService genericOIDService
     GokbService gokbService
     LinksGenerationService linksGenerationService
     ProviderService providerService
@@ -261,6 +265,52 @@ class ProviderController {
     }
 
     /**
+     * Creates a new provider organisation with the given parameters
+     * @return the details view of the provider or the creation view in case of an error
+     */
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+    })
+    def createProvider() {
+        Provider.withTransaction {
+
+            Provider provider = new Provider(name: params.provider, status: RDStore.PROVIDER_STATUS_CURRENT)
+            provider.setGlobalUID()
+            if (provider.save()) {
+                flash.message = message(code: 'default.created.message', args: [message(code: 'default.provider.label'), provider.name]) as String
+                redirect action: 'show', id: provider.id
+                return
+            }
+            else {
+                log.error("Problem creating org: ${provider.errors}");
+                flash.message = message(code: 'org.error.createProviderError', args: [provider.errors]) as String
+                redirect(action: 'findProviderMatches')
+                return
+            }
+        }
+    }
+
+    /**
+     * Call to create a new provider; offers first a query for the new name to insert in order to exclude duplicates
+     * @return the empty form (with a submit to proceed with the new organisation) or a list of eventual name matches
+     */
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+    })
+    def findProviderMatches() {
+
+        Map<String, Object> result = [:]
+        if ( params.proposedProvider ) {
+
+            result.providerMatches= Provider.executeQuery("from Provider as p where (genfunc_filter_matcher(p.name, :searchName) = true or genfunc_filter_matcher(p.sortname, :searchName) = true) ",
+                    [searchName: params.proposedProvider])
+        }
+        result
+    }
+
+    /**
      * Links two providers with the given params
      */
     @Secured(['ROLE_USER'])
@@ -278,15 +328,204 @@ class ProviderController {
         redirect action: 'show', id: params.id
     }
 
+    /**
+     * Call to list the public contacts of the given provider
+     * @return a table view of public contacts
+     */
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+    })
+    @Check404(domain=Provider)
+    def addressbook() {
+        Map<String, Object> result = providerService.getResultGenericsAndCheckAccess(params)
+        if(!result) {
+            response.sendError(401)
+            return
+        }
+
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
+        params.provider = result.provider
+        params.sort = params.sort ?: 'p.last_name, p.first_name'
+        params.tab = params.tab ?: 'contacts'
+
+        EhcacheWrapper cache = contextService.getUserCache("/provider/addressbook/${params.id}")
+        switch(params.tab) {
+            case 'contacts':
+                result.personOffset = result.offset
+                result.addressOffset = cache.get('addressOffset') ?: 0
+                break
+            case 'addresses':
+                result.addressOffset = result.offset
+                result.personOffset = cache.get('personOffset') ?: 0
+                break
+        }
+        cache.put('personOffset', result.personOffset)
+        cache.put('addressOffset', result.addressOffset)
+
+        Map<String, Object> configMap = params.clone()
+
+        List visiblePersons = addressbookService.getVisiblePersons("addressbook", configMap+[offset: result.personOffset]),
+             visibleAddresses = addressbookService.getVisibleAddresses("addressbook", configMap+[offset: result.addressOffset])
+
+        result.propList =
+                PropertyDefinition.findAllWhere(
+                        descr: PropertyDefinition.PRS_PROP,
+                        tenant: contextService.getOrg() // private properties
+                )
+
+        result.num_visiblePersons = visiblePersons.size()
+        result.visiblePersons = visiblePersons.drop(result.personOffset).take(result.max)
+        result.num_visibleAddresses = visibleAddresses.size()
+        result.addresses = visibleAddresses.drop(result.addressOffset).take(result.max)
+
+        /*
+        if (visiblePersons){
+            result.emailAddresses = Contact.executeQuery("select new map(c.prs as person, c.content as mail) from Contact c join c.prs p join p.roleLinks pr join pr.org o where p in (:persons) and c.contentType = :contentType order by o.sortname",
+                    [persons: visiblePersons, contentType: RDStore.CCT_EMAIL])
+        }
+        */
+        Map<Org, String> emailAddresses = [:]
+        visiblePersons.each { Person p ->
+            Contact mail = Contact.findByPrsAndContentType(p, RDStore.CCT_EMAIL)
+            if(mail) {
+                String oid
+                if(p.roleLinks.provider[0]) {
+                    oid = genericOIDService.getOID(p.roleLinks.provider[0])
+                }
+                if(oid) {
+                    Set<String> mails = emailAddresses.get(oid)
+                    if(!mails)
+                        mails = []
+                    mails << mail.content
+                    emailAddresses.put(oid, mails)
+                }
+            }
+        }
+        result.emailAddresses = emailAddresses
+
+        result
+    }
+
+    /**
+     * Shows the tasks attached to the given provider. Displayed here are tasks which
+     * are related to the given provider (i.e. which have the given provider as target)
+     * and not such assigned to the given one!
+     * @return the task table view
+     * @see Task
+     */
     @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
-    @Check404()
+    @Check404(domain=Provider)
+    def tasks() {
+        Map<String,Object> result = providerService.getResultGenericsAndCheckAccess(params)
+        if (!result) {
+            response.sendError(401); return
+        }
+        SwissKnife.setPaginationParams(result, params, result.user as User)
+        result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (Provider) result.provider)['cmbTaskInstanceList']
+
+        result
+    }
+
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+    })
+    @Check404(domain=Provider)
     def workflows() {
         Map<String, Object> result = providerService.getResultGenericsAndCheckAccess(params)
 
         workflowService.executeCmdAndUpdateResult(result, params)
         result
+    }
+
+    /**
+     * Opens the notes view for the given provider
+     * @return a {@link List} of notes ({@link Doc})
+     * @see Doc
+     * @see DocContext
+     */
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN()
+    })
+    @Check404(domain=Provider)
+    def notes() {
+        Map<String, Object> result = providerService.getResultGenericsAndCheckAccess(params)
+        if(!result) {
+            response.sendError(401)
+            return
+        }
+        result
+    }
+
+    /**
+     * Shows the documents attached to the given provider
+     * @return the document table view
+     * @see Doc
+     * @see DocContext
+     */
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+    })
+    @Check404(domain=Provider)
+    def documents() {
+        Map<String, Object> result = providerService.getResultGenericsAndCheckAccess(params)
+        if(!result) {
+            response.sendError(401)
+            return
+        }
+
+        if (params.bulk_op) {
+            docstoreService.bulkDocOperation(params, result, flash)
+        }
+        result
+    }
+
+    /**
+     * Call to edit the given document. Beware: edited are the relations between the document and the object
+     * it has been attached to; content editing of an uploaded document is not possible in this app!
+     * @return the modal to edit the document parameters
+     */
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
+    def editDocument() {
+        Map<String, Object> result = providerService.getResultGenericsAndCheckAccess(params)
+        if(!result) {
+            response.sendError(401)
+            return
+        }
+        result.ownobj = result.institution
+        result.owntp = 'provider'
+        if(params.id) {
+            result.docctx = DocContext.get(params.id)
+            result.doc = result.docctx.owner
+        }
+
+        render template: "/templates/documents/modal", model: result
+    }
+
+    /**
+     * Call to delete a given document
+     * @return the document table view ({@link #documents()})
+     * @see DocstoreService#unifiedDeleteDocuments()
+     */
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
+    def deleteDocuments() {
+        log.debug("deleteDocuments ${params}");
+
+        docstoreService.unifiedDeleteDocuments(params)
+
+        redirect controller: 'provider', action:params.redirectAction, id:params.instanceId /*, fragment: 'docstab' */
     }
 }

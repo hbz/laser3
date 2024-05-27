@@ -278,6 +278,12 @@
                                             <g:if test="${tskObj.controller == 'organisation'}">
                                                 <i class="university icon"></i>
                                             </g:if>
+                                            <g:if test="${tskObj.controller == 'provider'}">
+                                                <i class="handshake icon"></i>
+                                            </g:if>
+                                            <g:if test="${tskObj.controller == 'vendor'}">
+                                                <i class="shipping fast icon"></i>
+                                            </g:if>
                                             <g:if test="${tskObj.controller.contains('subscription')}">
                                                 <i class="clipboard outline icon"></i>
                                             </g:if>
