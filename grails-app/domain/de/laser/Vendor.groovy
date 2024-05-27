@@ -201,6 +201,15 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         result
     }
 
+    /**
+     * Is the toString() implementation; returns the name of this organisation
+     * @return the name of this organisation
+     */
+    @Override
+    String toString() {
+        name
+    }
+
     static Vendor convertFromAgency(Org agency) {
         Vendor v = null
         if(agency.gokbId) {

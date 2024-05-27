@@ -13,6 +13,11 @@
                 <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.VENDORS]"/>
             </ui:exportDropdownItem>
         </ui:exportDropdown>
+        <g:if test="${contextService.is_ORG_COM_EDITOR_or_ROLEADMIN()}">
+            <ui:actionsDropdown>
+                <ui:actionsDropdownItem controller="vendor" action="findVendorMatches" message="org.create_new_vendor.label"/>
+            </ui:actionsDropdown>
+        </g:if>
     </ui:controlButtons>
 
         <ui:h1HeaderWithIcon message="menu.public.all_vendors" total="${vendorListTotal}" floated="true" />

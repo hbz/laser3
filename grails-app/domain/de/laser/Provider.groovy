@@ -175,6 +175,15 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         result
     }
 
+    /**
+     * Is the toString() implementation; returns the name of this organisation
+     * @return the name of this organisation
+     */
+    @Override
+    String toString() {
+        name
+    }
+
     static Provider convertFromOrg(Org provider) {
         Provider p = null
         if(provider.gokbId) {

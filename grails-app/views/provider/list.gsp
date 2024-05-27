@@ -12,39 +12,11 @@
             <ui:exportDropdownItem>
                 <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.PROVIDERS]"/>
             </ui:exportDropdownItem>
-            <%--
-            <g:if test="${filterSet}">
-                <ui:exportDropdownItem>
-                    <g:link class="item js-open-confirm-modal"
-                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                            data-confirm-term-how="ok" controller="organisations" action="listProvider"
-                            params="${params+[exportXLS:true]}">
-                        ${message(code:'default.button.exports.xls')}
-                    </g:link>
-                </ui:exportDropdownItem>
-                <ui:exportDropdownItem>
-                    <g:link class="item js-open-confirm-modal"
-                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                            data-confirm-term-how="ok" controller="organisations" action="listProvider"
-                            params="${params+[format:'csv']}">
-                        ${message(code:'default.button.exports.csv')}
-                    </g:link>
-                </ui:exportDropdownItem>
-            </g:if>
-            <g:else>
-                <ui:exportDropdownItem>
-                    <g:link class="item" action="listProvider" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
-                </ui:exportDropdownItem>
-                <ui:exportDropdownItem>
-                    <g:link class="item" action="listProvider" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
-                </ui:exportDropdownItem>
-            </g:else>
-            --%>
         </ui:exportDropdown>
 
             <g:if test="${contextService.is_ORG_COM_EDITOR_or_ROLEADMIN()}">
                 <ui:actionsDropdown>
-                    <ui:actionsDropdownItem controller="organisation" action="findProviderMatches" message="org.create_new_provider.label"/>
+                    <ui:actionsDropdownItem controller="provider" action="findProviderMatches" message="org.create_new_provider.label"/>
                 </ui:actionsDropdown>
             </g:if>
     </ui:controlButtons>
