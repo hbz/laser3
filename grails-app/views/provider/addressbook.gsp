@@ -106,8 +106,8 @@
 </div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.app.personCreate = function (contactFor, org) {
-        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showAddresses=true&showContacts=true';
+    JSPC.app.personCreate = function (contactFor, provider) {
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&provider='+provider+'&showAddresses=true&showContacts=true';
         JSPC.app.createPersonModal(url)
     }
     JSPC.app.createPersonModal = function (url) {
@@ -127,8 +127,8 @@
             }
         });
     }
-    JSPC.app.addressCreate = function (addressFor, orgId) {
-        let url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?addressFor=' + addressFor+'&orgId='+orgId;
+    JSPC.app.addressCreate = function (addressFor, providerId) {
+        let url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?addressFor=' + addressFor+'&providerId='+providerId;
         let func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
         func();
     }

@@ -3,6 +3,7 @@ package de.laser
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
+import de.laser.base.AbstractBase
 import de.laser.cache.EhcacheWrapper
 import de.laser.helper.Params
 import de.laser.properties.PropertyDefinition
@@ -275,6 +276,7 @@ class ProviderController {
         Provider.withTransaction {
 
             Provider provider = new Provider(name: params.provider, status: RDStore.PROVIDER_STATUS_CURRENT)
+            provider.setGlobalUID()
             if (provider.save()) {
                 flash.message = message(code: 'default.created.message', args: [message(code: 'default.provider.label'), provider.name]) as String
                 redirect action: 'show', id: provider.id

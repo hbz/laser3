@@ -1,7 +1,7 @@
 <laser:htmlStart message="default.notes.label" serviceInjection="true" />
 
         <laser:render template="breadcrumb"
-              model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
+              model="${[provider: provider]}"/>
 
         <ui:controlButtons>
             <laser:render template="${customerTypeService.getActionsTemplatePath()}" model="[provider: provider]"/>
