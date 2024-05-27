@@ -156,27 +156,24 @@ class WfChecklist {
      * @param obj the object (one of {@link Org}, {@link License} or {@link Subscription}) for which the checklists are being requested
      * @return a {@link Set} of checklists belonging to the institution and related to the given object
      */
-    static Set<WfChecklist> getAllChecklistsByOwnerAndObj(Org owner, def obj) {
-        String query = 'select cl from WfChecklist cl where cl.owner = :owner'
+    static Set<WfChecklist> getAllChecklistsByOwnerAndObjAndStatus(Org owner, def obj, RefdataValue status = null) {
+        Set<WfChecklist> workflows = []
+        String sql
 
-        if (obj instanceof License) {
-            executeQuery( query + ' and cl.license = :obj', [owner: owner, obj: obj]) as Set<WfChecklist>
+             if (obj instanceof License)        { sql = 'cl.license = :obj' }
+        else if (obj instanceof Org)            { sql = 'cl.org = :obj' }
+        else if (obj instanceof Provider)       { sql = 'cl.provider = :obj' }
+        else if (obj instanceof Subscription)   { sql = 'cl.subscription = :obj' }
+        else if (obj instanceof Vendor)         { sql = 'cl.vendor = :obj' }
+
+        if (sql) {
+            workflows = executeQuery('select cl from WfChecklist cl where cl.owner = :owner and ' + sql, [owner: owner, obj: obj]) as Set<WfChecklist>
+
+            if (status) {
+                workflows = workflows.findAll { w -> w.getInfo().status == status }
+            }
         }
-        else if (obj instanceof Org) {
-            executeQuery( query + ' and cl.org = :obj', [owner: owner, obj: obj]) as Set<WfChecklist>
-        }
-        else if (obj instanceof Provider) {
-            executeQuery( query + ' and cl.provider = :obj', [owner: owner, obj: obj]) as Set<WfChecklist>
-        }
-        else if (obj instanceof Subscription) {
-            executeQuery( query + ' and cl.subscription = :obj', [owner: owner, obj: obj]) as Set<WfChecklist>
-        }
-        else if (obj instanceof Vendor) {
-            executeQuery( query + ' and cl.vendor = :obj', [owner: owner, obj: obj]) as Set<WfChecklist>
-        }
-        else {
-            []
-        }
+        workflows
     }
 
     /**
