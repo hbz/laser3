@@ -55,10 +55,13 @@ class CostItem extends AbstractBase
 
     Org owner
     Subscription sub // NOT set if surveyOrg (exclusive)
+
+    @Deprecated
     SubscriptionPackage subPkg // only set if sub
+
     IssueEntitlement issueEntitlement // only set if sub
     SurveyOrg surveyOrg // NOT set if sub (exclusive)
-    Package pkg
+    Package pkg // only set if sub
     Order order
     Invoice invoice
     IssueEntitlementGroup issueEntitlementGroup // only set if sub
@@ -177,7 +180,7 @@ class CostItem extends AbstractBase
 
         issueEntitlement(nullable: true, validator: { val, obj ->
             if (obj.issueEntitlement) {
-                if (!obj.subPkg || (obj.issueEntitlement.tipp.pkg.gokbId != obj.subPkg.pkg.gokbId)) return ['issueEntitlementNotInPackage']
+                if (!obj.pkg || (obj.issueEntitlement.tipp.pkg.gokbId != obj.pkg.gokbId)) return ['issueEntitlementNotInPackage']
             }
         })
         surveyOrg       (nullable: true)

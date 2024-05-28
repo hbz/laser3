@@ -339,7 +339,7 @@ class SurveyService {
                         row.add([field: subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
 
                         if (surveyConfig.subSurveyUseForTransfer) {
-                            CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, surveyOrg.org), RDStore.COST_ITEM_DELETED)
+                            CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, surveyOrg.org), RDStore.COST_ITEM_DELETED)
 
                             row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
                             row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
@@ -413,7 +413,7 @@ class SurveyService {
                     row.add([field: subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
 
                     if (surveyConfig.subSurveyUseForTransfer) {
-                        CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED)
+                        CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED)
                         row.add([field: surveyConfig.scheduledStartDate ? DateUtils.getSDF_ddMMyyy().format( DateUtils.getSDF_yyyyMMdd_hhmmSSS().parse(surveyConfig.scheduledStartDate.toString()) ): '', style: null])
                         row.add([field: surveyConfig.scheduledEndDate ? DateUtils.getSDF_ddMMyyy().format( DateUtils.getSDF_yyyyMMdd_hhmmSSS().parse(surveyConfig.scheduledEndDate.toString()) ): '', style: null])
                         row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
@@ -559,7 +559,7 @@ class SurveyService {
 
                         row.add([field: subscription.status?.getI10n("value") ?: '', style: null])
 
-                        CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, surveyOrg.org), RDStore.COST_ITEM_DELETED)
+                        CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, surveyOrg.org), RDStore.COST_ITEM_DELETED)
 
                         if (surveyCostItem) {
                             row.add([field: surveyCostItem?.costItemElement?.getI10n('value') ?: '', style: null])
@@ -638,7 +638,7 @@ class SurveyService {
 
                     row.add([field: subscription.status?.getI10n("value") ?: '', style: null])
 
-                    CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED)
+                    CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED)
 
                     if (surveyCostItem) {
                         row.add([field: surveyCostItem?.costItemElement?.getI10n('value') ?: '', style: null])
@@ -772,7 +772,7 @@ class SurveyService {
                             row.add([field: subscription.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
                             row.add([field: subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
 
-                                CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)
+                                CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)
 
                                 row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
                                 row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
@@ -2195,7 +2195,7 @@ class SurveyService {
         List<SurveyPackageResult> surveyPackageResultList = SurveyPackageResult.findAllBySurveyConfigAndParticipant(surveyConfig, participant)
 
         if(surveyPackageResultList){
-            List<CostItem> costItemList = CostItem.findAllBySurveyOrgAndPkgInList(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), surveyPackageResultList.pkg)
+            List<CostItem> costItemList = CostItem.findAllBySurveyOrgAndPkgInListAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), surveyPackageResultList.pkg)
             costItemList.each { CostItem costItem ->
 
                 sumCostInBillingCurrency = sumCostInBillingCurrency+ costItem.costInBillingCurrency

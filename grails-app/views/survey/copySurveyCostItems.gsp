@@ -140,7 +140,7 @@
 
                     <tr class="">
                         <td>
-                            <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}">
+                            <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(participant.newSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}">
                                 <g:checkBox name="selectedSurveyCostItem" value="${participant.surveyCostItem.id}"
                                             checked="false"/>
                             </g:if>

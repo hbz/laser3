@@ -103,7 +103,7 @@
                                             if(errors.containsKey('multipleSubError'))
                                                 errMess = message(code:"myinst.financeImport.post.error.multipleSubError",args:[errors.get('multipleSubError')])
                                             break
-                                        case ["paket", "package"]: tableCell = ci.subPkg?.pkg?.name
+                                        case ["paket", "package"]: tableCell = ci.pkg?.name
                                             if(errors.containsKey('packageWithoutSubscription'))
                                                 errMess = message(code:"myinst.financeImport.post.error.packageWithoutSubscription",args:[errors.get('packageWithoutSubscription')])
                                             if(errors.containsKey('noValidPackage'))

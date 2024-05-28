@@ -318,7 +318,7 @@ class FinanceController  {
                                     row.add(message(code:'financials.costItemConfiguration.notSet'))
                                 //subscription package
                                 cellnum++
-                                row.add(ci.subPkg ? ci.subPkg.pkg.name:'')
+                                row.add(ci.pkg ? ci.pkg.name:'')
                                 //issue entitlement
                                 cellnum++
                                 row.add(ci.issueEntitlement ? ci.issueEntitlement?.tipp?.name:'')

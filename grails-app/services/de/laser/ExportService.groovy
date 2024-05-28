@@ -2632,7 +2632,7 @@ class ExportService {
 						cell.setCellValue(messageSource.getMessage('financials.costItemConfiguration.notSet',null,locale))
 					//subscription package
 					cell = row.createCell(cellnum++)
-					cell.setCellValue(ci?.subPkg ? ci.subPkg.pkg.name:'')
+					cell.setCellValue(ci?.pkg ? ci.pkg.name:'')
 					//issue entitlement
 					cell = row.createCell(cellnum++)
 					cell.setCellValue(ci?.issueEntitlement ? ci.issueEntitlement.tipp.name:'')

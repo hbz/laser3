@@ -291,7 +291,7 @@ class ManagementService {
                 result.validPackages = Package.executeQuery('select sp from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: result.subscription])
                 result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
                 if(result.filteredSubscriptions)
-                    result.childWithCostItems = CostItem.executeQuery('select ci.subPkg from CostItem ci where ci.subPkg.subscription in (:filteredSubChildren) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution, deleted:RDStore.COST_ITEM_DELETED, filteredSubChildren:result.filteredSubscriptions.collect { row -> row.sub }])
+                    result.childWithCostItems = CostItem.executeQuery('select ci.pkg from CostItem ci where ci.pkg is not null and ci.sub in (:filteredSubChildren) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution, deleted:RDStore.COST_ITEM_DELETED, filteredSubChildren:result.filteredSubscriptions.collect { row -> row.sub }])
             }
 
             if(controller instanceof MyInstitutionController) {
@@ -303,7 +303,7 @@ class ManagementService {
 
                 result.filteredSubscriptions = result.subscriptions
                 if(result.filteredSubscriptions)
-                    result.childWithCostItems = CostItem.executeQuery('select ci.subPkg from CostItem ci where ci.subPkg.subscription in (:filteredSubscriptions) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution, deleted:RDStore.COST_ITEM_DELETED, filteredSubscriptions:result.filteredSubscriptions])
+                    result.childWithCostItems = CostItem.executeQuery('select ci.pkg from CostItem ci where ci.pkg is not null and ci.sub in (:filteredSubscriptions) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution, deleted:RDStore.COST_ITEM_DELETED, filteredSubscriptions:result.filteredSubscriptions])
             }
 
             [result:result,status:STATUS_OK]
@@ -379,7 +379,7 @@ class ManagementService {
                             }
                             else if(params.processOption =~ /^unlink/) {
                                 if(sp) {
-                                    if (!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp and ci.costItemStatus != :deleted and ci.owner = :context', [sp: sp, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
+                                    if (!CostItem.executeQuery('select ci from CostItem ci where ci.pkg = :pkg and ci.sub = :sub and ci.costItemStatus != :deleted and ci.owner = :context', [sub: selectedSub, pkg: pkg, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
                                         packageService.unlinkFromSubscription(pkg, selectedSub, result.institution, params.processOption == 'unlinkwithIE')
                                     }
                                     /*
@@ -452,7 +452,7 @@ class ManagementService {
                                 if (params.processOption == 'unlinkwithIE' || params.processOption == 'unlinkwithoutIE') {
                                     if (subscription.packages && (pkg_to_link.id in subscription.packages.pkg.id)) {
                                         SubscriptionPackage subPkg = SubscriptionPackage.findBySubscriptionAndPkg(subscription, pkg_to_link)
-                                        if (!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp and ci.costItemStatus != :deleted and ci.owner = :context', [sp: subPkg, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
+                                        if (!CostItem.executeQuery('select ci from CostItem ci where ci.pkg = :pkg and ci.sub = :sub and ci.costItemStatus != :deleted and ci.owner = :context', [sub: subPkg.sub, pkg: subPkg.pkg, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
                                             packageService.unlinkFromSubscription(pkg_to_link, subscription, result.institution, params.processOption == 'unlinkwithIE')
                                         } else {
                                             Object[] args = [subPkg.pkg.name, subPkg.subscription.getSubscriberRespConsortia().name]

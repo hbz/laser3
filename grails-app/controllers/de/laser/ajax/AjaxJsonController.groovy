@@ -283,33 +283,34 @@ class AjaxJsonController {
      */
     @Secured(['ROLE_USER'])
     def checkCascade() {
-        Map<String, Object> result = [sub:true, subPkg:true, ie:true]
+        Map<String, Object> result = [sub:true, pkg:true, ie:true]
         if (!params.subscription && ((params.package && params.issueEntitlement) || params.issueEntitlement)) {
             result.sub = false
-            result.subPkg = false
+            result.pkg = false
             result.ie = false
         }
         else if (params.subscription) {
             Subscription sub = (Subscription) genericOIDService.resolveOID(params.subscription)
             if (!sub) {
                 result.sub = false
-                result.subPkg = false
+                result.pkg = false
                 result.ie = false
             }
             else if (params.issueEntitlement) {
                 if (!params.package || params.package.contains('null')) {
-                    result.subPkg = false
+                    result.pkg = false
                     result.ie = false
                 }
                 else if (params.package && !params.package.contains('null')) {
                     Package pkg = (Package) genericOIDService.resolveOID(params.package)
+                    SubscriptionPackage subPkg = (SubscriptionPackage) SubscriptionPackage.findBySubscriptionAndPkg(sub, pkg)
                     if(!pkg || subPkg.subscription != sub) {
-                        result.subPkg = false
+                        result.pkg = false
                         result.ie = false
                     }
                     else {
                         IssueEntitlement ie = (IssueEntitlement) genericOIDService.resolveOID(params.issueEntitlement)
-                        if(!ie || ie.subscription != subPkg.subscription || ie.tipp.pkg != subPkg.pkg) {
+                        if(!ie || ie.subscription != subPkg.subscription || ie.tipp.pkg != pkg) {
                             result.ie = false
                         }
                     }
