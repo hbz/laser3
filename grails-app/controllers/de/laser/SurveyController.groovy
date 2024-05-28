@@ -1959,6 +1959,22 @@ class SurveyController {
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
+    Map<String,Object> copySurveyPackages() {
+        Map<String,Object> ctrlResult = surveyControllerService.copySurveyPackages(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }else {
+            ctrlResult.result
+        }
+    }
+
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
     Map<String,Object> proccessCopySubPackagesAndIes() {
         Map<String,Object> ctrlResult = surveyControllerService.proccessCopySubPackagesAndIes(params)
         if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
@@ -1969,6 +1985,25 @@ class SurveyController {
         }else {
             ctrlResult.result
             redirect(action: 'copySubPackagesAndIes', id: params.id, params: [surveyConfigID: ctrlResult.result.surveyConfig.id, targetSubscriptionId: ctrlResult.result.targetSubscription.id])
+            return
+        }
+
+    }
+
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    Map<String,Object> proccessCopySurveyPackages() {
+        Map<String,Object> ctrlResult = surveyControllerService.proccessCopySurveyPackages(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }else {
+            ctrlResult.result
+            redirect(action: 'copySurveyPackages', id: params.id, params: [surveyConfigID: ctrlResult.result.surveyConfig.id, targetSubscriptionId: ctrlResult.result.targetSubscription.id])
             return
         }
 
@@ -1994,6 +2029,22 @@ class SurveyController {
         }
     }
 
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    Map<String,Object> copySurveyCostItemPackage() {
+        Map<String,Object> ctrlResult = surveyControllerService.surveyCostItemPackage(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }else {
+            ctrlResult.result
+        }
+    }
+
     /**
      * Takes the given parameters and creates copies of the given cost items, based on the submitted data
      * @return the survey cost copy overview
@@ -2004,6 +2055,28 @@ class SurveyController {
     })
      Map<String,Object> proccessCopySurveyCostItems() {
         Map<String,Object> ctrlResult = surveyControllerService.proccessCopySurveyCostItems(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }else {
+            flash.message = message(code: 'copySurveyCostItems.copy.success', args: [ctrlResult.result.countNewCostItems]) as String
+            ctrlResult.result
+            redirect(action: 'copySurveyCostItems', id: params.id, params: [surveyConfigID: ctrlResult.result.surveyConfig.id, targetSubscriptionId: ctrlResult.result.targetSubscription.id])
+            return
+        }
+
+        redirect(uri: request.getHeader('referer'))
+
+    }
+
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    Map<String,Object> proccessCopySurveyCostItemPackage() {
+        Map<String,Object> ctrlResult = surveyControllerService.proccessCopySurveyCostItemPackage(params)
         if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)

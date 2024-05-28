@@ -92,6 +92,41 @@
         </g:else>
     </div>
 
+    <g:if test="${surveyConfig.packageSurvey}">
+        <div class="${(actionName == 'copySurveyPackages') ? 'active' : ''} step">
+
+            <div class="content">
+                <div class="title">
+                    <g:link controller="survey" action="copySurveyPackages"
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, targetSubscriptionId: targetSubscription?.id]">
+                        ${message(code: 'copySurveyPackages.label')}
+                    </g:link>
+                </div>
+
+                <div class="description">
+                    <i class="gift icon"></i>${message(code: 'copySurveyPackages.label')}
+                </div>
+            </div>
+        &nbsp;&nbsp;
+            <g:if test="${transferWorkflow && Boolean.valueOf(transferWorkflow.transferSubPackagesAndIes)}">
+                <g:link controller="survey" action="setSurveyTransferConfig"
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, transferSurveyPackages: false]">
+                    <i class="check bordered large green icon"></i>
+                </g:link>
+            </g:if>
+            <g:else>
+                <g:link controller="survey" action="setSurveyTransferConfig"
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, transferSurveyPackages: true]">
+                    <i class="close bordered large red icon"></i>
+                </g:link>
+            </g:else>
+
+        </div>
+    </g:if>
+
+
+<g:if test="${surveyConfig.subscription}">
+
     <div class="${(actionName == 'copyProperties' && params.tab == 'customProperties') ? 'active' : ''}  step">
 
         <div class="content">
@@ -152,7 +187,9 @@
 
     </div>
 
-    <g:if test="${CostItem.executeQuery('select count(*) from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and costItem.costItemStatus != :status', [survConfig: surveyConfig, status: RDStore.COST_ITEM_DELETED])[0] > 0}">
+</g:if>
+
+    <g:if test="${CostItem.executeQuery('select count(*) from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and costItem.costItemStatus != :status and costItem.pkg is null', [survConfig: surveyConfig, status: RDStore.COST_ITEM_DELETED])[0] > 0}">
         <div class="${(actionName == 'copySurveyCostItems') ? 'active' : ''} step">
 
             <div class="content">
@@ -177,6 +214,39 @@
             <g:else>
                 <g:link controller="survey" action="setSurveyTransferConfig"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, transferSurveyCostItems: true]">
+                    <i class="close bordered large red icon"></i>
+                </g:link>
+            </g:else>
+
+        </div>
+    </g:if>
+
+
+    <g:if test="${CostItem.executeQuery('select count(*) from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and costItem.costItemStatus != :status and costItem.pkg is not null', [survConfig: surveyConfig, status: RDStore.COST_ITEM_DELETED])[0] > 0}">
+        <div class="${(actionName == 'copySurveyCostItemPackage') ? 'active' : ''} step">
+
+            <div class="content">
+                <div class="title">
+                    <g:link controller="survey" action="copySurveyCostItemPackage"
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, targetSubscriptionId: targetSubscription?.id]">
+                        ${message(code: 'surveyCostItemsPackages.label')}
+                    </g:link>
+                </div>
+
+                <div class="description">
+                    <i class="money bill alternate outline icon"></i>${message(code: 'surveyCostItemsPackages.label')}
+                </div>
+            </div>
+
+            <g:if test="${transferWorkflow && Boolean.valueOf(transferWorkflow.transferSurveyCostItems)}">
+                <g:link controller="survey" action="setSurveyTransferConfig"
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, transferSurveyCostItemPackage: false]">
+                    <i class="check bordered large green icon"></i>
+                </g:link>
+            </g:if>
+            <g:else>
+                <g:link controller="survey" action="setSurveyTransferConfig"
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, transferSurveyCostItemPackage: true]">
                     <i class="close bordered large red icon"></i>
                 </g:link>
             </g:else>

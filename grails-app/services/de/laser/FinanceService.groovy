@@ -101,11 +101,11 @@ class FinanceService {
                         break
                 }
             }
-            SubscriptionPackage pkg
+            Package pkg
             if (params.newPackage?.contains("${SubscriptionPackage.class.name}:")) {
                 try {
                     if (params.newPackage.split(":")[1] != 'null') {
-                        pkg = (SubscriptionPackage) genericOIDService.resolveOID(params.newPackage)
+                        pkg = (Package) genericOIDService.resolveOID(params.newPackage)
                     }
                 } catch (Exception e) {
                     log.error("Non-valid sub-package sent ${params.newPackage}",e)
@@ -143,7 +143,8 @@ class FinanceService {
                 }
                 newCostItem.owner = (Org) result.institution
                 newCostItem.sub = sub
-                newCostItem.subPkg = SubscriptionPackage.findBySubscriptionAndPkg(sub,pkg?.pkg) ?: null
+                //newCostItem.subPkg = SubscriptionPackage.findBySubscriptionAndPkg(sub,pkg?.pkg) ?: null
+                newCostItem.pkg = pkg && SubscriptionPackage.findBySubscriptionAndPkg(sub,pkg) ? pkg : null
                 newCostItem.issueEntitlement = IssueEntitlement.findBySubscriptionAndTipp(sub,ie?.tipp) ?: null
                 newCostItem.issueEntitlementGroup = issueEntitlementGroup ?: null
                 newCostItem.order = configMap.order

@@ -14,6 +14,7 @@ import de.laser.License
 import de.laser.LicenseService
 import de.laser.LinksGenerationService
 import de.laser.OrganisationService
+import de.laser.Package
 import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
 import de.laser.SubscriptionDiscountScale
@@ -301,8 +302,8 @@ class AjaxJsonController {
                     result.ie = false
                 }
                 else if (params.package && !params.package.contains('null')) {
-                    SubscriptionPackage subPkg = (SubscriptionPackage) genericOIDService.resolveOID(params.package)
-                    if(!subPkg || subPkg.subscription != sub) {
+                    Package pkg = (Package) genericOIDService.resolveOID(params.package)
+                    if(!pkg || subPkg.subscription != sub) {
                         result.subPkg = false
                         result.ie = false
                     }
