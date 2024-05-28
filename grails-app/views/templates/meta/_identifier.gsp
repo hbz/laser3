@@ -70,11 +70,12 @@
     $("#idExpl").hide();
     let dictionary = {};
     let pattern;
+    let placeholder;
     <g:each in="${namespacesWithValidations}" var="entry">
         <g:set var="key" value="${entry.getKey()}"/>
         <g:set var="ns" value="${entry.getValue()}"/>
         pattern = '${ns.pattern}';
-        dictionary['${key}'] = {pattern: pattern.replaceAll('&#92;','\\'), prompt: '${ns.prompt}', placeholder: '${ns.placeholder}'.replaceAll('&quot;','"')};
+        dictionary['${key}'] = {pattern: pattern.replaceAll('&#92;','\\'), prompt: '${ns.prompt}', placeholder: '${ns.placeholder.replaceAll("'",'"')}'.replaceAll('&quot;','"')};
     </g:each>
 
     $.fn.form.settings.rules.identifierRegex = function() {
