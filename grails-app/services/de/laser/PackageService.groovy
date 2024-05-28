@@ -222,7 +222,7 @@ class PackageService {
                 removePackagePendingChanges(pkg, subList, true)
                 SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.pkg.id = :pkg_id and sp.subscription.id in (:sub)',queryParams).each { SubscriptionPackage delPkg ->
                     OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg = :subPkg", [subPkg:delPkg])
-                    CostItem.executeQuery('select ci from CostItem ci where ci.costItemStatus != :deleted and ci.pkg = :delPkg and ci.owner != :ctx', [delPkg: delPkg.pkg, deleted: RDStore.COST_ITEM_DELETED, ctx: contextOrg]).each { CostItem ci ->
+                    CostItem.executeQuery('select ci from CostItem ci where ci.costItemStatus != :deleted and ci.pkg = :delPkg and ci.sub = :sub and ci.owner != :ctx', [sub: delPkg.subscription, delPkg: delPkg.pkg, deleted: RDStore.COST_ITEM_DELETED, ctx: contextOrg]).each { CostItem ci ->
                         PendingChange.construct([target:ci,owner:ci.owner,oldValue:ci.pkg.name,newValue:null,msgToken:PendingChangeConfiguration.COST_ITEM_PACKAGE_UNLINKED,status:RDStore.PENDING_CHANGE_PENDING])
                     }
                     CostItem.executeUpdate('update CostItem ci set ci.costItemStatus = :deleted, ci.pkg = null, ci.sub = :sub where ci.pkg = :delPkg',[delPkg: delPkg.pkg, sub:delPkg.subscription, deleted: RDStore.COST_ITEM_DELETED])

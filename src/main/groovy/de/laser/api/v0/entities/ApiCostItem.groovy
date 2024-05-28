@@ -200,7 +200,7 @@ class ApiCostItem {
 
         result.owner    = ApiUnsecuredMapReader.getOrganisationStubMap(costItem.owner) // de.laser.Org
         result.sub      = ApiStubReader.requestSubscriptionStub(costItem.sub, context, isInvoiceTool) // de.laser.Subscription // RECURSION ???
-        result.subPkg   = ApiStubReader.requestSubscriptionPackageStubMixed(SubscriptionPackage.findBySubscriptionAndPkg(costItem.sub, costItem.subPkg), ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.SubscriptionPackage
+        result.subPkg   = ApiStubReader.requestSubscriptionPackageStubMixed(SubscriptionPackage.findBySubscriptionAndPkg(costItem.sub, costItem.pkg), ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.SubscriptionPackage
         result.issueEntitlement = ApiIssueEntitlement.getIssueEntitlementMap(costItem.issueEntitlement, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, context) // de.laser.IssueEntitlement
         if(costItem.issueEntitlementGroup)
             result.titleGroup = ApiIssueEntitlement.getTitleGroupMap(costItem.issueEntitlementGroup, context) //de.laser.IssueEntitlementGroup
