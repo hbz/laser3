@@ -304,11 +304,8 @@ class PublicController {
     @Secured(['permitAll'])
     def licensingModel() {
         Map<String, Object> result = [:]
-        result.mappingColsBasic = ["licence","asService", "accessRights"]
-        result.mappingColsPro = ["erms", "propertiesUse", "propertiesCreation", "cost", "ie", "docs", "tasks", "notifications", "address", "budget", "reporting", "testSystem", "community", "wekb", "api"]
-        result.mappingColsServiceBasic = ["support", "help", "handbook", "progression", "trainingFundamentals"]
-        result.mappingColsServicePro = ["trainingIndividual", "userMeeting"]
-
+        result.mappingColsBasic = ["asService", "accessRights", "community", "wekb"]
+        result.mappingColsPro = ["management", "organisation", "reporting", "api"]
         result
     }
 }
