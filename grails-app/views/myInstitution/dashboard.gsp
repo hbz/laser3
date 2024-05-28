@@ -46,6 +46,12 @@
                                 <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="tasks" message="menu.my.tasks" />
                             </div>
                         </div>
+                        <div class="item">
+                            <i class="tasks icon la-list-icon"></i>
+                            <div class="content">
+                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
+                            </div>
+                        </div>
 %{--                        <div class="item">--}%
 %{--                            <i class="file alternate icon la-list-icon"></i>--}%
 %{--                            <div class="content">--}%
@@ -61,12 +67,6 @@
                                 <g:else>
                                     <ui:securedMainNavItem orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys"/>
                                 </g:else>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <i class="tasks icon la-list-icon"></i>
-                            <div class="content">
-                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
                             </div>
                         </div>
                     </div>
