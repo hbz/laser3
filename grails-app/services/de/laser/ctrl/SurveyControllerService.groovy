@@ -3920,7 +3920,7 @@ class SurveyControllerService {
                     newMap.sortname = org.sortname
                     newMap.name = org.name
                     newMap.newSub = sub
-                    newMap.oldSub = result.surveyConfig.subSurveyUseForTransfer ? sub._getCalculatedPreviousForSurvey() : result.parentSubscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
+                    newMap.oldSub = result.surveyConfig.subscription ? (result.surveyConfig.subSurveyUseForTransfer ? sub._getCalculatedPreviousForSurvey() : result.parentSubscription.getDerivedSubscriptionForNonHiddenSubscriber(org)) : null
 
                     //println("new: ${newMap.newSub}, old: ${newMap.oldSub}")
 
