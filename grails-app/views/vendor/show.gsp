@@ -714,75 +714,57 @@
     </aside>
 </div>
 
-%{--
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.createContact').click(function() {
         JSPC.app.personCreate($(this).attr('id'), ${vendor.id});
     });
 
-    JSPC.app.showRegionsdropdown = function (newValue) {
-        $("*[id^=regions_]").hide();
-        if(newValue){
-            var id = newValue.split(':')[1]
-            // $("#regions_" + id).editable('setValue', null);
-            $("#regions_" + id).show();
-        }
-    };
-
-    JSPC.app.addresscreate_org = function (orgId, typeId, redirect, hideType) {
-        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?orgId=' + orgId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
+    JSPC.app.addresscreate_org = function (vendorId, typeId, redirect, hideType) {
+        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?vendorId=' + vendorId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
         var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
         func();
     }
 
-$('.addListValue').click(function() {
-    let url;
-    let returnSelector;
-    switch($(this).attr('data-objtype')) {
-        case 'altname': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'altname', owner: vendor.id]"/>';
-            returnSelector = '#altnames';
-            break;
-        case 'frontend': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'frontend', owner: vendor.id]"/>';
-            returnSelector = '#discoverySystemsFrontend';
-            break;
-        case 'index': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'index', owner: vendor.id]"/>';
-            returnSelector = '#discoverySystemsIndex';
-            break;
+    $('.addListValue').click(function() {
+        let url;
+        let returnSelector;
+        switch($(this).attr('data-objtype')) {
+            case 'altname': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'altname', owner: genericOIDService.getOID(vendor)]"/>';
+                returnSelector = '#altnames';
+                break;
+        }
+
+        $.ajax({
+            url: url,
+            success: function(result) {
+                $(returnSelector).append(result);
+                r2d2.initDynamicUiStuff(returnSelector);
+                r2d2.initDynamicXEditableStuff(returnSelector);
+            }
+        });
+    });
+    JSPC.app.removeListValue = function(objId) {
+        $("div[data-objId='"+objId+"']").remove();
     }
 
-    $.ajax({
-        url: url,
-        success: function(result) {
-            $(returnSelector).append(result);
-            r2d2.initDynamicUiStuff(returnSelector);
-            r2d2.initDynamicXEditableStuff(returnSelector);
-        }
-    });
-});
-JSPC.app.removeListValue = function(objId) {
-    $("div[data-objId='"+objId+"']").remove();
-}
+    JSPC.app.personCreate = function (contactFor, vendor, supportType = "") {
+        <g:if test="${vendor.gokbId}">
+            let existsWekbRecord = "&existsWekbRecord=true";
+        </g:if>
+        <g:else>
+            let existsWekbRecord = "";
+        </g:else>
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&vendor=' + vendor + existsWekbRecord + '&showAddresses=false&showContacts=true' + supportType;
+        var func = bb8.ajax4SimpleModalFunction("#personModal", url);
+        func();
+    }
 
-JSPC.app.personCreate = function (contactFor, org, supportType = "") {
-    <g:if test="${vendor.gokbId}">
-        let existsWekbRecord = "&existsWekbRecord=true";
-    </g:if>
-    <g:else>
-        let existsWekbRecord = "";
-    </g:else>
-    var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&org=' + org + existsWekbRecord + '&showAddresses=false&showContacts=true' + supportType;
-    var func = bb8.ajax4SimpleModalFunction("#personModal", url);
-    func();
-}
-
-%{--
 <g:if test="${editable && vendor.gokbId}">
 let confirmationCard = $('#js-confirmationCard');
-$('.js-open-confirm-modal-xEditable',tionCard).editable('destroy').editable().on('shown', function() {
+$('.js-open-confirm-modal-xEditable',confirmationCard).editable('destroy').editable().on('shown', function() {
                                 r2d2.initDynamicUiStuff('.js-open-confirm-modal-xEditable');
                             });
 </g:if >
 </laser:script>
---}%
 
 <laser:htmlEnd />
