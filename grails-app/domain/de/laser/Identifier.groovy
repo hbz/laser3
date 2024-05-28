@@ -204,7 +204,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         }
 
         if (! ident) {
-			if (ns.isUnique && Identifier.executeQuery("select count(ident) from Identifier ident where ident.value != '"+IdentifierNamespace.UNKNOWN+"' and ident.ns = :ns and ident." + attr + " = :ref", [ns: ns, ref: reference])[0] > 0) {
+			if (ns.isUnique && Identifier.executeQuery("select count(*) from Identifier ident where ident.value != '"+IdentifierNamespace.UNKNOWN+"' and ident.ns = :ns and ident." + attr + " = :ref", [ns: ns, ref: reference])[0] > 0) {
                 log.debug("NO IDENTIFIER CREATED: multiple occurrences found for unique namespace ( ${value}, ${ns} )")
                 Identifier identifierInDB = Identifier.executeQuery("select ident from Identifier ident where ident.value != '"+IdentifierNamespace.UNKNOWN+"' and ident.ns = :ns and ident." + attr + " = :ref", [ns: ns, ref: reference])[0]
                 factoryResult.status += FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_SEVERAL_EXIST_IN_REFERENCE_OBJ

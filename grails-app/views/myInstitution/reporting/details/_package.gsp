@@ -106,7 +106,7 @@
 
                         <%
                             List tipps = TitleInstancePackagePlatform.executeQuery(
-                                    'select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status',
+                                    'select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status',
                                     [pkg: pkg, status: RDStore.TIPP_STATUS_CURRENT]
                             )
                             println tipps[0] > 0 ? tipps[0] : ''

@@ -57,7 +57,7 @@
                         <g:if test="${query != 'license-x-identifier' && query != 'license-x-property'}">
                             <td>
                                 <%
-                                    println License.executeQuery('select count(l) from License l where l.instanceOf = :parent group by l.reference', [parent: lic])[0]
+                                    println License.executeQuery('select count(*) from License l where l.instanceOf = :parent group by l.reference', [parent: lic])[0]
                                 %>
                             </td>
                             <td>

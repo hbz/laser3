@@ -2364,7 +2364,7 @@ class SubscriptionControllerService {
                     List childSubsPackages = SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs, result.package)
                     int numOfPCsChildSubs = packageService.removePackagePendingChanges(result.package, childSubs.id, false)
                     int numOfIEsChildSubs = IssueEntitlement.executeQuery(queryChildSubs, queryParamChildSubs).size()
-                    int numOfCIsChildSubs = childSubsPackages ? CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub in (:childSubs) and ci.pkg = :pkg and ci.owner != :ctx and ci.costItemStatus != :deleted', [pkg: result.package, childSubs: childSubs, deleted: RDStore.COST_ITEM_DELETED, ctx: result.institution])[0] : 0
+                    int numOfCIsChildSubs = childSubsPackages ? CostItem.executeQuery('select count(*) from CostItem ci where ci.sub in (:childSubs) and ci.pkg = :pkg and ci.owner != :ctx and ci.costItemStatus != :deleted', [pkg: result.package, childSubs: childSubs, deleted: RDStore.COST_ITEM_DELETED, ctx: result.institution])[0] : 0
                     if(numOfPCsChildSubs > 0 || numOfIEsChildSubs > 0 || numOfCIsChildSubs > 0) {
                         conflictsList.addAll(packageService.listConflicts(result.package, childSubs, numOfPCsChildSubs, numOfIEsChildSubs, numOfCIsChildSubs))
                     }

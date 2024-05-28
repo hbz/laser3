@@ -206,7 +206,7 @@
             <g:if test="${memberLicenses}">
                 <table>
                     <g:each in="${memberLicenses}" var="member">
-                        <g:set var="subCount" value="${Links.executeQuery('select count(li.id) from Links li where li.sourceLicense = :source and li.linkType = :license and li.destinationSubscription.status = :current',[source: member, license: RDStore.LINKTYPE_LICENSE, current: RDStore.SUBSCRIPTION_CURRENT])}"/>
+                        <g:set var="subCount" value="${Links.executeQuery('select count(*) from Links li where li.sourceLicense = :source and li.linkType = :license and li.destinationSubscription.status = :current',[source: member, license: RDStore.LINKTYPE_LICENSE, current: RDStore.SUBSCRIPTION_CURRENT])}"/>
                         <tr>
                             <%
                                 String memberRunningTimes = " - ${member.status.getI10n("value")}"

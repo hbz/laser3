@@ -1405,7 +1405,7 @@ class SurveyService {
                 c5CheckParams.startDate = queryParams.startDate
                 c5CheckParams.endDate = queryParams.endDate
             }
-            count5check.addAll(Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms)'+dateRange, c5CheckParams))
+            count5check.addAll(Counter5Report.executeQuery('select count(*) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms)'+dateRange, c5CheckParams))
             if(count5check.get(0) == 0) {
                 Set availableReportTypes = Counter4Report.executeQuery('select r.reportType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) order by r.reportFrom asc', [customer: queryParams.customer, platforms: queryParams.platforms])
                 result.reportTypes = availableReportTypes
@@ -1432,7 +1432,7 @@ class SurveyService {
                 else {
                     result.usages = Counter4Report.executeQuery('select r from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)' + filter + dateRange + ' order by ' + sort, queryParams, [max: result.max, offset: result.offset])
 
-                    count4check.addAll(Counter4Report.executeQuery('select count(r.id) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)' + filter + dateRange, queryParams))
+                    count4check.addAll(Counter4Report.executeQuery('select count(*) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)' + filter + dateRange, queryParams))
                     result.total = count4check.size() > 0 ? count4check[0] as int : 0
                 }
 
@@ -1855,7 +1855,7 @@ class SurveyService {
     Integer countIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         Integer countIes = issueEntitlementGroup ?
-                IssueEntitlementGroupItem.executeQuery("select count(igi) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status != :status",
+                IssueEntitlementGroupItem.executeQuery("select count(*) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status != :status",
                         [ieGroup: issueEntitlementGroup, status: RDStore.TIPP_STATUS_REMOVED])[0]
                 : 0
         countIes
@@ -1871,7 +1871,7 @@ class SurveyService {
     Integer countIssueEntitlementsByIEGroupWithStatus(Subscription subscription, SurveyConfig surveyConfig, RefdataValue status) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         Integer countIes = issueEntitlementGroup ?
-                IssueEntitlementGroupItem.executeQuery("select count(igi) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status = :status",
+                IssueEntitlementGroupItem.executeQuery("select count(*) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status = :status",
                         [ieGroup: issueEntitlementGroup, status: status])[0]
                 : 0
         countIes
@@ -1886,7 +1886,7 @@ class SurveyService {
     Integer countCurrentIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         Integer countIes = issueEntitlementGroup ?
-                IssueEntitlementGroupItem.executeQuery("select count(igi) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status = :status",
+                IssueEntitlementGroupItem.executeQuery("select count(*) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status = :status",
                         [ieGroup: issueEntitlementGroup, status: RDStore.TIPP_STATUS_CURRENT])[0]
                 : 0
         countIes

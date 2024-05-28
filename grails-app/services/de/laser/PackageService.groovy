@@ -256,7 +256,7 @@ class PackageService {
         }
         else {
             if(subIds) {
-                count = PendingChange.executeQuery('select count(pc.id) from PendingChange pc where (pc.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkgId) and pc.oid in (:subOIDs))', [pkgId: pkg.id, subOIDs: subIds.collect { subId -> Subscription.class.name+':'+subId }])[0]
+                count = PendingChange.executeQuery('select count(*) from PendingChange pc where (pc.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkgId) and pc.oid in (:subOIDs))', [pkgId: pkg.id, subOIDs: subIds.collect { subId -> Subscription.class.name+':'+subId }])[0]
             }
         }
         count
@@ -289,7 +289,7 @@ class PackageService {
     Map<String, Object> getResultGenerics(GrailsParameterMap params) {
         Map<String, Object> result = [user: contextService.getUser(), contextOrg: contextService.getOrg(), packageInstance: Package.get(params.id)]
         result.contextCustomerType = result.contextOrg.getCustomerType()
-        int relationCheck = SubscriptionPackage.executeQuery('select count(sp) from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))', [pkg: result.packageInstance, context: result.contextOrg, current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED])[0]
+        int relationCheck = SubscriptionPackage.executeQuery('select count(*) from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))', [pkg: result.packageInstance, context: result.contextOrg, current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED])[0]
         result.isMyPkg = relationCheck > 0
 
         result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]

@@ -70,7 +70,7 @@ class AjaxController {
     def refdata_config = [
     "ContentProvider" : [
       domain:'Org',
-      countQry:"select count(o) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
+      countQry:"select count(*) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
       rowQry:"select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
       qryParams:[
               [
@@ -88,7 +88,7 @@ class AjaxController {
     ],
     "Licenses" : [
       domain:'License',
-      countQry:"select count(l) from License as l",
+      countQry:"select count(*) from License as l",
       rowQry:"select l from License as l",
       qryParams:[],
       cols:['reference'],
@@ -96,7 +96,7 @@ class AjaxController {
     ],
     'Currency' : [
       domain:'RefdataValue',
-      countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='" + RDConstants.CURRENCY + "'",
+      countQry:"select count(*) from RefdataValue as rdv where rdv.owner.desc='" + RDConstants.CURRENCY + "'",
       rowQry:"select rdv from RefdataValue as rdv where rdv.owner.desc='" + RDConstants.CURRENCY + "'",
       qryParams:[
                    [
@@ -109,7 +109,7 @@ class AjaxController {
     ],
     "allOrgs" : [
             domain:'Org',
-            countQry:"select count(o) from Org as o where lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
+            countQry:"select count(*) from Org as o where lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
             rowQry:"select o from Org as o where lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
             qryParams:[
                     [
@@ -127,7 +127,7 @@ class AjaxController {
     ],
     "CommercialOrgs" : [
             domain:'Org',
-            countQry:"select count(o) from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
+            countQry:"select count(*) from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
             rowQry:"select o from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
             qryParams:[
                     [
@@ -315,7 +315,7 @@ class AjaxController {
             // If we werent able to locate a specific config override, assume the ID is just a refdata key
             config = [
                 domain      :'RefdataValue',
-                countQry    :"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='" + params.id + "'",
+                countQry    :"select count(*) from RefdataValue as rdv where rdv.owner.desc='" + params.id + "'",
                 rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='" + params.id + "' order by rdv.order asc, rdv.value_" + lang,
                 qryParams   :[],
                 cols        :['value'],

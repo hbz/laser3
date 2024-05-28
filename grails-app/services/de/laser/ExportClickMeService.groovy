@@ -3836,7 +3836,7 @@ class ExportClickMeService {
         if(subscription) {
             List<Subscription> childSubs = subscription.getNonDeletedDerivedSubscriptions()
             if(childSubs) {
-                maxCostItemsElements = CostItem.executeQuery('select count(id) as countCostItems from CostItem where sub in (:subs) group by costItemElement, sub order by countCostItems desc', [subs: childSubs])[0]
+                maxCostItemsElements = CostItem.executeQuery('select count(*) as countCostItems from CostItem where sub in (:subs) group by costItemElement, sub order by countCostItems desc', [subs: childSubs])[0]
             }
         }
         else maxCostItemsElements = 1
@@ -3920,7 +3920,7 @@ class ExportClickMeService {
 
         Integer maxCostItemsElements = 0
 
-        maxCostItemsElements = CostItem.executeQuery('select count(id) as countCostItems from CostItem where sub in (:subs) group by costItemElement, sub order by countCostItems desc', [subs: result])[0]
+        maxCostItemsElements = CostItem.executeQuery('select count(*) as countCostItems from CostItem where sub in (:subs) group by costItemElement, sub order by countCostItems desc', [subs: result])[0]
 
         List titles = _exportTitles(selectedExportFields, locale, selectedCostItemFields, maxCostItemsElements, null, selectedCostItemElements, format)
 
@@ -3997,7 +3997,7 @@ class ExportClickMeService {
 
         Integer maxCostItemsElements = 0
 
-        maxCostItemsElements = CostItem.executeQuery('select count(id) as countCostItems from CostItem where sub in (:subs) group by costItemElement, sub order by countCostItems desc', [subs: result.sub])[0]
+        maxCostItemsElements = CostItem.executeQuery('select count(*) as countCostItems from CostItem where sub in (:subs) group by costItemElement, sub order by countCostItems desc', [subs: result.sub])[0]
 
         List titles = _exportTitles(selectedExportFields, locale, selectedCostItemFields, maxCostItemsElements, contactSwitch, selectedCostItemElements, format)
 
