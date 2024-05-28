@@ -14,3 +14,18 @@ console.log('+ bundle: base.js');
 //= require /trumbowyg/langs/de.js                              //--> assets/vendor
 //= require /trumbowyg/plugins/history/trumbowyg.history.js     //--> assets/vendor
 
+window.onerror  = (a, b, c, d, e) => {
+    if ($.toast) {
+        $.toast({
+            title: 'LAS:eR-Debug',
+            message: '<div>&dot; Javascript</div><div>&dot; ' + a + '</div><div>&dot; ' + b + ':' + c + '</div>',
+            displayTime: 30000,
+            class: 'red',
+            showIcon: 'bug',
+            position: 'bottom left' });
+    } else {
+        alert('LAS:eR-Debug * Javascript-Error\n\n' + a + '\n' + b + ':' + c);
+    }
+    return false;
+}
+
