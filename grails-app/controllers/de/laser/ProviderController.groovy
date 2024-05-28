@@ -13,6 +13,7 @@ import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 
@@ -86,9 +87,9 @@ class ProviderController {
         ]
         List<String> queryArgs = []
         result.wekbRecords = providerService.getWekbProviderRecords(params, result)
-        if(params.containsKey('providerNameContains')) {
+        if(params.containsKey('nameContains')) {
             queryArgs << "(genfunc_filter_matcher(p.name, :name) = true or genfunc_filter_matcher(p.sortname, :name) = true)"
-            queryParams.name = params.providerNameContains
+            queryParams.name = params.nameContains
         }
         if(params.containsKey('provStatus')) {
             queryArgs << "p.status in (:status)"
@@ -527,5 +528,97 @@ class ProviderController {
         docstoreService.unifiedDeleteDocuments(params)
 
         redirect controller: 'provider', action:params.redirectAction, id:params.instanceId /*, fragment: 'docstab' */
+    }
+
+    /**
+     * Assigns the given discovery system to the given organisation
+     */
+    @Transactional
+    @Secured(['ROLE_USER'])
+    def addAttribute() {
+        Map<String, Object> result = providerService.getResultGenericsAndCheckAccess(params)
+
+        if (!result.provider) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.provider.label'), params.id]) as String
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        def newAttr = genericOIDService.resolveOID(params.get(params.field))
+        if (result.editable) {
+            switch(params.field) {
+                case 'invoicingFormat':
+                    if (!newAttr) {
+                        flash.message = message(code: 'default.not.found.message', args: [message(code: 'vendor.invoicing.formats.label'), params.frontend]) as String
+                        redirect(url: request.getHeader('referer'))
+                        return
+                    }
+                    if (result.provider.getElectronicBillings().find { ElectronicBilling eb -> eb.invoicingFormat.id == newAttr.id }) {
+                        flash.message = message(code: 'default.err.alreadyExist', args: [message(code: 'vendor.invoicing.formats.label')]) as String
+                        redirect(url: request.getHeader('referer'))
+                        return
+                    }
+                    result.provider.addToElectronicBillings(invoicingFormat: newAttr)
+                break
+                case 'invoiceDispatch':
+                    if (!newAttr) {
+                        flash.message = message(code: 'default.not.found.message', args: [message(code: 'vendor.invoicing.dispatch.label'), params.index]) as String
+                        redirect(url: request.getHeader('referer'))
+                        return
+                    }
+                    if (result.provider.getInvoiceDispatchs().find { InvoiceDispatch idi -> idi.invoiceDispatch.id == newAttr.id }) {
+                        flash.message = message(code: 'default.err.alreadyExist', args: [message(code: 'vendor.invoicing.dispatch.label')]) as String
+                        redirect(url: request.getHeader('referer'))
+                        return
+                    }
+                    result.provider.addToInvoiceDispatchs(invoiceDispatch: newAttr)
+                break
+                case 'invoicingVendor':
+                    if (!newAttr) {
+                        flash.message = message(code: 'default.not.found.message', args: [message(code: 'vendor.invoicing.vendors.label'), params.index]) as String
+                        redirect(url: request.getHeader('referer'))
+                        return
+                    }
+                    if (result.provider.getInvoicingVendors().find { InvoicingVendor iv -> iv.vendor.id == newAttr.id }) {
+                        flash.message = message(code: 'default.err.alreadyExist', args: [message(code: 'vendor.invoicing.vendors.label')]) as String
+                        redirect(url: request.getHeader('referer'))
+                        return
+                    }
+                    result.provider.addToInvoicingVendors(vendor: newAttr)
+                break
+            }
+            result.provider.save()
+        }
+
+        redirect action: 'show', id: params.id
+    }
+
+    /**
+     * Removes the given discovery system from the given organisation
+     */
+    @Transactional
+    @Secured(['ROLE_USER'])
+    def deleteAttribute() {
+        Map<String, Object> result = providerService.getResultGenericsAndCheckAccess(params)
+
+        if (!result.provider) {
+            flash.error = message(code: 'default.not.found.message', args: [message(code: 'default.provider.label'), params.id]) as String
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        if (result.editable) {
+            def attr = genericOIDService.resolveOID(params.removeObjectOID)
+            switch(params.field) {
+                case 'invoicingFormat': result.provider.removeFromElectronicBillings(attr)
+                    break
+                case 'invoiceDispatch': result.provider.removeFromInvoiceDispatchs(attr)
+                    break
+                case 'invoicingVendor': result.provider.removeFromInvoicingVendors(attr)
+                    break
+            }
+            result.provider.save()
+            attr.delete()
+        }
+
+        redirect(url: request.getHeader('referer'))
     }
 }

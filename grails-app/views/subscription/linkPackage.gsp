@@ -88,11 +88,16 @@
             <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="question circle icon"></i></span></label>
         </div>
         <div class="four fields">
-            <g:if test="${subscription.instanceOf && auditService.getAuditConfig(subscription, 'holdingSelection')}">
+            <g:if test="${subscription.instanceOf && auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')}">
+                <div class="field">
+                    ${subscription.holdingSelection.getI10n('value')}
+                </div>
+            </g:if>
+            <g:else>
                 <div class="field">
                     <ui:select class="ui dropdown search selection" id="holdingSelection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id" optionValue="value"/>
                 </div>
-                <g:if test="${institution.isCustomerType_Consortium()}">
+                <g:if test="${institution.isCustomerType_Consortium() && !subscription.instanceOf}">
                     <div class="field">
                         <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
                             <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherited')}" class="ui icon green button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="true">
@@ -106,11 +111,6 @@
                         </g:else>
                     </div>
                 </g:if>
-            </g:if>
-            <g:else>
-                <div class="field">
-                    ${subscription.holdingSelection.getI10n('value')}
-                </div>
             </g:else>
             <div class="field">
                 <div class="ui checkbox toggle">
