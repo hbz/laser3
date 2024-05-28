@@ -3,6 +3,7 @@ package de.laser.ctrl
 import de.laser.AccessService
 import de.laser.AddressbookService
 import de.laser.AuditConfig
+import de.laser.AuditService
 import de.laser.CompareService
 import de.laser.ComparisonService
 import de.laser.ContextService
@@ -16,6 +17,7 @@ import de.laser.FilterService
 import de.laser.FinanceService
 import de.laser.GenericOIDService
 import de.laser.GlobalService
+import de.laser.GlobalSourceSyncService
 import de.laser.GokbService
 import de.laser.Identifier
 import de.laser.IdentifierNamespace
@@ -95,6 +97,7 @@ class SurveyControllerService {
 
     AccessService accessService
     AddressbookService addressbookService
+    AuditService auditService
     CompareService compareService
     ComparisonService comparisonService
     ContextService contextService
@@ -105,6 +108,7 @@ class SurveyControllerService {
     ExportClickMeService exportClickMeService
     GenericOIDService genericOIDService
     GlobalService globalService
+    GlobalSourceSyncService globalSourceSyncService
     GokbService gokbService
     FilterService filterService
     FinanceControllerService financeControllerService
@@ -501,7 +505,9 @@ class SurveyControllerService {
                 map.pkg = surveyConfigPackage.pkg
                 map.costItemsByCostItemElement = CostItem.executeQuery(query + ' and ct.pkg = :pkg', [pkg: surveyConfigPackage.pkg, status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig, orgIds: orgsId]).sort {it.costItemElement.getI10n('value')}.groupBy { it.costItemElement}
                 result.costItemsByPackages << map
-            }.sort{it.pkg.name}
+            }
+
+            result.costItemsByPackages= result.costItemsByPackages.sort{it.pkg.name}
 
             result.countCostItems = CostItem.executeQuery('select count(*) from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null and ct.costItemElement = :costItemElement and ct.pkg = :pkg', [pkg: RefdataValue.get(result.selectedPackageID), costItemElement: RefdataValue.get(result.selectedCostItemElementID), status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig])[0]
 
@@ -544,8 +550,8 @@ class SurveyControllerService {
             if(result.surveyConfig.surveyPackages){
                 List uuidPkgs = SurveyConfigPackage.executeQuery("select scg.pkg.gokbId from SurveyConfigPackage scg where scg.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
                 params.uuids = uuidPkgs
-                params.max = params.size()
-                params.offset = 0
+                params.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
+                params.offset = params.offset ? Integer.parseInt(params.offset) : 0
                 result.putAll(packageService.getWekbPackages(params))
             }else{
                 result.records = []
@@ -572,6 +578,8 @@ class SurveyControllerService {
                     if(pkg)
                     SurveyConfigPackage surveyConfigPackage = new SurveyConfigPackage(surveyConfig: result.surveyConfig, pkg: pkg).save()
                 }
+                result.surveyConfig = result.surveyConfig.refresh()
+                result.surveyPackagesCount = SurveyConfigPackage.executeQuery("select count(*) from SurveyConfigPackage where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
                 params.remove("addUUID")
             }
 
@@ -602,7 +610,8 @@ class SurveyControllerService {
                 }
                 params.remove("selectedPkgs")
             }
-
+            params.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
+            params.offset = params.offset ? Integer.parseInt(params.offset) : 0
             result.putAll(packageService.getWekbPackages(params))
 
             result.uuidPkgs = SurveyConfigPackage.executeQuery("select scg.pkg.gokbId from SurveyConfigPackage scg where scg.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
@@ -1181,6 +1190,10 @@ class SurveyControllerService {
                             transferWorkflow.transferSurveyCostItems = params.transferSurveyCostItems
                         }
 
+                        if (params.transferSurveyCostItemPackage != null) {
+                            transferWorkflow.transferSurveyCostItemPackage = params.transferSurveyCostItemPackage
+                        }
+
                         if (params.transferSurveyProperties != null) {
                             transferWorkflow.transferSurveyProperties = params.transferSurveyProperties
                         }
@@ -1195,6 +1208,10 @@ class SurveyControllerService {
 
                         if (params.transferSubPackagesAndIes != null) {
                             transferWorkflow.transferSubPackagesAndIes = params.transferSubPackagesAndIes
+                        }
+
+                        if (params.transferSurveyPackages != null) {
+                            transferWorkflow.transferSurveyPackages = params.transferSurveyPackages
                         }
                     } else {
                         Map transferWorkflowForMultiYear = [:]
@@ -1212,6 +1229,10 @@ class SurveyControllerService {
                             transferWorkflowForMultiYear.transferSurveyCostItems = params.transferSurveyCostItems
                         }
 
+                        if (params.transferSurveyCostItemPackage != null) {
+                            transferWorkflow.transferSurveyCostItemPackage = params.transferSurveyCostItemPackage
+                        }
+
                         if (params.transferSurveyProperties != null) {
                             transferWorkflowForMultiYear.transferSurveyProperties = params.transferSurveyProperties
                         }
@@ -1226,6 +1247,10 @@ class SurveyControllerService {
 
                         if (params.transferSubPackagesAndIes != null) {
                             transferWorkflowForMultiYear.transferSubPackagesAndIes = params.transferSubPackagesAndIes
+                        }
+
+                        if (params.transferSurveyPackages != null) {
+                            transferWorkflowForMultiYear.transferSurveyPackages = params.transferSurveyPackages
                         }
                         transferWorkflow["transferWorkflowForMultiYear_${subscription.id}"] = transferWorkflowForMultiYear
                     }
@@ -2122,217 +2147,12 @@ class SurveyControllerService {
                 result.surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(result.participant, result.surveyConfig, propertyDefinition)
             }
 
-
             result.ownerId = result.surveyInfo.owner.id
 
             params.viewTab = params.viewTab ?: 'overview'
+            params.subTab = params.subTab ?: 'allPackages'
 
-            if (result.surveyConfig.subscription) {
-
-                if(params.viewTab == 'overview') {
-
-                result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(result.participant)
-                // restrict visible for templates/links/orgLinksAsList
-                result.visibleOrgRelations = []
-                if (result.subscription) {
-                    result.subscription.orgRelations.each { OrgRole or ->
-                        if (!(or.org.id == result.institution.id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
-                            result.visibleOrgRelations << or
-                        }
-                    }
-                    result.visibleOrgRelations.sort { it.org.sortname }
-
-                    result.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
-                    result.links = linksGenerationService.getSourcesAndDestinations(result.subscription, result.user)
-
-                    if (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
-
-                        result.previousSubscription = result.subscription._getCalculatedPreviousForSurvey()
-
-                        /*result.previousIesListPriceSum = 0
-                       if(result.previousSubscription){
-                           result.previousIesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                                   'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
-                           [sub: result.previousSubscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
-
-                       }*/
-
-                        result.sumListPriceSelectedIEsEUR = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_EUR)
-                        result.sumListPriceSelectedIEsUSD = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_USD)
-                        result.sumListPriceSelectedIEsGBP = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_GBP)
-
-
-                        /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                                 'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
-                                 [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
-
-                        result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
-                        result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription)
-//                    if (result.surveyConfig.pickAndChoosePerpetualAccess) {
-//                        result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
-//                    } else {
-//                        result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countCurrentIssueEntitlements(result.previousSubscription) : 0) + subscriptionService.countCurrentIssueEntitlements(result.subscription)
-//                    }
-
-                        result.subscriber = result.participant
-
-                    }
-
-
-                }
-                if (result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
-                    if (!result.subscription) {
-                        result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
-                        result.successorSubscription = result.successorSubscriptionParent ? result.successorSubscriptionParent.getDerivedSubscriptionForNonHiddenSubscriber(result.participant) : null
-                    } else {
-                        result.successorSubscription = result.subscription._getCalculatedSuccessorForSurvey()
-                    }
-                    if (result.successorSubscription) {
-                        List objects = []
-                        if (result.subscription) {
-                            objects << result.subscription
-                        }
-                        objects << result.successorSubscription
-                        result = result + compareService.compareProperties(objects)
-                    }
-
-                    if (result.surveyConfig.subSurveyUseForTransfer) {
-                        result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
-                        result.subscriptionParent = result.surveyConfig.subscription
-                        Collection<AbstractPropertyWithCalculatedLastUpdated> props
-                        props = result.subscriptionParent.propertySet.findAll { it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic)) }
-                        if (result.successorSubscriptionParent) {
-                            props += result.successorSubscriptionParent.propertySet.findAll { it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic)) }
-                        }
-                        result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
-                    }
-                }
-                }else if(params.viewTab == 'invoicingInformation') {
-                    params.sort = params.sort ?: 'pr.org.sortname'
-                    params.org = result.participant
-                    result.visiblePersons = addressbookService.getVisiblePersons("contacts", params)
-                    result.addresses = addressbookService.getVisibleAddresses("contacts", params)
-
-                }else if(params.viewTab == 'stats') {
-                    result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(result.participant)
-
-                    if (params.error)
-                        result.error = params.error
-                    if (params.reportType)
-                        result.putAll(subscriptionControllerService.loadFilterList(params))
-                    ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-                    result.flagContentGokb = true // gokbService.executeQuery
-                    Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (:subscriptions)", [subscriptions: [result.subscription, result.subscription.instanceOf]])
-                    result.platformInstanceRecords = [:]
-                    result.platforms = subscribedPlatforms
-                    result.platformsJSON = subscribedPlatforms.globalUID as JSON
-                    result.keyPairs = [:]
-                    if (!params.containsKey('tab'))
-                        params.tab = subscribedPlatforms[0].id.toString()
-                    result.subscription.instanceOf.packages.each { SubscriptionPackage sp ->
-                        Platform platformInstance = sp.pkg.nominalPlatform
-                        if (result.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_LOCAL]) {
-                            //create dummies for that they may be xEdited - OBSERVE BEHAVIOR for eventual performance loss!
-                            CustomerIdentifier keyPair = CustomerIdentifier.findByPlatformAndCustomer(platformInstance, result.subscription.getSubscriberRespConsortia())
-                            if (!keyPair) {
-                                keyPair = new CustomerIdentifier(platform: platformInstance,
-                                        customer: result.subscription.getSubscriberRespConsortia(),
-                                        type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT,
-                                        owner: contextService.getOrg(),
-                                        isPublic: true)
-                                if (!keyPair.save()) {
-                                    log.warn(keyPair.errors.getAllErrors().toListString())
-                                }
-                            }
-                            result.keyPairs.put(platformInstance.gokbId, keyPair)
-                        }
-                        Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
-                        if (queryResult.error && queryResult.error == 404) {
-                            result.wekbServerUnavailable = message(code: 'wekb.error.404')
-                        } else if (queryResult) {
-                            List records = queryResult.result
-                            if (records[0]) {
-                                records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
-                                records[0].id = platformInstance.id
-                                result.platformInstanceRecords[platformInstance.gokbId] = records[0]
-                                result.platformInstanceRecords[platformInstance.gokbId].wekbUrl = apiSource.editUrl + "/resource/show/${platformInstance.gokbId}"
-                                if (records[0].statisticsFormat == 'COUNTER' && records[0].counterR4SushiServerUrl == null && records[0].counterR5SushiServerUrl == null) {
-                                    result.error = 'noSushiSource'
-                                    ArrayList<Object> errorArgs = ["${apiSource.editUrl}/resource/show/${platformInstance.gokbId}", platformInstance.name]
-                                    result.errorArgs = errorArgs.toArray()
-                                } else {
-                                    CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriberRespConsortia(), platformInstance)
-                                    if (!ci?.value) {
-                                        if (result.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_LOCAL])
-                                            result.error = 'noCustomerId.local'
-                                        else
-                                            result.error = 'noCustomerId'
-                                    }
-                                }
-                            }
-                        }
-                        if (result.subscription._getCalculatedType() != CalculatedType.TYPE_CONSORTIAL) {
-                            result.reportTypes = []
-                            CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriberRespConsortia(), platformInstance)
-                            if (ci?.value) {
-                                Set allAvailableReports = subscriptionControllerService.getAvailableReports(result)
-                                if (allAvailableReports)
-                                    result.reportTypes.addAll(allAvailableReports)
-                                else {
-                                    result.error = 'noReportAvailable'
-                                }
-                            } else if (!ci?.value) {
-                                result.error = 'noCustomerId'
-                            }
-                        }
-                    }
-                }else if(params.viewTab == 'packageSurvey') {
-                    params.subTab = params.subTab ?: 'allPackages'
-
-                    if(result.editable) {
-                        switch (params.actionsForSurveyPackages) {
-                            case "addSurveyPackage":
-                                Package pkg = Package.findByGokbId(params.pkgUUID)
-                                if (SurveyConfigPackage.findBySurveyConfigAndPkg(result.surveyConfig, pkg) && !SurveyPackageResult.findBySurveyConfigAndParticipantAndPkg(result.surveyConfig, result.participant, pkg)) {
-                                    SurveyPackageResult surveyPackageResult = new SurveyPackageResult(surveyConfig: result.surveyConfig, participant: result.participant, pkg: pkg, owner: result.surveyInfo.owner)
-                                    surveyPackageResult.save()
-                                }
-
-                                break
-                            case "removeSurveyPackage":
-                                Package pkg = Package.findByGokbId(params.pkgUUID)
-                                SurveyPackageResult surveyPackageResult = SurveyPackageResult.findBySurveyConfigAndParticipantAndPkg(result.surveyConfig, result.participant, pkg)
-                                if (SurveyConfigPackage.findBySurveyConfigAndPkg(result.surveyConfig, pkg) && surveyPackageResult) {
-                                    surveyPackageResult.delete()
-                                }
-                                break
-                        }
-                    }
-
-                    if(result.surveyConfig.surveyPackages){
-                        List uuidPkgs
-                        if(params.subTab == 'allPackages'){
-                            result.uuidPkgs = SurveyPackageResult.executeQuery("select spr.pkg.gokbId from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant", [participant: result.participant, surveyConfig: result.surveyConfig])
-                            uuidPkgs = SurveyConfigPackage.executeQuery("select scg.pkg.gokbId from SurveyConfigPackage scg where scg.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
-                        }else if(params.subTab == 'selectPackages'){
-                            List<Long> ids = SurveyPackageResult.executeQuery("select spr.pkg.gokbId from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant", [participant: result.participant, surveyConfig: result.surveyConfig])
-                            if(ids.size() > 0){
-                                uuidPkgs = ids
-                            }else {
-                                uuidPkgs = ['fakeUuids']
-                            }
-                        }
-
-                        params.uuids = uuidPkgs
-                        params.max = params.size()
-                        params.offset = 0
-                        result.putAll(packageService.getWekbPackages(params))
-                    }else{
-                        result.records = []
-                        result.recordsCount = 0
-                    }
-                }
-            }
+            result = surveyService.participantResultGenerics(result, result.participant, params)
 
             result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
             result.institution = result.participant
@@ -3510,6 +3330,45 @@ class SurveyControllerService {
 
     }
 
+    Map<String, Object> copySurveyPackages(GrailsParameterMap params) {
+        Map<String, Object> result = getResultGenericsAndCheckAccess(params)
+        if (!result) {
+            [result: null, status: STATUS_ERROR]
+        } else {
+            if (!result.editable) {
+                [result: null, status: STATUS_ERROR]
+                return
+            }
+
+            result = surveyControllerService.getSubResultForTranfser(result, params)
+
+            result.participantsList = []
+
+            result.parentSuccessortParticipantsList = []
+
+            result.parentSuccessorSubChilds.each { sub ->
+                Map newMap = [:]
+                Org org = sub.getSubscriberRespConsortia()
+                newMap.id = org.id
+                newMap.sortname = org.sortname
+                newMap.name = org.name
+                newMap.newSub = sub
+                newMap.oldSub = sub._getCalculatedPreviousForSurvey()
+                newMap.surveyPackages = SurveyPackageResult.executeQuery("select spr.pkg from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant", [surveyConfig: result.surveyConfig, participant: org])
+
+                result.participantsList << newMap
+
+            }
+
+            result.participantsList = result.participantsList.sort { it.sortname }
+
+            result.isLinkingRunning = subscriptionService.checkThreadRunning('CopySurPkgs_' + result.parentSuccessorSubscription.id)
+
+            [result: result, status: STATUS_OK]
+        }
+
+    }
+
     Map<String, Object> proccessCopySubPackagesAndIes(GrailsParameterMap params) {
         Map<String, Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
@@ -3546,17 +3405,75 @@ class SurveyControllerService {
                         SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(selectedSub, pkg)
                         if (processOption =~ /^link/) {
                             if (!sp) {
-                                if (result.parentSuccessorSubscription) {
+                               /* if (result.parentSuccessorSubscription) {
                                     subscriptionService.addToSubscriptionCurrentStock(selectedSub, result.parentSuccessorSubscription, pkg, processOption == 'linkwithIE')
                                 } else {
                                     subscriptionService.addToSubscription(selectedSub, pkg, processOption == 'linkwithIE')
-                                }
+                                }*/
+                                subscriptionService.addToSubscription(selectedSub, pkg, processOption == 'linkwithIE')
                             }
                         }
                     }
                 }
             })
         }
+
+        [result: result, status: STATUS_OK]
+    }
+
+    Map<String, Object> proccessCopySurveyPackages(GrailsParameterMap params) {
+        Map<String, Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result.editable) {
+            [result: null, status: STATUS_ERROR]
+            return
+        }
+
+        result = surveyControllerService.getSubResultForTranfser(result, params)
+
+        if (!subscriptionService.checkThreadRunning('CopySurPkgs_' + result.parentSuccessorSubscription.id)) {
+            Set<Subscription> subscriptions, permittedSubs = []
+            if (params.containsKey("membersListToggler")) {
+                subscriptions = result.parentSuccessorSubChilds
+            } else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubs"))
+            subscriptions.each { Subscription selectedSub ->
+                if (selectedSub.isEditableBy(result.user)) {
+                    permittedSubs << selectedSub
+                }
+            }
+
+            boolean createEntitlements = params.createEntitlements == 'on'
+           if(result.parentSuccessorSubscription && !auditService.getAuditConfig(result.parentSuccessorSubscription, 'holdingSelection')) {
+               if (params.holdingSelection) {
+                   RefdataValue holdingSelection = RefdataValue.get(params.holdingSelection)
+                   permittedSubs.each { Subscription selectedSub ->
+                       Org org = selectedSub.getSubscriberRespConsortia()
+                       if(SurveyPackageResult.executeQuery("select count(*) from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant", [surveyConfig: result.surveyConfig, participant: org])[0] > 0) {
+                           selectedSub.holdingSelection = holdingSelection
+                           selectedSub.save()
+                       }
+                   }
+               }
+           }
+
+
+            executorService.execute({
+                Thread.currentThread().setName('CopySurPkgs_' + result.parentSuccessorSubscription.id)
+                    permittedSubs.each { Subscription selectedSub ->
+                        selectedSub = selectedSub.refresh()
+                        Org org = selectedSub.getSubscriberRespConsortia()
+                        List<Package> surveyPackages = SurveyPackageResult.executeQuery("select spr.pkg from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant", [surveyConfig: result.surveyConfig, participant: org])
+                        surveyPackages.each { Package pkg ->
+                        SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(selectedSub, pkg)
+                            if (!sp) {
+                                println("pkg"+pkg.name)
+                                subscriptionService.addToSubscription(selectedSub, pkg, createEntitlements)
+                            }
+                    }
+                }
+            })
+
+        }
+
 
         [result: result, status: STATUS_OK]
     }
@@ -3611,6 +3528,67 @@ class SurveyControllerService {
         }
 
     }
+
+    Map<String, Object> surveyCostItemPackage(GrailsParameterMap params) {
+        Map<String, Object> result = getResultGenericsAndCheckAccess(params)
+        if (!result) {
+            [result: null, status: STATUS_ERROR]
+        } else {
+            if (!result.editable) {
+                [result: null, status: STATUS_ERROR]
+                return
+            }
+
+            result = surveyControllerService.getSubResultForTranfser(result, params)
+
+            result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID): RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+
+            result.selectedCostItemElement = RefdataValue.get(result.selectedCostItemElementID)
+
+            result.selectedPackageID = params.selectedPackageID ? Long.valueOf(params.selectedPackageID) : CostItem.executeQuery('select ct.pkg.id from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null and ct.costItemElement = :costItemElement and ct.pkg is not null order by pkg.name', [costItemElement: RefdataValue.get(result.selectedCostItemElementID), status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig])[0]
+            result.pkg = Package.get(result.selectedPackageID)
+
+            result.participantsList = []
+
+            result.parentSuccessortParticipantsList = []
+
+            result.parentSuccessorSubChilds.each { sub ->
+                Map newMap = [:]
+                Org org = sub.getSubscriberRespConsortia()
+                newMap.id = org.id
+                newMap.sortname = org.sortname
+                newMap.org = org
+                newMap.name = org.name
+                newMap.newSub = sub
+                newMap.oldSub = sub._getCalculatedPreviousForSurvey()
+
+                newMap.surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, org)
+                newMap.surveyCostItem = newMap.surveyOrg && result.pkg ? CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkg(newMap.surveyOrg, RDStore.COST_ITEM_DELETED, result.selectedCostItemElement, result.pkg) : null
+
+                result.participantsList << newMap
+
+            }
+
+            result.participantsList = result.participantsList.sort { it.sortname }
+
+            String query = 'from CostItem ct where ct.pkg is not null and ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig and surOrg.org in (:orgs)) and ct.costItemElement is not null'
+
+            result.costItemsByPackages = []
+
+            result.surveyConfig.surveyPackages.each{ SurveyConfigPackage surveyConfigPackage ->
+                Map map = [:]
+                map.pkg = surveyConfigPackage.pkg
+                map.costItemsByCostItemElement = CostItem.executeQuery(query + ' and ct.pkg = :pkg', [pkg: surveyConfigPackage.pkg, status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig, orgs: result.participantsList.org]).sort {it.costItemElement.getI10n('value')}.groupBy { it.costItemElement}
+                result.costItemsByPackages << map
+            }
+
+            result.costItemsByPackages= result.costItemsByPackages.sort{it.pkg.name}
+
+            [result: result, status: STATUS_OK]
+        }
+
+    }
+
 
     /**
      * Takes the given parameters and creates copies of the given cost items, based on the submitted data
@@ -3690,6 +3668,77 @@ class SurveyControllerService {
                     }
 
                 }
+
+            result.countNewCostItems = countNewCostItems
+            [result: result, status: STATUS_OK]
+        }
+
+    }
+
+    Map<String, Object> proccessCopySurveyCostItemPackage(GrailsParameterMap params) {
+        Map<String, Object> result = getResultGenericsAndCheckAccess(params)
+        if (!result) {
+            [result: null, status: STATUS_ERROR]
+        } else {
+            if (!result.editable) {
+                [result: null, status: STATUS_ERROR]
+                return
+            }
+
+            result = surveyControllerService.getSubResultForTranfser(result, params)
+
+            Integer countNewCostItems = 0
+            //RefdataValue costElement = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE
+
+            params.list('selectedSurveyCostItemPackage').each { costItemId ->
+
+                CostItem costItem = CostItem.get(costItemId)
+                Subscription participantSub = result.parentSuccessorSubscription?.getDerivedSubscriptionForNonHiddenSubscriber(costItem.surveyOrg.org)
+                List participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participantSub, result.institution, costItem.costItemElement, RDStore.COST_ITEM_DELETED)
+                if (costItem && participantSub && !participantSubCostItem) {
+
+                    Map properties = costItem.properties
+                    CostItem copyCostItem = new CostItem()
+                    InvokerHelper.setProperties(copyCostItem, properties)
+                    copyCostItem.globalUID = null
+                    copyCostItem.surveyOrg = null
+                    copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : false
+                    copyCostItem.sub = participantSub
+
+                    int taxRate = 0 //fallback
+                    if (copyCostItem.taxKey)
+                        taxRate = copyCostItem.taxKey.taxRate
+
+                    if (copyCostItem.billingCurrency == RDStore.CURRENCY_EUR) {
+                        copyCostItem.currencyRate = 1.0
+                        copyCostItem.costInLocalCurrency = copyCostItem.costInBillingCurrency
+                        copyCostItem.costInLocalCurrencyAfterTax = copyCostItem.costInLocalCurrency ? copyCostItem.costInLocalCurrency * (1.0 + (0.01 * taxRate)) : null
+                        copyCostItem.costInBillingCurrencyAfterTax = copyCostItem.costInBillingCurrency ? copyCostItem.costInBillingCurrency * (1.0 + (0.01 * taxRate)) : null
+                    } else {
+                        copyCostItem.currencyRate = 0.00
+                        copyCostItem.costInLocalCurrency = null
+                        copyCostItem.costInLocalCurrencyAfterTax = null
+                        copyCostItem.costInBillingCurrencyAfterTax = copyCostItem.costInBillingCurrency ? copyCostItem.costInBillingCurrency * (1.0 + (0.01 * taxRate)) : null
+                    }
+
+                    if (copyCostItem.billingSumRounding) {
+                        copyCostItem.costInBillingCurrency = copyCostItem.costInBillingCurrency ? Math.round(copyCostItem.costInBillingCurrency) : null
+                        copyCostItem.costInLocalCurrency = copyCostItem.costInLocalCurrency ? Math.round(copyCostItem.costInLocalCurrency) : null
+                    }
+                    if (copyCostItem.finalCostRounding) {
+                        copyCostItem.costInBillingCurrencyAfterTax = copyCostItem.costInBillingCurrencyAfterTax ? Math.round(copyCostItem.costInBillingCurrencyAfterTax) : null
+                        copyCostItem.costInLocalCurrencyAfterTax = copyCostItem.costInLocalCurrencyAfterTax ? Math.round(copyCostItem.costInLocalCurrencyAfterTax) : null
+                    }
+
+                    if (copyCostItem.save()) {
+                        countNewCostItems++
+                    } else {
+                        log.debug("Error by proccessCopySurveyCostItems: " + copyCostItem.errors)
+                    }
+
+                }
+
+            }
 
             result.countNewCostItems = countNewCostItems
             [result: result, status: STATUS_OK]
@@ -3871,7 +3920,7 @@ class SurveyControllerService {
                     newMap.sortname = org.sortname
                     newMap.name = org.name
                     newMap.newSub = sub
-                    newMap.oldSub = result.surveyConfig.subSurveyUseForTransfer ? sub._getCalculatedPreviousForSurvey() : result.parentSubscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
+                    newMap.oldSub = result.surveyConfig.subscription ? (result.surveyConfig.subSurveyUseForTransfer ? sub._getCalculatedPreviousForSurvey() : result.parentSubscription.getDerivedSubscriptionForNonHiddenSubscriber(org)) : null
 
                     //println("new: ${newMap.newSub}, old: ${newMap.oldSub}")
 

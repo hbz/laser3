@@ -101,7 +101,7 @@
             </td>
         <g:if test="${showSurveyInvoicingInformation}">
             <td>
-                <g:if test="${editable && actionName == 'myInstitution'}">
+                <g:if test="${editable && controllerName == 'myInstitution'}">
                     <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndAddress(participant, surveyConfig, address)}">
                         <g:link controller="myInstitution" action="setSurveyInvoicingInformation"
                                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: false, addressId: address.id]">
@@ -115,6 +115,20 @@
                         </g:link>
                     </g:else>
                 </g:if>
+                <g:elseif test="${editable && controllerName == 'survey'}">
+                    <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndAddress(participant, surveyConfig, address)}">
+                        <g:link controller="survey" action="evaluationParticipant"
+                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: false, addressId: address.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', participant: participant.id]">
+                            <i class="check bordered large green icon"></i>
+                        </g:link>
+                    </g:if>
+                    <g:else>
+                        <g:link controller="survey" action="evaluationParticipant"
+                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: true, addressId: address.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', participant: participant.id]">
+                            <i class="close bordered large red icon"></i>
+                        </g:link>
+                    </g:else>
+                </g:elseif>
                 <g:else>
                     <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndAddress(participant, surveyConfig, address)}">
                         <i class="check bordered large green icon"></i>
