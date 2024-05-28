@@ -103,11 +103,11 @@ class BaseConfig {
     static List<String> FILTER = [
             KEY_SUBSCRIPTION,
             KEY_LICENSE,
-            KEY_ORGANISATION,
             KEY_PROVIDER,
             KEY_VENDOR,
             KEY_PLATFORM,
             KEY_PACKAGE,
+            KEY_ORGANISATION,
             // KEY_ISSUEENTITLEMENT,
             // 'costItem'
     ]

@@ -34,8 +34,8 @@
     <p class="ui header">Icons #2</p>
     <div class="ui list">
         <div class="item">
-            <i class="icon large rocket"></i>
-            <div class="content"> Anbieter (rocket)</div>
+            <i class="icon large handshake"></i>
+            <div class="content"> Anbieter (handshake)</div>
         </div>
         <div class="item">
             <i class="icon large boxes"></i>
