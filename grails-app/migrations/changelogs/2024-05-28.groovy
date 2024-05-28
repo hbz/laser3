@@ -6,7 +6,9 @@ databaseChangeLog = {
         grailsChange {
             change {
                 sql.execute("update cost_item set ci_pkg_fk = (select sp_pkg_fk from subscription_package where sp_id = ci_sub_pkg_fk) where ci_sub_pkg_fk is not null")
-                confirm("cost_item set ci_pkg_fk from ci_sub_pkg_fk: ${sql.getUpdateCount()}")
+                String info = "cost_item set ci_pkg_fk from ci_sub_pkg_fk: ${sql.getUpdateCount()}"
+                confirm(info)
+                changeSet.setComments(info)
             }
             rollback {}
         }
