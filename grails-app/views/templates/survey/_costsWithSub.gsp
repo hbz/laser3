@@ -5,9 +5,9 @@
            value="${surveyOrg ? CostItem.findAllBySurveyOrgAndPkgIsNull(surveyOrg) : null}"/>
 
     <g:set var="costItemsSubsc"
-           value="${CostItem.executeQuery('select ci from CostItem as ci left join ci.costItemElement cie where ci.owner in :owner and ci.sub = :sub and ci.isVisibleForSubscriber = true and ci.surveyOrg = null and ci.costItemStatus != :deleted and ci.pkg is null' +
+           value="${subscription ? CostItem.executeQuery('select ci from CostItem as ci left join ci.costItemElement cie where ci.owner in :owner and ci.sub = :sub and ci.isVisibleForSubscriber = true and ci.surveyOrg = null and ci.costItemStatus != :deleted and ci.pkg is null' +
                    ' order by cie.value_' + LocaleUtils.getCurrentLang(),
-                   [owner: [subscription.getConsortia()], sub: subscription, deleted: RDStore.COST_ITEM_DELETED])}"/>
+                   [owner: [subscription.getConsortia()], sub: subscription, deleted: RDStore.COST_ITEM_DELETED]) : null}"/>
 
     <% Set<RefdataValue> costItemElementsNotInSurveyCostItems = [] %>
 
@@ -340,10 +340,10 @@
 
     <g:if test="${surveyInfo.owner.id == institution.id}">
         <g:set var="consCostItems"
-               value="${CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElement cie ' +
+               value="${subscription ? CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElement cie ' +
                        'where ci.owner = :owner and sub.instanceOf = :sub and oo.roleType in (:roleTypes)  and ci.surveyOrg = null and ci.costItemStatus != :deleted' +
                        ' order by cie.value_' + LocaleUtils.getCurrentLang(),
-                       [owner: [subscription.getConsortia()], sub: subscription, deleted: RDStore.COST_ITEM_DELETED, roleTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}"/>
+                       [owner: [subscription.getConsortia()], sub: subscription, deleted: RDStore.COST_ITEM_DELETED, roleTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]) : null}"/>
         <g:set var="consCosts" value="${consCostItems ? financeService.calculateResults(consCostItems.id) : null}"/>
         <g:if test="${consCosts}">
             <div class="ui card la-dl-no-table">
