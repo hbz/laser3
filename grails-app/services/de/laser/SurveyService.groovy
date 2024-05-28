@@ -2288,6 +2288,30 @@ class SurveyService {
             }
         }
         else if (params.viewTab == 'invoicingInformation') {
+            if (result.editable) {
+                if(params.setSurveyInvoicingInformation) {
+                    if (params.personId) {
+                        if (params.setConcact == 'true') {
+                            result.surveyOrg.person = Person.get(Long.valueOf(params.personId))
+                        }
+                        if (params.setConcact == 'false') {
+                            result.surveyOrg.person = null
+                        }
+                        result.surveyOrg.save()
+                    }
+
+                    if (params.addressId) {
+                        if (params.setAddress == 'true') {
+                            result.surveyOrg.address = Address.get(Long.valueOf(params.addressId))
+                        }
+                        if (params.setAddress == 'false') {
+                            result.surveyOrg.address = null
+                        }
+                        result.surveyOrg.save()
+                    }
+                }
+            }
+
             params.sort = params.sort ?: 'pr.org.sortname'
             params.org = participant
             result.visiblePersons = addressbookService.getVisiblePersons("contacts", params)
