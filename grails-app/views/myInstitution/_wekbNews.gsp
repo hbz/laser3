@@ -211,7 +211,7 @@
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
 
         tmplConfig = [
-                ['provider', wekbNews.provider,   'default.provider.label',     'university',       'menu.my.providers'],
+                ['provider', wekbNews.provider,   'default.provider.label',     'handshake',        'menu.my.providers'],
                 ['vendor',   wekbNews.vendor,     'vendor.plural',              'shipping fast',    'menu.my.vendors'],
                 ['platform', wekbNews.platform,   'platform.plural',            'cloud',            'menu.my.platforms'],
                 ['package',  wekbNews.package,    'package.plural',             'gift',             'menu.my.packages']

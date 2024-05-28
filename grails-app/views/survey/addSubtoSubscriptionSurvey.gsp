@@ -30,7 +30,7 @@
         <g:if test="${!(SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true))}">
             <div class="field">
                 <label>${message(code: 'surveyconfig.subSurveyUseForTransfer.label.info')}</label>
-                <div class="ui checkbox">
+                <div class="ui checkbox subSurveyUseForTransferCheckbox">
                     <input type="checkbox" id="subSurveyUseForTransfer" name="subSurveyUseForTransfer"  ${params.subSurveyUseForTransfer? 'checked':''}>
                 </div>
             </div>
@@ -48,7 +48,7 @@
 
         <div class="field">
             <label>${message(code: 'surveyInfo.isMandatory.label.info')}</label>
-            <div class="ui checkbox">
+            <div class="ui checkbox mandatoryCheckbox">
                 <input type="checkbox" id="mandatory" name="mandatory" ${params.mandatory? 'checked':''}>
             </div>
         </div>
@@ -72,11 +72,14 @@
     </ui:form>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-        $('#subSurveyUseForTransfer').click(function () {
-            if ($(this).prop('checked')) {
-                $('#mandatory').prop('checked', true)
-            }
-        })
+    $('.subSurveyUseForTransferCheckbox').checkbox({
+     onChecked: function() {
+             $('.mandatoryCheckbox').checkbox('check');
+        },
+        onUnchecked: function() {
+          $('.mandatoryCheckbox').checkbox('uncheck');
+        }
+ });
 </laser:script>
 
 <laser:htmlEnd />

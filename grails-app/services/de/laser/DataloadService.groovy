@@ -1282,7 +1282,7 @@ class DataloadService {
                         }
                 }
                 else {
-                    log.debug("Element comparison ignored, because ftControl is not active")
+//                    log.debug("Element comparison ignored, because ftControl is not active")
                 }
             }
             finally {
