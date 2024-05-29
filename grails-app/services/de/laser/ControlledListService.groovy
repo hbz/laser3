@@ -437,7 +437,7 @@ class ControlledListService {
         subscriptions.each { row ->
             Subscription s = (Subscription) row[0]
             s.packages.each { sp ->
-                result.results.add([name:"${sp.pkg.name}/${s.dropdownNamingConvention(org)}",value:genericOIDService.getOID(sp)])
+                result.results.add([name:"${sp.pkg.name}/${s.dropdownNamingConvention(org)}",value:genericOIDService.getOID(sp.pkg)])
             }
         }
         result
@@ -1491,10 +1491,8 @@ class ControlledListService {
             qryParams.query = params.query
         }
         if(params.tableView) {
-            qryParams.context = institution
-            if(vendorNameFilter)
-                vendorNameFilter = "and ${vendorNameFilter}"
-            qryString = "select vendor from PackageVendor pv join pv.vendor vendor, SubscriptionPackage sp join sp.pkg pkg where sp.pkg = pv.pkg and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) ${vendorNameFilter} group by vendor.id order by vendor.sortname asc"
+            //qryParams.context = institution
+            qryString = "select vendor from Vendor vendor where ${vendorNameFilter} group by vendor.id order by vendor.sortname asc"
         }
         else {
             if(params.displayWekbFlag) {

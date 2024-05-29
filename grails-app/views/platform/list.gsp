@@ -32,7 +32,7 @@
 							<th>${message(code:'sidewide.number')}</th>
 							<g:sortableColumn property="sortname" title="${message(code: 'default.name.label')}" />
 							<th>${message(code:'default.url.label')}</th> <%-- needs we:kb rework to make the property sortable --%>
-						<g:sortableColumn property="providerName" title="${message(code:'default.provider.label')}" />
+						<g:sortableColumn property="providerName" title="${message(code:'provider.label')}" />
 							<th class="center aligned">
 								<ui:myXIcon tooltip="${message(code: 'menu.my.platforms')}" />
 							</th>

@@ -14,6 +14,7 @@ import de.laser.License
 import de.laser.LicenseService
 import de.laser.LinksGenerationService
 import de.laser.OrganisationService
+import de.laser.Package
 import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
 import de.laser.SubscriptionDiscountScale
@@ -282,33 +283,34 @@ class AjaxJsonController {
      */
     @Secured(['ROLE_USER'])
     def checkCascade() {
-        Map<String, Object> result = [sub:true, subPkg:true, ie:true]
+        Map<String, Object> result = [sub:true, pkg:true, ie:true]
         if (!params.subscription && ((params.package && params.issueEntitlement) || params.issueEntitlement)) {
             result.sub = false
-            result.subPkg = false
+            result.pkg = false
             result.ie = false
         }
         else if (params.subscription) {
             Subscription sub = (Subscription) genericOIDService.resolveOID(params.subscription)
             if (!sub) {
                 result.sub = false
-                result.subPkg = false
+                result.pkg = false
                 result.ie = false
             }
             else if (params.issueEntitlement) {
                 if (!params.package || params.package.contains('null')) {
-                    result.subPkg = false
+                    result.pkg = false
                     result.ie = false
                 }
                 else if (params.package && !params.package.contains('null')) {
-                    SubscriptionPackage subPkg = (SubscriptionPackage) genericOIDService.resolveOID(params.package)
-                    if(!subPkg || subPkg.subscription != sub) {
-                        result.subPkg = false
+                    Package pkg = (Package) genericOIDService.resolveOID(params.package)
+                    SubscriptionPackage subPkg = (SubscriptionPackage) SubscriptionPackage.findBySubscriptionAndPkg(sub, pkg)
+                    if(!pkg || subPkg.subscription != sub) {
+                        result.pkg = false
                         result.ie = false
                     }
                     else {
                         IssueEntitlement ie = (IssueEntitlement) genericOIDService.resolveOID(params.issueEntitlement)
-                        if(!ie || ie.subscription != subPkg.subscription || ie.tipp.pkg != subPkg.pkg) {
+                        if(!ie || ie.subscription != subPkg.subscription || ie.tipp.pkg != pkg) {
                             result.ie = false
                         }
                     }
@@ -526,7 +528,7 @@ class AjaxJsonController {
                 name: fuzzyString,
                 status: RDStore.O_STATUS_DELETED
         ]
-        String countQry = "select count(o) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status)"
+        String countQry = "select count(*) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status)"
         String rowQry = "select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status) order by o.name asc"
 
         List cq = Org.executeQuery(countQry,query_params)

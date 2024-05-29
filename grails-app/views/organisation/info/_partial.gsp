@@ -9,7 +9,7 @@
     </a>
     <a class="ui item stats-toggle" data-target="stats_provider">
         <span class="">
-            ${message(code:'default.provider.label')}
+            ${message(code:'provider.label')}
             <i class="grey question circle icon la-popup-tooltip la-delay" data-content="${message(code: 'subscription.plural')}, ${message(code: 'package.plural')}, ${message(code: 'platform.plural')}"></i>
         </span>
         <span class="ui ${providerMap?.size() ? 'primary' : ''} label"> ${providerMap?.size() ?: 0} </span>
@@ -43,7 +43,7 @@
 %{--        </div>--}%
 %{--        <div class="statistic stats-toggle" data-target="stats_provider">--}%
 %{--            <span class="value"> ${providerMap?.size() ?: 0} </span>--}%
-%{--            <span class="label"> ${message(code:'default.provider.label')} </span>--}%
+%{--            <span class="label"> ${message(code:'provider.label')} </span>--}%
 %{--        </div>--}%
 %{--        <div class="statistic stats-toggle" data-target="stats_survey">--}%
 %{--            <span class="value"> ${surveyMap.get('open')?.size() ?: 0} </span>--}%

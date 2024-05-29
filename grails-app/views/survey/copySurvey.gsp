@@ -427,7 +427,7 @@
                         </th>
 
                         <g:sortableColumn params="${params}" property="orgRole§provider"
-                                          title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}"
+                                          title="${message(code: 'provider.label')} / ${message(code: 'vendor.label')}"
                                           rowspan="2"/>
 
                         <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.startDate"
@@ -532,7 +532,7 @@
                                     </g:each>
                                     <g:each in="${s.vendors}" var="vendor">
                                         <g:link controller="vendor" action="show"
-                                                id="${vendor.id}">${vendor.name} (${message(code: 'default.agency.label')})</g:link><br />
+                                                id="${vendor.id}">${vendor.name} (${message(code: 'vendor.label')})</g:link><br />
                                     </g:each>
                                 </td>
                                 <td>
@@ -548,7 +548,7 @@
                                 <td>
                                     <g:link mapping="subfinance" controller="finance" action="index"
                                             params="${[sub: s.id]}">
-                                        ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
+                                        ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(*) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
                                     </g:link>
                                 </td>
 

@@ -326,7 +326,7 @@
                         <div id="container-provider">
                             <div class="ui card">
                                 <div class="content">
-                                    <h2 class="ui header">${message(code: 'default.provider.label')}</h2>
+                                    <h2 class="ui header">${message(code: 'provider.label')}</h2>
                                     <laser:render template="/templates/links/providerLinksAsList"
                                               model="${[roleLinks: visibleProviders,
                                                         roleObject: license,
@@ -355,7 +355,7 @@
                         <div id="container-vendor">
                             <div class="ui card">
                                 <div class="content">
-                                    <h2 class="ui header">${message(code: 'default.agency.label')}</h2>
+                                    <h2 class="ui header">${message(code: 'vendor.label')}</h2>
                                     <laser:render template="/templates/links/vendorLinksAsList"
                                                   model="${[vendorRoles: visibleVendors,
                                                             roleObject: license,

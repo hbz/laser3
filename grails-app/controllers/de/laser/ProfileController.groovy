@@ -54,6 +54,13 @@ class ProfileController {
         result
     }
 
+    @Secured(['ROLE_USER'])
+    def importManuel() {
+        Map<String, Object> result = [:]
+        result.user = contextService.getUser()
+        result
+    }
+
     /**
      * Call for a listing of public properties and reference data values, i.e. an overview of the controlled lists
      */

@@ -22,7 +22,7 @@
             <thead>
                 <tr>
                     <th colspan="3">
-                        <label for="source">${message(code: 'default.agency.plural.label')}</label>
+                        <label for="source">${message(code: 'vendor.plural')}</label>
                         <div class="ui search selection fluid dropdown org" id="source">
                             <input type="hidden" name="source"/>
                             <div class="default text"><g:message code="default.select.source.label"/></div>
@@ -30,7 +30,7 @@
                         </div>
                     </th>
                     <th colspan="3">
-                        <label for="target">${message(code: 'default.agency.plural.label')}</label>
+                        <label for="target">${message(code: 'vendor.plural')}</label>
                         <div class="ui search selection fluid dropdown org" id="target">
                             <input type="hidden" name="target"/>
                             <div class="default text"><g:message code="default.select.target.label"/></div>

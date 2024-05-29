@@ -51,6 +51,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
     boolean prequalificationVOL = false
     String prequalificationVOLInfo
 
+    Date retirementDate
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading
@@ -97,6 +98,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         name column: 'ven_name'
         sortname column: 'ven_sortname'
         status column: 'ven_status_rv_fk'
+        retirementDate column: 'ven_retirement_date'
         homepage column: 'ven_homepage'
         webShopOrders column: 'ven_web_shop_orders'
         xmlOrders column: 'ven_xml_orders'
@@ -123,6 +125,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         globalUID                   (unique: true)
         sortname                    (nullable: true)
         homepage                    (nullable: true, maxSize: 512)
+        retirementDate              (nullable: true)
         researchPlatformForEbooks   (nullable: true)
         prequalificationVOLInfo     (nullable: true)
         lastUpdatedCascading        (nullable: true)
@@ -199,6 +202,15 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         if(!result)
             result = id <=> v.id
         result
+    }
+
+    /**
+     * Is the toString() implementation; returns the name of this organisation
+     * @return the name of this organisation
+     */
+    @Override
+    String toString() {
+        name
     }
 
     static Vendor convertFromAgency(Org agency) {

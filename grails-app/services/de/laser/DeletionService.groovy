@@ -451,6 +451,7 @@ class DeletionService {
                         tmp.costItemStatus = RDStore.COST_ITEM_DELETED
                         tmp.sub = null
                         tmp.subPkg = null
+                        tmp.pkg = null
                         tmp.issueEntitlement = null
                         tmp.save()
                     }
@@ -896,7 +897,7 @@ class DeletionService {
                     OrgRole.findAllByPkg(pkg).each { tmp -> tmp.delete() }
                     //deleting (empty) subscription packages
                     SubscriptionPackage.findAllByPkg(pkg).each { tmp ->
-                        CostItem.executeUpdate("delete from CostItem ci where ci.subPkg = :sp",[sp:tmp])
+                        CostItem.executeUpdate("delete from CostItem ci where ci.pkg = :sp",[sp:tmp])
                         tmp.delete()
                     }
                     //deleting empty-running trackers

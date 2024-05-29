@@ -58,7 +58,7 @@
 
     <g:if test="${surveyInfo.provider}">
         <h3>
-            <g:message code="default.provider.label"/>
+            <g:message code="provider.label"/>
         </h3>
 
         <g:link absolute="true" controller="organisation" action="show" id="${surveyInfo.provider.id}">

@@ -89,7 +89,7 @@
             tmplConfigShow: ['lineNumber', 'name', 'function', 'position',  'showContacts', 'showAddresses']
     ]}"/>
 
-    <ui:paginate action="addressbook" controller="myInstitution" params="${params+[tab: 'contacts']}"
+    <ui:paginate action="organisation" controller="myInstitution" params="${params+[tab: 'contacts']}"
                     max="${max}" offset="${personOffset}"
                     total="${num_visiblePersons}"/>
 </div>
@@ -104,7 +104,7 @@
             showOptions : true
     ]}"/>
 
-    <ui:paginate action="addressbook" controller="myInstitution" params="${params+[tab: 'addresses']}"
+    <ui:paginate action="organisation" controller="myInstitution" params="${params+[tab: 'addresses']}"
                  max="${max}" offset="${addressOffset}"
                  total="${num_visibleAddresses}"/>
 </div>

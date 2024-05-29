@@ -24,10 +24,10 @@
                       </g:if>
 
                       <g:if test="${'provider' in licenseFilterTable}">
-                          <th rowspan="2"><g:message code="default.provider.label"/></th>
+                          <th rowspan="2"><g:message code="provider.label"/></th>
                       </g:if>
                       <g:if test="${'vendor' in licenseFilterTable}">
-                          <th rowspan="2"><g:message code="default.agency.label"/></th>
+                          <th rowspan="2"><g:message code="vendor.label"/></th>
                       </g:if>
                       <g:if test="${'licensingConsortium' in licenseFilterTable}">
                           <th rowspan="2"><g:message code="consortium"/></th>

@@ -27,7 +27,7 @@
                             <div class="three wide column">
                                 <div>
                                     <g:if test="${sp.pkg.provider}">
-                                        <i aria-hidden="true" class="handshake grey outline icon la-popup-tooltip la-delay" data-content="${message(code: 'default.provider.label')}"></i>
+                                        <i aria-hidden="true" class="handshake grey outline icon la-popup-tooltip la-delay" data-content="${message(code: 'provider.label')}"></i>
                                         <g:link controller="provider" action="show" id="${sp.pkg.provider.id}">${sp.pkg.provider.name}</g:link>
                                         <g:if test="${sp.pkg.provider.homepage}"><ui:linkWithIcon href="${sp.pkg.provider.homepage.startsWith('http') ? sp.pkg.provider.homepage : 'http://' + sp.pkg.provider.homepage}"/></g:if>
                                         <g:if test="${sp.pkg.provider.gokbId}"><ui:wekbIconLink type="provider" gokbId="${sp.pkg.provider.gokbId}"/></g:if>
@@ -36,7 +36,7 @@
                                 <g:each in="${sp.pkg.vendors}" var="pv">
                                     <g:set var="vendorRecord" value="${packageInstanceRecord.vendors.find { rec -> rec.vendorUuid == pv.vendor.gokbId }}"/>
                                     <div>
-                                        <i aria-hidden="true" class="shipping fast grey icon la-popup-tooltip la-delay" data-content="${message(code: 'default.agency.label')}"></i>
+                                        <i aria-hidden="true" class="shipping fast grey icon la-popup-tooltip la-delay" data-content="${message(code: 'vendor.label')}"></i>
                                         <g:link controller="vendor" action="show" id="${pv.vendor.id}">${pv.vendor.name}</g:link>
                                         <g:if test="${vendorRecord.homepage}"><ui:linkWithIcon href="${vendorRecord.homepage.startsWith('http') ? vendorRecord.homepage : 'http://' + vendorRecord.homepage}"/></g:if>
                                         <g:if test="${pv.vendor.gokbId}"><ui:wekbIconLink type="vendor" gokbId="${pv.vendor.gokbId}"/></g:if>
@@ -69,7 +69,7 @@
                                     </div>
                                     <%
                                         String unlinkDisabled = '', unlinkDisabledTooltip = null
-                                        Set<Subscription> blockingCostItems = CostItem.executeQuery('select ci.subPkg.subscription from CostItem ci where (ci.subPkg.subscription = :sub or ci.subPkg.subscription.instanceOf = :sub) and ci.subPkg.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted', [pkg: sp.pkg, deleted: RDStore.COST_ITEM_DELETED, sub: sp.subscription, context: institution])
+                                        Set<Subscription> blockingCostItems = CostItem.executeQuery('select ci.sub from CostItem ci where (ci.sub = :sub or ci.sub.instanceOf = :sub) and ci.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted', [pkg: sp.pkg, deleted: RDStore.COST_ITEM_DELETED, sub: sp.subscription, context: institution])
                                         if(showConsortiaFunctions) {
                                             if(auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')) {
                                                 unlinkDisabled = 'disabled'

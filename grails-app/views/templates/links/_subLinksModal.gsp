@@ -63,14 +63,14 @@
         case Provider.class.name: header = message(code:"provider.linking.header")
             thisString = context.name
             lookupName = "lookupproviders"
-            instanceType = message(code:"default.provider.label")
+            instanceType = message(code:"provider.label")
             urlParams.controller = 'provider'
             urlParams.action = 'link'
             break
         case Vendor.class.name: header = message(code:"vendor.linking.header")
             thisString = context.name
             lookupName = "lookupVendors"
-            instanceType = message(code:"default.agency.label")
+            instanceType = message(code:"vendor.label")
             urlParams.controller = 'vendor'
             urlParams.action = 'link'
             break
@@ -182,7 +182,7 @@
                     <g:if test="${linkInstanceType == Links.class.name && !link}">
                         <div class="row">
                             <div class="four wide column">
-                                <g:message code="default.provider.label"/>
+                                <g:message code="provider.label"/>
                             </div>
                             <div class="twelve wide column">
                                 <div class="ui search selection dropdown la-full-width" id="providerFilter">

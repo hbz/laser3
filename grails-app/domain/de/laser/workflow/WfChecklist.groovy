@@ -101,33 +101,26 @@ class WfChecklist {
                 status: RDStore.WF_WORKFLOW_STATUS_DONE
         ]
 
-        if (org) {
+        if (license) {
+            info.target = GrailsHibernateUtil.unwrapIfProxy(license)
+            info.targetName = license.reference
+            info.targetTitle = ms.getMessage('license.label', null, locale)
+            info.targetIcon = 'balance scale'
+            info.targetController = 'lic'
+        }
+        else if (org) {
             info.target = GrailsHibernateUtil.unwrapIfProxy(org)
             info.targetName = org.name
-            info.targetTitle = ms.getMessage('org.institution.label', null, locale) + '/' + ms.getMessage('default.provider.label', null, locale)
+            info.targetTitle = ms.getMessage('org.institution.label', null, locale) + '/' + ms.getMessage('provider.label', null, locale)
             info.targetIcon = 'university'
             info.targetController = 'org'
         }
         else if (provider) {
             info.target = GrailsHibernateUtil.unwrapIfProxy(provider)
             info.targetName = provider.name
-            info.targetTitle = ms.getMessage('default.provider.label', null, locale)
+            info.targetTitle = ms.getMessage('provider.label', null, locale)
             info.targetIcon = 'handshake'
             info.targetController = 'provider'
-        }
-        else if (vendor) {
-            info.target = GrailsHibernateUtil.unwrapIfProxy(vendor)
-            info.targetName = vendor.name
-            info.targetTitle = ms.getMessage('default.agency.label', null, locale)
-            info.targetIcon = 'shipping fast'
-            info.targetController = 'vendor'
-        }
-        else if (license) {
-            info.target = GrailsHibernateUtil.unwrapIfProxy(license)
-            info.targetName = license.reference
-            info.targetTitle = ms.getMessage('license.label', null, locale)
-            info.targetIcon = 'balance scale'
-            info.targetController = 'lic'
         }
         else if (subscription) {
             info.target = GrailsHibernateUtil.unwrapIfProxy(subscription)
@@ -135,6 +128,13 @@ class WfChecklist {
             info.targetTitle = ms.getMessage('subscription.label', null, locale)
             info.targetIcon = 'clipboard'
             info.targetController = 'subscription'
+        }
+        else if (vendor) {
+            info.target = GrailsHibernateUtil.unwrapIfProxy(vendor)
+            info.targetName = vendor.name
+            info.targetTitle = ms.getMessage('vendor.label', null, locale)
+            info.targetIcon = 'shipping fast'
+            info.targetController = 'vendor'
         }
 
         boolean sequenceIsDone = true
@@ -156,21 +156,24 @@ class WfChecklist {
      * @param obj the object (one of {@link Org}, {@link License} or {@link Subscription}) for which the checklists are being requested
      * @return a {@link Set} of checklists belonging to the institution and related to the given object
      */
-    static Set<WfChecklist> getAllChecklistsByOwnerAndObj(Org owner, def obj) {
-        String query = 'select cl from WfChecklist cl where cl.owner = :owner and cl.template = false'
+    static Set<WfChecklist> getAllChecklistsByOwnerAndObjAndStatus(Org owner, def obj, RefdataValue status = null) {
+        Set<WfChecklist> workflows = []
+        String sql
 
-        if (obj instanceof Org) {
-            executeQuery( query + ' and cl.org = :obj', [owner: owner, obj: obj]) as Set<WfChecklist>
+             if (obj instanceof License)        { sql = 'cl.license = :obj' }
+        else if (obj instanceof Org)            { sql = 'cl.org = :obj' }
+        else if (obj instanceof Provider)       { sql = 'cl.provider = :obj' }
+        else if (obj instanceof Subscription)   { sql = 'cl.subscription = :obj' }
+        else if (obj instanceof Vendor)         { sql = 'cl.vendor = :obj' }
+
+        if (sql) {
+            workflows = executeQuery('select cl from WfChecklist cl where cl.owner = :owner and ' + sql, [owner: owner, obj: obj]) as Set<WfChecklist>
+
+            if (status) {
+                workflows = workflows.findAll { w -> w.getInfo().status == status }
+            }
         }
-        else if (obj instanceof License) {
-            executeQuery( query + ' and cl.license = :obj', [owner: owner, obj: obj]) as Set<WfChecklist>
-        }
-        else if (obj instanceof Subscription) {
-            executeQuery( query + ' and cl.subscription = :obj', [owner: owner, obj: obj]) as Set<WfChecklist>
-        }
-        else {
-            []
-        }
+        workflows
     }
 
     /**
@@ -182,14 +185,20 @@ class WfChecklist {
     static Set<WfChecklist> getAllTemplatesByOwnerAndObjType(Org owner, def obj) {
         String query = 'select cl from WfChecklist cl where cl.owner = :owner and cl.template = true'
 
-        if (obj instanceof Org) {
+        if (obj instanceof License) {
+            executeQuery( query + ' and cl.license != null', [owner: owner]) as Set<WfChecklist>
+        }
+        else if (obj instanceof Org) {
             executeQuery( query + ' and cl.org != null', [owner: owner]) as Set<WfChecklist>
         }
-        else if (obj instanceof License) {
-            executeQuery( query + ' and cl.license != null', [owner: owner]) as Set<WfChecklist>
+        else if (obj instanceof Provider) {
+            executeQuery( query + ' and cl.provider != null', [owner: owner]) as Set<WfChecklist>
         }
         else if (obj instanceof Subscription) {
             executeQuery( query + ' and cl.subscription != null', [owner: owner]) as Set<WfChecklist>
+        }
+        else if (obj instanceof Vendor) {
+            executeQuery( query + ' and cl.vendor != null', [owner: owner]) as Set<WfChecklist>
         }
         else {
             []

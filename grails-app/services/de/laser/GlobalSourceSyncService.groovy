@@ -1400,7 +1400,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     oldPersons.each { Person old ->
                         PersonRole.executeUpdate('delete from PersonRole pr where pr.provider = :provider and pr.prs = :oldPerson and pr.functionType.id in (:funcTypes)', [provider: provider, oldPerson: old, funcTypes: funcTypes])
                         Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: old])
-                        if(PersonRole.executeQuery('select count(pr) from PersonRole pr where pr.prs = :oldPerson and pr.provider = :provider and (pr.functionType.id not in (:funcTypes) or pr.functionType = null)', [provider: provider, oldPerson: old, funcTypes: funcTypes])[0] == 0) {
+                        if(PersonRole.executeQuery('select count(*) from PersonRole pr where pr.prs = :oldPerson and pr.provider = :provider and (pr.functionType.id not in (:funcTypes) or pr.functionType = null)', [provider: provider, oldPerson: old, funcTypes: funcTypes])[0] == 0) {
                             Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: old])
                         }
                     }
@@ -1590,7 +1590,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         oldPersons.each { Person old ->
                             PersonRole.executeUpdate('delete from PersonRole pr where pr.vendor = :vendor and pr.prs = :oldPerson and pr.functionType.id in (:funcTypes)', [vendor: vendor, oldPerson: old, funcTypes: funcTypes])
                             Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: old])
-                            if (PersonRole.executeQuery('select count(pr) from PersonRole pr where pr.prs = :oldPerson and pr.vendor = :vendor and (pr.functionType.id not in (:funcTypes) or pr.functionType = null)', [vendor: vendor, oldPerson: old, funcTypes: funcTypes])[0] == 0) {
+                            if (PersonRole.executeQuery('select count(*) from PersonRole pr where pr.prs = :oldPerson and pr.vendor = :vendor and (pr.functionType.id not in (:funcTypes) or pr.functionType = null)', [vendor: vendor, oldPerson: old, funcTypes: funcTypes])[0] == 0) {
                                 Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: old])
                             }
                         }

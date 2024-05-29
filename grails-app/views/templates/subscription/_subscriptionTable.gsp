@@ -47,10 +47,10 @@
                             <th rowspan="2">${message(code:'org.institution.label')}</th>
                         </g:elseif>
                         <g:if test="${'showProviders' in tableConfig}">
-                            <g:sortableColumn scope="col" params="${params}" property="provider" title="${message(code: 'default.provider.label')}" rowspan="2" />
+                            <g:sortableColumn scope="col" params="${params}" property="provider" title="${message(code: 'provider.label')}" rowspan="2" />
                         </g:if>
                         <g:if test="${'showVendors' in tableConfig}">
-                            <g:sortableColumn scope="col" params="${params}" property="vendor" title="${message(code: 'default.agency.label')}" rowspan="2" />
+                            <g:sortableColumn scope="col" params="${params}" property="vendor" title="${message(code: 'vendor.label')}" rowspan="2" />
                         </g:if>
                         <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label.shy')}"/>
                         <g:if test="${params.orgRole in ['Subscription Consortia']}">
@@ -229,7 +229,7 @@
                                 <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
                                     <g:if test="${institution.isCustomerType_Consortium()}">
                                         <div class="ui blue circular label">
-                                            ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
+                                            ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(*) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
                                         </div>
                                     </g:if>
                                 </g:link>

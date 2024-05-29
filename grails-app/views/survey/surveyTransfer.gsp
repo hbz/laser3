@@ -50,6 +50,9 @@
         <g:if test="${surveyConfig.pickAndChoose}">
             <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'finishedDate', 'surveyTitlesCount', 'surveyProperties', 'commentOnlyForOwner']}"/>
         </g:if>
+        <g:elseif test="${surveyConfig.packageSurvey}">
+            <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'surveyPackages', 'surveyCostItemsPackages', 'commentOnlyForOwner']}"/>
+        </g:elseif>
         <g:else>
             <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'commentOnlyForOwner']}"/>
         </g:else>

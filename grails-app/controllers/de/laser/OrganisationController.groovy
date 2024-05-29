@@ -53,9 +53,9 @@ class OrganisationController  {
     GokbService gokbService
     IdentifierService identifierService
     InfoService infoService
+    LinksGenerationService linksGenerationService
     OrganisationControllerService organisationControllerService
     OrganisationService organisationService
-    OrgTypeService orgTypeService
     PropertyService propertyService
     TaskService taskService
     UserControllerService userControllerService
@@ -771,55 +771,6 @@ class OrganisationController  {
                 render view: 'create', model: [orgInstance: orgInstance]
                 break
         }
-    }
-
-    /**
-     * Creates a new provider organisation with the given parameters
-     * @return the details view of the provider or the creation view in case of an error
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
-    })
-    def createProvider() {
-        Org.withTransaction {
-
-            Org orgInstance = new Org(name: params.provider, sector: RDStore.O_SECTOR_PUBLISHER, status: RDStore.O_STATUS_CURRENT)
-            if (orgInstance.save()) {
-
-                orgInstance.addToOrgType(RDStore.OT_PROVIDER)
-                orgInstance.save()
-
-                flash.message = message(code: 'default.created.message', args: [message(code: 'org.label'), orgInstance.name]) as String
-                redirect action: 'show', id: orgInstance.id
-                return
-            }
-            else {
-                log.error("Problem creating org: ${orgInstance.errors}");
-                flash.message = message(code: 'org.error.createProviderError', args: [orgInstance.errors]) as String
-                redirect(action: 'findProviderMatches')
-                return
-            }
-        }
-    }
-
-    /**
-     * Call to create a new provider; offers first a query for the new name to insert in order to exclude duplicates
-     * @return the empty form (with a submit to proceed with the new organisation) or a list of eventual name matches
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
-    })
-    def findProviderMatches() {
-
-        Map<String, Object> result = [:]
-        if ( params.proposedProvider ) {
-
-            result.providerMatches= Org.executeQuery("from Org as o where exists (select roletype from o.orgType as roletype where roletype = :provider ) and (lower(o.name) like :searchName or lower(o.sortname) like :searchName ) ",
-                    [provider: RDStore.OT_PROVIDER, searchName: "%${params.proposedProvider.toLowerCase()}%"])
-        }
-        result
     }
 
     /**
@@ -1729,7 +1680,7 @@ class OrganisationController  {
      */
     @Secured(['ROLE_USER'])
     def linkOrgs() {
-        organisationControllerService.linkOrgs(params)
+        linksGenerationService.linkOrgs(params)
         redirect action: 'show', id: params.context
     }
 
@@ -1738,7 +1689,7 @@ class OrganisationController  {
      */
     @Secured(['ROLE_USER'])
     def unlinkOrg() {
-        organisationControllerService.unlinkOrg(params)
+        linksGenerationService.unlinkOrg(params)
         redirect action: 'show', id: params.id
     }
 
@@ -1978,7 +1929,7 @@ class OrganisationController  {
         result.rdvAllPersonFunctions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
         result.rdvAllPersonPositions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
 
-        if ((result.institution.isCustomerType_Consortium() || result.institution.isCustomerType_Support() )&& result.orgInstance) {
+        if ((result.institution.isCustomerType_Consortium() || result.institution.isCustomerType_Support()) && result.orgInstance) {
             params.org = result.orgInstance
             result.rdvAllPersonFunctions << RDStore.PRS_FUNC_GASCO_CONTACT
         }else{

@@ -27,7 +27,7 @@
                     </label>
                     <input type="text" id="nameContains" name="nameContains"
                            placeholder="${message(code:'default.search.ph')}"
-                           value="${params.providerNameContains}"/>
+                           value="${params.nameContains}"/>
                 </div>
             </g:if>
 

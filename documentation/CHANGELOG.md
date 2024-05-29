@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5637    29.05.2024  dev     3.4         David   Feature     GASCO-Kontakt für Backoffice/Kundentyp Verwaltung reaktivieren
+
+5390    28.05.2024  dev     3.4         Andreas Feature     Verfahrensverzeichnis aktualisiert
+
+5140    27.05.2024  dev     3.4         David   Feature     Workflow´s an Objekte hängen (?)
+
+5715    27.05.2024  dev     3.4         David   Feature     Filter: currentWorkflows -> Anbieter/Lieferanten
+
 5713    24.05.2024  dev     3.4         David   Feature     Workflows anlegen für Anbieter und Lieferanten
 
 5712    24.05.2024  dev     3.4         Andreas Feature     Zuordnungsjahr bei Hinzufügen neuer Teilnehmer verteilen

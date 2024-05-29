@@ -1,12 +1,16 @@
 package de.laser
 
 import de.laser.auth.User
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.ctrl.SubscriptionControllerService
 import de.laser.finance.CostItem
 import de.laser.config.ConfigDefaults
 import de.laser.finance.PriceItem
 import de.laser.helper.Params
+import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
+import de.laser.remote.ApiSource
 import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5ApiSource
@@ -25,6 +29,7 @@ import de.laser.survey.SurveyUrl
 import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.gsp.PageRenderer
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -45,13 +50,19 @@ import java.text.SimpleDateFormat
 class SurveyService {
 
     AccessService accessService
+    AddressbookService addressbookService
+    CompareService compareService
+    ComparisonService comparisonService
     ContextService contextService
     EscapeService escapeService
     ExportService exportService
+    GokbService gokbService
     FilterService filterService
     LinksGenerationService linksGenerationService
     MessageSource messageSource
+    PackageService packageService
     SubscriptionService subscriptionService
+    SubscriptionControllerService subscriptionControllerService
     MailSendService mailSendService
 
     PageRenderer groovyPageRenderer
@@ -328,7 +339,7 @@ class SurveyService {
                         row.add([field: subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
 
                         if (surveyConfig.subSurveyUseForTransfer) {
-                            CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, surveyOrg.org), RDStore.COST_ITEM_DELETED)
+                            CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, surveyOrg.org), RDStore.COST_ITEM_DELETED)
 
                             row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
                             row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
@@ -402,7 +413,7 @@ class SurveyService {
                     row.add([field: subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
 
                     if (surveyConfig.subSurveyUseForTransfer) {
-                        CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED)
+                        CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED)
                         row.add([field: surveyConfig.scheduledStartDate ? DateUtils.getSDF_ddMMyyy().format( DateUtils.getSDF_yyyyMMdd_hhmmSSS().parse(surveyConfig.scheduledStartDate.toString()) ): '', style: null])
                         row.add([field: surveyConfig.scheduledEndDate ? DateUtils.getSDF_ddMMyyy().format( DateUtils.getSDF_yyyyMMdd_hhmmSSS().parse(surveyConfig.scheduledEndDate.toString()) ): '', style: null])
                         row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
@@ -548,7 +559,7 @@ class SurveyService {
 
                         row.add([field: subscription.status?.getI10n("value") ?: '', style: null])
 
-                        CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, surveyOrg.org), RDStore.COST_ITEM_DELETED)
+                        CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, surveyOrg.org), RDStore.COST_ITEM_DELETED)
 
                         if (surveyCostItem) {
                             row.add([field: surveyCostItem?.costItemElement?.getI10n('value') ?: '', style: null])
@@ -627,7 +638,7 @@ class SurveyService {
 
                     row.add([field: subscription.status?.getI10n("value") ?: '', style: null])
 
-                    CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED)
+                    CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED)
 
                     if (surveyCostItem) {
                         row.add([field: surveyCostItem?.costItemElement?.getI10n('value') ?: '', style: null])
@@ -761,7 +772,7 @@ class SurveyService {
                             row.add([field: subscription.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
                             row.add([field: subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
 
-                                CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)
+                                CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)
 
                                 row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
                                 row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
@@ -1394,7 +1405,7 @@ class SurveyService {
                 c5CheckParams.startDate = queryParams.startDate
                 c5CheckParams.endDate = queryParams.endDate
             }
-            count5check.addAll(Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms)'+dateRange, c5CheckParams))
+            count5check.addAll(Counter5Report.executeQuery('select count(*) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms)'+dateRange, c5CheckParams))
             if(count5check.get(0) == 0) {
                 Set availableReportTypes = Counter4Report.executeQuery('select r.reportType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) order by r.reportFrom asc', [customer: queryParams.customer, platforms: queryParams.platforms])
                 result.reportTypes = availableReportTypes
@@ -1421,7 +1432,7 @@ class SurveyService {
                 else {
                     result.usages = Counter4Report.executeQuery('select r from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)' + filter + dateRange + ' order by ' + sort, queryParams, [max: result.max, offset: result.offset])
 
-                    count4check.addAll(Counter4Report.executeQuery('select count(r.id) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)' + filter + dateRange, queryParams))
+                    count4check.addAll(Counter4Report.executeQuery('select count(*) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)' + filter + dateRange, queryParams))
                     result.total = count4check.size() > 0 ? count4check[0] as int : 0
                 }
 
@@ -1844,7 +1855,7 @@ class SurveyService {
     Integer countIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         Integer countIes = issueEntitlementGroup ?
-                IssueEntitlementGroupItem.executeQuery("select count(igi) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status != :status",
+                IssueEntitlementGroupItem.executeQuery("select count(*) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status != :status",
                         [ieGroup: issueEntitlementGroup, status: RDStore.TIPP_STATUS_REMOVED])[0]
                 : 0
         countIes
@@ -1860,7 +1871,7 @@ class SurveyService {
     Integer countIssueEntitlementsByIEGroupWithStatus(Subscription subscription, SurveyConfig surveyConfig, RefdataValue status) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         Integer countIes = issueEntitlementGroup ?
-                IssueEntitlementGroupItem.executeQuery("select count(igi) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status = :status",
+                IssueEntitlementGroupItem.executeQuery("select count(*) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status = :status",
                         [ieGroup: issueEntitlementGroup, status: status])[0]
                 : 0
         countIes
@@ -1875,7 +1886,7 @@ class SurveyService {
     Integer countCurrentIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         Integer countIes = issueEntitlementGroup ?
-                IssueEntitlementGroupItem.executeQuery("select count(igi) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status = :status",
+                IssueEntitlementGroupItem.executeQuery("select count(*) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status = :status",
                         [ieGroup: issueEntitlementGroup, status: RDStore.TIPP_STATUS_CURRENT])[0]
                 : 0
         countIes
@@ -2184,7 +2195,7 @@ class SurveyService {
         List<SurveyPackageResult> surveyPackageResultList = SurveyPackageResult.findAllBySurveyConfigAndParticipant(surveyConfig, participant)
 
         if(surveyPackageResultList){
-            List<CostItem> costItemList = CostItem.findAllBySurveyOrgAndPkgInList(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), surveyPackageResultList.pkg)
+            List<CostItem> costItemList = CostItem.findAllBySurveyOrgAndPkgInListAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), surveyPackageResultList.pkg)
             costItemList.each { CostItem costItem ->
 
                 sumCostInBillingCurrency = sumCostInBillingCurrency+ costItem.costInBillingCurrency
@@ -2193,6 +2204,242 @@ class SurveyService {
         }
 
         [sumCostInBillingCurrency: sumCostInBillingCurrency, sumCostInBillingCurrencyAfterTax: sumCostInBillingCurrencyAfterTax]
+
+    }
+
+
+    Map participantResultGenerics(Map result, Org participant, GrailsParameterMap params){
+
+        if (params.viewTab == 'overview') {
+            if (result.surveyConfig.subscription) {
+                result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(participant)
+                // restrict visible for templates/links/orgLinksAsList
+                result.visibleOrgRelations = []
+                if (result.subscription) {
+                    result.subscription.orgRelations.each { OrgRole or ->
+                        if (!(or.org.id == result.contextOrg.id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
+                            result.visibleOrgRelations << or
+                        }
+                    }
+                    result.visibleOrgRelations.sort { it.org.sortname }
+
+                    result.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
+                    result.links = linksGenerationService.getSourcesAndDestinations(result.subscription, result.user)
+
+                    if (result.surveyConfig.subSurveyUseForTransfer) {
+                        result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                        result.subscriptionParent = result.surveyConfig.subscription
+                        Collection<AbstractPropertyWithCalculatedLastUpdated> props
+                        props = result.subscriptionParent.propertySet.findAll { it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic)) }
+                        if (result.successorSubscriptionParent) {
+                            props += result.successorSubscriptionParent.propertySet.findAll { it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic)) }
+                        }
+                        result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
+                    }
+
+                    if (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+
+                        result.previousSubscription = result.subscription._getCalculatedPreviousForSurvey()
+
+                        /*result.previousIesListPriceSum = 0
+                       if(result.previousSubscription){
+                           result.previousIesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                                   'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                           [sub: result.previousSubscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+
+                       }*/
+
+                        result.sumListPriceSelectedIEsEUR = sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_EUR)
+                        result.sumListPriceSelectedIEsUSD = sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_USD)
+                        result.sumListPriceSelectedIEsGBP = sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_GBP)
+
+
+                        /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                                 'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                                 [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
+
+                        result.countSelectedIEs = countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
+                        result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription)
+//                    if (result.surveyConfig.pickAndChoosePerpetualAccess) {
+//                        result.countCurrentIEs = countPerpetualAccessTitlesBySub(result.subscription)
+//                    } else {
+//                        result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countCurrentIssueEntitlements(result.previousSubscription) : 0) + subscriptionService.countCurrentIssueEntitlements(result.subscription)
+//                    }
+
+                        result.subscriber = participant
+
+                    }
+                }
+
+                if (!result.subscription) {
+                    result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                    result.successorSubscription = result.successorSubscriptionParent ? result.successorSubscriptionParent.getDerivedSubscriptionForNonHiddenSubscriber(participant) : null
+                } else {
+                    result.successorSubscription = result.subscription._getCalculatedSuccessorForSurvey()
+                }
+                if (result.successorSubscription) {
+                    List objects = []
+                    if (result.subscription) {
+                        objects << result.subscription
+                    }
+                    objects << result.successorSubscription
+                    result = result + compareService.compareProperties(objects)
+                }
+            }
+        }
+        else if (params.viewTab == 'invoicingInformation') {
+            if (result.editable) {
+                if(params.setSurveyInvoicingInformation) {
+                    if (params.personId) {
+                        if (params.setConcact == 'true') {
+                            result.surveyOrg.person = Person.get(Long.valueOf(params.personId))
+                        }
+                        if (params.setConcact == 'false') {
+                            result.surveyOrg.person = null
+                        }
+                        result.surveyOrg.save()
+                    }
+
+                    if (params.addressId) {
+                        if (params.setAddress == 'true') {
+                            result.surveyOrg.address = Address.get(Long.valueOf(params.addressId))
+                        }
+                        if (params.setAddress == 'false') {
+                            result.surveyOrg.address = null
+                        }
+                        result.surveyOrg.save()
+                    }
+                }
+            }
+
+            params.sort = params.sort ?: 'pr.org.sortname'
+            params.org = participant
+            result.visiblePersons = addressbookService.getVisiblePersons("contacts", params)
+            result.addresses = addressbookService.getVisibleAddresses("contacts", params)
+
+        }
+        else if (params.viewTab == 'stats') {
+            result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(participant)
+
+            if(result.subscription){
+                if (params.error)
+                    result.error = params.error
+                if (params.reportType)
+                    result.putAll(subscriptionControllerService.loadFilterList(params))
+                ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+                result.flagContentGokb = true // gokbService.executeQuery
+                Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (:subscriptions)", [subscriptions: [result.subscription, result.subscription.instanceOf]])
+                result.platformInstanceRecords = [:]
+                result.platforms = subscribedPlatforms
+                result.platformsJSON = subscribedPlatforms.globalUID as JSON
+                result.keyPairs = [:]
+                if (!params.containsKey('tab'))
+                    params.tab = subscribedPlatforms[0].id.toString()
+                result.subscription.instanceOf.packages.each { SubscriptionPackage sp ->
+                    Platform platformInstance = sp.pkg.nominalPlatform
+                    if (result.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_LOCAL]) {
+                        //create dummies for that they may be xEdited - OBSERVE BEHAVIOR for eventual performance loss!
+                        CustomerIdentifier keyPair = CustomerIdentifier.findByPlatformAndCustomer(platformInstance, result.subscription.getSubscriberRespConsortia())
+                        if (!keyPair) {
+                            keyPair = new CustomerIdentifier(platform: platformInstance,
+                                    customer: result.subscription.getSubscriberRespConsortia(),
+                                    type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT,
+                                    owner: contextService.getOrg(),
+                                    isPublic: true)
+                            if (!keyPair.save()) {
+                                log.warn(keyPair.errors.getAllErrors().toListString())
+                            }
+                        }
+                        result.keyPairs.put(platformInstance.gokbId, keyPair)
+                    }
+                    Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
+                    if (queryResult.error && queryResult.error == 404) {
+                        result.wekbServerUnavailable = message(code: 'wekb.error.404')
+                    } else if (queryResult) {
+                        List records = queryResult.result
+                        if (records[0]) {
+                            records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
+                            records[0].id = platformInstance.id
+                            result.platformInstanceRecords[platformInstance.gokbId] = records[0]
+                            result.platformInstanceRecords[platformInstance.gokbId].wekbUrl = apiSource.editUrl + "/resource/show/${platformInstance.gokbId}"
+                            if (records[0].statisticsFormat == 'COUNTER' && records[0].counterR4SushiServerUrl == null && records[0].counterR5SushiServerUrl == null) {
+                                result.error = 'noSushiSource'
+                                ArrayList<Object> errorArgs = ["${apiSource.editUrl}/resource/show/${platformInstance.gokbId}", platformInstance.name]
+                                result.errorArgs = errorArgs.toArray()
+                            } else {
+                                CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriberRespConsortia(), platformInstance)
+                                if (!ci?.value) {
+                                    if (result.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_LOCAL])
+                                        result.error = 'noCustomerId.local'
+                                    else
+                                        result.error = 'noCustomerId'
+                                }
+                            }
+                        }
+                    }
+                    if (result.subscription._getCalculatedType() != CalculatedType.TYPE_CONSORTIAL) {
+                        result.reportTypes = []
+                        CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriberRespConsortia(), platformInstance)
+                        if (ci?.value) {
+                            Set allAvailableReports = subscriptionControllerService.getAvailableReports(result)
+                            if (allAvailableReports)
+                                result.reportTypes.addAll(allAvailableReports)
+                            else {
+                                result.error = 'noReportAvailable'
+                            }
+                        } else if (!ci?.value) {
+                            result.error = 'noCustomerId'
+                        }
+                    }
+                }
+            }
+        }
+        else if (params.viewTab == 'packageSurvey') {
+            if (result.editable) {
+                switch (params.actionsForSurveyPackages) {
+                    case "addSurveyPackage":
+                        Package pkg = Package.findByGokbId(params.pkgUUID)
+                        if (SurveyConfigPackage.findBySurveyConfigAndPkg(result.surveyConfig, pkg) && !SurveyPackageResult.findBySurveyConfigAndParticipantAndPkg(result.surveyConfig, participant, pkg)) {
+                            SurveyPackageResult surveyPackageResult = new SurveyPackageResult(surveyConfig: result.surveyConfig, participant: participant, pkg: pkg, owner: result.surveyInfo.owner)
+                            surveyPackageResult.save()
+                        }
+
+                        break
+                    case "removeSurveyPackage":
+                        Package pkg = Package.findByGokbId(params.pkgUUID)
+                        SurveyPackageResult surveyPackageResult = SurveyPackageResult.findBySurveyConfigAndParticipantAndPkg(result.surveyConfig, participant, pkg)
+                        if (SurveyConfigPackage.findBySurveyConfigAndPkg(result.surveyConfig, pkg) && surveyPackageResult) {
+                            surveyPackageResult.delete()
+                        }
+                        break
+                }
+            }
+
+            if (result.surveyConfig.surveyPackages) {
+                List uuidPkgs
+                if (params.subTab == 'allPackages') {
+                    result.uuidPkgs = SurveyPackageResult.executeQuery("select spr.pkg.gokbId from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
+                    uuidPkgs = SurveyConfigPackage.executeQuery("select scg.pkg.gokbId from SurveyConfigPackage scg where scg.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
+                } else if (params.subTab == 'selectPackages') {
+                    List<Long> ids = SurveyPackageResult.executeQuery("select spr.pkg.gokbId from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
+                    if (ids.size() > 0) {
+                        uuidPkgs = ids
+                    } else {
+                        uuidPkgs = ['fakeUuids']
+                    }
+                }
+
+                params.uuids = uuidPkgs
+                params.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
+                params.offset = params.offset ? Integer.parseInt(params.offset) : 0
+                result.putAll(packageService.getWekbPackages(params))
+            } else {
+                result.records = []
+                result.recordsCount = 0
+            }
+        }
+
+        return result
 
     }
 

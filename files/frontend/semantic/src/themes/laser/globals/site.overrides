@@ -413,6 +413,9 @@ i.icon.la-list-icon{
 .la-minor-object a{
     font-weight: normal;
 }
+.la-major-object{
+    font-weight: bold;
+}
 // clearing afecting the elements before the element with class 'la-clear-before'
 .la-clear-before {
     clear: both;

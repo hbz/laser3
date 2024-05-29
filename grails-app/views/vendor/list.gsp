@@ -1,7 +1,7 @@
 <%@ page import="de.laser.*" %>
 <laser:htmlStart message="menu.public.all_vendors" serviceInjection="true" />
 
-        <g:set var="entityName" value="${message(code: 'default.agency.label')}" />
+        <g:set var="entityName" value="${message(code: 'vendor.label')}" />
 
         <ui:breadcrumbs>
             <ui:crumb message="menu.public.all_vendors" class="active" />
@@ -13,6 +13,11 @@
                 <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.VENDORS]"/>
             </ui:exportDropdownItem>
         </ui:exportDropdown>
+        <g:if test="${contextService.is_ORG_COM_EDITOR_or_ROLEADMIN()}">
+            <ui:actionsDropdown>
+                <ui:actionsDropdownItem controller="vendor" action="findVendorMatches" message="org.create_new_vendor.label"/>
+            </ui:actionsDropdown>
+        </g:if>
     </ui:controlButtons>
 
         <ui:h1HeaderWithIcon message="menu.public.all_vendors" total="${vendorListTotal}" floated="true" />
@@ -38,10 +43,10 @@
             </g:if>
             <g:else>
                 <g:if test="${filterSet}">
-                    <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"default.agency.plural.label")]}"/></strong>
+                    <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"vendor.plural")]}"/></strong>
                 </g:if>
                 <g:else>
-                    <br /><strong><g:message code="result.empty.object" args="${[message(code:"default.agency.plural.label")]}"/></strong>
+                    <br /><strong><g:message code="result.empty.object" args="${[message(code:"vendor.plural")]}"/></strong>
                 </g:else>
             </g:else>
         </div>

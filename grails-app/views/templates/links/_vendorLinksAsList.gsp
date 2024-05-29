@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.workflow.WfChecklist; de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <laser:serviceInjection />
 <g:set var="wekbAPI" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 <table class="ui compact table">
@@ -7,7 +7,7 @@
         <tr>
             <td>
                 <span class="la-flexbox la-minor-object">
-                    <i class="la-list-icon la-popup-tooltip la-delay shipping fast icon" data-content="${message(code:'default.agency.label')}"></i>
+                    <i class="la-list-icon la-popup-tooltip la-delay shipping fast icon" data-content="${message(code:'vendor.label')}"></i>
                 </span>
                 <g:link controller="vendor" action="show" id="${role.vendor.id}">
                     ${role.vendor.name}
@@ -76,6 +76,18 @@
                 </td>
 
             </tr>
+
+        <g:if test="${workflowService.hasUserPerm_read() && WfChecklist.getAllChecklistsByOwnerAndObjAndStatus(contextService.getOrg(), role.vendor, RDStore.WF_WORKFLOW_STATUS_OPEN)}">
+            <tr>
+                <td colspan="2">
+                    <span class="la-flexbox la-minor-object">
+                        <i class="icon exclamation triangle orange" style="margin:.1rem .5rem 0 0"></i>
+                        <g:link controller="vendor" action="workflows" id="${role.vendor.id}">${message(code:'workflow.vendor.someMore.info')}</g:link>
+                    </span>
+                </td>
+            </tr>
+        </g:if>
+
             <g:if test="${showPersons && (Person.getPublicByOrgAndFunc(role.vendor, 'General contact person') || (Person.getPublicByOrgAndFunc(role.vendor, 'Technical Support')) || (Person.getPublicByOrgAndFunc(role.vendor, 'Service Support')) || (Person.getPublicByOrgAndFunc(role.vendor, 'Metadata Contact')) ||
                             Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person', contextOrg) ||
                             Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Technical Support', contextOrg) ||

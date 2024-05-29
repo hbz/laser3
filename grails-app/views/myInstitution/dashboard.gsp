@@ -46,6 +46,12 @@
                                 <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="tasks" message="menu.my.tasks" />
                             </div>
                         </div>
+                        <div class="item">
+                            <i class="tasks icon la-list-icon"></i>
+                            <div class="content">
+                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
+                            </div>
+                        </div>
 %{--                        <div class="item">--}%
 %{--                            <i class="file alternate icon la-list-icon"></i>--}%
 %{--                            <div class="content">--}%
@@ -61,12 +67,6 @@
                                 <g:else>
                                     <ui:securedMainNavItem orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys"/>
                                 </g:else>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <i class="tasks icon la-list-icon"></i>
-                            <div class="content">
-                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
                             </div>
                         </div>
                     </div>
@@ -277,6 +277,12 @@
                                         <span class="la-popup-tooltip la-delay" data-content="${message(code: 'task.' + tskObj.controller)}" data-position="left center" data-variation="tiny">
                                             <g:if test="${tskObj.controller == 'organisation'}">
                                                 <i class="university icon"></i>
+                                            </g:if>
+                                            <g:if test="${tskObj.controller == 'provider'}">
+                                                <i class="handshake icon"></i>
+                                            </g:if>
+                                            <g:if test="${tskObj.controller == 'vendor'}">
+                                                <i class="shipping fast icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('subscription')}">
                                                 <i class="clipboard outline icon"></i>
