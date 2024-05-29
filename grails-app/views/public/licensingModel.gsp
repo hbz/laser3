@@ -188,6 +188,11 @@
                                 ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
                             </button>
                         </g:if>
+                        <g:if test="${mpg2 === 'organisation'}">
+                            <button id="${mpg2}" class="ui icon blue button la-modal" >
+                                ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
+                            </button>
+                        </g:if>
                         <g:if test="${mpg2 === 'reporting'}">
                             <button id="${mpg2}" class="ui icon blue button la-modal" >
                                 ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
@@ -205,7 +210,7 @@
     </aside>
 </div>
     <g:each in="${mappingColsPro+mappingColsBasic+mappingColsServiceBasic+mappingColsServicePro}" var="mpg5" >
-        <g:if test="${mpg5 in ['asService','accessRight', 'community', 'management', 'reporting']}">
+        <g:if test="${mpg5 in ['asService','accessRight', 'community', 'management','organisation', 'reporting']}">
 
             <laser:script file="${this.getGroovyPageFileName()}">
                 $('#${mpg5}').click(function(){
