@@ -1403,14 +1403,14 @@ class SubscriptionControllerService {
                         List<CostItem> previousSubCostItems
                         Subscription previousSub = memberSub._getCalculatedPreviousForSurvey()
                         if (previousSub) {
-                            previousSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(previousSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
+                            previousSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(previousSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
                         }
 
                         Double percentage = 1 + params.double('percentOnOldPrice') / 100
                         CostItem lastYearEquivalent = previousSubCostItems.size() == 1 ? previousSubCostItems[0] : null
                         if (lastYearEquivalent) {
 
-                            List<CostItem> currentSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(memberSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
+                            List<CostItem> currentSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(memberSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
 
                             currentSubCostItems.each { CostItem ci ->
                                 if (ci.sub) {
@@ -1429,7 +1429,7 @@ class SubscriptionControllerService {
                     } else if (params.percentOnCurrentPrice) {
                         Double percentage = 1 + params.double('percentOnCurrentPrice') / 100
 
-                        List<CostItem> currentSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(memberSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
+                        List<CostItem> currentSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(memberSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
 
                         currentSubCostItems.each { CostItem ci ->
                             if (ci.sub) {
@@ -2352,7 +2352,8 @@ class SubscriptionControllerService {
             Map<String,Object> queryParams = [sub: result.subscription, pkg_id: result.package.id]
             int numOfPCs = packageService.removePackagePendingChanges(result.package, [result.subscription.id], false)
             int numOfIEs = IssueEntitlement.executeQuery(query, queryParams).size()
-            int numOfCIs = CostItem.findAllBySubPkg(SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,result.package)).size()
+            SubscriptionPackage subscriptionPackage = SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,result.package)
+            int numOfCIs = CostItem.findAllBySubAndPkg(subscriptionPackage.subscription, subscriptionPackage.pkg).size()
             List conflictsList = packageService.listConflicts(result.package,result.subscription,numOfPCs,numOfIEs,numOfCIs)
             //Automatisch Paket entknüpfen, wenn das Paket in der Elternlizenz entknüpft wird
             if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE]){
@@ -2363,7 +2364,7 @@ class SubscriptionControllerService {
                     List childSubsPackages = SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs, result.package)
                     int numOfPCsChildSubs = packageService.removePackagePendingChanges(result.package, childSubs.id, false)
                     int numOfIEsChildSubs = IssueEntitlement.executeQuery(queryChildSubs, queryParamChildSubs).size()
-                    int numOfCIsChildSubs = childSubsPackages ? CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.subPkg in (:childSubsPackages) and ci.owner != :ctx and ci.costItemStatus != :deleted', [childSubsPackages: childSubsPackages, deleted: RDStore.COST_ITEM_DELETED, ctx: result.institution])[0] : 0
+                    int numOfCIsChildSubs = childSubsPackages ? CostItem.executeQuery('select count(*) from CostItem ci where ci.sub in (:childSubs) and ci.pkg = :pkg and ci.owner != :ctx and ci.costItemStatus != :deleted', [pkg: result.package, childSubs: childSubs, deleted: RDStore.COST_ITEM_DELETED, ctx: result.institution])[0] : 0
                     if(numOfPCsChildSubs > 0 || numOfIEsChildSubs > 0 || numOfCIsChildSubs > 0) {
                         conflictsList.addAll(packageService.listConflicts(result.package, childSubs, numOfPCsChildSubs, numOfIEsChildSubs, numOfCIsChildSubs))
                     }

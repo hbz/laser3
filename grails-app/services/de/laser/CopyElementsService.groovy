@@ -1601,8 +1601,8 @@ class CopyElementsService {
                 OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=:sp", [sp: subPkg])
                 PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp", [sp: subPkg])
 
-                CostItem.findAllBySubPkg(subPkg).each { costItem ->
-                    costItem.subPkg = null
+                CostItem.findAllByPkgAndSub(subPkg.pkg, subPkg.subscription).each { costItem ->
+                    costItem.pkg = null
                     if (!costItem.sub) {
                         costItem.sub = subPkg.subscription
                     }

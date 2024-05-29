@@ -425,7 +425,7 @@
         $('#${modalID} *[id^=fileformat-query-' + $('#${modalID} select[name=fileformat]').val() + ']').removeClass('hidden')
     }).trigger('change');
 
-    $('input[type="checkbox"]').on( 'change', function() {
+    $('#${modalID} input[type="checkbox"]').on( 'change', function() {
     <%
         totalFields.eachWithIndex { def fields, int i ->
             String tmp = '$("#numberOfChecked-tab-'+i+'").html($'+"('[data-tab=tab-" + i + "]" + ' input[type="checkbox"]' + "').filter(':checked').length);"

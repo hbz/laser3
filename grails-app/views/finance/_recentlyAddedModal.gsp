@@ -31,7 +31,7 @@
                         <td>${item?.sub?.name}</td>
                     </tr>
                     <tr>
-                        <td>${item?.subPkg?.pkg?.name}</td>
+                        <td>${item?.pkg?.name}</td>
                         <td>${item?.issueEntitlement?.tipp?.title?.title}</td>
                         <td>${item?.costInBillingCurrency}</td>
                         <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${item?.lastUpdated}"/></td>

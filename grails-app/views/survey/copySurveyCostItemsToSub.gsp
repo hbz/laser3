@@ -75,7 +75,7 @@
                 <th>${message(code: 'sidewide.number')}</th>
                 <th>${message(code: 'subscription.details.consortiaMembers.label')}</th>
                 <th>${message(code: 'copySurveyCostItems.surveyCostItem')}
-                    <br>
+                    %{--<br>
                     <g:set var="costItemElements"
                            value="${costItemsByCostItemElement.collect {RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT))}}"/>
 
@@ -85,7 +85,7 @@
                                optionValue="value"
                                value="${selectedCostItemElementID}"
                                class="ui dropdown"
-                               id="selectedCostItemElementID"/>
+                               id="selectedCostItemElementID"/>--}%
                 </th>
                 <th>${message(code: 'copySurveyCostItems.newCostItem')}</th>
                 <th></th>
@@ -96,7 +96,7 @@
 
                 <tr class="">
                     <td>
-                        <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}">
+                        <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(participant.newSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}">
                             <g:checkBox name="selectedSurveyCostItem" value="${participant.surveyCostItem.id}" checked="false"/>
                         </g:if>
                     </td>

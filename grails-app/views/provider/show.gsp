@@ -1,4 +1,4 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.ProviderLink; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Vendor; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.ProviderLink; de.laser.Contact; de.laser.remote.ApiSource; de.laser.Provider" %>
 
 <g:set var="entityName" value="${message(code: 'default.provider.label')}"/>
 
@@ -176,10 +176,10 @@
                                     List<RefdataValue> invoicingFormats = RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_FORMAT)
                                 %>
                                 <laser:render template="/templates/attributesList"
-                                              model="${[owner: provider, deleteAction: 'deleteAttribute', attributes: provider.electronicBillings, field: 'invoicingFormat', availableAttributeIds: invoicingFormats.collect { RefdataValue rdv -> rdv.id }, editable: editable && !provider.gokbId]}"/>
+                                              model="${[ownObj: provider, deleteAction: 'deleteAttribute', attributes: provider.electronicBillings, field: 'invoicingFormat', availableAttributeIds: invoicingFormats.collect { RefdataValue rdv -> rdv.id }, editable: editable && !provider.gokbId]}"/>
 
                                 <laser:render template="/templates/attributesModal"
-                                              model="${[owner: provider, buttonText: 'vendor.invoicing.formats.label', label: 'vendor.invoicing.formats.label', availableAttributes: invoicingFormats, editable: editable && !provider.gokbId]}"/>
+                                              model="${[ownObj: provider, addAction: 'addAttribute', modalId: 'electronicBilling', buttonText: 'vendor.invoicing.formats.add', label: 'vendor.invoicing.formats.label', field: 'invoicingFormat', availableAttributes: invoicingFormats, editable: editable && !provider.gokbId]}"/>
                             </dd>
                         </dl>
                         <dl>
@@ -188,13 +188,13 @@
                             </dt>
                             <dd>
                                 <%
-                                    List<RefdataValue> invoicingDispatchs = RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_DISPATCH)
+                                    List<RefdataValue> invoiceDispatchs = RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_DISPATCH)
                                 %>
                                 <laser:render template="/templates/attributesList"
-                                              model="${[owner: provider, deleteAction: 'deleteAttribute', attributes: provider.invoiceDispatchs, field: 'invoicingDispatch', availableAttributeIds: invoicingDispatchs.collect { RefdataValue rdv -> rdv.id }, editable: editable && !provider.gokbId]}"/>
+                                              model="${[ownObj: provider, deleteAction: 'deleteAttribute', attributes: provider.invoiceDispatchs, field: 'invoiceDispatch', availableAttributeIds: invoiceDispatchs.collect { RefdataValue rdv -> rdv.id }, editable: editable && !provider.gokbId]}"/>
 
                                 <laser:render template="/templates/attributesModal"
-                                              model="${[owner: provider, buttonText: 'vendor.invoicing.formats.label', label: 'vendor.invoicing.formats.label', availableAttributes: invoiceDispatchs, editable: editable && !provider.gokbId]}"/>
+                                              model="${[ownObj: provider, addAction: 'addAttribute', modalId: 'invoiceDispatch', buttonText: 'vendor.invoicing.dispatch.add', label: 'vendor.invoicing.dispatch.label', field: 'invoiceDispatch', availableAttributes: invoiceDispatchs, editable: editable && !provider.gokbId]}"/>
                             </dd>
                         </dl>
                         <dl>
@@ -202,7 +202,10 @@
                                 <g:message code="vendor.invoicing.paperInvoice.label" />
                             </dt>
                             <dd>
-                                ${RefdataValue.displayBoolean(provider.paperInvoice)}
+                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                     owner="${provider}" type="url" field="paperInvoice"  overwriteEditable="${editable && !provider.gokbId}"/>
                             </dd>
                         </dl>
                         <dl>
@@ -210,7 +213,10 @@
                                 <g:message code="vendor.invoicing.managementOfCredits.label" />
                             </dt>
                             <dd>
-                                ${RefdataValue.displayBoolean(provider.managementOfCredits)}
+                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                     owner="${provider}" type="url" field="managementOfCredits"  overwriteEditable="${editable && !provider.gokbId}"/>
                             </dd>
                         </dl>
                         <dl>
@@ -218,7 +224,10 @@
                                 <g:message code="vendor.invoicing.compensationPayments.label" />
                             </dt>
                             <dd>
-                                ${RefdataValue.displayBoolean(provider.processingOfCompensationPayments)}
+                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                     owner="${provider}" type="url" field="processingOfCompensationPayments"  overwriteEditable="${editable && !provider.gokbId}"/>
                             </dd>
                         </dl>
                         <dl>
@@ -226,7 +235,10 @@
                                 <g:message code="vendor.invoicing.individualInvoiceDesign.label" />
                             </dt>
                             <dd>
-                                ${RefdataValue.displayBoolean(provider.individualInvoiceDesign)}
+                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                     owner="${provider}" type="url" field="individualInvoiceDesign"  overwriteEditable="${editable && !provider.gokbId}"/>
                             </dd>
                         </dl>
                     </g:if>
@@ -236,9 +248,14 @@
                         </dt>
                         <dd>
                             <ul>
-                                <g:each in="${provider.invoicingVendors}" var="row">
-                                    <li><g:link controller="vendor" action="show" id="${row.vendor.id}">${row.vendor.name}</g:link></li>
-                                </g:each>
+                                <%
+                                    List<Vendor> invoicingVendors = Vendor.findAll([sort: 'sortname'])
+                                %>
+                                <laser:render template="/templates/attributesList"
+                                              model="${[ownObj: provider, deleteAction: 'deleteAttribute', attributes: provider.invoicingVendors, field: 'vendor', availableAttributeIds: invoicingVendors.collect { Vendor v -> v.id }, editable: editable && !provider.gokbId]}"/>
+
+                                <laser:render template="/templates/attributesModal"
+                                              model="${[ownObj: provider, addAction: 'addAttribute', modalId: 'invoicingVendor', buttonText: 'vendor.invoicing.vendors.add', label: 'vendor.invoicing.vendors.label', field: 'invoicingVendor', availableAttributes: invoicingVendors, editable: editable && !provider.gokbId]}"/>
                             </ul>
                         </dd>
                     </dl>
@@ -274,7 +291,7 @@
                                     <%
                                         String[] linkTypes = RDStore.PROVIDER_LINK_FOLLOWS.getI10n('value').split('\\|')
                                         int perspectiveIndex
-                                        Org pair
+                                        Provider pair
                                         if(provider == row.from) {
                                             perspectiveIndex = 0
                                             pair = row.to
@@ -845,20 +862,7 @@
         JSPC.app.personCreate($(this).attr('id'), ${provider.id});
     });
 
-    $('#country').on('save', function(e, params) {
-        JSPC.app.showRegionsdropdown(params.newValue);
-    });
-
-    JSPC.app.showRegionsdropdown = function (newValue) {
-        $("*[id^=regions_]").hide();
-        if(newValue){
-            var id = newValue.split(':')[1]
-            // $("#regions_" + id).editable('setValue', null);
-            $("#regions_" + id).show();
-        }
-    };
-
-    JSPC.app.addresscreate_org = function (orgId, typeId, redirect, hideType) {
+    JSPC.app.addresscreate_org = function (providerId, typeId, redirect, hideType) {
         var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?providerId=' + providerId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
         var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
         func();
@@ -868,14 +872,8 @@
         let url;
         let returnSelector;
         switch($(this).attr('data-objtype')) {
-            case 'altname': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'altname', owner: provider.id]"/>';
+            case 'altname': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'altname', owner: genericOIDService.getOID(provider)]"/>';
                 returnSelector = '#altnames';
-                break;
-            case 'frontend': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'frontend', owner: provider.id]"/>';
-                returnSelector = '#discoverySystemsFrontend';
-                break;
-            case 'index': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'index', owner: provider.id]"/>';
-                returnSelector = '#discoverySystemsIndex';
                 break;
         }
 
@@ -892,7 +890,7 @@
         $("div[data-objId='"+objId+"']").remove();
     }
 
-    JSPC.app.personCreate = function (contactFor, org, supportType = "") {
+    JSPC.app.personCreate = function (contactFor, provider, supportType = "") {
         <g:if test="${provider.gokbId}">
             let existsWekbRecord = "&existsWekbRecord=true";
         </g:if>

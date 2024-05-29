@@ -56,6 +56,9 @@
 
         <g:form action="processSurveyCostItemsBulkWithUpload" controller="survey" method="post" class="ui form" enctype="multipart/form-data"
                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
+            <br>
+            <g:link class="item" controller="profile" action="importManuel" target="_blank">${message(code: 'help.technicalHelp.uploadFile.manuel')}</g:link>
+            <br>
 
             <g:link controller="survey" action="templateForSurveyCostItemsBulkWithUpload" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
                 <p>${message(code:'myinst.financeImport.template')}</p>

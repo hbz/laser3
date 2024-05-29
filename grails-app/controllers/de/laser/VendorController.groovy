@@ -8,6 +8,7 @@ import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 
@@ -17,6 +18,7 @@ import java.text.SimpleDateFormat
 class VendorController {
 
     ExportClickMeService exportClickMeService
+    GenericOIDService genericOIDService
     GokbService gokbService
     TaskService taskService
     UserService userService
@@ -59,9 +61,9 @@ class VendorController {
                 [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
         ]
         List<String> queryArgs = []
-        if(params.containsKey('vendorNameContains')) {
+        if(params.containsKey('nameContains')) {
             queryArgs << "(genfunc_filter_matcher(v.name, :name) = true or genfunc_filter_matcher(v.sortname, :name) = true)"
-            queryParams.name = params.vendorNameContains
+            queryParams.name = params.nameContains
         }
         if(params.containsKey('venStatus')) {
             queryArgs << "v.status in (:status)"
@@ -176,8 +178,8 @@ class VendorController {
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, vendor)
             result.subLinks = VendorRole.executeQuery('select vr from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])
             result.licLinks = VendorRole.executeQuery('select vr from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and l.status = :current and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, current: RDStore.LICENSE_CURRENT, context: result.institution])
-            result.currentSubscriptionsCount = VendorRole.executeQuery('select count(vr) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, context: result.institution])[0]
-            result.currentLicensesCount = VendorRole.executeQuery('select count(vr) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, context: result.institution])[0]
+            result.currentSubscriptionsCount = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, context: result.institution])[0]
+            result.currentLicensesCount = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, context: result.institution])[0]
 
             workflowService.executeCmdAndUpdateResult(result, params)
 
@@ -199,5 +201,71 @@ class VendorController {
 
         workflowService.executeCmdAndUpdateResult(result, params)
         result
+    }
+
+    /**
+     * Assigns the given subject group to the given organisation
+     */
+    @Transactional
+    @Secured(['ROLE_USER'])
+    def addAttribute() {
+        Map<String, Object> result = vendorService.getResultGenerics(params)
+
+        if (!result.vendor) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'vendor'), params.id]) as String
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        def newAttr = genericOIDService.resolveOID(params.get(params.field))
+        if (result.editable) {
+            switch(params.field) {
+                case 'invoicingFormat':
+                    if (!newAttr) {
+                        flash.message = message(code: 'default.not.found.message', args: [message(code: 'vendor.invoicing.formats.label'), params.get(params.field)]) as String
+                        redirect(url: request.getHeader('referer'))
+                        return
+                    }
+                    if (result.vendor.electronicBillings.find { ElectronicBilling eb -> eb.invoicingFormat.id == newAttr.id }) {
+                        flash.message = message(code: 'default.err.alreadyExist', args: [message(code: 'vendor.invoicing.formats.label')]) as String
+                        redirect(url: request.getHeader('referer'))
+                        return
+                    }
+                        result.vendor.addToElectronicBillings(invoicingFormat: newAttr)
+                    break
+                case 'invoiceDispatch':
+                    break
+            }
+            result.vendor.save()
+        }
+
+        redirect action: 'show', id: params.id
+    }
+
+    /**
+     * Removes the given subject group from the given organisation
+     */
+    @Transactional
+    @Secured(['ROLE_USER'])
+    def deleteAttribute() {
+        Map<String, Object> result = vendorService.getResultGenerics(params)
+
+        if (!result.vendor) {
+            flash.error = message(code: 'default.not.found.message', args: [message(code: 'vendor'), params.id]) as String
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+        if (result.editable) {
+            def attr = genericOIDService.resolveOID(params.removeObjectOID)
+            switch(params.field) {
+                case 'invoicingFormat': result.vendor.removeFromElectronicBillings(attr)
+                    break
+                case 'invoiceDispatch': result.vendor.removeFromInvoiceDispatchs(attr)
+                    break
+            }
+            result.vendor.save()
+            attr.delete()
+        }
+
+        redirect(url: request.getHeader('referer'))
     }
 }

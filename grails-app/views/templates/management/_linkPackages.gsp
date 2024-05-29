@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.FormService; de.laser.SubscriptionPackage; de.laser.Subscription" %>
+<%@ page import="de.laser.Package; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.FormService; de.laser.SubscriptionPackage; de.laser.Subscription" %>
 <laser:serviceInjection/>
 
 <g:if test="${filteredSubscriptions}">
@@ -213,7 +213,7 @@
                                                 ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
                                             </g:link>
                                         </g:else>
-                                        <g:if test="${editable && childWithCostItems.find { SubscriptionPackage row -> row.id == sp.id }}">
+                                        <g:if test="${editable && childWithCostItems.find { Package row -> row.id == sp.pkg.id }}">
                                             <br/><g:message code="subscription.delete.existingCostItems"/>
                                         </g:if>
                                     </div>

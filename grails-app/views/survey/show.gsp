@@ -241,6 +241,19 @@
         <br />
         <br />
 
+        <g:form action="setSurveyWorkFlowInfos" method="post" class="ui form"
+                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, setSurveyWorkFlowInfo: 'setSurveyConfigFinish']">
+
+            <div class="ui right floated compact segment">
+                <div class="ui checkbox">
+                    <input type="checkbox" onchange="this.form.submit()"
+                           name="configFinish" ${surveyConfig.configFinish ? 'checked' : ''}>
+                    <label><g:message code="surveyconfig.configFinish.label"/></label>
+                </div>
+            </div>
+
+        </g:form>
+
 
 
     </div><!-- .twelve -->

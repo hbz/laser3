@@ -468,19 +468,19 @@ class WorkflowService {
      */
     int getWorkflowCount(def obj, Org owner) {
         if (obj instanceof License) {
-            WfChecklist.executeQuery('select count(wf) from WfChecklist wf where wf.license = :lic and wf.owner = :ctxOrg', [lic: obj, ctxOrg: owner])[0]
+            WfChecklist.executeQuery('select count(*) from WfChecklist wf where wf.license = :lic and wf.owner = :ctxOrg', [lic: obj, ctxOrg: owner])[0]
         }
         else if (obj instanceof Org) {
-            WfChecklist.executeQuery('select count(wf) from WfChecklist wf where wf.org = :org and wf.owner = :ctxOrg', [org: obj, ctxOrg: owner])[0]
+            WfChecklist.executeQuery('select count(*) from WfChecklist wf where wf.org = :org and wf.owner = :ctxOrg', [org: obj, ctxOrg: owner])[0]
         }
         else if (obj instanceof Provider) {
-            WfChecklist.executeQuery('select count(wf) from WfChecklist wf where wf.provider = :provider and wf.owner = :ctxOrg', [provider: obj, ctxOrg: owner])[0]
+            WfChecklist.executeQuery('select count(*) from WfChecklist wf where wf.provider = :provider and wf.owner = :ctxOrg', [provider: obj, ctxOrg: owner])[0]
         }
         else if (obj instanceof Subscription) {
-            WfChecklist.executeQuery('select count(wf) from WfChecklist wf where wf.subscription = :sub and wf.owner = :ctxOrg', [sub: obj, ctxOrg: owner])[0]
+            WfChecklist.executeQuery('select count(*) from WfChecklist wf where wf.subscription = :sub and wf.owner = :ctxOrg', [sub: obj, ctxOrg: owner])[0]
         }
         else if (obj instanceof Vendor) {
-            WfChecklist.executeQuery('select count(wf) from WfChecklist wf where wf.vendor = :vendor and wf.owner = :ctxOrg', [vendor: obj, ctxOrg: owner])[0]
+            WfChecklist.executeQuery('select count(*) from WfChecklist wf where wf.vendor = :vendor and wf.owner = :ctxOrg', [vendor: obj, ctxOrg: owner])[0]
         }
         else {
             return 0

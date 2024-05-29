@@ -239,10 +239,15 @@
         <g:if test="${tmplShowCheckbox}">
             <td>
                 <g:if test="${controllerName in ["survey"] && actionName == "surveyCostItems"}">
-                    <g:if test="${CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)}">
+                    <g:if test="${CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)}">
                         <g:checkBox id="selectedOrgs_${org.id}" name="selectedOrgs" value="${org.id}" checked="false"/>
                     </g:if>
                 </g:if>
+                <g:elseif test="${controllerName in ["survey"] && actionName == "surveyCostItemsPackages"}">
+                    <g:if test="${CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, Package.get(Long.valueOf(selectedPackageID)))}">
+                        <g:checkBox id="selectedOrgs_${org.id}" name="selectedOrgs" value="${org.id}" checked="false"/>
+                    </g:if>
+                </g:elseif>
                 <g:else>
                     <g:checkBox id="selectedOrgs_${org.id}" name="selectedOrgs" value="${org.id}" checked="false"/>
                 </g:else>
@@ -810,7 +815,7 @@
                     <g:else>
 
                         <g:set var="costItems" scope="request"
-                               value="${CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElement(surveyOrg, RDStore.COST_ITEM_DELETED, RefdataValue.get(Long.valueOf(selectedCostItemElementID)))}"/>
+                               value="${CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, RefdataValue.get(Long.valueOf(selectedCostItemElementID)))}"/>
 
                         <g:if test="${costItems}">
                             <table class="ui very basic compact table">

@@ -2,18 +2,23 @@
 <g:if test="${attributes}">
     <div class="ui divided middle aligned selection list la-flex-list">
         <g:each in="${attributes}" var="attribute">
+            <%
+                String outputString = attribute[field]
+                if(attribute[field] instanceof de.laser.RefdataValue)
+                    outputString = attribute[field].getI10n("value")
+            %>
             <div class="ui item">
                 <div class="content la-space-right">
-                    <strong>${attribute[field].getI10n("value")}</strong>
+                    <strong>${outputString}</strong>
                 </div>
                 <g:if test="${editable}">
                     <g:if test="${attribute[field].id in availableAttributeIds}">
                         <div class="content la-space-right">
                             <div class="ui icon buttons">
                                 <g:link class="ui negative button la-modern-button js-open-confirm-modal"
-                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.subjectgroup.organisation", args: [attribute[field].getI10n('value')])}"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.subjectgroup.organisation", args: [outputString])}"
                                         data-confirm-term-how="delete"
-                                        controller="${controllerName}" action="${deleteAction}" params="[id: owner.id, removeObjectOID: genericOIDService.getOID(attribute)]"
+                                        controller="${controllerName}" action="${deleteAction}" params="[id: ownObj.id, field: field, removeObjectOID: genericOIDService.getOID(attribute)]"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="trash alternate outline icon"></i>

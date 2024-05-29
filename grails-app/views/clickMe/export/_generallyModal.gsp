@@ -16,7 +16,8 @@
                                                                                     accessPointNotice: accessPointNotice,
                                                                                     currentTabNotice: currentTabNotice,
                                                                                     overrideFormat: overrideFormat,
-                                                                                    showClickMeConfigSave: showClickMeConfigSave]}"/>
+                                                                                    showClickMeConfigSave: showClickMeConfigSave,
+                                                                                    modalID: modalID]}"/>
 
     </g:form>
 

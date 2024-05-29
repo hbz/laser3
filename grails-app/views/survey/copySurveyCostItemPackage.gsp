@@ -1,5 +1,5 @@
 <%@ page import="de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem; de.laser.storage.RDConstants;" %>
-<laser:htmlStart message="surveyInfo.copySurveyCostItems" serviceInjection="true" />
+<laser:htmlStart message="surveyCostItemsPackages.label" serviceInjection="true" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
@@ -40,10 +40,10 @@
     <g:render template="navCompareMembers"/>
 
     <h2 class="ui header">
-        ${message(code: 'surveyInfo.copySurveyCostItems')}
+        ${message(code: 'surveyCostItemsPackages.label')}
     </h2>
 
-    <g:render template="costItemsByCostItemElementTable"/>
+    <g:render template="costItemsByCostItemElementAndPkgTable"/>
 
 
     <ui:greySegment>
@@ -96,7 +96,7 @@
 
     <ui:greySegment>
 
-        <g:form action="proccessCopySurveyCostItems" controller="survey" id="${surveyInfo.id}"
+        <g:form action="proccessCopySurveyCostItemPackage" controller="survey" id="${surveyInfo.id}"
                 params="[surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]"
                 method="post" class="ui form ">
 
@@ -117,18 +117,7 @@
                     <th>${message(code: 'sidewide.number')}</th>
                     <th>${message(code: 'subscription.details.consortiaMembers.label')}</th>
                     <th>${message(code: 'copySurveyCostItems.oldCostItem')}</th>
-                    <th>${message(code: 'copySurveyCostItems.surveyCostItem')}
-                        %{--<br><g:set var="costItemElements"
-                               value="${costItemsByCostItemElement.collect {RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT))}}"/>
-
-                        <ui:select name="selectedCostItemElementID"
-                                   from="${costItemElements}"
-                                   optionKey="id"
-                                   optionValue="value"
-                                   value="${selectedCostItemElementID}"
-                                   class="ui dropdown"
-                                   id="selectedCostItemElementID"/>--}%
-                    </th>
+                    <th>${message(code: 'copySurveyCostItems.surveyCostItem')}</th>
                     <th>${message(code: 'copySurveyCostItems.newCostItem')}</th>
                     <th></th>
                 </tr>
@@ -140,8 +129,8 @@
 
                     <tr class="">
                         <td>
-                            <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(participant.newSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}">
-                                <g:checkBox name="selectedSurveyCostItem" value="${participant.surveyCostItem.id}"
+                            <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNotNull(participant.newSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}">
+                                <g:checkBox name="selectedSurveyCostItemPackage" value="${participant.surveyCostItem.id}"
                                             checked="false"/>
                             </g:if>
                         </td>
@@ -175,7 +164,7 @@
                             <g:if test="${participant.oldSub}">
                                 <table class="ui very basic compact table">
                                     <tbody>
-                                    <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.oldSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}"
+                                    <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkg(participant.oldSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED, pkg)}"
                                             var="costItemParticipantSub">
                                         <tr>
                                             <td>
@@ -255,7 +244,7 @@
                             <g:if test="${participant.newSub}">
                                 <table class="ui very basic compact table">
                                     <tbody>
-                                    <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}"
+                                    <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkg(participant.newSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED, pkg)}"
                                             var="costItemParticipantSuccessorSub">
 
                                         <tr>
@@ -400,9 +389,9 @@
     <laser:script file="${this.getGroovyPageFileName()}">
         $('#costItemsToggler').click(function () {
             if ($(this).prop('checked')) {
-                $("tr[class!=disabled] input[name=selectedSurveyCostItem]").prop('checked', true)
+                $("tr[class!=disabled] input[name=selectedSurveyCostItemPackage]").prop('checked', true)
             } else {
-                $("tr[class!=disabled] input[name=selectedSurveyCostItem]").prop('checked', false)
+                $("tr[class!=disabled] input[name=selectedSurveyCostItemPackage]").prop('checked', false)
             }
         })
     </laser:script>
