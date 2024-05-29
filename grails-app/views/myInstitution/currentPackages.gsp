@@ -93,7 +93,7 @@
                 <th>${message(code:'sidewide.number')}</th>
                 <g:sortableColumn property="name" title="${message(code: 'default.name.label')}" />
                 <g:sortableColumn property="currentTippCount" title="${message(code:'package.compare.overview.tipps')}"/>
-                <g:sortableColumn property="provider.name" title="${message(code: 'default.provider.label')}" params="${params}"/>
+                <g:sortableColumn property="provider.name" title="${message(code: 'provider.label')}" params="${params}"/>
                 <g:sortableColumn property="nominalPlatform.name" title="${message(code: 'platform.label')}" params="${params}"/>
                 <th>${message(code: 'package.curatoryGroup.label')}</th>
                 <th>${message(code: 'package.source.automaticUpdates')}</th>

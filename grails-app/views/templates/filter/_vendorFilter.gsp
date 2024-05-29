@@ -19,15 +19,15 @@
 
             <g:if test="${field.equalsIgnoreCase('name')}">
                 <div class="field">
-                    <label for="vendorNameContains">
+                    <label for="nameContains">
                         <g:message code="org.search.vendor.contains"/>
                         <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.vendor.contains.tooltip')}">
                             <i class="question circle icon"></i>
                         </span>
                     </label>
-                    <input type="text" id="vendorNameContains" name="vendorNameContains"
+                    <input type="text" id="nameContains" name="nameContains"
                            placeholder="${message(code:'default.search.ph')}"
-                           value="${params.vendorNameContains}"/>
+                           value="${params.nameContains}"/>
                 </div>
             </g:if>
 

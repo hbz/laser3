@@ -30,7 +30,7 @@
     <g:elseif test="${linkType == 'Provider'}">
 
         <h2 class="ui header">
-            <g:message code="default.provider.label"/>
+            <g:message code="provider.label"/>
         </h2>
 
         <g:if test="${surveyInfo.provider}">

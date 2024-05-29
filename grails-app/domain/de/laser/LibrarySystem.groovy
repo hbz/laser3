@@ -20,10 +20,8 @@ class LibrarySystem implements Comparable<LibrarySystem> {
     @Override
     int compareTo(LibrarySystem ls) {
         int result = librarySystem <=> ls.librarySystem
-        if(!result)
-            result = vendor.sortname <=> ls.vendor.sortname
-        if(!result)
-            result = vendor.name <=> ls.vendor.name
+        if(!result && vendor && ls.vendor)
+            result = vendor <=> ls.vendor
         result
     }
 }

@@ -4,7 +4,6 @@ import de.laser.base.AbstractCoverage
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
 import de.laser.properties.LicenseProperty
-import de.laser.remote.ApiSource
 import de.laser.storage.BeanStore
 import de.laser.storage.PropertyStore
 import de.laser.utils.DateUtils
@@ -326,7 +325,7 @@ class ExportClickMeService {
 
             providers: [
                     label: 'Provider',
-                    message: 'default.provider.label',
+                    message: 'provider.label',
                     fields: [
                             'provider.sortname'          : [field: 'sub.providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
                             'provider.name'              : [field: 'sub.providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
@@ -337,7 +336,7 @@ class ExportClickMeService {
 
             vendor: [
                     label: 'Agency',
-                    message: 'default.agency.label',
+                    message: 'vendor.label',
                     fields: [
                             'vendor.sortname'          : [field: 'sub.vendors.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
                             'vendor.name'              : [field: 'sub.vendors.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
@@ -407,7 +406,7 @@ class ExportClickMeService {
 
             providers: [
                     label: 'Provider',
-                    message: 'default.provider.label',
+                    message: 'provider.label',
                     fields: [
                             'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
                             'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
@@ -418,7 +417,7 @@ class ExportClickMeService {
 
             vendors: [
                     label: 'Vendor',
-                    message: 'default.agency.label',
+                    message: 'vendor.label',
                     fields: [
                             'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
                             'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
@@ -684,7 +683,7 @@ class ExportClickMeService {
 
             providers: [
                     label: 'Provider',
-                    message: 'default.provider.label',
+                    message: 'provider.label',
                     fields: [
                             'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
                             'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
@@ -695,7 +694,7 @@ class ExportClickMeService {
 
             vendors: [
                     label: 'Vendor',
-                    message: 'default.agency.label',
+                    message: 'vendor.label',
                     fields: [
                             'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
                             'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
@@ -914,7 +913,7 @@ class ExportClickMeService {
 
             providers: [
                     label: 'Provider',
-                    message: 'default.provider.label',
+                    message: 'provider.label',
                     fields: [
                             'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
                             'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
@@ -925,7 +924,7 @@ class ExportClickMeService {
 
             vendors: [
                     label: 'Agency',
-                    message: 'default.agency.label',
+                    message: 'vendor.label',
                     fields: [
                             'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
                             'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
@@ -1394,7 +1393,7 @@ class ExportClickMeService {
     static Map<String, Object> EXPORT_VENDOR_CONFIG = [
             vendor : [
                     label: 'Vendor',
-                    message: 'default.agency.label',
+                    message: 'vendor.label',
                     fields: [
                             'vendor.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
                             'vendor.sortname'              : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],

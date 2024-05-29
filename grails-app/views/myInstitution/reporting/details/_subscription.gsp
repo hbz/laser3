@@ -23,13 +23,13 @@
                 <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
             <g:elseif test="${query == 'subscription-x-platform'}">
-                <th>${message(code:'default.provider.label')}</th>
+                <th>${message(code:'provider.label')}</th>
             </g:elseif>
             <g:elseif test="${query == 'subscription-x-identifier'}">
                 <th>${message(code:'identifier.label')}</th>
             </g:elseif>
             <g:elseif test="${query == 'subscription-x-memberProvider'}">
-                <th>${message(code:'default.provider.label')}</th>
+                <th>${message(code:'provider.label')}</th>
             </g:elseif>
             <th>${message(code:'subscription.startDate.label')}</th>
             <th>${message(code:'subscription.endDate.label')}</th>

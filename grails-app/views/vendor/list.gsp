@@ -1,7 +1,7 @@
 <%@ page import="de.laser.*" %>
 <laser:htmlStart message="menu.public.all_vendors" serviceInjection="true" />
 
-        <g:set var="entityName" value="${message(code: 'default.agency.label')}" />
+        <g:set var="entityName" value="${message(code: 'vendor.label')}" />
 
         <ui:breadcrumbs>
             <ui:crumb message="menu.public.all_vendors" class="active" />
@@ -43,10 +43,10 @@
             </g:if>
             <g:else>
                 <g:if test="${filterSet}">
-                    <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"default.agency.plural.label")]}"/></strong>
+                    <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"vendor.plural")]}"/></strong>
                 </g:if>
                 <g:else>
-                    <br /><strong><g:message code="result.empty.object" args="${[message(code:"default.agency.plural.label")]}"/></strong>
+                    <br /><strong><g:message code="result.empty.object" args="${[message(code:"vendor.plural")]}"/></strong>
                 </g:else>
             </g:else>
         </div>

@@ -4,7 +4,7 @@
         <div class="menu ui top attached tabular la-tab-with-js">
             <a class="active item" data-tab="package-filter-tab-1">${message(code:'package.plural')}</a>
 %{--            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).provider}">--}%
-%{--                <a class="item" data-tab="package-filter-tab-2">${message(code:'default.provider.label')}</a>--}%
+%{--                <a class="item" data-tab="package-filter-tab-2">${message(code:'provider.label')}</a>--}%
 %{--            </g:if>--}%
 %{--            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).platform}">--}%
 %{--                <a class="item" data-tab="package-filter-tab-3">${message(code:'platform.label')}</a>--}%

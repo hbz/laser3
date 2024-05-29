@@ -489,14 +489,14 @@ class AjaxHtmlController {
                 if(params.providerId)
                     model.providerId = params.providerId
                 else
-                    model.providerList = Org.executeQuery("from Provider p order by LOWER(p.sortname) nulls last")
+                    model.providerList = Provider.executeQuery("from Provider p order by LOWER(p.sortname) nulls last")
                 model.tenant = model.contextOrg.id
                 break
             case 'addressForVendor':
-                if(params.providerId)
-                    model.providerId = params.providerId
+                if(params.vendorId)
+                    model.vendorId = params.vendorId
                 else
-                    model.providerList = Org.executeQuery("from Provider p order by LOWER(p.sortname) nulls last")
+                    model.vendorList = Vendor.executeQuery("from Provider p order by LOWER(p.sortname) nulls last")
                 model.tenant = model.contextOrg.id
                 break
             default: model.orgId = params.orgId ?: model.contextOrg.id
@@ -577,7 +577,7 @@ class AjaxHtmlController {
         result.provider = params.provider ? Provider.get(params.long('provider')) : null
         result.vendor = params.vendor ? Vendor.get(params.long('vendor')) : null
         result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
-        if(result.contextOrg.isCustomerType_Consortium()){
+        if (result.contextOrg.isCustomerType_Consortium() || result.contextOrg.isCustomerType_Support()) {
             result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
         }
         result.positions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
@@ -649,7 +649,7 @@ class AjaxHtmlController {
             result.vendor = PersonRole.executeQuery("select distinct(pr.vendor) from PersonRole as pr where pr.prs = :person ", [person: result.personInstance])[0]
             result.provider = PersonRole.executeQuery("select distinct(pr.provider) from PersonRole as pr where pr.prs = :person ", [person: result.personInstance])[0]
             result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
-            if(contextOrg.isCustomerType_Consortium()){
+            if (contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Support()) {
                 result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
             }
             result.positions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]

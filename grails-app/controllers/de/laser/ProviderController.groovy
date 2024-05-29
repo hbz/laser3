@@ -279,7 +279,7 @@ class ProviderController {
             Provider provider = new Provider(name: params.provider, status: RDStore.PROVIDER_STATUS_CURRENT)
             provider.setGlobalUID()
             if (provider.save()) {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'default.provider.label'), provider.name]) as String
+                flash.message = message(code: 'default.created.message', args: [message(code: 'provider.label'), provider.name]) as String
                 redirect action: 'show', id: provider.id
                 return
             }
@@ -316,7 +316,7 @@ class ProviderController {
      */
     @Secured(['ROLE_USER'])
     def link() {
-        linksGenerationService.link(params)
+        linksGenerationService.linkProviderVendor(params, ProviderLink.class.name)
         redirect action: 'show', id: params.context
     }
 
@@ -325,7 +325,7 @@ class ProviderController {
      */
     @Secured(['ROLE_USER'])
     def unlink() {
-        linksGenerationService.unlink(params)
+        linksGenerationService.unlinkProviderVendor(params)
         redirect action: 'show', id: params.id
     }
 
@@ -539,7 +539,7 @@ class ProviderController {
         Map<String, Object> result = providerService.getResultGenericsAndCheckAccess(params)
 
         if (!result.provider) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.provider.label'), params.id]) as String
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'provider.label'), params.id]) as String
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -601,7 +601,7 @@ class ProviderController {
         Map<String, Object> result = providerService.getResultGenericsAndCheckAccess(params)
 
         if (!result.provider) {
-            flash.error = message(code: 'default.not.found.message', args: [message(code: 'default.provider.label'), params.id]) as String
+            flash.error = message(code: 'default.not.found.message', args: [message(code: 'provider.label'), params.id]) as String
             redirect(url: request.getHeader('referer'))
             return
         }

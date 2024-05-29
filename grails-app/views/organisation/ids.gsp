@@ -100,7 +100,7 @@
                     </div>
                     <div class="two fields">
                         <div class="field">
-                            <label for="ciPlatform">${message(code:'default.provider.label')} : ${message(code:'platform.label')}</label>
+                            <label for="ciPlatform">${message(code:'provider.label')} : ${message(code:'platform.label')}</label>
                             <g:select id="ciPlatform" name="ciPlatform"
                                       from="${allPlatforms}"
                                       value="${params.ciPlatform}"
@@ -121,7 +121,7 @@
                 <thead>
                     <tr>
                         <th class="one wide">${message(code:'default.number')}</th>
-                        <g:sortableColumn title="${message(code:'default.provider.label')}" property="platform.org.name" class="three wide" params="[tab: 'customerIdentifiers']"/>
+                        <g:sortableColumn title="${message(code:'provider.label')}" property="platform.org.name" class="three wide" params="[tab: 'customerIdentifiers']"/>
                         <g:sortableColumn title="${message(code:'platform.label')}" property="platform.name" class="two wide" params="[tab: 'customerIdentifiers']"/>
                         <th class="three wide">${message(code:'org.customerIdentifier')}</th>
                         <th class="three wide">${message(code:'org.requestorKey')}</th>

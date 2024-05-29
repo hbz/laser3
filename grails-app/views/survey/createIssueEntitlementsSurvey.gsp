@@ -132,7 +132,7 @@
                 </th>
 
                 <g:sortableColumn params="${params}" property="orgRole§provider"
-                                  title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}"
+                                  title="${message(code: 'provider.label')} / ${message(code: 'vendor.label')}"
                                   rowspan="2"/>
 
                 <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.startDate"
@@ -218,7 +218,7 @@
                             </g:each>
                             <g:each in="${s.vendors}" var="vendor">
                                 <g:link controller="vendor" action="show"
-                                        id="${vendor.id}">${vendor.name} (${message(code: 'default.agency.label')})</g:link><br />
+                                        id="${vendor.id}">${vendor.name} (${message(code: 'vendor.label')})</g:link><br />
                             </g:each>
                         </td>
 

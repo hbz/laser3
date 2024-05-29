@@ -19,7 +19,7 @@
             <th>${message(code:'sidewide.number')}</th>
             <g:sortableColumn property="p.normname" title="${message(code: 'default.name.label')}" />
             <th>${message(code:'default.url.label')}</th>
-            <th>${message(code:'default.provider.label')}</th>
+            <th>${message(code:'provider.label')}</th>
             <%--<th>${message(code:'accessPoint.plural')}</th>--%>
             <th>${message(code:'myinst.currentPlatforms.assignedSubscriptions')}</th>
             <th class="center aligned"><ui:markerIcon type="WEKB_CHANGES" /></th>

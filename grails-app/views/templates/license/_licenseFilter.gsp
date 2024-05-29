@@ -40,7 +40,7 @@
               </div>
             <g:if test="${'providerAgency' in licenseFilterTable}">
               <div class="field">
-                  <label for="licensor"><g:message code="default.provider.label"/></label>
+                  <label for="licensor"><g:message code="provider.label"/></label>
                   <select id="licensor" name="licensor" multiple="" class="ui search selection fluid dropdown">
                       <option value=""><g:message code="default.select.choose.label"/></option>
                       <g:each in="${orgs.licensors}" var="licensor">
@@ -51,7 +51,7 @@
             </g:if>
             <g:if test="${'vendor' in licenseFilterTable}">
               <div class="field">
-                  <label for="vendor"><g:message code="default.agency.label"/></label>
+                  <label for="vendor"><g:message code="vendor.label"/></label>
                   <select id="vendor" name="vendor" multiple="" class="ui search selection fluid dropdown">
                       <option value=""><g:message code="default.select.choose.label"/></option>
                       <g:each in="${vendors}" var="vendor">

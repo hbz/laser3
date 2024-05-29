@@ -53,7 +53,7 @@
                             <i class="icon grey cloud la-list-icon"></i> ${message(code:'platform.label')}
                         </g:elseif>
                         <g:if test="${objCat.value.first() instanceof Provider}">
-                            <i class="icon grey university la-list-icon"></i> ${message(code:'default.provider.label')}
+                            <i class="icon grey university la-list-icon"></i> ${message(code:'provider.label')}
                         </g:if>
                         <g:elseif test="${objCat.value.first() instanceof Vendor}">
                             <i class="icon grey shipping fast la-list-icon"></i> ${message(code:'vendor')}

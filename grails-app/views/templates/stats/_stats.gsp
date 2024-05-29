@@ -15,7 +15,7 @@
                 <thead>
                 <tr>
                     <th class="three wide">${message(code: 'consortium.member')}</th>
-                    <th class="four wide">${message(code: 'default.provider.label')} : ${message(code: 'platform.label')}</th>
+                    <th class="four wide">${message(code: 'provider.label')} : ${message(code: 'platform.label')}</th>
                     <th class="three wide">${message(code: 'org.customerIdentifier')}</th>
                     <th class="three wide">${message(code: 'org.requestorKey')}</th>
                     <th class="two wide">${message(code: 'default.note.label')}</th>

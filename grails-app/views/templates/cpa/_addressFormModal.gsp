@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.RefdataCategory; de.laser.Address; de.laser.Org; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.storage.RDConstants; de.laser.I10nTranslation;" %>
+<%@ page import="de.laser.utils.LocaleUtils; de.laser.RefdataCategory; de.laser.Address; de.laser.Org; de.laser.Provider; de.laser.Vendor; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.storage.RDConstants; de.laser.I10nTranslation;" %>
 <laser:serviceInjection />
 <ui:modal formID="create_address"  modalSize="big" id="addressFormModal" text="${modalText ?: message(code: 'address.add.addressForPublic.label')}" msgClose="${message(code: 'default.button.cancel')}" msgSave="${modalMsgSave ?: message(code: 'default.button.create.label')}">
     <g:form id="create_address" class="ui form" url="${url}" method="POST">
@@ -26,6 +26,52 @@
                     <g:select class="ui dropdown search selection"
                               name="org"
                               from="${orgList}"
+                              value=""
+                              optionKey="id"
+                              optionValue="${{ it.sortname ?: it.name }}"
+                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                </div>
+            </g:elseif>
+            <g:elseif test="${providerId}">
+                <div class="five wide field">
+                    <input id="provider" name="provider" type="hidden" value="${providerId}"/>
+                    <label for="provider">
+                        <g:message code="person.belongsTo"/>
+                    </label>
+                    <g:link controller="provider" action="show" id="${providerId}">${Provider.get(providerId).name}</g:link>
+                </div>
+             </g:elseif>
+            <g:elseif test="${providerList}">
+                <div class="five wide required field  ${hasErrors(bean: addressInstance, field: 'provider', 'error')} ">
+                    <label for="provider">
+                        <g:message code="person.belongsTo"/>
+                    </label>
+                    <g:select class="ui dropdown search selection"
+                              name="provider"
+                              from="${providerList}"
+                              value=""
+                              optionKey="id"
+                              optionValue="${{ it.sortname ?: it.name }}"
+                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                </div>
+            </g:elseif>
+            <g:elseif test="${vendorId}">
+                <div class="five wide field">
+                    <input id="vendor" name="vendor" type="hidden" value="${vendorId}"/>
+                    <label for="vendor">
+                        <g:message code="person.belongsTo"/>
+                    </label>
+                    <g:link controller="vendor" action="show" id="${vendorId}">${Vendor.get(vendorId).name}</g:link>
+                </div>
+             </g:elseif>
+            <g:elseif test="${vendorList}">
+                <div class="five wide required field  ${hasErrors(bean: addressInstance, field: 'vendor', 'error')} ">
+                    <label for="vendor">
+                        <g:message code="person.belongsTo"/>
+                    </label>
+                    <g:select class="ui dropdown search selection"
+                              name="vendor"
+                              from="${vendorList}"
                               value=""
                               optionKey="id"
                               optionValue="${{ it.sortname ?: it.name }}"

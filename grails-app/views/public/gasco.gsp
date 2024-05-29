@@ -75,7 +75,7 @@
             </div>
         </div>
         <div class="five wide column">
-            <img class="ui fluid image" alt="Logo GASCO" src="${resource(dir: 'images', file: 'gasco/logo-small.jpg')}"/>
+            <img class="ui fluid image" alt="Logo GASCO" src="${resource(dir: 'images', file: 'gasco-logo.jpg')}"/>
         </div>
     </div>
     <laser:script file="${this.getGroovyPageFileName()}">
