@@ -419,8 +419,19 @@ class SubscriptionQuery extends BaseQuery {
 
                 // sorting
                 Provider.executeQuery('select id, name from Provider where id in (:providerIdList) order by name', [providerIdList: providerIdList]).each{ p ->
-                    aList.each { a -> if (p[0] == a[0]) { result.data << a } }
-                    bList.each { b -> if (p[0] == b[0]) { result.data << b } }
+                    List tmp = [null, null, 0, 0]
+                    aList.each { a -> if (p[0] == a[0]) {
+                        tmp[0] = a[0]
+                        tmp[1] = a[1]
+                        tmp[2] = a[2]
+                    } }
+                    bList.each { b -> if (p[0] == b[0]) {
+                        tmp[0] = b[0]
+                        tmp[1] = b[1]
+                        tmp[3] = b[2]
+                    } }
+
+                    if (tmp[0]) { result.data << tmp }
                 }
 
                 result.data.each { d ->
@@ -458,8 +469,19 @@ class SubscriptionQuery extends BaseQuery {
 
                 // sorting
                 Vendor.executeQuery('select id, name from Vendor where id in (:vendorIdList) order by name', [vendorIdList: vendorIdList]).each{ p ->
-                    aList.each { a -> if (p[0] == a[0]) { result.data << a } }
-                    bList.each { b -> if (p[0] == b[0]) { result.data << b } }
+                    List tmp = [null, null, 0, 0]
+                    aList.each { a -> if (p[0] == a[0]) {
+                        tmp[0] = a[0]
+                        tmp[1] = a[1]
+                        tmp[2] = a[2]
+                    } }
+                    bList.each { b -> if (p[0] == b[0]) {
+                        tmp[0] = b[0]
+                        tmp[1] = b[1]
+                        tmp[3] = b[2]
+                    } }
+
+                    if (tmp[0]) { result.data << tmp }
                 }
 
                 result.data.each { d ->
