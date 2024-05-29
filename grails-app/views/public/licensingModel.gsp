@@ -5,7 +5,7 @@
             top: 48px !important;
         }
         .ui.table thead tr:nth-child(2)>th {
-            top: 88px !important;
+            top: 119px !important;
         }
         .mk-test1:before {
             content: "\f328";
@@ -96,19 +96,12 @@
         <table class="ui large structured la-table table">
             <thead>
             <tr>
-                <th class="two wide" rowspan="3">Leistungsmerkmale</th>
-                <th class="center aligned" colspan="2">Las:eR Mitgliedschaft</th>
-                <th class="center aligned"  rowspan="3">${message(code:'licensingModel.table.demo')}</th>
+                <th class="two wide" rowspan="2">Leistungsmerkmale</th>
+                <th class="center aligned"><h2 class="ui heading">Basic</h2>Mitgliedschaft</th>
+                <th class="center aligned"><h2 class="ui heading">Pro</h2>Mitgliedschaft</th>
+                <th class="center aligned"  rowspan="2">${message(code:'licensingModel.table.demo')}</th>
             </tr>
-            <tr>
-                <th class="four wide center aligned">
-                    <h2 class="ui heading">Basic</h2>
 
-                </th>
-                <th class="four wide center aligned">
-                    <h2 class="ui heading">Pro</h2>
-                </th>
-            </tr>
             <tr>
                 <th class="two wide center aligned" colspan="2">
                     <a href="mailto:laser@hbz-nrw.de" class="ui huge first button" style="color: white">
@@ -120,7 +113,7 @@
             <tbody>
             <g:each in="${mappingColsBasic}" var="mpg1">
                 <tr>
-                    <td class="eight wide">
+                    <td class="tenwide">
                         <div class="ui list">
                             <div class="item">
                                 <i class="icon la-list-icon mk-${mpg1}"></i>
@@ -162,7 +155,7 @@
             </g:each>
             <g:each in="${mappingColsPro}" var="mpg2">
                 <tr>
-                    <td class="eight wide">
+                    <td class="ten wide">
                         <div class="ui list">
                             <div class="item">
                                 <i class="icon la-list-icon mk-${mpg2}"></i>
@@ -249,7 +242,7 @@
         top: 90px!important;
     }
      .ui.table thead tr:nth-child(2)>th {
-         top: 130px!important;
+         top: 160px!important;
      }
     </style>
 </sec:ifAnyGranted>
