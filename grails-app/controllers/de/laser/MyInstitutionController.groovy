@@ -1049,7 +1049,7 @@ class MyInstitutionController  {
             contactSwitch.addAll(params.list("addressSwitch"))
             switch(params.fileformat) {
                 case 'xlsx':
-                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportProviders(providerListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.XLS, contactSwitch)
+                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportProviders(providerListTotal, selectedFields, ExportClickMeService.FORMAT.XLS, contactSwitch)
 
                     response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
                     response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -1063,12 +1063,12 @@ class MyInstitutionController  {
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
-                        writer.write((String) exportClickMeService.exportProviders(providerListTotal,selectedFields, 'provider',ExportClickMeService.FORMAT.CSV,contactSwitch))
+                        writer.write((String) exportClickMeService.exportProviders(providerListTotal,selectedFields,ExportClickMeService.FORMAT.CSV,contactSwitch))
                     }
                     out.close()
                     return
                 case 'pdf':
-                    Map<String, Object> pdfOutput = exportClickMeService.exportProviders(providerListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.PDF, contactSwitch)
+                    Map<String, Object> pdfOutput = exportClickMeService.exportProviders(providerListTotal, selectedFields, ExportClickMeService.FORMAT.PDF, contactSwitch)
 
                     byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                     response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
@@ -3034,7 +3034,7 @@ class MyInstitutionController  {
             visibleAddresses.addAll(addressbookService.getVisibleAddresses("addressbook", configMap+[offset: result.addressOffset]))
         }
 
-        Set<String> filterFields = ['org', 'prs', 'filterPropDef', 'filterProp', 'function', 'position', 'showOnlyContactPersonForInstitution', 'showOnlyContactPersonForProviderAgency']
+        Set<String> filterFields = ['org', 'prs', 'filterPropDef', 'filterProp', 'function', 'position', 'showOnlyContactPersonForInstitution', 'showOnlyContactPersonForProvider', 'showOnlyContactPersonForVendor']
         result.filterSet = params.keySet().any { String selField -> selField in filterFields }
 
         result.propList =
@@ -3091,7 +3091,7 @@ class MyInstitutionController  {
         else */
         if(params.fileformat) {
             switch(params.fileformat) {
-                case 'xlsx': SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportAddresses(visiblePersons, visibleAddresses, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProviderAgency == 'true', null, ExportClickMeService.FORMAT.XLS)
+                case 'xlsx': SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportAddresses(visiblePersons, visibleAddresses, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProvider == 'true', params.exportOnlyContactPersonForVendor == 'true', null, ExportClickMeService.FORMAT.XLS)
                     response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
                     response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     wb.write(response.outputStream)
@@ -3104,12 +3104,12 @@ class MyInstitutionController  {
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { Writer writer ->
-                        writer.write((String) exportClickMeService.exportAddresses(visiblePersons, visibleAddresses, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProviderAgency == 'true', params.tab, ExportClickMeService.FORMAT.CSV))
+                        writer.write((String) exportClickMeService.exportAddresses(visiblePersons, visibleAddresses, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProvider == 'true', params.exportOnlyContactPersonForVendor == 'true', params.tab, ExportClickMeService.FORMAT.CSV))
                     }
                     out.close()
                     return
                 case 'pdf':
-                    Map<String, Object> pdfOutput = exportClickMeService.exportAddresses(visiblePersons, visibleAddresses, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProviderAgency == 'true', null, ExportClickMeService.FORMAT.PDF)
+                    Map<String, Object> pdfOutput = exportClickMeService.exportAddresses(visiblePersons, visibleAddresses, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProvider == 'true', params.exportOnlyContactPersonForVendor == 'true', null, ExportClickMeService.FORMAT.PDF)
 
                     byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                     response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')

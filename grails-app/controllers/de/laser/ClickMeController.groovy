@@ -113,7 +113,7 @@ class ClickMeController {
             case ExportClickMeService.PROVIDERS:
                 result.formFields = exportClickMeService.getExportProviderFieldsForUI(result.clickMeConfig)
                 result.contactSwitch = true
-                result.exportFileName = result.exportFileName ?: message(code: 'default.ProviderAgency.export.label')
+                result.exportFileName = result.exportFileName ?: message(code: 'default.provider.export.label')
                 break
             case ExportClickMeService.SUBSCRIPTIONS:
                 result.formFields = exportClickMeService.getExportSubscriptionFieldsForUI(false, result.clickMeConfig)

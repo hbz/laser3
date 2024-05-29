@@ -762,11 +762,6 @@
                                                                                 if(p.packageStatus != RDStore.PACKAGE_STATUS_REMOVED)
                                                                                     respObjects << p
                                                                                 break
-                                                                            case 'tipp': TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(respRef[1])
-                                                                                if(tipp.status == RDStore.TIPP_STATUS_CURRENT) {
-                                                                                    respObjects << tipp
-                                                                                }
-                                                                                break
                                                                         }
                                                                         respMap.put(pr.responsibilityType.getI10n('value'), respObjects)
                                                                     }
@@ -800,9 +795,6 @@
                                                                                     <g:elseif test="${respObj instanceof de.laser.Package}">
                                                                                         (<g:link controller="package" action="show" id="${respObj.id}">${respObj.name}</g:link>)
                                                                                     </g:elseif>
-                                                                                    <g:if test="${respObj instanceof TitleInstancePackagePlatform}">
-                                                                                        (<g:link controller="tipp" action="show" id="${respObj.id}">${respObj.name}</g:link>)
-                                                                                    </g:if>
                                                                                 </g:each>
                                                                             </g:if>
                                                                         </g:each>

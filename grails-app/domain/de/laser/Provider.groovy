@@ -37,6 +37,8 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
     @RefdataInfo(cat = RDConstants.PROVIDER_STATUS)
     RefdataValue status
 
+    Org legallyObligedBy
+
     Date retirementDate
     Date dateCreated
     Date lastUpdated
@@ -80,6 +82,7 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         gokbId column: 'prov_gokb_id', type: 'text', index: 'prov_gokb_idx'
         globalUID column: 'prov_guid', index: 'prov_guid_idx'
         status column: 'prov_status_rv_fk'
+        legallyObligedBy column: 'prov_legally_obliged_by_fk'
         kbartDownloaderURL column: 'prov_kbart_downloader_url', type: 'text'
         metadataDownloaderURL column: 'prov_metadata_downloader_url', type: 'text'
         homepage column: 'prov_homepage'
@@ -105,6 +108,7 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         homepage                    (nullable: true, maxSize: 512)
         retirementDate              (nullable: true)
         lastUpdatedCascading        (nullable: true)
+        legallyObligedBy            (nullable: true)
     }
 
     @Override
@@ -188,8 +192,10 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         Provider p = null
         if(provider.gokbId) {
             p = Provider.findByGokbId(provider.gokbId)
-            if(p)
+            if(p) {
                 p.globalUID = provider.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase())
+                p.legallyObligedBy = null
+            }
         }
         if(!p)
             p = Provider.findByGlobalUID(provider.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase()))
@@ -198,6 +204,8 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         p.name = provider.name
         p.sortname = provider.sortname
         p.gokbId = provider.gokbId //for the case providers have already recorded as orgs by sync
+        if(!provider.gokbId && provider.legallyObligedBy)
+            p.legallyObligedBy = provider.legallyObligedBy
         p.homepage = provider.url
         switch(provider.status) {
             case RDStore.ORG_STATUS_CURRENT: p.status = RDStore.PROVIDER_STATUS_CURRENT
@@ -278,24 +286,26 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         PropertyDefinition.executeUpdate('delete from PropertyDefinition pd where pd.tenant = :provider', [provider: provider])
         OrgProperty.findAllByOwner(provider).each { OrgProperty op ->
             PropertyDefinition type = PropertyDefinition.findByNameAndDescrAndTenant(op.type.name, PropertyDefinition.PRV_PROP, op.type.tenant)
-            ProviderProperty pp = new ProviderProperty(owner: p, type: type)
-            if(op.dateValue)
-                pp.dateValue = op.dateValue
-            if(op.decValue)
-                pp.decValue = op.decValue
-            if(op.intValue)
-                pp.intValue = op.intValue
-            if(op.refValue)
-                pp.refValue = op.refValue
-            if(op.stringValue)
-                pp.stringValue = op.stringValue
-            if(op.urlValue)
-                pp.urlValue = op.urlValue
-            pp.note = op.note
-            pp.tenant = op.tenant
-            pp.dateCreated = op.dateCreated
-            pp.lastUpdated = op.lastUpdated
-            pp.save()
+            if(!ProviderProperty.findByOwnerAndTypeAndTenant(p, type, op.tenant)) {
+                ProviderProperty pp = new ProviderProperty(owner: p, type: type)
+                if (op.dateValue)
+                    pp.dateValue = op.dateValue
+                if (op.decValue)
+                    pp.decValue = op.decValue
+                if (op.intValue)
+                    pp.intValue = op.intValue
+                if (op.refValue)
+                    pp.refValue = op.refValue
+                if (op.stringValue)
+                    pp.stringValue = op.stringValue
+                if (op.urlValue)
+                    pp.urlValue = op.urlValue
+                pp.note = op.note
+                pp.tenant = op.tenant
+                pp.dateCreated = op.dateCreated
+                pp.lastUpdated = op.lastUpdated
+                pp.save()
+            }
         }
         p
     }

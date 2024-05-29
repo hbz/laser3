@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5725    29.05.2024  dev     3.4         Andreas Bug         Checkbox zum Eingrenzen der Kontaktarten überarbeitet
+
 5637    29.05.2024  dev     3.4         David   Feature     GASCO-Kontakt für Backoffice/Kundentyp Verwaltung reaktivieren
 
 5390    28.05.2024  dev     3.4         Andreas Feature     Verfahrensverzeichnis aktualisiert
