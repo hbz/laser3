@@ -205,7 +205,7 @@
                                 <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                                      data_confirm_term_how="ok"
                                                      class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                     owner="${provider}" type="url" field="paperInvoice"  overwriteEditable="${editable && !provider.gokbId}"/>
+                                                     owner="${provider}" field="paperInvoice"  overwriteEditable="${editable && !provider.gokbId}"/>
                             </dd>
                         </dl>
                         <dl>
@@ -216,7 +216,7 @@
                                 <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                                      data_confirm_term_how="ok"
                                                      class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                     owner="${provider}" type="url" field="managementOfCredits"  overwriteEditable="${editable && !provider.gokbId}"/>
+                                                     owner="${provider}" field="managementOfCredits"  overwriteEditable="${editable && !provider.gokbId}"/>
                             </dd>
                         </dl>
                         <dl>
@@ -227,7 +227,7 @@
                                 <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                                      data_confirm_term_how="ok"
                                                      class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                     owner="${provider}" type="url" field="processingOfCompensationPayments"  overwriteEditable="${editable && !provider.gokbId}"/>
+                                                     owner="${provider}" field="processingOfCompensationPayments"  overwriteEditable="${editable && !provider.gokbId}"/>
                             </dd>
                         </dl>
                         <dl>
@@ -238,7 +238,7 @@
                                 <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                                      data_confirm_term_how="ok"
                                                      class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                     owner="${provider}" type="url" field="individualInvoiceDesign"  overwriteEditable="${editable && !provider.gokbId}"/>
+                                                     owner="${provider}" field="individualInvoiceDesign"  overwriteEditable="${editable && !provider.gokbId}"/>
                             </dd>
                         </dl>
                     </g:if>
@@ -648,6 +648,24 @@
                                             </g:if>
                                         </td>
                                     </tr>
+                                <%
+                                    provider.addresses.each { Address a ->
+                                        a.type.each { type ->
+                                            String typeName = type.getI10n('value')
+                                            typeNames.add(typeName)
+                                            if(!a.tenant) {
+                                                List addresses = publicTypeAddressMap.get(typeName) ?: []
+                                                addresses.add(a)
+                                                publicTypeAddressMap.put(typeName, addresses)
+                                            }
+                                            else if(a.tenant.id == institution.id) {
+                                                List addresses = privateTypeAddressMap.get(typeName) ?: []
+                                                addresses.add(a)
+                                                privateTypeAddressMap.put(typeName, addresses)
+                                            }
+                                        }
+                                    }
+                                %>
                             </table>
                         </g:if>
                     </div>
@@ -824,7 +842,7 @@
                                                                         <div class="fourteen wide column">
                                                                             <div class="ui label">${typeName}</div>
                                                                             <g:each in="${privateAddresses}" var="a">
-                                                                                <g:if test="${a.org}">
+                                                                                <g:if test="${a.provider}">
                                                                                     <laser:render template="/templates/cpa/address" model="${[
                                                                                             hideAddressType     : true,
                                                                                             address             : a,

@@ -1,10 +1,10 @@
 <%@ page import="de.laser.Org" %>
 
-<g:set var="entityName" value="${message(code: 'default.provider.label')}" />
+<g:set var="entityName" value="${message(code: 'default.agency.label')}" />
 <laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" />
 
 	<ui:breadcrumbs>
-		<ui:crumb message="menu.public.all_providers" controller="provider" action="list"  />
+		<ui:crumb message="menu.public.all_vendors" controller="vendor" action="list"  />
 		<ui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
 	</ui:breadcrumbs>
 
@@ -12,24 +12,24 @@
 
 		<ui:messages data="${flash}" />
 
-		<ui:errors bean="${provider}" />
+		<ui:errors bean="${vendor}" />
 
-		<p>${message(code:'org.findProviderMatches.note')}</p>
+		<p>${message(code:'org.findVendorMatches.note')}</p>
 
-		<ui:searchSegment controller="provider" action="findProviderMatches" method="get">
+		<ui:searchSegment controller="vendor" action="findVendorMatches" method="get">
 			<div class="field">
-				<label for="proposedProvider">${message(code:'org.findProviderMatches.proposed')}</label>
-				<input type="text" id="proposedProvider" name="proposedProvider" value="${params.proposedProvider}" />
+				<label for="proposedVendor">${message(code:'org.findVendorMatches.proposed')}</label>
+				<input type="text" id="proposedVendor" name="proposedVendor" value="${params.proposedVendor}" />
 			</div>
 			<div class="field la-field-right-aligned">
 				<a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.searchreset.label')}</a>
 				<input type="submit" value="${message(code:'default.button.search.label')}" class="ui primary button">
-				<g:link controller="organisation" action="listProvider" class="ui button">${message(code:'default.button.cancel.label')}</g:link>
+				<g:link controller="vendor" action="list" class="ui button">${message(code:'default.button.cancel.label')}</g:link>
 			</div>
 		</ui:searchSegment>
 
-				<g:if test="${providerMatches != null}">
-					<g:if test="${providerMatches.size()>0}">
+				<g:if test="${vendorMatches != null}">
+					<g:if test="${vendorMatches.size()>0}">
 						<table class="ui celled la-js-responsive-table la-table table">
 							<thead>
 							<tr>
@@ -39,29 +39,29 @@
 							</tr>
 							</thead>
 							<tbody>
-							<g:each in="${providerMatches}" var="providerInstance">
+							<g:each in="${vendorMatches}" var="vendorInstance">
 								<tr>
-									<td>${providerInstance.name} <g:link controller="provider" action="show" id="${providerInstance.id}">(${message(code:'default.button.edit.label')})</g:link></td>
+									<td>${vendorInstance.name} <g:link controller="vendor" action="show" id="${vendorInstance.id}">(${message(code:'default.button.edit.label')})</g:link></td>
 									<td><ul>
-											<li><g:message code="globalUID.label" />: <g:fieldValue bean="${providerInstance}" field="globalUID"/></li>
-											<g:if test="${providerInstance.gokbId}">
-												<li><g:message code="org.wekbId.label" />: <g:fieldValue bean="${providerInstance}" field="gokbId"/></li>
+											<li><g:message code="globalUID.label" />: <g:fieldValue bean="${vendorInstance}" field="globalUID"/></li>
+											<g:if test="${vendorInstance.gokbId}">
+												<li><g:message code="org.wekbId.label" />: <g:fieldValue bean="${vendorInstance}" field="gokbId"/></li>
 											</g:if>
-											<g:if test="${providerInstance.id}">
-												<g:each in="${providerInstance.ids}" var="id"><li>${id.ns.ns}: ${id.value}</li></g:each>
+											<g:if test="${vendorInstance.id}">
+												<g:each in="${vendorInstance.ids}" var="id"><li>${id.ns.ns}: ${id.value}</li></g:each>
 											</g:if>
 									</ul></td>
-									<td>${providerInstance.sortname}</td>
+									<td>${vendorInstance.sortname}</td>
 								</tr>
 							</g:each>
 							</tbody>
 						</table>
-						<ui:msg class="warning" message="org.findProviderMatches.match" args="[params.proposedProvider]" />
-						<g:link controller="provider" action="createProvider" class="ui negative button" params="${[provider:params.proposedProvider]}">${message(code:'org.findProviderMatches.matches.create', args: [params.proposedProvider])}</g:link>
+						<ui:msg class="warning" message="org.findVendorMatches.match" args="[params.proposedVendor]" />
+						<g:link controller="vendor" action="createVendor" class="ui negative button" params="${[vendor:params.proposedVendor]}">${message(code:'org.findVendorMatches.matches.create', args: [params.proposedVendor])}</g:link>
 					</g:if>
 					<g:else>
-						<ui:msg class="warning" message="org.findProviderMatches.no_match" args="[params.proposedProvider]" />
-						<g:link controller="provider" action="createProvider" class="ui positive button" params="${[provider:params.proposedProvider]}">${message(code:'org.findProviderMatches.no_matches.create', args: [params.proposedProvider])}</g:link>
+						<ui:msg class="warning" message="org.findVendorMatches.no_match" args="[params.proposedVendor]" />
+						<g:link controller="vendor" action="createVendor" class="ui positive button" params="${[vendor:params.proposedVendor]}">${message(code:'org.findVendorMatches.no_matches.create', args: [params.proposedVendor])}</g:link>
 					</g:else>
 				</g:if>
 

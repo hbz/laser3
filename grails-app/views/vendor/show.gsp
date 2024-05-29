@@ -66,7 +66,7 @@
                                                             class="js-open-confirm-modal-xEditable"
                                                             owner="${altname}" field="name" overwriteEditable="${editable}"/>
                                                 </div>
-                                                <g:if test="${editable && vendor.gokbId}">
+                                                <g:if test="${editable && !vendor.gokbId}">
                                                     <div class="content la-space-right">
                                                         <div class="ui buttons">
                                                             <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
@@ -82,8 +82,7 @@
                                     </div>
                                 </g:if>
                             </div>
-                            <%--do not use if vendors can come only from we:kb--%>
-                            <g:if test="${vendor.gokbId}">
+                            <g:if test="${!vendor.gokbId}">
                                 <input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}">
                             </g:if>
                         </dd>
@@ -91,25 +90,30 @@
                     <dl>
                         <dt><g:message code="vendor.homepage.label"/></dt>
                         <dd>
-                            ${vendor.homepage}
-                            <%--
                             <ui:xEditable
                                     data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                     data_confirm_term_how="ok"
                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                    owner="${vendor}" type="url" field="url" />
-                            <g:if test="${vendor.url}">
-                                <ui:linkWithIcon href="${vendor.url}" />
+                                    owner="${vendor}" type="url" field="homepage" />
+                            <g:if test="${vendor.homepage}">
+                                <ui:linkWithIcon href="${vendor.homepage}" />
                             </g:if>
-                            --%>
                         </dd>
                     </dl>
                     <dl>
                         <dt><g:message code="default.status.label"/></dt>
                         <dd>
-                            ${vendor.status.getI10n('value')}
+                            <ui:xEditableRefData owner="${vendor}" field="status" config="${RDConstants.VENDOR_STATUS}" overwriteEditable="${editable && !vendor.gokbId}"/>
                         </dd>
                     </dl>
+                    <g:if test="${vendor.status == RDStore.VENDOR_STATUS_RETIRED}">
+                        <dl>
+                            <dt>${message(code: 'vendor.retirementDate.label')}</dt>
+                            <dd>
+                                <g:formatDate date="${vendor.retirementDate}" format="${message(code: 'default.date.format.notime')}"/>
+                            </dd>
+                        </dl>
+                    </g:if>
                 </div>
             </div><!-- .card -->
 
@@ -121,7 +125,10 @@
                             <g:message code="vendor.ordering.webshop.label" />
                         </dt>
                         <dd>
-                            ${RefdataValue.displayBoolean(vendor.webShopOrders)}
+                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                 data_confirm_term_how="ok"
+                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                 owner="${vendor}" field="webShopOrders"  overwriteEditable="${editable && !vendor.gokbId}"/>
                         </dd>
                     </dl>
                     <dl>
@@ -129,7 +136,10 @@
                             <g:message code="vendor.ordering.xml.label" />
                         </dt>
                         <dd>
-                            ${RefdataValue.displayBoolean(vendor.xmlOrders)}
+                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                 data_confirm_term_how="ok"
+                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                 owner="${vendor}" field="xmlOrders"  overwriteEditable="${editable && !vendor.gokbId}"/>
                         </dd>
                     </dl>
                     <dl>
@@ -137,7 +147,10 @@
                             <g:message code="vendor.ordering.edi.label" />
                         </dt>
                         <dd>
-                            ${RefdataValue.displayBoolean(vendor.ediOrders)}
+                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                 data_confirm_term_how="ok"
+                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                 owner="${vendor}" field="ediOrders"  overwriteEditable="${editable && !vendor.gokbId}"/>
                         </dd>
                     </dl>
                     <dl>
@@ -145,11 +158,14 @@
                             <g:message code="vendor.ordering.supportedLibrarySystems.label" />
                         </dt>
                         <dd>
-                            <ul>
-                                <g:each in="${vendor.supportedLibrarySystems}" var="row">
-                                    <li>${row.librarySystem.getI10n('value')}</li>
-                                </g:each>
-                            </ul>
+                            <%
+                                List<RefdataValue> supportedLibrarySystems = RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_SUPPORTED_LIBRARY_SYSTEM)
+                            %>
+                            <laser:render template="/templates/attributesList"
+                                          model="${[ownObj: vendor, deleteAction: 'deleteAttribute', attributes: vendor.supportedLibrarySystems, field: 'librarySystem', availableAttributeIds: supportedLibrarySystems.collect { RefdataValue rdv -> rdv.id }, editable: editable && !vendor.gokbId]}"/>
+
+                            <laser:render template="/templates/attributesModal"
+                                          model="${[ownObj: vendor, addAction: 'addAttribute', modalId: 'librarySystem', buttonText: 'vendor.ordering.supportedLibrarySystems.add', label: 'vendor.ordering.supportedLibrarySystems.label', field: 'librarySystem', availableAttributes: supportedLibrarySystems, editable: editable && !vendor.gokbId]}"/>
                         </dd>
                     </dl>
                     <dl>
@@ -157,11 +173,14 @@
                             <g:message code="vendor.ordering.electronicDeliveryDelayNotifications.label" />
                         </dt>
                         <dd>
-                            <ul>
-                                <g:each in="${vendor.electronicDeliveryDelays}" var="row">
-                                    <li>${row.delayNotification.getI10n('value')}</li>
-                                </g:each>
-                            </ul>
+                            <%
+                                List<RefdataValue> electronicDeliveryDelayNotifications = RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_ELECTRONIC_DELIVERY_DELAY)
+                            %>
+                            <laser:render template="/templates/attributesList"
+                                          model="${[ownObj: vendor, deleteAction: 'deleteAttribute', attributes: vendor.electronicDeliveryDelays, field: 'delayNotification', availableAttributeIds: electronicDeliveryDelayNotifications.collect { RefdataValue rdv -> rdv.id }, editable: editable && !vendor.gokbId]}"/>
+
+                            <laser:render template="/templates/attributesModal"
+                                          model="${[ownObj: vendor, addAction: 'addAttribute', modalId: 'delayNotification', buttonText: 'vendor.ordering.electronicDeliveryDelayNotifications.add', label: 'vendor.ordering.electronicDeliveryDelayNotifications.label', field: 'delayNotification', availableAttributes: electronicDeliveryDelayNotifications, editable: editable && !vendor.gokbId]}"/>
                         </dd>
                     </dl>
                 </div>
@@ -175,11 +194,14 @@
                             <g:message code="vendor.invoicing.formats.label" />
                         </dt>
                         <dd>
-                            <ul>
-                                <g:each in="${vendor.electronicBillings}" var="row">
-                                    <li>${row.invoicingFormat.getI10n('value')}</li>
-                                </g:each>
-                            </ul>
+                            <%
+                                List<RefdataValue> invoicingFormats = RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_FORMAT)
+                            %>
+                            <laser:render template="/templates/attributesList"
+                                          model="${[ownObj: vendor, deleteAction: 'deleteAttribute', attributes: vendor.electronicBillings, field: 'invoicingFormat', availableAttributeIds: invoicingFormats.collect { RefdataValue rdv -> rdv.id }, editable: editable && !vendor.gokbId]}"/>
+
+                            <laser:render template="/templates/attributesModal"
+                                          model="${[ownObj: vendor, addAction: 'addAttribute', modalId: 'electronicBilling', buttonText: 'vendor.invoicing.formats.add', label: 'vendor.invoicing.formats.label', field: 'invoicingFormat', availableAttributes: invoicingFormats, editable: editable && !vendor.gokbId]}"/>
                         </dd>
                     </dl>
                     <dl>
@@ -187,11 +209,14 @@
                             <g:message code="vendor.invoicing.dispatch.label" />
                         </dt>
                         <dd>
-                            <ul>
-                                <g:each in="${vendor.invoiceDispatchs}" var="row">
-                                    <li>${row.invoiceDispatch.getI10n('value')}</li>
-                                </g:each>
-                            </ul>
+                            <%
+                                List<RefdataValue> invoiceDispatchs = RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_DISPATCH)
+                            %>
+                            <laser:render template="/templates/attributesList"
+                                          model="${[ownObj: vendor, deleteAction: 'deleteAttribute', attributes: vendor.invoiceDispatchs, field: 'invoiceDispatch', availableAttributeIds: invoiceDispatchs.collect { RefdataValue rdv -> rdv.id }, editable: editable && !vendor.gokbId]}"/>
+
+                            <laser:render template="/templates/attributesModal"
+                                          model="${[ownObj: vendor, addAction: 'addAttribute', modalId: 'invoiceDispatch', buttonText: 'vendor.invoicing.dispatch.add', label: 'vendor.invoicing.dispatch.label', field: 'invoiceDispatch', availableAttributes: invoiceDispatchs, editable: editable && !vendor.gokbId]}"/>
                         </dd>
                     </dl>
                     <dl>
@@ -199,7 +224,10 @@
                             <g:message code="vendor.invoicing.paperInvoice.label" />
                         </dt>
                         <dd>
-                            ${RefdataValue.displayBoolean(vendor.paperInvoice)}
+                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                 data_confirm_term_how="ok"
+                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                 owner="${vendor}" field="paperInvoice"  overwriteEditable="${editable && !vendor.gokbId}"/>
                         </dd>
                     </dl>
                     <dl>
@@ -207,7 +235,10 @@
                             <g:message code="vendor.invoicing.managementOfCredits.label" />
                         </dt>
                         <dd>
-                            ${RefdataValue.displayBoolean(vendor.managementOfCredits)}
+                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                 data_confirm_term_how="ok"
+                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                 owner="${vendor}" field="managementOfCredits"  overwriteEditable="${editable && !vendor.gokbId}"/>
                         </dd>
                     </dl>
                     <dl>
@@ -215,7 +246,10 @@
                             <g:message code="vendor.invoicing.compensationPayments.label" />
                         </dt>
                         <dd>
-                            ${RefdataValue.displayBoolean(vendor.processingOfCompensationPayments)}
+                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                 data_confirm_term_how="ok"
+                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                 owner="${vendor}" field="processingOfCompensationPayments"  overwriteEditable="${editable && !vendor.gokbId}"/>
                         </dd>
                     </dl>
                     <dl>
@@ -223,7 +257,10 @@
                             <g:message code="vendor.invoicing.individualInvoiceDesign.label" />
                         </dt>
                         <dd>
-                            ${RefdataValue.displayBoolean(vendor.individualInvoiceDesign)}
+                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                 data_confirm_term_how="ok"
+                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                 owner="${vendor}" field="individualInvoiceDesign"  overwriteEditable="${editable && !vendor.gokbId}"/>
                         </dd>
                     </dl>
                 </div>
@@ -237,7 +274,10 @@
                             <g:message code="vendor.general.technicalSupport.label" />
                         </dt>
                         <dd>
-                            ${RefdataValue.displayBoolean(vendor.technicalSupport)}
+                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                 data_confirm_term_how="ok"
+                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                 owner="${vendor}" field="technicalSupport"  overwriteEditable="${editable && !vendor.gokbId}"/>
                         </dd>
                     </dl>
                     <dl>
@@ -245,7 +285,10 @@
                             <g:message code="vendor.general.metadata.label" />
                         </dt>
                         <dd>
-                            ${RefdataValue.displayBoolean(vendor.shippingMetadata)}
+                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                 data_confirm_term_how="ok"
+                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                 owner="${vendor}" field="shippingMetadata"  overwriteEditable="${editable && !vendor.gokbId}"/>
                         </dd>
                     </dl>
                     <dl>
@@ -253,7 +296,10 @@
                             <g:message code="vendor.general.usageStats.label" />
                         </dt>
                         <dd>
-                            ${RefdataValue.displayBoolean(vendor.forwardingUsageStatisticsFromPublisher)}
+                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                 data_confirm_term_how="ok"
+                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                 owner="${vendor}" field="forwardingUsageStatisticsFromPublisher"  overwriteEditable="${editable && !vendor.gokbId}"/>
                         </dd>
                     </dl>
                     <dl>
@@ -261,7 +307,10 @@
                             <g:message code="vendor.general.newReleaseInformation.label" />
                         </dt>
                         <dd>
-                            ${RefdataValue.displayBoolean(vendor.activationForNewReleases)}
+                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                 data_confirm_term_how="ok"
+                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                 owner="${vendor}" field="activationForNewReleases"  overwriteEditable="${editable && !vendor.gokbId}"/>
                         </dd>
                     </dl>
                     <dl>
@@ -269,7 +318,10 @@
                             <g:message code="vendor.general.exchangeIndividualTitles.label" />
                         </dt>
                         <dd>
-                            ${RefdataValue.displayBoolean(vendor.exchangeOfIndividualTitles)}
+                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                 data_confirm_term_how="ok"
+                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                 owner="${vendor}" field="exchangeOfIndividualTitles"  overwriteEditable="${editable && !vendor.gokbId}"/>
                         </dd>
                     </dl>
                     <dl>
@@ -277,8 +329,12 @@
                             <g:message code="vendor.general.researchPlatform.label" />
                         </dt>
                         <dd>
+                            <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                          data_confirm_term_how="ok"
+                                          class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                          owner="${vendor}" type="url" field="researchPlatformForEbooks" overwriteEditable="${editable && !vendor.gokbId}"/>
                             <g:if test="${vendor.researchPlatformForEbooks}">
-                                <ui:link url="${vendor.researchPlatformForEbooks}" target="_blank">${vendor.researchPlatformForEbooks}</ui:link>
+                                <ui:linkWithIcon href="${vendor.researchPlatformForEbooks}"/>
                             </g:if>
                         </dd>
                     </dl>
@@ -296,11 +352,11 @@
                                         String[] linkTypes = RDStore.PROVIDER_LINK_FOLLOWS.getI10n('value').split('\\|')
                                         int perspectiveIndex
                                         Org pair
-                                        if(orgInstance == row.from) {
+                                        if(vendor == row.from) {
                                             perspectiveIndex = 0
                                             pair = row.to
                                         }
-                                        else if(orgInstance == row.to) {
+                                        else if(vendor == row.to) {
                                             perspectiveIndex = 1
                                             pair = row.from
                                         }
@@ -326,7 +382,7 @@
                                 </g:each>
                             </table>
                         </g:if>
-                        <g:if test="${subEditor}">
+                        <g:if test="${editable}">
                             <div class="ui la-vertical buttons">
                                 <%
                                     Map<String,Object> model = [tmplText:message(code: 'vendor.linking.addLink'),
@@ -518,7 +574,7 @@
                     </div>
                 </div>
             </div>
-            <g:if test="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) && !inContextOrg}">
+            <g:if test="${institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()}">
                 <div id="container-contacts">
                     <div class="ui card">
                         <div class="content">
@@ -681,7 +737,7 @@
                                                                         <div class="fourteen wide column">
                                                                             <div class="ui label">${typeName}</div>
                                                                             <g:each in="${privateAddresses}" var="a">
-                                                                                <g:if test="${a.org}">
+                                                                                <g:if test="${a.vendor}">
                                                                                     <laser:render template="/templates/cpa/address" model="${[
                                                                                             hideAddressType     : true,
                                                                                             address             : a,

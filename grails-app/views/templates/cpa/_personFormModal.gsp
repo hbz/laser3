@@ -14,10 +14,10 @@
                 <input name="personRoleOrg" type="hidden" value="${org.id}"/>
             </g:if>
             <g:if test="${provider}">
-                <input name="personRoleOrg" type="hidden" value="${provider.id}"/>
+                <input name="personRoleProvider" type="hidden" value="${provider.id}"/>
             </g:if>
             <g:if test="${vendor}">
-                <input name="personRoleOrg" type="hidden" value="${vendor.id}"/>
+                <input name="personRoleVendor" type="hidden" value="${vendor.id}"/>
             </g:if>
         </g:if>
 
