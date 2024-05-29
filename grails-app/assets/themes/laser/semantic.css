@@ -1673,6 +1673,10 @@ i.icon.la-list-icon:before {
   font-weight: normal;
 }
 
+.la-major-object {
+  font-weight: bold;
+}
+
 .la-clear-before {
   clear: both;
 }
