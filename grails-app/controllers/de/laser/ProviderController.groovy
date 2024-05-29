@@ -316,7 +316,7 @@ class ProviderController {
      */
     @Secured(['ROLE_USER'])
     def link() {
-        linksGenerationService.link(params)
+        linksGenerationService.linkProviderVendor(params, ProviderLink.class.name)
         redirect action: 'show', id: params.context
     }
 
@@ -325,7 +325,7 @@ class ProviderController {
      */
     @Secured(['ROLE_USER'])
     def unlink() {
-        linksGenerationService.unlink(params)
+        linksGenerationService.unlinkProviderVendor(params)
         redirect action: 'show', id: params.id
     }
 

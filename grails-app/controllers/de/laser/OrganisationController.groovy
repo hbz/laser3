@@ -53,9 +53,9 @@ class OrganisationController  {
     GokbService gokbService
     IdentifierService identifierService
     InfoService infoService
+    LinksGenerationService linksGenerationService
     OrganisationControllerService organisationControllerService
     OrganisationService organisationService
-    OrgTypeService orgTypeService
     PropertyService propertyService
     TaskService taskService
     UserControllerService userControllerService
@@ -1680,7 +1680,7 @@ class OrganisationController  {
      */
     @Secured(['ROLE_USER'])
     def linkOrgs() {
-        organisationControllerService.linkOrgs(params)
+        linksGenerationService.linkOrgs(params)
         redirect action: 'show', id: params.context
     }
 
@@ -1689,7 +1689,7 @@ class OrganisationController  {
      */
     @Secured(['ROLE_USER'])
     def unlinkOrg() {
-        organisationControllerService.unlinkOrg(params)
+        linksGenerationService.unlinkOrg(params)
         redirect action: 'show', id: params.id
     }
 

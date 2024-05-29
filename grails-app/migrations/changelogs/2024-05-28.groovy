@@ -14,5 +14,9 @@ databaseChangeLog = {
         }
     }
 
-
+    changeSet(author: "galffy (generated)", id: "1716910938586-2") {
+        addColumn(tableName: "vendor") {
+            column(name: "ven_retirement_date", type: "timestamp")
+        }
+    }
 }

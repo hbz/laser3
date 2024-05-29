@@ -24,6 +24,7 @@ class VendorService {
     DeletionService deletionService
     GokbService gokbService
     TaskService taskService
+    UserService userService
     WorkflowService workflowService
 
     static String RESULT_BLOCKED            = 'RESULT_BLOCKED'
@@ -492,9 +493,11 @@ class VendorService {
         Map<String, Object> result = [user: contextUser,
                                       institution: contextOrg,
                                       contextOrg: contextOrg, //for templates
+                                      contextCustomerType:contextOrg.getCustomerType(),
                                       wekbApi: ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]
         if(params.id) {
             result.vendor = Vendor.get(params.id)
+            result.editable = userService.hasFormalAffiliation_or_ROLEADMIN(contextUser, contextOrg, 'INST_EDITOR')
             int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.vendor).size()
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.vendor).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''

@@ -21,7 +21,7 @@
 <ui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.addressBook.visible"/>
 
 <ui:filter>
-    <g:form action="addressbook" controller="provider" method="get" params="[id: vendor.id]" class="ui small form">
+    <g:form action="addressbook" controller="vendor" method="get" params="[id: vendor.id]" class="ui small form">
         <div class="three fields">
             <div class="field">
                 <label for="prs">${message(code: 'person.filter.name')}</label>
@@ -78,7 +78,7 @@
 <div class="ui bottom attached tab segment ${params.tab == 'contacts' ? 'active' : ''}" data-tab="contacts">
     <laser:render template="/templates/cpa/person_table" model="${[
             persons       : visiblePersons,
-            restrictToProvider : provider,
+            restrictToVendor : vendor,
             showContacts: true,
             showAddresses: true,
             showOptions : true,

@@ -434,6 +434,83 @@ class LinksGenerationService {
     }
 
     /**
+     * Links two organisations by combo
+     * @param params the parameter map, containing the link parameters
+     * @return true if the link saving was successful, false otherwise
+     */
+    boolean linkOrgs(GrailsParameterMap params) {
+        log.debug(params.toMapString())
+        Combo c
+        if(params.linkType_new) {
+            c = new Combo()
+            int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
+            c.type = RDStore.COMBO_TYPE_FOLLOWS
+            if(perspectiveIndex == 0) {
+                c.fromOrg = Org.get(params.pair_new)
+                c.toOrg = Org.get(params.context)
+            }
+            else if(perspectiveIndex == 1) {
+                c.fromOrg = Org.get(params.context)
+                c.toOrg = Org.get(params.pair_new)
+            }
+        }
+        c.save()
+    }
+
+    /**
+     * Disjoins the given link between two organisatons
+     * @param params the parameter map containing the combo to unlink
+     * @return true if the deletion was successful, false otherwise
+     */
+    boolean unlinkOrg(GrailsParameterMap params) {
+        int del = Combo.executeUpdate('delete from Combo c where c.id = :id',[id: params.long("combo")])
+        return del > 0
+    }
+
+    /**
+     * Links two organisations by combo
+     * @param params the parameter map, containing the link parameters
+     * @return true if the link saving was successful, false otherwise
+     */
+    boolean linkProviderVendor(GrailsParameterMap params, String linkInstanceType) {
+        log.debug(params.toMapString())
+        def l
+        if(params.linkType_new) {
+            Long from, to
+            int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
+            if(perspectiveIndex == 0) {
+                from = params.long('pair_new')
+                to = params.long('context')
+            }
+            else if(perspectiveIndex == 1) {
+                from = params.long('context')
+                to = params.long('pair_new')
+            }
+            switch(linkInstanceType) {
+                case ProviderLink: l = new ProviderLink(type: RDStore.PROVIDER_LINK_FOLLOWS, from: Provider.get(from), to: Provider.get(to))
+                    break
+                case VendorLink: l = new VendorLink(type: RDStore.PROVIDER_LINK_FOLLOWS, from: Vendor.get(from), to: Vendor.get(to))
+                    break
+            }
+            if(l) {
+                l.save()
+                true
+            }
+        }
+        false
+    }
+
+    /**
+     * Disjoins the given link between two organisatons
+     * @param params the parameter map containing the combo to unlink
+     * @return true if the deletion was successful, false otherwise
+     */
+    boolean unlinkProviderVendor(GrailsParameterMap params) {
+        int del = Combo.executeUpdate('delete from Combo c where c.id = :id',[id: params.long("combo")])
+        return del > 0
+    }
+
+    /**
      * Gets the organisations connected to the given organisation
      * @param org the {@link Org} whose connections should be retrieved
      * @return a {@link Set} of connections from or to this {@link Org}
