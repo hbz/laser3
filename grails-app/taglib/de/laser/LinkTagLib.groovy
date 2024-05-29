@@ -38,7 +38,7 @@ class LinkTagLib {
         }
         else if (attrs.type == 'org') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
-            label = message(code: 'default.provider.label') + ' in der we:kb aufrufen'
+            label = message(code: 'provider.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'package') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
@@ -50,7 +50,7 @@ class LinkTagLib {
         }
         else if (attrs.type == 'provider') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
-            label = message(code: 'default.provider.label') + ' in der we:kb aufrufen'
+            label = message(code: 'provider.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'source') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
@@ -78,7 +78,7 @@ class LinkTagLib {
 
         if (attrs.type == 'org') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
-            label = message(code: 'default.provider.label') + ' in der we:kb aufrufen'
+            label = message(code: 'provider.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'vendor') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId

@@ -173,7 +173,7 @@ class GenericHelper {
             }
             //
             else if (fieldName.startsWith('x-provider+')) {
-                base = messageSource.getMessage('default.provider.label', null, locale)
+                base = messageSource.getMessage('provider.label', null, locale)
             }
             //
             else if (fieldName.startsWith('x-vendor+')) {

@@ -111,14 +111,14 @@ class WfChecklist {
         else if (org) {
             info.target = GrailsHibernateUtil.unwrapIfProxy(org)
             info.targetName = org.name
-            info.targetTitle = ms.getMessage('org.institution.label', null, locale) + '/' + ms.getMessage('default.provider.label', null, locale)
+            info.targetTitle = ms.getMessage('org.institution.label', null, locale) + '/' + ms.getMessage('provider.label', null, locale)
             info.targetIcon = 'university'
             info.targetController = 'org'
         }
         else if (provider) {
             info.target = GrailsHibernateUtil.unwrapIfProxy(provider)
             info.targetName = provider.name
-            info.targetTitle = ms.getMessage('default.provider.label', null, locale)
+            info.targetTitle = ms.getMessage('provider.label', null, locale)
             info.targetIcon = 'handshake'
             info.targetController = 'provider'
         }

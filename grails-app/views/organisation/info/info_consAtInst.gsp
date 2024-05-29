@@ -90,7 +90,7 @@
 %{--                    </g:each>--}%
 %{--                </div>--}%
 
-                <div class="ui tiny header">${message(code: 'default.provider.label')}</div>
+                <div class="ui tiny header">${message(code: 'provider.label')}</div>
                 <div class="ui secondary wrapping menu la-tab-with-js">
                     <g:each in="${providerMap}" var="prov,subList">
                         <g:set var="provider" value="${Provider.get(prov)}" />

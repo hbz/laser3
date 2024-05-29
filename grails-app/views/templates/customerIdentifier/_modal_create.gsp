@@ -12,7 +12,7 @@
         </g:if>
 
         <div class="field">
-            <label for="addCIPlatform">${message(code:'default.provider.label')} : ${message(code:'platform.label')}</label>
+            <label for="addCIPlatform">${message(code:'provider.label')} : ${message(code:'platform.label')}</label>
             <g:if test="${customeridentifier}">
                 <% Platform p = customeridentifier.platform%>
                 <input type="text" id="addCIPlatform" name="addCIPlatform" value="${ p.org.name + (p.org.sortname ? " (${p.org.sortname})" : '') + ' : ' + p.name}" disabled/>

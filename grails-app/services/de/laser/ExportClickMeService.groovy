@@ -325,7 +325,7 @@ class ExportClickMeService {
 
             providers: [
                     label: 'Provider',
-                    message: 'default.provider.label',
+                    message: 'provider.label',
                     fields: [
                             'provider.sortname'          : [field: 'sub.providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
                             'provider.name'              : [field: 'sub.providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
@@ -406,7 +406,7 @@ class ExportClickMeService {
 
             providers: [
                     label: 'Provider',
-                    message: 'default.provider.label',
+                    message: 'provider.label',
                     fields: [
                             'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
                             'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
@@ -683,7 +683,7 @@ class ExportClickMeService {
 
             providers: [
                     label: 'Provider',
-                    message: 'default.provider.label',
+                    message: 'provider.label',
                     fields: [
                             'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
                             'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
@@ -913,7 +913,7 @@ class ExportClickMeService {
 
             providers: [
                     label: 'Provider',
-                    message: 'default.provider.label',
+                    message: 'provider.label',
                     fields: [
                             'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
                             'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],

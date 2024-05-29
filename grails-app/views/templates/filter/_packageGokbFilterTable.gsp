@@ -33,7 +33,7 @@
                     <th>Wekb <br>${message(code: 'package.show.nav.expired')}</th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'provider'}">
-                    <g:sortableColumn property="provider.name" title="${message(code: 'default.provider.label')}" params="${params}"/>
+                    <g:sortableColumn property="provider.name" title="${message(code: 'provider.label')}" params="${params}"/>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'vendor'}">
                     <g:sortableColumn property="vendor.name" title="${message(code: 'vendor.label')}" params="${params}"/>

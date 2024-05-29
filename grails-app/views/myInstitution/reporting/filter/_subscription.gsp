@@ -13,7 +13,7 @@
                 <a class="item filter-wrapper-consortium" data-tab="sub-filter-tab-4">${message(code:'subscription.details.consortia.label')}</a>
             </g:if>
             <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).provider}">
-                <a class="item" data-tab="sub-filter-tab-5">${message(code:'default.provider.label')}</a>
+                <a class="item" data-tab="sub-filter-tab-5">${message(code:'provider.label')}</a>
             </g:if>
 %{--            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency}">--}%
 %{--                <a class="item" data-tab="sub-filter-tab-6">${message(code:'vendor.plural')}</a>--}%

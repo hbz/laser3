@@ -132,7 +132,7 @@
                 </th>
 
                 <g:sortableColumn params="${params}" property="orgRole§provider"
-                                  title="${message(code: 'default.provider.label')} / ${message(code: 'vendor.label')}"
+                                  title="${message(code: 'provider.label')} / ${message(code: 'vendor.label')}"
                                   rowspan="2"/>
 
                 <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.startDate"

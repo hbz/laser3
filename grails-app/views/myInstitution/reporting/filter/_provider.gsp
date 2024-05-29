@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 
         <div class="menu ui top attached tabular la-tab-with-js">
-            <a class="active item" data-tab="provider-filter-tab-1">${message(code:'default.provider.label')}</a>
+            <a class="active item" data-tab="provider-filter-tab-1">${message(code:'provider.label')}</a>
             <a class="item" data-tab="provider-filter-tab-help"> ? %{--<i class="icon question"></i>--}%</a>
         </div><!-- .menu -->
 

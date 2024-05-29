@@ -1,6 +1,6 @@
 <%@ page import="de.laser.Org" %>
 
-<g:set var="entityName" value="${message(code: 'default.provider.label')}" />
+<g:set var="entityName" value="${message(code: 'provider.label')}" />
 <laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" />
 
 	<ui:breadcrumbs>

@@ -6,7 +6,7 @@
             %{--<a class="item" data-tab="lic-filter-tab-2">Einrichtung</a>--}%
             <a class="item" data-tab="lic-filter-tab-3">${message(code:'license.licensor.label')}</a>
             <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).provider}">
-                <a class="item" data-tab="lic-filter-tab-4">${message(code:'default.provider.label')}</a>
+                <a class="item" data-tab="lic-filter-tab-4">${message(code:'provider.label')}</a>
             </g:if>
             <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).vendor}">
                 <a class="item" data-tab="lic-filter-tab-5">${message(code:'default.vendor.export.label')}</a>

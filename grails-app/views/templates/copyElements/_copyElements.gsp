@@ -235,7 +235,7 @@
                     <td data-element="source">
                         <div>
                 <g:if test="${!source_visibleProviders}">
-                    <strong><i class="handshake icon"></i>&nbsp;${message(code: "default.provider.label")}:
+                    <strong><i class="handshake icon"></i>&nbsp;${message(code: "provider.label")}:
                     </strong>
                 </g:if>
                 <g:each in="${source_visibleProviders}" var="source_role">
@@ -281,7 +281,7 @@
                     <td data-element="target">
                         <div>
                             <g:if test="${!target_visibleProviders}">
-                                <strong><i class="handshake icon"></i>&nbsp;${message(code: "default.provider.label")}:
+                                <strong><i class="handshake icon"></i>&nbsp;${message(code: "provider.label")}:
                                 </strong>
                             </g:if>
                             <g:each in="${target_visibleProviders}" var="target_role">
