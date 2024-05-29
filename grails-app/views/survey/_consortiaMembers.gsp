@@ -40,6 +40,8 @@
                 ${message(code: 'surveyParticipants.addParticipants.option.selectMembersWithFile.text')}
 
                 <br>
+                <g:link class="item" controller="profile" action="importManuel" target="_blank">${message(code: 'help.technicalHelp.uploadFile.manuel')}</g:link>
+                <br>
 
                 <g:link controller="survey" action="templateForSurveyParticipantsBulkWithUpload" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
                     <p>${message(code:'myinst.financeImport.template')}</p>

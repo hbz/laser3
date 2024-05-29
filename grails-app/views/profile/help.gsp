@@ -42,6 +42,21 @@
 
 <div class="ui segment">
     <p class="ui header">
+        <g:message code="help.technicalHelp.uploadFile.title"/>
+    </p>
+
+    <p>
+        <g:message code="help.technicalHelp.uploadFile.content"/>:
+    </p>
+
+    <p>
+        <g:link class="item" controller="profile" action="importManuel">${message(code: 'help.technicalHelp.uploadFile.manuel')}</g:link>
+    </p>
+
+</div>
+
+<div class="ui segment">
+    <p class="ui header">
         <g:message code="help.technicalHelp.spellcheck.title"/>
     </p>
     <div class="ui relaxed list">
