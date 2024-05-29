@@ -1,5 +1,5 @@
 <!-- _costItemInput.gsp -->
-<%@ page import="de.laser.CustomerTypeService; de.laser.finance.BudgetCode; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.UserSetting; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.*; de.laser.interfaces.CalculatedType; de.laser.finance.CostItemElementConfiguration" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.finance.BudgetCode; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.Package; de.laser.UserSetting; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.*; de.laser.interfaces.CalculatedType; de.laser.finance.CostItemElementConfiguration" %>
 <laser:serviceInjection />
 
         <g:if test="${costItem}">
@@ -287,16 +287,16 @@
                             <label>${message(code:'financials.newCosts.package')}</label>
                             <g:if test="${costItem?.sub}">
                                 <g:select name="newPackage" id="newPackage_${idSuffix}" class="ui dropdown search"
-                                          from="${[{}] + costItem?.sub?.packages}"
-                                          optionValue="${{it?.pkg?.name ?: message(code:'financials.newCosts.noPackageLink')}}"
-                                          optionKey="${{SubscriptionPackage.class.name + ':' + it?.id}}"
+                                          from="${[{}] + costItem?.sub?.packages?.pkg}"
+                                          optionValue="${{it?.name ?: message(code:'financials.newCosts.noPackageLink')}}"
+                                          optionKey="${{Package.class.name + ':' + it?.id}}"
                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                          value="${SubscriptionPackage.class.name + ':' + costItem?.subPkg?.id}" />
+                                          value="${Package.class.name + ':' + costItem?.pkg?.id}" />
                             </g:if>
                             <g:else>
                             <%--<input name="newPackage" class="ui" disabled="disabled" data-subFilter="" data-disableReset="true" />--%>
                                 <div class="ui search selection dropdown newCISelect" id="newPackage_${idSuffix}">
-                                    <input type="hidden" name="newPackage" value="${costItem?.subPkg ? "${SubscriptionPackage.class.name}:${costItem.subPkg.id}" : params.newPackage}">
+                                    <input type="hidden" name="newPackage" value="${costItem?.pkg ? "${Package.class.name}:${costItem.pkg.id}" : params.newPackage}">
                                     <i class="dropdown icon"></i>
                                     <input type="text" class="search">
                                     <div class="default text"></div>
@@ -566,7 +566,7 @@
                         JSPC.app.finance${idSuffix}.newSubscription.addClass("error");
                     else
                         JSPC.app.finance${idSuffix}.newSubscription.removeClass("error");
-                    if(!response.subPkg)
+                    if(!response.pkg)
                         JSPC.app.finance${idSuffix}.newPackage.addClass("error");
                     else
                         JSPC.app.finance${idSuffix}.newPackage.removeClass("error");

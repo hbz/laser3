@@ -100,8 +100,8 @@
                 </g:if>
                 <div class="field"><!--NEW -->
                     <label>${message(code:'package.label')}</label>
-                    <div class="ui search selection multiple dropdown newFilter" id="filterCISPkg">
-                        <input type="hidden" name="filterCISPkg">
+                    <div class="ui search selection multiple dropdown newFilter" id="filterCIPkg">
+                        <input type="hidden" name="filterCIPkg">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
@@ -301,7 +301,7 @@
         const links = {
             "filterSubProviders": "${createLink([controller:"ajaxJson", action:"lookupProvidersAgencies"])}?query={query}&forFinanceView=true",
             "filterCISub": "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?status="+subStatus+"&query={query}",
-            "filterCISPkg": "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?status="+subStatus+fixedSubscriptionString+"&query={query}",
+            "filterCIPkg": "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?status="+subStatus+fixedSubscriptionString+"&query={query}",
             "filterCIInvoiceNumber": "${createLink([controller:"ajaxJson", action:"lookupInvoiceNumbers"])}?query={query}",
             "filterCIOrderNumber": "${createLink([controller:"ajaxJson", action:"lookupOrderNumbers"])}?query={query}",
             "filterCIReference": "${createLink([controller:"ajaxJson", action:"lookupReferences"])}?query={query}"

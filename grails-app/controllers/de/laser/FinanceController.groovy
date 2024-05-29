@@ -100,7 +100,7 @@ class FinanceController  {
                     result.currentSurveysCounts = SurveyConfig.findAllBySubscription(result.subscription).size()
                     result.currentCostItemCounts = "${result.financialData.own.count}/${result.financialData.cons.count}"
                 }
-                result.currentMembersCounts =  Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',[parent: result.subscription, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])[0]
+                result.currentMembersCounts =  Subscription.executeQuery('select count(*) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',[parent: result.subscription, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])[0]
             }else{
                 result.currentSurveysCounts = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                         [sub: result.subscription.instanceOf,
@@ -318,7 +318,7 @@ class FinanceController  {
                                     row.add(message(code:'financials.costItemConfiguration.notSet'))
                                 //subscription package
                                 cellnum++
-                                row.add(ci.subPkg ? ci.subPkg.pkg.name:'')
+                                row.add(ci.pkg ? ci.pkg.name:'')
                                 //issue entitlement
                                 cellnum++
                                 row.add(ci.issueEntitlement ? ci.issueEntitlement?.tipp?.name:'')

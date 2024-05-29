@@ -129,7 +129,7 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
      * @return
      */
     List<CostItem> getCostItems(){
-        return CostItem.findAllBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), RDStore.COST_ITEM_DELETED)
+        return CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), RDStore.COST_ITEM_DELETED)
     }
 
     /**

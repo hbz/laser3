@@ -69,7 +69,7 @@
                                     </div>
                                     <%
                                         String unlinkDisabled = '', unlinkDisabledTooltip = null
-                                        Set<Subscription> blockingCostItems = CostItem.executeQuery('select ci.subPkg.subscription from CostItem ci where (ci.subPkg.subscription = :sub or ci.subPkg.subscription.instanceOf = :sub) and ci.subPkg.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted', [pkg: sp.pkg, deleted: RDStore.COST_ITEM_DELETED, sub: sp.subscription, context: institution])
+                                        Set<Subscription> blockingCostItems = CostItem.executeQuery('select ci.sub from CostItem ci where (ci.sub = :sub or ci.sub.instanceOf = :sub) and ci.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted', [pkg: sp.pkg, deleted: RDStore.COST_ITEM_DELETED, sub: sp.subscription, context: institution])
                                         if(showConsortiaFunctions) {
                                             if(auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')) {
                                                 unlinkDisabled = 'disabled'
