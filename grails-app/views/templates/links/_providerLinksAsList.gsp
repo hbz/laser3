@@ -8,7 +8,7 @@
             <tr>
                 <td>
                     <span class="la-flexbox la-minor-object">
-                        <i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code:'default.provider.label')}"></i>
+                        <i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code:'provider.label')}"></i>
                         <g:link controller="provider" action="show" id="${role.provider.id}">
                             ${role.provider.name}
                         </g:link>

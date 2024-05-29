@@ -28,7 +28,7 @@
                     <div class="ui fluid card" style="margin-bottom:0">
                         <div class="content">
                             <div class="header">
-                                <a href="#" class="wekb-flyout-trigger" data-preset="provider,all">${message(code: 'default.provider.label')}%{--: ${wekbNews.provider.count}--}%</a>
+                                <a href="#" class="wekb-flyout-trigger" data-preset="provider,all">${message(code: 'provider.label')}%{--: ${wekbNews.provider.count}--}%</a>
                                 <div class="right floated meta"><i class="icon university"></i></div>
                             </div>
                         </div>
@@ -211,10 +211,10 @@
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
 
         tmplConfig = [
-                ['provider', wekbNews.provider,   'default.provider.label',     'handshake',        'menu.my.providers'],
-                ['vendor',   wekbNews.vendor,     'vendor.plural',              'shipping fast',    'menu.my.vendors'],
-                ['platform', wekbNews.platform,   'platform.plural',            'cloud',            'menu.my.platforms'],
-                ['package',  wekbNews.package,    'package.plural',             'gift',             'menu.my.packages']
+                ['provider', wekbNews.provider,   'provider.label',         'handshake',        'menu.my.providers'],
+                ['vendor',   wekbNews.vendor,     'vendor.plural',          'shipping fast',    'menu.my.vendors'],
+                ['platform', wekbNews.platform,   'platform.plural',        'cloud',            'menu.my.platforms'],
+                ['package',  wekbNews.package,    'package.plural',         'gift',             'menu.my.packages']
         ]
     %>
 
@@ -228,12 +228,12 @@
         </p>
         <div class="filter" style="margin:0 2em 0.5em; text-align:right;">
             <div class="ui buttons mini">
-                <span class="ui button" data-obj="provider">${message(code: 'default.provider.label')}: ${wekbNews.provider.count}</span>
+                <span class="ui button" data-obj="provider">${message(code: 'provider.label')}: ${wekbNews.provider.count}</span>
                 <span class="ui button" data-obj="vendor">${message(code: 'vendor.plural')}: ${wekbNews.vendor.count}</span>
                 <span class="ui button" data-obj="platform">${message(code: 'platform.plural')}: ${wekbNews.platform.count}</span>
                 <span class="ui button" data-obj="package">${message(code: 'package.plural')}: ${wekbNews.package.count}</span>
                 <span class="ui button la-popup-tooltip la-long-tooltip la-delay" data-obj="all"
-                      data-content="Alle anzeigen: ${message(code: 'default.provider.label')}, ${message(code: 'vendor.plural')}, ${message(code: 'platform.plural')}, ${message(code: 'package.plural')}">Alle</span>
+                      data-content="Alle anzeigen: ${message(code: 'provider.label')}, ${message(code: 'vendor.plural')}, ${message(code: 'platform.plural')}, ${message(code: 'package.plural')}">Alle</span>
             </div>
         </div>
         <div class="filter" style="margin:0 2em 0.5em; text-align:right;">

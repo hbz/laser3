@@ -595,7 +595,7 @@
             <div id="container-provider">
                 <div class="ui card">
                     <div class="content">
-                        <h2 class="ui header">${message(code: 'default.provider.label')}</h2>
+                        <h2 class="ui header">${message(code: 'provider.label')}</h2>
                         <laser:render template="/templates/links/providerLinksAsList"
                                   model="${[providerRoles: providerRoles,
                                             roleObject   : subscription,

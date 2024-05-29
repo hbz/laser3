@@ -27,7 +27,7 @@
                             <div class="three wide column">
                                 <div>
                                     <g:if test="${sp.pkg.provider}">
-                                        <i aria-hidden="true" class="handshake grey outline icon la-popup-tooltip la-delay" data-content="${message(code: 'default.provider.label')}"></i>
+                                        <i aria-hidden="true" class="handshake grey outline icon la-popup-tooltip la-delay" data-content="${message(code: 'provider.label')}"></i>
                                         <g:link controller="provider" action="show" id="${sp.pkg.provider.id}">${sp.pkg.provider.name}</g:link>
                                         <g:if test="${sp.pkg.provider.homepage}"><ui:linkWithIcon href="${sp.pkg.provider.homepage.startsWith('http') ? sp.pkg.provider.homepage : 'http://' + sp.pkg.provider.homepage}"/></g:if>
                                         <g:if test="${sp.pkg.provider.gokbId}"><ui:wekbIconLink type="provider" gokbId="${sp.pkg.provider.gokbId}"/></g:if>

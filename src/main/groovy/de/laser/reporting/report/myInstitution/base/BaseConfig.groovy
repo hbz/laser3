@@ -346,7 +346,7 @@ class BaseConfig {
         }
 //        else if (key == CI_GENERIC_PACKAGE_OR_PROVIDER) {
 //            return [
-//                    label: messageSource.getMessage('default.provider.label', null, locale),
+//                    label: messageSource.getMessage('provider.label', null, locale),
 //                    from: Org.executeQuery('select distinct(org) from Org org join org.orgType ot where ot in (:otList)',
 //                            [ otList: [RDStore.OT_PROVIDER] ]).collect{[
 //                            id: it.id,

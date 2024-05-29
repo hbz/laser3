@@ -47,7 +47,7 @@
                             <th rowspan="2">${message(code:'org.institution.label')}</th>
                         </g:elseif>
                         <g:if test="${'showProviders' in tableConfig}">
-                            <g:sortableColumn scope="col" params="${params}" property="provider" title="${message(code: 'default.provider.label')}" rowspan="2" />
+                            <g:sortableColumn scope="col" params="${params}" property="provider" title="${message(code: 'provider.label')}" rowspan="2" />
                         </g:if>
                         <g:if test="${'showVendors' in tableConfig}">
                             <g:sortableColumn scope="col" params="${params}" property="vendor" title="${message(code: 'vendor.label')}" rowspan="2" />

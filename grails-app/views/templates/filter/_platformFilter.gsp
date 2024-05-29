@@ -9,7 +9,7 @@
             </div>
 
             <div class="field">
-                <label for="provider">${message(code: 'default.provider.label')}</label>
+                <label for="provider">${message(code: 'provider.label')}</label>
                 <div class="ui input">
                     <input type="text" id="provider" name="provider"
                            placeholder="${message(code: 'default.search.ph')}"

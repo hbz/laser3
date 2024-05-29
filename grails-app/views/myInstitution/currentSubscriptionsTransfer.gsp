@@ -275,7 +275,7 @@
                         ${message(code: 'sidewide.number')}
                     </th>
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="providerAgency"
-                                      title="${message(code: 'default.provider.label')} / ${message(code: 'vendor.label')}"/>
+                                      title="${message(code: 'provider.label')} / ${message(code: 'vendor.label')}"/>
 
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="name"
                                       title="${message(code: 'subscription')}"/>

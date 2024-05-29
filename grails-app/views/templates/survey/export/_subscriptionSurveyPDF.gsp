@@ -140,7 +140,7 @@
             <br/>
             <g:each in="${visibleProviders}" var="role">
                     <h2>
-                        ${message(code: 'default.provider.label')}
+                        ${message(code: 'provider.label')}
                     </h2>
                     <g:link absolute="true" controller="provider" action="show"
                             id="${role.provider.id}">${role.provider.name}</g:link>
