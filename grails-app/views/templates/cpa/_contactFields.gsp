@@ -22,15 +22,10 @@
         </div>
 
 
-        <div class="field seven wide">
+        <div class="field eight wide">
             <label></label>
             <g:textField id="content" name="content" value="${contactInstance?.content}"/>
         </div>
-       <div class="field one wide">
-           <button type="button"  class="ui icon negative button la-modern-button removeContactElement">
-               <i class="trash alternate outline icon"></i>
-           </button>
-       </div>
     </div>
 
 
