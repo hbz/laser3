@@ -4,6 +4,8 @@ import de.laser.base.AbstractCoverage
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
 import de.laser.properties.LicenseProperty
+import de.laser.properties.ProviderProperty
+import de.laser.properties.VendorProperty
 import de.laser.storage.BeanStore
 import de.laser.storage.PropertyStore
 import de.laser.utils.DateUtils
@@ -184,6 +186,7 @@ class ExportClickMeService {
                             message: 'subscription.label',
                             fields: [
                                     'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label'],
+                                    'subscription.altnames'                     : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
                                     'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
                                     'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label'],
                                     'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -207,6 +210,7 @@ class ExportClickMeService {
                     message: 'subscription.label',
                     fields: [
                             'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
+                            'subscription.altnames'                     : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
                             'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                             'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                             'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -352,6 +356,7 @@ class ExportClickMeService {
                     message: 'subscription.label',
                     fields: [
                             'subscription.name'                         : [field: 'name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
+                            'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
                             'subscription.startDate'                    : [field: 'startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                             'subscription.endDate'                      : [field: 'endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                             'subscription.manualCancellationDate'       : [field: 'manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -491,6 +496,7 @@ class ExportClickMeService {
                     message: 'subscription.label',
                     fields: [
                             'subscription.name'                         : [field: 'name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
+                            'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
                             'subscription.startDate'                    : [field: 'startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                             'subscription.endDate'                      : [field: 'endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                             'subscription.manualCancellationDate'       : [field: 'manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -595,6 +601,7 @@ class ExportClickMeService {
                     message: 'subscription.label',
                     fields: [
                             'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
+                            'subscription.altnames'                     : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
                             'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                             'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                             'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -743,6 +750,7 @@ class ExportClickMeService {
                     message: 'subscription.label',
                     fields: [
                             'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
+                            'subscription.altnames'                     : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
                             'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                             'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                             'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -876,6 +884,7 @@ class ExportClickMeService {
                     message: 'license.label',
                     fields: [
                             'license.reference'       : [field: 'reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true'],
+                            'license.altnames'        : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
                             'license.status'          : [field: 'status', label: 'Status', message: 'exportClickMe.license.status', defaultChecked: 'true'],
                             'license.licenseCategory' : [field: 'licenseCategory', label: 'License Category', message: 'license.licenseCategory.label', defaultChecked: 'true'],
                             'license.startDate'       : [field: 'startDate', label: 'Start Date', message: 'exportClickMe.license.startDate', defaultChecked: 'true'],
@@ -958,6 +967,7 @@ class ExportClickMeService {
                     message: 'license.label',
                     fields: [
                             'license.reference'       : [field: 'reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true'],
+                            'license.altnames'        : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
                             'license.status'          : [field: 'status', label: 'Status', message: 'exportClickMe.license.status', defaultChecked: 'true'],
                             'license.licenseCategory' : [field: 'licenseCategory', label: 'License Category', message: 'license.licenseCategory.label', defaultChecked: 'true'],
                             'license.startDate'       : [field: 'startDate', label: 'Start Date', message: 'exportClickMe.license.startDate', defaultChecked: 'true'],
@@ -1345,7 +1355,7 @@ class ExportClickMeService {
     static Map<String, Object> EXPORT_PROVIDER_CONFIG = [
             provider : [
                     label: 'Provider',
-                    message: 'default.provider.singular',
+                    message: 'provider.label',
                     fields: [
                             'provider.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
                             'provider.sortname'              : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
@@ -1354,7 +1364,10 @@ class ExportClickMeService {
                             'provider.homepage'              : [field: 'homepage', label: 'Homepage URL', message: 'org.homepage.label', defaultChecked: true],
                             'provider.metadataDownloaderURL' : [field: 'metadataDownloaderURL', label: 'Metadata Downloader URL', message: 'org.metadataDownloaderURL.label', defaultChecked: true],
                             'provider.kbartDownloaderURL'    : [field: 'kbartDownloaderURL', label: 'KBART Downloader URL', message: 'org.KBARTDownloaderURL.label', defaultChecked: true],
-                            'provider.roles'                 : [field: 'roles', label: 'Roles', message: 'org.orgRole.label', defaultChecked: true]
+                            'provider.packages'              : [field: null, label: 'Packages', message:'package.plural', defaultChecked: true],
+                            'provider.platforms'             : [field: null, label: 'Platforms', message: 'org.platforms.label', defaultChecked: true],
+                            'provider.subscriptions'         : [field: null, label: 'Subscriptions', message: 'subscription.plural', defaultChecked: true],
+                            'provider.licenses'              : [field: null, label: 'Licenses', message: 'license.plural', defaultChecked: true]
                     ]
             ],
             providerIdentifiers : [
@@ -1367,6 +1380,18 @@ class ExportClickMeService {
                     message: 'exportClickMe.participantCustomerIdentifiers',
                     fields: [:]
             ],
+            providerInvoicing : [
+                    label: 'Invoicing',
+                    message: 'vendor.invoicing.header',
+                    fields: [
+                            'vendor.electronicBillings'                 : [field: null, label: 'Electronic invoice formats', message: 'vendor.invoicing.formats.label'],
+                            'vendor.invoiceDispatchs'                   : [field: null, label: 'Invoice dispatch via', message: 'vendor.invoicing.dispatch.label'],
+                            'vendor.paperInvoice'                       : [field: 'paperInvoice', label: 'Paper invoice', message: 'vendor.invoicing.paperInvoice.label'],
+                            'vendor.managementOfCredits'                : [field: 'managementOfCredits', label: 'Management of credits', message: 'vendor.invoicing.managementOfCredits.label'],
+                            'vendor.processingOfCompensationPayments'   : [field: 'processingOfCompensationPayments', label: 'Processing of compensation payments (credits/subsequent debits)', message: 'vendor.invoicing.compensationPayments.label'],
+                            'vendor.individualInvoiceDesign'            : [field: 'individualInvoiceDesign', label: 'Individual invoice design', message: 'vendor.invoicing.individualInvoiceDesign.label']
+                    ]
+            ],
             providerContacts : [
                     label: 'Contacts',
                     message: 'org.contacts.label',
@@ -1376,11 +1401,6 @@ class ExportClickMeService {
             providerAddresses : [
                     label: 'Addresses',
                     message: 'org.addresses.label',
-                    fields: [:]
-            ],
-            providerProperties : [
-                    label: 'Properties',
-                    message: 'default.properties',
                     fields: [:]
             ],
             myProviderProperties : [
@@ -1448,6 +1468,16 @@ class ExportClickMeService {
                             'vendor.prequalificationVOLInfo'    : [field: 'prequalificationVOLInfo', label: 'Info to Prequalification VOL', message: 'vendor.supplier.infoPrequalificationVol.label']
                     ]
             ],
+            providerIdentifiers : [
+                    label: 'Identifiers',
+                    message: 'exportClickMe.participantIdentifiers',
+                    fields: [:]
+            ],
+            providerCustomerIdentifiers : [
+                    label: 'Customer Identifiers',
+                    message: 'exportClickMe.participantCustomerIdentifiers',
+                    fields: [:]
+            ],
             vendorContacts : [
                     label: 'Contacts',
                     message: 'org.contacts.label',
@@ -1457,6 +1487,11 @@ class ExportClickMeService {
             vendorAddresses : [
                     label: 'Addresses',
                     message: 'org.addresses.label',
+                    fields: [:]
+            ],
+            myVendorProperties : [
+                    label: 'Properties',
+                    message: 'default.properties.my',
                     fields: [:]
             ]
     ]
@@ -2973,8 +3008,16 @@ class ExportClickMeService {
             }
         }
 
+        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_PROVIDER_NS).each {
+            exportFields.put("vendorIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
+
+        Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx)', contextParams).each { Platform plat ->
+            exportFields.put("vendorCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
+        }
+
         PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.VEN_PROP], contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
-            exportFields.put("providerProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == contextOrg.id)])
+            exportFields.put("vendorProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == contextOrg.id)])
         }
         contactTypes.each { RefdataValue contactType ->
             exportFields.put("vendorContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
@@ -3000,13 +3043,19 @@ class ExportClickMeService {
         List<Map> subTabs = [[view: funcType.desc, label: funcType.getI10n('desc')], [view: posType.desc, label: posType.getI10n('desc')], [view: respType.desc, label: respType.getI10n('desc')]]
         String subTabActive = funcType.desc
         fields.putAll(EXPORT_VENDOR_CONFIG)
-        fields.vendorProperties.fields.clear()
+        fields.vendorIdentifiers.fields.clear()
+        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_PROVIDER_NS, [sort: 'ns']).each {
+            fields.vendorIdentifiers.fields << ["vendorIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
+        fields.vendorIdentifiers.fields << ['vendor.uuid':[field: 'globalUID', label: 'Laser-UUID',  message: null]]
+        fields.vendorCustomerIdentifiers.fields.clear()
+        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx) order by plat.name', contextParams).each { Platform plat ->
+            fields.vendorCustomerIdentifiers.fields << ["vendorCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
+        }
         fields.myVendorProperties.fields.clear()
         PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.VEN_PROP], contextOrg).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
             if(propertyDefinition.tenant?.id == contextOrg.id)
                 fields.myVendorProperties.fields << ["vendorProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: true]]
-            else
-                fields.vendorProperties.fields << ["vendorProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: false]]
         }
         fields.vendorContacts.fields.clear()
         fields.vendorContacts.subTabs = subTabs
@@ -3085,13 +3134,10 @@ class ExportClickMeService {
         Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx) order by plat.name', contextParams).each { Platform plat ->
             fields.providerCustomerIdentifiers.fields << ["providerCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
         }
-        fields.providerProperties.fields.clear()
         fields.myProviderProperties.fields.clear()
         PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PRV_PROP], contextOrg).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
             if(propertyDefinition.tenant?.id == contextOrg.id)
                 fields.myProviderProperties.fields << ["providerProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: true]]
-            else
-                fields.providerProperties.fields << ["providerProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: false]]
         }
         fields.providerContacts.fields.clear()
         fields.providerContacts.subTabs = subTabs
@@ -4323,13 +4369,14 @@ class ExportClickMeService {
      * @param selectedFields the fields to be exported
      * @param withInstData should data from institutions be included?
      * @param withProvData should data from providers be included?
+     * @param withVenData should data from vendors be included?
      * @param format the {@link FORMAT} to be exported
      * @return the output, rendered in the desired format
      */
-    def exportAddresses(List visiblePersons, List visibleAddresses, Map<String, Object> selectedFields, withInstData, withProvData, String tab, FORMAT format) {
+    def exportAddresses(List visiblePersons, List visibleAddresses, Map<String, Object> selectedFields, withInstData, withProvData, withVenData, String tab, FORMAT format) {
         Locale locale = LocaleUtils.getCurrentLocale()
         Map<String, Object> configFields = getExportAddressFields(), selectedExportContactFields = [:], selectedExportAddressFields = [:], sheetData = [:]
-        List instData = [], provData = [], instAddresses = [], provAddresses = []
+        List instData = [], provData = [], venData = [], instAddresses = [], provAddresses = [], venAddresses = []
 
         selectedFields.keySet().each { String key ->
             if(configFields.contact.containsKey(key))
@@ -4374,18 +4421,18 @@ class ExportClickMeService {
         addressesContacts.each { Person p, Map<String, Map<String, String>> contactData ->
             for(int addressRow = 0; addressRow < contactData.size(); addressRow++) {
                 String contactType = ''
-                PersonRole orgLink = p.roleLinks.find { PersonRole pr -> pr.org != null }
-                if(orgLink.functionType)
-                    contactType = orgLink.functionType.getI10n('value')
-                else if(orgLink.positionType)
-                    contactType = orgLink.positionType.getI10n('value')
+                PersonRole prsLink = p.roleLinks.find { PersonRole pr -> pr.org != null || pr.provider != null || pr.vendor != null }
+                if(prsLink.functionType)
+                    contactType = prsLink.functionType.getI10n('value')
+                else if(prsLink.positionType)
+                    contactType = prsLink.positionType.getI10n('value')
                 List row = [createTableCell(format, contactType)]
                 Map.Entry<String, Map<String, String>> contact = contactData.entrySet()[addressRow]
                 //Address a = p.addresses[addressRow]
                 selectedExportContactFields.each { String fieldKey, Map mapSelectedFields ->
                     String field = mapSelectedFields.field
                     if (field == 'organisation') {
-                        row.add(createTableCell(format, orgLink.org.name))
+                        row.add(createTableCell(format, prsLink.org.name))
                     }
                     else if (field == 'receiver') {
                         row.add(createTableCell(format, p.toString()))
@@ -4402,16 +4449,21 @@ class ExportClickMeService {
                         }
                     }*/
                 }
-                if(orgLink.org.getCustomerType())
+                if(prsLink.org)
                     instData << row
-                else provData << row
+                else if(prsLink.provider)
+                    provData << row
+                else if(prsLink.vendor)
+                    venData << row
             }
         }
 
         if(withInstData)
             sheetData[messageSource.getMessage('org.institution.plural', null, locale)] = [titleRow: titleRow, columnData: instData]
         if(withProvData)
-            sheetData[messageSource.getMessage('default.agency.provider.plural.label', null, locale)] = [titleRow: titleRow, columnData: provData]
+            sheetData[messageSource.getMessage('provider.plural', null, locale)] = [titleRow: titleRow, columnData: provData]
+        if(withVenData)
+            sheetData[messageSource.getMessage('vendor.plural', null, locale)] = [titleRow: titleRow, columnData: provData]
         if(visibleAddresses || tab == 'addresses') {
             titleRow = [messageSource.getMessage('default.type.label', null, locale)]
             titleRow.addAll(_exportTitles(selectedExportAddressFields, locale, null, null, null, null, format))
@@ -4432,15 +4484,20 @@ class ExportClickMeService {
                             else row.add([field: a[field], style: null])
                         }
                     }
-                    if(a.org.getCustomerType())
+                    if(a.org)
                         instAddresses << row
-                    else provAddresses << row
+                    else if(a.provider)
+                        provAddresses << row
+                    else if(a.vendor)
+                        venAddresses << row
                 }
             }
             if(withInstData)
                 sheetData[messageSource.getMessage('org.institution.address.label', null, locale)] = [titleRow: titleRow, columnData: instAddresses]
             if(withProvData)
-                sheetData[messageSource.getMessage('default.agency.provider.address.label', null, locale)] = [titleRow: titleRow, columnData: provAddresses]
+                sheetData[messageSource.getMessage('default.provider.address.label', null, locale)] = [titleRow: titleRow, columnData: provAddresses]
+            if(withVenData)
+                sheetData[messageSource.getMessage('default.vendor.address.label', null, locale)] = [titleRow: titleRow, columnData: venAddresses]
         }
         if(sheetData.size() == 0) {
             sheetData[messageSource.getMessage('org.institution.plural', null, locale)] = [titleRow: titleRow, columnData: []]
@@ -4455,12 +4512,16 @@ class ExportClickMeService {
                             currData.addAll(instAddresses)
                         if(withProvData)
                             currData.addAll(provAddresses)
+                        if(withProvData)
+                            currData.addAll(venAddresses)
                         break
                     case 'contacts':
                         if(withInstData)
                             currData.addAll(instData)
                         if(withProvData)
                             currData.addAll(provData)
+                        if(withVenData)
+                            currData.addAll(venData)
                         break
                 }
                 return exportService.generateSeparatorTableString(titleRow, currData, '|')
@@ -5273,6 +5334,12 @@ class ExportClickMeService {
                         row.add(createTableCell(format, ' '))
                     }
                 }
+                else if (fieldKey.contains('altnames')) {
+                    if(subscription.altnames) {
+                        row.add(createTableCell(format, subscription.altnames.collect { AlternativeName alt -> alt.name }.join('\n')))
+                    }
+                    else row.add(createTableCell(format, ' '))
+                }
                 else if (fieldKey.startsWith('participantSubProperty.') || fieldKey.startsWith('subProperty.')) {
                     Long id = Long.parseLong(fieldKey.split("\\.")[1])
                     String query = "select prop from SubscriptionProperty prop where (prop.owner = :sub and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :sub and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg) order by prop.type.${localizedName} asc"
@@ -5452,6 +5519,12 @@ class ExportClickMeService {
                         row.add(createTableCell(format, licNotes.baseItems.join('\n')))
                     else if(fieldKey == 'license.notes.shared')
                         row.add(createTableCell(format, licNotes.sharedItems.join('\n')))
+                }
+                else if (fieldKey.contains('altnames')) {
+                    if(license.altnames) {
+                        row.add(createTableCell(format, license.altnames.collect { AlternativeName alt -> alt.name }.join('\n')))
+                    }
+                    else row.add(createTableCell(format, ' '))
                 }
                 else if (fieldKey.startsWith('participantLicProperty.') || fieldKey.startsWith('licProperty.')) {
                     Long id = Long.parseLong(fieldKey.split("\\.")[1])
@@ -5654,11 +5727,11 @@ class ExportClickMeService {
                 }
                 else if (fieldKey == 'participant.readerNumbers') {
                     _setOrgFurtherInformation(result, row, fieldKey, format)
-                }else if (fieldKey.startsWith('participantIdentifiers.') || fieldKey.startsWith('providerIdentifiers.')) {
+                }else if (fieldKey.startsWith('participantIdentifiers.')) {
                     _setOrgFurtherInformation(result, row, fieldKey, format)
-                }else if (fieldKey.startsWith('participantCustomerIdentifiers.') || fieldKey.startsWith('providerCustomerIdentifiers.')) {
+                }else if (fieldKey.startsWith('participantCustomerIdentifiers.')) {
                     _setOrgFurtherInformation(result, row, fieldKey, format)
-                }else if (fieldKey.startsWith('participantProperty.') || fieldKey.startsWith('providerProperty.')) {
+                }else if (fieldKey.startsWith('participantProperty.')) {
                     _setOrgFurtherInformation(result, row, fieldKey, format)
                 }
                 else {
@@ -5691,7 +5764,6 @@ class ExportClickMeService {
      * @param contactSources which type of contacts should be considered (public or private)?
      * @param configMap filter parameters for further queries
      */
-    //continue here: migrate from provider/org to vendor
     private void _setVendorRow(Vendor result, Map<String, Object> selectedFields, List exportData, FORMAT format, Set<String> contactSources = []){
         List row = []
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -5716,6 +5788,18 @@ class ExportClickMeService {
                     }
                     else _setVendorFurtherInformation(result, row, fieldKey, format, 'publicAddress')
                 }
+                else if (fieldKey.startsWith('vendorIdentifiers.')) {
+                    _setVendorFurtherInformation(result, row, fieldKey, format)
+                }
+                else if (fieldKey.startsWith('vendorCustomerIdentifiers.')) {
+                    _setVendorFurtherInformation(result, row, fieldKey, format)
+                }
+                else if (fieldKey.startsWith('vendorProperty.')) {
+                    _setVendorFurtherInformation(result, row, fieldKey, format)
+                }
+                else if (fieldKey.contains('altnames')) {
+                    _setVendorFurtherInformation(result, row, fieldKey, format)
+                }
                 else {
                     switch(fieldKey) {
                         case 'vendor.electronicBillings':
@@ -5732,13 +5816,13 @@ class ExportClickMeService {
                             if(context.isCustomerType_Consortium())
                                 consortiaFilter = ' and l.instanceOf = null'
                             List nameOfLicenses = Subscription.executeQuery('select l.reference from VendorRole vr join vr.license l, OrgRole oo where vr.license = oo.lic and vr.vendor = :vendor and l.status = :current and oo.org = :context'+consortiaFilter, [vendor: result, current: RDStore.LICENSE_CURRENT, context: context])
-                            row.add(createTableCell(format, nameOfLicenses.join('; ')))
+                            row.add(createTableCell(format, nameOfLicenses.join('\n')))
                             break
                         case 'vendor.packages':
-                            row.add(createTableCell(format, result.packages.pkg.name.join('; ')))
+                            row.add(createTableCell(format, result.packages.pkg.name.join('\n')))
                             break
                         case 'vendor.platforms':
-                            row.add(createTableCell(format, result.packages.pkg.nominalPlatform.name.join('; ')))
+                            row.add(createTableCell(format, result.packages.pkg.nominalPlatform.name.join('\n')))
                             break
                         case 'vendor.subscriptions':
                             String consortiaFilter = ''
@@ -5749,6 +5833,108 @@ class ExportClickMeService {
                             break
                         case 'vendor.supportedLibrarySystems':
                             row.add(createTableCell(format, result.supportedLibrarySystems.collect { LibrarySystem ls -> ls.librarySystem.getI10n('value') }.join('; ')))
+                            break
+                        default:
+                            def fieldValue = field && result[field] != null ? result[field] : ' '
+
+                            if(fieldValue instanceof RefdataValue){
+                                fieldValue = fieldValue.getI10n('value')
+                            }
+
+                            if(fieldValue instanceof Boolean){
+                                fieldValue = (fieldValue == true ? RDStore.YN_YES.getI10n('value') : (fieldValue == false ? RDStore.YN_NO.getI10n('value') : ''))
+                            }
+
+                            if(fieldValue instanceof Date){
+                                fieldValue = sdf.format(fieldValue)
+                            }
+                            row.add(createTableCell(format, fieldValue))
+                            break
+                    }
+                }
+            }
+        }
+        exportData.add(row)
+    }
+
+    /**
+     * Fills a row for the provider export
+     * @param result the {@link Provider} record to export
+     * @param selectedFields the fields which should appear
+     * @param exportData the list containing the export rows
+     * @param format the {@link FORMAT} to be exported
+     * @param contactSources which type of contacts should be considered (public or private)?
+     * @param configMap filter parameters for further queries
+     */
+    private void _setProviderRow(Provider result, Map<String, Object> selectedFields, List exportData, FORMAT format, Set<String> contactSources = []){
+        List row = []
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        Org context = contextService.getOrg()
+        selectedFields.keySet().each { String fieldKey ->
+            Map mapSelecetedFields = selectedFields.get(fieldKey)
+            String field = mapSelecetedFields.field
+            if(!mapSelecetedFields.separateSheet) {
+                if (fieldKey.contains('Contact.')) {
+                    if(contactSources) {
+                        contactSources.findAll{ String source -> source.contains('Contact') }.each { String contactSwitch ->
+                            _setProviderFurtherInformation(result, row, fieldKey, format, contactSwitch)
+                        }
+                    }
+                    else _setProviderFurtherInformation(result, row, fieldKey, format, 'publicContact')
+                }
+                else if (fieldKey.contains('Address.')) {
+                    if(contactSources) {
+                        contactSources.findAll{ String source -> source.contains('Address') }.each { String contactSwitch ->
+                            _setProviderFurtherInformation(result, row, fieldKey, format, contactSwitch)
+                        }
+                    }
+                    else _setProviderFurtherInformation(result, row, fieldKey, format, 'publicAddress')
+                }
+                else if (fieldKey.startsWith('providerIdentifiers.')) {
+                    _setProviderFurtherInformation(result, row, fieldKey, format)
+                }
+                else if (fieldKey.startsWith('providerCustomerIdentifiers.')) {
+                    _setProviderFurtherInformation(result, row, fieldKey, format)
+                }
+                else if (fieldKey.startsWith('providerProperty.')) {
+                    _setProviderFurtherInformation(result, row, fieldKey, format)
+                }
+                else if (fieldKey.contains('altnames')) {
+                    _setProviderFurtherInformation(result, row, fieldKey, format)
+                }
+                else {
+                    switch(fieldKey) {
+                        case 'provider.electronicBillings':
+                            row.add(createTableCell(format, result.electronicBillings.collect { ElectronicBilling eb -> eb.invoicingFormat.getI10n('value') }.join('; ')))
+                            break
+                        case 'provider.invoiceDispatchs':
+                            row.add(createTableCell(format, result.invoiceDispatchs.collect { InvoiceDispatch id -> id.invoiceDispatch.getI10n('value') }.join('; ')))
+                            break
+                        case 'provider.licenses':
+                            String consortiaFilter = ''
+                            if(context.isCustomerType_Consortium())
+                                consortiaFilter = ' and l.instanceOf = null'
+                            List nameOfLicenses = Subscription.executeQuery('select l.reference from ProviderRole pvr join pvr.license l, OrgRole oo where pvr.license = oo.lic and pvr.provider = :provider and l.status = :current and oo.org = :context'+consortiaFilter, [provider: result, current: RDStore.LICENSE_CURRENT, context: context])
+                            row.add(createTableCell(format, nameOfLicenses.join('\n')))
+                            break
+                        case 'provider.packages':
+                            String packageNames
+                            if(result.packages.size() > 10) {
+                                Set<Package> packageSubSet = result.packages.take(10)
+                                packageNames = "${packageSubSet.name.join('\n')} ${messageSource.getMessage('export.overflow', [result.packages.size()-10] as Object[], LocaleUtils.getCurrentLocale())}"
+                            }
+                            else packageNames = result.packages.name.join('\n')
+                            row.add(createTableCell(format, packageNames))
+                            break
+                        case 'provider.platforms':
+                            row.add(createTableCell(format, result.packages.nominalPlatform.name.join('; ')))
+                            break
+                        case 'provider.subscriptions':
+                            String consortiaFilter = ''
+                            if(context.isCustomerType_Consortium())
+                                consortiaFilter = ' and s.instanceOf = null'
+                            List nameOfSubscriptions = Subscription.executeQuery('select s.name from ProviderRole pvr join pvr.subscription s, OrgRole oo where pvr.subscription = oo.sub and pvr.provider = :provider and s.status = :current and oo.org = :context'+consortiaFilter, [provider: result, current: RDStore.SUBSCRIPTION_CURRENT, context: context])
+                            row.add(createTableCell(format, nameOfSubscriptions.join('; ')))
                             break
                         default:
                             def fieldValue = field && result[field] != null ? result[field] : ' '
@@ -6505,7 +6691,7 @@ class ExportClickMeService {
             else {
                 row.add(createTableCell(format, ' '))
             }
-        } else if (fieldKey.startsWith('participantIdentifiers.') || fieldKey.startsWith('providerIdentifiers.')) {
+        } else if (fieldKey.startsWith('participantIdentifiers.')) {
             if (org) {
                 Long id = Long.parseLong(fieldKey.split("\\.")[1])
                 List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.org = :org and ident.ns.id in (:namespaces) and ident.value != :unknown and ident.value != ''", [org: org, namespaces: [id], unknown: IdentifierNamespace.UNKNOWN])
@@ -6526,7 +6712,7 @@ class ExportClickMeService {
                 row.add(createTableCell(format, ' '))
                 row.add(createTableCell(format, ' '))
             }
-        } else if (fieldKey.startsWith('participantCustomerIdentifiers.') || fieldKey.startsWith('providerCustomerIdentifiers.')) {
+        } else if (fieldKey.startsWith('participantCustomerIdentifiers.')) {
             if (org) {
                 CustomerIdentifier customerIdentifier = CustomerIdentifier.findByCustomerAndPlatform(org, Platform.get(fieldKey.split("\\.")[1]))
                 if (customerIdentifier) {
@@ -6537,7 +6723,7 @@ class ExportClickMeService {
             } else {
                 row.add(createTableCell(format, ' '))
             }
-        } else if (fieldKey.startsWith('participantProperty.') || fieldKey.startsWith('providerProperty.')) {
+        } else if (fieldKey.startsWith('participantProperty.')) {
             if (org) {
 
                 Long id = Long.parseLong(fieldKey.split("\\.")[1])
@@ -6683,10 +6869,10 @@ class ExportClickMeService {
         }
     }
 
-
     private void _setVendorFurtherInformation(Vendor vendor, List row, String fieldKey, FORMAT format, String contactSwitch = 'publicContact'){
         boolean isPublic = contactSwitch == 'publicContact'
         String tenantFilter = '', addressTenantFilter, contactTypeFilter = ''
+        Org contextOrg = contextService.getOrg()
         if (fieldKey.contains('Contact.')) {
             if (vendor) {
                 Map<String, Object> queryParams = [vendor: vendor, type: RDStore.CCT_EMAIL, isPublic: isPublic]
@@ -6737,7 +6923,196 @@ class ExportClickMeService {
                 row.add(createTableCell(format, ' '))
             }
         }
+        if (fieldKey.contains('altnames')) {
+            if (vendor) {
+                if(vendor.altnames) {
+                    row.add(createTableCell(format, vendor.altnames.collect { AlternativeName alt -> alt.name }.join('\n')))
+                }
+                else row.add(createTableCell(format, ' '))
+            }
+            else {
+                row.add(createTableCell(format, ' '))
+            }
+        }
+        else if (fieldKey.startsWith('vendorIdentifiers.')) {
+            if (vendor) {
+                Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.provider = :provider and ident.ns.id in (:namespaces) and ident.value != :unknown and ident.value != ''", [vendor: vendor, namespaces: [id], unknown: IdentifierNamespace.UNKNOWN])
+                if (identifierList) {
+                    row.add(createTableCell(format, identifierList.value.join('\n')))
+                    List idNotes = []
+                    identifierList.each { Identifier ident ->
+                        if(ident.note)
+                            idNotes << ident.note
+                        else idNotes << ' '
+                    }
+                    row.add(createTableCell(format, idNotes.join('\n')))
+                } else {
+                    row.add(createTableCell(format, ' '))
+                    row.add(createTableCell(format, ' '))
+                }
+            } else {
+                row.add(createTableCell(format, ' '))
+                row.add(createTableCell(format, ' '))
+            }
+        }
+        else if (fieldKey.startsWith('vendorCustomerIdentifiers.')) {
+            if (vendor) {
+                Set<CustomerIdentifier> customerIdentifier = CustomerIdentifier.executeQuery('select ci from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from PackageVendor pv join pv.pkg pkg where pkg.vendor = :vendor) and plat = :platform and ci.customer = :context', [context: contextOrg, vendor: vendor, platform: Platform.get(fieldKey.split("\\.")[1])])
+                if (customerIdentifier) {
+                    row.add(createTableCell(format, customerIdentifier[0].value))
+                } else {
+                    row.add(createTableCell(format, ' '))
+                }
+            } else {
+                row.add(createTableCell(format, ' '))
+            }
+        }
+        else if (fieldKey.startsWith('vendorProperty.')) {
+            if (vendor) {
 
+                Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                List<VendorProperty> vendorProperties = VendorProperty.executeQuery("select prop from VendorProperty prop where (prop.owner = :vendor and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :vendor and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg)", [vendor: vendor, propertyDefs: [id], contextOrg: contextOrg])
+                if (vendorProperties) {
+                    List<String> propValues = [], propAnnotations = []
+                    vendorProperties.each { VendorProperty prop ->
+                        propValues << prop.getValueInI10n()
+                        if(prop.note)
+                            propAnnotations << prop.note
+                    }
+                    row.add(createTableCell(format, propValues.join('\n')))
+                    row.add(createTableCell(format, propAnnotations.join('\n')))
+                } else {
+                    row.add(createTableCell(format, ' '))
+                    row.add(createTableCell(format, ' '))
+                }
+            } else {
+                row.add(createTableCell(format, ' '))
+            }
+        }
+    }
+
+    private void _setProviderFurtherInformation(Provider provider, List row, String fieldKey, FORMAT format, String contactSwitch = 'publicContact'){
+        boolean isPublic = contactSwitch == 'publicContact'
+        String tenantFilter = '', addressTenantFilter, contactTypeFilter = ''
+        Org contextOrg = contextService.getOrg()
+        if (fieldKey.contains('Contact.')) {
+            if (provider) {
+                Map<String, Object> queryParams = [provider: provider, type: RDStore.CCT_EMAIL, isPublic: isPublic]
+                if(!isPublic) {
+                    tenantFilter = ' and p.tenant = :ctx'
+                    queryParams.ctx = contextService.getOrg()
+                }
+                RefdataValue contactType = RefdataValue.getByCategoriesDescAndValue([RDConstants.PERSON_POSITION, RDConstants.PERSON_FUNCTION, RDConstants.PERSON_RESPONSIBILITY], fieldKey.split('\\.')[3])
+                switch(contactType.owner.desc) {
+                    case RDConstants.PERSON_FUNCTION: contactTypeFilter = 'pr.functionType = :functionType'
+                        queryParams.functionType = contactType
+                        break
+                    case RDConstants.PERSON_POSITION: contactTypeFilter = 'pr.positionType = :positionType'
+                        queryParams.positionType = contactType
+                        break
+                    case RDConstants.PERSON_RESPONSIBILITY: contactTypeFilter = 'pr.responsibilityType = :responsibilityType'
+                        queryParams.responsibilityType = contactType
+                        break
+                }
+                List<Contact> contactList = Contact.executeQuery("select c from PersonRole pr join pr.prs p join p.contacts c where pr.provider = :provider and "+contactTypeFilter+" and c.contentType = :type and p.isPublic = :isPublic"+tenantFilter, queryParams)
+
+                if (contactList) {
+                    row.add(createTableCell(format, contactList.content.join(";")))
+                } else {
+                    row.add(createTableCell(format, ' '))
+                }
+            } else {
+                row.add(createTableCell(format, ' '))
+            }
+
+        }
+        if (fieldKey.contains('Address.')) {
+            if (provider) {
+                Map<String, Object> queryParams = [provider: provider, type: RefdataValue.getByValue(fieldKey.split('\\.')[1])]
+                if(contactSwitch == 'privateAddress') {
+                    addressTenantFilter = ' and a.tenant = :ctx'
+                    queryParams.ctx = contextService.getOrg()
+                }
+                else addressTenantFilter = ' and a.tenant = null'
+                Set<Address> addressList = Address.executeQuery("select a from Address a join a.type type where type = :type and a.provider = :provider"+addressTenantFilter, queryParams)
+
+                if (addressList) {
+                    row.add(createTableCell(format, addressList.collect { Address address -> _getAddress(address, provider)}.join(";")))
+                } else {
+                    row.add(createTableCell(format, ' '))
+                }
+            } else {
+                row.add(createTableCell(format, ' '))
+            }
+        }
+        if (fieldKey.contains('altnames')) {
+            if (provider) {
+                if(provider.altnames) {
+                    row.add(createTableCell(format, provider.altnames.collect { AlternativeName alt -> alt.name }.join('\n')))
+                }
+                else row.add(createTableCell(format, ' '))
+            }
+            else {
+                row.add(createTableCell(format, ' '))
+            }
+        }
+        else if (fieldKey.startsWith('providerIdentifiers.')) {
+            if (provider) {
+                Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.provider = :provider and ident.ns.id in (:namespaces) and ident.value != :unknown and ident.value != ''", [provider: provider, namespaces: [id], unknown: IdentifierNamespace.UNKNOWN])
+                if (identifierList) {
+                    row.add(createTableCell(format, identifierList.value.join('\n')))
+                    List idNotes = []
+                    identifierList.each { Identifier ident ->
+                        if(ident.note)
+                            idNotes << ident.note
+                        else idNotes << ' '
+                    }
+                    row.add(createTableCell(format, idNotes.join('\n')))
+                } else {
+                    row.add(createTableCell(format, ' '))
+                    row.add(createTableCell(format, ' '))
+                }
+            } else {
+                row.add(createTableCell(format, ' '))
+                row.add(createTableCell(format, ' '))
+            }
+        }
+        else if (fieldKey.startsWith('providerCustomerIdentifiers.')) {
+            if (provider) {
+                Set<CustomerIdentifier> customerIdentifier = CustomerIdentifier.executeQuery('select ci from CustomerIdentifier ci join ci.platform plat where plat.provider = :provider and plat = :platform and ci.customer = :context', [context: contextOrg, provider: provider, platform: Platform.get(fieldKey.split("\\.")[1])])
+                if (customerIdentifier) {
+                    row.add(createTableCell(format, customerIdentifier[0].value))
+                } else {
+                    row.add(createTableCell(format, ' '))
+                }
+            } else {
+                row.add(createTableCell(format, ' '))
+            }
+        }
+        else if (fieldKey.startsWith('providerProperty.')) {
+            if (provider) {
+
+                Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                List<ProviderProperty> providerProperties = ProviderProperty.executeQuery("select prop from ProviderProperty prop where (prop.owner = :provider and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :provider and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg)", [provider: provider, propertyDefs: [id], contextOrg: contextOrg])
+                if (providerProperties) {
+                    List<String> propValues = [], propAnnotations = []
+                    providerProperties.each { ProviderProperty prop ->
+                        propValues << prop.getValueInI10n()
+                        if(prop.note)
+                            propAnnotations << prop.note
+                    }
+                    row.add(createTableCell(format, propValues.join('\n')))
+                    row.add(createTableCell(format, propAnnotations.join('\n')))
+                } else {
+                    row.add(createTableCell(format, ' '))
+                    row.add(createTableCell(format, ' '))
+                }
+            } else {
+                row.add(createTableCell(format, ' '))
+            }
+        }
     }
 
     /**
@@ -6896,10 +7271,10 @@ class ExportClickMeService {
     /**
      * Formats the given organisations address
      * @param address the address to format
-     * @param org the organisation to which the address is belonging
+     * @param org the organisation/provider/vendor to which the address is belonging
      * @return the formatted address string
      */
-    private String _getAddress(Address address, Org org){
+    private String _getAddress(Address address, org){
         String addr= ""
 
         if(address.name){

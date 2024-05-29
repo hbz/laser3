@@ -3,7 +3,7 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#private-property-wrapper-xxx"); --}%
 
-<%@ page import="de.laser.CustomerTypeService; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; java.net.URL" %>
+<%@ page import="de.laser.utils.LocaleUtils; de.laser.CustomerTypeService; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; java.net.URL" %>
 <laser:serviceInjection />
 
 
@@ -15,7 +15,7 @@
 </g:if>
 
 <table class="ui compact la-js-responsive-table la-table-inCard table">
-    <g:set var="privateProperties" value="${ownobj.propertySet.findAll { cp -> cp.type.tenant?.id == contextOrg.id && cp.tenant?.id == contextOrg.id }}"/>
+    <g:set var="privateProperties" value="${ownobj.propertySet.findAll { cp -> cp.type.tenant?.id == contextOrg.id && cp.tenant?.id == contextOrg.id }.sort{ cp -> cp.type[de.laser.utils.LocaleUtils.getLocalizedAttributeName('name')] }}"/>
     <g:if test="${privateProperties}">
         <colgroup>
             <col class="la-prop-col-1">
