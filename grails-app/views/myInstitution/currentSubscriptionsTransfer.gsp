@@ -275,7 +275,7 @@
                         ${message(code: 'sidewide.number')}
                     </th>
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="providerAgency"
-                                      title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}"/>
+                                      title="${message(code: 'default.provider.label')} / ${message(code: 'vendor.label')}"/>
 
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="name"
                                       title="${message(code: 'subscription')}"/>
@@ -402,7 +402,7 @@
                                     <g:if test="${vendor.sortname}">
                                         <br/>
                                         (${fieldValue(bean: vendor, field: "sortname")})
-                                    </g:if> (${message(code: 'default.agency.label')})
+                                    </g:if> (${message(code: 'vendor.label')})
                                 </g:link><br/>
                             </g:each>
                         </td>

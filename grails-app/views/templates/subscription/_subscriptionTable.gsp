@@ -50,7 +50,7 @@
                             <g:sortableColumn scope="col" params="${params}" property="provider" title="${message(code: 'default.provider.label')}" rowspan="2" />
                         </g:if>
                         <g:if test="${'showVendors' in tableConfig}">
-                            <g:sortableColumn scope="col" params="${params}" property="vendor" title="${message(code: 'default.agency.label')}" rowspan="2" />
+                            <g:sortableColumn scope="col" params="${params}" property="vendor" title="${message(code: 'vendor.label')}" rowspan="2" />
                         </g:if>
                         <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label.shy')}"/>
                         <g:if test="${params.orgRole in ['Subscription Consortia']}">

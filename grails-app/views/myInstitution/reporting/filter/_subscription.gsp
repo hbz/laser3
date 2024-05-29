@@ -16,7 +16,7 @@
                 <a class="item" data-tab="sub-filter-tab-5">${message(code:'default.provider.label')}</a>
             </g:if>
 %{--            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency}">--}%
-%{--                <a class="item" data-tab="sub-filter-tab-6">${message(code:'default.agency.plural.label')}</a>--}%
+%{--                <a class="item" data-tab="sub-filter-tab-6">${message(code:'vendor.plural')}</a>--}%
 %{--            </g:if>--}%
             <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).vendor}">
                 <a class="item" data-tab="sub-filter-tab-6">${message(code:'default.vendor.export.label')}</a>

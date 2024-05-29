@@ -70,7 +70,7 @@
         case Vendor.class.name: header = message(code:"vendor.linking.header")
             thisString = context.name
             lookupName = "lookupVendors"
-            instanceType = message(code:"default.agency.label")
+            instanceType = message(code:"vendor.label")
             urlParams.controller = 'vendor'
             urlParams.action = 'link'
             break

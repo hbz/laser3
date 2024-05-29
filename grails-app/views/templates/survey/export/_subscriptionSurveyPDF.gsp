@@ -155,7 +155,7 @@
             <br/>
             <g:each in="${visibleVendors}" var="role">
                     <h2>
-                        ${message(code: 'default.agency.label')}
+                        ${message(code: 'vendor.label')}
                     </h2>
                     <g:link absolute="true" controller="vendor" action="show"
                             id="${role.vendor.id}">${role.vendor.name}</g:link>

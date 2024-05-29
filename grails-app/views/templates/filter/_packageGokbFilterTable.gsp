@@ -36,7 +36,7 @@
                     <g:sortableColumn property="provider.name" title="${message(code: 'default.provider.label')}" params="${params}"/>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'vendor'}">
-                    <g:sortableColumn property="vendor.name" title="${message(code: 'default.agency.label')}" params="${params}"/>
+                    <g:sortableColumn property="vendor.name" title="${message(code: 'vendor.label')}" params="${params}"/>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'platform'}">
                     <g:sortableColumn property="nominalPlatform.name" title="${message(code: 'platform.label')}" params="${params}"/>
