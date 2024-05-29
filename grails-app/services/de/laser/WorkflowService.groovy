@@ -480,7 +480,7 @@ class WorkflowService {
             WfChecklist.executeQuery('select count(*) from WfChecklist wf where wf.subscription = :sub and wf.owner = :ctxOrg', [sub: obj, ctxOrg: owner])[0]
         }
         else if (obj instanceof Vendor) {
-            WfChecklist.executeQuery('select count(wf) from WfChecklist wf where wf.vendor = :vendor and wf.owner = :ctxOrg', [vendor: obj, ctxOrg: owner])[0]
+            WfChecklist.executeQuery('select count(*) from WfChecklist wf where wf.vendor = :vendor and wf.owner = :ctxOrg', [vendor: obj, ctxOrg: owner])[0]
         }
         else {
             return 0
