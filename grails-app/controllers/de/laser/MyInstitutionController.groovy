@@ -1340,7 +1340,7 @@ class MyInstitutionController  {
                        g.message(code: 'subscription.packages.label'),
                        g.message(code: 'consortium.label'),
                        g.message(code: 'default.provider.label'),
-                       g.message(code: 'default.agency.label'),
+                       g.message(code: 'vendor.label'),
                        g.message(code: 'subscription.startDate.label'),
                        g.message(code: 'subscription.endDate.label'),
                        g.message(code: 'subscription.manualCancellationDate.label'),

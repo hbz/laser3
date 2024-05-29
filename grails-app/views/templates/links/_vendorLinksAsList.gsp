@@ -7,7 +7,7 @@
         <tr>
             <td>
                 <span class="la-flexbox la-minor-object">
-                    <i class="la-list-icon la-popup-tooltip la-delay shipping fast icon" data-content="${message(code:'default.agency.label')}"></i>
+                    <i class="la-list-icon la-popup-tooltip la-delay shipping fast icon" data-content="${message(code:'vendor.label')}"></i>
                 </span>
                 <g:link controller="vendor" action="show" id="${role.vendor.id}">
                     ${role.vendor.name}

@@ -213,7 +213,7 @@ class VendorController {
             Vendor vendor = new Vendor(name: params.vendor, status: RDStore.VENDOR_STATUS_CURRENT)
             vendor.setGlobalUID()
             if (vendor.save()) {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'default.agency.label'), vendor.name]) as String
+                flash.message = message(code: 'default.created.message', args: [message(code: 'vendor.label'), vendor.name]) as String
                 redirect action: 'show', id: vendor.id
                 return
             }
