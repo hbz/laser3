@@ -2,10 +2,10 @@
 <laser:serviceInjection/>
 
 <ui:modal  id="${modalID ?: 'personModal'}" formID="person_form"
-             modalSize="big"
-             text="${modalText ?: message(code: 'person.create_new.label')}"
-             msgClose="${message(code: 'default.button.cancel')}"
-             msgSave="${message(code: 'default.button.save.label')}">
+           modalSize="big"
+           text="${modalText ?: message(code: 'person.create_new.label')}"
+           msgClose="${message(code: 'default.button.cancel')}"
+           msgSave="${message(code: 'default.button.save.label')}">
     <g:form id="person_form" class="ui form" url="${url}" method="POST">
         <g:if test="${!personInstance}">
             <input name="tenant.id" type="hidden" value="${tenant.id}"/>
@@ -22,11 +22,11 @@
         </g:if>
 
     %{--Only for public contact person for Provider/Agency --}%
-        <%--<g:if test="${contactPersonForProviderAgencyPublic && !personInstance}">
-            <input name="personRoleOrg" type="hidden" value="${tenant.id}"/>
-            <input name="functionType" type="hidden" value="${presetFunctionType.id}"/>
-            <input name="last_name" type="hidden" value="${presetFunctionType.getI10n('value')}"/>
-        </g:if>--%>
+    <%--<g:if test="${contactPersonForProviderAgencyPublic && !personInstance}">
+        <input name="personRoleOrg" type="hidden" value="${tenant.id}"/>
+        <input name="functionType" type="hidden" value="${presetFunctionType.id}"/>
+        <input name="last_name" type="hidden" value="${presetFunctionType.getI10n('value')}"/>
+    </g:if>--%>
 
         <g:if test="${!contactPersonForProviderPublic && !contactPersonForVendorPublic}">
 
@@ -177,11 +177,11 @@
                             <g:message code="person.gender.label"/>
                         </label>
                         <ui:select class="ui dropdown" id="gender" name="gender"
-                                      from="${Person.getAllRefdataValues(RDConstants.GENDER)}"
-                                      optionKey="id"
-                                      optionValue="value"
-                                      value="${personInstance?.gender?.id}"
-                                      noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                                   from="${Person.getAllRefdataValues(RDConstants.GENDER)}"
+                                   optionKey="id"
+                                   optionValue="value"
+                                   value="${personInstance?.gender?.id}"
+                                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                     </div>
                 </div>
             </div>
@@ -251,11 +251,11 @@
 
                             <div class="field wide four">
                                 <ui:select class="ui search dropdown" name="contactLang${contact.id}"
-                                              from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)}"
-                                              optionKey="id"
-                                              optionValue="value"
-                                              value="${contact.language?.id}"
-                                              noSelection="['null': '']"/>
+                                           from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)}"
+                                           optionKey="id"
+                                           optionValue="value"
+                                           value="${contact.language?.id}"
+                                           noSelection="['null': '']"/>
                             </div>
 
                             <div class="field wide eight">
@@ -281,34 +281,34 @@
 
                 <br />
                 <br />
-            <div class="field">
-                <div class="three fields contactField" id="contactFields${personInstance?.contacts ? personInstance.contacts.size()+1 : 1}">
-                    <div class="field wide four">
-                        <label></label>
-                        <ui:select class="ui dropdown" name="contentType.id"
-                                      from="${Contact.getAllRefdataValues(RDConstants.CONTACT_CONTENT_TYPE)}"
-                                      optionKey="id"
-                                      optionValue="value"
-                                      value="${contactInstance?.contentType?.id}"/>
-                    </div>
+                <div class="field">
+                    <div class="three fields contactField" id="contactFields${personInstance?.contacts ? personInstance.contacts.size()+1 : 1}">
+                        <div class="field wide four">
+                            <label></label>
+                            <ui:select class="ui dropdown" name="contentType.id"
+                                       from="${Contact.getAllRefdataValues(RDConstants.CONTACT_CONTENT_TYPE)}"
+                                       optionKey="id"
+                                       optionValue="value"
+                                       value="${contactInstance?.contentType?.id}"/>
+                        </div>
 
-                    <div class="field wide four">
-                        <label></label>
-                        <ui:select class="ui search dropdown" name="contactLang.id"
-                                      from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)}"
-                                      optionKey="id"
-                                      optionValue="value"
-                                      value="${contactInstance?.language?.id}"
-                                      noSelection="['null': message(code: 'person.contacts.selectLang.default')]"/>
-                    </div>
+                        <div class="field wide four">
+                            <label></label>
+                            <ui:select class="ui search dropdown" name="contactLang.id"
+                                       from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)}"
+                                       optionKey="id"
+                                       optionValue="value"
+                                       value="${contactInstance?.language?.id}"
+                                       noSelection="['null': message(code: 'person.contacts.selectLang.default')]"/>
+                        </div>
 
 
-                    <div class="field wide eight">
-                        <label></label>
-                        <g:textField id="content" name="content" value="${contactInstance?.content}"/>
+                        <div class="field wide eight">
+                            <label></label>
+                            <g:textField id="content" name="content" value="${contactInstance?.content}"/>
+                        </div>
                     </div>
                 </div>
-            </div>
 
 
                 <div id="contactElements"></div>
@@ -316,44 +316,44 @@
 
         </g:if>
 
-        <%--<g:if test="${showAddresses}">
-            <div class="field">
-                <br />
-                <label>
-                    <g:message code="person.addresses.label"/>:
-                </label>
-                <g:if test="${personInstance}">
-                    <div class="ui divided middle aligned list la-flex-list addressField">
-                        <g:each in="${personInstance.addresses.sort { it.type.each { it?.getI10n('value') } }}"
-                                var="address">
-                            <laser:render template="/templates/cpa/address"
-                                      model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
-                        </g:each>
-                    </div>
-                </g:if>
-            </div>
-            <g:if test="${addAddresses}">
-                <button type="button" id="addAddressElement" class="ui icon button">
-                    <i class="plus green circle icon"></i>
-                </button>
-
-                <button type="button" id="removeAddressElement" class="ui icon button">
-                    <i class="minus red circle icon"></i>
-                </button>
-
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                      data-content="${message(code: 'person.addresses.add.button')}">
-                    <i class="question circle icon"></i>
-                </span>
-
-                <br />
-                <br />
-                <laser:render template="/templates/cpa/addressFields" model="[multipleAddresses: true]"/>
-
-                <div id="addressElements"></div>
+    <%--<g:if test="${showAddresses}">
+        <div class="field">
+            <br />
+            <label>
+                <g:message code="person.addresses.label"/>:
+            </label>
+            <g:if test="${personInstance}">
+                <div class="ui divided middle aligned list la-flex-list addressField">
+                    <g:each in="${personInstance.addresses.sort { it.type.each { it?.getI10n('value') } }}"
+                            var="address">
+                        <laser:render template="/templates/cpa/address"
+                                  model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
+                    </g:each>
+                </div>
             </g:if>
+        </div>
+        <g:if test="${addAddresses}">
+            <button type="button" id="addAddressElement" class="ui icon button">
+                <i class="plus green circle icon"></i>
+            </button>
 
-        </g:if>--%>
+            <button type="button" id="removeAddressElement" class="ui icon button">
+                <i class="minus red circle icon"></i>
+            </button>
+
+            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                  data-content="${message(code: 'person.addresses.add.button')}">
+                <i class="question circle icon"></i>
+            </span>
+
+            <br />
+            <br />
+            <laser:render template="/templates/cpa/addressFields" model="[multipleAddresses: true]"/>
+
+            <div id="addressElements"></div>
+        </g:if>
+
+    </g:if>--%>
 
     </g:form>
 
@@ -392,23 +392,23 @@
             on: 'submit',
             inline: true,
             fields: {
-            <g:if test="${orgList}">
-                personRoleOrg: {
-                  identifier: 'personRoleOrg',
-                  rules: [
-                    {
-                      type: 'empty',
-                      prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+        <g:if test="${orgList}">
+            personRoleOrg: {
+              identifier: 'personRoleOrg',
+              rules: [
+                {
+                  type: 'empty',
+                  prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
                     }
                   ]
                 },
-            </g:if>
-                last_name: {
-                    identifier: 'last_name',
-                    rules: [
-                        {
-                            type: 'empty',
-                            prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
+        </g:if>
+        last_name: {
+            identifier: 'last_name',
+            rules: [
+                {
+                    type: 'empty',
+                    prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
                         }
                     ]
                 },
@@ -435,6 +435,7 @@
         $(JSPC.app.addressContainer).attr('id', 'addressElementsContainer');
         $(JSPC.app.contactContainer).attr('id', 'contactElementsContainer');
 
+        /* CONTACT START */
         $('#addContactElement').click(function () {
             $.ajax({
                 url: "<g:createLink controller="ajaxHtml" action="contactFields"/>",
@@ -447,6 +448,23 @@
                         $('#contactFields').attr('id', 'contactFields' + JSPC.app.contactElementCount);
 
                         $('#contactElements').after(JSPC.app.contactContainer);
+
+                        $('.removeContactElement').click(function () {
+
+                            if (JSPC.app.contactElementCount != 0) {
+                                // $('.contactField').last().remove();
+                                $(this).parents('.contactField').remove();
+
+                            }
+                            JSPC.app.contactElementCount = $(".contactField").length;
+
+                            if (JSPC.app.contactElementCount == 0) {
+                                $(JSPC.app.contactContainer).empty().remove();
+                                $('#addContactElement').removeAttr('disabled').attr('class', 'ui icon button');
+                            }
+                        });
+
+
                     } else {
                         $('#addContactElement').attr('class', 'ui icon button disable');
                         $('#addContactElement').attr('disabled', 'disabled');
@@ -459,54 +477,62 @@
             });
         });
 
-        $('#removeContactElement').click(function () {
-            if (JSPC.app.contactElementCount != 0) {
-                $('.contactField').last().remove();
-            }
-            JSPC.app.contactElementCount = $(".contactField").length;
+    %{--$('#removeContactElement').click(function () {
+        alert("test");
+        if (JSPC.app.contactElementCount != 0) {
+            // $('.contactField').last().remove();
+            $(this).parents('.contactField').remove();
 
-            if (JSPC.app.contactElementCount == 0) {
-                $(JSPC.app.contactContainer).empty().remove();
-                $('#addContactElement').removeAttr('disabled').attr('class', 'ui icon button');
-            }
-        });
+        }
+        JSPC.app.contactElementCount = $(".contactField").length;
 
-        $('#addAddressElement').click(function () {
-            $.ajax({
-                url: "<g:createLink controller="ajaxHtml" action="addressFields" params="[multipleAddresses: true]"/>",
-                type: "POST",
-                success: function (data) {
-                    if (JSPC.app.addressElementCount <= 3) {
+        if (JSPC.app.contactElementCount == 0) {
+            $(JSPC.app.contactContainer).empty().remove();
+            $('#addContactElement').removeAttr('disabled').attr('class', 'ui icon button');
+        }
+    });--}%
+        let test = function() {
 
-                        JSPC.app.addressElementCount = JSPC.app.addressElementCount + 1;
-                        $(JSPC.app.addressContainer).append(data);
-                        $('#addressFields').attr('id', 'addressFields' + JSPC.app.addressElementCount);
+        }
+        /* CONTACT END */
 
-                        $('#addressElements').after(JSPC.app.addressContainer);
-                    } else {
-                        $('#addAddressElement').attr('class', 'ui icon button disable');
-                        $('#addAddressElement').attr('disabled', 'disabled');
+    %{--        /* ADDRESS START */
+            $('#addAddressElement').click(function () {
+                $.ajax({
+                    url: "<g:createLink controller="ajaxHtml" action="addressFields" params="[multipleAddresses: true]"/>",
+                    type: "POST",
+                    success: function (data) {
+                        if (JSPC.app.addressElementCount <= 3) {
+
+                            JSPC.app.addressElementCount = JSPC.app.addressElementCount + 1;
+                            $(JSPC.app.addressContainer).append(data);
+                            $('#addressFields').attr('id', 'addressFields' + JSPC.app.addressElementCount);
+
+                            $('#addressElements').after(JSPC.app.addressContainer);
+                        } else {
+                            $('#addAddressElement').attr('class', 'ui icon button disable');
+                            $('#addAddressElement').attr('disabled', 'disabled');
+                        }
+                        r2d2.initDynamicUiStuff('#addressElementsContainer');
+                    },
+                    error: function (j, status, eThrown) {
+                        console.log('Error ' + eThrown)
                     }
-                    r2d2.initDynamicUiStuff('#addressElementsContainer');
-                },
-                error: function (j, status, eThrown) {
-                    console.log('Error ' + eThrown)
+                });
+            });
+
+            $('#removeAddressElement').click(function () {
+                if (JSPC.app.addressElementCount != 0) {
+                    $('.addressField').remove();
+                }
+                JSPC.app.addressElementCount = $(".addressField").length;
+
+                if (JSPC.app.addressElementCount == 0) {
+                    $(JSPC.app.addressContainer).empty().remove();
+                    $('#addAddressElement').removeAttr('disabled').attr('class', 'ui icon button');
                 }
             });
-        });
-
-        $('#removeAddressElement').click(function () {
-            if (JSPC.app.addressElementCount != 0) {
-                $('.addressField').remove();
-            }
-            JSPC.app.addressElementCount = $(".addressField").length;
-
-            if (JSPC.app.addressElementCount == 0) {
-                $(JSPC.app.addressContainer).empty().remove();
-                $('#addAddressElement').removeAttr('disabled').attr('class', 'ui icon button');
-            }
-        });
-
+            /* ADDRESS END */--}%
         $('#cust_prop_add_value_private').submit(function(e) {
             e.preventDefault();
             console.log("redirect obstructed, continue implementing!");
