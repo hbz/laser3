@@ -20,7 +20,7 @@
                                     <i class="ui icon book" aria-hidden="true"></i>
                                 </g:if>
                                 <g:elseif test="${meta.filter == BaseConfig.KEY_LICENSE}">
-                                    <i class="ui icon clipboard" aria-hidden="true"></i>
+                                    <i class="ui icon balance scale" aria-hidden="true"></i>
                                 </g:elseif>
                                 <g:elseif test="${meta.filter == BaseConfig.KEY_ORGANISATION}">
                                     <i class="ui icon university" aria-hidden="true"></i>
@@ -32,10 +32,10 @@
                                     <i class="ui icon cloud" aria-hidden="true"></i>
                                 </g:elseif>
                                 <g:elseif test="${meta.filter == BaseConfig.KEY_PROVIDER}">
-                                    <i class="ui icon university" aria-hidden="true"></i>
+                                    <i class="ui icon handshake" aria-hidden="true"></i>
                                 </g:elseif>
                                 <g:elseif test="${meta.filter == BaseConfig.KEY_SUBSCRIPTION}">
-                                    <i class="ui icon balance scale" aria-hidden="true"></i>
+                                    <i class="ui icon clipboard" aria-hidden="true"></i>
                                 </g:elseif>
                                 <g:elseif test="${meta.filter == BaseConfig.KEY_VENDOR}">
                                     <i class="ui icon shipping fast" aria-hidden="true"></i>
@@ -96,7 +96,7 @@
                                     <i class="ui icon book" aria-hidden="true"></i>
                                 </g:if>
                                 <g:elseif test="${fav.filter == BaseConfig.KEY_LICENSE}">
-                                    <i class="ui icon clipboard" aria-hidden="true"></i>
+                                    <i class="ui icon balance scale" aria-hidden="true"></i>
                                 </g:elseif>
                                 <g:elseif test="${fav.filter == BaseConfig.KEY_ORGANISATION}">
                                     <i class="ui icon university" aria-hidden="true"></i>
@@ -108,10 +108,10 @@
                                     <i class="ui icon cloud" aria-hidden="true"></i>
                                 </g:elseif>
                                 <g:elseif test="${fav.filter == BaseConfig.KEY_PROVIDER}">
-                                    <i class="ui icon university" aria-hidden="true"></i>
+                                    <i class="ui icon handshake" aria-hidden="true"></i>
                                 </g:elseif>
                                 <g:elseif test="${fav.filter == BaseConfig.KEY_SUBSCRIPTION}">
-                                    <i class="ui icon balance scale" aria-hidden="true"></i>
+                                    <i class="ui icon clipboard" aria-hidden="true"></i>
                                 </g:elseif>
                                 <g:elseif test="${fav.filter == BaseConfig.KEY_VENDOR}">
                                     <i class="ui icon shipping fast" aria-hidden="true"></i>
