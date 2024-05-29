@@ -351,7 +351,7 @@
                                     <%
                                         String[] linkTypes = RDStore.PROVIDER_LINK_FOLLOWS.getI10n('value').split('\\|')
                                         int perspectiveIndex
-                                        Org pair
+                                        Vendor pair
                                         if(vendor == row.from) {
                                             perspectiveIndex = 0
                                             pair = row.to
