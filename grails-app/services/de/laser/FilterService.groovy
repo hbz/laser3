@@ -619,6 +619,12 @@ class FilterService {
             isFilterSet = true
         }
 
+        if(params.checkInvoicingInformation) {
+            query += " and surConfig.invoicingInformation = :checkInvoicingInformation"
+            queryParams << [checkInvoicingInformation: true]
+            isFilterSet = true
+        }
+
         if (params.provider) {
             query += " and exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org = :provider)"
             queryParams << [provider : Org.get(params.provider)]
@@ -771,6 +777,12 @@ class FilterService {
         if(params.checkPackageSurvey) {
             query += "surConfig.packageSurvey = :checkPackageSurvey"
             queryParams << [checkPackageSurvey: true]
+            isFilterSet = true
+        }
+
+        if(params.checkInvoicingInformation) {
+            query += " and surConfig.invoicingInformation = :checkInvoicingInformation"
+            queryParams << [checkInvoicingInformation: true]
             isFilterSet = true
         }
 

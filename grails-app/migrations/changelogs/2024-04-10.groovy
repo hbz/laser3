@@ -220,5 +220,22 @@ databaseChangeLog = {
             }
         }
     }
+
+    changeSet(author: "djebeniani (generated)", id: "1713791564528-21") {
+        addColumn(tableName: "survey_config") {
+            column(name: "surconf_invoicing_information", type: "boolean") {
+                constraints(nullable: "true")
+            }
+        }
+    }
+
+    changeSet(author: "djebeniani (hand-coded)", id: "1713791564528-22") {
+        grailsChange {
+            change {
+                sql.execute("update survey_config set surconf_invoicing_information = false")
+            }
+            rollback {}
+        }
+    }
 }
 

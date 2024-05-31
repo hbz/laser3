@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.survey.SurveyResult" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.survey.SurveyResult" %>
 <laser:htmlStart message="surveyShow.label" serviceInjection="true"/>
 
 <ui:debugInfo>
@@ -131,6 +131,16 @@
 
                                     </dd>
                             </dl>
+                            <dl>
+                                <dt class="control-label">${message(code: 'surveyconfig.invoicingInformation.label')}</dt>
+                                <dd>
+                                    <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">
+                                        <ui:xEditableBoolean owner="${surveyConfig}" field="invoicingInformation"/>
+                                    </g:if><g:else>
+                                        <ui:xEditableBoolean owner="${surveyConfig}" field="invoicingInformation" overwriteEditable="false"/>
+                                    </g:else>
+                                </dd>
+                            </dl>
                         </g:if>
 
                         <g:if test="${surveyInfo.type == RDStore.SURVEY_TYPE_TITLE_SELECTION}">
@@ -217,19 +227,16 @@
             <g:if test="${surveyConfig}">
                 <g:if test="${surveyConfig.subscription}">
 
-                    <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
-                                                                subscription: surveyConfig.subscription,
-                                                                tasks: tasks,
-                                                                visibleProviders: providerRoles]"/>
+                    <laser:render template="/templates/survey/subscriptionSurveyForOwner" model="[surveyConfig: surveyConfig,
+                                                                                          subscription: surveyConfig.subscription,
+                                                                                          tasks: tasks,
+                                                                                          visibleProviders: providerRoles]"/>
+
                 </g:if>
 
 
                 <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
-
-                    <laser:render template="/templates/survey/generalSurvey" model="[surveyConfig: surveyConfig,
-                                                                    subscription: surveyConfig.subscription,
-                                                                    tasks: tasks,
-                                                                    visibleProviders: providerRoles]"/>
+                    <laser:render template="/templates/survey/generalSurveyForOwner"/>
                 </g:if>
 
             </g:if>

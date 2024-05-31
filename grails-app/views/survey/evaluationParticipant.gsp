@@ -13,13 +13,13 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
-    <ui:exportDropdown>
+    %{--<ui:exportDropdown>
         <ui:exportDropdownItem>
             <g:link class="item" controller="survey" action="generatePdfForParticipant"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]">PDF-Export
             </g:link>
         </ui:exportDropdownItem>
-    </ui:exportDropdown>
+    </ui:exportDropdown>--}%
     <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id]}">
         <ui:actionsDropdown>
             <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">

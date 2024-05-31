@@ -1052,6 +1052,10 @@ class SurveyService {
                                 if (surveyConfig.surveyInfo.status == RDStore.SURVEY_SURVEY_STARTED) {
                                     emailsToSurveyUsersOfOrg(surveyConfig.surveyInfo, org, false)
                                 }
+
+                                if(surveyConfig.invoicingInformation){
+                                    setDefaultInvoiceInformation(surveyConfig, org)
+                                }
                             }
                         }
                     }
@@ -2213,32 +2217,8 @@ class SurveyService {
         if (params.viewTab == 'overview') {
             if (result.surveyConfig.subscription) {
                 result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(participant)
-                // restrict visible for templates/links/orgLinksAsList
-                result.visibleOrgRelations = []
                 if (result.subscription) {
-                    result.subscription.orgRelations.each { OrgRole or ->
-                        if (!(or.org.id == result.contextOrg.id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
-                            result.visibleOrgRelations << or
-                        }
-                    }
-                    result.visibleOrgRelations.sort { it.org.sortname }
-
-                    result.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
-                    result.links = linksGenerationService.getSourcesAndDestinations(result.subscription, result.user)
-
-                    if (result.surveyConfig.subSurveyUseForTransfer) {
-                        result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
-                        result.subscriptionParent = result.surveyConfig.subscription
-                        Collection<AbstractPropertyWithCalculatedLastUpdated> props
-                        props = result.subscriptionParent.propertySet.findAll { it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic)) }
-                        if (result.successorSubscriptionParent) {
-                            props += result.successorSubscriptionParent.propertySet.findAll { it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic)) }
-                        }
-                        result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
-                    }
-
                     if (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
-
                         result.previousSubscription = result.subscription._getCalculatedPreviousForSurvey()
 
                         /*result.previousIesListPriceSum = 0
@@ -2267,7 +2247,34 @@ class SurveyService {
 //                    }
 
                         result.subscriber = participant
+                    }
+                }
+            }
+        }
+        else if (params.viewTab == 'additionalInformation') {
+            if (result.surveyConfig.subscription) {
+                result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(participant)
+                // restrict visible for templates/links/orgLinksAsList
+                result.visibleOrgRelations = []
+                if (result.subscription) {
+                    result.subscription.orgRelations.each { OrgRole or ->
+                        if (!(or.org.id == result.contextOrg.id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
+                            result.visibleOrgRelations << or
+                        }
+                    }
+                    result.visibleOrgRelations.sort { it.org.sortname }
 
+                    result.links = linksGenerationService.getSourcesAndDestinations(result.subscription, result.user)
+
+                    if (result.surveyConfig.subSurveyUseForTransfer) {
+                        result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                        result.subscriptionParent = result.surveyConfig.subscription
+                        Collection<AbstractPropertyWithCalculatedLastUpdated> props
+                        props = result.subscriptionParent.propertySet.findAll { it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic)) }
+                        if (result.successorSubscriptionParent) {
+                            props += result.successorSubscriptionParent.propertySet.findAll { it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic)) }
+                        }
+                        result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
                     }
                 }
 
@@ -2314,7 +2321,10 @@ class SurveyService {
 
             params.sort = params.sort ?: 'pr.org.sortname'
             params.org = participant
+            params.function = [RDStore.PRS_FUNC_FC_BILLING_ADDRESS.id, RDStore.PRS_FUNC_INVOICING_CONTACT.id]
             result.visiblePersons = addressbookService.getVisiblePersons("contacts", params)
+
+            params.type = RDStore.ADDRESS_TYPE_BILLING.id
             result.addresses = addressbookService.getVisibleAddresses("contacts", params)
 
         }
@@ -2441,6 +2451,34 @@ class SurveyService {
 
         return result
 
+    }
+
+    void setDefaultInvoiceInformation(SurveyConfig surveyConfig, Org org){
+        SurveyOrg surOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)
+        if(surOrg) {
+            Map parameterMap = [:]
+            parameterMap.org = org
+            parameterMap.sort = 'pr.org.sortname'
+
+            if(!surOrg.person) {
+                parameterMap.function = [RDStore.PRS_FUNC_FC_BILLING_ADDRESS.id, RDStore.PRS_FUNC_INVOICING_CONTACT.id]
+                List visiblePersons = addressbookService.getVisiblePersons("contacts", parameterMap)
+
+                if(visiblePersons.size() > 0){
+                    surOrg.person = visiblePersons[0]
+                    surOrg.save()
+                }
+            }
+            if(!surOrg.address) {
+                parameterMap.type = RDStore.ADDRESS_TYPE_BILLING.id
+                List addresses = addressbookService.getVisibleAddresses("contacts", parameterMap)
+
+                if(addresses.size() > 0){
+                    surOrg.address = addresses[0]
+                    surOrg.save()
+                }
+            }
+        }
     }
 
 }

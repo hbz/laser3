@@ -103,14 +103,14 @@
             <td>
                 <g:if test="${editable && controllerName == 'myInstitution'}">
                     <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndAddress(participant, surveyConfig, address)}">
-                        <g:link controller="myInstitution" action="setSurveyInvoicingInformation"
-                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: false, addressId: address.id]">
+                        <g:link controller="myInstitution" action="surveyInfos"
+                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: false, addressId: address.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation']">
                             <i class="check bordered large green icon"></i>
                         </g:link>
                     </g:if>
                     <g:else>
-                        <g:link controller="myInstitution" action="setSurveyInvoicingInformation"
-                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: true, addressId: address.id]">
+                        <g:link controller="myInstitution" action="surveyInfos"
+                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: true, addressId: address.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation']">
                             <i class="close bordered large red icon"></i>
                         </g:link>
                     </g:else>

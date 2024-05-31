@@ -315,7 +315,8 @@ class SurveyController {
                         type: 'GeneralSurvey',
                         surveyInfo: surveyInfo,
                         configOrder: 1,
-                        packageSurvey: (params.packageSurvey ?: false)
+                        packageSurvey: (params.packageSurvey ?: false),
+                        invoicingInformation: (params.invoicingInformation ?: false)
                 )
                 if(!(surveyConfig.save())){
                     surveyInfo.delete()
@@ -597,7 +598,8 @@ class SurveyController {
                         type: 'Subscription',
                         surveyInfo: surveyInfo,
                         subSurveyUseForTransfer: subSurveyUseForTransfer,
-                        packageSurvey: (params.packageSurvey ?: false)
+                        packageSurvey: (params.packageSurvey ?: false),
+                        invoicingInformation: (params.invoicingInformation ?: false)
 
                 )
 
@@ -1375,6 +1377,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
+    @Deprecated // Muss überarbeitet werden wegen Umbau der Teilnehmersicht auf die Umfrage
     Map<String,Object> generatePdfForParticipant() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if(result.status == SurveyControllerService.STATUS_ERROR) {

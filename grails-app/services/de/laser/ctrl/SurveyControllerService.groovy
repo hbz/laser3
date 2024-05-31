@@ -2415,6 +2415,10 @@ class SurveyControllerService {
                                         if (result.surveyInfo.status == RDStore.SURVEY_SURVEY_STARTED) {
                                             surveyService.emailsToSurveyUsersOfOrg(result.surveyInfo, org, false)
                                         }
+
+                                        if(result.surveyConfig.invoicingInformation){
+                                            surveyService.setDefaultInvoiceInformation(result.surveyConfig, org)
+                                        }
                                     }
                                 }
                             }
@@ -2590,6 +2594,10 @@ class SurveyControllerService {
                                             log.error("Not create surveyResult: " + surveyResult)
                                         }
                                     }
+                                }
+
+                                if(config.invoicingInformation){
+                                    surveyService.setDefaultInvoiceInformation(config, org)
                                 }
                             }
                         }
