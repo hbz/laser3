@@ -48,10 +48,10 @@
         <%--<div class="field">
             <g:textArea id="emailAddressesTextArea" name="emailAddresses" readonly="false" rows="5" cols="1" class="myTargetsNeu" style="width: 100%;" />
         </div>--%>
-        <button class="ui icon button right floated" onclick="JSPC.app.copyToClipboard()">
+        <button class="ui icon button right floated test" onclick="JSPC.app.copyToClipboard()">
             ${message(code:'menu.institutions.copy_emailaddresses_to_clipboard')}
         </button>
-        <button class="ui icon button right floated" onclick="JSPC.app.copyToEmailProgram()">
+        <button class="ui icon button right floated test" onclick="JSPC.app.copyToEmailProgram()">
             ${message(code:'menu.institutions.copy_emailaddresses_to_emailclient')}
         </button>
     </div>
@@ -75,12 +75,17 @@
     </table>
 
     <laser:script file="${this.getGroovyPageFileName()}">
-        JSPC.app.jsonOrgIdListDefault = <%=groovy.json.JsonOutput.toJson((Set) orgList.collect { it.id })%>;
+
+
+
+
+     JSPC.app.jsonOrgIdListDefault = <%=groovy.json.JsonOutput.toJson((Set) orgList.collect { it.id })%>;
         JSPC.app.jsonOrgIdList = null
 
         JSPC.app.copyToEmailProgram = function () {
             let emailAdresses = $(".address:visible").map((i, el) => el.innerText.trim()).get().join('; ');
             window.location.href = "mailto:" + emailAdresses;
+            $('#copyEmailaddresses_ajaxModal') ? $('#copyEmailaddresses_ajaxModal').modal('hide') : false;
         }
 
         JSPC.app.copyToClipboard = function () {
@@ -90,6 +95,7 @@
             textArea.select();
             document.execCommand("copy");
             textArea.remove();
+            $('#copyEmailaddresses_ajaxModal') ? $('#copyEmailaddresses_ajaxModal').modal('hide') : false;
         }
 
         JSPC.app.updateTextArea = function () {
