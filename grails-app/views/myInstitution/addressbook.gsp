@@ -137,9 +137,18 @@
 
                 <div class="inline field">
                     <div class="ui checkbox">
-                        <label for="showOnlyContactPersonForProviderAgency">${message(code: 'person.contactPersonForProviderAgency.label')}</label>
-                        <input id="showOnlyContactPersonForProviderAgency" name="showOnlyContactPersonForProviderAgency" type="checkbox"
-                               <g:if test="${params.showOnlyContactPersonForProviderAgency}">checked=""</g:if>
+                        <label for="showOnlyContactPersonForProvider">${message(code: 'person.contactPersonForProvider.label')}</label>
+                        <input id="showOnlyContactPersonForProvider" name="showOnlyContactPersonForProvider" type="checkbox"
+                               <g:if test="${params.showOnlyContactPersonForProvider}">checked=""</g:if>
+                               tabindex="0">
+                    </div>
+                </div>
+
+                <div class="inline field">
+                    <div class="ui checkbox">
+                        <label for="showOnlyContactPersonForVendor">${message(code: 'person.contactPersonForVendor.label')}</label>
+                        <input id="showOnlyContactPersonForVendor" name="showOnlyContactPersonForVendor" type="checkbox"
+                               <g:if test="${params.showOnlyContactPersonForVendor}">checked=""</g:if>
                                tabindex="0">
                     </div>
                 </div>

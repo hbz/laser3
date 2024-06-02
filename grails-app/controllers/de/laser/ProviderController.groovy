@@ -194,7 +194,7 @@ class ProviderController {
             contactSwitch.addAll(params.list("addressSwitch"))
             switch(params.fileformat) {
                 case 'xlsx':
-                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportProviders(providersTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.XLS, contactSwitch)
+                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportProviders(providersTotal, selectedFields, ExportClickMeService.FORMAT.XLS, contactSwitch)
                     response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
                     response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     wb.write(response.outputStream)
@@ -207,12 +207,12 @@ class ProviderController {
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
-                        writer.write((String) exportClickMeService.exportProviders(providersTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.CSV, contactSwitch))
+                        writer.write((String) exportClickMeService.exportProviders(providersTotal, selectedFields, ExportClickMeService.FORMAT.CSV, contactSwitch))
                     }
                     out.close()
                     return
                 case 'pdf':
-                    Map<String, Object> pdfOutput = exportClickMeService.exportProviders(providersTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.PDF, contactSwitch)
+                    Map<String, Object> pdfOutput = exportClickMeService.exportProviders(providersTotal, selectedFields, ExportClickMeService.FORMAT.PDF, contactSwitch)
 
                     byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                     response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')

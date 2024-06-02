@@ -34,6 +34,8 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
     @RefdataInfo(cat = RDConstants.VENDOR_STATUS)
     RefdataValue status
 
+    Org legallyObligedBy
+
     String homepage
     boolean webShopOrders = false
     boolean xmlOrders = false
@@ -98,6 +100,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         name column: 'ven_name'
         sortname column: 'ven_sortname'
         status column: 'ven_status_rv_fk'
+        legallyObligedBy column: 'ven_legally_obliged_by_fk'
         retirementDate column: 'ven_retirement_date'
         homepage column: 'ven_homepage'
         webShopOrders column: 'ven_web_shop_orders'
@@ -129,6 +132,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         researchPlatformForEbooks   (nullable: true)
         prequalificationVOLInfo     (nullable: true)
         lastUpdatedCascading        (nullable: true)
+        legallyObligedBy            (nullable: true)
     }
 
     @Transient
@@ -217,8 +221,10 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         Vendor v = null
         if(agency.gokbId) {
             v = Vendor.findByGokbId(agency.gokbId)
-            if(v)
+            if(v) {
                 v.globalUID = agency.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase())
+                v.legallyObligedBy = null
+            }
         }
         if(!v)
             v = Vendor.findByGlobalUID(agency.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
@@ -227,6 +233,8 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         v.name = agency.name
         v.sortname = agency.sortname
         v.gokbId = agency.gokbId //for the case vendors have already recorded as orgs by sync
+        if(!agency.gokbId && agency.legallyObligedBy)
+            v.legallyObligedBy = agency.legallyObligedBy
         v.homepage = agency.url
         switch(agency.status) {
             case RDStore.ORG_STATUS_CURRENT: v.status = RDStore.VENDOR_STATUS_CURRENT
@@ -303,24 +311,26 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         PropertyDefinition.executeUpdate('delete from PropertyDefinition pd where pd.tenant = :agency', [agency: agency])
         OrgProperty.findAllByOwner(agency).each { OrgProperty op ->
             PropertyDefinition type = PropertyDefinition.findByNameAndDescrAndTenant(op.type.name, PropertyDefinition.VEN_PROP, op.type.tenant)
-            VendorProperty vp = new VendorProperty(owner: v, type: type)
-            if(op.dateValue)
-                vp.dateValue = op.dateValue
-            if(op.decValue)
-                vp.decValue = op.decValue
-            if(op.intValue)
-                vp.intValue = op.intValue
-            if(op.refValue)
-                vp.refValue = op.refValue
-            if(op.stringValue)
-                vp.stringValue = op.stringValue
-            if(op.urlValue)
-                vp.urlValue = op.urlValue
-            vp.note = op.note
-            vp.tenant = op.tenant
-            vp.dateCreated = op.dateCreated
-            vp.lastUpdated = op.lastUpdated
-            vp.save()
+            if(!ProviderProperty.findByOwnerAndTypeAndTenant(p, type, op.tenant)) {
+                VendorProperty vp = new VendorProperty(owner: v, type: type)
+                if(op.dateValue)
+                    vp.dateValue = op.dateValue
+                if(op.decValue)
+                    vp.decValue = op.decValue
+                if(op.intValue)
+                    vp.intValue = op.intValue
+                if(op.refValue)
+                    vp.refValue = op.refValue
+                if(op.stringValue)
+                    vp.stringValue = op.stringValue
+                if(op.urlValue)
+                    vp.urlValue = op.urlValue
+                vp.note = op.note
+                vp.tenant = op.tenant
+                vp.dateCreated = op.dateCreated
+                vp.lastUpdated = op.lastUpdated
+                vp.save()
+            }
         }
         v
     }
