@@ -160,16 +160,16 @@ databaseChangeLog = {
     }
 
     changeSet(author: "djebeniani (hand-coded)", id: "1713791564528-19") {
-        grailsChange {
+        /*grailsChange {
             change {
                 sql.execute("update survey_config set surconf_package_survey = false")
             }
             rollback {}
-        }
+        }*/
     }
 
     changeSet(author: "djebeniani (hand-coded)", id: "1713791564528-20") {
-        grailsChange {
+        /*grailsChange {
             change {
                 SurveyConfig.withTransaction {
                     SurveyConfig.findAll().each { SurveyConfig surveyConfig ->
@@ -218,7 +218,7 @@ databaseChangeLog = {
                     }
                 }
             }
-        }
+        }*/
     }
 
     changeSet(author: "djebeniani (generated)", id: "1713791564528-21") {
@@ -230,12 +230,12 @@ databaseChangeLog = {
     }
 
     changeSet(author: "djebeniani (hand-coded)", id: "1713791564528-22") {
-        grailsChange {
+        /*grailsChange {
             change {
                 sql.execute("update survey_config set surconf_invoicing_information = false")
             }
             rollback {}
-        }
+        }*/
     }
 }
 
