@@ -33,7 +33,8 @@ class ESSearchService{
                     'status':'status',
                     'publisher':'publisher',
                     'publishers':'publishers.name',
-                    'name':'name']
+                    'name':'name',
+                    'altnames':'altnames']
 
   /**
    * Substitution call for requests, fetching the reverse map
@@ -110,6 +111,7 @@ class ESSearchService{
               searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
               searchSourceBuilder.aggregation(AggregationBuilders.terms('rectype').size(25).field('rectype.keyword'))
               searchSourceBuilder.aggregation(AggregationBuilders.terms('providerName').size(50).field('providerName.keyword'))
+              searchSourceBuilder.aggregation(AggregationBuilders.terms('altnames').size(50).field('altnames'))
               searchSourceBuilder.aggregation(nestedAggregationBuilder.subAggregation(AggregationBuilders.terms('status').size(50).field('status.value')))
               searchSourceBuilder.aggregation(AggregationBuilders.terms('startYear').size(50).field('startYear.keyword'))
               searchSourceBuilder.aggregation(AggregationBuilders.terms('endYear').size(50).field('endYear.keyword'))

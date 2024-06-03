@@ -941,8 +941,8 @@ SELECT * FROM (
                         String newName = pdTo.tenant ? "${pdTo.getI10n("name")} (priv.)" : pdTo.getI10n("name")
                         if (pdFrom && pdTo) {
                             try {
-                                int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo, params.overwrite == 'on', true)
-                                if(count == 0) {
+                                Map<String, Integer> counts = propertyService.replacePropertyDefinitions(pdFrom, pdTo, params.overwrite == 'on', true)
+                                if(counts.success == 0 && counts.failures == 0) {
                                     String instanceType
                                     switch(pdFrom.descr) {
                                         case PropertyDefinition.LIC_PROP: instanceType = message(code: 'menu.institutions.replace_prop.licenses')
@@ -959,7 +959,7 @@ SELECT * FROM (
                                     flash.message = message(code: 'menu.institutions.replace_prop.noChanges', args: [instanceType]) as String
                                 }
                                 else
-                                    flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName]) as String
+                                    flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [counts.success, counts.failures, oldName, newName]) as String
                             }
                             catch (Exception e) {
                                 e.printStackTrace()
