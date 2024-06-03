@@ -61,6 +61,13 @@
         </div>
 
         <div class="field">
+            <label>${message(code: 'surveyconfig.vendorSurvey.label')}</label>
+            <div class="ui checkbox">
+                <input type="checkbox" id="vendorSurvey" name="vendorSurvey" ${params.vendorSurvey? 'checked':''}>
+            </div>
+        </div>
+
+        <div class="field">
             <label>${message(code: 'surveyconfig.invoicingInformation.label')}</label>
             <div class="ui checkbox">
                 <input type="checkbox" id="invoicingInformation" name="invoicingInformation" ${params.invoicingInformation? 'checked':''}>

@@ -105,6 +105,15 @@
 
                     <div class="inline field">
                         <div class="ui checkbox">
+                            <label for="checkVendorSurvey">${message(code: 'surveyconfig.vendorSurvey.label')}</label>
+                            <input id="checkVendorSurvey" name="checkVendorSurvey" type="checkbox"
+                                   <g:if test="${params.checkVendorSurvey}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
                             <label for="checkInvoicingInformation">${message(code: 'surveyconfig.invoicingInformation.label')}</label>
                             <input id="checkInvoicingInformation" name="checkInvoicingInformation" type="checkbox"
                                    <g:if test="${params.checkInvoicingInformation}">checked=""</g:if>

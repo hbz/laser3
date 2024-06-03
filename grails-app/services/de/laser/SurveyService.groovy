@@ -21,12 +21,14 @@ import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigPackage
 import de.laser.survey.SurveyConfigProperties
+import de.laser.survey.SurveyConfigVendor
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyPackageResult
 import de.laser.survey.SurveyResult
 import de.laser.survey.SurveyUrl
 import de.laser.config.ConfigMapper
+import de.laser.survey.SurveyVendorResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import grails.converters.JSON
@@ -64,6 +66,7 @@ class SurveyService {
     SubscriptionService subscriptionService
     SubscriptionControllerService subscriptionControllerService
     MailSendService mailSendService
+    VendorService vendorService
 
     PageRenderer groovyPageRenderer
 
@@ -2192,6 +2195,19 @@ class SurveyService {
         return chartSource.reverse()
     }
 
+    List generateSurveyVendorDataForCharts(SurveyConfig surveyConfig, List<Org> orgList){
+        List chartSource = [['property', 'value']]
+
+        List<Vendor> vendors = SurveyConfigVendor.executeQuery("select scv.vendor from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig order by scv.vendor.name", [surveyConfig: surveyConfig])
+
+        vendors.each {Vendor vendor ->
+            chartSource << ["${vendor.name.replace('"', '')}", SurveyVendorResult.executeQuery("select count(*) from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant in (:participants) and svr.vendor = :vendor", [vendor: vendor, surveyConfig: surveyConfig, participants: orgList])[0]]
+        }
+
+        chartSource = chartSource.reverse()
+        return chartSource.reverse()
+    }
+
     Map getCostItemSumBySelectSurveyPackageOfParticipant(SurveyConfig surveyConfig, Org participant){
         Double sumCostInBillingCurrency = 0.0
         Double sumCostInBillingCurrencyAfterTax = 0.0
@@ -2425,6 +2441,8 @@ class SurveyService {
                 }
             }
 
+            params.subTab = params.subTab ?: 'allPackages'
+
             if (result.surveyConfig.surveyPackages) {
                 List uuidPkgs
                 if (params.subTab == 'allPackages') {
@@ -2446,6 +2464,49 @@ class SurveyService {
             } else {
                 result.records = []
                 result.recordsCount = 0
+            }
+        }else if (params.viewTab == 'vendorSurvey') {
+            if (result.editable) {
+                switch (params.actionsForSurveyVendors) {
+                    case "addSurveyVendor":
+                        Vendor vendor = Vendor.findByGokbId(params.vendorUUID)
+                        if (SurveyConfigVendor.findBySurveyConfigAndVendor(result.surveyConfig, vendor) && !SurveyVendorResult.findBySurveyConfigAndParticipantAndVendor(result.surveyConfig, participant, vendor)) {
+                            SurveyVendorResult surveyVendorResult = new SurveyVendorResult(surveyConfig: result.surveyConfig, participant: participant, vendor: vendor, owner: result.surveyInfo.owner)
+                            surveyVendorResult.save()
+                        }
+
+                        break
+                    case "removeSurveyVendor":
+                        Vendor vendor = Vendor.findByGokbId(params.vendorUUID)
+                        SurveyVendorResult surveyVendorResult = SurveyVendorResult.findBySurveyConfigAndParticipantAndVendor(result.surveyConfig, participant, vendor)
+                        if (SurveyConfigVendor.findBySurveyConfigAndVendor(result.surveyConfig, vendor) && surveyVendorResult) {
+                            surveyVendorResult.delete()
+                        }
+                        break
+                }
+            }
+
+            params.subTab = params.subTab ?: 'allVendors'
+
+            if (result.surveyConfig.surveyVendors) {
+                List configUuidVendors
+                if (params.subTab == 'allVendors') {
+                    result.selectedUuidVendors = SurveyVendorResult.executeQuery("select svr.vendor.gokbId from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
+                    configUuidVendors = SurveyConfigVendor.executeQuery("select scv.vendor.gokbId from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
+                } else if (params.subTab == 'selectVendors') {
+                    List<Long> ids = SurveyVendorResult.executeQuery("select svr.vendor.gokbId from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
+                    if (ids.size() > 0) {
+                        configUuidVendors = ids
+                    } else {
+                        configUuidVendors = ['fakeUuids']
+                    }
+                }
+
+                params.uuids = configUuidVendors
+                result.putAll(vendorService.getWekbVendors(params))
+            } else {
+                result.vendorList = []
+                result.vendorListTotal = 0
             }
         }
 
