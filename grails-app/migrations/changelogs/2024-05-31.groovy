@@ -151,12 +151,7 @@ databaseChangeLog = {
         addForeignKeyConstraint(baseColumnNames: "surconven_vendor_fk", baseTableName: "survey_config_vendor", constraintName: "FKsfuu4rx3nc53tvfgc9a1s2xbe", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "ven_id", referencedTableName: "vendor", validate: "true")
     }
 
-    changeSet(author: "djebeniani (generated)", id: "1717188095793-18") {
-        addNotNullConstraint(columnDataType: "boolean", columnName: "surconf_vendor_survey", tableName: "survey_config", validate: "true")
-    }
-
-
-    changeSet(author: "djebeniani (hand-coded)", id: "1717188095793-19") {
+    changeSet(author: "djebeniani (hand-coded)", id: "1717188095793-18") {
         grailsChange {
             change {
                 sql.execute("update survey_config set surconf_package_survey = false")
@@ -165,7 +160,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "djebeniani (hand-coded)", id: "1717188095793-20") {
+    changeSet(author: "djebeniani (hand-coded)", id: "1717188095793-19") {
         grailsChange {
             change {
                 sql.execute("update survey_config set surconf_vendor_survey = false")
@@ -174,7 +169,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "djebeniani (hand-coded)", id: "1717188095793-21") {
+    changeSet(author: "djebeniani (hand-coded)", id: "1717188095793-20") {
         grailsChange {
             change {
                 sql.execute("update survey_config set surconf_invoicing_information = false")
@@ -182,6 +177,11 @@ databaseChangeLog = {
             rollback {}
         }
     }
+
+    changeSet(author: "djebeniani (generated)", id: "1717188095793-21") {
+        addNotNullConstraint(columnDataType: "boolean", columnName: "surconf_vendor_survey", tableName: "survey_config", validate: "true")
+    }
+
 
     changeSet(author: "djebeniani (generated)", id: "1717188095793-22") {
         addNotNullConstraint(columnDataType: "boolean", columnName: "surconf_invoicing_information", tableName: "survey_config", validate: "true")
