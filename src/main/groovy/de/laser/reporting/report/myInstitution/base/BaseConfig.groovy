@@ -584,4 +584,19 @@ class BaseConfig {
     static String getDistributionLabel(String key, String dist) {
         getLabel('reporting.cfg.dist.' + key + '.' + dist)
     }
+
+    static String getIcon(String objKey) {
+        String icon = 'question'
+
+             if (objKey == KEY_ISSUEENTITLEMENT){ icon = 'book' }
+        else if (objKey == KEY_LICENSE)         { icon = 'balance scale' }
+        else if (objKey == KEY_ORGANISATION)    { icon = 'university' }
+        else if (objKey == KEY_PACKAGE)         { icon = 'gift' }
+        else if (objKey == KEY_PLATFORM)        { icon = 'cloud' }
+        else if (objKey == KEY_PROVIDER)        { icon = 'handshake' }
+        else if (objKey == KEY_SUBSCRIPTION)    { icon = 'clipboard' }
+        else if (objKey == KEY_VENDOR)          { icon = 'shipping fast' }
+
+        icon
+    }
 }

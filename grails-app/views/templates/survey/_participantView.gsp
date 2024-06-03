@@ -22,15 +22,26 @@
                 ${message(code: 'default.overview.label')}
             </g:link>
 
-            <g:link class="item ${params.viewTab == 'invoicingInformation' ? 'active' : ''}"
-                    controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
-                    params="${parame+[viewTab: 'invoicingInformation']}">
-                ${message(code: 'surveyOrg.invoicingInformation')}
-                <span class="ui floating blue circular label">${SurveyOrg.countByOrgAndSurveyConfigAndPersonIsNotNull(participant, surveyConfig)}/${SurveyOrg.countByOrgAndSurveyConfigAndAddressIsNotNull(participant, surveyConfig)}</span>
-            </g:link>
+            <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
+                        <g:link class="item ${params.viewTab == 'additionalInformation' ? 'active' : ''}"
+                                controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                                params="${parame+[viewTab: 'additionalInformation']}">
 
-            <g:if test="${surveyConfig.subSurveyUseForTransfer && surveyConfig.subscription && surveyConfig.subscription.packages}">
-                <g:if test="${subscriptionService.areStatsAvailable(surveyConfig.subscription)}">
+                            ${message(code: 'surveyOrg.additionalInformation')}
+                        </g:link>
+            </g:if>
+
+            <g:if test="${surveyConfig.invoicingInformation}">
+                <g:link class="item ${params.viewTab == 'invoicingInformation' ? 'active' : ''}"
+                        controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                        params="${parame+[viewTab: 'invoicingInformation']}">
+                    ${message(code: 'surveyOrg.invoicingInformation.short')}
+                    <span class="ui floating blue circular label">${SurveyOrg.countByOrgAndSurveyConfigAndPersonIsNotNull(participant, surveyConfig)}/${SurveyOrg.countByOrgAndSurveyConfigAndAddressIsNotNull(participant, surveyConfig)}</span>
+                </g:link>
+            </g:if>
+
+            <g:if test="${surveyConfig.subscription && subscription}">
+                <g:if test="${subscriptionService.areStatsAvailable(subscription)}">
                     <laser:javascript src="echarts.js"/>
 
                     <g:link class="item ${params.viewTab == 'stats' ? 'active' : ''}"
@@ -60,7 +71,11 @@
 
         <div class="ui bottom attached tab segment active">
 
-            <g:if test="${params.viewTab == 'invoicingInformation'}">
+            <g:if test="${params.viewTab == 'invoicingInformation' && surveyConfig.invoicingInformation}">
+
+                <h3>
+                    ${message(code: 'surveyOrg.invoicingInformation')}
+                </h3>
 
                 <div class="ui top attached stackable tabular la-tab-with-js menu">
                     <a class="active item" data-tab="contacts">
@@ -173,37 +188,21 @@
 
             </g:if>
 
-            <g:if test="${params.viewTab == 'overview'}">
-
-                <div class="la-inline-lists">
-                    <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
-
-                        <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig       : surveyConfig,
-                                                                                              subscription       : subscription,
-                                                                                              visibleProviders: providerRoles,
-                                                                                              surveyResults      : surveyResults]"/>
-
-                    </g:if>
-
-                    <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
-
-                        <laser:render template="/templates/survey/generalSurvey" model="[surveyConfig : surveyConfig,
-                                                                                         surveyResults: surveyResults]"/>
-                    </g:if>
-
-                    <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
-
-                        <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig       : surveyConfig,
-                                                                                              subscription       : subscription,
-                                                                                              visibleProviders: providerRoles,
-                                                                                              surveyResults      : surveyResults]"/>
-
-                        <laser:render template="/templates/survey/entitlementSurvey"/>
-                    </g:if>
-
-                </div>
+            <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
+                <g:if test="${params.viewTab == 'additionalInformation'}">
+                    <div class="la-inline-lists">
+                            <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig       : surveyConfig,
+                                                                                                  subscription       : subscription,
+                                                                                                  visibleProviders: providerRoles,
+                                                                                                  surveyResults      : surveyResults]"/>
+                    </div>
+                </g:if>
             </g:if>
-            <g:if test="${params.viewTab == 'stats' && surveyConfig.subSurveyUseForTransfer && surveyConfig.subscription && surveyConfig.subscription.packages}">
+
+            <g:if test="${params.viewTab == 'overview'}">
+                    <laser:render template="/templates/survey/generalInfos"/>
+            </g:if>
+            <g:if test="${params.viewTab == 'stats' && surveyConfig.subscription && subscription}">
                 <g:render template="/templates/stats/stats"/>
             </g:if>
 

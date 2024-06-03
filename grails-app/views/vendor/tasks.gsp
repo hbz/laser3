@@ -1,14 +1,14 @@
 <laser:htmlStart message="task.plural" serviceInjection="true"/>
 
     <laser:render template="breadcrumb"
-              model="${[provider: provider]}"/>
+              model="${[vendor: vendor]}"/>
 
     <ui:controlButtons>
-        <laser:render template="${customerTypeService.getActionsTemplatePath()}" model="${[provider: provider]}"/>
+        <laser:render template="${customerTypeService.getActionsTemplatePath()}" model="${[vendor: vendor]}"/>
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon text="${provider.name}">
-        <laser:render template="/templates/iconObjectIsMine" model="${[isMyProvider: isMyProvider]}"/>
+    <ui:h1HeaderWithIcon text="${vendor.name}">
+        <laser:render template="/templates/iconObjectIsMine" model="${[isMyVendor: isMyVendor]}"/>
     </ui:h1HeaderWithIcon>
 
     <laser:render template="${customerTypeService.getNavTemplatePath()}" />

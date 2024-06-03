@@ -2,6 +2,7 @@ package de.laser.ctrl
 
 import de.laser.*
 import de.laser.auth.User
+import de.laser.storage.BeanStore
 import de.laser.utils.DateUtils
 import de.laser.helper.Profiler
 import de.laser.storage.RDStore
@@ -137,6 +138,8 @@ class MyInstitutionControllerService {
         Map<String, Object> result = getResultGenerics(controller, params)
         params.tab = params.tab ?: ExportClickMeService.ADDRESSBOOK
 
+        result.editable = BeanStore.getContextService().isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+
         List notShowClickMe = []
 
         if(result.contextOrg.isCustomerType_Consortium()){
@@ -168,6 +171,7 @@ class MyInstitutionControllerService {
 
     Map<String, Object> exportConfigsActions(MyInstitutionController controller, GrailsParameterMap params) {
         Map<String, Object> result = getResultGenerics(controller, params)
+        result.editable = BeanStore.getContextService().isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
         result.tab = params.tab ?: ExportClickMeService.ADDRESSBOOK
         if(result.editable) {
             if (params.cmd == 'delete' && params.id) {

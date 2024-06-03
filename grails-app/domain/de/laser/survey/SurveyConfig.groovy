@@ -74,6 +74,7 @@ class SurveyConfig {
     boolean pickAndChoosePerpetualAccess = false
 
     boolean packageSurvey = false
+    boolean invoicingInformation = false
 
     String issueEntitlementGroupName
 
@@ -128,6 +129,7 @@ class SurveyConfig {
 
         pickAndChoosePerpetualAccess column: 'surconf_pac_perpetualaccess'
         packageSurvey column: 'surconf_package_survey'
+        invoicingInformation column: 'surconf_invoicing_information'
 
         scheduledStartDate column: 'surconf_scheduled_startdate'
         scheduledEndDate column: 'surconf_scheduled_enddate'

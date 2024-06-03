@@ -16,33 +16,7 @@
                         <td>
                             <g:link controller="myInstitution" action="reporting" class="ui large icon button blue la-modern-button reporting-callLink"
                                     params="${[filter: meta.filter /*, token: fhRCache.token*/ ] + filterCache.map}">
-                                <g:if test="${meta.filter == BaseConfig.KEY_ISSUEENTITLEMENT}">
-                                    <i class="ui icon book" aria-hidden="true"></i>
-                                </g:if>
-                                <g:elseif test="${meta.filter == BaseConfig.KEY_LICENSE}">
-                                    <i class="ui icon clipboard" aria-hidden="true"></i>
-                                </g:elseif>
-                                <g:elseif test="${meta.filter == BaseConfig.KEY_ORGANISATION}">
-                                    <i class="ui icon university" aria-hidden="true"></i>
-                                </g:elseif>
-                                <g:elseif test="${meta.filter == BaseConfig.KEY_PACKAGE}">
-                                    <i class="ui icon gift" aria-hidden="true"></i>
-                                </g:elseif>
-                                <g:elseif test="${meta.filter == BaseConfig.KEY_PLATFORM}">
-                                    <i class="ui icon cloud" aria-hidden="true"></i>
-                                </g:elseif>
-                                <g:elseif test="${meta.filter == BaseConfig.KEY_PROVIDER}">
-                                    <i class="ui icon university" aria-hidden="true"></i>
-                                </g:elseif>
-                                <g:elseif test="${meta.filter == BaseConfig.KEY_SUBSCRIPTION}">
-                                    <i class="ui icon balance scale" aria-hidden="true"></i>
-                                </g:elseif>
-                                <g:elseif test="${meta.filter == BaseConfig.KEY_VENDOR}">
-                                    <i class="ui icon shipping fast" aria-hidden="true"></i>
-                                </g:elseif>
-                                <g:else>
-                                    <i class="ui icon question" aria-hidden="true"></i>
-                                </g:else>
+                                <i class="ui icon ${BaseConfig.getIcon(meta.filter)}" aria-hidden="true"></i>
                             </g:link>
                         </td>
                         <td>
@@ -92,33 +66,7 @@
                         <td>
                             <g:link controller="myInstitution" action="reporting" class="ui large icon button blue la-modern-button reporting-callLink"
                                 params="${[filter: fav.filter /*, token: fhRCache.token*/ ] + fav.getParsedFilterMap()}">
-                                <g:if test="${fav.filter == BaseConfig.KEY_ISSUEENTITLEMENT}">
-                                    <i class="ui icon book" aria-hidden="true"></i>
-                                </g:if>
-                                <g:elseif test="${fav.filter == BaseConfig.KEY_LICENSE}">
-                                    <i class="ui icon clipboard" aria-hidden="true"></i>
-                                </g:elseif>
-                                <g:elseif test="${fav.filter == BaseConfig.KEY_ORGANISATION}">
-                                    <i class="ui icon university" aria-hidden="true"></i>
-                                </g:elseif>
-                                <g:elseif test="${fav.filter == BaseConfig.KEY_PACKAGE}">
-                                    <i class="ui icon gift" aria-hidden="true"></i>
-                                </g:elseif>
-                                <g:elseif test="${fav.filter == BaseConfig.KEY_PLATFORM}">
-                                    <i class="ui icon cloud" aria-hidden="true"></i>
-                                </g:elseif>
-                                <g:elseif test="${fav.filter == BaseConfig.KEY_PROVIDER}">
-                                    <i class="ui icon university" aria-hidden="true"></i>
-                                </g:elseif>
-                                <g:elseif test="${fav.filter == BaseConfig.KEY_SUBSCRIPTION}">
-                                    <i class="ui icon balance scale" aria-hidden="true"></i>
-                                </g:elseif>
-                                <g:elseif test="${fav.filter == BaseConfig.KEY_VENDOR}">
-                                    <i class="ui icon shipping fast" aria-hidden="true"></i>
-                                </g:elseif>
-                                <g:else>
-                                    <i class="ui icon question" aria-hidden="true"></i>
-                                </g:else>
+                                <i class="ui icon ${BaseConfig.getIcon(fav.filter)}" aria-hidden="true"></i>
                             </g:link>
                         </td>
                         <td>
