@@ -339,10 +339,10 @@ class PropertyService {
      * @param asAdmin is the action done by a global admin changing every occurrence of a public property?
      * @return the count of replacements performed
      */
-    int replacePropertyDefinitions(PropertyDefinition pdFrom, PropertyDefinition pdTo, boolean overwrite, boolean asAdmin) {
+    Map<String, Integer> replacePropertyDefinitions(PropertyDefinition pdFrom, PropertyDefinition pdTo, boolean overwrite, boolean asAdmin) {
 
         log.debug("replacing: ${pdFrom} with: ${pdTo}, overwrite: ${overwrite}")
-        int count = 0
+        int success = 0, failures = 0
         Org contextOrg = contextService.getOrg()
         PropertyDefinition.executeUpdate("update PropertyDefinitionGroupItem set propDef = :pdTo where propDef in (select pdgi.propDef from PropertyDefinitionGroupItem pdgi join pdgi.propDefGroup pdg where pdgi.propDef = :pdFrom and pdg.tenant = :context)", [pdTo: pdTo, pdFrom: pdFrom, context: contextOrg])
         String implClass = pdFrom.getImplClass(), targetImpl = pdTo.getImplClass()
@@ -356,8 +356,9 @@ class PropertyService {
                 cp.tenant = pdFrom.tenant
                 if(moveProperty(cp, pdTo, existingTargetProps, overwrite)) {
                     log.debug("exchange type at: ${implClass}(${cp.id}) from: ${pdFrom.id} to: ${pdTo.id}")
-                    count++
+                    success++
                 }
+                else failures++
             }
             //no, it is a general property to be moved
             else {
@@ -365,12 +366,13 @@ class PropertyService {
                 if(cp.tenant.id == contextOrg.id || asAdmin) {
                     if(moveProperty(cp, pdTo, existingTargetProps, overwrite)) {
                         log.debug("exchange type at: ${implClass}(${cp.id}) from: ${pdFrom.id} to: ${pdTo.id}")
-                        count++
+                        success++
                     }
+                    else failures++
                 }
             }
         }
-        count
+        [success: success, failures: failures]
     }
 
     /**

@@ -54,7 +54,7 @@
 <div class="ui la-search segment">
     <g:form action="index" controller="search" method="post" class="ui form" >
 
-        <g:each in="${['rectype', 'endYear', 'startYear', 'consortiaName', 'providerName', 'status']}" var="facet">
+        <g:each in="${['rectype', 'endYear', 'startYear', 'consortiaName', 'altnames', 'providerName', 'status']}" var="facet">
             <g:each in="${params.list(facet)}" var="selected_facet_value">
                 <input type="hidden" name="${facet}" value="${selected_facet_value}"/>
             </g:each>
@@ -224,7 +224,7 @@
             <div class="twelve wide column">
                 <h3 class="ui header">${message(code: 'search.search.filter')} <ui:totalNumber total="${resultsTotal}"/></h3>
                 <p>
-                    <g:each in="${['rectype', 'endYear', 'startYear', 'consortiaName', 'providerName', 'status']}" var="facet">
+                    <g:each in="${['rectype', 'altnames', 'endYear', 'startYear', 'consortiaName', 'providerName', 'status']}" var="facet">
                         <g:each in="${params.list(facet)}" var="fv">
 
                             <span class="ui label la-advanced-label"><g:message code="facet.so.${facet}"/>:
@@ -267,10 +267,9 @@
                         %>
                         <tr>
                             <g:if test="${object.rectype == 'Org'}">
-                                <g:set var="providerAgency" value="${RDStore.OT_PROVIDER.value in object.type?.value || RDStore.OT_AGENCY.value in object.type?.value }"/>
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${(providerAgency) ? message(code: 'spotlight.provideragency') : message(code: 'spotlight.'+object.rectype.toLowerCase())}">
+                                          data-content="${message(code: 'spotlight.'+object.rectype.toLowerCase())}">
                                         <i class="circular icon la-organisation"></i>
                                     </span>
 
@@ -360,6 +359,47 @@
                                 <g:link controller="organisation" action="show"
                                         id="${object.orgId}">${object.orgName}</g:link>
 
+                                </td>
+                            </g:if>
+
+                            <g:if test="${object.rectype == 'Provider'}">
+                                <td>
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: 'spotlight.provider')}">
+                                        <i class="circular icon la-${object.rectype.toLowerCase()}"></i>
+                                    </span>
+
+                                    <g:link controller="provider" action="show"
+                                            id="${object.dbId}">${object.name}</g:link>
+
+                                </td>
+                                <td>
+                                    <strong><g:message code="default.identifiers.label"/></strong>:
+                                    <div class="ui bulleted list">
+                                        <g:each in="${object.identifiers?.sort { it.type }}" var="id">
+                                            <div class="item">
+                                                ${id.type}: ${id.value} &nbsp;
+                                            </div>
+                                        </g:each>
+                                    </div>
+                                    <strong><g:message code="package.plural"/></strong>:
+                                    <div class="ui bulleted list">
+                                        <g:each in="${object.packages?.sort { it.name }}" var="pkg">
+                                            <div class="item">
+                                                <g:link controller="package" action="show"
+                                                        id="${pkg.dbId}">${pkg.name}</g:link>
+                                            </div>
+                                        </g:each>
+                                    </div>
+                                    <strong><g:message code="org.platforms.label"/></strong>:
+                                    <div class="ui bulleted list">
+                                        <g:each in="${object.platforms?.sort { it.name }}" var="platform">
+                                            <div class="item">
+                                                <g:link controller="platform" action="show"
+                                                        id="${platform.dbId}">${platform.name}</g:link>
+                                            </div>
+                                        </g:each>
+                                    </div>
                                 </td>
                             </g:if>
 
@@ -612,6 +652,38 @@
                                         </g:if>
                                     <br />
                                     <strong>${message(code: 'default.description.label')}</strong>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
+                                </td>
+                            </g:if>
+
+                            <g:if test="${object.rectype == 'Vendor'}">
+                                <td>
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: 'spotlight.vendor')}">
+                                        <i class="circular icon la-${object.rectype.toLowerCase()}"></i>
+                                    </span>
+
+                                    <g:link controller="vendor" action="show"
+                                            id="${object.dbId}">${object.name}</g:link>
+
+                                </td>
+                                <td>
+                                    <strong><g:message code="default.identifiers.label"/></strong>:
+                                    <div class="ui bulleted list">
+                                        <g:each in="${object.identifiers?.sort { it.type }}" var="id">
+                                            <div class="item">
+                                                ${id.type}: ${id.value} &nbsp;
+                                            </div>
+                                        </g:each>
+                                    </div>
+                                    <strong><g:message code="package.plural"/></strong>:
+                                    <div class="ui bulleted list">
+                                        <g:each in="${object.packages?.sort { it.pkg.name }}" var="pv">
+                                            <div class="item">
+                                                <g:link controller="package" action="show"
+                                                        id="${pv.pkg.dbId}">${pv.pkg.name}</g:link>
+                                            </div>
+                                        </g:each>
+                                    </div>
                                 </td>
                             </g:if>
                             <g:if test="${object.rectype == 'Note'}">
