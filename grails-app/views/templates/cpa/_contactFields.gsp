@@ -13,7 +13,7 @@
 
     <div class="field four wide">
         <label></label>
-        <ui:select class="ui search dropdown" name="contactLang.id"
+        <ui:select class="ui search multiple selection dropdown" name="contactLang.id"
                    from="${RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)}"
                    optionKey="id"
                    optionValue="value"
