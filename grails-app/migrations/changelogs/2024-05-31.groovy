@@ -15,14 +15,6 @@ databaseChangeLog = {
     }
 
     changeSet(author: "djebeniani (generated)", id: "1717188095793-3") {
-        addNotNullConstraint(columnDataType: "boolean", columnName: "surconf_invoicing_information", tableName: "survey_config", validate: "true")
-    }
-
-    changeSet(author: "djebeniani (generated)", id: "1717188095793-4") {
-        addNotNullConstraint(columnDataType: "boolean", columnName: "surconf_package_survey", tableName: "survey_config", validate: "true")
-    }
-
-    changeSet(author: "djebeniani (generated)", id: "1717188095793-5") {
         createTable(tableName: "survey_config_vendor") {
             column(autoIncrement: "true", name: "surconven_id", type: "BIGINT") {
                 constraints(nullable: "false", primaryKey: "true", primaryKeyName: "survey_config_vendorPK")
@@ -50,7 +42,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "djebeniani (generated)", id: "1717188095793-6") {
+    changeSet(author: "djebeniani (generated)", id: "1717188095793-4") {
         createTable(tableName: "survey_vendor_result") {
             column(autoIncrement: "true", name: "survenre_id", type: "BIGINT") {
                 constraints(nullable: "false", primaryKey: "true", primaryKeyName: "survey_vendor_resultPK")
@@ -92,74 +84,74 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "djebeniani (generated)", id: "1717188095793-7") {
+    changeSet(author: "djebeniani (generated)", id: "1717188095793-5") {
         addColumn(tableName: "survey_config") {
             column(name: "surconf_vendor_survey", type: "boolean") {
             }
         }
     }
 
-    changeSet(author: "djebeniani (generated)", id: "1717188095793-8") {
+    changeSet(author: "djebeniani (generated)", id: "1717188095793-6") {
         createIndex(indexName: "surconven_survey_config_idx", tableName: "survey_config_vendor") {
             column(name: "surconven_survey_config_fk")
         }
     }
 
-    changeSet(author: "djebeniani (generated)", id: "1717188095793-9") {
+    changeSet(author: "djebeniani (generated)", id: "1717188095793-7") {
         createIndex(indexName: "surconven_vendor_idx", tableName: "survey_config_vendor") {
             column(name: "surconven_vendor_fk")
         }
     }
 
-    changeSet(author: "djebeniani (generated)", id: "1717188095793-10") {
+    changeSet(author: "djebeniani (generated)", id: "1717188095793-8") {
         createIndex(indexName: "survenre_owner_idx", tableName: "survey_vendor_result") {
             column(name: "survenre_owner_fk")
         }
     }
 
-    changeSet(author: "djebeniani (generated)", id: "1717188095793-11") {
+    changeSet(author: "djebeniani (generated)", id: "1717188095793-9") {
         createIndex(indexName: "survenre_participant_idx", tableName: "survey_vendor_result") {
             column(name: "survenre_participant_fk")
         }
     }
 
-    changeSet(author: "djebeniani (generated)", id: "1717188095793-12") {
+    changeSet(author: "djebeniani (generated)", id: "1717188095793-10") {
         createIndex(indexName: "survenre_survey_config_idx", tableName: "survey_vendor_result") {
             column(name: "survenre_survey_config_fk")
         }
     }
 
-    changeSet(author: "djebeniani (generated)", id: "1717188095793-13") {
+    changeSet(author: "djebeniani (generated)", id: "1717188095793-11") {
         createIndex(indexName: "survenre_vendor_idx", tableName: "survey_vendor_result") {
             column(name: "survenre_vendor_fk")
         }
     }
 
-    changeSet(author: "djebeniani (generated)", id: "1717188095793-14") {
+    changeSet(author: "djebeniani (generated)", id: "1717188095793-12") {
         addForeignKeyConstraint(baseColumnNames: "survenre_owner_fk", baseTableName: "survey_vendor_result", constraintName: "FK1t0756c4kgcpdfh05462o52tj", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "org_id", referencedTableName: "org", validate: "true")
     }
 
-    changeSet(author: "djebeniani (generated)", id: "1717188095793-15") {
+    changeSet(author: "djebeniani (generated)", id: "1717188095793-13") {
         addForeignKeyConstraint(baseColumnNames: "survenre_participant_fk", baseTableName: "survey_vendor_result", constraintName: "FK7om8a3brfjk8kh4m0ejrernlv", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "org_id", referencedTableName: "org", validate: "true")
     }
 
-    changeSet(author: "djebeniani (generated)", id: "1717188095793-16") {
+    changeSet(author: "djebeniani (generated)", id: "1717188095793-14") {
         addForeignKeyConstraint(baseColumnNames: "survenre_survey_config_fk", baseTableName: "survey_vendor_result", constraintName: "FKasn3a8q3uikwrrapevjg4h286", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "surconf_id", referencedTableName: "survey_config", validate: "true")
     }
 
-    changeSet(author: "djebeniani (generated)", id: "1717188095793-17") {
+    changeSet(author: "djebeniani (generated)", id: "1717188095793-15") {
         addForeignKeyConstraint(baseColumnNames: "surconven_survey_config_fk", baseTableName: "survey_config_vendor", constraintName: "FKef7951aw67a1duifwdqkggjyh", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "surconf_id", referencedTableName: "survey_config", validate: "true")
     }
 
-    changeSet(author: "djebeniani (generated)", id: "1717188095793-18") {
+    changeSet(author: "djebeniani (generated)", id: "1717188095793-16") {
         addForeignKeyConstraint(baseColumnNames: "survenre_vendor_fk", baseTableName: "survey_vendor_result", constraintName: "FKmg5xybgle1xfncjyopslair3g", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "ven_id", referencedTableName: "vendor", validate: "true")
     }
 
-    changeSet(author: "djebeniani (generated)", id: "1717188095793-19") {
+    changeSet(author: "djebeniani (generated)", id: "1717188095793-17") {
         addForeignKeyConstraint(baseColumnNames: "surconven_vendor_fk", baseTableName: "survey_config_vendor", constraintName: "FKsfuu4rx3nc53tvfgc9a1s2xbe", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "ven_id", referencedTableName: "vendor", validate: "true")
     }
 
-    changeSet(author: "djebeniani (generated)", id: "1717188095793-20") {
+    changeSet(author: "djebeniani (generated)", id: "1717188095793-18") {
         addNotNullConstraint(columnDataType: "boolean", columnName: "surconf_vendor_survey", tableName: "survey_config", validate: "true")
     }
 
@@ -191,7 +183,15 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "djebeniani (hand-coded)", id: "1717188095793-22") {
+    changeSet(author: "djebeniani (generated)", id: "1717188095793-22") {
+        addNotNullConstraint(columnDataType: "boolean", columnName: "surconf_invoicing_information", tableName: "survey_config", validate: "true")
+    }
+
+    changeSet(author: "djebeniani (generated)", id: "1717188095793-23") {
+        addNotNullConstraint(columnDataType: "boolean", columnName: "surconf_package_survey", tableName: "survey_config", validate: "true")
+    }
+
+    changeSet(author: "djebeniani (hand-coded)", id: "1717188095793-24") {
         grailsChange {
             change {
                 SurveyConfig.withTransaction {
