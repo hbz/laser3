@@ -86,7 +86,6 @@ class ClickMeController {
                 result.formFields = exportClickMeService.getExportCostItemFieldsForUI(result.subscription, result.clickMeConfig)
                 result.exportController = 'finance'
                 result.exportAction = 'financialsExport'
-                result.exportParams = result.exportParams
                 result.contactSwitch = true
                 result.exportFileName = result.exportFileName ?: (result.subscription ? (escapeService.escapeString(subscription.name) + "_" + message(code:'subscription.details.financials.label')) : message(code:'subscription.details.financials.label'))
                 result.overrideFormat = [xlsx: 'XLSX']
@@ -124,7 +123,6 @@ class ClickMeController {
                 result.formFields = exportClickMeService.getExportSubscriptionMembersFieldsForUI(result.subscription, result.clickMeConfig)
                 result.exportController = 'subscription'
                 result.exportAction = 'members'
-                result.exportParams = result.exportParams
                 result.contactSwitch = true
                 result.exportFileName = result.exportFileName ?: escapeService.escapeString(result.subscription.name) + "_" + message(code:'subscriptionDetails.members.members')
                 break
