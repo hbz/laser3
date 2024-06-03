@@ -707,7 +707,7 @@ class AjaxController {
     def addProviderRole() {
         def owner  = genericOIDService.resolveOID(params.parent)
 
-        Set<Provider> providers = Vendor.findAllByIdInList(params.list('selectedProviders'))
+        Set<Provider> providers = Provider.findAllByIdInList(params.list('selectedProviders'))
         providers.each{ providerToLink ->
             boolean duplicateProviderRole = false
 

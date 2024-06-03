@@ -223,7 +223,7 @@ class VendorController {
     def createVendor() {
         Vendor.withTransaction {
 
-            Vendor vendor = new Vendor(name: params.vendor, status: RDStore.VENDOR_STATUS_CURRENT)
+            Vendor vendor = new Vendor(name: params.vendor, status: RDStore.VENDOR_STATUS_CURRENT, createdBy: contextService.getOrg())
             vendor.setGlobalUID()
             if (vendor.save()) {
                 flash.message = message(code: 'default.created.message', args: [message(code: 'vendor.label'), vendor.name]) as String
