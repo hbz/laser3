@@ -36,6 +36,16 @@
                         </dd>
                     </dl>
                     <dl>
+                        <dt><g:message code="org.sortname.label" /></dt>
+                        <dd>
+                            <ui:xEditable
+                                    data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                    data_confirm_term_how="ok"
+                                    class="js-open-confirm-modal-xEditable"
+                                    owner="${vendor}" field="sortname" overwriteEditable="${editable && !vendor.gokbId}"/>
+                        </dd>
+                    </dl>
+                    <dl>
                         <dt><g:message code="org.altname.label" /></dt>
                         <dd>
                             <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion">
@@ -498,7 +508,62 @@
                     </div>
                 </div>
             </div>
-
+            <g:if test="${vendor.createdBy || vendor.legallyObligedBy}">
+                <div class="ui card">
+                    <div class="content">
+                        <g:if test="${vendor.createdBy}">
+                            <dl>
+                                <dt>
+                                    <g:message code="org.createdBy.label" />
+                                </dt>
+                                <dd>
+                                    <h5 class="ui header">
+                                        <g:link controller="organisation" action="show" id="${vendor.createdBy.id}">${vendor.createdBy.name}</g:link>
+                                    </h5>
+                                    <g:if test="${createdByOrgGeneralContacts}">
+                                        <g:each in="${createdByOrgGeneralContacts}" var="cbogc">
+                                            <laser:render template="/templates/cpa/person_full_details" model="${[
+                                                    person              : cbogc,
+                                                    personContext       : vendor.createdBy,
+                                                    tmplShowFunctions       : true,
+                                                    tmplShowPositions       : true,
+                                                    tmplShowResponsiblities : true,
+                                                    tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax'],
+                                                    editable            : false
+                                            ]}"/>
+                                        </g:each>
+                                    </g:if>
+                                </dd>
+                            </dl>
+                        </g:if>
+                        <g:if test="${vendor.legallyObligedBy}">
+                            <dl>
+                                <dt>
+                                    <g:message code="org.legallyObligedBy.label" />
+                                </dt>
+                                <dd>
+                                    <h5 class="ui header">
+                                        <g:link controller="organisation" action="show" id="${vendor.legallyObligedBy.id}">${vendor.legallyObligedBy.name}</g:link>
+                                    </h5>
+                                    <g:if test="${legallyObligedByOrgGeneralContacts}">
+                                        <g:each in="${legallyObligedByOrgGeneralContacts}" var="lobogc">
+                                            <laser:render template="/templates/cpa/person_full_details" model="${[
+                                                    person              : lobogc,
+                                                    personContext       : vendor.legallyObligedBy,
+                                                    tmplShowFunctions       : true,
+                                                    tmplShowPositions       : true,
+                                                    tmplShowResponsiblities : true,
+                                                    tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax'],
+                                                    editable            : false
+                                            ]}"/>
+                                        </g:each>
+                                    </g:if>
+                                </dd>
+                            </dl>
+                        </g:if>
+                    </div>
+                </div><!-- .card -->
+            </g:if>
             <g:if test="${institution.isCustomerType_Consortium() || institution.isCustomerType_Support() || institution.isCustomerType_Inst_Pro()}">
                 <div id="new-dynamic-properties-block">
                     <laser:render template="properties" model="${[ vendor: vendor, institution: institution ]}"/>
