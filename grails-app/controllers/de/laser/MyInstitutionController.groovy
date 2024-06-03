@@ -2662,49 +2662,6 @@ class MyInstitutionController  {
         redirect(url: request.getHeader('referer'))
     }
 
-
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
-    })
-    def setSurveyInvoicingInformation() {
-        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        SurveyInfo surveyInfo = SurveyInfo.get(params.id)
-        SurveyConfig surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : surveyInfo.surveyConfigs[0]
-
-        SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
-
-        if(params.personId)
-        {
-            if(params.setConcact == 'true'){
-                surveyOrg.person = Person.get(Long.valueOf(params.personId))
-            }
-            if(params.setConcact == 'false'){
-                surveyOrg.person = null
-            }
-            surveyOrg.save()
-        }
-
-        if(params.addressId)
-        {
-            if(params.setAddress == 'true'){
-                surveyOrg.address = Address.get(Long.valueOf(params.addressId))
-            }
-            if(params.setAddress == 'false'){
-                surveyOrg.address = null
-            }
-            surveyOrg.save()
-        }
-
-        redirect(url: request.getHeader('referer'))
-    }
-
     /**
      * Call to participate on a survey linked to the given survey. The survey link is being resolved and the
      * institution called this link will join as participant on the linked survey. Other members of the institution
@@ -2785,6 +2742,10 @@ class MyInstitutionController  {
 
                                 surveyService.emailsToSurveyUsersOfOrg(surveyInfo, org, false)
                                 //flash.message = message(code: 'surveyLinks.participateToSurvey.success')
+
+                                if(surveyConfig.invoicingInformation){
+                                    surveyService.setDefaultInvoiceInformation(surveyConfig, org)
+                                }
                             }
                         }
                     }
