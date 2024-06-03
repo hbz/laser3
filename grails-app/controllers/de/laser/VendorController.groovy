@@ -190,7 +190,20 @@ class VendorController {
             result.currentLicensesCount = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, context: result.institution])[0]
 
             workflowService.executeCmdAndUpdateResult(result, params)
-
+            if (result.vendor.createdBy) {
+                result.createdByOrgGeneralContacts = PersonRole.executeQuery(
+                        "select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo " +
+                                "where oo = :org and pr.functionType = :ft and prs.isPublic = true",
+                        [org: result.vendor.createdBy, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+                )
+            }
+            if (result.vendor.legallyObligedBy) {
+                result.legallyObligedByOrgGeneralContacts = PersonRole.executeQuery(
+                        "select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo " +
+                                "where oo = :org and pr.functionType = :ft and prs.isPublic = true",
+                        [org: result.vendor.legallyObligedBy, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+                )
+            }
             result
         }
         else {

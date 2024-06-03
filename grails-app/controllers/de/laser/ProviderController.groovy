@@ -259,7 +259,20 @@ class ProviderController {
             result.currentLicensesCount = ProviderRole.executeQuery('select count(*) from ProviderRole pvr join pvr.license l join l.orgRelations oo where pvr.provider = :provider and oo.org = :context '+licenseConsortiumFilter, [provider: provider, context: result.institution])[0]
 
             workflowService.executeCmdAndUpdateResult(result, params)
-
+            if (result.provider.createdBy) {
+                result.createdByOrgGeneralContacts = PersonRole.executeQuery(
+                        "select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo " +
+                                "where oo = :org and pr.functionType = :ft and prs.isPublic = true",
+                        [org: result.provider.createdBy, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+                )
+            }
+            if (result.provider.legallyObligedBy) {
+                result.legallyObligedByOrgGeneralContacts = PersonRole.executeQuery(
+                        "select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo " +
+                                "where oo = :org and pr.functionType = :ft and prs.isPublic = true",
+                        [org: result.provider.legallyObligedBy, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+                )
+            }
             result
         }
         result
