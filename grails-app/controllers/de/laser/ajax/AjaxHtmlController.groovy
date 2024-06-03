@@ -321,7 +321,7 @@ class AjaxHtmlController {
             result.packages << packageInfos
         }
 
-        render template: '/survey/packages', model: result
+        render template: '/survey/generalPackageData', model: result
     }
 
     /**

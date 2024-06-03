@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyPackageResult; de.laser.survey.SurveyConfigPackage; de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition;" %>
+<%@ page import="de.laser.survey.SurveyPackageResult; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyConfigPackage; de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition;" %>
 
 
 <div class="ui stackable grid">
@@ -65,6 +65,17 @@
                         <span class="ui floating blue circular label">${SurveyPackageResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}/${SurveyConfigPackage.countBySurveyConfig(surveyConfig)}</span>
                     </g:link>
             </g:if>
+
+        <g:if test="${surveyConfig.vendorSurvey}">
+            <g:link class="item ${params.viewTab == 'vendorSurvey' ? 'active' : ''}"
+                    controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                    params="${parame+[viewTab: 'vendorSurvey']}">
+
+                ${message(code: 'surveyconfig.vendorSurvey.label')}
+
+                <span class="ui floating blue circular label">${SurveyVendorResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}/${SurveyConfigVendor.countBySurveyConfig(surveyConfig)}</span>
+            </g:link>
+        </g:if>
 
         </div>
 
@@ -242,6 +253,45 @@
                     </g:else>
 
                     <g:render template="/templates/survey/packages" model="[
+                            processController: controllerName,
+                            processAction    : actionName,
+                            tmplShowCheckbox : false,
+                            tmplConfigShow   : tmplConfigShowList]"/>
+                </div>
+
+            </g:if>
+
+            <g:if test="${params.viewTab == 'vendorSurvey' && surveyConfig.vendorSurvey}">
+
+                <div class="ui top attached stackable tabular menu">
+                    <g:link class="item ${params.viewTab == 'vendorSurvey' && params.subTab == 'allVendors' ? 'active' : ''}"
+                            controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                            params="${parame + [viewTab: 'vendorSurvey', subTab: 'allVendors']}">
+                        ${message(code: 'surveyVendors.all')}
+                        <span class="ui floating blue circular label">${SurveyConfigVendor.countBySurveyConfig(surveyConfig)}</span>
+                    </g:link>
+                    <g:link class="item ${params.viewTab == 'vendorSurvey' && params.subTab == 'selectVendors' ? 'active' : ''}"
+                            controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                            params="${parame + [viewTab: 'vendorSurvey', subTab: 'selectVendors']}">
+                        ${message(code: 'surveyVendors.selectedVendors')}
+                        <span class="ui floating blue circular label">${SurveyVendorResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}</span>
+                    </g:link>
+                </div>
+
+                <div class="ui bottom attached tab segment active">
+
+                    <h2 class="ui left floated aligned icon header la-clear-before">${message(code: params.subTab == 'selectVendors' ? 'surveyVendors.selectedVendors' : 'surveyVendors.all')}
+                    <ui:totalNumber total="${vendorListTotal}"/>
+                    </h2>
+
+                    <g:if test="${params.subTab == 'selectVendors'}">
+                        <g:set var="tmplConfigShowList" value="${['lineNumber', 'sortname', 'name', 'isWekbCurated', 'surveyVendorsComments', 'removeSurveyVendorResult']}"/>
+                    </g:if>
+                    <g:else>
+                        <g:set var="tmplConfigShowList" value="${['lineNumber', 'sortname', 'name', 'isWekbCurated', 'addSurveyVendorResult']}"/>
+                    </g:else>
+
+                    <g:render template="/templates/survey/vendors" model="[
                             processController: controllerName,
                             processAction    : actionName,
                             tmplShowCheckbox : false,

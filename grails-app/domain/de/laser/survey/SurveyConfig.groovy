@@ -75,6 +75,7 @@ class SurveyConfig {
 
     boolean packageSurvey = false
     boolean invoicingInformation = false
+    boolean vendorSurvey = false
 
     String issueEntitlementGroupName
 
@@ -87,6 +88,7 @@ class SurveyConfig {
             propertySet      : SurveyResult,
             surveyUrls         : SurveyUrl,
             surveyPackages      : SurveyConfigPackage,
+            surveyVendors      : SurveyConfigVendor,
     ]
 
     static constraints = {
@@ -130,6 +132,7 @@ class SurveyConfig {
         pickAndChoosePerpetualAccess column: 'surconf_pac_perpetualaccess'
         packageSurvey column: 'surconf_package_survey'
         invoicingInformation column: 'surconf_invoicing_information'
+        vendorSurvey column: 'surconf_vendor_survey'
 
         scheduledStartDate column: 'surconf_scheduled_startdate'
         scheduledEndDate column: 'surconf_scheduled_enddate'

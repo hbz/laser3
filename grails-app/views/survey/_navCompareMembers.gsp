@@ -108,7 +108,7 @@
                 </div>
             </div>
         &nbsp;&nbsp;
-            <g:if test="${transferWorkflow && Boolean.valueOf(transferWorkflow.transferSubPackagesAndIes)}">
+            <g:if test="${transferWorkflow && Boolean.valueOf(transferWorkflow.transferSurveyPackages)}">
                 <g:link controller="survey" action="setSurveyTransferConfig"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, transferSurveyPackages: false]">
                     <i class="check bordered large green icon"></i>
@@ -117,6 +117,38 @@
             <g:else>
                 <g:link controller="survey" action="setSurveyTransferConfig"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, transferSurveyPackages: true]">
+                    <i class="close bordered large red icon"></i>
+                </g:link>
+            </g:else>
+
+        </div>
+    </g:if>
+
+    <g:if test="${surveyConfig.vendorSurvey}">
+        <div class="${(actionName == 'copySurveyVendors') ? 'active' : ''} step">
+
+            <div class="content">
+                <div class="title">
+                    <g:link controller="survey" action="copySurveyVendors"
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, targetSubscriptionId: targetSubscription?.id]">
+                        ${message(code: 'copySurveyVendors.label')}
+                    </g:link>
+                </div>
+
+                <div class="description">
+                    <i class="gift icon"></i>${message(code: 'copySurveyVendors.label')}
+                </div>
+            </div>
+        &nbsp;&nbsp;
+            <g:if test="${transferWorkflow && Boolean.valueOf(transferWorkflow.transferSurveyVendors)}">
+                <g:link controller="survey" action="setSurveyTransferConfig"
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, transferSurveyVendors: false]">
+                    <i class="check bordered large green icon"></i>
+                </g:link>
+            </g:if>
+            <g:else>
+                <g:link controller="survey" action="setSurveyTransferConfig"
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, transferSurveyVendors: true]">
                     <i class="close bordered large red icon"></i>
                 </g:link>
             </g:else>

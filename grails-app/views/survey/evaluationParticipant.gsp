@@ -24,13 +24,13 @@
         <ui:actionsDropdown>
             <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
                 <ui:actionsDropdownItem controller="survey" action="actionsForParticipant"
-                                               params="[surveyConfigID: surveyConfig.id, participant: participant.id, actionForParticipant: 'openSurveyAgainForParticipant']"
+                                               params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id, actionForParticipant: 'openSurveyAgainForParticipant']"
                                                message="openSurveyAgainForParticipant.button"/>
 
             </g:if>
             <g:if test="${!surveyConfig.isResultsSetFinishByOrg(participant)}">
                 <ui:actionsDropdownItem controller="survey" action="actionsForParticipant"
-                                               params="[surveyConfigID: surveyConfig.id, participant: participant.id, actionForParticipant: 'finishSurveyForParticipant']"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id, actionForParticipant: 'finishSurveyForParticipant']"
                                                message="finishSurveyForParticipant.button"/>
 
             </g:if>

@@ -411,13 +411,13 @@
                         <td class="right aligned">
                             <g:if test="${editable}">
                                 <g:if test="${(!uuidPkgs || !(record.uuid in uuidPkgs))}">
-                                    <g:link type="button" class="ui icon button" controller="survey" action="linkSurveyPackage" id="${params.id}"
+                                    <g:link type="button" class="ui icon button" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                             params="[addUUID: record.uuid, surveyConfigID: surveyConfig.id]"><g:message
                                             code="surveyPackages.linkPackage"/></g:link>
 
                                 </g:if>
                                 <g:else>
-                                    <g:link type="button" class="ui button negative" controller="survey" action="linkSurveyPackage" id="${params.id}"
+                                    <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                             params="[removeUUID: record.uuid, surveyConfigID: surveyConfig.id]"><g:message
                                             code="surveyPackages.unlinkPackage"/></g:link>
 
@@ -428,7 +428,7 @@
                     <g:if test="${tmplConfigItem == 'unLinkSurveyPackage'}">
                         <td class="right aligned">
                             <g:if test="${editable && (!uuidPkgs || !(record.uuid in uuidPkgs))}">
-                                <g:link type="button" class="ui button negative" controller="survey" action="packages" id="${params.id}"
+                                <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                         params="[removeUUID: record.uuid, surveyConfigID: surveyConfig.id]"><g:message
                                         code="surveyPackages.unlinkPackage"/></g:link>
 

@@ -316,7 +316,8 @@ class SurveyController {
                         surveyInfo: surveyInfo,
                         configOrder: 1,
                         packageSurvey: (params.packageSurvey ?: false),
-                        invoicingInformation: (params.invoicingInformation ?: false)
+                        invoicingInformation: (params.invoicingInformation ?: false),
+                        vendorSurvey: (params.vendorSurvey ?: false),
                 )
                 if(!(surveyConfig.save())){
                     surveyInfo.delete()
@@ -599,8 +600,8 @@ class SurveyController {
                         surveyInfo: surveyInfo,
                         subSurveyUseForTransfer: subSurveyUseForTransfer,
                         packageSurvey: (params.packageSurvey ?: false),
-                        invoicingInformation: (params.invoicingInformation ?: false)
-
+                        invoicingInformation: (params.invoicingInformation ?: false),
+                        vendorSurvey: (params.vendorSurvey ?: false)
                 )
 
                 surveyConfig.save()
@@ -881,6 +882,28 @@ class SurveyController {
         }
     }
 
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+    })
+    def linkSurveyVendor() {
+        Map<String,Object> ctrlResult = surveyControllerService.linkSurveyVendor(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
+            }
+        }
+        else {
+            flash.message = ctrlResult.result.message
+            ctrlResult.result
+        }
+    }
+
     /**
      * Call to list the potential package candidates for linking
      * @return a list view of the packages in the we:kb ElasticSearch index or a redirect to an title list view
@@ -905,6 +928,27 @@ class SurveyController {
         else {
                 ctrlResult.result
             }
+    }
+
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+    })
+    def surveyVendors() {
+        Map<String,Object> ctrlResult = surveyControllerService.surveyVendors(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
+            }
+        }
+        else {
+            ctrlResult.result
+        }
     }
 
     /**
@@ -1226,9 +1270,24 @@ class SurveyController {
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
-    def surveyEvaluationPackages() {
-        //TODO: TODO MOE 2024
-        Map<String,Object> ctrlResult = surveyControllerService.surveyEvaluationPackages(params)
+    def surveyPackagesEvaluation() {
+        Map<String,Object> ctrlResult = surveyControllerService.surveyPackagesEvaluation(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }else {
+            ctrlResult.result
+        }
+    }
+
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    def surveyVendorsEvaluation() {
+        Map<String,Object> ctrlResult = surveyControllerService.surveyVendorsEvaluation(params)
         if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
@@ -1978,6 +2037,22 @@ class SurveyController {
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
+    Map<String,Object> copySurveyVendors() {
+        Map<String,Object> ctrlResult = surveyControllerService.copySurveyVendors(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }else {
+            ctrlResult.result
+        }
+    }
+
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
     Map<String,Object> proccessCopySubPackagesAndIes() {
         Map<String,Object> ctrlResult = surveyControllerService.proccessCopySubPackagesAndIes(params)
         if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
@@ -2007,6 +2082,25 @@ class SurveyController {
         }else {
             ctrlResult.result
             redirect(action: 'copySurveyPackages', id: params.id, params: [surveyConfigID: ctrlResult.result.surveyConfig.id, targetSubscriptionId: ctrlResult.result.targetSubscription.id])
+            return
+        }
+
+    }
+
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    Map<String,Object> proccessCopySurveyVendors() {
+        Map<String,Object> ctrlResult = surveyControllerService.proccessCopySurveyVendors(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }else {
+            ctrlResult.result
+            redirect(action: 'copySurveyVendors', id: params.id, params: [surveyConfigID: ctrlResult.result.surveyConfig.id, targetSubscriptionId: ctrlResult.result.targetSubscription.id])
             return
         }
 
