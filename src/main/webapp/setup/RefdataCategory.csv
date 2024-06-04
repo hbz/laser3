@@ -8,9 +8,15 @@ authority,Autorität,Authority
 billingTime, Rechnungzeitpunkt, Time of billing
 category.a.f,Preiskategorie Beck,Price category Beck
 category.bautabellen,Preiskategorie Bautabellen,Price category Bautabellen
+category.detail.inspiration,Preiskategorie DETAIL inspiration,Price category DETAIL inspiration
 category.euromonitor,Preiskategorie Euromonitor,Price category Euromonitor
 category.igi,Preiskategorie IGI InfoSci Journals,Price category IGI InfoSci Journals
 category.juris,Preiskategorie juris,Price category juris
+category.pnas,Preiskategorie PNAS,Price category PNAS
+category.scientific.net.rup,Preiskategorie Scientific.Net RuP,Price category Scientific.Net RuP
+category.scopus,Preiskategorie Scopus,Price category Scopus
+category.total.materia,Preiskategorie Total Materia,Price category Total Materia
+category.ullmans,Preiskategorie Ullmann's,Price category Ullmann's
 category.unwto,Preiskategorie UNWTO,Price category UNWTO
 category.world.bank,Preiskategorie World Bank,Price category World Bank
 choice.option.letter,Auswahloption (Buchstabe),Choice option (letter)
@@ -21,6 +27,9 @@ concurrent.access,SimUser,Concurrent Access
 confidentiality,Vertraulichkeit Auswahl,Confidentiality Choice
 contact.content.type,Kontakttyp,Type of Contact
 contact.type,Art des Kontaktes,Contact Type
+content.option.asme,Gewählte Inhaltsoption ASME DC,Chosen content option ASME DC
+content.option.asme.addition,Gewählte Inhaltsoption ASME DC Zuwahl,Chosen content option ASME DC Archive
+content.option.london.journals,Gewählte Inhaltsoption RS London Journals,Chosen content option RS London Journals
 cost.configuration,Kostenkonfiguration,Cost configuration
 cost.item.category,CostItemCategory,CostItemCategory
 cost.item.element,CostItemElement,CostItemElement
@@ -158,6 +167,7 @@ platform.statistics.format,Statistik Auslieferungsformat (Plattform),Statistics 
 platform.statistics.frequency,Statistik Auslieferungsfrequenz (Plattform),Statistics Frequency (Platform)
 subjectgroup,Fächergruppe,Subject Group
 subscription.form,Lizenzform,Subscription Form
+subscription.form.ullmans,Lizenzmodell Ullmann's,Subscription Form Ullmann's
 subscription.holding,Paketzuschnitt,Holding Selection
 subscription.resource,Ressourcentyp,Resource type
 subscription.status,Lizenzstatus,Subscription Status

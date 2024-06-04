@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5728    04.06.2024  dev     3.4         Andreas Feature     neue Referenzwerte und Merkmale aufgenommen
+
 5726    03.06.2024  dev     3.4         Andreas Bug         Haushaltsjahr nicht berücksichtigt, Lizenz vorbelegt
 
 5720    03.06.2024  dev     3.4         Andreas Feature     Anbieter und Lieferanten um createdBy/legallyObligedBy erweitert

@@ -231,7 +231,7 @@
                 </tr>
             </g:if>
             <g:if test="${!contextService.getOrg().isCustomerType_Support()}">
-                <tr data-type="takeOrgRelations" data-element="copyObject.takeOrgRelations">
+                <tr data-type="takeProviders" data-element="copyObject.takeProviders">
                     <td data-element="source">
                         <div>
                 <g:if test="${!source_visibleProviders}">
@@ -271,7 +271,7 @@
                     <g:each in="${source_visibleProviders}" var="source_role">
                         <g:if test="${source_role.provider}">
                             <div class="ui checkbox la-toggle-radio la-replace">
-                                <g:checkBox name="copyObject.takeOrgRelations" data-action="copy" value="${genericOIDService.getOID(source_role)}" checked="${true}"/>
+                                <g:checkBox name="copyObject.takeProviders" data-action="copy" value="${genericOIDService.getOID(source_role)}" checked="${true}"/>
                             </div>
                             <br />
                         </g:if>
@@ -320,7 +320,7 @@
                         <g:each in="${target_visibleProviders}" var="target_role">
                             <g:if test="${target_role.provider}">
                                 <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
-                                    <g:checkBox name="copyObject.deleteOrgRelations" data-action="delete" value="${genericOIDService.getOID(target_role)}" checked="${false}"/>
+                                    <g:checkBox name="copyObject.deleteProviders" data-action="delete" value="${genericOIDService.getOID(target_role)}" checked="${false}"/>
                                 </div>
                                 <br />
                             </g:if>
@@ -795,8 +795,8 @@
             checkboxes: {
                 $takeLicenses:                      $('input:checkbox[name="copyObject.takeLicenses"]'),
                 $deleteLicenses:                    $('input:checkbox[name="copyObject.deleteLicenses"]'),
-                $takeOrgRelations:                  $('input:checkbox[name="copyObject.takeOrgRelations"]'),
-                $deleteOrgRelations:                $('input:checkbox[name="copyObject.deleteOrgRelations"]'),
+                $takeProviders:                     $('input:checkbox[name="copyObject.takeProviders"]'),
+                $deleteProviders:                   $('input:checkbox[name="copyObject.deleteProviders"]'),
                 $takeSpecificSubscriptionEditors:   $('input:checkbox[name="subscription.takeSpecificSubscriptionEditors"]'),
                 $deleteSpecificSubscriptionEditors: $('input:checkbox[name="subscription.deleteSpecificSubscriptionEditors"]'),
                 $takeIdentifier:                    $('input:checkbox[name="copyObject.takeIdentifierIds"]'),
@@ -810,8 +810,8 @@
 
                 scc.checkboxes.$takeLicenses.change(function (event) { scc.takeLicenses(this); } ).trigger('change');
                 scc.checkboxes.$deleteLicenses.change(function (event) { scc.deleteLicenses(this); } ).trigger('change');
-                scc.checkboxes.$takeOrgRelations.change(function (event) { scc.takeOrgRelations(this); } ).trigger('change');
-                scc.checkboxes.$deleteOrgRelations.change(function (event) { scc.deleteOrgRelations(this); } ).trigger('change');
+                scc.checkboxes.$takeProviders.change(function (event) { scc.takeProviders(this); } ).trigger('change');
+                scc.checkboxes.$deleteProviders.change(function (event) { scc.deleteProviders(this); } ).trigger('change');
                 scc.checkboxes.$takeSpecificSubscriptionEditors.change(function (event) { scc.takeSpecificSubscriptionEditors(this); } ).trigger('change');
                 scc.checkboxes.$deleteSpecificSubscriptionEditors.change(function (event) { scc.deleteSpecificSubscriptionEditors(this); } ).trigger('change');
                 scc.checkboxes.$takeSpecificSubscriptionEditors.change(function (event) { scc.takeSpecificSubscriptionEditors(this); } ).trigger('change');
@@ -836,11 +836,11 @@
                 JSPC.app.subCopyController._handleDeleted(elem, 'takeLicenses')
             },
 
-            takeOrgRelations: function (elem) {
-                JSPC.app.subCopyController._handleTake(elem, 'takeOrgRelations', 'takeOrgRelations')
+            takeProviders: function (elem) {
+                JSPC.app.subCopyController._handleTake(elem, 'takeProviders', 'takeProviders')
             },
-            deleteOrgRelations: function (elem) {
-                JSPC.app.subCopyController._handleDeleted(elem, 'takeOrgRelations')
+            deleteProviders: function (elem) {
+                JSPC.app.subCopyController._handleDeleted(elem, 'takeProviders')
             },
 
             takeSpecificSubscriptionEditors: function (elem) {

@@ -489,14 +489,14 @@ class AjaxHtmlController {
                 if(params.providerId)
                     model.providerId = params.providerId
                 else
-                    model.providerList = Provider.executeQuery("from Provider p order by LOWER(p.sortname) nulls last")
+                    model.providerList = Provider.executeQuery("from Provider p order by LOWER(p.sortname), LOWER(p.name)")
                 model.tenant = model.contextOrg.id
                 break
             case 'addressForVendor':
                 if(params.vendorId)
                     model.vendorId = params.vendorId
                 else
-                    model.vendorList = Vendor.executeQuery("from Provider p order by LOWER(p.sortname) nulls last")
+                    model.vendorList = Vendor.executeQuery("from Vendor v order by LOWER(v.sortname), LOWER(v.name)")
                 model.tenant = model.contextOrg.id
                 break
             default: model.orgId = params.orgId ?: model.contextOrg.id
@@ -605,7 +605,7 @@ class AjaxHtmlController {
                 }
                 else {
                     result.modalText = message(code: "person.create_new.contactPersonForProvider.label")
-                    result.provList = Provider.findAll([sort: 'sortname'])
+                    result.provList = Provider.executeQuery("from Provider p order by LOWER(p.sortname), LOWER(p.name)")
                 }
                 break
             case 'contactPersonForVendor':
@@ -621,7 +621,7 @@ class AjaxHtmlController {
                 }
                 else {
                     result.modalText = message(code: "person.create_new.contactPersonForVendor.label")
-                    result.venList = Vendor.findAll([sort: 'sortname'])
+                    result.venList = Vendor.executeQuery("from Vendor v order by LOWER(v.sortname), LOWER(v.name)")
                 }
                 break
             case 'contactPersonForPublic':
