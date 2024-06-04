@@ -107,6 +107,12 @@
                                message="surveyPackages.label"/>
              </g:if>
 
+            <g:if test="${surveyConfig.vendorSurvey}">
+                <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyVendors"
+                               params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${surveyVendorsCount}"
+                               message="surveyVendors.label"/>
+            </g:if>
+
             <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
                 <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyCostItems"
                                params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${surveyCostItemsCount}"
@@ -125,10 +131,17 @@
                            class="${(actionName in evalutionsViews) ? "active" : ""}"/>
 
             <g:if test="${surveyConfig.packageSurvey}">
-                <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyEvaluationPackages"
+                <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyPackagesEvaluation"
                                params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${evaluationCount}"
                                message="surveyPackagesEvaluation.label"
                                />
+            </g:if>
+
+            <g:if test="${surveyConfig.vendorSurvey}">
+                <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyVendorsEvaluation"
+                               params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${evaluationCount}"
+                               message="surveyVendorsEvaluation.label"
+                />
             </g:if>
 
             <g:if test="${surveyConfig.subSurveyUseForTransfer}">

@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5726    03.06.2024  dev     3.4         Andreas Bug         Haushaltsjahr nicht berücksichtigt, Lizenz vorbelegt
+
+5720    03.06.2024  dev     3.4         Andreas Feature     Anbieter und Lieferanten um createdBy/legallyObligedBy erweitert
+
+5688    03.06.2024  dev     3.4         Andreas Feature     ElasticSearch-Index um neue Komponenten erweitert
+
 5725    29.05.2024  dev     3.4         Andreas Bug         Checkbox zum Eingrenzen der Kontaktarten überarbeitet
 
 5637    29.05.2024  dev     3.4         David   Feature     GASCO-Kontakt für Backoffice/Kundentyp Verwaltung reaktivieren

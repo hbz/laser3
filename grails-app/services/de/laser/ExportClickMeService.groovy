@@ -1070,8 +1070,8 @@ class ExportClickMeService {
                             'costItem.costInLocalCurrency'              : [field: 'costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency', defaultChecked: 'true'],
                             'costItem.costInLocalCurrencyAfterTax'      : [field: 'costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax', defaultChecked: 'true'],
 
-                            'costItem.datePaid'                         : [field: 'datePaid', label: 'Financial Year', message: 'financials.financialYear'],
-                            'costItem.financialYear'                    : [field: 'financialYear', label: 'Date Paid', message: 'financials.datePaid'],
+                            'costItem.datePaid'                         : [field: 'datePaid', label: 'Date Paid', message: 'financials.datePaid'],
+                            'costItem.financialYear'                    : [field: 'financialYear', label: 'Financial Year', message: 'financials.financialYear'],
                             'costItem.invoiceDate'                      : [field: 'invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
                             'costItem.startDate'                        : [field: 'startDate', label: 'Date From', message: 'financials.dateFrom'],
                             'costItem.endDate'                          : [field: 'endDate', label: 'Date To', message: 'financials.dateTo'],
@@ -1117,9 +1117,9 @@ class ExportClickMeService {
                     label: 'Subscription',
                     message: 'subscription.label',
                     fields: [
-                            'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label'],
-                            'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
-                            'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label'],
+                            'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: true],
+                            'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: true],
+                            'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: true],
                             'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
                             'subscription.isMultiYear'                  : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
                             'subscription.referenceYear'                : [field: 'sub.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label'],
@@ -6441,6 +6441,10 @@ class ExportClickMeService {
 
         if(fieldValue instanceof Date){
             fieldValue = sdf.format(fieldValue)
+        }
+
+        if(fieldValue instanceof Year){
+            fieldValue = fieldValue.toString()
         }
 
         if(fieldValue instanceof Collection){

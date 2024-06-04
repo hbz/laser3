@@ -131,6 +131,19 @@
 
                                     </dd>
                             </dl>
+
+                            <dl>
+                                <dt class="control-label">${message(code: 'surveyconfig.vendorSurvey.label')}</dt>
+                                <dd>
+                                    <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">
+                                        <ui:xEditableBoolean owner="${surveyConfig}" field="vendorSurvey"/>
+                                    </g:if><g:else>
+                                        <ui:xEditableBoolean owner="${surveyConfig}" field="vendorSurvey" overwriteEditable="false"/>
+                                    </g:else>
+
+                                </dd>
+                            </dl>
+
                             <dl>
                                 <dt class="control-label">${message(code: 'surveyconfig.invoicingInformation.label')}</dt>
                                 <dd>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyPackageResult; de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyPackageResult; de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
 <laser:serviceInjection/>
 
 <g:if test="${showOpenParticipantsAgainButtons}">
@@ -245,6 +245,11 @@
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemsPackages')}">
                     <th>
                         ${message(code: 'surveyCostItemsPackages.label')}
+                    </th>
+                </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyVendors')}">
+                    <th>
+                        ${message(code: 'surveyVendors.selectedVendors')}
                     </th>
                 </g:if>
             </g:each>
@@ -578,6 +583,14 @@
                             ${costItemSumBySelectSurveyPackageOfParticipant.sumCostInBillingCurrency} (${costItemSumBySelectSurveyPackageOfParticipant.sumCostInBillingCurrencyAfterTax})
                         </td>
                     </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyVendors')}">
+                        <td>
+                            <g:link controller="survey" action="evaluationParticipant"
+                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id, viewTab: 'vendorSurvey', subTab: 'selectVendors']">
+                                ${SurveyVendorResult.countByParticipantAndSurveyConfig(participant, surveyConfig)}
+                            </g:link>
+                        </td>
+                    </g:if>
                 </g:each>
                 <td>
                     <g:link controller="survey" action="evaluationParticipant"
@@ -814,6 +827,11 @@
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemsPackages')}">
                     <th>
                         ${message(code: 'surveyCostItemsPackages.label')}
+                    </th>
+                </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyVendors')}">
+                    <th>
+                        ${message(code: 'surveyVendors.selectedVendors')}
                     </th>
                 </g:if>
 
@@ -1146,6 +1164,14 @@
                         <td>
                             <g:set var="costItemSumBySelectSurveyPackageOfParticipant" value="${surveyService.getCostItemSumBySelectSurveyPackageOfParticipant(surveyConfig, participant)}"/>
                             ${costItemSumBySelectSurveyPackageOfParticipant.sumCostInBillingCurrency} (${costItemSumBySelectSurveyPackageOfParticipant.sumCostInBillingCurrencyAfterTax})
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyVendors')}">
+                        <td>
+                            <g:link controller="survey" action="evaluationParticipant"
+                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id, viewTab: 'vendorSurvey', subTab: 'selectVendors']">
+                                ${SurveyVendorResult.countByParticipantAndSurveyConfig(participant, surveyConfig)}
+                            </g:link>
                         </td>
                     </g:if>
 

@@ -172,19 +172,19 @@ class IconTagLib {
 
         switch (attrs.type) {
             case [ 'Journal' ]:
-                dc = message(code: 'spotlight.journaltitle')
+                dc = attrs.type
                 icon = 'newspaper outline'
                 break
             case [ 'Database' ]:
-                dc = message(code: 'spotlight.databasetitle')
+                dc = attrs.type
                 icon = 'database'
                 break
             case [ 'Book', 'EBook' ]:
-                dc = message(code: 'spotlight.ebooktitle')
+                dc = attrs.type
                 icon = 'tablet alternate'
                 break
             case 'Other':
-                dc = message(code: 'spotlight.othertitle')
+                dc = attrs.type
                 icon = 'film'
                 break
         }

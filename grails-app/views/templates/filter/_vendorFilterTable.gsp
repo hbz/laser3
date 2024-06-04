@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.Vendor; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.survey.SurveyVendorResult; de.laser.CustomerTypeService; de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.Vendor; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
 <laser:serviceInjection/>
 
 <table id="${tableID ?: ''}" class="ui sortable celled la-js-responsive-table la-table table ${fixedHeader ?: ''}">
@@ -38,6 +38,39 @@
                     <th class="center aligned">
                         <ui:markerIcon type="WEKB_CHANGES" />
                     </th>
+                </g:if>
+                <g:if test="${tmplConfigItem == 'surveyVendorsComments'}">
+                    <th>
+                        <g:if test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                            ${message(code: 'surveyResult.participantComment')}
+                        </g:if>
+                        <g:else>
+                            ${message(code: 'surveyResult.commentParticipant')}
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${message(code: 'surveyResult.commentParticipant.info')}">
+                                <i class="question circle icon"></i>
+                            </span>
+                        </g:else>
+                    </th>
+                    <th>
+                        <g:if test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                            ${message(code: 'surveyResult.commentOnlyForOwner')}
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
+                                <i class="question circle icon"></i>
+                            </span>
+                        </g:if>
+                        <g:else>
+                            ${message(code: 'surveyResult.commentOnlyForParticipant')}
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
+                                <i class="question circle icon"></i>
+                            </span>
+                        </g:else>
+                    </th>
+                </g:if>
+                <g:if test="${tmplConfigItem == 'linkSurveyVendor' || tmplConfigItem == 'unLinkSurveyVendor' || tmplConfigItem == 'removeSurveyVendorResult' || tmplConfigItem == 'addSurveyVendorResult'}">
+                    <th class="center aligned">${message(code: 'default.actions.label')}</th>
                 </g:if>
 
             </g:each>
@@ -137,8 +170,91 @@
                     </td>
                 </g:if>
 
+                <g:if test="${tmplConfigItem == 'linkSurveyVendor'}">
+                    <td class="right aligned">
+                        <g:if test="${editable}">
+                            <g:if test="${(!configUuidVendors || !(vendor.gokbId in configUuidVendors))}">
+                                <g:link type="button" class="ui icon button" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                        params="[addUUID: vendor.gokbId, surveyConfigID: surveyConfig.id]"><g:message
+                                        code="surveyVendors.linkVendor"/></g:link>
+
+                            </g:if>
+                            <g:else>
+                                <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                        params="[removeUUID: vendor.gokbId, surveyConfigID: surveyConfig.id]"><g:message
+                                        code="surveyPackages.unlinkPackage"/></g:link>
+
+                            </g:else>
+                        </g:if>
+                    </td>
+                </g:if>
+                <g:if test="${tmplConfigItem == 'unLinkSurveyVendor'}">
+                    <td class="right aligned">
+                        <g:if test="${editable && (!configUuidVendors || !(vendor.gokbId in configUuidVendors))}">
+                            <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                    params="[removeUUID: vendor.gokbId, surveyConfigID: surveyConfig.id]"><g:message
+                                    code="surveyPackages.unlinkPackage"/></g:link>
+
+                        </g:if>
+                    </td>
+                </g:if>
+                <g:if test="${tmplConfigItem == 'addSurveyVendorResult'}">
+                    <td class="right aligned">
+                        <g:if test="${editable && (!selectedUuidVendors || !(vendor.gokbId in selectedUuidVendors))}">
+                            <g:link type="button" class="ui button" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                    params="${parame+ [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'addSurveyVendor', vendorUUID: vendor.gokbId]}"><g:message
+                                    code="surveyVendors.linkVendor"/></g:link>
+                        </g:if>
+                    </td>
+                </g:if>
+                <g:if test="${tmplConfigItem == 'removeSurveyVendorResult'}">
+                    <td class="right aligned">
+                        <g:if test="${editable && (!selectedUuidVendors || !(vendor.gokbId in selectedUuidVendors))}">
+                            <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                    params="${parame+ [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'removeSurveyVendor', vendorUUID: vendor.gokbId]}"><g:message
+                                    code="surveyVendors.unlinkVendor"/></g:link>
+
+                        </g:if>
+                    </td>
+                </g:if>
+
+                <g:if test="${tmplConfigItem == 'surveyVendorsComments'}">
+                    <g:set var="surveyVendorResult"
+                           value="${SurveyVendorResult.findByParticipantAndSurveyConfigAndVendor(participant, surveyConfig, pkg)}"/>
+                    <g:if test="${surveyVendorResult}">
+                        <td>
+                            <ui:xEditable owner="${surveyVendorResult}" type="textarea" field="comment"/>
+                        </td>
+                        <td>
+                            <g:if test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                                <ui:xEditable owner="${surveyVendorResult}" type="textarea" field="ownerComment"/>
+                            </g:if>
+                            <g:else>
+                                <ui:xEditable owner="${surveyVendorResult}" type="textarea" field="participantComment"/>
+                            </g:else>
+                        </td>
+                    </g:if>
+                    <g:else>
+                        <td></td>
+                        <td></td>
+                    </g:else>
+                </g:if>
+
             </g:each><!-- tmplConfigShow -->
             </tr>
         </g:each><!-- vendorList -->
     </tbody>
 </table>
+
+<g:if test="${tmplShowCheckbox}">
+    <laser:script file="${this.getGroovyPageFileName()}">
+        $('#vendorListToggler').click(function () {
+            if ($(this).prop('checked')) {
+                $("tr[class!=disabled] input[name=selectedVendors]").prop('checked', true)
+            } else {
+                $("tr[class!=disabled] input[name=selectedVendors]").prop('checked', false)
+            }
+        })
+    </laser:script>
+
+</g:if>

@@ -259,7 +259,20 @@ class ProviderController {
             result.currentLicensesCount = ProviderRole.executeQuery('select count(*) from ProviderRole pvr join pvr.license l join l.orgRelations oo where pvr.provider = :provider and oo.org = :context '+licenseConsortiumFilter, [provider: provider, context: result.institution])[0]
 
             workflowService.executeCmdAndUpdateResult(result, params)
-
+            if (result.provider.createdBy) {
+                result.createdByOrgGeneralContacts = PersonRole.executeQuery(
+                        "select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo " +
+                                "where oo = :org and pr.functionType = :ft and prs.isPublic = true",
+                        [org: result.provider.createdBy, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+                )
+            }
+            if (result.provider.legallyObligedBy) {
+                result.legallyObligedByOrgGeneralContacts = PersonRole.executeQuery(
+                        "select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo " +
+                                "where oo = :org and pr.functionType = :ft and prs.isPublic = true",
+                        [org: result.provider.legallyObligedBy, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+                )
+            }
             result
         }
         result
@@ -276,7 +289,7 @@ class ProviderController {
     def createProvider() {
         Provider.withTransaction {
 
-            Provider provider = new Provider(name: params.provider, status: RDStore.PROVIDER_STATUS_CURRENT)
+            Provider provider = new Provider(name: params.provider, status: RDStore.PROVIDER_STATUS_CURRENT, createdBy: contextService.getOrg())
             provider.setGlobalUID()
             if (provider.save()) {
                 flash.message = message(code: 'default.created.message', args: [message(code: 'provider.label'), provider.name]) as String

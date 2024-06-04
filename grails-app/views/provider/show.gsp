@@ -44,18 +44,16 @@
                                     overwriteEditable="${editable && !provider.gokbId}"/>
                         </dd>
                     </dl>
-                    <g:if test="${!inContextOrg || editable}">
-                        <dl>
-                            <dt><g:message code="org.sortname.label" /></dt>
-                            <dd>
-                                <ui:xEditable
-                                        data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                        data_confirm_term_how="ok"
-                                        class="js-open-confirm-modal-xEditable"
-                                        owner="${provider}" field="sortname" overwriteEditable="${editable && !provider.gokbId}"/>
-                            </dd>
-                        </dl>
-                    </g:if>
+                    <dl>
+                        <dt><g:message code="org.sortname.label" /></dt>
+                        <dd>
+                            <ui:xEditable
+                                    data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                    data_confirm_term_how="ok"
+                                    class="js-open-confirm-modal-xEditable"
+                                    owner="${provider}" field="sortname" overwriteEditable="${editable && !provider.gokbId}"/>
+                        </dd>
+                    </dl>
                     <dl>
                         <dt><g:message code="org.altname.label" /></dt>
                         <dd>
@@ -568,7 +566,62 @@
                             </div>
                         </div>
                         --%>
-
+            <g:if test="${provider.createdBy || provider.legallyObligedBy}">
+                <div class="ui card">
+                    <div class="content">
+                        <g:if test="${provider.createdBy}">
+                            <dl>
+                                <dt>
+                                    <g:message code="org.createdBy.label" />
+                                </dt>
+                                <dd>
+                                    <h5 class="ui header">
+                                        <g:link controller="organisation" action="show" id="${provider.createdBy.id}">${provider.createdBy.name}</g:link>
+                                    </h5>
+                                    <g:if test="${createdByOrgGeneralContacts}">
+                                        <g:each in="${createdByOrgGeneralContacts}" var="cbogc">
+                                            <laser:render template="/templates/cpa/person_full_details" model="${[
+                                                    person              : cbogc,
+                                                    personContext       : provider.createdBy,
+                                                    tmplShowFunctions       : true,
+                                                    tmplShowPositions       : true,
+                                                    tmplShowResponsiblities : true,
+                                                    tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax'],
+                                                    editable            : false
+                                            ]}"/>
+                                        </g:each>
+                                    </g:if>
+                                </dd>
+                            </dl>
+                        </g:if>
+                        <g:if test="${provider.legallyObligedBy}">
+                            <dl>
+                                <dt>
+                                    <g:message code="org.legallyObligedBy.label" />
+                                </dt>
+                                <dd>
+                                    <h5 class="ui header">
+                                        <g:link controller="organisation" action="show" id="${provider.legallyObligedBy.id}">${provider.legallyObligedBy.name}</g:link>
+                                    </h5>
+                                    <g:if test="${legallyObligedByOrgGeneralContacts}">
+                                        <g:each in="${legallyObligedByOrgGeneralContacts}" var="lobogc">
+                                            <laser:render template="/templates/cpa/person_full_details" model="${[
+                                                    person              : lobogc,
+                                                    personContext       : provider.legallyObligedBy,
+                                                    tmplShowFunctions       : true,
+                                                    tmplShowPositions       : true,
+                                                    tmplShowResponsiblities : true,
+                                                    tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax'],
+                                                    editable            : false
+                                            ]}"/>
+                                        </g:each>
+                                    </g:if>
+                                </dd>
+                            </dl>
+                        </g:if>
+                    </div>
+                </div><!-- .card -->
+            </g:if>
             <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support() || contextService.getOrg().isCustomerType_Inst_Pro()}">
                 <div id="new-dynamic-properties-block">
                     <laser:render template="properties" model="${[ provider: provider, authOrg: formalOrg, contextOrg: institution ]}"/>

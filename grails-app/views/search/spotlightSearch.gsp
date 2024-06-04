@@ -27,7 +27,7 @@
         else if (object.rectype == 'Org') {
             result << objMap + [
                 "url":   g.createLink(controller:"organisation", action:"show", id:"${object.dbId}"),
-                "category": (RDStore.OT_PROVIDER.value in object.type?.value || RDStore.OT_AGENCY.value in object.type?.value ) ? "${message(code: 'spotlight.provideragency')}" : "${message(code: "spotlight.${object.rectype.toLowerCase()}")}",
+                "category": "${message(code: "spotlight.${object.rectype.toLowerCase()}")}",
                 "description": ""
             ]
         }
@@ -43,6 +43,13 @@
                 "url":   g.createLink(controller:"platform", action:"show", id:"${object.dbId}"),
                 "category": "${message(code: "spotlight.${object.rectype.toLowerCase()}")}",
                 "description": ""
+            ]
+        }
+        else if (object.rectype == 'Provider') {
+            result << objMap + [
+                    "url":   g.createLink(controller:"provider", action:"show", id:"${object.dbId}"),
+                    "category": "${message(code: "spotlight.${object.rectype.toLowerCase()}")}",
+                    "description": ""
             ]
         }
         else if (object.rectype == 'Subscription') {
@@ -67,7 +74,15 @@
                     "category": "${message(code: "spotlight.${object.rectype.toLowerCase()}")}",
                     "description": "${statusString + ' ' +period}"
             ]
-        }else if (object.rectype == 'Note') {
+        }
+        else if (object.rectype == 'Vendor') {
+            result << objMap + [
+                    "url":   g.createLink(controller:"vendor", action:"show", id:"${object.dbId}"),
+                    "category": "${message(code: "spotlight.${object.rectype.toLowerCase()}")}",
+                    "description": ""
+            ]
+        }
+        else if (object.rectype == 'Note') {
             result << objMap + [
                     "url":   g.createLink(controller:"${object.objectClassName}", action:"notes", id:"${object.objectId}"),
                     "category": "${message(code: "spotlight.${object.rectype.toLowerCase()}")}",

@@ -9,12 +9,20 @@ import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.traces.DeletedObject
+import de.laser.utils.DateUtils
+import de.laser.utils.LocaleUtils
+import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.hibernate.Session
+import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
+
+import javax.servlet.ServletOutputStream
+import java.text.SimpleDateFormat
 
 @Transactional
 class VendorService {
@@ -23,6 +31,7 @@ class VendorService {
     DocstoreService docstoreService
     DeletionService deletionService
     GokbService gokbService
+    MessageSource messageSource
     TaskService taskService
     UserService userService
     WorkflowService workflowService
@@ -99,6 +108,11 @@ class VendorService {
             if(params.containsKey(mapping))
                 queryParams.put(mapping,params.get(mapping))
         }
+
+        if(params.uuids)
+            queryParams.uuids = params.uuids
+
+        println(queryParams)
 
         Map<String, Object> wekbResult = gokbService.doQuery(result, [max: 10000, offset: 0], queryParams)
         if(wekbResult.recordsCount > 0)
@@ -508,6 +522,84 @@ class VendorService {
 
         SwissKnife.setPaginationParams(result, params, contextUser)
         result
+    }
+
+    Map<String, Map> getWekbVendors(GrailsParameterMap params) {
+        Map<String, Object> result = [:], queryParams = [:]
+        User contextUser = contextService.getUser()
+        SwissKnife.setPaginationParams(result, params, contextUser)
+        Locale locale = LocaleUtils.getCurrentLocale()
+        result.wekbApi = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+
+        result.flagContentGokb = true // vendorService.getWekbVendorRecords()
+        Map queryCuratoryGroups = gokbService.executeQuery(result.wekbApi.baseUrl + result.wekbApi.fixToken + '/groups', [:])
+        if (queryCuratoryGroups.code == 404) {
+            result.error = message(code: 'wekb.error.' + queryCuratoryGroups.error) as String
+        } else {
+            if (queryCuratoryGroups) {
+                List recordsCuratoryGroups = queryCuratoryGroups.result
+                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+            }
+            result.wekbRecords = getWekbVendorRecords(params, result)
+        }
+        result.curatoryGroupTypes = [
+                [value: 'Provider', name: messageSource.getMessage('package.curatoryGroup.provider', null, locale)],
+                [value: 'Vendor', name: messageSource.getMessage('package.curatoryGroup.vendor', null, locale)],
+                [value: 'Other', name: messageSource.getMessage('package.curatoryGroup.other', null, locale)]
+        ]
+        List<String> queryArgs = []
+        if (params.containsKey('nameContains')) {
+            queryArgs << "(genfunc_filter_matcher(v.name, :name) = true or genfunc_filter_matcher(v.sortname, :name) = true)"
+            queryParams.name = params.nameContains
+        }
+        if (params.containsKey('venStatus')) {
+            queryArgs << "v.status in (:status)"
+            queryParams.status = Params.getRefdataList(params, 'venStatus')
+        } else if (!params.containsKey('venStatus') && !params.containsKey('filterSet')) {
+            queryArgs << "v.status = :status"
+            queryParams.status = "Current"
+            params.venStatus = RDStore.VENDOR_STATUS_CURRENT.id
+        }
+
+        if (params.containsKey('qp_supportedLibrarySystems')) {
+            queryArgs << "exists (select ls from v.supportedLibrarySystems ls where ls.librarySystem in (:librarySystems))"
+            queryParams.put('librarySystems', Params.getRefdataList(params, 'qp_supportedLibrarySystems'))
+        }
+
+        if (params.containsKey('qp_electronicBillings')) {
+            queryArgs << "exists (select eb from v.electronicBillings eb where eb.invoiceFormat in (:electronicBillings))"
+            queryParams.put('electronicBillings', Params.getRefdataList(params, 'qp_electronicBillings'))
+        }
+
+        if (params.containsKey('qp_invoiceDispatchs')) {
+            queryArgs << "exists (select idi from v.invoiceDispatchs idi where idi.invoiceDispatch in (:invoiceDispatchs))"
+            queryParams.put('invoiceDispatchs', Params.getRefdataList(params, 'qp_invoiceDispatchs'))
+        }
+
+        if (params.containsKey('curatoryGroup') || params.containsKey('curatoryGroupType')) {
+            queryArgs << "v.gokbId in (:wekbIds)"
+            queryParams.wekbIds = result.wekbRecords.keySet()
+        }
+
+        if (params.containsKey('uuids')) {
+            queryArgs << "v.gokbId in (:wekbIds)"
+            queryParams.wekbIds = result.wekbRecords.keySet()
+        }
+
+        String vendorQuery = 'select v from Vendor v'
+        if (queryArgs) {
+            vendorQuery += ' where ' + queryArgs.join(' and ')
+        }
+        if (params.containsKey('sort')) {
+            vendorQuery += " order by ${params.sort} ${params.order ?: 'asc'}, v.name ${params.order ?: 'asc'} "
+        } else
+            vendorQuery += " order by v.sortname "
+        Set<Vendor> vendorsTotal = Vendor.executeQuery(vendorQuery, queryParams)
+
+        result.vendorListTotal = vendorsTotal.size()
+        result.vendorList = vendorsTotal.drop(result.offset).take(result.max)
+        result
+
     }
 
 }

@@ -619,6 +619,12 @@ class FilterService {
             isFilterSet = true
         }
 
+        if(params.checkVendorSurvey) {
+            query += " and surConfig.vendorSurvey = :checkVendorSurvey"
+            queryParams << [checkVendorSurvey: true]
+            isFilterSet = true
+        }
+
         if(params.checkInvoicingInformation) {
             query += " and surConfig.invoicingInformation = :checkInvoicingInformation"
             queryParams << [checkInvoicingInformation: true]
@@ -780,8 +786,14 @@ class FilterService {
             isFilterSet = true
         }
 
+        if(params.checkVendorSurvey) {
+            query += "surConfig.vendorSurvey = :checkVendorSurvey"
+            queryParams << [checkVendorSurvey: true]
+            isFilterSet = true
+        }
+
         if(params.checkInvoicingInformation) {
-            query += " and surConfig.invoicingInformation = :checkInvoicingInformation"
+            query += "surConfig.invoicingInformation = :checkInvoicingInformation"
             queryParams << [checkInvoicingInformation: true]
             isFilterSet = true
         }

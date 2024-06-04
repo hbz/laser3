@@ -44,12 +44,14 @@ import de.laser.Task
 import de.laser.TitleInstancePackagePlatform
 import de.laser.Vendor
 import de.laser.VendorRole
+import de.laser.VendorService
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.finance.Order
 import de.laser.helper.Params
 import de.laser.interfaces.CalculatedType
+import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.remote.ApiSource
 import de.laser.storage.PropertyStore
@@ -58,6 +60,7 @@ import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigPackage
 import de.laser.survey.SurveyConfigProperties
 import de.laser.SurveyController
+import de.laser.survey.SurveyConfigVendor
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyLinks
 import de.laser.survey.SurveyOrg
@@ -66,23 +69,26 @@ import de.laser.survey.SurveyResult
 import de.laser.TaskService
 import de.laser.auth.User
 import de.laser.survey.SurveyUrl
+import de.laser.survey.SurveyVendorResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
+import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
-
+import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.context.MessageSource
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.multipart.MultipartFile
 
+import javax.servlet.ServletOutputStream
 import java.text.NumberFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -123,6 +129,7 @@ class SurveyControllerService {
     SurveyControllerService surveyControllerService
     SurveyService surveyService
     TaskService taskService
+    VendorService vendorService
 
     MessageSource messageSource
 
@@ -291,7 +298,7 @@ class SurveyControllerService {
             result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsr.query, fsr.queryParams, params)
             result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsr.query, fsr.queryParams, params)
 
-            params.tab = params.tab ?: (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY ? 'selectedParticipants' : ((result.selectedSubParticipantsCount == 0) ? 'selectedParticipants' : 'selectedSubParticipants'))
+            params.tab = params.tab ?: (result.selectedSubParticipantsCount == 0 && result.selectedParticipantsCount == 0) ? 'consortiaMembers' : (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY ? 'selectedParticipants' : ((result.selectedSubParticipantsCount == 0) ? 'selectedParticipants' : 'selectedSubParticipants'))
 
             [result: result, status: STATUS_OK]
         }
@@ -615,6 +622,95 @@ class SurveyControllerService {
             result.putAll(packageService.getWekbPackages(params))
 
             result.uuidPkgs = SurveyConfigPackage.executeQuery("select scg.pkg.gokbId from SurveyConfigPackage scg where scg.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
+
+            [result: result, status: STATUS_OK]
+        }
+    }
+
+    Map<String,Object> surveyVendors(GrailsParameterMap params) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else {
+            if(params.removeUUID) {
+                Vendor vendor = Vendor.findByGokbId(params.removeUUID)
+                if(vendor) {
+                    SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig and scp.vendor = :vendor", [surveyConfig: result.surveyConfig, vendor: vendor])
+                    result.surveyConfig = result.surveyConfig.refresh()
+                    result.surveyPackagesCount = SurveyConfigVendor.executeQuery("select count(*) from SurveyConfigVendor where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
+                }
+                params.remove("removeUUID")
+            }
+
+            List selectedVendors = params.list("vendorListToggler")
+
+            if (selectedVendors) {
+                selectedVendors.each {
+                    Vendor vendor = Vendor.findByGokbId(it)
+                    if(vendor) {
+                        SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig and scp.vendor = :vendor", [surveyConfig: result.surveyConfig, vendor: vendor])
+                    }
+                }
+                result.surveyConfig = result.surveyConfig.refresh()
+                result.surveyVendorsCount = SurveyConfigVendor.executeQuery("select count(*) from SurveyConfigVendor where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
+                params.remove("selectedVendors")
+            }
+
+            if(result.surveyConfig.surveyVendors){
+                List configUuidVendors = SurveyConfigVendor.executeQuery("select scv.vendor.gokbId from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
+                params.uuids = configUuidVendors
+            }
+
+            result.putAll(vendorService.getWekbVendors(params))
+
+            [result: result, status: STATUS_OK]
+        }
+    }
+
+    Map<String,Object> linkSurveyVendor(GrailsParameterMap params) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else {
+            if(params.addUUID) {
+                Vendor vendor = Vendor.findByGokbId(params.addUUID)
+                if(vendor) {
+                    if(!SurveyConfigVendor.findByVendorAndSurveyConfig(vendor, result.surveyConfig)) {
+                        SurveyConfigVendor surveyConfigVendor = new SurveyConfigVendor(surveyConfig: result.surveyConfig, vendor: vendor).save()
+                    }
+                }
+                result.surveyConfig = result.surveyConfig.refresh()
+                result.surveyVendorsCount = SurveyConfigVendor.executeQuery("select count(*) from SurveyConfigVendor where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
+                params.remove("addUUID")
+            }
+
+            if(params.removeUUID) {
+                Vendor vendor = Vendor.findByGokbId(params.removeUUID)
+                if(vendor) {
+                    SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig and scp.vendor = :vendor", [surveyConfig: result.surveyConfig, vendor: vendor])
+                    result.surveyConfig = result.surveyConfig.refresh()
+                    result.surveyVendorsCount = SurveyConfigVendor.executeQuery("select count(*) from SurveyConfigVendor where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
+                }
+                params.remove("removeUUID")
+            }
+
+            List selectedVendors = params.list("vendorListToggler")
+
+            if (selectedVendors) {
+                selectedVendors.each {
+                    Vendor vendor = Vendor.findByGokbId(it)
+                    if(vendor) {
+                        if(!SurveyConfigVendor.findByVendorAndSurveyConfig(vendor, result.surveyConfig)) {
+                            SurveyConfigVendor surveyConfigVendor = new SurveyConfigVendor(surveyConfig: result.surveyConfig, vendor: vendor).save()
+                        }
+                    }
+                }
+                params.remove("vendorListToggler")
+            }
+
+            result.putAll(vendorService.getWekbVendors(params))
+
+            result.configUuidVendors = SurveyConfigVendor.executeQuery("select scv.vendor.gokbId from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
 
             [result: result, status: STATUS_OK]
         }
@@ -1213,6 +1309,10 @@ class SurveyControllerService {
                         if (params.transferSurveyPackages != null) {
                             transferWorkflow.transferSurveyPackages = params.transferSurveyPackages
                         }
+
+                        if (params.transferSurveyVendors != null) {
+                            transferWorkflow.transferSurveyVendors = params.transferSurveyVendors
+                        }
                     } else {
                         Map transferWorkflowForMultiYear = [:]
                         if (transferWorkflow["transferWorkflowForMultiYear_${subscription.id}"]) {
@@ -1251,6 +1351,10 @@ class SurveyControllerService {
 
                         if (params.transferSurveyPackages != null) {
                             transferWorkflowForMultiYear.transferSurveyPackages = params.transferSurveyPackages
+                        }
+
+                        if (params.transferSurveyVendors != null) {
+                            transferWorkflowForMultiYear.transferSurveyVendors = params.transferSurveyVendors
                         }
                         transferWorkflow["transferWorkflowForMultiYear_${subscription.id}"] = transferWorkflowForMultiYear
                     }
@@ -1802,7 +1906,7 @@ class SurveyControllerService {
      * exported as (configurable) Excel worksheet
      * @return the survey evaluation view, either as HTML or as (configurable) Excel worksheet
      */
-    def surveyEvaluationPackages(GrailsParameterMap params) {
+    def surveyPackagesEvaluation(GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params)
         if (!result) {
             [result: null, status: STATUS_ERROR]
@@ -1830,6 +1934,39 @@ class SurveyControllerService {
             result.participants = result.participants.sort { it.org.sortname }
 
             result.charts = surveyService.generateSurveyPackageDataForCharts(result.surveyConfig, result.participants?.org)
+
+            [result: result, status: STATUS_OK]
+        }
+    }
+
+    def surveyVendorsEvaluation(GrailsParameterMap params) {
+        Map<String, Object> result = getResultGenericsAndCheckAccess(params)
+        if (!result) {
+            [result: null, status: STATUS_ERROR]
+        } else {
+
+            result.participantsNotFinishTotal = SurveyOrg.countByFinishDateIsNullAndSurveyConfig(result.surveyConfig)
+            result.participantsFinishTotal = SurveyOrg.countBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)
+            result.participantsTotal = SurveyOrg.countBySurveyConfig(result.surveyConfig)
+
+            params.tab = params.tab ?: (result.participantsFinishTotal > 0 ? 'participantsViewAllFinish' : 'participantsViewAllNotFinish')
+
+            if (params.tab == 'participantsViewAllNotFinish') {
+                params.participantsNotFinish = true
+            } else if (params.tab == 'participantsViewAllFinish') {
+                params.participantsFinish = true
+            }
+
+            Map<String, Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
+
+            result.participants = SurveyOrg.executeQuery(fsq.query, fsq.queryParams, params)
+
+
+            result.propList = result.surveyConfig.surveyProperties.surveyProperty
+
+            result.participants = result.participants.sort { it.org.sortname }
+
+            result.charts = surveyService.generateSurveyVendorDataForCharts(result.surveyConfig, result.participants?.org)
 
             [result: result, status: STATUS_OK]
         }
@@ -2150,7 +2287,6 @@ class SurveyControllerService {
             result.ownerId = result.surveyInfo.owner.id
 
             params.viewTab = params.viewTab ?: 'overview'
-            params.subTab = params.subTab ?: 'allPackages'
 
             result = surveyService.participantResultGenerics(result, result.participant, params)
 
@@ -3377,6 +3513,43 @@ class SurveyControllerService {
 
     }
 
+    Map<String, Object> copySurveyVendors(GrailsParameterMap params) {
+        Map<String, Object> result = getResultGenericsAndCheckAccess(params)
+        if (!result) {
+            [result: null, status: STATUS_ERROR]
+        } else {
+            if (!result.editable) {
+                [result: null, status: STATUS_ERROR]
+                return
+            }
+
+            result = surveyControllerService.getSubResultForTranfser(result, params)
+
+            result.participantsList = []
+
+            result.parentSuccessortParticipantsList = []
+
+            result.parentSuccessorSubChilds.each { sub ->
+                Map newMap = [:]
+                Org org = sub.getSubscriberRespConsortia()
+                newMap.id = org.id
+                newMap.sortname = org.sortname
+                newMap.name = org.name
+                newMap.newSub = sub
+                newMap.oldSub = sub._getCalculatedPreviousForSurvey()
+                newMap.surveyVendors = SurveyVendorResult.executeQuery("select svr.vendor from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [surveyConfig: result.surveyConfig, participant: org])
+
+                result.participantsList << newMap
+
+            }
+
+            result.participantsList = result.participantsList.sort { it.sortname }
+
+            [result: result, status: STATUS_OK]
+        }
+
+    }
+
     Map<String, Object> proccessCopySubPackagesAndIes(GrailsParameterMap params) {
         Map<String, Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
@@ -3473,7 +3646,6 @@ class SurveyControllerService {
                         surveyPackages.each { Package pkg ->
                         SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(selectedSub, pkg)
                             if (!sp) {
-                                println("pkg"+pkg.name)
                                 subscriptionService.addToSubscription(selectedSub, pkg, createEntitlements)
                             }
                     }
@@ -3481,6 +3653,47 @@ class SurveyControllerService {
             })
 
         }
+
+
+        [result: result, status: STATUS_OK]
+    }
+
+    Map<String, Object> proccessCopySurveyVendors(GrailsParameterMap params) {
+        Map<String, Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result.editable) {
+            [result: null, status: STATUS_ERROR]
+            return
+        }
+
+        result = surveyControllerService.getSubResultForTranfser(result, params)
+
+        Set<Subscription> subscriptions, permittedSubs = []
+        if (params.containsKey("membersListToggler")) {
+            subscriptions = result.parentSuccessorSubChilds
+        } else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubs"))
+        subscriptions.each { Subscription selectedSub ->
+            if (selectedSub.isEditableBy(result.user)) {
+                permittedSubs << selectedSub
+            }
+        }
+
+
+        permittedSubs.each { Subscription selectedSub ->
+            Org org = selectedSub.getSubscriberRespConsortia()
+            List<Vendor> vendorList = SurveyVendorResult.executeQuery("select svr.vendor from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [surveyConfig: result.surveyConfig, participant: org])
+            vendorList.each { Vendor vendor ->
+                if (!VendorRole.findAllBySubscriptionAndVendor(selectedSub, vendor)) {
+                    VendorRole new_link = new VendorRole(vendor: vendor, subscription: selectedSub)
+                    if (!new_link.save()) {
+                        log.error("Problem saving new vendor link ..")
+                        new_link.errors.each { e ->
+                            log.error(e.toString())
+                        }
+                    }
+                }
+            }
+        }
+
 
 
         [result: result, status: STATUS_OK]
@@ -4558,6 +4771,7 @@ class SurveyControllerService {
         result.surveyCostItemsCount = CostItem.executeQuery("select count(*) from CostItem where pkg is null and owner = :owner and costItemStatus != :status and surveyOrg in (select surOrg from SurveyOrg as surOrg where surveyConfig = :surveyConfig)", [surveyConfig: result.surveyConfig, owner: result.surveyInfo.owner, status: RDStore.COST_ITEM_DELETED])[0]
         result.surveyCostItemsPackagesCount = CostItem.executeQuery("select count(*) from CostItem where pkg is not null and sub is null and owner = :owner and costItemStatus != :status and surveyOrg in (select surOrg from SurveyOrg as surOrg where surveyConfig = :surveyConfig)", [surveyConfig: result.surveyConfig, owner: result.surveyInfo.owner, status: RDStore.COST_ITEM_DELETED])[0]
         result.surveyPackagesCount = SurveyConfigPackage.executeQuery("select count(*) from SurveyConfigPackage where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
+        result.surveyVendorsCount = SurveyConfigPackage.executeQuery("select count(*) from SurveyConfigVendor where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
         result.evaluationCount = SurveyOrg.executeQuery("select count (*) from SurveyOrg where surveyConfig = :surveyConfig and finishDate is not null", [surveyConfig: result.surveyConfig])[0] + '/' + SurveyOrg.executeQuery("select count (*) from SurveyOrg where surveyConfig = :surveyConfig", [surveyConfig: result.surveyConfig])[0]
 
         result.subscription = result.surveyConfig.subscription ?: null

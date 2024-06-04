@@ -1,5 +1,5 @@
 <%@ page import="de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.storage.RDStore" %>
-<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyPackagesEvaluation.label')})" serviceInjection="true"/>
+<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyVendorsEvaluation.label')})" serviceInjection="true"/>
 <laser:javascript src="echarts.js"/>
 
 <ui:breadcrumbs>
@@ -43,7 +43,7 @@
     <g:else>
         ${surveyConfig.getConfigNameShort()}
     </g:else>
-    : ${message(code: 'surveyPackagesEvaluation.label')}
+    : ${message(code: 'surveyVendorsEvaluation.label')}
 </h2>
 
 <g:if test="${surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
@@ -55,21 +55,21 @@
 <div class="ui top attached stackable tabular la-tab-with-js menu">
 
     <g:link class="item ${params.tab == 'participantsViewAllFinish' ? 'active' : ''}"
-            controller="survey" action="surveyEvaluationPackages"
+            controller="survey" action="surveyPackagesEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllFinish']">
         ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
         <span class="ui floating blue circular label">${participantsFinishTotal}</span>
     </g:link>
 
     <g:link class="item ${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}"
-            controller="survey" action="surveyEvaluationPackages"
+            controller="survey" action="surveyPackagesEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllNotFinish']">
         ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
         <span class="ui floating blue circular label">${participantsNotFinishTotal}</span>
     </g:link>
 
     <g:link class="item ${params.tab == 'participantsView' ? 'active' : ''}"
-            controller="survey" action="surveyEvaluationPackages"
+            controller="survey" action="surveyPackagesEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsView']">
         ${message(code: 'surveyEvaluation.participantsView')}
         <span class="ui floating blue circular label">${participantsTotal}</span>
@@ -80,7 +80,7 @@
 
     <div id="chartWrapper" style="width:100%; min-height:500px"></div>
 
-    <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyPackages', 'surveyCostItemsPackages', 'commentOnlyForOwner']}"/>
+    <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyVendors', 'commentOnlyForOwner']}"/>
 
     <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess: false,
                                                                 showCheckboxForParticipantsHasNoAccess: false,
@@ -128,7 +128,7 @@
     ]
   },
   xAxis: {name: "${g.message(code: 'surveyEvaluation.participants')}", max: "${participants.size()}"},
-  yAxis: {  name: "${g.message(code: 'surveyPackages.selectedPackages')}", type: 'category' },
+  yAxis: {  name: "${g.message(code: 'surveyVendors.selectedVendors')}", type: 'category' },
   series: [
     {
       type: 'bar',
