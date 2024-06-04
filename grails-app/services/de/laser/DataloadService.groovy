@@ -455,8 +455,8 @@ class DataloadService {
                 result.rectype = plat.getClass().getSimpleName()
 
                 result.primaryUrl = plat.primaryUrl
-                result.orgId = plat.org?.id
-                result.orgName = plat.org?.name
+                result.providerId = plat.provider?.id
+                result.providerName = plat.provider?.name
 
                 //result.titleCountCurrent = plat.getCurrentTipps().size() ?: 0
                 result.titleCountCurrent = TitleInstancePackagePlatform.executeQuery(
@@ -752,6 +752,19 @@ class DataloadService {
                     result.objectClassName = task.org.getClass().getSimpleName().toLowerCase()
                 }
 
+                if (task.provider) {
+                    result.objectId = task.provider.id
+                    result.objectName = task.provider.name
+                    result.objectClassName = task.provider.getClass().getSimpleName().toLowerCase()
+                }
+
+                if (task.vendor) {
+                    result.objectId = task.vendor.id
+                    result.objectName = task.vendor.name
+                    result.objectClassName = task.vendor.getClass().getSimpleName().toLowerCase()
+                }
+
+
                 if (task.license) {
                     result.objectId = task.license.id
                     result.objectName = task.license.reference
@@ -803,6 +816,18 @@ class DataloadService {
                     result.objectId = docCon.org.id
                     result.objectName = docCon.org.name
                     result.objectClassName = docCon.org.getClass().getSimpleName().toLowerCase()
+                }
+
+                if (docCon.provider) {
+                    result.objectId = docCon.provider.id
+                    result.objectName = docCon.provider.name
+                    result.objectClassName = docCon.provider.getClass().getSimpleName().toLowerCase()
+                }
+
+                if (docCon.vendor) {
+                    result.objectId = docCon.vendor.id
+                    result.objectName = docCon.vendor.name
+                    result.objectClassName = docCon.vendor.getClass().getSimpleName().toLowerCase()
                 }
 
                 if (docCon.license) {
