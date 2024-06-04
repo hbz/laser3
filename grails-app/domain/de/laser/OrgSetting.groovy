@@ -37,7 +37,8 @@ class OrgSetting {
         NATSTAT_SERVER_REQUESTOR_ID (String),
         LASERSTAT_SERVER_KEY        (String),
         MAIL_REPLYTO_FOR_SURVEY        (String),
-        MAIL_SURVEY_FINISH_RESULT        (String)
+        MAIL_SURVEY_FINISH_RESULT        (String),
+        MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY        (RefdataValue, RDConstants.Y_N)
 
         KEYS(type, rdc) {
             this.type = type
@@ -99,7 +100,8 @@ class OrgSetting {
                 OrgSetting.KEYS.NATSTAT_SERVER_API_KEY,
                 OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID,
                 OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY,
-                OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT
+                OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT,
+                OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY
         ]
     }
 
