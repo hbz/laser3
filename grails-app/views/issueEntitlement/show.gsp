@@ -170,12 +170,6 @@
                                     <div class="ui card">
                                         <div class="content">
                                             <div class="la-card-column">
-                                                <g:message code="tipp.price.listPrice"/>:
-                                                <ui:xEditable field="listPrice"
-                                                                 owner="${priceItem}"/> <ui:xEditableRefData
-                                                        field="listCurrency" owner="${priceItem}" config="Currency"/>
-
-                                                <br/>
                                                 <g:message code="tipp.price.localPrice"/>: <ui:xEditable
                                                         field="localPrice"
                                                         owner="${priceItem}"/> <ui:xEditableRefData
