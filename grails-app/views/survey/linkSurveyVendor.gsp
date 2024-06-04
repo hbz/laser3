@@ -16,6 +16,7 @@
         processController: 'survey',
         processAction: 'linkSurveyVendor',
         tmplShowCheckbox: editable,
+        vendorIdList: configVendorIds,
         linkSurveyVendor: true,
         tmplConfigShow: ['lineNumber', 'sortname', 'name', 'isWekbCurated', 'linkSurveyVendor']]"/>
 

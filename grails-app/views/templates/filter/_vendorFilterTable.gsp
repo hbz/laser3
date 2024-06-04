@@ -81,7 +81,9 @@
 
             <g:if test="${tmplShowCheckbox}">
                 <td>
+                    <g:if test="${(!vendorIdList || !(vendor.id in vendorIdList))}">
                     <g:checkBox id="selectedVendors_${vendor.id}" name="selectedVendors" value="${vendor.id}" checked="false"/>
+                    </g:if>
                 </td>
             </g:if>
 
@@ -173,16 +175,16 @@
                 <g:if test="${tmplConfigItem == 'linkSurveyVendor'}">
                     <td class="right aligned">
                         <g:if test="${editable}">
-                            <g:if test="${(!configUuidVendors || !(vendor.gokbId in configUuidVendors))}">
+                            <g:if test="${(!vendorIdList || !(vendor.id in vendorIdList))}">
                                 <g:link type="button" class="ui icon button" controller="${controllerName}" action="${actionName}" id="${params.id}"
-                                        params="[addUUID: vendor.gokbId, surveyConfigID: surveyConfig.id]"><g:message
+                                        params="[addVendor: vendor.id, surveyConfigID: surveyConfig.id]"><g:message
                                         code="surveyVendors.linkVendor"/></g:link>
 
                             </g:if>
                             <g:else>
                                 <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
-                                        params="[removeUUID: vendor.gokbId, surveyConfigID: surveyConfig.id]"><g:message
-                                        code="surveyPackages.unlinkPackage"/></g:link>
+                                        params="[removeVendor: vendor.id, surveyConfigID: surveyConfig.id]"><g:message
+                                        code="surveyVendors.unlinkVendor"/></g:link>
 
                             </g:else>
                         </g:if>
@@ -190,28 +192,28 @@
                 </g:if>
                 <g:if test="${tmplConfigItem == 'unLinkSurveyVendor'}">
                     <td class="right aligned">
-                        <g:if test="${editable && (!configUuidVendors || !(vendor.gokbId in configUuidVendors))}">
+                        <g:if test="${editable && (!vendorIdList || !(vendor.id in vendorIdList))}">
                             <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
-                                    params="[removeUUID: vendor.gokbId, surveyConfigID: surveyConfig.id]"><g:message
-                                    code="surveyPackages.unlinkPackage"/></g:link>
+                                    params="[removeVendor: vendor.id, surveyConfigID: surveyConfig.id]"><g:message
+                                    code="surveyVendors.unlinkVendor"/></g:link>
 
                         </g:if>
                     </td>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'addSurveyVendorResult'}">
                     <td class="right aligned">
-                        <g:if test="${editable && (!selectedUuidVendors || !(vendor.gokbId in selectedUuidVendors))}">
+                        <g:if test="${editable && (!vendorIdList || !(vendor.id in vendorIdList))}">
                             <g:link type="button" class="ui button" controller="${controllerName}" action="${actionName}" id="${params.id}"
-                                    params="${parame+ [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'addSurveyVendor', vendorUUID: vendor.gokbId]}"><g:message
+                                    params="${parame+ [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'addSurveyVendor', vendorId: vendor.id]}"><g:message
                                     code="surveyVendors.linkVendor"/></g:link>
                         </g:if>
                     </td>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'removeSurveyVendorResult'}">
                     <td class="right aligned">
-                        <g:if test="${editable && (!selectedUuidVendors || !(vendor.gokbId in selectedUuidVendors))}">
+                        <g:if test="${editable && (!vendorIdList || !(vendor.id in vendorIdList))}">
                             <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
-                                    params="${parame+ [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'removeSurveyVendor', vendorUUID: vendor.gokbId]}"><g:message
+                                    params="${parame+ [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'removeSurveyVendor', vendorId: vendor.id]}"><g:message
                                     code="surveyVendors.unlinkVendor"/></g:link>
 
                         </g:if>
