@@ -20,7 +20,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "djebeniani (hand-coded)", id: "1717498671893-1") {
+    changeSet(author: "djebeniani (hand-coded)", id: "1717494364714-3") {
         grailsChange {
             change {
                 sql.execute("update title_instance_package_platform set tipp_title_type = 'serial' where tipp_title_type = 'Journal'")
@@ -31,7 +31,7 @@ databaseChangeLog = {
             rollback {}
         }
     }
-    changeSet(author: "djebeniani (hand-coded)", id: "1717498671893-2") {
+    changeSet(author: "djebeniani (hand-coded)", id: "1717494364714-4") {
         grailsChange {
             change {
                 sql.execute("update title_instance_package_platform set tipp_title_type = 'monograph' where tipp_title_type = 'Book'")
@@ -43,7 +43,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "djebeniani (hand-coded)", id: "1717498671893-3") {
+    changeSet(author: "djebeniani (hand-coded)", id: "1717494364714-5") {
         grailsChange {
             change {
                 sql.execute("update title_instance_package_platform set tipp_title_type = 'database' where tipp_title_type = 'Database'")
@@ -55,7 +55,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "djebeniani (hand-coded)", id: "1717498671893-4") {
+    changeSet(author: "djebeniani (hand-coded)", id: "1717494364714-6") {
         grailsChange {
             change {
                 sql.execute("update title_instance_package_platform set tipp_title_type = 'other' where tipp_title_type = 'Other'")
