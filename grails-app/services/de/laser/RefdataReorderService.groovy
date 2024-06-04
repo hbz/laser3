@@ -54,7 +54,20 @@ class RefdataReorderService {
         }
         //price categories: take the order of insertion and make then the ID ascending
         //I do not use the getAllRefdataValues because this does the ordering in an incorrect way
-        List priceCategories = RefdataValue.executeQuery('select rdv from RefdataValue rdv join rdv.owner rdc where rdc.desc in (:priceCategories) order by rdv.id asc',[priceCategories:[RDConstants.CATEGORY_A_F,RDConstants.CATEGORY_BAUTABELLEN,RDConstants.CATEGORY_EUROMONITOR,RDConstants.CATEGORY_IGI,RDConstants.CATEGORY_JURIS,RDConstants.CATEGORY_UNWTO,RDConstants.CATEGORY_WORLD_BANK]])
+        Set<String> catDescs = [RDConstants.CATEGORY_A_F,
+                                RDConstants.CATEGORY_BAUTABELLEN,
+                                RDConstants.CATEGORY_DETAIL,
+                                RDConstants.CATEGORY_EUROMONITOR,
+                                RDConstants.CATEGORY_IGI,
+                                RDConstants.CATEGORY_JURIS,
+                                RDConstants.CATEGORY_PNAS,
+                                RDConstants.CATEGORY_SCIENTIFIC,
+                                RDConstants.CATEGORY_SCOPUS,
+                                RDConstants.CATEGORY_TOTAL_MATERIA,
+                                RDConstants.CATEGORY_ULLMANNS,
+                                RDConstants.CATEGORY_UNWTO,
+                                RDConstants.CATEGORY_WORLD_BANK]
+        List priceCategories = RefdataValue.executeQuery('select rdv from RefdataValue rdv join rdv.owner rdc where rdc.desc in (:priceCategories) order by rdv.id asc',[priceCategories:catDescs])
         order = 0
         priceCategories.each { RefdataValue pc ->
             pc.order = order
