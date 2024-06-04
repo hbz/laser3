@@ -357,7 +357,7 @@ class ApiCollectionReader {
                     "tipp_guid, tipp_name, tipp_host_platform_url, tipp_gokb_id, tipp_pkg_fk, tipp_date_first_in_print, tipp_date_first_online, tipp_first_author, tipp_first_editor, " +
                     "tipp_publisher_name, tipp_imprint, tipp_volume, tipp_edition_number, tipp_last_updated, tipp_series_name, tipp_subject_reference, (select rdv_value from refdata_value where rdv_id = tipp_access_type_rv_fk) as tipp_access_type, (select rdv_value from refdata_value where rdv_id = tipp_open_access_rv_fk) as tipp_open_access, " +
                     "tipp_last_updated, tipp_id, (select rdv_value from refdata_value where rdv_id = tipp_status_rv_fk) as tipp_status, " +
-                    "case tipp_title_type when 'Journal' then 'serial' when 'Book' then 'monograph' when 'Database' then 'database' else 'other' end as title_type " +
+                    "tipp_title_type as title_type " +
                     "from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id " +
                     "where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg order by tipp_sort_name limit :limit offset :offset",
                     ieParams+[limit: limit, offset: i]))

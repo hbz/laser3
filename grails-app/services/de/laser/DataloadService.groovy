@@ -343,8 +343,7 @@ class DataloadService {
                     result.sortname = tipp.sortname
 
                     result.medium = tipp.medium?.getMapForES()
-                    RefdataValue titleType = RefdataValue.getByValueAndCategory(tipp.titleType, RDConstants.TITLE_MEDIUM)
-                    result.type = titleType ? titleType.getMapForES() : []
+                    result.type = tipp.titleType
 
                     List<Org> publishers = tipp.getPublishers()
                     result.publishers = []

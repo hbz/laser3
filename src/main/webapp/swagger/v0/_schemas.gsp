@@ -1771,8 +1771,8 @@
         titleType:
           type: string
           description: Statement about the title type.
-          enum: ["Book", "Database", "Journal", "Other"]
-          example: Book
+          enum: ["monograph", "database", "serial", "other"]
+          example: monograph
         volume:
           type: string
           description: Number of volume for monograph.
