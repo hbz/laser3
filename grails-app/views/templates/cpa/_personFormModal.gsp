@@ -46,6 +46,30 @@
                                           optionValue="${{ it.sortname ?: it.name }}"
                                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                             </g:if>
+                            <g:if test="${provList}">
+                                <label for="personRoleOrg">
+                                    <g:message code="person.belongsTo"/> <g:message code="messageRequiredField" />
+                                </label>
+                                <g:select class="ui search dropdown"
+                                          name="personRoleProvider"
+                                          from="${provList}"
+                                          value="${provider?.id}"
+                                          optionKey="id"
+                                          optionValue="${{ it.sortname ?: it.name }}"
+                                          noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                            </g:if>
+                            <g:if test="${venList}">
+                                <label for="personRoleOrg">
+                                    <g:message code="person.belongsTo"/> <g:message code="messageRequiredField" />
+                                </label>
+                                <g:select class="ui search dropdown"
+                                          name="personRoleVendor"
+                                          from="${venList}"
+                                          value="${ven?.id}"
+                                          optionKey="id"
+                                          optionValue="${{ it.sortname ?: it.name }}"
+                                          noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                            </g:if>
                             <g:if test="${org}">
                                 <label for="personRoleOrg">
                                     <g:message code="person.belongsTo"/>

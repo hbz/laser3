@@ -248,9 +248,9 @@ class OrganisationService {
     List<Platform> getAllPlatformsForContextOrg(Org contextOrg) {
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         Set<String> uuids = []
-        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), editUrl: apiSource.editUrl], [max: '1000', offset: '0'], [componentType: 'Platform', status: 'Current'])
+        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), editUrl: apiSource.editUrl], [max: '10000', offset: '0'], [componentType: 'Platform', status: 'Current'])
         uuids.addAll(result.records.collect { Map platRecord -> platRecord.uuid })
-        Platform.executeQuery('select p from Platform p join p.org o where p.gokbId in (:uuids) and p.org is not null and p in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (select oo.sub from OrgRole oo where oo.org = :context)) order by o.name, o.sortname, p.name', [uuids: uuids, context: contextOrg])
+        Platform.executeQuery('select p from Platform p join p.provider p where p.gokbId in (:uuids) and p.provider is not null and p in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (select oo.sub from OrgRole oo where oo.org = :context)) order by o.name, o.sortname, p.name', [uuids: uuids, context: contextOrg])
     }
 
     /**
