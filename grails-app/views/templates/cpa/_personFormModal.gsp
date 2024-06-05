@@ -126,7 +126,28 @@
 
                 </div>
             </div><!-- .field -->
-
+                <!-- Alternating address Buttons START-->
+            <div class="ui blue buttons" style="width: 100%">
+                <button class="ui active button" id="la-js-buttonSurname">
+                    <h2 class="ui icon inverted header">
+                        <i class="address card outline icon"></i>
+                        <div class="content">
+                            Nachname
+                        </div>
+                    </h2>
+                </button>
+                <div class="or" data-text="<g:message code='search.advancedSearch.option.OR' />"></div>
+                <button class="ui button" id="la-js-buttonFunction">
+                    <h2 class="ui icon inverted header">
+                        <i class="wrench icon"></i>
+                        <div class="content">
+                            Funktionsbezeichnung
+                        </div>
+                    </h2>
+                </button>
+            </div>
+            <!-- Alternating address Buttons END-->
+            <br><br>
             <div class="field">
                 <div class="two fields">
 

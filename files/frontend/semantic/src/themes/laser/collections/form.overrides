@@ -175,7 +175,8 @@ legend {
   }
 }
 /* Addresses */
-#create_address {
+#create_address,
+#person_form {
     .ui.buttons .or::before {
       margin-left: -2.5em;
       width: 4.785714em;

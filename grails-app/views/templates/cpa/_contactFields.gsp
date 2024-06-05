@@ -27,7 +27,7 @@
         <g:textField id="content" name="content" value="${contactInstance?.content}"/>
     </div>
     <div class="field one wide">
-        <button type="button"  class="ui icon negative button la-modern-button removeContactElement">
+        <button type="button"  class="ui icon negative button la-modern-button la-margin-top-1-7em removeContactElement">
             <i class="trash alternate outline icon"></i>
         </button>
     </div>
