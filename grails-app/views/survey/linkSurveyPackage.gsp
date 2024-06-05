@@ -22,7 +22,7 @@
 
 <ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
-<ui:h1HeaderWithIcon message="surveyPackages.linkPackage"/>
+<h2> <g:message code="surveyPackages.linkPackage"/>:</h2>
 <br>
 <br>
 <g:link class="ui button right floated" controller="survey" action="surveyPackages"

@@ -21,9 +21,8 @@
 <laser:render template="nav"/>
 
 <ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
-<br>
-<br>
-<ui:h1HeaderWithIcon message="surveyVendors.linkVendor"/>
+
+<h2> <g:message code="surveyVendors.linkVendor"/>:</h2>
 <br>
 
 <g:link class="ui button right floated" controller="survey" action="surveyVendors"
