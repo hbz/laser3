@@ -54,6 +54,10 @@ class OrganisationService {
             OrgSetting.add(org, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT, '')
         }
 
+        if (org.isCustomerType_Consortium_Pro() && OrgSetting.get(org, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY) == OrgSetting.SETTING_NOT_FOUND) {
+            OrgSetting.add(org, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY, RDStore.YN_NO)
+        }
+
         // called after
         // new Org.save()
         // does not work unless session is not flushed what causes crashes in sync
@@ -244,9 +248,9 @@ class OrganisationService {
     List<Platform> getAllPlatformsForContextOrg(Org contextOrg) {
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         Set<String> uuids = []
-        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), editUrl: apiSource.editUrl], [max: '1000', offset: '0'], [componentType: 'Platform', status: 'Current'])
+        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), editUrl: apiSource.editUrl], [max: '10000', offset: '0'], [componentType: 'Platform', status: 'Current'])
         uuids.addAll(result.records.collect { Map platRecord -> platRecord.uuid })
-        Platform.executeQuery('select p from Platform p join p.org o where p.gokbId in (:uuids) and p.org is not null and p in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (select oo.sub from OrgRole oo where oo.org = :context)) order by o.name, o.sortname, p.name', [uuids: uuids, context: contextOrg])
+        Platform.executeQuery('select plat from Platform plat join plat.provider p where plat.gokbId in (:uuids) and p is not null and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (select oo.sub from OrgRole oo where oo.org = :context)) order by p.name, p.sortname, plat.name', [uuids: uuids, context: contextOrg])
     }
 
     /**

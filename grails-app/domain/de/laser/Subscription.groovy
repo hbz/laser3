@@ -318,18 +318,12 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     /**
      * Method to check if the correct shareable is being processed.
-     * Is needed to differentiate OrgRoles
      * @param sharedObject the object to be shared
-     * @return true if the object is an {@link OrgRole} and the share toggling was successful, false otherwise
+     * @return true if the object is one of {@link ProviderRole} or {@link VendorRole} and the share toggling was successful, false otherwise
      */
     @Override
     boolean checkSharePreconditions(ShareableTrait sharedObject) {
-        if (sharedObject instanceof OrgRole) {
-            if (showUIShareButton() && sharedObject.roleType.value in ['Provider', 'Agency']) {
-                return true
-            }
-        }
-        false
+        return (sharedObject instanceof ProviderRole || sharedObject instanceof VendorRole) && showUIShareButton()
     }
 
     /**

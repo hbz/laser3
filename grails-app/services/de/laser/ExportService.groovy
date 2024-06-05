@@ -3360,7 +3360,7 @@ class ExportService {
 						row.add(' ')
 					}
 					//publication_type
-					switch(tipp.titleType) {
+					/*switch(tipp.titleType) {
 						case "Journal": row.add('serial')
 							break
 						case "Book": row.add('monograph')
@@ -3369,10 +3369,11 @@ class ExportService {
 							break
 						default: row.add('other')
 							break
-					}
+					}*/
+					row.add(tipp.titleType)
 					//publisher_name
 					row.add(tipp.publisherName)
-					if(tipp.titleType == 'Book') {
+					if(tipp.titleType == 'monograph') {
 						//date_monograph_published_print (no value unless BookInstance)
 						row.add(tipp.dateFirstInPrint ? formatter.format(tipp.dateFirstInPrint) : ' ')
 						//date_monograph_published_online (no value unless BookInstance)
@@ -3932,8 +3933,8 @@ class ExportService {
 	Map<String, String> getBaseTitleHeaders(String entitlementInstance, boolean checkPerpetuallyAccessToTitle = false) {
 		Locale locale = LocaleUtils.getCurrentLocale()
 		Map <String, String> mapping = [publication_title: 'tipp_name as publication_title',
-		 print_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('book','monograph') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISBN).id}) or (lower(tipp_title_type) in ('journal','serial') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISSN).id}))) as print_identifier",
-		 online_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('book','monograph') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.EISBN).id}) or (lower(tipp_title_type) in ('journal','serial') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.EISSN).id}))) as online_identifier",
+		 print_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISBN).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISSN).id}))) as print_identifier",
+		 online_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.EISBN).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.EISSN).id}))) as online_identifier",
 		 date_first_issue_online: '',
 		 num_first_vol_online: '',
 		 num_first_issue_online: '',

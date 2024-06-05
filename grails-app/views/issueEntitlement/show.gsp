@@ -105,10 +105,10 @@
 
 
 
-            <g:if test="${issueEntitlementInstance.tipp.titleType == 'Book'}">
+            <g:if test="${issueEntitlementInstance.tipp.titleType == 'monograph'}">
                 <div class="la-title">${message(code: 'tipp.print')} & ${message(code: 'tipp.online')}</div>
             </g:if>
-            <g:elseif test="${issueEntitlementInstance.tipp.titleType == "Journal"}">
+            <g:elseif test="${issueEntitlementInstance.tipp.titleType == "serial"}">
                 <div class="la-title">${message(code: 'tipp.coverage')}</div>
             </g:elseif>
             <g:else>
@@ -170,12 +170,6 @@
                                     <div class="ui card">
                                         <div class="content">
                                             <div class="la-card-column">
-                                                <g:message code="tipp.price.listPrice"/>:
-                                                <ui:xEditable field="listPrice"
-                                                                 owner="${priceItem}"/> <ui:xEditableRefData
-                                                        field="listCurrency" owner="${priceItem}" config="Currency"/>
-
-                                                <br/>
                                                 <g:message code="tipp.price.localPrice"/>: <ui:xEditable
                                                         field="localPrice"
                                                         owner="${priceItem}"/> <ui:xEditableRefData

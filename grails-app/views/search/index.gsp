@@ -329,7 +329,10 @@
                                     <strong>${message(code: 'package.compare.overview.tipps')}</strong>:
                                     <g:link controller="package" action="index"
                                         id="${object.dbId}">${object.titleCountCurrent}</g:link>
-
+                                    <br />
+                                    <strong>${message(code: 'provider.label')}</strong>:
+                                        <g:link controller="provider" action="show"
+                                        id="${object.providerId}">${object.providerName}</g:link>
                                 </td>
                             </g:if>
 
@@ -356,8 +359,8 @@
                                         </g:if>
                                     <br />
                                     <strong>${message(code: 'platform.provider')}</strong>:
-                                <g:link controller="organisation" action="show"
-                                        id="${object.orgId}">${object.orgName}</g:link>
+                                <g:link controller="provider" action="show"
+                                        id="${object.providerId}">${object.providerName}</g:link>
 
                                 </td>
                             </g:if>

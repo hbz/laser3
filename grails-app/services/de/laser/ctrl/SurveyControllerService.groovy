@@ -632,21 +632,21 @@ class SurveyControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-            if(params.removeUUID) {
-                Vendor vendor = Vendor.findByGokbId(params.removeUUID)
+            if(params.removeVendor) {
+                Vendor vendor = Vendor.findById(params.removeVendor)
                 if(vendor) {
                     SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig and scp.vendor = :vendor", [surveyConfig: result.surveyConfig, vendor: vendor])
                     result.surveyConfig = result.surveyConfig.refresh()
                     result.surveyPackagesCount = SurveyConfigVendor.executeQuery("select count(*) from SurveyConfigVendor where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
                 }
-                params.remove("removeUUID")
+                params.remove("removeVendor")
             }
 
-            List selectedVendors = params.list("vendorListToggler")
+            List selectedVendors = Params.getLongList(params, "selectedVendors")
 
             if (selectedVendors) {
                 selectedVendors.each {
-                    Vendor vendor = Vendor.findByGokbId(it)
+                    Vendor vendor = Vendor.findById(it)
                     if(vendor) {
                         SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig and scp.vendor = :vendor", [surveyConfig: result.surveyConfig, vendor: vendor])
                     }
@@ -656,10 +656,9 @@ class SurveyControllerService {
                 params.remove("selectedVendors")
             }
 
-            if(result.surveyConfig.surveyVendors){
-                List configUuidVendors = SurveyConfigVendor.executeQuery("select scv.vendor.gokbId from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
-                params.uuids = configUuidVendors
-            }
+            result.selectedVendorIdList = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
+            params.ids = result.selectedVendorIdList
+
 
             result.putAll(vendorService.getWekbVendors(params))
 
@@ -672,8 +671,8 @@ class SurveyControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-            if(params.addUUID) {
-                Vendor vendor = Vendor.findByGokbId(params.addUUID)
+            if(params.addVendor) {
+                Vendor vendor = Vendor.findById(params.addVendor)
                 if(vendor) {
                     if(!SurveyConfigVendor.findByVendorAndSurveyConfig(vendor, result.surveyConfig)) {
                         SurveyConfigVendor surveyConfigVendor = new SurveyConfigVendor(surveyConfig: result.surveyConfig, vendor: vendor).save()
@@ -681,36 +680,44 @@ class SurveyControllerService {
                 }
                 result.surveyConfig = result.surveyConfig.refresh()
                 result.surveyVendorsCount = SurveyConfigVendor.executeQuery("select count(*) from SurveyConfigVendor where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
-                params.remove("addUUID")
+                params.remove("addVendor")
             }
 
-            if(params.removeUUID) {
-                Vendor vendor = Vendor.findByGokbId(params.removeUUID)
+            if(params.removeVendor) {
+                Vendor vendor = Vendor.findById(params.removeVendor)
                 if(vendor) {
                     SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig and scp.vendor = :vendor", [surveyConfig: result.surveyConfig, vendor: vendor])
                     result.surveyConfig = result.surveyConfig.refresh()
                     result.surveyVendorsCount = SurveyConfigVendor.executeQuery("select count(*) from SurveyConfigVendor where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
                 }
-                params.remove("removeUUID")
+                params.remove("removeVendor")
             }
 
-            List selectedVendors = params.list("vendorListToggler")
+            List selectedVendors = Params.getLongList(params, "selectedVendors")
 
             if (selectedVendors) {
                 selectedVendors.each {
-                    Vendor vendor = Vendor.findByGokbId(it)
+                    Vendor vendor = Vendor.findById(it)
                     if(vendor) {
                         if(!SurveyConfigVendor.findByVendorAndSurveyConfig(vendor, result.surveyConfig)) {
                             SurveyConfigVendor surveyConfigVendor = new SurveyConfigVendor(surveyConfig: result.surveyConfig, vendor: vendor).save()
                         }
                     }
                 }
-                params.remove("vendorListToggler")
+                params.remove("selectedVendors")
+            }
+
+            if(result.surveyConfig.subscription && params.initial){
+                List providers = result.surveyConfig.subscription.getProviders()
+                if(providers.size() > 0){
+                    params.qp_providers = providers.id
+                    params.remove('initial')
+                }
             }
 
             result.putAll(vendorService.getWekbVendors(params))
 
-            result.configUuidVendors = SurveyConfigVendor.executeQuery("select scv.vendor.gokbId from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
+            result.selectedVendorIdList = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
 
             [result: result, status: STATUS_OK]
         }
@@ -2043,6 +2050,7 @@ class SurveyControllerService {
 
             if (!params.targetSubscriptionId) {
                 result.error = messageSource.getMessage("surveyTransfer.error.noSelectedSub", null, result.locale)
+                [result: result, status: STATUS_ERROR]
                 return
             }
 

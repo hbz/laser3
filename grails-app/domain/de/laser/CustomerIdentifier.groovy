@@ -47,7 +47,7 @@ class CustomerIdentifier {
      * Retrieves the provider associated to the platform (if the platform exists)
      * @return the {@link Org} linked to the {@link Platform}, null if not exists
      */
-    Org getProvider() {
-        return platform?.org
+    Provider getProvider() {
+        return platform?.provider
     }
 }

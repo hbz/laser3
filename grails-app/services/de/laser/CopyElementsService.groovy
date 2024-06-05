@@ -569,13 +569,13 @@ class CopyElementsService {
                 copyLicenses(toCopyLicenses, targetObject, flash)
             }
 
-            if (params.list('copyObject.deleteOrgRelations') && isBothObjectsSet(sourceObject, targetObject)) {
-                List<OrgRole> toDeleteOrgRelations = params.list('copyObject.deleteOrgRelations').collect { genericOIDService.resolveOID(it) }
-                deleteOrgRelations(toDeleteOrgRelations, targetObject, flash)
+            if (params.list('copyObject.deleteProviders') && isBothObjectsSet(sourceObject, targetObject)) {
+                List<OrgRole> toDeleteProviders = params.list('copyObject.deleteProviders').collect { genericOIDService.resolveOID(it) }
+                deleteOrgRelations(toDeleteProviders, targetObject, flash)
                 //isTargetSubChanged = true
             }
-            if (params.list('copyObject.takeOrgRelations') && isBothObjectsSet(sourceObject, targetObject)) {
-                List<OrgRole> toCopyOrgRelations = params.list('copyObject.takeOrgRelations').collect { genericOIDService.resolveOID(it) }
+            if (params.list('copyObject.takeProviders') && isBothObjectsSet(sourceObject, targetObject)) {
+                List<OrgRole> toCopyOrgRelations = params.list('copyObject.takeProviders').collect { genericOIDService.resolveOID(it) }
                 copyOrgRelations(toCopyOrgRelations, sourceObject, targetObject, flash)
                 //isTargetSubChanged = true
 

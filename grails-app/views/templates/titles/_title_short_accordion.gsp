@@ -14,7 +14,7 @@
                 href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
     </g:if>
 </div>
-<g:if test="${(tipp.titleType == 'Book') && (tipp.editionStatement || showEmptyFields)}">
+<g:if test="${(tipp.titleType == 'monograph') && (tipp.editionStatement || showEmptyFields)}">
     <div class="item">
         <i class="grey icon copy la-popup-tooltip la-delay"
            data-content="${message(code: 'title.editionStatement.label')}"></i>

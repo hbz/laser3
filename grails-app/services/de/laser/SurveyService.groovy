@@ -2469,7 +2469,7 @@ class SurveyService {
             if (result.editable) {
                 switch (params.actionsForSurveyVendors) {
                     case "addSurveyVendor":
-                        Vendor vendor = Vendor.findByGokbId(params.vendorUUID)
+                        Vendor vendor = Vendor.findById(params.vendorId)
                         if (SurveyConfigVendor.findBySurveyConfigAndVendor(result.surveyConfig, vendor) && !SurveyVendorResult.findBySurveyConfigAndParticipantAndVendor(result.surveyConfig, participant, vendor)) {
                             SurveyVendorResult surveyVendorResult = new SurveyVendorResult(surveyConfig: result.surveyConfig, participant: participant, vendor: vendor, owner: result.surveyInfo.owner)
                             surveyVendorResult.save()
@@ -2477,7 +2477,7 @@ class SurveyService {
 
                         break
                     case "removeSurveyVendor":
-                        Vendor vendor = Vendor.findByGokbId(params.vendorUUID)
+                        Vendor vendor = Vendor.findById(params.vendorId)
                         SurveyVendorResult surveyVendorResult = SurveyVendorResult.findBySurveyConfigAndParticipantAndVendor(result.surveyConfig, participant, vendor)
                         if (SurveyConfigVendor.findBySurveyConfigAndVendor(result.surveyConfig, vendor) && surveyVendorResult) {
                             surveyVendorResult.delete()
@@ -2489,20 +2489,21 @@ class SurveyService {
             params.subTab = params.subTab ?: 'allVendors'
 
             if (result.surveyConfig.surveyVendors) {
-                List configUuidVendors
+                List configVendorIds
                 if (params.subTab == 'allVendors') {
-                    result.selectedUuidVendors = SurveyVendorResult.executeQuery("select svr.vendor.gokbId from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
-                    configUuidVendors = SurveyConfigVendor.executeQuery("select scv.vendor.gokbId from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
+                    result.selectedVendorIdList = SurveyVendorResult.executeQuery("select svr.vendor.id from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
+                    configVendorIds = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
                 } else if (params.subTab == 'selectVendors') {
-                    List<Long> ids = SurveyVendorResult.executeQuery("select svr.vendor.gokbId from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
+                    List<Long> ids = SurveyVendorResult.executeQuery("select svr.vendor.id from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
                     if (ids.size() > 0) {
-                        configUuidVendors = ids
+                        configVendorIds = ids
                     } else {
-                        configUuidVendors = ['fakeUuids']
+                        configVendorIds = ['fakeUuids']
                     }
+                    result.selectedVendorIdList = configVendorIds
                 }
 
-                params.uuids = configUuidVendors
+                params.ids = configVendorIds
                 result.putAll(vendorService.getWekbVendors(params))
             } else {
                 result.vendorList = []

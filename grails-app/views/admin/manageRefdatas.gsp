@@ -70,7 +70,7 @@
                                 </td>
                             </tr>
 
-                            <g:each in="${RefdataCategory.getAllRefdataValues(rdc.desc)}" var="rdv">
+                            <g:each in="${RefdataCategory.getAllRefdataValuesWithOrder(rdc.desc)}" var="rdv">
                                 <tr>
                                     <td>
                                         <g:if test="${rdv.isHardData}">

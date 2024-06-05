@@ -160,7 +160,8 @@ class OrganisationController  {
         ]
         List<OrgSetting.KEYS> mailSet = [
                 OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY,
-                OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT
+                OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT,
+                OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY
         ]
 
         result.settings = []
@@ -996,24 +997,17 @@ class OrganisationController  {
         if(!params.tab)
             params.tab = 'identifier'
 
-        //IF ORG is a Provider and is NOT ex we:kb
-        if(!result.orgInstance.gokbId && (result.orgInstance.sector == RDStore.O_SECTOR_PUBLISHER || RDStore.OT_PROVIDER.id in result.allOrgTypeIds)) {
-            result.editable_identifier = userService.hasFormalAffiliation(result.user, result.orgInstance, 'INST_EDITOR') ||
-                    contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        if (contextService.getOrg().isCustomerType_Consortium()) {
+            List<Long> consortia = Combo.executeQuery('select c.id from Combo c where c.type = :type and c.fromOrg = :target and c.toOrg = :context',[type:RDStore.COMBO_TYPE_CONSORTIUM,target:result.orgInstance,context:result.institution])
+            if(consortia.size() == 1 && userService.hasFormalAffiliation(result.user, result.institution, 'INST_EDITOR'))
+                result.editable_identifier = true
         }
-        else if(!result.orgInstance.gokbId) {
-            if (contextService.getOrg().isCustomerType_Consortium()) {
-                List<Long> consortia = Combo.executeQuery('select c.id from Combo c where c.type = :type and c.fromOrg = :target and c.toOrg = :context',[type:RDStore.COMBO_TYPE_CONSORTIUM,target:result.orgInstance,context:result.institution])
-                if(consortia.size() == 1 && userService.hasFormalAffiliation(result.user, result.institution, 'INST_EDITOR'))
-                    result.editable_identifier = true
-            }
-            else
-                result.editable_identifier = userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.orgInstance, 'INST_EDITOR')
-        }
+        else
+            result.editable_identifier = userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.orgInstance, 'INST_EDITOR')
 
-        if(!(RDStore.OT_PROVIDER.id in result.allOrgTypeIds)){
-            result.orgInstance.createCoreIdentifiersIfNotExist()
-        }
+        //if(!(RDStore.OT_PROVIDER.id in result.allOrgTypeIds)){
+        result.orgInstance.createCoreIdentifiersIfNotExist()
+        //}
 
         Boolean inContextOrg = result.inContextOrg
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
@@ -1053,7 +1047,7 @@ class OrganisationController  {
                     query += " and platform in (:wekbPlatforms)"
                     queryParams.wekbPlatforms = result.allPlatforms
                 }
-                String sort = " order by platform.org.name asc"
+                String sort = " order by platform.provider.name asc"
                 if(params.sort) {
                     sort = " order by ${params.sort} ${params.order}"
                 }

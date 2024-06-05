@@ -73,8 +73,8 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
     static constraints = {
         group    (nullable: true,  blank:false)
         order    (nullable: true)
-        value_de (nullable: true, blank: false)
-        value_en (nullable: true, blank: false)
+        value_de (nullable: true, blank: false, maxSize: 511)
+        value_en (nullable: true, blank: false, maxSize: 511)
         expl_de  (nullable: true, blank: false)
         expl_en  (nullable: true, blank: false)
         lastUpdated (nullable: true)
@@ -191,8 +191,8 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
         if (!categoryName || !value) {
             return null
         }
-        String query = "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and rdc.desc = :category and rdv.value_de = :value_de"
-        List<RefdataValue> data = RefdataValue.executeQuery( query, [category: categoryName, value_de: value] )
+        String query = "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and rdc.desc = :category and lower(rdv.value_de) = :value_de"
+        List<RefdataValue> data = RefdataValue.executeQuery( query, [category: categoryName, value_de: value.toLowerCase()] )
 
         return (data.size() > 0) ? data[0] : null
     }

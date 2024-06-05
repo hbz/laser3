@@ -112,8 +112,6 @@ class VendorService {
         if(params.uuids)
             queryParams.uuids = params.uuids
 
-        println(queryParams)
-
         Map<String, Object> wekbResult = gokbService.doQuery(result, [max: 10000, offset: 0], queryParams)
         if(wekbResult.recordsCount > 0)
             records.putAll(wekbResult.records.collectEntries { Map wekbRecord -> [wekbRecord.uuid, wekbRecord] })
@@ -576,6 +574,11 @@ class VendorService {
             queryParams.put('invoiceDispatchs', Params.getRefdataList(params, 'qp_invoiceDispatchs'))
         }
 
+        if (params.containsKey('qp_providers')) {
+            queryArgs << "exists (select pv from PackageVendor pv where pv.vendor = v and pv.pkg.provider.id in (:providers))"
+            queryParams.providers = Params.getLongList(params, 'qp_providers')
+        }
+
         if (params.containsKey('curatoryGroup') || params.containsKey('curatoryGroupType')) {
             queryArgs << "v.gokbId in (:wekbIds)"
             queryParams.wekbIds = result.wekbRecords.keySet()
@@ -586,6 +589,11 @@ class VendorService {
             queryParams.wekbIds = result.wekbRecords.keySet()
         }
 
+        if (params.containsKey('ids')) {
+            queryArgs << "v.id in (:ids)"
+            queryParams.ids = Params.getLongList(params, 'ids')
+        }
+
         String vendorQuery = 'select v from Vendor v'
         if (queryArgs) {
             vendorQuery += ' where ' + queryArgs.join(' and ')
@@ -594,6 +602,7 @@ class VendorService {
             vendorQuery += " order by ${params.sort} ${params.order ?: 'asc'}, v.name ${params.order ?: 'asc'} "
         } else
             vendorQuery += " order by v.sortname "
+
         Set<Vendor> vendorsTotal = Vendor.executeQuery(vendorQuery, queryParams)
 
         result.vendorListTotal = vendorsTotal.size()
