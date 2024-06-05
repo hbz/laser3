@@ -49,7 +49,7 @@
                               title="${message(code: 'person.name.label')}"/>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('organisation')}">
-        <g:sortableColumn params="${params}" property="pr.org.sortname"
+        <g:sortableColumn params="${params}" property="sortname"
                           title="${message(code: 'person.organisation.label')}"/>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('function')}">

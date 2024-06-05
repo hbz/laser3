@@ -664,7 +664,7 @@ class AjaxController {
 
                 if (new_link.save()) {
                     // log.debug("Org link added")
-                    if (owner instanceof ShareSupport && owner.checkSharePreconditions(new_link)) {
+                    if (owner.checkSharePreconditions(new_link)) {
                         new_link.isShared = true
                         new_link.save()
 
@@ -724,7 +724,7 @@ class AjaxController {
 
                 if (new_link.save()) {
                     // log.debug("Org link added")
-                    if (owner instanceof ShareSupport && owner.checkSharePreconditions(new_link)) {
+                    if (owner.checkSharePreconditions(new_link)) {
                         new_link.isShared = true
                         new_link.save()
 

@@ -1468,12 +1468,12 @@ class ExportClickMeService {
                             'vendor.prequalificationVOLInfo'    : [field: 'prequalificationVOLInfo', label: 'Info to Prequalification VOL', message: 'vendor.supplier.infoPrequalificationVol.label']
                     ]
             ],
-            providerIdentifiers : [
+            vendorIdentifiers : [
                     label: 'Identifiers',
                     message: 'exportClickMe.participantIdentifiers',
                     fields: [:]
             ],
-            providerCustomerIdentifiers : [
+            vendorCustomerIdentifiers : [
                     label: 'Customer Identifiers',
                     message: 'exportClickMe.participantCustomerIdentifiers',
                     fields: [:]

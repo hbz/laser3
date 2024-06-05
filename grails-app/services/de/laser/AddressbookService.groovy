@@ -94,12 +94,16 @@ class AddressbookService {
                 qParams.public = true
                 break
         }
+        String sort
+        if(!params.sort || params.sort == "sortname")
+            sort = 'coalesce(org.sortname, vendor.sortname, provider.sortname) as sortname'
+        else sort = params.sort
 
-        if (params.containsKey('prs')) {
+        if (params.prs) {
             qParts << "( genfunc_filter_matcher(p.last_name, :prsName) = true OR genfunc_filter_matcher(p.middle_name, :prsName) = true OR genfunc_filter_matcher(p.first_name, :prsName) = true )"
             qParams << [prsName: "${params.prs}"]
         }
-        if (params.containsKey('org')) {
+        if (params.org) {
             if (params.org instanceof Org) {
                 qParts << "pr.org = :org"
                 qParams << [org: params.org]
@@ -109,7 +113,7 @@ class AddressbookService {
                 qParams << [name: "${params.org}"]
             }
         }
-        else if(params.containsKey('vendor')) {
+        else if(params.vendor) {
             if (params.vendor instanceof Vendor) {
                 qParts << "pr.vendor = :vendor"
                 qParams << [vendor: params.vendor]
@@ -119,7 +123,7 @@ class AddressbookService {
                 qParams << [name: "${params.vendor}"]
             }
         }
-        else if(params.containsKey('provider')) {
+        else if(params.provider) {
             if (params.provider instanceof Provider) {
                 qParts << "pr.provider = :provider"
                 qParams << [provider: params.provider]
@@ -145,11 +149,17 @@ class AddressbookService {
         }
 
         if (params.showOnlyContactPersonForInstitution || params.exportOnlyContactPersonForInstitution){
-            qParts << "(exists (select roletype from pr.org.orgType as roletype where roletype.id = :instType ) and pr.org.sector.id = :instSector )"
+            qParts << "(exists (select roletype from org.orgType as roletype where roletype.id = :instType ) and org.sector.id = :instSector )"
             qParams << [instSector: RDStore.O_SECTOR_HIGHER_EDU.id, instType: RDStore.OT_INSTITUTION.id]
         }
+        if(params.showOnlyContactPersonForProvider || params.exportOnlyContactPersonForProvider) {
+            qParts << "provider != null"
+        }
+        if(params.showOnlyContactPersonForVendor || params.exportOnlyContactPersonForVendor) {
+            qParts << "vendor != null"
+        }
 
-        String query = "SELECT distinct(p), ${params.sort} FROM Person AS p join p.roleLinks pr WHERE " + qParts.join(" AND ")
+        String query = "SELECT distinct(p), ${sort} FROM Person AS p join p.roleLinks pr left join pr.org org left join pr.vendor vendor left join pr.provider provider WHERE " + qParts.join(" AND ")
 
         if (params.filterPropDef) {
             Map<String, Object> psq = propertyService.evalFilterQuery(params, query, 'p', qParams)
@@ -185,13 +195,16 @@ class AddressbookService {
     List getVisibleAddresses(String fromSite, Map params) {
         List qParts = []
         Map qParams = [:]
+        String sortquery = params.sort
         String sort = params.sort
-        if(!params.containsKey('sort'))
-            sort = 'a.org.sortname'
-        else if(params.sort.contains('pr.org'))
-            sort = params.sort.replaceAll('pr.org', 'a.org')
-        else if(params.sort.contains('_name'))
+        if(!params.containsKey('sort') || params.sort == 'sortname') {
+            sortquery = 'coalesce(a.org.sortname, a.provider.sortname, a.vendor.sortname) as sortname'
+            sort = 'sortname'
+        }
+        else if(params.sort.contains('_name')) {
+            sortquery = 'a.name'
             sort = 'a.name'
+        }
         switch(fromSite) {
             case "addressbook":
                 qParts << 'a.tenant = :tenant'
@@ -232,7 +245,7 @@ class AddressbookService {
             qParams << [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]]
         }
 
-        String query = "SELECT distinct(a), ${sort} FROM Address AS a WHERE " + qParts.join(" AND ")
+        String query = "SELECT distinct(a), ${sortquery} FROM Address AS a WHERE " + qParts.join(" AND ")
 
         /*
         if (params.filterPropDef) {
