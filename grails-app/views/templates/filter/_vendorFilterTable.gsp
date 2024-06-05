@@ -81,8 +81,8 @@
 
             <g:if test="${tmplShowCheckbox}">
                 <td>
-                    <g:if test="${'linkSurveyVendor' in tmplConfigShow && (!selectedVendorIdList || !(vendor.id in selectedVendorIdList)) || 'unLinkSurveyVendor' in tmplConfigShow && (selectedVendorIdList && (vendor.id in selectedVendorIdList))}">
-                    <g:checkBox id="selectedVendors_${vendor.id}" name="selectedVendors" value="${vendor.id}" checked="false"/>
+                    <g:if test="${'linkVendors' in tmplConfigShow || 'linkSurveyVendor' in tmplConfigShow && (!selectedVendorIdList || !(vendor.id in selectedVendorIdList)) || 'unLinkSurveyVendor' in tmplConfigShow && (selectedVendorIdList && (vendor.id in selectedVendorIdList))}">
+                        <g:checkBox id="selectedVendors_${vendor.id}" name="selectedVendors" value="${vendor.id}" checked="false"/>
                     </g:if>
                 </td>
             </g:if>

@@ -198,7 +198,7 @@ class AddressbookService {
         String sortquery = params.sort
         String sort = params.sort
         if(!params.containsKey('sort') || params.sort == 'sortname') {
-            sortquery = 'coalesce(a.org.sortname, a.provider.sortname, a.vendor.sortname) as sortname'
+            sortquery = 'coalesce(org.sortname, provider.sortname, vendor.sortname) as sortname'
             sort = 'sortname'
         }
         else if(params.sort.contains('_name')) {
@@ -222,11 +222,11 @@ class AddressbookService {
         }
         */
         if (params.org && params.org instanceof Org) {
-            qParts << "a.org = :org"
+            qParts << "org = :org"
             qParams << [org: params.org]
         }
         else if(params.org && params.org instanceof String) {
-            qParts << "( genfunc_filter_matcher(a.org.name, :name) = true or genfunc_filter_matcher(a.org.sortname, :name) = true )"
+            qParts << "( genfunc_filter_matcher(org.name, :name) = true or genfunc_filter_matcher(org.sortname, :name) = true )"
             qParams << [name: "${params.org}"]
         }
 
@@ -236,16 +236,16 @@ class AddressbookService {
         }
 
         if (params.showOnlyContactPersonForInstitution || params.exportOnlyContactPersonForInstitution){
-            qParts << "(exists (select roletype from a.org.orgType as roletype where roletype.id = :instType ) and a.org.sector.id = :instSector )"
+            qParts << "(exists (select roletype from org.orgType as roletype where roletype.id = :instType ) and org.sector.id = :instSector )"
             qParams << [instSector: RDStore.O_SECTOR_HIGHER_EDU.id, instType: RDStore.OT_INSTITUTION.id]
         }
 
         if (params.showOnlyContactPersonForProvider || params.exportOnlyContactPersonForProvider){
-            qParts << "(exists (select roletype from a.org.orgType as roletype where roletype.id in (:orgType)) and a.org.sector.id = :orgSector )"
+            qParts << "(exists (select roletype from org.orgType as roletype where roletype.id in (:orgType)) and org.sector.id = :orgSector )"
             qParams << [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]]
         }
 
-        String query = "SELECT distinct(a), ${sortquery} FROM Address AS a WHERE " + qParts.join(" AND ")
+        String query = "SELECT distinct(a), ${sortquery} FROM Address AS a left join a.org org left join a.provider provider left join a.vendor vendor WHERE " + qParts.join(" AND ")
 
         /*
         if (params.filterPropDef) {

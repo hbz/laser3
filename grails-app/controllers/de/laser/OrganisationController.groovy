@@ -1930,13 +1930,6 @@ class OrganisationController  {
             params.org = result.institution
         }
 
-        List allOrgTypeIds = result.orgInstance.getAllOrgTypeIds()
-        if(RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds){
-            result.rdvAllPersonFunctions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
-            result.rdvAllPersonPositions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
-
-        }
-
         params.sort = params.sort ?: 'p.last_name, p.first_name'
         Map adrParams = [:]
         adrParams.putAll(params)
@@ -1963,6 +1956,9 @@ class OrganisationController  {
                 }
                 else if(p.roleLinks.vendor[0]) {
                     oid = genericOIDService.getOID(p.roleLinks.vendor[0])
+                }
+                else if(p.roleLinks.provider[0]) {
+                    oid = genericOIDService.getOID(p.roleLinks.provider[0])
                 }
                 if(oid) {
                     Set<String> mails = emailAddresses.get(oid)

@@ -472,6 +472,14 @@ class CopyElementsService {
                     log.debug("new vendor role set: ${newVendorRole.subscription} for ${newVendorRole.vendor.sortname}")
                 }
 
+                //ProviderRole
+                ProviderRole.findAllBySubscription(subMember).each { ProviderRole pvr ->
+                    ProviderRole newProviderRole = new ProviderRole(provider: pvr.provider)
+                    newProviderRole.subscription = newSubscription
+                    newProviderRole.save()
+                    log.debug("new provider role set: ${newProviderRole.subscription} for ${newProviderRole.provider.sortname}")
+                }
+
                 if (subMember.prsLinks && targetObject.prsLinks) {
                     //PersonRole
                     subMember.prsLinks?.each { prsLink ->
@@ -570,38 +578,38 @@ class CopyElementsService {
             }
 
             if (params.list('copyObject.deleteProviders') && isBothObjectsSet(sourceObject, targetObject)) {
-                List<OrgRole> toDeleteProviders = params.list('copyObject.deleteProviders').collect { genericOIDService.resolveOID(it) }
-                deleteOrgRelations(toDeleteProviders, targetObject, flash)
+                List<ProviderRole> toDeleteProviders = params.list('copyObject.deleteProviders').collect { genericOIDService.resolveOID(it) }
+                deleteProviderRelations(toDeleteProviders, targetObject, flash)
                 //isTargetSubChanged = true
             }
             if (params.list('copyObject.takeProviders') && isBothObjectsSet(sourceObject, targetObject)) {
-                List<OrgRole> toCopyOrgRelations = params.list('copyObject.takeProviders').collect { genericOIDService.resolveOID(it) }
-                copyOrgRelations(toCopyOrgRelations, sourceObject, targetObject, flash)
+                List<ProviderRole> toCopyProviderRelations = params.list('copyObject.takeProviders').collect { genericOIDService.resolveOID(it) }
+                copyProviderRelations(toCopyProviderRelations, sourceObject, targetObject, flash)
                 //isTargetSubChanged = true
 
-                List<OrgRole> toggleShareOrgRoles = params.list('toggleShareOrgRoles').collect {
+                List<ProviderRole> toggleShareProviderRoles = params.list('toggleShareProviderRoles').collect {
                     genericOIDService.resolveOID(it)
                 }
 
                 //targetObject = targetObject.refresh()
-                targetObject.orgRelations.each { newSubOrgRole ->
+                ProviderRole.findAllBySubscription(targetObject).each { ProviderRole newSubProvRole ->
 
-                    if (newSubOrgRole.org in toggleShareOrgRoles.org) {
-                        newSubOrgRole.isShared = true
-                        newSubOrgRole.save()
-                        ((ShareSupport) targetObject).updateShare(newSubOrgRole)
+                    if (newSubProvRole.provider in toggleShareProviderRoles.provider) {
+                        newSubProvRole.isShared = true
+                        newSubProvRole.save()
+                        ((ShareSupport) targetObject).updateShare(newSubProvRole)
                     }
                 }
             }
 
             if (params.list('copyObject.deleteVendors') && isBothObjectsSet(sourceObject, targetObject)) {
                 List<VendorRole> toDeleteVendorRelations = params.list('copyObject.deleteVendors').collect { genericOIDService.resolveOID(it) }
-                deleteOrgRelations(toDeleteVendorRelations, targetObject, flash)
+                deleteVendorRelations(toDeleteVendorRelations, targetObject, flash)
                 //isTargetSubChanged = true
             }
             if (params.list('copyObject.takeVendors') && isBothObjectsSet(sourceObject, targetObject)) {
                 List<VendorRole> toCopyVendorRelations = params.list('copyObject.takeVendors').collect { genericOIDService.resolveOID(it) }
-                copyOrgRelations(toCopyVendorRelations, sourceObject, targetObject, flash)
+                copyVendorRelations(toCopyVendorRelations, sourceObject, targetObject, flash)
                 //isTargetSubChanged = true
 
                 List<VendorRole> toggleShareVendorRoles = params.list('toggleShareVendorRoles').collect {
@@ -1479,16 +1487,28 @@ class CopyElementsService {
     }
 
     /**
-     * Deletes the given organisational relations from the target object
-     * @param toDeleteOrgRelations the relations to be deleted
+     * Deletes the given provider relations from the target object
+     * @param toDeleteProviderRelations the relations to be deleted
      * @param targetObject the target object from which the relations should be removed
-     * @param flash unused
      * @return true if the unlinking was successful, false otherwise
      */
-    boolean deleteOrgRelations(List<OrgRole> toDeleteOrgRelations, Object targetObject, def flash) {
-        OrgRole.executeUpdate(
-                "delete from OrgRole o where o in (:orgRelations) and o.sub = :sub and o.roleType not in (:roleTypes)",
-                [orgRelations: toDeleteOrgRelations, sub: targetObject, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
+    boolean deleteProviderRelations(List<ProviderRole> toDeleteProviderRelations, Object targetObject) {
+        ProviderRole.executeUpdate(
+                "delete from ProviderRole pvr where pvr in (:delRelations) and pvr.subscription = :sub",
+                [delRelations: toDeleteProviderRelations, sub: targetObject]
+        )
+    }
+
+    /**
+     * Deletes the given vendor relations from the target object
+     * @param toDeleteVendorRelations the relations to be deleted
+     * @param targetObject the target object from which the relations should be removed
+     * @return true if the unlinking was successful, false otherwise
+     */
+    boolean deleteVendorRelations(List<VendorRole> toDeleteVendorRelations, Object targetObject) {
+        VendorRole.executeUpdate(
+                "delete from VendorRole vr where vr in (:delRelations) and vr.subscription = :subscription",
+                [delRelations: toDeleteVendorRelations, sub: targetObject]
         )
     }
 
@@ -1507,39 +1527,74 @@ class CopyElementsService {
     }
 
     /**
-     * Links the given organisations to the target object
-     * @param toDeleteOrgRelations the relations to be linked
+     * Links the given providers to the target object
+     * @param toCopyProviderRelations the relations to be linked
      * @param sourceObject the source object from which the organisational relations should be taken
      * @param targetObject the target object to which the organisations should be linked
      * @param flash the message container
      * @return true if the linking was successful, false otherwise
      */
-    boolean copyOrgRelations(List<OrgRole> toCopyOrgRelations, Object sourceObject, Object targetObject, def flash) {
+    boolean copyProviderRelations(List<ProviderRole> toCopyProviderRelations, Object sourceObject, Object targetObject, def flash) {
         Locale locale = LocaleUtils.getCurrentLocale()
-        if (!targetObject.orgRelations)
-            targetObject.orgRelations = []
-        //question mark may be necessary because of lazy loading (there were some NPEs here in the past)
-        sourceObject.orgRelations?.each { or ->
-            if (or in toCopyOrgRelations && !(or.org?.id == contextService.getOrg().id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE, RDStore.OR_LICENSING_CONSORTIUM])) {
-                if (targetObject.orgRelations.find { it.roleTypeId == or.roleTypeId && it.orgId == or.orgId }) {
-                    Object[] args = [or?.roleType?.getI10n("value") + " " + or?.org?.name]
+        List<ProviderRole> sourceRelations = ProviderRole.executeQuery('select pvr from ProviderRole pvr where :id in (pvr.subscription.id, pvr.license.id)', [id: sourceObject.id]),
+        targetRelations = ProviderRole.executeQuery('select pvr from ProviderRole pvr where :id in (pvr.subscription.id, pvr.license.id)', [id: targetObject.id])
+        sourceRelations.each { ProviderRole pvrA ->
+            if (pvrA in toCopyProviderRelations) {
+                if (targetRelations.find { ProviderRole pvrB -> pvrB.providerId == pvrA.providerId }) {
+                    Object[] args = [pvrA.provider.name]
                     flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
                 } else {
-                    def newProperties = or.properties
-                    OrgRole newOrgRole = new OrgRole()
-                    InvokerHelper.setProperties(newOrgRole, newProperties)
+                    def newProperties = pvrA.properties
+                    ProviderRole newProviderRole = new ProviderRole()
+                    InvokerHelper.setProperties(newProviderRole, newProperties)
                     //Vererbung ausschalten
-                    newOrgRole.sharedFrom = null
-                    newOrgRole.isShared = false
+                    newProviderRole.sharedFrom = null
+                    newProviderRole.isShared = false
                     if (sourceObject instanceof Subscription) {
-                        newOrgRole.sub = targetObject
+                        newProviderRole.subscription = targetObject
                     }
                     if (sourceObject instanceof License) {
-                        newOrgRole.lic = targetObject
+                        newProviderRole.license = targetObject
                     }
                     //this is a bit dangerous ...
-                    if (_save(newOrgRole, flash))
-                        targetObject.orgRelations << newOrgRole
+                    _save(newProviderRole, flash)
+                }
+            }
+        }
+    }
+
+    /**
+     * Links the given vendors to the target object
+     * @param toCopyVendorRelations the relations to be linked
+     * @param sourceObject the source object from which the organisational relations should be taken
+     * @param targetObject the target object to which the organisations should be linked
+     * @param flash the message container
+     * @return true if the linking was successful, false otherwise
+     */
+    boolean copyVendorRelations(List<VendorRole> toCopyVendorRelations, Object sourceObject, Object targetObject, def flash) {
+        Locale locale = LocaleUtils.getCurrentLocale()
+        List<VendorRole> sourceRelations = VendorRole.executeQuery('select vr from VendorRole vr where :id in (vr.subscription.id, vr.license.id)', [id: sourceObject.id]),
+                         targetRelations = VendorRole.executeQuery('select vr from VendorRole vr where :id in (vr.subscription.id, vr.license.id)', [id: targetObject.id])
+        sourceRelations?.each { VendorRole vrA ->
+            if (vrA in toCopyVendorRelations) {
+                if (targetRelations.find { VendorRole vrB -> vrA.vendorId == vrB.vendorId }) {
+                    Object[] args = [vrA.vendor.name]
+                    flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
+                } else {
+                    def newProperties = vrA.properties
+                    VendorRole newVendorRole = new VendorRole()
+                    InvokerHelper.setProperties(newVendorRole, newProperties)
+                    //Vererbung ausschalten
+                    newVendorRole.sharedFrom = null
+                    newVendorRole.isShared = false
+                    if (sourceObject instanceof Subscription) {
+                        newVendorRole.subscription = targetObject
+                    }
+                    if (sourceObject instanceof License) {
+                        newVendorRole.license = targetObject
+                    }
+                    //this is a bit dangerous ...
+                    _save(newVendorRole, flash)
                 }
             }
         }
