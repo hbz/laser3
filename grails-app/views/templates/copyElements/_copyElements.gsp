@@ -241,7 +241,7 @@
                 <g:each in="${source_visibleProviders}" var="source_role">
                     <g:if test="${source_role.provider}">
                         <div data-oid="${genericOIDService.getOID(source_role)}" class="la-multi-sources">
-                            <strong><i class="university icon"></i>&nbsp;${source_role.roleType.getI10n("value")}:</strong>
+                            <strong><i class="handshake icon"></i>&nbsp:</strong>
                             <g:link controller="provider" action="show" target="_blank" id="${source_role.provider.id}">
                                 ${source_role.provider.name}
                             </g:link>
@@ -256,7 +256,7 @@
                         <g:each in="${source_visibleProviders}" var="source_role">
                             <g:if test="${source_role.provider}">
                                 <div class="ui checkbox la-toggle-radio la-share">
-                                    <input class="ui checkbox" type="checkbox" name="toggleShareOrgRoles"
+                                    <input class="ui checkbox" type="checkbox" name="toggleShareProviderRoles"
                                            value="${source_role.class.name}:${source_role.id}" ${source_role.isShared ? 'checked' : ''}/>
                                 </div>
                                 <br />
@@ -287,8 +287,7 @@
                             <g:each in="${target_visibleProviders}" var="target_role">
                                 <g:if test="${target_role.provider}">
                                     <div data-oid="${genericOIDService.getOID(target_role)}">
-                                        <strong><i class="university icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
-                                        </strong>
+                                        <strong><i class="handshake icon"></i>&nbsp;:</strong>
                                         <g:link controller="provider" action="show" target="_blank"
                                                 id="${target_role.provider.id}">
                                             ${target_role.provider.name}
@@ -797,6 +796,8 @@
                 $deleteLicenses:                    $('input:checkbox[name="copyObject.deleteLicenses"]'),
                 $takeProviders:                     $('input:checkbox[name="copyObject.takeProviders"]'),
                 $deleteProviders:                   $('input:checkbox[name="copyObject.deleteProviders"]'),
+                $takeVendors:                       $('input:checkbox[name="copyObject.takeVendors"]'),
+                $deleteVendors:                     $('input:checkbox[name="copyObject.deleteVendors"]'),
                 $takeSpecificSubscriptionEditors:   $('input:checkbox[name="subscription.takeSpecificSubscriptionEditors"]'),
                 $deleteSpecificSubscriptionEditors: $('input:checkbox[name="subscription.deleteSpecificSubscriptionEditors"]'),
                 $takeIdentifier:                    $('input:checkbox[name="copyObject.takeIdentifierIds"]'),
@@ -812,6 +813,8 @@
                 scc.checkboxes.$deleteLicenses.change(function (event) { scc.deleteLicenses(this); } ).trigger('change');
                 scc.checkboxes.$takeProviders.change(function (event) { scc.takeProviders(this); } ).trigger('change');
                 scc.checkboxes.$deleteProviders.change(function (event) { scc.deleteProviders(this); } ).trigger('change');
+                scc.checkboxes.$takeVendors.change(function (event) { scc.takeVendors(this); } ).trigger('change');
+                scc.checkboxes.$deleteVendors.change(function (event) { scc.deleteVendors(this); } ).trigger('change');
                 scc.checkboxes.$takeSpecificSubscriptionEditors.change(function (event) { scc.takeSpecificSubscriptionEditors(this); } ).trigger('change');
                 scc.checkboxes.$deleteSpecificSubscriptionEditors.change(function (event) { scc.deleteSpecificSubscriptionEditors(this); } ).trigger('change');
                 scc.checkboxes.$takeSpecificSubscriptionEditors.change(function (event) { scc.takeSpecificSubscriptionEditors(this); } ).trigger('change');
@@ -841,6 +844,13 @@
             },
             deleteProviders: function (elem) {
                 JSPC.app.subCopyController._handleDeleted(elem, 'takeProviders')
+            },
+
+            takeVendors: function (elem) {
+                JSPC.app.subCopyController._handleTake(elem, 'takeVendors', 'takeVendors')
+            },
+            deleteVendors: function (elem) {
+                JSPC.app.subCopyController._handleDeleted(elem, 'takeVendors')
             },
 
             takeSpecificSubscriptionEditors: function (elem) {
