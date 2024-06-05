@@ -33,7 +33,7 @@
 <g:if test="${editable}">
     <g:link class="ui icon button right floated" controller="survey" action="linkSurveyVendor"
             id="${surveyInfo.id}"
-            params="[surveyConfigID: surveyConfig.id]"><g:message code="surveyVendors.linkVendor"/></g:link>
+            params="[surveyConfigID: surveyConfig.id, initial: true]"><g:message code="surveyVendors.linkVendor"/></g:link>
     <br>
     <br>
 </g:if>
@@ -42,8 +42,7 @@
         processController: 'survey',
         processAction: 'surveyVendors',
         tmplShowCheckbox: editable,
-        vendorIdList: configVendorIds,
-        linkSurveyPackage: true,
+
         tmplConfigShow: ['lineNumber', 'sortname', 'name', 'isWekbCurated', 'unLinkSurveyVendor']]"/>
 
 <laser:htmlEnd/>

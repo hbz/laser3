@@ -295,7 +295,6 @@
                             processController: controllerName,
                             processAction    : actionName,
                             tmplShowCheckbox : false,
-                            vendorIdList: vendorIdList,
                             tmplConfigShow   : tmplConfigShowList]"/>
                 </div>
 

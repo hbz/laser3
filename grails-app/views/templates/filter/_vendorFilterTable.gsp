@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyVendorResult; de.laser.CustomerTypeService; de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.Vendor; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyVendorResult; de.laser.CustomerTypeService; de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.Vendor; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
 <laser:serviceInjection/>
 
 <table id="${tableID ?: ''}" class="ui sortable celled la-js-responsive-table la-table table ${fixedHeader ?: ''}">
@@ -81,7 +81,7 @@
 
             <g:if test="${tmplShowCheckbox}">
                 <td>
-                    <g:if test="${(!vendorIdList || !(vendor.id in vendorIdList))}">
+                    <g:if test="${'linkSurveyVendor' in tmplConfigShow && (!selectedVendorIdList || !(vendor.id in selectedVendorIdList)) || 'unLinkSurveyVendor' in tmplConfigShow && (selectedVendorIdList && (vendor.id in selectedVendorIdList))}">
                         <g:checkBox id="selectedVendors_${vendor.id}" name="selectedVendors" value="${vendor.id}" checked="false"/>
                     </g:if>
                 </td>
@@ -175,7 +175,7 @@
                 <g:if test="${tmplConfigItem == 'linkSurveyVendor'}">
                     <td class="right aligned">
                         <g:if test="${editable}">
-                            <g:if test="${(!vendorIdList || !(vendor.id in vendorIdList))}">
+                            <g:if test="${editable && !(SurveyConfigVendor.findByVendorAndSurveyConfig(vendor, surveyConfig))}">
                                 <g:link type="button" class="ui icon button" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                         params="[addVendor: vendor.id, surveyConfigID: surveyConfig.id]"><g:message
                                         code="surveyVendors.linkVendor"/></g:link>
@@ -192,7 +192,7 @@
                 </g:if>
                 <g:if test="${tmplConfigItem == 'unLinkSurveyVendor'}">
                     <td class="right aligned">
-                        <g:if test="${editable && (!vendorIdList || !(vendor.id in vendorIdList))}">
+                        <g:if test="${editable && (SurveyConfigVendor.findByVendorAndSurveyConfig(vendor, surveyConfig))}">
                             <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                     params="[removeVendor: vendor.id, surveyConfigID: surveyConfig.id]"><g:message
                                     code="surveyVendors.unlinkVendor"/></g:link>
@@ -202,7 +202,7 @@
                 </g:if>
                 <g:if test="${tmplConfigItem == 'addSurveyVendorResult'}">
                     <td class="right aligned">
-                        <g:if test="${editable && (!vendorIdList || !(vendor.id in vendorIdList))}">
+                        <g:if test="${editable && (!SurveyVendorResult.findByVendorAndSurveyConfig(vendor, surveyConfig))}">
                             <g:link type="button" class="ui button" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                     params="${parame+ [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'addSurveyVendor', vendorId: vendor.id]}"><g:message
                                     code="surveyVendors.linkVendor"/></g:link>
@@ -211,7 +211,7 @@
                 </g:if>
                 <g:if test="${tmplConfigItem == 'removeSurveyVendorResult'}">
                     <td class="right aligned">
-                        <g:if test="${editable && (!vendorIdList || !(vendor.id in vendorIdList))}">
+                        <g:if test="${editable && (SurveyVendorResult.findByVendorAndSurveyConfig(vendor, surveyConfig))}">
                             <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                     params="${parame+ [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'removeSurveyVendor', vendorId: vendor.id]}"><g:message
                                     code="surveyVendors.unlinkVendor"/></g:link>

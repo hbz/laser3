@@ -1,9 +1,10 @@
 
 <ui:filter>
-    <g:form controller="${processController}" action="${processAction}" method="get" class="ui form">
+    <g:form controller="${processController}" action="${processAction}" id="${surveyInfo.id}"
+            params="${params}" method="get" class="ui form">
         <laser:render template="/templates/filter/vendorFilter"
                       model="[
-                              tmplConfigShow: [['name', 'venStatus'], ['supportedLibrarySystems', 'electronicBillings', 'invoiceDispatchs'], ['curatoryGroup', 'curatoryGroupType']],
+                              tmplConfigShow: [['name', 'venStatus'], ['supportedLibrarySystems', 'electronicBillings', 'invoiceDispatchs'], ['curatoryGroup', 'curatoryGroupType'], ['providers']],
                               tmplConfigFormFilter: true
                       ]"/>
     </g:form>

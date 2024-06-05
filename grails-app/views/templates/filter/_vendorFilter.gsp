@@ -177,6 +177,20 @@
                 </div>
             </g:if>
 
+            <g:if test="${field.equalsIgnoreCase('providers')}">
+                <div class="field">
+                    <label for="qp_providers">${message(code: 'provider.plural')}</label>
+                    <select name="qp_providers" id="qp_providers" multiple="multiple" class="ui search selection dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${Provider.findAllByStatusNotEqual(RDStore.PROVIDER_STATUS_DELETED).sort {it.name}}" var="provider">
+                            <option <%=Params.getLongList(params, 'qp_providers').contains(provider.id) ? 'selected=selected"' : ''%> value="${provider.id}">
+                                ${provider.name}
+                            </option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+
             <g:if test="${field.equalsIgnoreCase('hasSubscription')}">
                 <div class="field">
                     <div class="inline fields la-filter-inline">
