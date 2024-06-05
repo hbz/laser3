@@ -642,7 +642,7 @@ class SurveyControllerService {
                 params.remove("removeVendor")
             }
 
-            List selectedVendors = params.list("vendorListToggler")
+            List selectedVendors = Params.getLongList(params, "selectedVendors")
 
             if (selectedVendors) {
                 selectedVendors.each {
@@ -656,8 +656,8 @@ class SurveyControllerService {
                 params.remove("selectedVendors")
             }
 
-            result.configVendorIds = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
-            params.uuids = result.configVendorIds
+            result.selectedVendorIdList = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
+            params.ids = result.selectedVendorIdList
 
 
             result.putAll(vendorService.getWekbVendors(params))
@@ -693,7 +693,7 @@ class SurveyControllerService {
                 params.remove("removeVendor")
             }
 
-            List selectedVendors = params.list("vendorListToggler")
+            List selectedVendors = Params.getLongList(params, "selectedVendors")
 
             if (selectedVendors) {
                 selectedVendors.each {
@@ -704,12 +704,12 @@ class SurveyControllerService {
                         }
                     }
                 }
-                params.remove("vendorListToggler")
+                params.remove("selectedVendors")
             }
 
             result.putAll(vendorService.getWekbVendors(params))
 
-            result.configVendorIds = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
+            result.selectedVendorIdList = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
 
             [result: result, status: STATUS_OK]
         }

@@ -2491,7 +2491,7 @@ class SurveyService {
             if (result.surveyConfig.surveyVendors) {
                 List configVendorIds
                 if (params.subTab == 'allVendors') {
-                    result.vendorIdList = SurveyVendorResult.executeQuery("select svr.vendor.id from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
+                    result.selectedVendorIdList = SurveyVendorResult.executeQuery("select svr.vendor.id from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
                     configVendorIds = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
                 } else if (params.subTab == 'selectVendors') {
                     List<Long> ids = SurveyVendorResult.executeQuery("select svr.vendor.id from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
@@ -2500,6 +2500,7 @@ class SurveyService {
                     } else {
                         configVendorIds = ['fakeUuids']
                     }
+                    result.selectedVendorIdList = configVendorIds
                 }
 
                 params.ids = configVendorIds

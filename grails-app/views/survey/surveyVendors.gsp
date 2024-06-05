@@ -42,8 +42,7 @@
         processController: 'survey',
         processAction: 'surveyVendors',
         tmplShowCheckbox: editable,
-        vendorIdList: configVendorIds,
-        linkSurveyPackage: true,
+
         tmplConfigShow: ['lineNumber', 'sortname', 'name', 'isWekbCurated', 'unLinkSurveyVendor']]"/>
 
 <laser:htmlEnd/>
