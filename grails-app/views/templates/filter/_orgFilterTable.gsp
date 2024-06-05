@@ -244,7 +244,7 @@
                     </g:if>
                 </g:if>
                 <g:elseif test="${controllerName in ["survey"] && actionName == "surveyCostItemsPackages"}">
-                    <g:if test="${CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, Package.get(Long.valueOf(selectedPackageID)))}">
+                    <g:if test="${selectedPackageID && CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, Package.get(Long.valueOf(selectedPackageID)))}">
                         <g:checkBox id="selectedOrgs_${org.id}" name="selectedOrgs" value="${org.id}" checked="false"/>
                     </g:if>
                 </g:elseif>
@@ -768,36 +768,38 @@
                     <g:else>
                         <table class="ui very basic compact table">
                             <tbody>
-                            <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, institution, RDStore.COST_ITEM_DELETED, RefdataValue.get(Long.valueOf(selectedCostItemElementID)))}"
-                                    var="costItem">
-                                <g:set var="sumOldCostItem"
-                                       value="${sumOldCostItem + costItem.costInBillingCurrency ?: 0}"/>
-                                <g:set var="sumOldCostItemAfterTax"
-                                       value="${sumOldCostItemAfterTax + costItem.costInBillingCurrencyAfterTax ?: 0}"/>
+                            <g:if test="${selectedCostItemElementID}">
+                                <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, institution, RDStore.COST_ITEM_DELETED, RefdataValue.get(Long.valueOf(selectedCostItemElementID)))}"
+                                        var="costItem">
+                                    <g:set var="sumOldCostItem"
+                                           value="${sumOldCostItem + costItem.costInBillingCurrency ?: 0}"/>
+                                    <g:set var="sumOldCostItemAfterTax"
+                                           value="${sumOldCostItemAfterTax + costItem.costInBillingCurrencyAfterTax ?: 0}"/>
 
-                                <g:set var="oldCostItem" value="${costItem.costInBillingCurrency ?: null}"/>
-                                <g:set var="oldCostItemAfterTax" value="${costItem.costInBillingCurrencyAfterTax ?: null}"/>
+                                    <g:set var="oldCostItem" value="${costItem.costInBillingCurrency ?: null}"/>
+                                    <g:set var="oldCostItemAfterTax" value="${costItem.costInBillingCurrencyAfterTax ?: null}"/>
 
-                                <tr>
-                                    <td>
-                                        <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}"
-                                                                minFractionDigits="2"
-                                                                maxFractionDigits="2" type="number"/></strong>
+                                    <tr>
+                                        <td>
+                                            <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}"
+                                                                    minFractionDigits="2"
+                                                                    maxFractionDigits="2" type="number"/></strong>
 
-                                        (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
-                                                         maxFractionDigits="2" type="number"/>)
-                                    </td>
-                                    <td>
-                                        ${costItem.billingCurrency?.getI10n('value')}
-                                    </td>
-                                    <td>
-                                        <g:if test="${costItem.startDate || costItem.endDate}">
-                                            ${costItem.startDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.startDate) : ''} - ${costItem.endDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.endDate) : ''}
-                                        </g:if>
-                                        <g:link class="ui blue right right floated mini button" controller="finance" action="showCostItem" id="${costItem.id}" params="[sub: costItem.sub?.id]" target="_blank"><g:message code="default.show.label" args="[g.message(code: 'costItem.label')]"/></g:link>
-                                    </td>
-                                </tr>
-                            </g:each>
+                                            (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
+                                                             maxFractionDigits="2" type="number"/>)
+                                        </td>
+                                        <td>
+                                            ${costItem.billingCurrency?.getI10n('value')}
+                                        </td>
+                                        <td>
+                                            <g:if test="${costItem.startDate || costItem.endDate}">
+                                                ${costItem.startDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.startDate) : ''} - ${costItem.endDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.endDate) : ''}
+                                            </g:if>
+                                            <g:link class="ui blue right right floated mini button" controller="finance" action="showCostItem" id="${costItem.id}" params="[sub: costItem.sub?.id]" target="_blank"><g:message code="default.show.label" args="[g.message(code: 'costItem.label')]"/></g:link>
+                                        </td>
+                                    </tr>
+                                </g:each>
+                            </g:if>
                             </tbody>
                         </table>
                     </g:else>
@@ -815,7 +817,7 @@
                     <g:else>
 
                         <g:set var="costItems" scope="request"
-                               value="${CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, RefdataValue.get(Long.valueOf(selectedCostItemElementID)))}"/>
+                               value="${selectedCostItemElementID ? CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, RefdataValue.get(Long.valueOf(selectedCostItemElementID))) : null}"/>
 
                         <g:if test="${costItems}">
                             <table class="ui very basic compact table">
@@ -910,7 +912,7 @@
             %{-- // TODO Moe - date.minusDays() --}%
                 <td class="center aligned" style="${(existSubforOrg && orgSub && orgSub.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(orgSub.startDate), DateUtils.dateToLocalDate(orgSub.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
 
-                    <g:if test="${selectedPackageID}">
+                    <g:if test="${selectedPackageID && selectedCostItemElementID}">
                         <g:set var="costItems" scope="request"
                                value="${CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, RefdataValue.get(Long.valueOf(selectedCostItemElementID)), Package.get(Long.valueOf(selectedPackageID)))}"/>
 
