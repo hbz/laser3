@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5734    05.06.2024  dev     3.4         Andreas Bug         Adressabfrage unvollständig
+
 5731    05.06.2024  dev     3.4         Andreas Bug         Kundennummer-Tabelle war nicht erreichbar
 
 5729    05.06.2024  dev     3.4         Andreas Bug         Anbieter und Lieferanten konnten nicht richtig verknüpft werden

@@ -82,7 +82,7 @@
             <g:if test="${tmplShowCheckbox}">
                 <td>
                     <g:if test="${(!vendorIdList || !(vendor.id in vendorIdList))}">
-                    <g:checkBox id="selectedVendors_${vendor.id}" name="selectedVendors" value="${vendor.id}" checked="false"/>
+                        <g:checkBox id="selectedVendors_${vendor.id}" name="selectedVendors" value="${vendor.id}" checked="false"/>
                     </g:if>
                 </td>
             </g:if>
