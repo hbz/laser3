@@ -209,13 +209,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
      */
     @Override
     boolean checkSharePreconditions(ShareableTrait sharedObject) {
-        // needed to differentiate OrgRoles
-        if (sharedObject instanceof OrgRole) {
-            if (showUIShareButton() && sharedObject.roleType.value == 'Licensor') {
-                return true
-            }
-        }
-        false
+        return (sharedObject instanceof ProviderRole || sharedObject instanceof VendorRole) && showUIShareButton()
     }
 
     /**

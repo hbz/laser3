@@ -1047,7 +1047,7 @@ class OrganisationController  {
                     query += " and platform in (:wekbPlatforms)"
                     queryParams.wekbPlatforms = result.allPlatforms
                 }
-                String sort = " order by platform.org.name asc"
+                String sort = " order by platform.provider.name asc"
                 if(params.sort) {
                     sort = " order by ${params.sort} ${params.order}"
                 }

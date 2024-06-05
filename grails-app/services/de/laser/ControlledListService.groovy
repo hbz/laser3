@@ -1495,8 +1495,11 @@ class ControlledListService {
         String consortiumFilter = "", vendorNameFilter = ""
         Map qryParams = [:]
         SortedSet<Vendor> results = new TreeSet<Vendor>()
+        /*
+        we must consider child instances as well this time ...
         if(institution.isCustomerType_Consortium())
             consortiumFilter = "and sub.instanceOf is null"
+        */
         if (params.query) {
             vendorNameFilter = "(genfunc_filter_matcher(vendor.name, :query) = true or genfunc_filter_matcher(vendor.sortname, :query) = true) "
             qryParams.query = params.query
@@ -1504,9 +1507,11 @@ class ControlledListService {
         if(params.tableView) {
             qryParams.context = institution
             String qryString1 = "select vendor from SubscriptionPackage sp, PackageVendor pv join pv.vendor vendor where sp.pkg = pv.pkg and sp.subscription in (select oo.sub from OrgRole oo where oo.org = :context ${consortiumFilter}) and ${vendorNameFilter} group by vendor.id order by vendor.sortname asc",
-            qryString2 = "select vendor from Vendor vendor where vendor.createdBy = :context and ${vendorNameFilter} order by vendor.sortname asc"
+            qryString2 = "select vendor from VendorRole vr join vr.vendor vendor where vr.subscription in (select oo.sub from OrgRole oo where oo.org = :context ${consortiumFilter}) and ${vendorNameFilter} group by vendor.id order by vendor.sortname asc",
+            qryString3 = "select vendor from Vendor vendor where vendor.createdBy = :context and ${vendorNameFilter} order by vendor.sortname asc"
             results.addAll(Vendor.executeQuery(qryString1, qryParams))
             results.addAll(Vendor.executeQuery(qryString2, qryParams))
+            results.addAll(Vendor.executeQuery(qryString3, qryParams))
         }
         else {
             if(params.displayWekbFlag) {

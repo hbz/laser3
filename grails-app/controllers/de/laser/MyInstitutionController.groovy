@@ -2966,7 +2966,7 @@ class MyInstitutionController  {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-        params.sort = params.sort ?: 'pr.org.sortname'
+        params.sort = params.sort ?: 'sortname'
         params.tab = params.tab ?: 'contacts'
         EhcacheWrapper cache = contextService.getUserCache("/myInstitution/addressbook/")
         switch(params.tab) {
