@@ -97,11 +97,11 @@
                 <g:message code="renewalEvaluation.newSub.change"/>
             </g:link>
         </g:if>
-        <g:else>
+        <g:elseif test="${parentSuccessorSubscription}">
             <g:link class="ui button openTransferParticipantsModal" controller="survey" action="openTransferParticipantsModal" params="${[surveyConfigID: surveyConfig.id, id: surveyInfo.id, targetSubscriptionId: parentSuccessorSubscription.id]}">
                 <g:message code="surveyInfo.transferParticipants"/>
             </g:link>
-        </g:else>
+        </g:elseif>
         <br>
     </g:if>
 </g:else>
