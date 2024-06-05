@@ -2050,6 +2050,7 @@ class SurveyControllerService {
 
             if (!params.targetSubscriptionId) {
                 result.error = messageSource.getMessage("surveyTransfer.error.noSelectedSub", null, result.locale)
+                [result: result, status: STATUS_ERROR]
                 return
             }
 

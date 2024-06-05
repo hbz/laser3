@@ -602,8 +602,7 @@ class VendorService {
             vendorQuery += " order by ${params.sort} ${params.order ?: 'asc'}, v.name ${params.order ?: 'asc'} "
         } else
             vendorQuery += " order by v.sortname "
-        println(vendorQuery)
-        println(queryParams)
+
         Set<Vendor> vendorsTotal = Vendor.executeQuery(vendorQuery, queryParams)
 
         result.vendorListTotal = vendorsTotal.size()
