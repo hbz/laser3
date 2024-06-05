@@ -586,6 +586,11 @@ class VendorService {
             queryParams.wekbIds = result.wekbRecords.keySet()
         }
 
+        if (params.containsKey('ids')) {
+            queryArgs << "v.id in (:ids)"
+            queryParams.ids = Params.getLongList(params, 'ids')
+        }
+
         String vendorQuery = 'select v from Vendor v'
         if (queryArgs) {
             vendorQuery += ' where ' + queryArgs.join(' and ')

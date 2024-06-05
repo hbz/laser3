@@ -160,7 +160,8 @@ class OrganisationController  {
         ]
         List<OrgSetting.KEYS> mailSet = [
                 OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY,
-                OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT
+                OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT,
+                OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY
         ]
 
         result.settings = []

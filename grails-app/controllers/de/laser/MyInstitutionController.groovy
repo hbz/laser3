@@ -2608,7 +2608,7 @@ class MyInstitutionController  {
 
         SurveyInfo surveyInfo = SurveyInfo.get(params.id)
         SurveyConfig surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : surveyInfo.surveyConfigs[0]
-        boolean sendMailToSurveyOwner = false
+        boolean sendSurveyFinishMail = false
 
         SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
 
@@ -2640,7 +2640,7 @@ class MyInstitutionController  {
                 flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
             } else {
                 flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess') as String
-                sendMailToSurveyOwner = true
+                sendSurveyFinishMail = true
             }
         }
         else if(!noParticipation && allResultHaveValue){
@@ -2649,12 +2649,34 @@ class MyInstitutionController  {
                 flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
             } else {
                 flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess') as String
-                sendMailToSurveyOwner = true
+                sendSurveyFinishMail = true
             }
         }
 
-        if(sendMailToSurveyOwner) {
-            mailSendService.emailToSurveyOwnerbyParticipationFinish(surveyInfo, result.institution)
+        if(sendSurveyFinishMail) {
+            boolean sendMailToSurveyOwner = true
+
+            if(!surveyInfo.isMandatory && OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY).rdValue == RDStore.YN_YES){
+                int countAllResultsIsRefNo = 0
+                int countAllResultsIsRef = 0
+                surveyResults.each { SurveyResult surre ->
+                    if (surre.type.isRefdataValueType()){
+                        countAllResultsIsRef++
+                        if( surre.refValue == RDStore.YN_NO || surre.refValue == null) {
+                            countAllResultsIsRefNo++
+                        }
+                    }
+                }
+
+                if(countAllResultsIsRefNo == countAllResultsIsRef){
+                    sendMailToSurveyOwner = false
+                }
+
+            }
+
+            if(sendMailToSurveyOwner) {
+                mailSendService.emailToSurveyOwnerbyParticipationFinish(surveyInfo, result.institution)
+            }
             mailSendService.emailToSurveyParticipationByFinish(surveyInfo, result.institution)
         }
 

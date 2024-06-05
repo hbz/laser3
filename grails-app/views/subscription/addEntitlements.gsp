@@ -354,7 +354,7 @@
                                        data-content="${message(code: 'tipp.tooltip.myArea')}"></i>
 
                                     <div class="ui la-segment-with-icon">
-                                        <g:if test="${(tipp.titleType == 'Journal')}">
+                                        <g:if test="${(tipp.titleType == 'serial')}">
                                             <g:set var="coverageStatements"
                                                    value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.coverages : [:]}"/>
                                             <div class="ui stackable grid"></div>

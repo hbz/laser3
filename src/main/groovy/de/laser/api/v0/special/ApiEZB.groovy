@@ -230,7 +230,7 @@ class ApiEZB {
                     List<GroovyRowResult> entitlementRows = sql.rows("select ie_id, tipp_name, tipp_sort_name, ie_access_start_date, ie_access_end_date, tipp_medium_rv_fk, ie_status_rv_fk, " +
                             "tipp_id, tipp_pkg_fk, tipp_host_platform_url, tipp_date_first_in_print, tipp_date_first_online, tipp_first_author, tipp_first_editor, " +
                             "tipp_publisher_name, tipp_volume, tipp_edition_number, tipp_last_updated, tipp_series_name, tipp_subject_reference, tipp_access_type_rv_fk, tipp_open_access_rv_fk, " +
-                            "case tipp_title_type when 'Journal' then 'serial' when 'Book' then 'monograph' when 'Database' then 'database' else 'other' end as title_type, " +
+                            "tipp_title_type as title_type, " +
                             "case ie_access_start_date when null then tipp_access_start_date else ie_access_start_date end as access_start_date, " +
                             "case ie_access_end_date when null then tipp_access_end_date else ie_access_end_date end as access_end_date " +
                             "from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id " +

@@ -10,10 +10,10 @@
 
     <g:if test="${ie}">
 
-        <g:if test="${ie.tipp.titleType == 'Book'}">
+        <g:if test="${ie.tipp.titleType == 'monograph'}">
             <div class="la-title">${message(code: 'tipp.print')} & ${message(code: 'tipp.online')}</div>
         </g:if>
-        <g:elseif test="${ie.tipp.titleType == "Journal"}">
+        <g:elseif test="${ie.tipp.titleType == "serial"}">
             <div class="la-title">${message(code: 'tipp.coverage')}</div>
         </g:elseif>
         <g:else>
@@ -110,10 +110,10 @@
     </g:if>
 
     <g:if test="${!ie && tipp}">
-        <g:if test="${(tipp.titleType == 'Book')}">
+        <g:if test="${(tipp.titleType == 'monograph')}">
             <div class="la-title">${message(code: 'tipp.print')} & ${message(code: 'tipp.online')}</div>
         </g:if>
-        <g:elseif test="${tipp.titleType == "Journal"}">
+        <g:elseif test="${tipp.titleType == "serial"}">
             <div class="la-title">${message(code: 'tipp.coverage')}</div>
         </g:elseif>
         <g:else>

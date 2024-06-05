@@ -38,6 +38,7 @@ class IconTagLib {
                 icon = 'bordered la-object-database'
                 break
             case 'ebook':
+            case 'monograph':
                 icon = 'bordered la-object-ebook'
                 break
             case 'file':
@@ -50,6 +51,7 @@ class IconTagLib {
                 icon = 'question circle bordered inverted grey la-object-extended'
                 break
             case 'journal':
+            case 'serial':
                 icon = 'bordered la-object-journal'
                 break
             case 'gasco':
@@ -170,23 +172,26 @@ class IconTagLib {
         String dc = message(code: 'default.title.label')
         String icon = 'question'
 
-        switch (attrs.type) {
-            case [ 'Journal' ]:
-                dc = attrs.type
-                icon = 'newspaper outline'
-                break
-            case [ 'Database' ]:
-                dc = attrs.type
-                icon = 'database'
-                break
-            case [ 'Book', 'EBook' ]:
-                dc = attrs.type
-                icon = 'tablet alternate'
-                break
-            case 'Other':
-                dc = attrs.type
-                icon = 'film'
-                break
+        if (attrs.type) {
+
+            switch (attrs.type.toLowerCase()) {
+                case ['journal', 'serial']:
+                    dc = attrs.type
+                    icon = 'newspaper outline'
+                    break
+                case ['database']:
+                    dc = attrs.type
+                    icon = 'database'
+                    break
+                case ['book', 'ebook', 'monograph']:
+                    dc = attrs.type
+                    icon = 'tablet alternate'
+                    break
+                case 'other':
+                    dc = attrs.type
+                    icon = 'film'
+                    break
+            }
         }
         if (hideSurroundingMarkup) {
             out << '<div class="la-inline-flexbox la-popup-tooltip la-delay"'

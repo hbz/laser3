@@ -888,7 +888,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     accessType: tipp.accessType,
                     openAccess: tipp.openAccess
                 ]
-                if(tipp.titleType == 'Journal') {
+                if(tipp.titleType == 'serial') {
                     tipp.coverage.each { cov ->
                         updatedTIPP.coverages << [
                                 startDate: cov.startDate ? DateUtils.parseDateGeneric(cov.startDate) : null,

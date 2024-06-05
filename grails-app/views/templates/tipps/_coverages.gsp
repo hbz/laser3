@@ -1,4 +1,4 @@
-<g:if test="${(tipp.titleType == 'Book')}">
+<g:if test="${(tipp.titleType == 'monograph')}">
     <div class="ui card">
         <div class="content">
 
@@ -10,7 +10,7 @@
         </div>
     </div>
 </g:if>
-<g:elseif test="${tipp.titleType == "Journal"}">
+<g:elseif test="${tipp.titleType == "serial"}">
     <g:if test="${ie}">
         <div class="ui cards">
             <%
