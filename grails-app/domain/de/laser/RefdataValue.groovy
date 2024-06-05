@@ -191,8 +191,8 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
         if (!categoryName || !value) {
             return null
         }
-        String query = "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and rdc.desc = :category and rdv.value_de = :value_de"
-        List<RefdataValue> data = RefdataValue.executeQuery( query, [category: categoryName, value_de: value] )
+        String query = "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and rdc.desc = :category and lower(rdv.value_de) = :value_de"
+        List<RefdataValue> data = RefdataValue.executeQuery( query, [category: categoryName, value_de: value.toLowerCase()] )
 
         return (data.size() > 0) ? data[0] : null
     }
