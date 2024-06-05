@@ -707,6 +707,14 @@ class SurveyControllerService {
                 params.remove("selectedVendors")
             }
 
+            if(result.surveyConfig.subscription && params.initial){
+                List providers = result.surveyConfig.subscription.getProviders()
+                if(providers.size() > 0){
+                    params.qp_providers = providers.id
+                    params.remove('initial')
+                }
+            }
+
             result.putAll(vendorService.getWekbVendors(params))
 
             result.selectedVendorIdList = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
@@ -2042,6 +2050,7 @@ class SurveyControllerService {
 
             if (!params.targetSubscriptionId) {
                 result.error = messageSource.getMessage("surveyTransfer.error.noSelectedSub", null, result.locale)
+                [result: result, status: STATUS_ERROR]
                 return
             }
 
