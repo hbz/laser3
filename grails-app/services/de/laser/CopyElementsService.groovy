@@ -111,6 +111,11 @@ class CopyElementsService {
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : null
 
+        if(sourceObject.hasProperty('altnames')) {
+            result.sourceAltnames = sourceObject.altnames
+            result.targetAltnames = targetObject?.altnames
+        }
+
         if(sourceObject.hasProperty('ids')) {
             result.sourceIdentifiers = sourceObject.ids?.sort { x, y ->
                 if (x.ns?.ns?.toLowerCase() == y.ns?.ns?.toLowerCase()) {
@@ -638,6 +643,18 @@ class CopyElementsService {
                 //isTargetSubChanged = true
             }
 
+            if (params.list('copyObject.deleteAltnames') && isBothObjectsSet(sourceObject, targetObject)) {
+                List<AlternativeName> toDeleteAltnames = params.list('copyObject.deleteAltnames').collect { genericOIDService.resolveOID(it) }
+                deleteAltnames(toDeleteAltnames, targetObject)
+                //isTargetSubChanged = true
+            }
+
+            if (params.list('copyObject.takeAltnames') && isBothObjectsSet(sourceObject, targetObject)) {
+                List<AlternativeName> toCopyAltnames = params.list('copyObject.takeAltnames').collect { genericOIDService.resolveOID(it) }
+                copyAltnames(toCopyAltnames, targetObject, takeAudit)
+                //isTargetSubChanged = true
+            }
+
             if (params.list('copyObject.deleteIdentifierIds') && isBothObjectsSet(sourceObject, targetObject)) {
                 List<Identifier> toDeleteIdentifiers = params.list('copyObject.deleteIdentifierIds').collect { genericOIDService.resolveOID(it) }
                 deleteIdentifiers(toDeleteIdentifiers, targetObject, flash)
@@ -1161,6 +1178,33 @@ class CopyElementsService {
     }
 
     /**
+     * Copies the given alternative names into the target object
+     * @param toCopyAltnames the identifiers to be copied
+     * @param targetObject the target object into which the tasks should be copied
+     * @param takeAudit which identifiers should be inherited?
+     */
+    void copyAltnames(List<AlternativeName> toCopyAltnames, Object targetObject, List takeAudit) {
+        toCopyAltnames.each { AlternativeName sourceAltname ->
+            def owner = targetObject
+            String name = sourceAltname.name
+
+            if (owner && name) {
+                Map<String, Object> configMap = [name: name]
+                if(owner instanceof Subscription)
+                    configMap.subscription = owner
+                else if(owner instanceof License)
+                    configMap.license = owner
+                AlternativeName factoryResult = AlternativeName.construct(configMap)
+                if(genericOIDService.getOID(sourceAltname) in takeAudit) {
+                    if(!AuditConfig.getConfig(factoryResult)) {
+                        AuditConfig.addConfig(factoryResult, AuditConfig.COMPLETE_OBJECT)
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Deletes the given identifiers from the target object
      * @param toDeleteIdentifiers the identifiers which should be deleted
      * @param targetObject the target object from which the tasks should be deleted
@@ -1168,12 +1212,28 @@ class CopyElementsService {
      */
     void deleteIdentifiers(List<Identifier> toDeleteIdentifiers, Object targetObject, def flash) {
         String attr = Identifier.getAttributeName(targetObject)
-        Identifier.executeUpdate('delete from Identifier i where i.instanceOf in (:toDeleteIdentifiers)')
+        Identifier.executeUpdate('delete from Identifier i where i.instanceOf in (:toDeleteIdentifiers)', [toDeleteIdentifiers: toDeleteIdentifiers])
         toDeleteIdentifiers.each { Identifier delId ->
             AuditConfig.removeConfig(delId)
         }
         int countDeleted = Identifier.executeUpdate('delete from Identifier i where i in (:toDeleteIdentifiers) and i.' + attr + ' = :reference',
                 [toDeleteIdentifiers: toDeleteIdentifiers, reference: targetObject])
+        Object[] args = [countDeleted]
+    }
+
+    /**
+     * Deletes the given alternative names from the target object
+     * @param toDeleteAltnames the alternative names which should be deleted
+     * @param targetObject the target object from which the tasks should be deleted
+     */
+    void deleteAltnames(List<AlternativeName> toDeleteAltnames, Object targetObject) {
+        String attr = targetObject.class.simpleName.toLowerCase()
+        AlternativeName.executeUpdate('delete from AlternativeName altname where altname.instanceOf in (:toDeleteAltnames)', [toDeleteAltnames: toDeleteAltnames])
+        toDeleteAltnames.each { AlternativeName delId ->
+            AuditConfig.removeConfig(delId)
+        }
+        int countDeleted = AlternativeName.executeUpdate('delete from AlternativeName altname where altname in (:toDeleteAltnames) and i.' + attr + ' = :reference',
+                [toDeleteAltnames: toDeleteAltnames, reference: targetObject])
         Object[] args = [countDeleted]
     }
 

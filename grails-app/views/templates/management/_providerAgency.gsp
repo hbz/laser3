@@ -1,4 +1,4 @@
-<%@ page import="de.laser.VendorRole; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Subscription;" %>
+<%@ page import="de.laser.ProviderRole; de.laser.VendorRole; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Subscription;" %>
 <g:if test="${filteredSubscriptions}">
 
     <g:if test="${controllerName == "subscription"}">
@@ -105,10 +105,8 @@
                     <td>
                         <div class="ui card">
                             <div class="content">
-                                <laser:render template="/templates/links/orgLinksAsList"
-                                          model="${[roleLinks    : sub.orgRelations?.findAll {
-                                              !(it.org?.id == contextService.getOrg().id) && !(it.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id])
-                                          }.sort { it?.org?.sortname },
+                                <laser:render template="/templates/links/providerLinksAsList"
+                                          model="${[providerRoles: ProviderRole.findAllBySubscription(sub, [sort: 'provider.sortname']),
                                                     roleObject   : sub,
                                                     roleRespValue: 'Specific subscription editor',
                                                     editmode     : editable,
@@ -119,17 +117,14 @@
                                                         roleObject   : sub,
                                                         roleRespValue: 'Specific subscription editor',
                                                         editmode     : editable,
-                                                        showPersons  : true
+                                                        showPersons  : false
                                               ]}"/>
                                 <div class="ui la-vertical buttons">
 
-                                    <laser:render template="/templates/links/orgLinksSimpleModal"
+                                    <laser:render template="/templates/links/providerLinksSimpleModal"
                                               model="${[linkType      : sub.class.name,
                                                         parent        : genericOIDService.getOID(sub),
-                                                        property      : 'orgs',
-                                                        recip_prop    : 'sub',
-                                                        tmplRole      : RDStore.OR_PROVIDER,
-                                                        tmplType      : RDStore.OT_PROVIDER,
+                                                        recip_prop    : 'subscription',
                                                         tmplEntity    : message(code: 'subscription.details.linkProvider.tmplEntity'),
                                                         tmplText      : message(code: 'subscription.details.linkProvider.tmplText'),
                                                         tmplButtonText: message(code: 'subscription.details.linkProvider.tmplButtonText'),
