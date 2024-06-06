@@ -1989,9 +1989,21 @@ class SurveyControllerService {
             [result: null, status: STATUS_ERROR]
         } else {
 
+            result.participantsNotFinishTotal = SurveyOrg.countByFinishDateIsNullAndSurveyConfig(result.surveyConfig)
+            result.participantsFinishTotal = SurveyOrg.countBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)
+            result.participantsTotal = SurveyOrg.countBySurveyConfig(result.surveyConfig)
+
+            params.tab = params.tab ?: (result.participantsFinishTotal > 0 ? 'participantsViewAllFinish' : 'participantsViewAllNotFinish')
+
+            if (params.tab == 'participantsViewAllNotFinish') {
+                params.participantsNotFinish = true
+            } else if (params.tab == 'participantsViewAllFinish') {
+                params.participantsFinish = true
+            }
+
             Map<String, Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
 
-            result.participants = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
+            result.participants = SurveyOrg.executeQuery(fsq.query, fsq.queryParams, params)
 
             result.propList = result.surveyConfig.surveyProperties.surveyProperty
 
@@ -2002,7 +2014,7 @@ class SurveyControllerService {
 
                     PropertyDefinition subPropDef = PropertyDefinition.getByNameAndDescr(propertyDefinition.name, PropertyDefinition.SUB_PROP)
                     if (subPropDef) {
-                        result.surveyConfig.orgs.each { SurveyOrg surveyOrg ->
+                        result.participants.each { SurveyOrg surveyOrg ->
                             Subscription subscription = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
                                     [parentSub  : result.surveyConfig.subscription,
                                      participant: surveyOrg.org
@@ -2029,6 +2041,9 @@ class SurveyControllerService {
                     }
                 }
             }
+
+            result.participants = result.participants.sort { it.org.sortname }
+
             [result: result, status: STATUS_OK]
         }
 
