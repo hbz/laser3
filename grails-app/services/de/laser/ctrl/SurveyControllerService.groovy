@@ -33,6 +33,8 @@ import de.laser.PendingChange
 import de.laser.PendingChangeConfiguration
 import de.laser.Platform
 import de.laser.PropertyService
+import de.laser.Provider
+import de.laser.ProviderRole
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.Subscription
@@ -4939,20 +4941,20 @@ class SurveyControllerService {
 
                     if (transferProviderAgency) {
                         newParentSub.getProviders().each { provider ->
-                            new OrgRole(org: provider, sub: memberSub, roleType: RDStore.OR_PROVIDER).save()
+                            new ProviderRole(provider: provider, sub: memberSub).save()
                         }
                         newParentSub.getVendors().each { provider ->
-                            new VendorRole(vendor: provider, sub: memberSub, roleType: RDStore.OR_AGENCY).save()
+                            new VendorRole(vendor: provider, sub: memberSub).save()
                         }
                     } else {
                         if (providersSelection) {
-                            providersSelection.each { orgID ->
-                                new OrgRole(org: Org.get(orgID), sub: memberSub, roleType: RDStore.OR_PROVIDER).save()
+                            providersSelection.each { providerID ->
+                                new ProviderRole(provider: Provider.get(providerID), sub: memberSub).save()
                             }
                         }
                         if (agenciesSelection) {
-                            agenciesSelection.each { orgID ->
-                                new VendorRole(vendor: Vendor.get(orgID), sub: memberSub, roleType: RDStore.OR_AGENCY).save()
+                            agenciesSelection.each { vendorID ->
+                                new VendorRole(vendor: Vendor.get(vendorID), sub: memberSub).save()
                             }
                         }
                     }

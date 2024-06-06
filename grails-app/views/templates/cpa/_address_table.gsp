@@ -19,7 +19,7 @@
     <tr>
         <th>${message(code: 'sidewide.number')}</th>
         <g:if test="${tmplShowOrgName}">
-            <g:sortableColumn params="${params}" property="pr.org.sortname" title="${message(code: 'person.organisation.label')}"/>
+            <g:sortableColumn params="${params}" property="sortname" title="${message(code: 'person.organisation.label')}"/>
         </g:if>
         <th>
             ${message(code: 'default.type.label')}
