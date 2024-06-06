@@ -689,7 +689,11 @@ class AjaxController {
     def delVendorRole() {
         VendorRole vr = VendorRole.get(params.id)
 
-        def owner = vr.getOwner()
+        def owner
+        if(vr.subscription)
+            owner = vr.subscription
+        else if(vr.license)
+            owner = vr.license
         if (owner instanceof ShareSupport && vr.isShared) {
             vr.isShared = false
             owner.updateShare(vr)
@@ -749,7 +753,11 @@ class AjaxController {
     def delProviderRole() {
         ProviderRole pvr = ProviderRole.get(params.id)
 
-        def owner = pvr.getOwner()
+        def owner
+        if(pvr.subscription)
+            owner = pvr.subscription
+        else if(pvr.license)
+            owner = pvr.license
         if (owner instanceof ShareSupport && pvr.isShared) {
             pvr.isShared = false
             owner.updateShare(pvr)
