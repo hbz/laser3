@@ -287,7 +287,7 @@
                             <g:each in="${target_visibleProviders}" var="target_role">
                                 <g:if test="${target_role.provider}">
                                     <div data-oid="${genericOIDService.getOID(target_role)}">
-                                        <strong><i class="handshake icon"></i>&nbsp;:</strong>
+                                        <strong><i class="handshake icon"></i></strong>
                                         <g:link controller="provider" action="show" target="_blank"
                                                 id="${target_role.provider.id}">
                                             ${target_role.provider.name}
@@ -379,8 +379,7 @@
                             </g:if>
                             <g:each in="${target_visibleVendors}" var="target_role">
                                     <div data-oid="${genericOIDService.getOID(target_role)}">
-                                        <strong><i class="shipping fast icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
-                                        </strong>
+                                        <strong><i class="shipping fast icon"></i></strong>
                                         <g:link controller="vendor" action="show" target="_blank"
                                                 id="${target_role.vendor.id}">
                                             ${target_role.vendor.name}

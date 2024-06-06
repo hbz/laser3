@@ -142,7 +142,7 @@ class ProviderController {
         else
             providerQuery += " order by p.sortname "
         Set<Provider> providersTotal = Provider.executeQuery(providerQuery, queryParams)
-        result.currentProviderIdList = Provider.executeQuery('select pvr.vendor.id from ProviderRole pvr, OrgRole oo join oo.sub s where s = pvr.subscription and oo.org = :context and s.status = :current', [current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])
+        result.currentProviderIdList = Provider.executeQuery('select pvr.provider.id from ProviderRole pvr, OrgRole oo join oo.sub s where s = pvr.subscription and oo.org = :context and s.status = :current', [current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])
 
         result.filterSet = params.filterSet ? true : false
 

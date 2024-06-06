@@ -109,7 +109,9 @@ class AddressbookService {
                 qParams << [org: params.org]
             }
             else if(params.org instanceof String) {
-                qParts << "( genfunc_filter_matcher(pr.org.name, :name) = true or genfunc_filter_matcher(pr.org.sortname, :name) = true )"
+                qParts << "( genfunc_filter_matcher(org.name, :name) = true or genfunc_filter_matcher(org.sortname, :name) = true )"
+                qParts << "( genfunc_filter_matcher(vendor.name, :name) = true or genfunc_filter_matcher(vendor.sortname, :name) = true )"
+                qParts << "( genfunc_filter_matcher(provider.name, :name) = true or genfunc_filter_matcher(provider.sortname, :name) = true )"
                 qParams << [name: "${params.org}"]
             }
         }
