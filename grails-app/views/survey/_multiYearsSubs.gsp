@@ -61,7 +61,7 @@
                     <g:else>
                         <g:if test="${(i == 0) || (nextSubs && nextSubs[i - 1])}">
                         <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo.id}"
-                                params="${[surveyConfig: surveyConfig.id, oldSub: ((nextSubs && i > 0) ? nextSubs[i - 1].id : parentSubscription.id)]}"
+                                params="${[surveyConfig: surveyConfig.id, sourceSubId: ((nextSubs && i > 0) ? nextSubs[i - 1].id : parentSubscription.id)]}"
                                 class="ui button ">
                             <g:message code="renewalEvaluation.newSub"/>
                         </g:link>
@@ -75,14 +75,13 @@
     </table>
 </g:if>
 <g:else>
-
     <g:if test="${surveyConfig.subSurveyUseForTransfer && actionName == 'compareMembersOfTwoSubs'}">
         <g:if test="${!parentSuccessorSubscription}">
 
             <h3 class="ui header">
                 <g:message code="renewalEvaluation.parentSuccessorSubscription"/>:
                 <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo.id}"
-                        params="[surveyConfig: surveyConfig.id]"
+                        params="[surveyConfig: surveyConfig.id, sourceSubId: surveyConfig.subscription.id]"
                         class="ui button ">
                     <g:message code="renewalEvaluation.newSub"/>
                 </g:link>
@@ -92,7 +91,7 @@
 
         <g:if test="${parentSuccessorSubscription && parentSuccessorSubscription.getDerivedNonHiddenSubscribers().size() > 0}">
             <g:link controller="subscription" action="copyElementsIntoSubscription" id="${parentSubscription.id}"
-                    params="[sourceObjectId: genericOIDService.getOID(parentSubscription), targetObjectId: genericOIDService.getOID(parentSuccessorSubscription), isRenewSub: true, fromSurvey: true]"
+                    params="[sourceObjectId: genericOIDService.getOID(parentSubscription), targetObjectId: genericOIDService.getOID(parentSuccessorSubscription), isRenewSub: true, fromSurvey: surveyConfig.id]"
                     class="ui button ">
                 <g:message code="renewalEvaluation.newSub.change"/>
             </g:link>

@@ -2989,7 +2989,7 @@ class SurveyControllerService {
         if (!result) {
             [result: null, status: STATUS_ERROR]
         } else {
-            Subscription subscription = Subscription.get(params.oldSub ?: null)
+            Subscription subscription = Subscription.get(params.sourceSubId ?: null)
 
             SimpleDateFormat sdf = DateUtils.getSDF_ddMMyyyy()
 
@@ -3020,7 +3020,7 @@ class SurveyControllerService {
 
             ]
 
-            result.subscription = subscription
+            result.sourceSubscription = subscription
             result.parentSub = result.surveyConfig.subscription
             [result: result, status: STATUS_OK]
         }
@@ -3039,7 +3039,11 @@ class SurveyControllerService {
             [result: null, status: STATUS_ERROR]
         } else {
 
-            Subscription baseSub = Subscription.get(params.oldSub ?: null)
+            Subscription baseSub = Subscription.get(params.sourceSubId ?: null)
+
+            if(!baseSub){
+                [result: null, status: STATUS_ERROR]
+            }
 
             ArrayList<Links> previousSubscriptions = Links.findAllByDestinationSubscriptionAndLinkType(baseSub, RDStore.LINKTYPE_FOLLOWS)
             if (previousSubscriptions.size() > 0) {
