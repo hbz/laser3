@@ -419,7 +419,14 @@ class ApiEZB {
         //status
         outRow.add(row['ie_status_rv_fk'] ? RefdataValue.get(row['ie_status_rv_fk'])?.value : '')
         //access_type (no values defined for LAS:eR, must await we:kb)
-        outRow.add(row['tipp_access_type_rv_fk'] ? RefdataValue.get(row['tipp_access_type_rv_fk'])?.value : '')
+        if(row['tipp_access_type_rv_fk']) {
+            if(RefdataValue.get(row['tipp_access_type_rv_fk']) == RDStore.TIPP_PAYMENT_FREE)
+                outRow.add('F')
+            else if(RefdataValue.get(row['tipp_access_type_rv_fk']) == RDStore.TIPP_PAYMENT_PAID)
+                outRow.add('P')
+            else outRow.add('')
+        }
+        else
         //oa_type
         outRow.add(row['tipp_open_access_rv_fk'] ? RefdataValue.get(row['tipp_open_access_rv_fk'])?.value : '')
         //zdb_ppn
