@@ -2335,7 +2335,7 @@ class SurveyService {
                 }
             }
 
-            params.sort = params.sort ?: 'pr.org.sortname'
+            params.sort = params.sort ?: 'sortname'
             params.org = participant
             params.function = [RDStore.PRS_FUNC_FC_BILLING_ADDRESS.id, RDStore.PRS_FUNC_INVOICING_CONTACT.id]
             result.visiblePersons = addressbookService.getVisiblePersons("contacts", params)
@@ -2520,9 +2520,9 @@ class SurveyService {
         if(surOrg) {
             Map parameterMap = [:]
             parameterMap.org = org
-            parameterMap.sort = 'pr.org.sortname'
 
             if(!surOrg.person) {
+                parameterMap.sort = 'sortname'
                 parameterMap.function = [RDStore.PRS_FUNC_FC_BILLING_ADDRESS.id, RDStore.PRS_FUNC_INVOICING_CONTACT.id]
                 List visiblePersons = addressbookService.getVisiblePersons("contacts", parameterMap)
 
@@ -2532,6 +2532,7 @@ class SurveyService {
                 }
             }
             if(!surOrg.address) {
+                parameterMap.sort = 'sortname'
                 parameterMap.type = RDStore.ADDRESS_TYPE_BILLING.id
                 List addresses = addressbookService.getVisibleAddresses("contacts", parameterMap)
 

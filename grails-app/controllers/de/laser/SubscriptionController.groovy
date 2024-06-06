@@ -2290,8 +2290,8 @@ class SubscriptionController {
                 ctrlResult.result.isRenewSub = params.isRenewSub
             }
             if(params.workFlowPart == CopyElementsService.WORKFLOW_END && ctrlResult.result.targetObject) {
-                SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(ctrlResult.result.sourceObject, true)
-                if (surveyConfig && ctrlResult.result.fromSurvey) {
+                SurveyConfig surveyConfig = ctrlResult.result.fromSurvey ? SurveyConfig.get(Long.valueOf(ctrlResult.result.fromSurvey)) : null
+                if (surveyConfig) {
                     redirect controller: 'survey', action: 'compareMembersOfTwoSubs', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
                     return
                 }
