@@ -43,9 +43,21 @@
             </td>
             <g:if test="${tmplShowOrgName}">
                 <td>
-                    <i class="icon university la-list-icon"></i>
-                    <g:link controller="organisation" action="addressbook"
-                            id="${address.org.id}">${address.org.name} (${address.org.sortname})</g:link>
+                    <g:if test="${address.org}">
+                        <i class="icon university la-list-icon"></i>
+                        <g:link controller="organisation" action="addressbook"
+                                id="${address.org.id}">${address.org.name} (${address.org.sortname})</g:link>
+                    </g:if>
+                    <g:if test="${address.provider}">
+                        <i class="icon handshake la-list-icon"></i>
+                        <g:link controller="provider" action="addressbook"
+                                id="${address.provider.id}">${address.provider.name} (${address.provider.sortname})</g:link>
+                    </g:if>
+                    <g:if test="${address.vendor}">
+                        <i class="icon shipping fast la-list-icon"></i>
+                        <g:link controller="vendor" action="addressbook"
+                                id="${address.vendor.id}">${address.vendor.name} (${address.vendor.sortname})</g:link>
+                    </g:if>
                 </td>
             </g:if>
             <td>
