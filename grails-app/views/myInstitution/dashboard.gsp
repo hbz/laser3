@@ -25,7 +25,7 @@
                             </div>
                         </div>
                         <div class="item">
-                            <i class="university icon la-list-icon"></i>
+                            <i class="handshake icon la-list-icon"></i>
                             <div class="content">
                                 <g:link controller="myInstitution" action="currentProviders">${message(code:'menu.my.providers')}</g:link>
                             </div>
