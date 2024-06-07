@@ -2337,7 +2337,7 @@ class SurveyService {
 
             params.sort = params.sort ?: 'sortname'
             params.org = participant
-            params.function = [RDStore.PRS_FUNC_FC_BILLING_ADDRESS.id, RDStore.PRS_FUNC_INVOICING_CONTACT.id]
+            params.function = [RDStore.PRS_FUNC_INVOICING_CONTACT.id, RDStore.PRS_FUNC_INVOICING_CONTACT.id]
             result.visiblePersons = addressbookService.getVisiblePersons("contacts", params)
 
             params.type = RDStore.ADDRESS_TYPE_BILLING.id
@@ -2523,7 +2523,7 @@ class SurveyService {
 
             if(!surOrg.person) {
                 parameterMap.sort = 'sortname'
-                parameterMap.function = [RDStore.PRS_FUNC_FC_BILLING_ADDRESS.id, RDStore.PRS_FUNC_INVOICING_CONTACT.id]
+                parameterMap.function = [RDStore.PRS_FUNC_INVOICING_CONTACT.id, RDStore.PRS_FUNC_INVOICING_CONTACT.id]
                 List visiblePersons = addressbookService.getVisiblePersons("contacts", parameterMap)
 
                 if(visiblePersons.size() > 0){

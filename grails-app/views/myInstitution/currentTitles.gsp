@@ -90,9 +90,6 @@
             <ui:datepicker label="myinst.currentTitles.subs_valid_on" id="validOn" name="validOn"
                            value="${validOn}"/>
             --%>
-        </div>
-
-        <div class="two fields">
             <div class="field">
                 <label for="filterSub">${message(code: 'subscription.plural')}</label>
                 <div class="ui search selection fluid multiple dropdown" id="filterSub">
@@ -114,11 +111,38 @@
                 --}%
 
             </div>
+        </div>
+
+        <div class="two fields">
 
             <div class="field">
-                <label for="filterPvd">${message(code: 'default.agency.provider.plural.label')}</label>
+                <label for="filterPvd">${message(code: 'provider.label')}</label>
                 <div class="ui search selection fluid multiple dropdown" id="filterPvd">
                     <input type="hidden" name="filterPvd"/>
+                    <div class="default text"><g:message code="default.select.all.label"/></div>
+                    <i class="dropdown icon"></i>
+                </div>
+                %{--
+                <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">
+                    <option <%--<%= (filterPvd.contains("all")) ? 'selected' : '' %>--%>
+                            value="">${message(code: 'default.select.all.label')}</option>
+                    <g:each in="${providers}" var="p">
+                        <%
+                            def pvdId = p[0].toString()
+                            def pvdName = p[1]
+                        %>
+                        <option <%=(filterPvd.contains(pvdId)) ? 'selected' : ''%> value="${pvdId}" title="${pvdName}">
+                            ${pvdName}
+                        </option>
+                    </g:each>
+                </select>
+                --}%
+            </div>
+
+            <div class="field">
+                <label for="filterPvd">${message(code: 'vendor.label')}</label>
+                <div class="ui search selection fluid multiple dropdown" id="filterVen">
+                    <input type="hidden" name="filterVen"/>
                     <div class="default text"><g:message code="default.select.all.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
@@ -483,6 +507,7 @@
 
     JSPC.app.ajaxDropdown($('#filterSub'), '<g:createLink controller="ajaxJson" action="lookupSubscriptions"/>?query={query}&restrictLevel=true', '${params.filterSub}');
     JSPC.app.ajaxDropdown($('#filterPvd'), '<g:createLink controller="ajaxJson" action="lookupProviders"/>?query={query}', '${params.filterPvd}');
+    JSPC.app.ajaxDropdown($('#filterPvd'), '<g:createLink controller="ajaxJson" action="lookupVendors"/>?query={query}', '${params.filterPvd}');
     JSPC.app.ajaxDropdown($('#filterHostPlat'), '<g:createLink controller="ajaxJson" action="lookupPlatforms"/>?query={query}', '${params.filterHostPlat}');
 </laser:script>
 

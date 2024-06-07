@@ -624,7 +624,7 @@
                                                                 </div>
                                                             </div>
                                                         </g:each>
-                                                        <g:set var="persons" value="${orgInstance.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_FC_BILLING_ADDRESS)}"/>
+                                                        <g:set var="persons" value="${orgInstance.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_INVOICING_CONTACT)}"/>
                                                         <g:each in="${persons}" var="prs">
                                                             <div class="row">
                                                                 <div class="two wide column">
@@ -636,7 +636,7 @@
                                                                     </g:else>
                                                                 </div>
                                                                 <div class="fourteen wide column">
-                                                                    <div class="ui label">${RDStore.PRS_FUNC_FC_BILLING_ADDRESS.getI10n('value')}</div>
+                                                                    <div class="ui label">${RDStore.PRS_FUNC_INVOICING_CONTACT.getI10n('value')}</div>
                                                                     <div class="ui header">${prs}</div>
                                                                     <g:each in="${prs.roleLinks}" var="personRole">
                                                                         <g:if test="${personRole.org.id == orgInstance.id && personRole.positionType}">

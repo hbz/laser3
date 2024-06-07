@@ -1763,24 +1763,26 @@ class FilterService {
                 }
                 if(subFilter) {
                     whereClauses << subFilter
-                    if (configMap.status != null && configMap.status != '') {
-                        params.ieStatus = connection.createArrayOf('bigint', listReaderWrapper(configMap, 'status').toArray())
-                        whereClauses << "ie_status_rv_fk = any(:ieStatus)"
-                    }
-                    else if (configMap.notStatus != null) {
-                        if(configMap.notStatus instanceof String && !configMap.notStatus.isEmpty()) {
-                            params.ieStatus = Long.parseLong(configMap.notStatus)
+                    if(!configMap.containsKey('defaultSubscriptionFilter')) {
+                        if (configMap.status != null && configMap.status != '') {
+                            params.ieStatus = connection.createArrayOf('bigint', listReaderWrapper(configMap, 'status').toArray())
+                            whereClauses << "ie_status_rv_fk = any(:ieStatus)"
                         }
-                        else if(configMap.notStatus instanceof Long) {
-                            //already id
-                            params.ieStatus = configMap.notStatus
+                        else if (configMap.notStatus != null) {
+                            if(configMap.notStatus instanceof String && !configMap.notStatus.isEmpty()) {
+                                params.ieStatus = Long.parseLong(configMap.notStatus)
+                            }
+                            else if(configMap.notStatus instanceof Long) {
+                                //already id
+                                params.ieStatus = configMap.notStatus
+                            }
+                            else params.ieStatus = configMap.status
+                            whereClauses << "ie_status_rv_fk != :ieStatus"
                         }
-                        else params.ieStatus = configMap.status
-                        whereClauses << "ie_status_rv_fk != :ieStatus"
-                    }
-                    else {
-                        params.ieStatus = RDStore.TIPP_STATUS_CURRENT.id
-                        whereClauses << "ie_status_rv_fk = :ieStatus"
+                        else {
+                            params.ieStatus = RDStore.TIPP_STATUS_CURRENT.id
+                            whereClauses << "ie_status_rv_fk = :ieStatus"
+                        }
                     }
 
                     if(configMap.titleGroup != null && !configMap.titleGroup.isEmpty()) {

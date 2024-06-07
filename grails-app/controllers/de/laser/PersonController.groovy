@@ -236,7 +236,7 @@ class PersonController  {
         }.findAll()
         List<PersonRole> fcba = PersonRole.where {
             prs == personInstance &&
-            functionType == RDStore.PRS_FUNC_FC_BILLING_ADDRESS
+            functionType == RDStore.PRS_FUNC_INVOICING_CONTACT
         }.findAll()
         
 
