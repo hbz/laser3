@@ -4369,7 +4369,7 @@ class ExportClickMeService {
 
         List exportData = []
         result.each { Org org ->
-            _setOrgRow(org, selectedExportFields, exportData, wekbRecords, format, contactSources, configMap)
+            _setOrgRow(org, selectedExportFields, exportData, format, contactSources, configMap)
         }
 
         Map sheetData = [:]
@@ -6783,7 +6783,7 @@ class ExportClickMeService {
         }
         /*else if (fieldKey.endsWith('.billingContact')) {
             if (org) {
-                Map<String, Object> queryParams = [org: org, functionTypes: [RDStore.PRS_FUNC_FC_BILLING_ADDRESS], type: RDStore.CCT_EMAIL, isPublic: isPublic]
+                Map<String, Object> queryParams = [org: org, functionTypes: [RDStore.PRS_FUNC_INVOICING_CONTACT], type: RDStore.CCT_EMAIL, isPublic: isPublic]
                 if(!isPublic) {
                     tenantFilter = ' and (p.tenant = :ctx or p.isPublic = true)'
                     queryParams.ctx = contextService.getOrg()
@@ -7333,11 +7333,11 @@ class ExportClickMeService {
                 /*else if (fieldKey.endsWith('.billingContact')) {
                     if(contactSources) {
                         contactSources.each { String contactSwitch ->
-                            titles.add(createTableCell(format,  "${RDStore.PRS_FUNC_FC_BILLING_ADDRESS."${localizedValue}"} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"))
+                            titles.add(createTableCell(format,  "${RDStore.PRS_FUNC_INVOICING_CONTACT."${localizedValue}"} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"))
                         }
                     }
                     else
-                        titles.add(createTableCell(format,  RDStore.PRS_FUNC_FC_BILLING_ADDRESS."${localizedValue}"))
+                        titles.add(createTableCell(format,  RDStore.PRS_FUNC_INVOICING_CONTACT."${localizedValue}"))
                 }
                 else if (fieldKey.endsWith('.billingAdress')) {
                     if(contactSources) {
