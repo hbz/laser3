@@ -1457,7 +1457,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     providerRecord.identifiers.each { id ->
                         if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
-                            Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: provider, isUnique: false, nsType: Provider.class.name])
+                            Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: provider, isUnique: false, nsType: Org.class.name])
                         }
                     }
                 }
@@ -1631,7 +1631,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         }
                         vendorRecord.identifiers.each { id ->
                             if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
-                                Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: vendor, isUnique: false, nsType: Provider.class.name])
+                                Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: vendor, isUnique: false, nsType: Org.class.name])
                             }
                         }
                     }

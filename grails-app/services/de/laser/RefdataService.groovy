@@ -44,8 +44,8 @@ class RefdataService {
             Map dfMap = [:]
 
             dcFields.each { df ->
-                Set<RefdataValue> rdvs = RefdataValue.executeQuery( "SELECT DISTINCT " + df.name + " FROM " + dcName )
-
+                List<Long> rdvIds = RefdataValue.executeQuery( "SELECT DISTINCT " + df.name + ".id FROM " + dcName )
+                Set<RefdataValue> rdvs = RefdataValue.findAllByIdInList(rdvIds)
                 dfMap << ["${df.name}": rdvs.collect { it -> "${it.id}:${it.value}" }.sort()]
 
                 // ids of used refdata values
