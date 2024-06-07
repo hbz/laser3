@@ -2207,6 +2207,7 @@ class SubscriptionControllerService {
             } else {
                 log.debug("Subscription has no linked packages yet")
             }
+            result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
             result.putAll(packageService.getWekbPackages(params))
             [result: result, status: STATUS_OK]
         }
