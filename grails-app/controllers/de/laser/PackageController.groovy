@@ -302,7 +302,7 @@ class PackageController {
         result.filterSet = query.filterSet
 
 
-        String filename = "${escapeService.escapeString(result.packageInstance.name + '_' + message(code: 'package.show.nav.current'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
+        String filename = "${escapeService.escapeString(result.packageInstance.name.replaceAll('["\']', '') + '_' + message(code: 'package.show.nav.current'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
 
         result.filename = filename
         ArrayList<TitleInstancePackagePlatform> tipps = []
