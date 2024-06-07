@@ -5954,7 +5954,9 @@ class ExportClickMeService {
                             row.add(createTableCell(format, result.packages.pkg.name.join('\n')))
                             break
                         case 'vendor.platforms':
-                            row.add(createTableCell(format, result.packages.pkg.nominalPlatform.name.join('\n')))
+                            SortedSet<Platform> distinctPlatforms = new TreeSet<Platform>()
+                            distinctPlatforms.addAll(result.packages.pkg.nominalPlatform)
+                            row.add(createTableCell(format, distinctPlatforms.name.join('\n')))
                             break
                         case 'vendor.subscriptions':
                             String consortiaFilter = ''
