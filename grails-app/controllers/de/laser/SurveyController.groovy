@@ -1898,7 +1898,7 @@ class SurveyController {
                 redirect(url: request.getHeader('referer'))
                 return
             }else {
-                redirect controller: 'subscription', action: 'copyElementsIntoSubscription', params: [sourceObjectId: genericOIDService.getOID(Subscription.get(params.parentSub)), targetObjectId: genericOIDService.getOID(ctrlResult.result.newSub), isRenewSub: true, fromSurvey: true]
+                redirect controller: 'subscription', action: 'copyElementsIntoSubscription', params: [sourceObjectId: genericOIDService.getOID(Subscription.get(params.sourceSubId)), targetObjectId: genericOIDService.getOID(ctrlResult.result.newSub), isRenewSub: true, fromSurvey: ctrlResult.result.surveyConfig.id]
                 return
             }
         }

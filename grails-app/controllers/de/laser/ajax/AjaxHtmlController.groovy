@@ -394,7 +394,7 @@ class AjaxHtmlController {
         Map<String, Object> model = [:], result = controlledListService.getVendors(params)
         model.vendorList = result.results
         model.tmplShowCheckbox = true
-        model.tmplConfigShow = ['sortname', 'name', 'isWekbCurated']
+        model.tmplConfigShow = ['sortname', 'name', 'isWekbCurated', 'linkVendors']
         model.fixedHeader = 'la-ignore-fixed'
         render template: "/templates/filter/vendorFilterTable", model: model
     }

@@ -150,7 +150,7 @@
                                   message="surveyInfo.evaluation"/>
 
                 <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="compareMembersOfTwoSubs"
-                                  class="${actionName in ['copyProperties', 'copySurveyCostItems'] ? 'active' : ''}"
+                                  class="${actionName in ['copyProperties', 'copySurveyCostItems', 'copySurveyPackages', 'copySurveyCostItemPackage', 'copySurveyVendors'] ? 'active' : ''}"
                                   params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                                   message="surveyInfo.renewal"/>
             </g:if>

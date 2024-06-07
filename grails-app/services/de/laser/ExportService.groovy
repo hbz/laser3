@@ -3975,7 +3975,7 @@ class ExportService {
 		 monograph_parent_collection_title: "null as monograph_parent_collection_title",
 		 subject_area: 'tipp_subject_reference as subject_area',
 		 status: '(select rdv_value from refdata_value where rdv_id = tipp_status_rv_fk) as status',
-		 access_type: '(select rdv_value from refdata_value where rdv_id = tipp_access_type_rv_fk) as access_type',
+		 access_type: '(select case when rdv_value = \'Paid\' then \'P\' when rdv_value = \'Free\' then \'F\' end case from refdata_value where rdv_id = tipp_access_type_rv_fk) as access_type',
 		 oa_type: '(select rdv_value from refdata_value where rdv_id = tipp_open_access_rv_fk) as oa_type',
 		 zdb_ppn: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB_PPN).id}) as zdb_ppn",
 		 listprice_eur: "(select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_last_updated desc limit 1) as listprice_eur",

@@ -112,7 +112,32 @@ class VendorController {
         else
             vendorQuery += " order by v.sortname "
         Set<Vendor> vendorsTotal = Vendor.executeQuery(vendorQuery, queryParams)
+        result.currentVendorIdList = Vendor.executeQuery('select vr.vendor.id from VendorRole vr, OrgRole oo join oo.sub s where s = vr.subscription and oo.org = :context and s.status = :current', [current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])
+        if (params.isMyX) {
+            List<String> xFilter = params.list('isMyX')
+            Set<Long> f1Result = [], f2Result = []
+            boolean   f1Set = false, f2Set = false
 
+            if (xFilter.contains('ismyx_exclusive')) {
+                f1Result.addAll( vendorsTotal.findAll { result.currentVendorIdList.contains( it.id ) }.collect{ it.id } )
+                f1Set = true
+            }
+            if (xFilter.contains('ismyx_not')) {
+                f1Result.addAll( vendorsTotal.findAll { ! result.currentVendorIdList.contains( it.id ) }.collect{ it.id }  )
+                f1Set = true
+            }
+            if (xFilter.contains('wekb_exclusive')) {
+                f2Result.addAll( vendorsTotal.findAll { it.gokbId != null }.collect{ it.id } )
+                f2Set = true
+            }
+            if (xFilter.contains('wekb_not')) {
+                f2Result.addAll( vendorsTotal.findAll { it.gokbId == null }.collect{ it.id }  )
+                f2Set = true
+            }
+
+            if (f1Set) { vendorsTotal = vendorsTotal.findAll { f1Result.contains(it.id) } }
+            if (f2Set) { vendorsTotal = vendorsTotal.findAll { f2Result.contains(it.id) } }
+        }
         String message = message(code: 'export.all.vendors') as String
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         String datetoday = sdf.format(new Date())

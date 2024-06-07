@@ -61,6 +61,70 @@
             </thead>
             <tbody>
 
+            <g:if test="${sourceObject.hasProperty("altnames")}">
+                <tr data-type="altnames" data-element="copyObject.takeAltname">
+                    <td data-element="source">
+                        <div>
+                            <strong><i class="tag icon"></i>&nbsp;${message(code: 'org.altname.label')}:</strong><br />
+                            <g:each in="${sourceAltnames}" var="altname">
+                                <div data-oid="${genericOIDService.getOID(altname)}">
+                                    ${altname.name}<br />
+                                </div>
+                            </g:each>
+                        </div>
+                    </td>
+                    <g:if test="${isConsortialObjects}">
+                        <td class="center aligned">
+                            <div class="ui checkbox la-toggle-radio la-inherit">
+                                <g:each in="${sourceAltnames}" var="altname">
+                                    <g:checkBox name="copyObject.toggleAudit" value="${genericOIDService.getOID(altname)}"
+                                                checked="${AuditConfig.getConfig(altname) ? 'true' : 'false'}"/>
+                                </g:each>
+                            </div>
+                        </td>
+                    </g:if>
+
+                %{--COPY:--}%
+                    <td class="center aligned">
+                        <g:each in="${sourceAltnames}" var="altname">
+                            <div class="la-element">
+                                <div class="ui checkbox la-toggle-radio la-replace">
+                                    <g:checkBox name="copyObject.takeAltnames" value="${genericOIDService.getOID(altname)}" data-action="copy"/>
+                                </div>
+                            </div>
+                            <br />
+                        </g:each>
+                    </td>
+                    <g:if test="${!copyObject}">
+                        <td data-element="target">
+                            <div>
+                                <strong><i class="tag icon"></i>&nbsp;${message(code: 'org.altname.label')}:</strong><br />
+                                <g:each in="${targetAltnames}" var="altname">
+                                    <div data-oid="${genericOIDService.getOID(altname)}">
+                                        ${altname.name}<br />
+                                    </div>
+                                    <%
+                                        if (AuditConfig.getConfig(altname)) {
+                                            println '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                        }
+                                    %>
+                                </g:each>
+                            </div>
+                        </td>
+                    %{--DELETE:--}%
+                        <td>
+                            <g:each in="${targetAltnames}" var="altname">
+                                <div class="la-element">
+                                    <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
+                                        <g:checkBox name="copyObject.deleteAltnames" value="${genericOIDService.getOID(altname)}" data-action="delete" checked="${false}"/>
+                                    </div>
+                                </div>
+                                <br />
+                            </g:each>
+                        </td>
+                    </g:if>
+                </tr>
+            </g:if>
             <g:each in="${copyElementsService.allowedProperties(sourceObject)}" var="objProperty">
                 <tr data-type="property" data-element="copyObject.take${objProperty}">
                     <td data-element="source">
@@ -241,7 +305,7 @@
                 <g:each in="${source_visibleProviders}" var="source_role">
                     <g:if test="${source_role.provider}">
                         <div data-oid="${genericOIDService.getOID(source_role)}" class="la-multi-sources">
-                            <strong><i class="university icon"></i>&nbsp;${source_role.roleType.getI10n("value")}:</strong>
+                            <strong><i class="handshake icon"></i>&nbsp:</strong>
                             <g:link controller="provider" action="show" target="_blank" id="${source_role.provider.id}">
                                 ${source_role.provider.name}
                             </g:link>
@@ -256,7 +320,7 @@
                         <g:each in="${source_visibleProviders}" var="source_role">
                             <g:if test="${source_role.provider}">
                                 <div class="ui checkbox la-toggle-radio la-share">
-                                    <input class="ui checkbox" type="checkbox" name="toggleShareOrgRoles"
+                                    <input class="ui checkbox" type="checkbox" name="toggleShareProviderRoles"
                                            value="${source_role.class.name}:${source_role.id}" ${source_role.isShared ? 'checked' : ''}/>
                                 </div>
                                 <br />
@@ -287,8 +351,7 @@
                             <g:each in="${target_visibleProviders}" var="target_role">
                                 <g:if test="${target_role.provider}">
                                     <div data-oid="${genericOIDService.getOID(target_role)}">
-                                        <strong><i class="university icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
-                                        </strong>
+                                        <strong><i class="handshake icon"></i></strong>
                                         <g:link controller="provider" action="show" target="_blank"
                                                 id="${target_role.provider.id}">
                                             ${target_role.provider.name}
@@ -380,8 +443,7 @@
                             </g:if>
                             <g:each in="${target_visibleVendors}" var="target_role">
                                     <div data-oid="${genericOIDService.getOID(target_role)}">
-                                        <strong><i class="shipping fast icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
-                                        </strong>
+                                        <strong><i class="shipping fast icon"></i></strong>
                                         <g:link controller="vendor" action="show" target="_blank"
                                                 id="${target_role.vendor.id}">
                                             ${target_role.vendor.name}
@@ -797,8 +859,12 @@
                 $deleteLicenses:                    $('input:checkbox[name="copyObject.deleteLicenses"]'),
                 $takeProviders:                     $('input:checkbox[name="copyObject.takeProviders"]'),
                 $deleteProviders:                   $('input:checkbox[name="copyObject.deleteProviders"]'),
+                $takeVendors:                       $('input:checkbox[name="copyObject.takeVendors"]'),
+                $deleteVendors:                     $('input:checkbox[name="copyObject.deleteVendors"]'),
                 $takeSpecificSubscriptionEditors:   $('input:checkbox[name="subscription.takeSpecificSubscriptionEditors"]'),
                 $deleteSpecificSubscriptionEditors: $('input:checkbox[name="subscription.deleteSpecificSubscriptionEditors"]'),
+                $takeAltname:                       $('input:checkbox[name="copyObject.takeAltnames"]'),
+                $deleteAltname:                      $('input:checkbox[name="copyObject.deleteAltnames"]'),
                 $takeIdentifier:                    $('input:checkbox[name="copyObject.takeIdentifierIds"]'),
                 $deleteIdentifier:                  $('input:checkbox[name="copyObject.deleteIdentifierIds"]'),
                 $takeLinks:                         $('input:checkbox[name="copyObject.takeLinks"]'),
@@ -812,10 +878,14 @@
                 scc.checkboxes.$deleteLicenses.change(function (event) { scc.deleteLicenses(this); } ).trigger('change');
                 scc.checkboxes.$takeProviders.change(function (event) { scc.takeProviders(this); } ).trigger('change');
                 scc.checkboxes.$deleteProviders.change(function (event) { scc.deleteProviders(this); } ).trigger('change');
+                scc.checkboxes.$takeVendors.change(function (event) { scc.takeVendors(this); } ).trigger('change');
+                scc.checkboxes.$deleteVendors.change(function (event) { scc.deleteVendors(this); } ).trigger('change');
                 scc.checkboxes.$takeSpecificSubscriptionEditors.change(function (event) { scc.takeSpecificSubscriptionEditors(this); } ).trigger('change');
                 scc.checkboxes.$deleteSpecificSubscriptionEditors.change(function (event) { scc.deleteSpecificSubscriptionEditors(this); } ).trigger('change');
                 scc.checkboxes.$takeSpecificSubscriptionEditors.change(function (event) { scc.takeSpecificSubscriptionEditors(this); } ).trigger('change');
                 scc.checkboxes.$deleteSpecificSubscriptionEditors.change(function (event) { scc.deleteSpecificSubscriptionEditors(this); } ).trigger('change');
+                scc.checkboxes.$takeAltname.change(function (event) { scc.takeAltname(this); } ).trigger('change');
+                scc.checkboxes.$deleteAltname.change(function (event) { scc.deleteAltname(this); } ).trigger('change');
                 scc.checkboxes.$takeIdentifier.change(function (event) { scc.takeIdentifier(this); } ).trigger('change');
                 scc.checkboxes.$deleteIdentifier.change(function (event) { scc.deleteIdentifier(this); } ).trigger('change');
                 scc.checkboxes.$takeLinks.change(function (event) { scc.takeLinks(this); } ).trigger('change');
@@ -843,6 +913,13 @@
                 JSPC.app.subCopyController._handleDeleted(elem, 'takeProviders')
             },
 
+            takeVendors: function (elem) {
+                JSPC.app.subCopyController._handleTake(elem, 'takeVendors', 'takeVendors')
+            },
+            deleteVendors: function (elem) {
+                JSPC.app.subCopyController._handleDeleted(elem, 'takeVendors')
+            },
+
             takeSpecificSubscriptionEditors: function (elem) {
                 if (elem.checked) {
                     $('.table tr td[data-element="subscription.takeSpecificSubscriptionEditors.source"] div div[data-oid="' + elem.value + '"]').addClass('willStay');
@@ -860,6 +937,13 @@
                 } else {
                     $('.table tr td[data-element="subscription.takeSpecificSubscriptionEditors.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
                 }
+            },
+
+            takeAltname: function (elem) {
+                JSPC.app.subCopyController._handleTake(elem, 'takeAltname', 'takeAltnames')
+            },
+            deleteAltname: function (elem) {
+                JSPC.app.subCopyController._handleDeleted(elem, 'takeAltname')
             },
 
             takeIdentifier: function (elem) {

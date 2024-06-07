@@ -1119,7 +1119,6 @@ class MyInstitutionController  {
             fsr.query = efq.query
             fsr.queryParams = efq.queryParams as Map<String, Object>
         }
-        */
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
         if(queryCuratoryGroups.code == 404) {
@@ -1130,13 +1129,16 @@ class MyInstitutionController  {
                 List recordsCuratoryGroups = queryCuratoryGroups.result
                 result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
             }
-            result.wekbRecords = vendorService.getWekbVendorRecords(params, result)
         }
+        */
+        result.wekbRecords = vendorService.getWekbVendorRecords(params, result)
+        /*
         result.curatoryGroupTypes = [
                 [value: 'Provider', name: message(code: 'package.curatoryGroup.provider')],
                 [value: 'Vendor', name: message(code: 'package.curatoryGroup.vendor')],
                 [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
         ]
+        */
 
         result.flagContentGokb = true // vendorService.getWekbVendorRecords()
         String query = "select v from VendorRole vr join vr.vendor v, OrgRole oo join oo.sub s where vr.subscription = s and oo.org = :contextOrg"
@@ -1180,6 +1182,19 @@ class MyInstitutionController  {
         }
 
         Set<Vendor> vendorsTotal = Vendor.executeQuery(query, queryParams)
+
+        if (params.isMyX) {
+            List<String> xFilter = params.list('isMyX')
+            Set<Long> f1Result = []
+
+            if (xFilter.contains('wekb_exclusive')) {
+                f1Result.addAll( vendorsTotal.findAll {it.gokbId != null }.collect{ it.id } )
+            }
+            if (xFilter.contains('wekb_not')) {
+                f1Result.addAll( vendorsTotal.findAll { it.gokbId == null }.collect{ it.id }  )
+            }
+            vendorsTotal = vendorsTotal.findAll { f1Result.contains(it.id) }
+        }
         result.vendorListTotal = vendorsTotal.size()
         result.vendorList = vendorsTotal.drop(result.offset).take(result.max)
 
@@ -2988,7 +3003,7 @@ class MyInstitutionController  {
             if (params.filename) {
                 filename = params.filename
             }
-            configMap = [function:[], position: [], type: [], sort: 'pr.org.sortname']
+            configMap = [function:[], position: [], type: [], sort: 'sortname']
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('ief:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('ief:', ''), it.value ) }
             selectedFields.each { String key, value ->

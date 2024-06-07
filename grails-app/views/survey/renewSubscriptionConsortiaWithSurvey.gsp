@@ -39,7 +39,7 @@
 
 
 <g:form action="processRenewalWithSurvey" method="post" enctype="multipart/form-data" params="${params}">
-    <input type="hidden" name="parentSub" value="${parentSub.id}"/>
+    <input type="hidden" name="sourceSubId" value="${sourceSubscription.id}"/>
 
         <table class="ui celled la-js-responsive-table la-table table">
             <thead>
@@ -59,7 +59,7 @@
                 </td>
                 <td class="center aligned">
                     <div class="ui checkbox">
-                    <input type="checkbox" name="auditList" value="name" ${AuditConfig.getConfig(subscription, 'name') ? 'checked': ''} />
+                    <input type="checkbox" name="auditList" value="name" ${AuditConfig.getConfig(sourceSubscription, 'name') ? 'checked': ''} />
                     </div>
                 </td>
 
@@ -69,7 +69,7 @@
                 <td><ui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo.sub_startDate}" required="" /></td>
                 <td class="center aligned">
                     <div class="ui checkbox">
-                        <input type="checkbox" name="auditList" value="startDate" ${AuditConfig.getConfig(subscription, 'startDate') ? 'checked': ''} />
+                        <input type="checkbox" name="auditList" value="startDate" ${AuditConfig.getConfig(sourceSubscription, 'startDate') ? 'checked': ''} />
                     </div>
                 </td>
             </tr>
@@ -78,7 +78,7 @@
                 <td><ui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo.sub_endDate}" /></td>
                 <td class="center aligned">
                     <div class="ui checkbox">
-                        <input type="checkbox" name="auditList" value="endDate" ${AuditConfig.getConfig(subscription, 'endDate') ? 'checked': ''} />
+                        <input type="checkbox" name="auditList" value="endDate" ${AuditConfig.getConfig(sourceSubscription, 'endDate') ? 'checked': ''} />
                     </div>
                 </td>
             </tr>
@@ -87,7 +87,7 @@
                 <td><ui:datepicker class="wide eight" id="subscription.reference_year" name="subscription.reference_year" placeholder="default.date.format.yyyy" value="${permissionInfo.sub_referenceYear}" type="year"/></td>
                 <td class="center aligned">
                     <div class="ui checkbox">
-                        <input type="checkbox" name="auditList" value="referenceYear" ${AuditConfig.getConfig(subscription, 'referenceYear') ? 'checked': ''} />
+                        <input type="checkbox" name="auditList" value="referenceYear" ${AuditConfig.getConfig(sourceSubscription, 'referenceYear') ? 'checked': ''} />
                     </div>
                 </td>
             </tr>
@@ -104,7 +104,7 @@
                 </td>
                 <td class="center aligned">
                     <div class="ui checkbox">
-                        <input type="checkbox" name="auditList" value="status" ${AuditConfig.getConfig(subscription, 'status') ? 'checked': ''} />
+                        <input type="checkbox" name="auditList" value="status" ${AuditConfig.getConfig(sourceSubscription, 'status') ? 'checked': ''} />
                     </div>
                 </td>
             </tr>
@@ -120,7 +120,7 @@
                 </td>
                 <td class="center aligned">
                     <div class="ui checkbox">
-                        <input type="checkbox" name="auditList" value="kind" ${AuditConfig.getConfig(subscription, 'kind') ? 'checked': ''} />
+                        <input type="checkbox" name="auditList" value="kind" ${AuditConfig.getConfig(sourceSubscription, 'kind') ? 'checked': ''} />
                     </div>
                 </td>
             </tr>
@@ -137,7 +137,7 @@
                 </td>
                 <td class="center aligned">
                     <div class="ui checkbox">
-                        <input type="checkbox" name="auditList" value="form" ${AuditConfig.getConfig(subscription, 'form') ? 'checked': ''} />
+                        <input type="checkbox" name="auditList" value="form" ${AuditConfig.getConfig(sourceSubscription, 'form') ? 'checked': ''} />
                     </div>
                 </td>
             </tr>
@@ -153,7 +153,7 @@
                 </td>
                 <td class="center aligned">
                     <div class="ui checkbox">
-                        <input type="checkbox" name="auditList" value="resource" ${AuditConfig.getConfig(subscription, 'resource') ? 'checked': ''} />
+                        <input type="checkbox" name="auditList" value="resource" ${AuditConfig.getConfig(sourceSubscription, 'resource') ? 'checked': ''} />
                     </div>
                 </td>
             </tr>
@@ -169,7 +169,7 @@
                 </td>
                 <td class="center aligned">
                     <div class="ui checkbox">
-                        <input type="checkbox" name="auditList" value="isPublicForApi" ${AuditConfig.getConfig(subscription, 'isPublicForApi') ? 'checked': ''} />
+                        <input type="checkbox" name="auditList" value="isPublicForApi" ${AuditConfig.getConfig(sourceSubscription, 'isPublicForApi') ? 'checked': ''} />
                     </div>
                 </td>
             </tr>
@@ -185,7 +185,7 @@
                 </td>
                 <td class="center aligned">
                     <div class="ui checkbox">
-                        <input type="checkbox" name="auditList" value="hasPerpetualAccess" ${AuditConfig.getConfig(subscription, 'hasPerpetualAccess') ? 'checked': ''} />
+                        <input type="checkbox" name="auditList" value="hasPerpetualAccess" ${AuditConfig.getConfig(sourceSubscription, 'hasPerpetualAccess') ? 'checked': ''} />
                     </div>
                 </td>
             </tr>
@@ -201,11 +201,11 @@
                 </td>
                 <td class="center aligned">
                     <div class="ui checkbox">
-                        <input type="checkbox" name="auditList" value="hasPublishComponent" ${AuditConfig.getConfig(subscription, 'hasPublishComponent') ? 'checked': ''} />
+                        <input type="checkbox" name="auditList" value="hasPublishComponent" ${AuditConfig.getConfig(sourceSubscription, 'hasPublishComponent') ? 'checked': ''} />
                     </div>
                 </td>
             </tr>
-            <g:if test="${subscription.packages}">
+            <g:if test="${sourceSubscription.packages}">
                 <tr>
                     <th>${message(code: 'subscription.holdingSelection.label.shy')}</th>
                     <td>
@@ -218,7 +218,7 @@
                     </td>
                     <td class="center aligned">
                         <div class="ui checkbox">
-                            <input type="checkbox" name="auditList" value="holdingSelection" ${AuditConfig.getConfig(subscription, 'holdingSelection') ? 'checked': ''} />
+                            <input type="checkbox" name="auditList" value="holdingSelection" ${AuditConfig.getConfig(sourceSubscription, 'holdingSelection') ? 'checked': ''} />
                         </div>
                     </td>
                 </tr>
