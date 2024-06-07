@@ -8,6 +8,10 @@ import de.laser.properties.ProviderProperty
 import de.laser.properties.VendorProperty
 import de.laser.storage.BeanStore
 import de.laser.storage.PropertyStore
+import de.laser.survey.SurveyConfigPackage
+import de.laser.survey.SurveyConfigVendor
+import de.laser.survey.SurveyPackageResult
+import de.laser.survey.SurveyVendorResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.storage.RDConstants
@@ -110,11 +114,6 @@ class ExportClickMeService {
                                     'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label'],
                                     'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
                                     'survey.ownerComment'                       : [field: null, label: 'Owner Comment', message: 'surveyResult.commentOnlyForOwner', defaultChecked: 'true'],
-                                    'survey.person'            : [field: null, label: 'Selected billing contact', message: 'surveyOrg.person.selected', defaultChecked: 'true'],
-                                    'survey.address'           : [field: null, label: 'Selected billing address', message: 'surveyOrg.address.selected', defaultChecked: 'true'],
-                                    'survey.eInvoicePortal'    : [field: null, label: 'Invoice receipt platform', message: 'surveyOrg.eInvoicePortal.label', defaultChecked: 'true'],
-                                    'survey.eInvoiceLeitwegId' : [field: null, label: ' Leit ID', message: 'surveyOrg.eInvoiceLeitwegId.label', defaultChecked: 'true'],
-                                    'survey.eInvoiceLeitkriterium' : [field: null, label: 'Leitkriterium', message: 'surveyOrg.eInvoiceLeitkriterium.label', defaultChecked: 'true'],
                             ]
                     ],
 
@@ -1561,12 +1560,6 @@ class ExportClickMeService {
                             'survey.ownerComment'        : [field: null, label: 'Owner Comment', message: 'surveyResult.commentOnlyForOwner', defaultChecked: 'true'],
                             'survey.finishDate'        : [field: null, label: 'Finish Date', message: 'surveyInfo.finishedDate', defaultChecked: 'true'],
                             'survey.reminderMailDate'  : [field: null, label: 'Reminder Mail Date', message: 'surveyOrg.reminderMailDate'],
-                            'survey.person'            : [field: null, label: 'Selected billing contact', message: 'surveyOrg.person.selected', defaultChecked: 'true'],
-                            'survey.address'           : [field: null, label: 'Selected billing address', message: 'surveyOrg.address.selected', defaultChecked: 'true'],
-                            'survey.eInvoicePortal'    : [field: null, label: 'Invoice receipt platform', message: 'surveyOrg.eInvoicePortal.label', defaultChecked: 'true'],
-                            'survey.eInvoiceLeitwegId' : [field: null, label: ' Leit ID', message: 'surveyOrg.eInvoiceLeitwegId.label', defaultChecked: 'true'],
-                            'survey.eInvoiceLeitkriterium' : [field: null, label: 'Leitkriterium', message: 'surveyOrg.eInvoiceLeitkriterium.label', defaultChecked: 'true'],
-
                     ]
             ],
 
@@ -1933,6 +1926,20 @@ class ExportClickMeService {
             }
         }*/
 
+        if(surveyConfig.vendorSurvey){
+            exportFields.put("vendorSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.vendorSurvey.label', null, locale)}", defaultChecked: 'true', separateSheet: 'true'])
+        }
+        if(surveyConfig.packageSurvey){
+            exportFields.put("packageSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.packageSurvey.label', null, locale)}", defaultChecked: 'true', separateSheet: 'true'])
+        }
+        if(surveyConfig.invoicingInformation){
+            exportFields.put('survey.person', [field: null, label: 'Selected billing contact', message: 'surveyOrg.person.selected', defaultChecked: 'true'])
+            exportFields.put('survey.address', [field: null, label: 'Selected billing address', message: 'surveyOrg.address.selected', defaultChecked: 'true'])
+            exportFields.put('survey.eInvoicePortal', [field: null, label: 'Invoice receipt platform', message: 'surveyOrg.eInvoicePortal.label', defaultChecked: 'true'])
+            exportFields.put('survey.eInvoiceLeitwegId', [field: null, label: ' Leit ID', message: 'surveyOrg.eInvoiceLeitwegId.label', defaultChecked: 'true'])
+            exportFields.put('survey.eInvoiceLeitkriterium', [field: null, label: 'Leitkriterium', message: 'surveyOrg.eInvoiceLeitkriterium.label', defaultChecked: 'true'])
+        }
+
         exportFields
     }
 
@@ -2003,6 +2010,48 @@ class ExportClickMeService {
                     fields.survey.fields.costItemsElements << ["renewalSurveyCostItems.${it.key}": [field: null, label: RefdataValue.get(it.key).getI10n('value')]]
                 }
         }*/
+
+        if(surveyConfig.vendorSurvey){
+            fields.survey.fields << ["vendorSurvey": [field: null, label: "${messageSource.getMessage('surveyconfig.vendorSurvey.label', null, locale)}", defaultChecked: 'true', separateSheet: 'true']]
+        }else {
+            if(fields.survey.fields.containsKey('vendorSurvey')) {
+                fields.survey.fields.remove('vendorSurvey')
+            }
+        }
+
+
+        if(surveyConfig.packageSurvey){
+            fields.survey.fields << ["packageSurvey":  [field: null, label: "${messageSource.getMessage('surveyconfig.packageSurvey.label', null, locale)}", defaultChecked: 'true', separateSheet: 'true']]
+        }else {
+            if(fields.survey.fields.containsKey('packageSurvey')) {
+                fields.survey.fields.remove('packageSurvey')
+            }
+        }
+
+
+        if(surveyConfig.invoicingInformation){
+            fields.survey.fields << ['survey.person': [field: null, label: 'Selected billing contact', message: 'surveyOrg.person.selected', defaultChecked: 'true']]
+            fields.survey.fields << ['survey.address': [field: null, label: 'Selected billing address', message: 'surveyOrg.address.selected', defaultChecked: 'true']]
+            fields.survey.fields << ['survey.eInvoicePortal': [field: null, label: 'Invoice receipt platform', message: 'surveyOrg.eInvoicePortal.label', defaultChecked: 'true']]
+            fields.survey.fields << ['survey.eInvoiceLeitwegId': [field: null, label: ' Leit ID', message: 'surveyOrg.eInvoiceLeitwegId.label', defaultChecked: 'true']]
+            fields.survey.fields << ['survey.eInvoiceLeitkriterium': [field: null, label: 'Leitkriterium', message: 'surveyOrg.eInvoiceLeitkriterium.label', defaultChecked: 'true']]
+        }else {
+            if(fields.survey.fields.containsKey('survey.person')) {
+                fields.survey.fields.remove('survey.person')
+            }
+            if(fields.survey.fields.containsKey('survey.address')) {
+                fields.survey.fields.remove('survey.address')
+            }
+            if(fields.survey.fields.containsKey('survey.eInvoicePortal')) {
+                fields.survey.fields.remove('survey.eInvoicePortal')
+            }
+            if(fields.survey.fields.containsKey('survey.eInvoiceLeitwegId')) {
+                fields.survey.fields.remove('survey.eInvoiceLeitwegId')
+            }
+            if(fields.survey.fields.containsKey('survey.eInvoiceLeitkriterium')) {
+                fields.survey.fields.remove('survey.eInvoiceLeitkriterium')
+            }
+        }
 
         fields = getClickMeFields(clickMeConfig, fields)
 
@@ -3289,6 +3338,7 @@ class ExportClickMeService {
     Map<String, Object> getExportSurveyEvaluationFields(SurveyConfig surveyConfig) {
 
         Map<String, Object> exportFields = [:]
+        Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
         Org contextOrg = contextService.getOrg()
 
@@ -3335,7 +3385,7 @@ class ExportClickMeService {
         }
 
         if(surveyConfig.pickAndChoose){
-            exportFields.put("pickAndChoose", [field: null, defaultChecked: 'true'])
+            exportFields.put("pickAndChoose", [field: null, label: "${messageSource.getMessage('surveyEvaluation.titles.label', null, locale)}", defaultChecked: 'true'])
         }
 
         if(surveyConfig.subscription) {
@@ -3350,6 +3400,20 @@ class ExportClickMeService {
                     exportFields.put("costItemsElementSubCostItem.${it.key}", [field: null, label: RefdataValue.get(it.key).getI10n('value')])
                 }
             }
+        }
+
+        if(surveyConfig.vendorSurvey){
+            exportFields.put("vendorSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.vendorSurvey.label', null, locale)}", defaultChecked: 'true', separateSheet: 'true'])
+        }
+        if(surveyConfig.packageSurvey){
+            exportFields.put("packageSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.packageSurvey.label', null, locale)}", defaultChecked: 'true', separateSheet: 'true'])
+        }
+        if(surveyConfig.invoicingInformation){
+            exportFields.put('survey.person', [field: null, label: 'Selected billing contact', message: 'surveyOrg.person.selected', defaultChecked: 'true'])
+            exportFields.put('survey.address', [field: null, label: 'Selected billing address', message: 'surveyOrg.address.selected', defaultChecked: 'true'])
+            exportFields.put('survey.eInvoicePortal', [field: null, label: 'Invoice receipt platform', message: 'surveyOrg.eInvoicePortal.label', defaultChecked: 'true'])
+            exportFields.put('survey.eInvoiceLeitwegId', [field: null, label: ' Leit ID', message: 'surveyOrg.eInvoiceLeitwegId.label', defaultChecked: 'true'])
+            exportFields.put('survey.eInvoiceLeitkriterium', [field: null, label: 'Leitkriterium', message: 'surveyOrg.eInvoiceLeitkriterium.label', defaultChecked: 'true'])
         }
 
         exportFields
@@ -3409,6 +3473,48 @@ class ExportClickMeService {
         }else {
             if(fields.survey.fields.containsKey('pickAndChoose')) {
                 fields.survey.fields.remove('pickAndChoose')
+            }
+        }
+
+        if(surveyConfig.vendorSurvey){
+            fields.survey.fields << ["vendorSurvey": [field: null, label: "${messageSource.getMessage('surveyconfig.vendorSurvey.label', null, locale)}", defaultChecked: 'true', separateSheet: 'true']]
+        }else {
+            if(fields.survey.fields.containsKey('vendorSurvey')) {
+                fields.survey.fields.remove('vendorSurvey')
+            }
+        }
+
+
+        if(surveyConfig.packageSurvey){
+            fields.survey.fields << ["packageSurvey":  [field: null, label: "${messageSource.getMessage('surveyconfig.packageSurvey.label', null, locale)}", defaultChecked: 'true', separateSheet: 'true']]
+        }else {
+            if(fields.survey.fields.containsKey('packageSurvey')) {
+                fields.survey.fields.remove('packageSurvey')
+            }
+        }
+
+
+        if(surveyConfig.invoicingInformation){
+            fields.survey.fields << ['survey.person': [field: null, label: 'Selected billing contact', message: 'surveyOrg.person.selected', defaultChecked: 'true']]
+            fields.survey.fields << ['survey.address': [field: null, label: 'Selected billing address', message: 'surveyOrg.address.selected', defaultChecked: 'true']]
+            fields.survey.fields << ['survey.eInvoicePortal': [field: null, label: 'Invoice receipt platform', message: 'surveyOrg.eInvoicePortal.label', defaultChecked: 'true']]
+            fields.survey.fields << ['survey.eInvoiceLeitwegId': [field: null, label: ' Leit ID', message: 'surveyOrg.eInvoiceLeitwegId.label', defaultChecked: 'true']]
+            fields.survey.fields << ['survey.eInvoiceLeitkriterium': [field: null, label: 'Leitkriterium', message: 'surveyOrg.eInvoiceLeitkriterium.label', defaultChecked: 'true']]
+        }else {
+            if(fields.survey.fields.containsKey('survey.person')) {
+                fields.survey.fields.remove('survey.person')
+            }
+            if(fields.survey.fields.containsKey('survey.address')) {
+                fields.survey.fields.remove('survey.address')
+            }
+            if(fields.survey.fields.containsKey('survey.eInvoicePortal')) {
+                fields.survey.fields.remove('survey.eInvoicePortal')
+            }
+            if(fields.survey.fields.containsKey('survey.eInvoiceLeitwegId')) {
+                fields.survey.fields.remove('survey.eInvoiceLeitwegId')
+            }
+            if(fields.survey.fields.containsKey('survey.eInvoiceLeitkriterium')) {
+                fields.survey.fields.remove('survey.eInvoiceLeitkriterium')
             }
         }
 
@@ -3820,6 +3926,22 @@ class ExportClickMeService {
 
         if (renewalResult.newOrgsContinuetoSubscription) {
             sheetData = _exportAccessPoints(renewalResult.newOrgsContinuetoSubscription.participant, sheetData, selectedExportFields, locale, " - 4", format)
+        }
+
+        if (renewalResult.orgsContinuetoSubscription) {
+            sheetData = _exportSurveyPackagesAndSurveyVendors(renewalResult.surveyConfig, renewalResult.surveyConfigrenewalResult.orgsContinuetoSubscription.participant, sheetData, selectedExportFields, locale, " - 5", format)
+        }
+
+        if (renewalResult.orgsWithMultiYearTermSub) {
+            sheetData = _exportSurveyPackagesAndSurveyVendors(renewalResult.surveyConfig, renewalResult.orgsWithMultiYearTermSub.collect { it.getSubscriberRespConsortia() }, sheetData, selectedExportFields, locale, " - 6", format)
+        }
+
+        if (renewalResult.orgsWithParticipationInParentSuccessor) {
+            sheetData = _exportSurveyPackagesAndSurveyVendors(renewalResult.surveyConfig, renewalResult.orgsWithParticipationInParentSuccessor.collect { it.getSubscriberRespConsortia() }, sheetData, selectedExportFields, locale, " - 7", format)
+        }
+
+        if (renewalResult.newOrgsContinuetoSubscription) {
+            sheetData = _exportSurveyPackagesAndSurveyVendors(renewalResult.surveyConfig, renewalResult.newOrgsContinuetoSubscription.participant, sheetData, selectedExportFields, locale, " - 8", format)
         }
 
         switch(format) {
@@ -4693,6 +4815,16 @@ class ExportClickMeService {
         if (participantsNotFinish) {
             sheetData = _exportAccessPoints(participantsNotFinish.org, sheetData, selectedExportFields, locale, " - 2", format)
         }
+
+        if (participantsFinish) {
+            sheetData = _exportSurveyPackagesAndSurveyVendors(result.surveyConfig, participantsFinish.org, sheetData, selectedExportFields, locale, " - 3", format)
+        }
+
+        if (participantsNotFinish) {
+            sheetData = _exportSurveyPackagesAndSurveyVendors(result.surveyConfig, participantsNotFinish.org, sheetData, selectedExportFields, locale, " - 4", format)
+        }
+
+
 
         switch(format) {
             case FORMAT.XLS: return exportService.generateXLSXWorkbook(sheetData)
@@ -6094,14 +6226,14 @@ class ExportClickMeService {
                     if (participantResult.surveyOrg.person && participantResult.surveyOrg.person.contacts) {
                         person = participantResult.surveyOrg.person.contacts.collect {it.content}.join('; ')
                     }
-                    row.add(createTableCell(format, person, surveyOrg && surveyService.modificationToCostInformation(surveyOrg) ? 'negative' : ''))
+                    row.add(createTableCell(format, person, participantResult.surveyOrg && surveyService.modificationToCostInformation(participantResult.surveyOrg) ? 'negative' : ''))
                 }
                 else if (fieldKey == 'survey.address') {
                     String address = ""
                     if (participantResult.surveyOrg && participantResult.surveyOrg.address) {
                         address = _getAddress(participantResult.surveyOrg.address, participantResult.surveyOrg.org)
                     }
-                    row.add(createTableCell(format, address, surveyOrg && surveyService.modificationToCostInformation(surveyOrg) ? 'negative' : ''))
+                    row.add(createTableCell(format, address, participantResult.surveyOrg && surveyService.modificationToCostInformation(participantResult.surveyOrg) ? 'negative' : ''))
                 }
                 else if (fieldKey == 'survey.eInvoicePortal') {
                     String eInvoicePortal = ""
@@ -6540,6 +6672,43 @@ class ExportClickMeService {
 
                 export = accessPointService.exportMailDomainsOfOrgs(orgList, format, true)
                 sheetName = messageSource.getMessage('subscriptionDetails.members.exportMailDomains.fileName.short', null, locale) + " (${orgList.size()})" +sheetNameAddition
+                sheetData[sheetName] = export
+            }
+
+        }
+
+        return sheetData
+    }
+
+    private Map _exportSurveyPackagesAndSurveyVendors(SurveyConfig surveyConfig, List<Org> orgList, Map sheetData, LinkedHashMap selectedExportFields, Locale locale, String sheetNameAddition, FORMAT format) {
+
+        Map export = [:]
+        String sheetName = ''
+
+        if ('packageSurvey' in selectedExportFields.keySet()) {
+            if (orgList) {
+
+                export = _exportSurveyPackages(surveyConfig, orgList, format)
+                sheetName = messageSource.getMessage('surveyconfig.packageSurvey.label', null, locale) + " (${orgList.size()})" +sheetNameAddition
+                sheetData[sheetName] = export
+            }
+        }
+
+        if ('vendorSurvey' in selectedExportFields.keySet()) {
+            if (orgList) {
+
+                export = _exportSurveyVendors(surveyConfig, orgList, format)
+                sheetName = messageSource.getMessage('surveyconfig.vendorSurvey.label', null, locale) + " (${orgList.size()})" +sheetNameAddition
+                sheetData[sheetName] = export
+            }
+
+        }
+
+        if ('packageSurveyCostItems' in selectedExportFields.keySet()) {
+            if (orgList) {
+
+                export = accessPointService.exportEZProxysOfOrgs(orgList, format, true)
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportEZProxys.fileName.short', null, locale) + " (${orgList.size()})" +sheetNameAddition
                 sheetData[sheetName] = export
             }
 
@@ -7453,5 +7622,136 @@ class ExportClickMeService {
         }
 
         return fields
+    }
+
+    def _exportSurveyPackages(SurveyConfig surveyConfig, List<Org> orgs, ExportClickMeService.FORMAT format) {
+
+        List titles = []
+        Locale locale = LocaleUtils.getCurrentLocale()
+
+        titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
+                       'Name'
+        ])
+
+        surveyConfig.surveyPackages.sort {it.pkg.name}.each {SurveyConfigPackage surveyConfigPackage ->
+            titles << surveyConfigPackage.pkg.name
+            titles << messageSource.getMessage('surveyResult.participantComment', null, locale)
+            titles << messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale)
+
+        }
+
+        List surveyPackageData = []
+        orgs.each { Org org ->
+            List row = []
+            String sortname = org.sortname ?: ' '
+            row.add(createTableCell(format, sortname))
+            row.add(createTableCell(format, org.name))
+
+            surveyConfig.surveyPackages.sort {it.pkg.name}.each { SurveyConfigPackage surveyConfigPackage ->
+                SurveyPackageResult surveyPackageResult = SurveyPackageResult.findBySurveyConfigAndPkgAndParticipant(surveyConfig, surveyConfigPackage.pkg, org)
+                if(surveyPackageResult){
+                    row.add(createTableCell(format, messageSource.getMessage('default.selected.label', null, locale), 'positive'))
+                    row.add(createTableCell(format, surveyPackageResult.comment))
+                    row.add(createTableCell(format, surveyPackageResult.ownerComment))
+                }else{
+                    row.add(createTableCell(format, ' '))
+                    row.add(createTableCell(format, ' '))
+                    row.add(createTableCell(format, ' '))
+                }
+            }
+
+            surveyPackageData.add(row)
+        }
+
+        return [titleRow: titles, columnData: surveyPackageData]
+
+    }
+
+    def _exportSurveyCostItemPackages(SurveyConfig surveyConfig, List<Org> orgs, ExportClickMeService.FORMAT format) {
+
+        List titles = []
+        Locale locale = LocaleUtils.getCurrentLocale()
+
+        titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
+                       'Name'
+        ])
+
+        surveyConfig.surveyPackages.sort {it.pkg.name}.each {SurveyConfigPackage surveyConfigPackage ->
+            titles << surveyConfigPackage.pkg.name
+            titles << messageSource.getMessage('surveyResult.participantComment', null, locale)
+            titles << messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale)
+
+        }
+
+        List surveyPackageData = []
+        orgs.each { Org org ->
+            List row = []
+            String sortname = org.sortname ?: ' '
+            row.add(createTableCell(format, sortname))
+            row.add(createTableCell(format, org.name))
+
+            surveyConfig.surveyPackages.sort {it.pkg.name}.each { SurveyConfigPackage surveyConfigPackage ->
+                SurveyPackageResult surveyPackageResult = SurveyPackageResult.findBySurveyConfigAndPkgAndParticipant(surveyConfig, surveyConfigPackage.pkg, org)
+                List<CostItem> costItemList = CostItem.findAllBySurveyOrgAndPkg(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org), surveyConfigPackage.pkg)
+                if(surveyPackageResult && costItemList){
+                    row.add(createTableCell(format, messageSource.getMessage('default.selected.label', null, locale), 'positive'))
+                    row.add(createTableCell(format, surveyPackageResult.comment))
+                    row.add(createTableCell(format, surveyPackageResult.ownerComment))
+                }else{
+                    row.add(createTableCell(format, ' '))
+                    row.add(createTableCell(format, ' '))
+                    row.add(createTableCell(format, ' '))
+                }
+            }
+
+            surveyPackageData.add(row)
+        }
+
+        return [titleRow: titles, columnData: surveyPackageData]
+
+    }
+
+
+    def _exportSurveyVendors(SurveyConfig surveyConfig, List<Org> orgs, ExportClickMeService.FORMAT format) {
+
+        List titles = []
+        Locale locale = LocaleUtils.getCurrentLocale()
+
+        titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
+                       'Name'
+        ])
+
+        surveyConfig.surveyVendors.sort {it.vendor.name}.each { SurveyConfigVendor surveyConfigVendor ->
+            titles << surveyConfigVendor.vendor.name
+            titles << messageSource.getMessage('surveyResult.participantComment', null, locale)
+            titles << messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale)
+
+        }
+
+        List surveyVendorData = []
+        orgs.each { Org org ->
+            List row = []
+            String sortname = org.sortname ?: ' '
+            row.add(createTableCell(format, sortname))
+            row.add(createTableCell(format, org.name))
+
+            surveyConfig.surveyVendors.sort {it.vendor.name}.each { SurveyConfigVendor surveyConfigVendor ->
+                SurveyVendorResult surveyVendorResult = SurveyVendorResult.findBySurveyConfigAndVendorAndParticipant(surveyConfig, surveyConfigVendor.vendor, org)
+                if(surveyVendorResult){
+                    row.add(createTableCell(format, messageSource.getMessage('default.selected.label', null, locale), 'positive'))
+                    row.add(createTableCell(format, surveyVendorResult.comment))
+                    row.add(createTableCell(format, surveyVendorResult.ownerComment))
+                }else{
+                    row.add(createTableCell(format, ' '))
+                    row.add(createTableCell(format, ' '))
+                    row.add(createTableCell(format, ' '))
+                }
+            }
+
+            surveyVendorData.add(row)
+        }
+
+        return [titleRow: titles, columnData: surveyVendorData]
+
     }
 }
