@@ -291,37 +291,31 @@
         </div>
     </g:if>
 
-    <g:set var="providers" value="${tipp.getPublishers()}"/>
-    <g:if test="${(providers || showEmptyFields)}">
-        <div class="item">
-            <i class="grey university icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.provider')}"></i>
 
-            <div class="content">
-                ${showCompact ? '' : message(code: 'tipp.provider') + ':'}
-                <g:if test="${providers}">
-                    <div class="ui list">
-                        <g:each in="${providers}" var="provider">
+    <div class="item">
+        <i class="grey university icon la-popup-tooltip la-delay"
+           data-content="${message(code: 'tipp.provider')}"></i>
 
-                            <g:link controller="organisation" action="show" target="_blank"
-                                    id="${provider.id}">${provider.name}</g:link>
+        <div class="content">
+            ${showCompact ? '' : message(code: 'tipp.provider') + ':'}
+            <g:if test="${tipp.pkg.provider}">
 
-                        %{--<g:each in="${apisources}" var="gokbAPI">
-                            <g:if test="${provider.gokbId}">
-                                <a role="button" class="ui icon tiny blue button la-popup-tooltip la-delay"
-                                   data-content="${message(code: 'wekb')}"
-                                   href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/orgContent/?id=' + provider.gokbId : '#'}"
-                                   target="_blank"><i class="la-gokb  icon"></i>
-                                </a>
-                            </g:if>
-                        </g:each>--}%
+                <g:link controller="provider" action="show" target="_blank"
+                        id="${tipp.pkg.provider.id}">${tipp.pkg.provider.name}</g:link>
 
-                        </g:each>
-                    </div>
-                </g:if>
-            </div>
+                <g:each in="${apisources}" var="gokbAPI">
+                    <g:if test="${tipp.pkg.provider.gokbId}">
+                        <a role="button" class="ui icon tiny blue button la-popup-tooltip la-delay"
+                           data-content="${message(code: 'wekb')}"
+                           href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/tippContent/?id=' + tipp.gokbId : '#'}"
+                           target="_blank"><i class="la-gokb  icon"></i>
+                        </a>
+                    </g:if>
+                </g:each>
+
+            </g:if>
         </div>
-    </g:if>
+    </div>
 
 %{--<g:if test="${ie && (ie.availabilityStatus || showEmptyFields)}">
     <g:if test="${ie.availabilityStatus?.value == 'Expected'}">

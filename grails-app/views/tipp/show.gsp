@@ -219,16 +219,15 @@
                 </g:else>
 
                 <g:if test="${tipp.hostPlatformURL}">
-                    <br/>
                     <ui:linkWithIcon
                             href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
                 </g:if>
             </div>
 
             <div class="item">
-                ${message(code: 'platform.provider')}:  <g:if test="${tipp.platform.org}">
-                    <g:link controller="organisation" action="show"
-                            id="${tipp.platform.org.id}">${tipp.platform.org.name}</g:link>
+                ${message(code: 'platform.provider')}:  <g:if test="${tipp.platform.provider}">
+                    <g:link controller="provider" action="show"
+                            id="${tipp.platform.provider.id}">${tipp.platform.provider.name}</g:link>
                 </g:if>
 
             </div>
@@ -258,7 +257,7 @@
     </div>
 
 
-    <div class="ui card">
+%{--    <div class="ui card">
         <div class="content">
             <div class="header"><g:message code="title.edit.orglink"/></div>
         </div>
@@ -268,7 +267,7 @@
             <table class="ui celled la-js-responsive-table la-table table ">
                 <thead>
                 <tr>
-                    %{--<th><g:message code="title.edit.component_id.label"/></th>--}%
+                    --}%%{--<th><g:message code="title.edit.component_id.label"/></th>--}%%{--
                     <th><g:message code="template.orgLinks.name"/></th>
                     <th><g:message code="default.role.label"/></th>
                     <th><g:message code="default.from"/></th>
@@ -278,7 +277,7 @@
                 <tbody>
                 <g:each in="${tipp.orgs}" var="org">
                     <tr>
-                        %{--<td>${org.org.id}</td>--}%
+                        --}%%{--<td>${org.org.id}</td>--}%%{--
                         <td><g:link controller="organisation" action="show"
                                     id="${org.org.id}">${org.org.name}</g:link></td>
                         <td>${org.roleType.getI10n("value")}</td>
@@ -293,7 +292,7 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </div>--}%
 
   <div class="ui card">
                 <div class="content">

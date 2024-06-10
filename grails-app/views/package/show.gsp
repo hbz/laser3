@@ -279,8 +279,8 @@ making obsolete package/actions
                                         <dl>
                                             <dt>${message(code: 'platform.provider')}</dt>
                                             <dd>
-                                                <g:if test="${platformInstanceRecord.org}">
-                                                    <g:link controller="organisation" action="show" id="${platformInstanceRecord.org.id}">${platformInstanceRecord.org.name}</g:link>
+                                                <g:if test="${platformInstanceRecord.provider}">
+                                                    <g:link controller="provider" action="show" id="${platformInstanceRecord.provider.id}">${platformInstanceRecord.provider.name}</g:link>
                                                 </g:if>
                                             </dd>
                                         </dl>

@@ -41,11 +41,11 @@
                     </g:if>
                 </td>
                 <td>
-                    <g:if test="${platformInstance.org}">
-                        <g:if test="${platformInstance.org.gokbId != null}">
-                            <ui:wekbIconLink type="org" gokbId="${platformInstance.org.gokbId}" />
+                    <g:if test="${platformInstance.provider}">
+                        <g:if test="${platformInstance.provider.gokbId != null}">
+                            <ui:wekbIconLink type="provider" gokbId="${platformInstance.provider.gokbId}" />
                         </g:if>
-                        <g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
+                        <g:link controller="provider" action="show" id="${platformInstance.provider.id}">${platformInstance.provider.getDesignation()}</g:link>
                     </g:if>
                 </td>
                 <%--<td>

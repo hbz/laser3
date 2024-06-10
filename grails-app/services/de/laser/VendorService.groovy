@@ -515,7 +515,7 @@ class VendorService {
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
             result.docsCount        = docstoreService.getDocsCount(result.vendor, result.institution)
             result.notesCount       = docstoreService.getNotesCount(result.vendor, result.institution)
-            //result.checklistCount   = workflowService.getWorkflowCount(result.vendor, result.institution) TODO
+            result.checklistCount   = workflowService.getWorkflowCount(result.vendor, result.institution) TODO
         }
 
         SwissKnife.setPaginationParams(result, params, contextUser)

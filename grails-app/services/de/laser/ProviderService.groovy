@@ -456,7 +456,7 @@ class ProviderService {
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
             result.docsCount        = docstoreService.getDocsCount(result.provider, result.institution)
             result.notesCount       = docstoreService.getNotesCount(result.provider, result.institution)
-            //result.checklistCount   = workflowService.getWorkflowCount(result.provider, result.institution) TODO
+            result.checklistCount   = workflowService.getWorkflowCount(result.provider, result.institution) TODO
         }
 
         //result.links = linksGenerationService.getProviderLinks(result.orgInstance)

@@ -1,4 +1,4 @@
-<%@page import="de.laser.CustomerTypeService; de.laser.survey.SurveyPackageResult; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.Vendor; de.laser.convenience.Marker; de.laser.utils.DateUtils; de.laser.storage.RDConstants; de.laser.Package; de.laser.Org; de.laser.Platform; de.laser.RefdataValue" %>
+<%@page import="de.laser.Provider; de.laser.CustomerTypeService; de.laser.survey.SurveyPackageResult; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.Vendor; de.laser.convenience.Marker; de.laser.utils.DateUtils; de.laser.storage.RDConstants; de.laser.Package; de.laser.Org; de.laser.Platform; de.laser.RefdataValue" %>
 <laser:serviceInjection/>
 <table class="ui sortable celled la-js-responsive-table la-table table">
     <thead>
@@ -125,14 +125,14 @@
             </g:else>
             <g:set var="pkg" value="${Package.findByGokbId(record.uuid)}"/>
             <%
-                Org org
+                Provider provider
                 SortedSet<Vendor> vendors = new TreeSet<Vendor>()
                 Set<Map> nonSyncedVendors = []
                 Platform plat
                 if(record.providerUuid)
-                    org = Org.findByGokbId(record.providerUuid)
+                    provider = Provider.findByGokbId(record.providerUuid)
                 else
-                    org = pkg.provider
+                    provider = pkg.provider
                 if(record.nominalPlatformUuid)
                     plat = Platform.findByGokbId(record.nominalPlatformUuid)
                 else
@@ -230,11 +230,11 @@
                     </g:if>
                     <g:if test="${tmplConfigItem == 'provider'}">
                         <td>
-                            <g:if test="${org}">
-                                <g:if test="${org.gokbId}">
-                                    <ui:wekbIconLink type="org" gokbId="${org.gokbId}" />
+                            <g:if test="${provider}">
+                                <g:if test="${provider.gokbId}">
+                                    <ui:wekbIconLink type="provider" gokbId="${provider.gokbId}" />
                                 </g:if>
-                                <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link>
+                                <g:link controller="provider" action="show" id="${provider.id}">${provider.name}</g:link>
                             </g:if>
                             <g:else>${record.providerName}</g:else>
                         </td>
@@ -247,7 +247,7 @@
                                         <g:if test="${vendor.gokbId}">
                                             <ui:wekbIconLink type="vendor" gokbId="${vendor.gokbId}" />
                                         </g:if>
-                                        <g:link controller="organisation" action="show" id="${vendor.id}">${vendor.sortname}</g:link>
+                                        <g:link controller="vendor" action="show" id="${vendor.id}">${vendor.sortname}</g:link>
                                     </li>
                                 </g:each>
                                 <g:each in="${nonSyncedVendors}" var="vendor">

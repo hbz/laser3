@@ -1,4 +1,4 @@
-<%@ page import="de.laser.remote.ApiSource; de.laser.storage.RDConstants; de.laser.Platform; de.laser.RefdataValue; de.laser.utils.DateUtils;" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; de.laser.remote.ApiSource; de.laser.storage.RDConstants; de.laser.Platform; de.laser.RefdataValue; de.laser.utils.DateUtils;" %>
 <laser:htmlStart message="platform.details" />
 
 <ui:debugInfo>
@@ -38,7 +38,7 @@
                     <div class="content">
                         <dl>
                             <dt>${message(code: 'platform.name')}</dt>
-                            <dd><ui:xEditable owner="${platformInstance}" field="name"/></dd>
+                            <dd><ui:xEditable owner="${platformInstance}" field="name" overwriteEditable="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}"/></dd>
                         </dl>
                         <dl>
                             <dt>${message(code: 'default.status.label')}</dt>
@@ -46,7 +46,7 @@
                         </dl>
                         <dl>
                             <dt>${message(code: 'platform.natstat.supplier')}</dt>
-                            <dd><ui:xEditable owner="${platformInstance}" field="natstatSupplierID"/></dd>
+                            <dd><ui:xEditable owner="${platformInstance}" field="natstatSupplierID" overwriteEditable="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}"/></dd>
                         </dl>
                     </div>
                 </div>
@@ -55,15 +55,15 @@
                         <dl>
                             <dt>${message(code: 'platform.provider')}</dt>
                             <dd>
-                                <g:if test="${platformInstance.org}">
-                                    <g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.name}</g:link>
+                                <g:if test="${platformInstance.provider}">
+                                    <g:link controller="provider" action="show" id="${platformInstance.provider.id}">${platformInstance.provider.name}</g:link>
                                 </g:if>
                             </dd>
                         </dl>
                         <dl>
                             <dt>${message(code: 'platform.primaryURL')}</dt>
                             <dd>
-                                <ui:xEditable owner="${platformInstance}" field="primaryUrl"/>
+                                <ui:xEditable owner="${platformInstance}" field="primaryUrl" overwriteEditable="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}"/>
                                 <g:if test="${platformInstance.primaryUrl}">
                                     <a role="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
