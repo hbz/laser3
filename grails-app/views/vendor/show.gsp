@@ -428,11 +428,11 @@
                                 </div>
                                 <div class="item">
                                     <strong><g:message code="subscription.plural" /></strong>
-                                    &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}/${subLinks.size()}</div>
+                                    &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}/${subLinks}</div>
                                 </div>
                                 <div class="item">
                                     <strong><g:message code="license.plural" /></strong>
-                                    &nbsp;<div class="ui blue circular label">${currentLicensesCount}/${licLinks.size()}</div>
+                                    &nbsp;<div class="ui blue circular label">${currentLicensesCount}/${licLinks}</div>
                                 </div>
                             </div>
                         </div>
