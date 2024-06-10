@@ -9,7 +9,6 @@
     </div>
     <g:form id="create_provider_role_link_${tmplModalID}" class="ui form" url="[controller:'ajax', action:'addProviderRole']" method="post">
         <input type="hidden" name="parent" value="${parent}" />
-        <input type="hidden" name="property" value="${property}" />
         <input type="hidden" name="recip_prop" value="${recip_prop}" />
         <input type="hidden" name="orm_orgRole" value="${tmplRole?.id}" />
         <input type="hidden" name="linkType" value="${linkType}" />

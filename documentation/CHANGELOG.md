@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5739    07.06.2024  dev     3.4         Andreas Bug         Namensraum-Dubletten per Sync ausgehebelt
+
+5738    07.06.2024  dev     3.4         Andreas Bug         Export der Konsortialstellen funktionierte nicht
+
 5717    06.06.2024  dev     3.4         Andreas Bug         falsche Ausgabe des KBART-Export korrigiert
 
 5649    06.06.2024  dev     3.4         Andreas Feature     Kopie von Anbietern und Lieferanten

@@ -1,11 +1,9 @@
 package de.laser
 
-import de.laser.properties.OrgProperty
+
 import de.laser.properties.PropertyDefinition
-import de.laser.properties.ProviderProperty
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
-import de.laser.traces.DeletedObject
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import org.springframework.context.MessageSource
@@ -87,7 +85,7 @@ class OrganisationService {
         }
         RefdataValue generalContact     = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         RefdataValue responsibleAdmin   = RDStore.PRS_FUNC_RESPONSIBLE_ADMIN
-        RefdataValue billingContact     = RDStore.PRS_FUNC_FC_BILLING_ADDRESS
+        RefdataValue billingContact     = RDStore.PRS_FUNC_INVOICING_CONTACT
         titles.addAll(['ISIL','WIB-ID','EZB-ID',generalContact.getI10n('value')])
         if(addHigherEducationTitles)
             titles.add(responsibleAdmin.getI10n('value'))

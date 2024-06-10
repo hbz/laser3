@@ -576,7 +576,7 @@ class AjaxHtmlController {
         result.org = params.org ? Org.get(params.long('org')) : null
         result.provider = params.provider ? Provider.get(params.long('provider')) : null
         result.vendor = params.vendor ? Vendor.get(params.long('vendor')) : null
-        result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
+        result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_INVOICING_CONTACT, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
         if (result.contextOrg.isCustomerType_Consortium() || result.contextOrg.isCustomerType_Support()) {
             result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
         }
@@ -648,7 +648,7 @@ class AjaxHtmlController {
             result.org = result.personInstance.getBelongsToOrg()
             result.vendor = PersonRole.executeQuery("select distinct(pr.vendor) from PersonRole as pr where pr.prs = :person ", [person: result.personInstance])[0]
             result.provider = PersonRole.executeQuery("select distinct(pr.provider) from PersonRole as pr where pr.prs = :person ", [person: result.personInstance])[0]
-            result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
+            result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_INVOICING_CONTACT, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
             if (contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Support()) {
                 result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
             }

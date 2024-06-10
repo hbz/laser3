@@ -328,7 +328,7 @@
                                 <div class="content">
                                     <h2 class="ui header">${message(code: 'provider.label')}</h2>
                                     <laser:render template="/templates/links/providerLinksAsList"
-                                              model="${[roleLinks: visibleProviders,
+                                              model="${[providerRoles: visibleProviders,
                                                         roleObject: license,
                                                         roleRespValue: 'Specific license editor',
                                                         editmode: editable,
@@ -339,7 +339,6 @@
                                         <laser:render template="/templates/links/providerLinksSimpleModal"
                                                   model="${[linkType: license.class.name,
                                                             parent: license.class.name + ':' + license.id,
-                                                            property: 'orgRelations',
                                                             recip_prop: 'license',
                                                             tmplEntity: message(code:'license.details.tmplEntity'),
                                                             tmplText: message(code:'license.details.tmplText'),

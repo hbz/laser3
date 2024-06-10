@@ -176,7 +176,6 @@ class RDStore {
     public final static RefdataValue PROVIDER_LINK_FOLLOWS       = getRefdataValue('follows', RDConstants.PROVIDER_LINK_TYPE)
 
     public final static RefdataValue PRS_FUNC_CONTACT_PRS               = getRefdataValue('Contact Person', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_FC_BILLING_ADDRESS        = getRefdataValue('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_FC_DELIVERY_ADDRESS       = getRefdataValue('Functional Contact Delivery Address', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_FC_LEGAL_PATRON_ADDRESS   = getRefdataValue('Functional Contact Legal Patron Address', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_FC_LIBRARY_ADDRESS        = getRefdataValue('Functional Contact Library Address', RDConstants.PERSON_FUNCTION)

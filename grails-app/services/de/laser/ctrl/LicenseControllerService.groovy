@@ -23,6 +23,7 @@ class LicenseControllerService {
     ContextService contextService
     DocstoreService docstoreService
     LinksGenerationService linksGenerationService
+    LicenseService licenseService
     TaskService taskService
     WorkflowService workflowService
 
@@ -98,11 +99,6 @@ class LicenseControllerService {
                 [license:result.license]
         )
 
-        result.visibleVendors = OrgRole.executeQuery(
-                "select vr from VendorRole vr join vr.vendor v where vr.license = :license order by v.sortname",
-                [license:result.license]
-        )
-
         result.showConsortiaFunctions = showConsortiaFunctions(result.license)
 
         int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.license).size()
@@ -129,6 +125,9 @@ class LicenseControllerService {
                 return null
             }
         }
+
+        result.visibleProviders = licenseService.getVisibleProviders(result.license)
+        result.visibleVendors = licenseService.getVisibleVendors(result.license)
 
         result
     }
