@@ -15,6 +15,7 @@ import de.laser.LicenseService
 import de.laser.LinksGenerationService
 import de.laser.OrganisationService
 import de.laser.Package
+import de.laser.Provider
 import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
 import de.laser.SubscriptionDiscountScale
@@ -1203,11 +1204,17 @@ class AjaxJsonController {
     def getEmailAddresses() {
         Map result = [:]
 
-        if (params.orgIdList || params.vendorIdList) {
+        if (params.orgIdList || params.providerIdList || params.vendorIdList) {
 
             String query
             Map<String, Object> queryParams
-            if(params.containsKey('vendorIdList')) {
+            if(params.containsKey('providerIdList')) {
+                List<Long> providerIds = Params.getLongList_forCommaSeparatedString(params, 'providerIdList')
+                List<Provider> providerList = providerIds ? Provider.findAllByIdInList(providerIds) : []
+                query = "select distinct p from Person as p inner join p.roleLinks pr where pr.provider in (:providers) "
+                queryParams = [providers: providerList]
+            }
+            else if(params.containsKey('vendorIdList')) {
                 List<Long> vendorIds = Params.getLongList_forCommaSeparatedString(params, 'vendorIdList')
                 List<Vendor> vendorList = vendorIds ? Vendor.findAllByIdInList(vendorIds) : []
                 query = "select distinct p from Person as p inner join p.roleLinks pr where pr.vendor in (:vendors) "
@@ -1252,7 +1259,10 @@ class AjaxJsonController {
             persons.each { Person p ->
                 Contact mail = Contact.findByPrsAndContentType(p, RDStore.CCT_EMAIL)
                 String key
-                if(p.roleLinks[0].vendor)
+                //prefix "org" is correct for selector in template
+                if(p.roleLinks[0].provider)
+                    key = "org${p.roleLinks.provider.id[0]}"
+                else if(p.roleLinks[0].vendor)
                     key = "org${p.roleLinks.vendor.id[0]}"
                 else
                     key = "org${p.roleLinks.org.id[0]}"

@@ -682,7 +682,7 @@ class AjaxController {
     }
 
     /**
-     * Deletes the given relation link between a {@link Vendor} its target
+     * Deletes the given relation link between a {@link Vendor} and its target
      */
     @Secured(['ROLE_USER'])
     @Transactional

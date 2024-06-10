@@ -92,7 +92,7 @@
                                     </div>
                                 </g:if>
                             </div>
-                            <g:if test="${!vendor.gokbId}">
+                            <g:if test="${editable && !vendor.gokbId}">
                                 <input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}">
                             </g:if>
                         </dd>

@@ -1024,6 +1024,7 @@ class MyInstitutionController  {
         }
 
         result.providersTotal = providerListTotal.size()
+        result.allProviders = providerListTotal
         result.providerList = providerListTotal.drop((int) result.offset).take((int) result.max)
 
         String message = message(code: 'export.my.currentProviders') as String
@@ -1196,6 +1197,7 @@ class MyInstitutionController  {
             vendorsTotal = vendorsTotal.findAll { f1Result.contains(it.id) }
         }
         result.vendorListTotal = vendorsTotal.size()
+        result.allVendors = vendorsTotal
         result.vendorList = vendorsTotal.drop(result.offset).take(result.max)
 
         String message = message(code: 'export.my.currentVendors') as String
@@ -4381,7 +4383,7 @@ join sub.orgRelations or_sub where
         }
         SwissKnife.setPaginationParams(result, params, result.user)
 
-        result.availableDescrs = [PropertyDefinition.SUB_PROP,PropertyDefinition.LIC_PROP,PropertyDefinition.PRS_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.ORG_PROP]
+        result.availableDescrs = [PropertyDefinition.PRS_PROP,PropertyDefinition.PRV_PROP,PropertyDefinition.VEN_PROP,PropertyDefinition.SUB_PROP,PropertyDefinition.ORG_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.LIC_PROP]
 
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
         Set<PropertyDefinition> propList = []
