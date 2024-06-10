@@ -67,11 +67,11 @@
 
 <div class="ui top attached stackable tabular la-tab-with-js menu">
     <a class="${params.tab == 'contacts' ? 'active' : ''} item" data-tab="contacts">
-        ${message(code: 'org.prsLinks.label')}
+        ${message(code: 'org.prsLinks.label')} <span class="ui circular label">${num_visiblePersons}</span>
     </a>
 
     <a class="${params.tab == 'addresses' ? 'active' : ''} item" data-tab="addresses">
-        ${message(code: 'org.addresses.label')}
+        ${message(code: 'org.addresses.label')} <span class="ui circular label">${num_visibleAddresses}</span>
     </a>
 </div>
 

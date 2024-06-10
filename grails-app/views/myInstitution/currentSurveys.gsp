@@ -19,7 +19,7 @@
     </ui:exportDropdown>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon text="${institution.name} - ${message(code: 'currentSurveys.label')}" type="survey" total="${countSurveys.values().sum { it }}" floated="true" />
+<ui:h1HeaderWithIcon message="currentSurveys.label" type="survey" total="${countSurveys.values().sum { it }}" floated="true" />
 
 <ui:messages data="${flash}"/>
 
@@ -105,14 +105,18 @@
 
             <laser:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true, label:message(code: 'subscription.property.search')]"/>
 
+
+        </div>
+
+        <div class="two fields">
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
                 <ui:select class="ui dropdown" name="type"
-                              from="${RefdataCategory.getAllRefdataValues(de.laser.storage.RDConstants.SURVEY_TYPE)}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.type}"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                           from="${RefdataCategory.getAllRefdataValues(de.laser.storage.RDConstants.SURVEY_TYPE)}"
+                           optionKey="id"
+                           optionValue="value"
+                           value="${params.type}"
+                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
 
             <div class="field">
