@@ -293,7 +293,7 @@
 
 
     <div class="item">
-        <i class="grey university icon la-popup-tooltip la-delay"
+        <i class="grey handshake icon la-popup-tooltip la-delay"
            data-content="${message(code: 'tipp.provider')}"></i>
 
         <div class="content">
