@@ -121,7 +121,7 @@
                                         class="ui angle double down icon"></i>
                                 </div>
                                 <g:if test="${(params.tab == 'allTipps') && editable && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
-                                    <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
+                                    <g:link class="ui icon negative button blue la-modern-button la-popup-tooltip la-delay"
                                             action="processRemoveIssueEntitlementsSurvey"
                                             params="${[id: subscriberSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
@@ -131,7 +131,7 @@
 
 
                                 <g:if test="${(params.tab == 'allTipps') && editable && !ieInNewSub && allowedToSelect}">
-                                    <g:link class="ui icon negative button la-modern-button la-popup-tooltip la-delay"
+                                    <g:link class="ui icon button la-modern-button la-popup-tooltip la-delay"
                                             action="processAddIssueEntitlementsSurvey"
                                             params="${[id: subscriberSub.id, singleTitle: tipp.id, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">

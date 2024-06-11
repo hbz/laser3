@@ -156,6 +156,10 @@
 
                 <laser:render template="/templates/survey/properties" model="${[surveyConfig: surveyConfig]}"/>
             </g:if>
+
+            <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
+                <laser:render template="/templates/survey/properties" model="${[surveyConfig: surveyConfig]}"/>
+            </g:if>
         </div>
     </div>
 </div>
