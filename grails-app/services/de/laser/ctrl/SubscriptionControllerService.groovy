@@ -561,12 +561,14 @@ class SubscriptionControllerService {
          */
         //calculate 100% for each year - works only iff costs have been defined in year rings!
         Map<String, Map<String, Object>> costsAllYears = [:]
-        Calendar costYear = GregorianCalendar.getInstance()
+        Calendar costYear = GregorianCalendar.getInstance(), startYear = GregorianCalendar.getInstance()
+        startYear.setTime(statsData.startDate)
         allCostItems.each { CostItem ci ->
-            if(ci.startDate >= statsData.startDate) {
-                costYear.setTime(ci.startDate)
-                String year = costYear.get(Calendar.YEAR).toString()
-                Map<String, Object> costsInYear = costsAllYears.containsKey(year) ? costsAllYears.get(year) : [total: 0.0, startDate: ci.startDate, endDate: ci.endDate]
+            costYear.setTime(ci.startDate)
+            Integer year = costYear.get(Calendar.YEAR)
+            if(year >= startYear.get(Calendar.YEAR)) {
+                String yearKey = year.toString()
+                Map<String, Object> costsInYear = costsAllYears.containsKey(yearKey) ? costsAllYears.get(yearKey) : [total: 0.0, startDate: ci.startDate, endDate: ci.endDate]
                 if(ci.startDate < costsInYear.startDate)
                     costsInYear.startDate = ci.startDate
                 if(ci.endDate < costsInYear.endDate)
@@ -579,7 +581,7 @@ class SubscriptionControllerService {
                         break
                 }
                 costsInYear.total = total
-                costsAllYears.put(year,costsInYear)
+                costsAllYears.put(yearKey,costsInYear)
             }
         }
         BigDecimal allYearsTotal = 0.0

@@ -323,7 +323,6 @@ $('#globalLoadingIndicator').show();
 let fd = new FormData($('#stats')[0]);
 fd.append('startDate',startDate);
 fd.append('endDate',endDate);
-//console.log($('#stats')[0]);
 $.ajax({
     url: "<g:createLink controller="ajax" action="generateCostPerUse"/>",
                     data: fd,
