@@ -1024,6 +1024,7 @@ class MyInstitutionController  {
         }
 
         result.providersTotal = providerListTotal.size()
+        result.allProviders = providerListTotal
         result.providerList = providerListTotal.drop((int) result.offset).take((int) result.max)
 
         String message = message(code: 'export.my.currentProviders') as String
@@ -1196,6 +1197,7 @@ class MyInstitutionController  {
             vendorsTotal = vendorsTotal.findAll { f1Result.contains(it.id) }
         }
         result.vendorListTotal = vendorsTotal.size()
+        result.allVendors = vendorsTotal
         result.vendorList = vendorsTotal.drop(result.offset).take(result.max)
 
         String message = message(code: 'export.my.currentVendors') as String
@@ -2673,7 +2675,7 @@ class MyInstitutionController  {
         if(sendSurveyFinishMail) {
             boolean sendMailToSurveyOwner = true
 
-            if(!surveyInfo.isMandatory && OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY).rdValue == RDStore.YN_YES){
+            if(!surveyInfo.isMandatory && OrgSetting.get(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS) != OrgSetting.SETTING_NOT_FOUND && OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY).rdValue == RDStore.YN_YES){
                 int countAllResultsIsRefNo = 0
                 int countAllResultsIsRef = 0
                 surveyResults.each { SurveyResult surre ->
@@ -4381,7 +4383,7 @@ join sub.orgRelations or_sub where
         }
         SwissKnife.setPaginationParams(result, params, result.user)
 
-        result.availableDescrs = [PropertyDefinition.SUB_PROP,PropertyDefinition.LIC_PROP,PropertyDefinition.PRS_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.ORG_PROP]
+        result.availableDescrs = [PropertyDefinition.PRS_PROP,PropertyDefinition.PRV_PROP,PropertyDefinition.VEN_PROP,PropertyDefinition.SUB_PROP,PropertyDefinition.ORG_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.LIC_PROP]
 
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
         Set<PropertyDefinition> propList = []

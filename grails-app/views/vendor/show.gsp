@@ -92,7 +92,7 @@
                                     </div>
                                 </g:if>
                             </div>
-                            <g:if test="${!vendor.gokbId}">
+                            <g:if test="${editable && !vendor.gokbId}">
                                 <input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}">
                             </g:if>
                         </dd>
@@ -428,11 +428,11 @@
                                 </div>
                                 <div class="item">
                                     <strong><g:message code="subscription.plural" /></strong>
-                                    &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}/${subLinks.size()}</div>
+                                    &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}/${subLinks}</div>
                                 </div>
                                 <div class="item">
                                     <strong><g:message code="license.plural" /></strong>
-                                    &nbsp;<div class="ui blue circular label">${currentLicensesCount}/${licLinks.size()}</div>
+                                    &nbsp;<div class="ui blue circular label">${currentLicensesCount}/${licLinks}</div>
                                 </div>
                             </div>
                         </div>

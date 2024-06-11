@@ -85,7 +85,7 @@
                                                             class="js-open-confirm-modal-xEditable"
                                                             owner="${altname}" field="name" overwriteEditable="${editable && !provider.gokbId}"/>
                                                 </div>
-                                                <g:if test="${editable && provider.gokbId}">
+                                                <g:if test="${editable && !provider.gokbId}">
                                                     <div class="content la-space-right">
                                                         <div class="ui buttons">
                                                             <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
@@ -101,7 +101,7 @@
                                     </div>
                                 </g:if>
                             </div>
-                            <g:if test="${!provider.gokbId}">
+                            <g:if test="${editable && !provider.gokbId}">
                                 <input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}">
                             </g:if>
                         </dd>
@@ -356,11 +356,11 @@
                                     </div>
                                     <div class="item">
                                         <strong><g:message code="subscription.plural" /></strong>
-                                        &nbsp;<div class="ui blue circular label">${subLinks.size()}/${currentSubscriptionsCount}</div>
+                                        &nbsp;<div class="ui blue circular label">${subLinks}/${currentSubscriptionsCount}</div>
                                     </div>
                                     <div class="item">
                                         <strong><g:message code="license.plural" /></strong>
-                                        &nbsp;<div class="ui blue circular label">${licLinks.size()}/${currentLicensesCount}</div>
+                                        &nbsp;<div class="ui blue circular label">${licLinks}/${currentLicensesCount}</div>
                                     </div>
                                 </div>
                             </div>

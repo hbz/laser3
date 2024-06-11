@@ -7,6 +7,18 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5752    10.06.2024  dev     3.4         Andreas Bug
+
+5751    10.06.2024  dev     3.4         Andreas Bug         
+
+5750    10.06.2024  dev     3.4         Andreas Bug         fehlende Berechtigungsprüfung nachgereicht
+
+5749    10.06.2024  dev     3.4         Andreas Bug
+
+5747    10.06.2024  dev     3.4         Andreas Bug         
+
+5746    10.06.2024  dev     3.4         Andreas Bug         Anbieter und Lieferanten korrekt aufgeschlüsselt
+
 5739    07.06.2024  dev     3.4         Andreas Bug         Namensraum-Dubletten per Sync ausgehebelt
 
 5738    07.06.2024  dev     3.4         Andreas Bug         Export der Konsortialstellen funktionierte nicht

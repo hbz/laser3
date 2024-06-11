@@ -257,7 +257,7 @@ class PackageController {
                     platformInstanceRecord.putAll(records[0])
                 platformInstanceRecord.name = result.packageInstance.nominalPlatform.name
                 platformInstanceRecord.status = result.packageInstance.nominalPlatform.status
-                platformInstanceRecord.org = result.packageInstance.nominalPlatform.org
+                platformInstanceRecord.provider = result.packageInstance.nominalPlatform.provider
                 platformInstanceRecord.id = result.packageInstance.nominalPlatform.id
                 platformInstanceRecord.primaryUrl = result.packageInstance.nominalPlatform.primaryUrl
             }

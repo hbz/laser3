@@ -235,9 +235,11 @@
                                         </div>
                                     </dd>
                                 </dl>
-                                <dl>
-                                    <input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}">
-                                </dl>
+                                <g:if test="${editable}">
+                                    <dl>
+                                        <dd><input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}"></dd>
+                                    </dl>
+                                </g:if>
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.startDate.label')}</dt>
                                     <dd>
@@ -328,7 +330,7 @@
                                 <div class="content">
                                     <h2 class="ui header">${message(code: 'provider.label')}</h2>
                                     <laser:render template="/templates/links/providerLinksAsList"
-                                              model="${[roleLinks: visibleProviders,
+                                              model="${[providerRoles: visibleProviders,
                                                         roleObject: license,
                                                         roleRespValue: 'Specific license editor',
                                                         editmode: editable,
@@ -339,7 +341,6 @@
                                         <laser:render template="/templates/links/providerLinksSimpleModal"
                                                   model="${[linkType: license.class.name,
                                                             parent: license.class.name + ':' + license.id,
-                                                            property: 'orgRelations',
                                                             recip_prop: 'license',
                                                             tmplEntity: message(code:'license.details.tmplEntity'),
                                                             tmplText: message(code:'license.details.tmplText'),

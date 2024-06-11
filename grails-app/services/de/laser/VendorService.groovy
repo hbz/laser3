@@ -212,31 +212,35 @@ class VendorService {
                 if (!v) {
                     v = Vendor.convertFromAgency(ar.org)
                 }
-                if (ar.sub || ar.lic) {
-                    VendorRole vr = new VendorRole(vendor: v, isShared: ar.isShared)
-                    if (ar.sub)
-                        vr.subscription = ar.sub
-                    if (ar.lic)
-                        vr.license = ar.lic
+                if (ar.sub && !VendorRole.findByVendorAndSubscription(v, ar.sub)) {
+                    VendorRole vr = new VendorRole(vendor: v, subscription: ar.sub, isShared: ar.isShared)
                     if (vr.save()) {
                         if (ar.isShared) {
-                            if (ar.sub) {
-                                List<Subscription> newTargets = Subscription.findAllByInstanceOf(vr.subscription)
-                                newTargets.each{ Subscription sub ->
-                                    vr.addShareForTarget_trait(sub)
-                                }
-                            }
-                            if (ar.lic) {
-                                List<License> newTargets = License.findAllByInstanceOf(vr.license)
-                                newTargets.each{ License lic ->
-                                    vr.addShareForTarget_trait(lic)
-                                }
+                            List<Subscription> newTargets = Subscription.findAllByInstanceOf(vr.subscription)
+                            newTargets.each{ Subscription sub ->
+                                vr.addShareForTarget_trait(sub)
                             }
                             //log.debug("${OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: ar])} shares deleted")
                         }
-                        log.debug("processed: ${vr.vendor}:${vr.subscription}:${vr.license} ex ${ar.org}:${ar.sub}:${ar.lic}")
-                    } else log.error(vr.errors.getAllErrors().toListString())
-                } else if (ar.pkg) {
+                        log.debug("processed: ${vr.vendor}:${vr.subscription} ex ${ar.org}:${ar.sub}")
+                    }
+                    else log.error(vr.errors.getAllErrors().toListString())
+                }
+                else if(ar.lic && !VendorRole.findByVendorAndLicense(v, ar.lic)) {
+                    VendorRole vr = new VendorRole(vendor: v, license: ar.lic, isShared: ar.isShared)
+                    if (vr.save()) {
+                        if (ar.isShared) {
+                            List<License> newTargets = License.findAllByInstanceOf(vr.license)
+                            newTargets.each{ License lic ->
+                                vr.addShareForTarget_trait(lic)
+                            }
+                            //log.debug("${OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: ar])} shares deleted")
+                        }
+                        log.debug("processed: ${vr.vendor}:${vr.license} ex ${ar.org}:${ar.lic}")
+                    }
+                    else log.error(vr.errors.getAllErrors().toListString())
+                }
+                else if (ar.pkg) {
                     if(!PackageVendor.findByVendorAndPkg(v, ar.pkg)) {
                         PackageVendor pv = new PackageVendor(vendor: v, pkg: ar.pkg)
                         if (pv.save())
@@ -254,7 +258,7 @@ class VendorService {
             }
             ts.flush()
         }
-        Set<Org> agencies = Org.executeQuery('select o from Org o join o.orgType ot where ot = :agency', [agency: RDStore.OT_AGENCY])
+        Set<Org> agencies = Org.executeQuery('select o from Org o join o.orgType ot where ot in (:agency)', [agency: [RDStore.OT_PROVIDER, RDStore.OT_AGENCY]])
         agencies.each { Org agency ->
             OrgRole.executeUpdate('delete from OrgRole oo where oo.org = :agency and oo.roleType not in (:toKeep)', [agency: agency, toKeep: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER, RDStore.OR_LICENSOR, RDStore.OR_AGENCY]])
             List<Person> oldPersons = Person.executeQuery('select p from Person p where p.tenant = :agency and p.isPublic = true',[agency: agency])
@@ -515,7 +519,7 @@ class VendorService {
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
             result.docsCount        = docstoreService.getDocsCount(result.vendor, result.institution)
             result.notesCount       = docstoreService.getNotesCount(result.vendor, result.institution)
-            //result.checklistCount   = workflowService.getWorkflowCount(result.vendor, result.institution) TODO
+            result.checklistCount   = workflowService.getWorkflowCount(result.vendor, result.institution)
         }
 
         SwissKnife.setPaginationParams(result, params, contextUser)

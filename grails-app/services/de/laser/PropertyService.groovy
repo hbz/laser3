@@ -328,6 +328,18 @@ class PropertyService {
             objMap.name = name
             objMap.displayController = "person"
         }
+        else if(obj instanceof Provider) {
+            Provider p = (Provider) obj
+            objMap.name = p.name
+            objMap.sortname = p.sortname
+            objMap.displayController = "provider"
+        }
+        else if(obj instanceof Vendor) {
+            Vendor v = (Vendor) obj
+            objMap.name = v.name
+            objMap.sortname = v.sortname
+            objMap.displayController = "vendor"
+        }
         objMap
     }
 
