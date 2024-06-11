@@ -51,7 +51,7 @@
         </g:else>
     </div>
 
-    <laser:render template="/templates/copyEmailaddresses" model="[orgList: providerList, instanceType: Provider.class.name]"/>
+    <laser:render template="/templates/copyEmailaddresses" model="[orgList: allProviders, instanceType: Provider.class.name]"/>
 
     <ui:paginate total="${providersTotal}" params="${params}" max="${max}" offset="${offset}" />
 

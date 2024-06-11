@@ -174,7 +174,6 @@
                         </g:if>
                         <g:if test="${'showProviders' in tableConfig}">
                             <td>
-                                <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
                                 <g:each in="${s.providers}" var="provider">
                                     <g:link controller="provider" action="show" id="${provider.id}">${fieldValue(bean: provider, field: "name")}
                                         <g:if test="${provider.sortname}">

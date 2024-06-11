@@ -281,6 +281,10 @@ making obsolete package/actions
                                             <dd>
                                                 <g:if test="${platformInstanceRecord.provider}">
                                                     <g:link controller="provider" action="show" id="${platformInstanceRecord.provider.id}">${platformInstanceRecord.provider.name}</g:link>
+                                                    <g:if test="${platformInstanceRecord.provider.homepage}">
+                                                        <ui:linkWithIcon href="${platformInstanceRecord.provider.homepage.startsWith('http') ? platformInstanceRecord.provider.homepage : 'http://' + platformInstanceRecord.provider.homepage}"/>
+                                                    </g:if>
+                                                    <ui:wekbIconLink type="provider" gokbId="${platformInstanceRecord.provider.gokbId}"/>
                                                 </g:if>
                                             </dd>
                                         </dl>
@@ -497,12 +501,22 @@ making obsolete package/actions
                 <div id="container-provider">
                     <div class="ui card">
                         <div class="content">
-                            <h2 class="ui header">${message(code: 'default.ProviderAgency.label')}</h2>
+                            <h2 class="ui header">${message(code: 'provider.label')}</h2>
                             <laser:render template="/templates/links/providerLinksAsList"
-                                          model="${[providerLinks: [packageInstance],
+                                          model="${[providerRoles: [packageInstance],
                                                     roleObject   : packageInstance,
                                                     roleRespValue: 'Specific package editor',
-                                                    editmode     : editable,
+                                                    showPersons  : true
+                                          ]}"/>
+                        </div>
+                    </div>
+                    <div class="ui card">
+                        <div class="content">
+                            <h2 class="ui header">${message(code: 'vendor.label')}</h2>
+                            <laser:render template="/templates/links/vendorLinksAsList"
+                                          model="${[vendorRoles: packageInstance.vendors,
+                                                    roleObject   : packageInstance,
+                                                    roleRespValue: 'Specific package editor',
                                                     showPersons  : true
                                           ]}"/>
                         </div>
