@@ -8,12 +8,12 @@
     <ui:actionsDropdown>
             <ui:actionsDropdownItem controller="myInstitution" action="manageParticipantSurveys" params="${params + [reminder: true]}" class="item" message="participantsReminder.button"/>
     </ui:actionsDropdown>
-    <ui:exportDropdown>
+%{--    <ui:exportDropdown>
         <ui:exportDropdownItem>
             <g:link class="item" controller="myInstitution" action="manageParticipantSurveys"
                     params="${params + [exportXLSX: true]}">${message(code: 'survey.exportSurveys')}</g:link>
         </ui:exportDropdownItem>
-    </ui:exportDropdown>
+    </ui:exportDropdown>--}%
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon message="manageParticipantSurveys.header" total="${surveyResultsCount}" floated="true" />
