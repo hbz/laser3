@@ -7,15 +7,15 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-5752    10.06.2024  dev     3.4         Andreas Bug
+5752    10.06.2024  dev     3.4         Andreas Bug         Merkmalsverwaltung für Anbieter und Lieferanten geöffnet
 
-5751    10.06.2024  dev     3.4         Andreas Bug         
+5751    10.06.2024  dev     3.4         Andreas Bug         dublette Erzeugung von VendorRoles unterbunden
 
 5750    10.06.2024  dev     3.4         Andreas Bug         fehlende Berechtigungsprüfung nachgereicht
 
-5749    10.06.2024  dev     3.4         Andreas Bug
+5749    10.06.2024  dev     3.4         Andreas Bug         fehlende Verknüpfung nachgereicht
 
-5747    10.06.2024  dev     3.4         Andreas Bug         
+5747    10.06.2024  dev     3.4         Andreas Bug         we:kb-Filter auf we:kb-Lieferanten eingegrenzt
 
 5746    10.06.2024  dev     3.4         Andreas Bug         Anbieter und Lieferanten korrekt aufgeschlüsselt
 

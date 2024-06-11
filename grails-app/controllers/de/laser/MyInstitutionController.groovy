@@ -4489,7 +4489,7 @@ join sub.orgRelations or_sub where
                     }
                 }
             }
-            redirect action: 'manageProperties', params: [filterPropDef: params.filterPropDef]
+            redirect action: 'manageProperties', params: [descr: pd.descr, filterPropDef: params.filterPropDef]
             return
         }
     }
@@ -4529,15 +4529,19 @@ join sub.orgRelations or_sub where
     private def _resolveOwner(PropertyDefinition pd, String id) {
         def owner
         switch(pd.descr) {
-            case PropertyDefinition.SUB_PROP: owner = Subscription.get(id)
+            case PropertyDefinition.PRS_PROP: owner = Person.get(id)
                 break
-            case PropertyDefinition.LIC_PROP: owner = License.get(id)
+            case PropertyDefinition.PRV_PROP: owner = Provider.get(id)
+                break
+            case PropertyDefinition.SUB_PROP: owner = Subscription.get(id)
                 break
             case PropertyDefinition.ORG_PROP: owner = Org.get(id)
                 break
-            case PropertyDefinition.PRS_PROP: owner = Person.get(id)
-                break
             case PropertyDefinition.PLA_PROP: owner = Platform.get(id)
+                break
+            case PropertyDefinition.LIC_PROP: owner = License.get(id)
+                break
+            case PropertyDefinition.VEN_PROP: owner = Vendor.get(id)
                 break
         }
         owner
