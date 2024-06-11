@@ -1,5 +1,8 @@
 <%@ page import="de.laser.properties.PropertyDefinition; de.laser.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.storage.RDConstants" %>
 <laser:serviceInjection/>
+<style>
+
+</style>
 
 <ui:modal  id="${modalID ?: 'personModal'}" formID="person_form"
            modalSize="big"
@@ -150,7 +153,7 @@
 
                 </div>
             </div><!-- .field -->
-                <!-- Alternating address Buttons START-->
+                <!-- Alternating contact buttons START-->
             <div class="ui blue buttons" style="width: 100%">
                 <button class="ui active button" id="la-js-buttonSurname">
                     <h2 class="ui icon inverted header">
@@ -170,13 +173,13 @@
                     </h2>
                 </button>
             </div>
-            <!-- Alternating address Buttons END-->
+            <!-- Alternating contact buttons END-->
             <br><br>
             <div class="field">
                 <div class="two fields">
 
                     <div class="field wide twelve ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
-                        <label for="last_name">
+                        <label id="la-js-nameOrFunction" for="last_name">
                             <g:message code="person.last_name.label"/> <g:message code="messageRequiredField" />
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'person.last_name.info')}">
@@ -186,35 +189,7 @@
                         <g:textField name="last_name" required="" value="${personInstance?.last_name}"/>
                     </div>
 
-                    <div id="person_title"
-                         class="field wide four ${hasErrors(bean: personInstance, field: 'title', 'error')}">
-                        <label for="title">
-                            <g:message code="person.title.label"/>
-                        </label>
-                        <g:textField name="title" value="${personInstance?.title}"/>
-                    </div>
 
-                </div>
-            </div>
-
-            <div class="field">
-                <div class="three fields">
-
-                    <div id="person_first_name"
-                         class="field wide eight ${hasErrors(bean: personInstance, field: 'first_name', 'error')}">
-                        <label for="first_name">
-                            <g:message code="person.first_name.label"/>
-                        </label>
-                        <g:textField name="first_name" value="${personInstance?.first_name}"/>
-                    </div>
-
-                    <div id="person_middle_name"
-                         class="field wide four ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
-                        <label for="middle_name">
-                            <g:message code="person.middle_name.label"/>
-                        </label>
-                        <g:textField name="middle_name" value="${personInstance?.middle_name}"/>
-                    </div>
 
                     <div id="person_gender"
                          class="field wide four ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
@@ -227,6 +202,40 @@
                                    optionValue="value"
                                    value="${personInstance?.gender?.id}"
                                    noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="ui accordion la-namedetails field">
+                <div class="title">
+                    <i class="icon dropdown"></i>
+                    Namensdetails
+                </div>
+                <div class="content field">
+                    <div class="three fields">
+                        <div id="person_title"
+                             class="field wide four ${hasErrors(bean: personInstance, field: 'title', 'error')}">
+                            <label for="title">
+                                <g:message code="person.title.label"/>
+                            </label>
+                            <g:textField name="title" value="${personInstance?.title}"/>
+                        </div>
+                        <div id="person_first_name"
+                             class="field wide eight ${hasErrors(bean: personInstance, field: 'first_name', 'error')}">
+                            <label for="first_name">
+                                <g:message code="person.first_name.label"/>
+                            </label>
+                            <g:textField name="first_name" value="${personInstance?.first_name}"/>
+                        </div>
+
+                        <div id="person_middle_name"
+                             class="field wide four ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
+                            <label for="middle_name">
+                                <g:message code="person.middle_name.label"/>
+                            </label>
+                            <g:textField name="middle_name" value="${personInstance?.middle_name}"/>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -623,6 +632,21 @@
         else filledOut = true;
         return filledOut;
     };
+
+        /* Deal with accordion in case allready any input */
+        $(".accordion").accordion();
+        let input = [$("#title"), $("#first_name"), $("#middle_name")];
+
+        let found = false;
+        for (var i = 0; i < input.length; i++) {
+          if ($(input[i]).val().trim() !== "") {
+            found = true;
+            console.log("Non empty");
+            $(".title").addClass("active");
+            $(".content").addClass("active");
+            break;
+          }
+        }
 
     </laser:script>
 

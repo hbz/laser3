@@ -66976,6 +66976,10 @@ a.inverted.ui.card:hover,
   background-color: #997a88;
   color: #FFFFFF;
 }
+
+.ui.accordion.la-namedetails:not(.styled) .title ~ .content {
+  padding: 0;
+}
 /*!
  * # Fomantic-UI 2.9.3 - Calendar
  * https://github.com/fomantic/Fomantic-UI/
