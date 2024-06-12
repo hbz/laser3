@@ -1169,7 +1169,7 @@ class MyInstitutionController  {
             if(params.subPerpetualAccess == RDStore.YN_NO)
                 query += ' and s.hasPerpetualAccess = false '
         }
-        else if(!params.containsKey('filterSet')) query += ')' //opened in line 1100 or 1105
+        else query += ')' //opened in line 1100 or 1105
 
 
         String currentSubQuery = "select vr from VendorRole vr, OrgRole oo join oo.sub s where vr.subscription = s and s.status = :current and oo.org = :contextOrg order by s.name, s.startDate desc"
