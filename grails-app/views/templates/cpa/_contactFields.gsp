@@ -2,8 +2,10 @@
 
 
 <div class="three fields contactField">
-    <div class="field four wide">
-        <label></label>
+    <div class="field one wide la-contactIconField">
+        <i class="icon large envelope outline la-js-contactIcon"></i>
+    </div>
+    <div class="field wide four">
         <ui:select class="ui dropdown" name="contentType.id"
                    from="${[RDStore.CCT_EMAIL, RDStore.CCT_FAX, RDStore.CCT_MOBILE, RDStore.CCT_PHONE, RDStore.CCT_URL]}"
                    optionKey="id"
@@ -12,8 +14,7 @@
     </div>
 
     <div class="field four wide">
-        <label></label>
-        <ui:select class="ui search multiple selection dropdown" name="contactLang.id"
+        <ui:select class="ui search  dropdown" name="contactLang.id"
                    from="${RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)}"
                    optionKey="id"
                    optionValue="value"
@@ -23,7 +24,6 @@
 
 
     <div class="field seven wide">
-        <label></label>
         <g:textField id="content" name="content" value="${contactInstance?.content}"/>
     </div>
     <div class="field one wide">

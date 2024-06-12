@@ -50702,6 +50702,11 @@ legend {
   background-color: #e6dee2;
   border: none;
 }
+
+.la-contactIconField {
+  align-self: center;
+  text-align: right;
+}
 /*!
  * # Fomantic-UI 2.9.3 - Grid
  * https://github.com/fomantic/Fomantic-UI/

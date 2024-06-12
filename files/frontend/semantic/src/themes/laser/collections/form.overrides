@@ -202,3 +202,7 @@ legend {
     background-color: @laAlternativeBackground;
     border: none;
 }
+.la-contactIconField {
+  align-self: center;
+  text-align: right;
+}

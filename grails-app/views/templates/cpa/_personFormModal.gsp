@@ -288,265 +288,290 @@
             </g:if>
 
         </g:if>
-
-        <g:if test="${showContacts}">
-            <div class="field">
-                <br />
-                <label>
-                    <g:message code="person.contacts.label"/>:
-                </label>
-
-                <g:if test="${personInstance}">
-                    <g:each in="${personInstance.contacts?.toSorted()}" var="contact" status="i">
-                        <div class="three fields contactField" id="contactFields${i}">
-                            <div class="field wide four ">
-                                <input type="text" readonly value="${contact.contentType.getI10n('value')}"/>
-                            </div>
-
-                            <div class="field wide four">
-                                <ui:select class="ui search dropdown" name="contactLang${contact.id}"
-                                           from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)}"
-                                           optionKey="id"
-                                           optionValue="value"
-                                           value="${contact.language?.id}"
-                                           noSelection="['null': '']"/>
-                            </div>
-
-                            <div class="field wide eight">
-                                <g:textField name="content${contact.id}" value="${contact.content}"/>
-                            </div>
-                        </div>
-                    </g:each>
-                </g:if>
-            </div>
-            <g:if test="${addContacts}">
-                <button type="button" id="addContactElement" class="ui icon button">
-                    <i class="plus green circle icon"></i>
-                </button>
-
-                <button type="button" id="removeContactElement" class="ui icon button">
-                    <i class="minus red circle icon"></i>
-                </button>
-
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                      data-content="${message(code: 'person.contacts.add.button')}">
-                    <i class="question circle icon"></i>
-                </span>
-
-                <br />
-                <br />
-                <div class="field">
-                    <div class="three fields contactField" id="contactFields${personInstance?.contacts ? personInstance.contacts.size()+1 : 1}">
-                        <div class="field wide four">
-                            <label></label>
-                            <ui:select class="ui dropdown" name="contentType.id"
-                                       from="${[RDStore.CCT_EMAIL, RDStore.CCT_FAX, RDStore.CCT_MOBILE, RDStore.CCT_PHONE, RDStore.CCT_URL]}"
-                                       optionKey="id"
-                                       optionValue="value"
-                                       value="${contactInstance?.contentType?.id}"/>
-                        </div>
-
-
-
-                        <div class="field wide four">
-                            <label></label>
-                            <ui:select class="ui search dropdown" name="contactLang.id"
-                                       from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)}"
-                                       optionKey="id"
-                                       optionValue="value"
-                                       value="${contactInstance?.language?.id}"
-                                       noSelection="['null': message(code: 'person.contacts.selectLang.default')]"/>
-                        </div>
-
-
-                        <div class="field wide eight">
-                            <label></label>
-                            <g:textField id="content" name="content" value="${contactInstance?.content}"/>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div id="contactElements"></div>
-            </g:if>
-
-        </g:if>
-
-    <%--<g:if test="${showAddresses}">
+    %{-- Buttons for selection of kind of contact START --}%
+    <div class="ui wrapping spaced buttons">
+        <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_EMAIL.id}"><i class="icon  envelope outline"></i>E-Mail hinzufügen</a>
+        <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_FAX.id}"><i class="tty circle icon"></i>Fax hinzufügen</a>
+        <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_MOBILE.id}"><i class="mobile alternate circle icon"></i>Mobil hinzufügen</a>
+        <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_PHONE.id}"><i class="phone circle icon"></i>Telefon hinzufügen</a>
+        <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_URL.id}"><i class="globe circle icon"></i>Url hinzufügen</a>
+    </div>
+    %{-- Buttons for selection of kind of contact END --}%
+    <g:if test="${showContacts}">
         <div class="field">
             <br />
             <label>
-                <g:message code="person.addresses.label"/>:
+                <g:message code="person.contacts.label"/>:
             </label>
+
             <g:if test="${personInstance}">
-                <div class="ui divided middle aligned list la-flex-list addressField">
-                    <g:each in="${personInstance.addresses.sort { it.type.each { it?.getI10n('value') } }}"
-                            var="address">
-                        <laser:render template="/templates/cpa/address"
-                                  model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
-                    </g:each>
-                </div>
+                <g:each in="${personInstance.contacts?.toSorted()}" var="contact" status="i">
+                    <div class="three fields contactField" id="contactFields${i}">
+                        <div class="field wide four ">
+                            <input type="text" readonly value="${contact.contentType.getI10n('value')}"/>
+                        </div>
+
+                        <div class="field wide four">
+                            <ui:select class="ui search dropdown" name="contactLang${contact.id}"
+                                       from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)}"
+                                       optionKey="id"
+                                       optionValue="value"
+                                       value="${contact.language?.id}"
+                                       noSelection="['null': '']"/>
+                        </div>
+
+                        <div class="field wide eight">
+                            <g:textField name="content${contact.id}" value="${contact.content}"/>
+                        </div>
+                    </div>
+                </g:each>
             </g:if>
         </div>
-        <g:if test="${addAddresses}">
-            <button type="button" id="addAddressElement" class="ui icon button">
+        <g:if test="${addContacts}">
+            <button type="button" id="addContactElement" class="ui icon button">
                 <i class="plus green circle icon"></i>
             </button>
 
-            <button type="button" id="removeAddressElement" class="ui icon button">
+            <button type="button" id="removeContactElement" class="ui icon button">
                 <i class="minus red circle icon"></i>
             </button>
 
             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                  data-content="${message(code: 'person.addresses.add.button')}">
+                  data-content="${message(code: 'person.contacts.add.button')}">
                 <i class="question circle icon"></i>
             </span>
 
             <br />
             <br />
-            <laser:render template="/templates/cpa/addressFields" model="[multipleAddresses: true]"/>
+            <div class="field">
+                <div class="three fields contactField" id="contactFields${personInstance?.contacts ? personInstance.contacts.size()+1 : 1}">
+                    <div class="field one wide la-contactIconField">
+                        <i class="icon large envelope outline la-js-contactIcon"></i>
+                    </div>
+                    <div class="field wide four">
+                        <ui:select class="ui dropdown contentType" name="contentType.id"
+                                   from="${[RDStore.CCT_EMAIL, RDStore.CCT_FAX, RDStore.CCT_MOBILE, RDStore.CCT_PHONE, RDStore.CCT_URL]}"
+                                   optionKey="id"
+                                   optionValue="value"
+                                   value="${contactInstance?.contentType?.id}"/>
+                    </div>
 
-            <div id="addressElements"></div>
-        </g:if>
 
-    </g:if>--%>
 
-    </g:form>
+                    <div class="field wide four">
+                        <ui:select class="ui search dropdown" name="contactLang.id"
+                                   from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)}"
+                                   optionKey="id"
+                                   optionValue="value"
+                                   value="${contactInstance?.language?.id}"
+                                   noSelection="['null': message(code: 'person.contacts.selectLang.default')]"/>
+                    </div>
 
-    <g:if test="${personInstance && !contactPersonForProviderAgencyPublic}">
-        <div class="ui grid">
-            <div class="sixteen wide column">
-                <div class="la-inline-lists">
-                    <div class="ui card">
-                        <div class="content">
-                            <g:set var="propertyWrapper" value="private-property-wrapper-${contextOrg.id}" />
-                            <h2 class="ui header">${message(code: 'org.properties.private')} ${contextOrg.name}</h2>
-                            <div id="${propertyWrapper}">
-                                <laser:render template="/templates/properties/private" model="${[
-                                        prop_desc       : PropertyDefinition.PRS_PROP,
-                                        ownobj          : personInstance,
-                                        propertyWrapper: "${propertyWrapper}",
-                                        tenant          : contextOrg]}"/>
 
-                                <laser:script file="${this.getGroovyPageFileName()}">
-                                    r2d2.initDynamicUiStuff('#${propertyWrapper}');
-                                    c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextOrg.id});
-                                </laser:script>
-                            </div>
-                        </div>
-                    </div><!-- .card -->
+                    <div class="field wide eight">
+                        <g:textField id="content" name="content" value="${contactInstance?.content}"/>
+                    </div>
                 </div>
             </div>
-        </div>
+
+
+            <div id="contactElements"></div>
+        </g:if>
+
     </g:if>
 
-    <laser:script file="${this.getGroovyPageFileName()}">
-        $.fn.form.settings.rules.functionOrPosition = function() {
-            return $('#functionType').dropdown('get value').length > 0
-        };
-        $('#person_form').form({
-            on: 'submit',
-            inline: true,
-            fields: {
-        <g:if test="${orgList}">
-            personRoleOrg: {
-              identifier: 'personRoleOrg',
-              rules: [
-                {
-                  type: 'empty',
-                  prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
-                    }
-                  ]
-                },
+<%--<g:if test="${showAddresses}">
+    <div class="field">
+        <br />
+        <label>
+            <g:message code="person.addresses.label"/>:
+        </label>
+        <g:if test="${personInstance}">
+            <div class="ui divided middle aligned list la-flex-list addressField">
+                <g:each in="${personInstance.addresses.sort { it.type.each { it?.getI10n('value') } }}"
+                        var="address">
+                    <laser:render template="/templates/cpa/address"
+                              model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
+                </g:each>
+            </div>
         </g:if>
-        last_name: {
-            identifier: 'last_name',
-            rules: [
-                {
-                    type: 'empty',
-                    prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
-                        }
-                    ]
-                },
-                functionType: {
-                    identifier: 'functionType',
-                    rules: [
-                        {
-                            type: 'functionOrPosition',
-                            prompt: '<g:message code="person.create.missing_function"/>'
-                        }
-                    ]
+    </div>
+    <g:if test="${addAddresses}">
+        <button type="button" id="addAddressElement" class="ui icon button">
+            <i class="plus green circle icon"></i>
+        </button>
+
+        <button type="button" id="removeAddressElement" class="ui icon button">
+            <i class="minus red circle icon"></i>
+        </button>
+
+        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+              data-content="${message(code: 'person.addresses.add.button')}">
+            <i class="question circle icon"></i>
+        </span>
+
+        <br />
+        <br />
+        <laser:render template="/templates/cpa/addressFields" model="[multipleAddresses: true]"/>
+
+        <div id="addressElements"></div>
+    </g:if>
+
+</g:if>--%>
+
+</g:form>
+
+<g:if test="${personInstance && !contactPersonForProviderAgencyPublic}">
+    <div class="ui grid">
+        <div class="sixteen wide column">
+            <div class="la-inline-lists">
+                <div class="ui card">
+                    <div class="content">
+                        <g:set var="propertyWrapper" value="private-property-wrapper-${contextOrg.id}" />
+                        <h2 class="ui header">${message(code: 'org.properties.private')} ${contextOrg.name}</h2>
+                        <div id="${propertyWrapper}">
+                            <laser:render template="/templates/properties/private" model="${[
+                                    prop_desc       : PropertyDefinition.PRS_PROP,
+                                    ownobj          : personInstance,
+                                    propertyWrapper: "${propertyWrapper}",
+                                    tenant          : contextOrg]}"/>
+
+                            <laser:script file="${this.getGroovyPageFileName()}">
+                                r2d2.initDynamicUiStuff('#${propertyWrapper}');
+                                c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextOrg.id});
+                            </laser:script>
+                        </div>
+                    </div>
+                </div><!-- .card -->
+            </div>
+        </div>
+    </div>
+</g:if>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $.fn.form.settings.rules.functionOrPosition = function() {
+        return $('#functionType').dropdown('get value').length > 0
+    };
+    $('#person_form').form({
+        on: 'submit',
+        inline: true,
+        fields: {
+    <g:if test="${orgList}">
+        personRoleOrg: {
+          identifier: 'personRoleOrg',
+          rules: [
+            {
+              type: 'empty',
+              prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
                 }
+              ]
+            },
+    </g:if>
+    last_name: {
+        identifier: 'last_name',
+        rules: [
+            {
+                type: 'empty',
+                prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
+                    }
+                ]
+            },
+            functionType: {
+                identifier: 'functionType',
+                rules: [
+                    {
+                        type: 'functionOrPosition',
+                        prompt: '<g:message code="person.create.missing_function"/>'
+                    }
+                ]
+            }
+        }
+    });
+
+    tooltip.init("#${modalID ?: 'personModal'}");
+
+    JSPC.app.addressElementCount = $(".addressField").length;
+    JSPC.app.contactElementCount = $(".contactField").length;
+
+    JSPC.app.addressContainer = $(document.createElement('div'));
+    JSPC.app.contactContainer = $(document.createElement('div'));
+
+    $(JSPC.app.addressContainer).attr('id', 'addressElementsContainer');
+    $(JSPC.app.contactContainer).attr('id', 'contactElementsContainer');
+
+    /* CONTACT START */
+
+
+
+    $('.la-js-addContactElement').click(function () {
+        let buttonClicked =    $(this);
+        $.ajax({
+            url: "<g:createLink controller="ajaxHtml" action="contactFields"/>",
+            type: "POST",
+            success: function (data) {
+                if (JSPC.app.contactElementCount <= 3) {
+
+                    JSPC.app.contactElementCount = JSPC.app.contactElementCount + 1;
+                    $(JSPC.app.contactContainer).append(data);
+                    $('#contactFields').attr('id', 'contactFields' + JSPC.app.contactElementCount);
+
+                    $('#contactElements').after(JSPC.app.contactContainer);
+
+                      let iconType = buttonClicked.attr("id");
+                      alert(iconType);
+                      let icon = $(".la-js-contactIcon");
+
+                      deleteIconClass();
+                      changeIcon(iconType.split('cct-')[1], icon);
+                      $('.contactField  option[value="' + iconType + '"]').prop("selected", true);
+                      $(".dropdown").dropdown();
+
+
+
+
+
+                    $('.removeContactElement').click(function () {
+
+                        if (JSPC.app.contactElementCount != 0) {
+                            // $('.contactField').last().remove();
+                            $(this).parents('.contactField').remove();
+
+                        }
+                        JSPC.app.contactElementCount = $(".contactField").length;
+
+                        if (JSPC.app.contactElementCount == 0) {
+                            $(JSPC.app.contactContainer).empty().remove();
+                            $('#addContactElement').removeAttr('disabled').attr('class', 'ui icon button');
+                        }
+                    });
+
+
+                } else {
+                    $('#addContactElement').attr('class', 'ui icon button disable');
+                    $('#addContactElement').attr('disabled', 'disabled');
+                }
+                r2d2.initDynamicUiStuff('#contactElementsContainer');
+            },
+            error: function (j, status, eThrown) {
+                console.log('Error ' + eThrown)
             }
         });
+    });
 
-        tooltip.init("#${modalID ?: 'personModal'}");
+%{--$('#removeContactElement').click(function () {
+    alert("test");
+    if (JSPC.app.contactElementCount != 0) {
+        // $('.contactField').last().remove();
+        $(this).parents('.contactField').remove();
 
-        JSPC.app.addressElementCount = $(".addressField").length;
-        JSPC.app.contactElementCount = $(".contactField").length;
+    }
+    JSPC.app.contactElementCount = $(".contactField").length;
 
-        JSPC.app.addressContainer = $(document.createElement('div'));
-        JSPC.app.contactContainer = $(document.createElement('div'));
-
-        $(JSPC.app.addressContainer).attr('id', 'addressElementsContainer');
-        $(JSPC.app.contactContainer).attr('id', 'contactElementsContainer');
-
-        /* CONTACT START */
-        $('#addContactElement').click(function () {
-            $.ajax({
-                url: "<g:createLink controller="ajaxHtml" action="contactFields"/>",
-                type: "POST",
-                success: function (data) {
-                    if (JSPC.app.contactElementCount <= 3) {
-
-                        JSPC.app.contactElementCount = JSPC.app.contactElementCount + 1;
-                        $(JSPC.app.contactContainer).append(data);
-                        $('#contactFields').attr('id', 'contactFields' + JSPC.app.contactElementCount);
-
-                        $('#contactElements').after(JSPC.app.contactContainer);
-
-                        $('.removeContactElement').click(function () {
-
-                            if (JSPC.app.contactElementCount != 0) {
-                                // $('.contactField').last().remove();
-                                $(this).parents('.contactField').remove();
-
-                            }
-                            JSPC.app.contactElementCount = $(".contactField").length;
-
-                            if (JSPC.app.contactElementCount == 0) {
-                                $(JSPC.app.contactContainer).empty().remove();
-                                $('#addContactElement').removeAttr('disabled').attr('class', 'ui icon button');
-                            }
-                        });
-
-
-                    } else {
-                        $('#addContactElement').attr('class', 'ui icon button disable');
-                        $('#addContactElement').attr('disabled', 'disabled');
-                    }
-                    r2d2.initDynamicUiStuff('#contactElementsContainer');
-                },
-                error: function (j, status, eThrown) {
-                    console.log('Error ' + eThrown)
-                }
-            });
-        });
-
-    %{--$('#removeContactElement').click(function () {
-        alert("test");
-        if (JSPC.app.contactElementCount != 0) {
-            // $('.contactField').last().remove();
-            $(this).parents('.contactField').remove();
-
-        }
-        JSPC.app.contactElementCount = $(".contactField").length;
-
-        if (JSPC.app.contactElementCount == 0) {
-            $(JSPC.app.contactContainer).empty().remove();
-            $('#addContactElement').removeAttr('disabled').attr('class', 'ui icon button');
-        }
-    });--}%
+    if (JSPC.app.contactElementCount == 0) {
+        $(JSPC.app.contactContainer).empty().remove();
+        $('#addContactElement').removeAttr('disabled').attr('class', 'ui icon button');
+    }
+});--}%
         let test = function() {
 
         }
@@ -633,7 +658,8 @@
         return filledOut;
     };
 
-        /* Deal with accordion in case allready any input */
+        /* Deal with accordion in case already any input */
+
         $(".accordion").accordion();
         let input = [$("#title"), $("#first_name"), $("#middle_name")];
 
@@ -648,6 +674,47 @@
           }
         }
 
-    </laser:script>
+
+
+        function deleteIconClass() {
+          $(".la-js-contactIcon").removeAttr("class");
+        }
+        $(".dropdown.contentType select").on("change", function () {
+
+          let icon = $(".la-js-contactIcon");
+          let value = $(this).val();
+
+          deleteIconClass();
+          changeIcon(value, icon)
+        });
+
+        function changeIcon(value, icon) {
+            console.log("value: " + value);
+            console.log("icon: " + icon);
+           deleteIconClass();
+           switch (value) {
+            case "${RDStore.CCT_EMAIL.id}":
+              icon.addClass("icon large la-js-contactIcon envelope outline");
+              break;
+            case "${RDStore.CCT_FAX.id}":
+              icon.addClass("icon large la-js-contactIcon tty");
+              break;
+            case "${RDStore.CCT_MOBILE.id}":
+              icon.addClass("icon large la-js-contactIcon mobile alternate");
+              break;
+            case "${RDStore.CCT_PHONE.id}":
+              icon.addClass("icon large la-js-contactIcon phone");
+              break;
+            case "${RDStore.CCT_PHONE.id}":
+              icon.addClass("icon large la-js-contactIcon phone");
+              break;
+            case "${RDStore.CCT_URL.id}":
+              icon.addClass("icon large la-js-contactIcon globe");
+              break;
+          }
+        }
+
+
+</laser:script>
 
 </ui:modal>
