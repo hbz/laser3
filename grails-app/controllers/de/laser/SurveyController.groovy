@@ -1082,7 +1082,7 @@ class SurveyController {
 
         List<Org> members = Org.executeQuery(fsr.query, fsr.queryParams, params)
 
-        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-NR", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label')]
+        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-NR", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label'), message(code: 'surveyconfig.orgs.label')]
 
         ArrayList rowData = []
         ArrayList row
@@ -1096,6 +1096,12 @@ class SurveyController {
             row.add(org.sortname)
             row.add(org.name)
             row.add(org.libraryType.getI10n('value'))
+
+            SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, result.surveyConfig)
+            if(surveyOrg){
+                row.add(RDStore.YN_YES.getI10n('value'))
+            }
+
             rowData.add(row)
         }
 
