@@ -367,6 +367,7 @@
             </div>
 
             <div class="wide two field">
+                <label></label>
                 <g:set var="format" value="${overrideFormat ?: [xlsx: 'XLSX', csv: 'CSV', pdf: 'PDF']}"/>
                 <g:select name="fileformat" id="fileformat-query" class="ui selection dropdown la-not-clearable"
                           optionKey="key" optionValue="value"
@@ -375,6 +376,7 @@
             </div>
 
             <div class="wide two field">
+                <label></label>
                 <button class="ui button positive right floated export" value="exportClickMeExcel">Export</button>
                 <%-- disused
                 <br>
@@ -404,15 +406,20 @@
                     <input name="clickMeConfigName" id="clickMeConfigName" value=""/>
                 </div>
 
-                <div class="wide eight field">
+                <div class="wide six field">
                     <label for="clickMeConfigNote"><g:message code="default.note.label"/></label>
                     <input name="clickMeConfigNote" id="clickMeConfigNote" value=""/>
                 </div>
 
-                <div class="wide four field">
-                    <button class="ui button positive right floated export" value="saveClickMeConfig" name="saveClickMeConfig">Export <g:message code="default.config.label"/> <g:message
+                <div class="wide five field">
+                    <label></label>
+                    <button class="ui button positive export" value="saveClickMeConfig" name="saveClickMeConfig">Export <g:message code="default.config.label"/> <g:message
                             code="default.button.save"/> </button>
+                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: 'clickMeConfig.save.info')}">
+                        <i class="question circle icon la-popup"></i>
+                    </span>
                 </div>
+
 
             </div><!-- .fields -->
         </g:if>
