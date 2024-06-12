@@ -1866,7 +1866,7 @@ join sub.orgRelations or_sub where
      * @param tsvFile the import file containing the subscription data
      * @return a map containing the candidates, the parent subscription type and the errors
      */
-    Map subscriptionImport(MultipartFile tsvFile) {
+    Map subscriptionImport(MultipartFile tsvFile, String encoding) {
         Locale locale = LocaleUtils.getCurrentLocale()
         Org contextOrg = contextService.getOrg()
         RefdataValue comboType
@@ -1879,7 +1879,7 @@ join sub.orgRelations or_sub where
         Map<String, Map> propMap = [:]
         Map candidates = [:]
         InputStream fileContent = tsvFile.getInputStream()
-        List<String> rows = fileContent.text.split('\n')
+        List<String> rows = fileContent.getText(encoding).split('\n')
         List<String> ignoredColHeads = [], multiplePropDefs = []
         rows[0].split('\t').eachWithIndex { String s, int c ->
             String headerCol = s.trim()
@@ -1889,70 +1889,46 @@ join sub.orgRelations or_sub where
             switch(headerCol.toLowerCase()) {
                 case "name": colMap.name = c
                     break
-                case "member":
-                case "einrichtung": colMap.member = c
+                case ["member", "einrichtung"]: colMap.member = c
                     break
-                case "vertrag":
-                case "license": colMap.licenses = c
+                case ["vertrag", "license"]: colMap.licenses = c
                     break
-                case "elternlizenz / konsortiallizenz":
-                case "parent subscription / consortial subscription":
-                case "elternlizenz":
-                case "konsortiallizenz":
-                case "parent subscription":
-                case "consortial subscription":
+                case ["elternlizenz / konsortiallizenz", "parent subscription / consortial subscription",
+                      "elternlizenz", "konsortiallizenz", "parent subscription", "consortial subscription"]:
                     if(contextService.getOrg().isCustomerType_Consortium())
                         colMap.instanceOf = c
                     break
                 case "status": colMap.status = c
                     break
-                case "startdatum":
-                case "laufzeit-beginn":
-                case "start date": colMap.startDate = c
+                case ["startdatum", "laufzeit-beginn", "start date"]: colMap.startDate = c
                     break
-                case "enddatum":
-                case "laufzeit-ende":
-                case "end date": colMap.endDate = c
+                case ["enddatum", "laufzeit-ende", "end date"]: colMap.endDate = c
                     break
-                case "kündigungsdatum":
-                case "cancellation date":
-                case "manual cancellation date": colMap.manualCancellationDate = c
+                case ["kündigungsdatum", "cancellation date", "manual cancellation date"]: colMap.manualCancellationDate = c
                     break
-                case "automatische verlängerung":
-                case "automatic renewal": colMap.isAutomaticRenewAnnually = c
+                case ["zuordnungsjahr", "reference year"]: colMap.referenceYear = c
                     break
-                case "lizenztyp":
-                case "subscription type":
-                case "type": colMap.kind = c
+                case ["automatische verlängerung", "automatic renewal"]: colMap.isAutomaticRenewAnnually = c
                     break
-                case "lizenzform":
-                case "subscription form":
-                case "form": colMap.form = c
+                case ["lizenztyp", "subscription type", "type"]: colMap.kind = c
                     break
-                case "ressourcentyp":
-                case "subscription resource":
-                case "resource": colMap.resource = c
+                case ["lizenzform", "subscription form", "form"]: colMap.form = c
                     break
-                case "anbieter":
-                case "provider:": colMap.provider = c
+                case ["ressourcentyp", "subscription resource", "resource"]: colMap.resource = c
                     break
-                case "lieferant":
-                case "agency": colMap.agency = c
+                case ["anbieter", "provider"]: colMap.provider = c
                     break
-                case "anmerkungen":
-                case "notes": colMap.notes = c
+                case ["lieferant", "agency", "vendor"]: colMap.vendor = c
                     break
-                case "perpetual access":
-                case "dauerhafter zugriff": colMap.hasPerpetualAccess = c
+                case ["anmerkungen", "notes"]: colMap.notes = c
                     break
-                case "publish component":
-                case "publish-komponente": colMap.hasPublishComponent = c
+                case ["perpetual access", "dauerhafter zugriff"]: colMap.hasPerpetualAccess = c
                     break
-                case "data exchange release":
-                case "freigabe daten": colMap.isPublicForApi = c
+                case ["publish component", "publish-komponente"]: colMap.hasPublishComponent = c
                     break
-                case "holding selection":
-                case "paketzuschnitt": colMap.holdingSelection = c
+                case ["data exchange release", "freigabe daten"]: colMap.isPublicForApi = c
+                    break
+                case ["holding selection", "paketzuschnitt"]: colMap.holdingSelection = c
                     break
                 default:
                     //check if property definition
@@ -2107,7 +2083,7 @@ join sub.orgRelations or_sub where
                 String providerIdCandidate = cols[colMap.provider]?.trim()
                 if(providerIdCandidate) {
                     Long idCandidate = providerIdCandidate.isLong() ? Long.parseLong(providerIdCandidate) : null
-                    Org provider = Org.findByIdOrGlobalUID(idCandidate,providerIdCandidate)
+                    Provider provider = Provider.findByIdOrGlobalUID(idCandidate,providerIdCandidate)
                     if(provider)
                         candidate.provider = "${provider.class.name}:${provider.id}"
                     else {
@@ -2116,15 +2092,15 @@ join sub.orgRelations or_sub where
                 }
             }
             //agency
-            if(colMap.agency != null) {
-                String agencyIdCandidate = cols[colMap.agency]?.trim()
-                if(agencyIdCandidate) {
-                    Long idCandidate = agencyIdCandidate.isLong() ? Long.parseLong(agencyIdCandidate) : null
-                    Org agency = Org.findByIdOrGlobalUID(idCandidate,agencyIdCandidate)
-                    if(agency)
-                        candidate.agency = "${agency.class.name}:${agency.id}"
+            if(colMap.vendor != null) {
+                String vendorIdCandidate = cols[colMap.vendor]?.trim()
+                if(vendorIdCandidate) {
+                    Long idCandidate = vendorIdCandidate.isLong() ? Long.parseLong(vendorIdCandidate) : null
+                    Vendor vendor = Vendor.findByIdOrGlobalUID(idCandidate,vendorIdCandidate)
+                    if(vendor)
+                        candidate.vendor = "${vendor.class.name}:${vendor.id}"
                     else {
-                        mappingErrorBag.noValidOrg = agencyIdCandidate
+                        mappingErrorBag.noValidOrg = vendorIdCandidate
                     }
                 }
             }
@@ -2168,6 +2144,15 @@ join sub.orgRelations or_sub where
                 Date manualCancellationDate = DateUtils.parseDateGeneric(cols[colMap.manualCancellationDate])
                 if(manualCancellationDate)
                     candidate.manualCancellationDate = manualCancellationDate
+            }
+            //referenceYear(nullable:true, blank:false)
+            if(colMap.referenceYear != null) {
+                String yearKey = cols[colMap.referenceYear].trim()
+                if(yearKey) {
+                    Year referenceYear = Year.parse(cols[colMap.referenceYear])
+                    if(referenceYear)
+                        candidate.referenceYear = referenceYear
+                }
             }
             //isAutomaticRenewAnnually
             if(colMap.isAutomaticRenewAnnually != null) {
@@ -2319,6 +2304,7 @@ join sub.orgRelations or_sub where
                         identifier: UUID.randomUUID())
                 sub.startDate = entry.startDate ? databaseDateFormatParser.parse(entry.startDate) : null
                 sub.endDate = entry.endDate ? databaseDateFormatParser.parse(entry.endDate) : null
+                sub.referenceYear = entry.referenceYear ? new Year(entry.referenceYear.value) : null
                 sub.manualCancellationDate = entry.manualCancellationDate ? databaseDateFormatParser.parse(entry.manualCancellationDate) : null
                 sub.isAutomaticRenewAnnually = entry.isAutomaticRenewAnnually ?: false
                 /* TODO [ticket=2276]
@@ -2326,8 +2312,8 @@ join sub.orgRelations or_sub where
                     sub.administrative = true*/
                 sub.instanceOf = entry.instanceOf ? genericOIDService.resolveOID(entry.instanceOf) : null
                 Org member = entry.member ? genericOIDService.resolveOID(entry.member) : null
-                Org provider = entry.provider ? genericOIDService.resolveOID(entry.provider) : null
-                Org agency = entry.agency ? genericOIDService.resolveOID(entry.agency) : null
+                Provider provider = entry.provider ? genericOIDService.resolveOID(entry.provider) : null
+                Vendor vendor = entry.vendor ? genericOIDService.resolveOID(entry.vendor) : null
                 if(sub.instanceOf && member)
                     sub.isSlaved = RDStore.YN_YES
                 if(sub.save()) {
@@ -2355,15 +2341,15 @@ join sub.orgRelations or_sub where
                         setOrgLicRole(sub,license,false)
                     }
                     if(provider) {
-                        OrgRole providerRole = new OrgRole(roleType: RDStore.OR_PROVIDER, sub: sub, org: provider)
+                        ProviderRole providerRole = new ProviderRole(subscription: sub, provider: provider)
                         if(!providerRole.save()) {
                             errors << providerRole.errors
                         }
                     }
-                    if(agency) {
-                        OrgRole agencyRole = new OrgRole(roleType: RDStore.OR_AGENCY, sub: sub, org: agency)
-                        if(!agencyRole.save()) {
-                            errors << agencyRole.errors
+                    if(vendor) {
+                        VendorRole vendorRole = new VendorRole(subscription: sub, vendor: vendor)
+                        if(!vendorRole.save()) {
+                            errors << vendorRole.errors
                         }
                     }
                     //process subscription properties
