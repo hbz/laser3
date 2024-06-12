@@ -1024,6 +1024,7 @@ class MyInstitutionController  {
         }
 
         result.providersTotal = providerListTotal.size()
+        result.allProviders = providerListTotal
         result.providerList = providerListTotal.drop((int) result.offset).take((int) result.max)
 
         String message = message(code: 'export.my.currentProviders') as String
@@ -1196,6 +1197,7 @@ class MyInstitutionController  {
             vendorsTotal = vendorsTotal.findAll { f1Result.contains(it.id) }
         }
         result.vendorListTotal = vendorsTotal.size()
+        result.allVendors = vendorsTotal
         result.vendorList = vendorsTotal.drop(result.offset).take(result.max)
 
         String message = message(code: 'export.my.currentVendors') as String
@@ -4381,7 +4383,7 @@ join sub.orgRelations or_sub where
         }
         SwissKnife.setPaginationParams(result, params, result.user)
 
-        result.availableDescrs = [PropertyDefinition.SUB_PROP,PropertyDefinition.LIC_PROP,PropertyDefinition.PRS_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.ORG_PROP]
+        result.availableDescrs = [PropertyDefinition.PRS_PROP,PropertyDefinition.PRV_PROP,PropertyDefinition.VEN_PROP,PropertyDefinition.SUB_PROP,PropertyDefinition.ORG_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.LIC_PROP]
 
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
         Set<PropertyDefinition> propList = []
@@ -4487,7 +4489,7 @@ join sub.orgRelations or_sub where
                     }
                 }
             }
-            redirect action: 'manageProperties', params: [filterPropDef: params.filterPropDef]
+            redirect action: 'manageProperties', params: [descr: pd.descr, filterPropDef: params.filterPropDef]
             return
         }
     }
@@ -4527,15 +4529,19 @@ join sub.orgRelations or_sub where
     private def _resolveOwner(PropertyDefinition pd, String id) {
         def owner
         switch(pd.descr) {
-            case PropertyDefinition.SUB_PROP: owner = Subscription.get(id)
+            case PropertyDefinition.PRS_PROP: owner = Person.get(id)
                 break
-            case PropertyDefinition.LIC_PROP: owner = License.get(id)
+            case PropertyDefinition.PRV_PROP: owner = Provider.get(id)
+                break
+            case PropertyDefinition.SUB_PROP: owner = Subscription.get(id)
                 break
             case PropertyDefinition.ORG_PROP: owner = Org.get(id)
                 break
-            case PropertyDefinition.PRS_PROP: owner = Person.get(id)
-                break
             case PropertyDefinition.PLA_PROP: owner = Platform.get(id)
+                break
+            case PropertyDefinition.LIC_PROP: owner = License.get(id)
+                break
+            case PropertyDefinition.VEN_PROP: owner = Vendor.get(id)
                 break
         }
         owner

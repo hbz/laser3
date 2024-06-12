@@ -41,7 +41,7 @@
         </div>
     </g:if>
 
-    <g:if test="${params.descr in [PropertyDefinition.ORG_PROP]}">
+    <g:if test="${params.descr == PropertyDefinition.ORG_PROP}">
         <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
 
             <div class="field">
@@ -58,14 +58,28 @@
             </div>
         </g:if>
     </g:if>
-    <g:elseif test="${params.descr in [PropertyDefinition.PRV_PROP, PropertyDefinition.VEN_PROP]}">
+    <g:elseif test="${params.descr in PropertyDefinition.PRV_PROP}">
         <div class="field">
             <div class="inline fields la-filter-inline">
                 <div class="inline field">
                     <div class="ui checkbox">
-                        <label for="checkMyProviderAgency">${message(code: 'default.myProviderAgency.label')}</label>
-                        <input id="checkMyProviderAgency" name="myProviderAgency" type="checkbox"
-                               <g:if test="${params.myProviderAgency == "on"}">checked=""</g:if>
+                        <label for="checkMyProvider">${message(code: 'menu.my.providers')}</label>
+                        <input id="checkMyProvider" name="myProvider" type="checkbox"
+                               <g:if test="${params.myProvider == "on"}">checked=""</g:if>
+                               tabindex="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </g:elseif>
+    <g:elseif test="${params.descr == PropertyDefinition.VEN_PROP}">
+        <div class="field">
+            <div class="inline fields la-filter-inline">
+                <div class="inline field">
+                    <div class="ui checkbox">
+                        <label for="checkMyVendor">${message(code: 'menu.my.vendors')}</label>
+                        <input id="checkMyVendor" name="myVendor" type="checkbox"
+                               <g:if test="${params.myVendor == "on"}">checked=""</g:if>
                                tabindex="0">
                     </div>
                 </div>

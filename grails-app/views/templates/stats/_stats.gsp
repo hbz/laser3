@@ -170,6 +170,20 @@
         </ui:msg>
     </g:elseif>
 </g:if>
+<g:elseif test="${platformInstanceRecords.values().statisticsFormat.contains('Document') || platformInstanceRecords.values().statisticsFormat.contains('Diagram')}">
+    <laser:serviceInjection/>
+    <ui:tabs>
+        <g:each in="${platformInstanceRecords.values()}" var="platform">
+            <ui:tabsItem controller=" $controllerName" action=" $actionName" tab="${platform.id.toString()}"
+                         params="${params + [tab: platform.id]}" text="${platform.name}"/>
+        </g:each>
+    </ui:tabs>
+    <g:each in="${platformInstanceRecords.values()}" var="platform">
+        <div class="ui bottom attached tab active segment" id="customerIdWrapper">
+            <laser:render template="/platform/platformStatsDetails" model="[wekbServerUnavailable: wekbServerUnavailable, platformInstanceRecord: platform]"/>
+        </div>
+    </g:each>
+</g:elseif>
 
 
 <laser:script file="${this.getGroovyPageFileName()}">
@@ -309,7 +323,6 @@ $('#globalLoadingIndicator').show();
 let fd = new FormData($('#stats')[0]);
 fd.append('startDate',startDate);
 fd.append('endDate',endDate);
-//console.log($('#stats')[0]);
 $.ajax({
     url: "<g:createLink controller="ajax" action="generateCostPerUse"/>",
                     data: fd,

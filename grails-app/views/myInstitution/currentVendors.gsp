@@ -49,7 +49,7 @@
         </g:else>
     </div>
 
-    <laser:render template="/templates/copyEmailaddresses" model="[orgList: vendorList, instanceType: Vendor.class.name]"/>
+    <laser:render template="/templates/copyEmailaddresses" model="[orgList: allVendors, instanceType: Vendor.class.name]"/>
 
     <ui:paginate total="${vendorListTotal}" params="${params}" max="${max}" offset="${offset}" />
 

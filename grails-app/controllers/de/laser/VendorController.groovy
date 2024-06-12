@@ -127,7 +127,7 @@ class VendorController {
                 f1Set = true
             }
             if (xFilter.contains('wekb_exclusive')) {
-                f2Result.addAll( vendorsTotal.findAll { it.gokbId != null }.collect{ it.id } )
+                f2Result.addAll( vendorsTotal.findAll { it.gokbId != null && it.gokbId in result.wekbRecords.keySet() }.collect{ it.id } )
                 f2Set = true
             }
             if (xFilter.contains('wekb_not')) {

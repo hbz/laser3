@@ -235,9 +235,11 @@
                                         </div>
                                     </dd>
                                 </dl>
-                                <dl>
-                                    <input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}">
-                                </dl>
+                                <g:if test="${editable}">
+                                    <dl>
+                                        <dd><input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}"></dd>
+                                    </dl>
+                                </g:if>
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.startDate.label')}</dt>
                                     <dd>

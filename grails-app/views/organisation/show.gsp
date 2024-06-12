@@ -132,7 +132,9 @@
                                     </div>
                                 </g:if>
                             </div>
-                            <input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}">
+                            <g:if test="${editable}">
+                                <input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}">
+                            </g:if>
                         </dd>
                     </dl>
                     <dl>
