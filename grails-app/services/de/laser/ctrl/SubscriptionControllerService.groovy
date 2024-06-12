@@ -1767,12 +1767,13 @@ class SubscriptionControllerService {
                                 Thread.sleep(1000) //to be sure ... wait until GORM has finished its work
                                 subscriptions.each { Subscription currParent ->
                                     if (packagesToProcess.containsKey("packagesToProcess_${currParent.id}") && memberSubIdsByParentSub.containsKey("newMemberSubIds_${currParent.id}")) {
-                                        List<Subscription> updatedSubList = Subscription.findAllById(memberSubIdsByParentSub.get("newMemberSubIds_${currParent.id}"))
+                                        List<Subscription> updatedSubList = Subscription.findAllByIdInList(memberSubIdsByParentSub.get("newMemberSubIds_${currParent.id}"))
                                         Set<Package> packagesToProcessCurParent = packagesToProcess.get("packagesToProcess_${currParent.id}")
                                         if(updatedSubList && packagesToProcessCurParent) {
                                             packagesToProcessCurParent.each { Package pkg ->
                                                 subscriptionService.cachePackageName("PackageTransfer_" + subscriptions[0].id, pkg.name)
-                                                subscriptionService.addToMemberSubscription(currParent, updatedSubList, pkg, params.linkWithEntitlements == 'on')
+                                                boolean createEntitlements = params.get('linkWithEntitlements_'+currParent.id) == 'on'
+                                                subscriptionService.addToMemberSubscription(currParent, updatedSubList, pkg, createEntitlements)
                                                 /*
                                             if()
                                                 subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)

@@ -1169,7 +1169,7 @@ class MyInstitutionController  {
             if(params.subPerpetualAccess == RDStore.YN_NO)
                 query += ' and s.hasPerpetualAccess = false '
         }
-        else if(!params.containsKey('filterSet')) query += ')' //opened in line 1100 or 1105
+        else query += ')' //opened in line 1100 or 1105
 
 
         String currentSubQuery = "select vr from VendorRole vr, OrgRole oo join oo.sub s where vr.subscription = s and s.status = :current and oo.org = :contextOrg order by s.name, s.startDate desc"
@@ -2406,8 +2406,8 @@ class MyInstitutionController  {
     })
     def subscriptionImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-        List<String> mappingCols = ["name", "owner", "status", "type", "form", "resource", "provider", "agency", "startDate", "endDate",
-                              "manualCancellationDate", "hasPerpetualAccess", "hasPublishComponent", "isPublicForApi",
+        List<String> mappingCols = ["name", "owner", "status", "type", "form", "resource", "provider", "vendor", "startDate", "endDate",
+                              "manualCancellationDate", "referenceYear", "hasPerpetualAccess", "hasPublishComponent", "isPublicForApi",
                               "customProperties", "privateProperties", "notes"]
         if(result.institution.isCustomerType_Inst_Pro()) {
             mappingCols.add(mappingCols.indexOf("manualCancellationDate"), "isAutomaticRenewAnnually")
@@ -2430,9 +2430,9 @@ class MyInstitutionController  {
             MultipartFile tsvFile = request.getFile("tsvFile") //this makes the transaction closure necessary
             if(tsvFile && tsvFile.size > 0) {
                 String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
-                if(encoding == "UTF-8") {
+                if(encoding in ["UTF-8", "WINDOWS-1252"]) {
                     result.filename = tsvFile.originalFilename
-                    Map subscriptionData = subscriptionService.subscriptionImport(tsvFile)
+                    Map subscriptionData = subscriptionService.subscriptionImport(tsvFile, encoding)
                     if(subscriptionData.globalErrors) {
                         flash.error = "<h3>${message([code:'myinst.subscriptionImport.post.globalErrors.header'])}</h3><p>${subscriptionData.globalErrors.join('</p><p>')}</p>"
                         redirect(action: 'subscriptionImport')

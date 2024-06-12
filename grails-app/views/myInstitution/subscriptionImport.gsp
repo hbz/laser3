@@ -39,7 +39,13 @@
             </ol>
             <g:message code="myinst.subscriptionImport.manual.p4"/>
         </p>
-            <a href="${resource(dir: 'files', file: 'bulk_load_subscription_records_template.csv')}"
+            <%
+                String templatePath = 'LizenzImportVollnutzerBeispiel.csv'
+                if(institution.isCustomerType_Consortium()) {
+                    templatePath = 'bulk_load_subscription_records_template.csv'
+                }
+            %>
+            <a href="${resource(dir: 'files', file: templatePath)}"
                download="template_bulk_load_subscription_records.csv">
                 <p><g:message code="myinst.subscriptionImport.template"/></p>
             </a>
