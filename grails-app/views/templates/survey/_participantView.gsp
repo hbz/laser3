@@ -22,7 +22,7 @@
                 ${message(code: 'default.overview.label')}
             </g:link>
 
-            <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
+            <g:if test="${surveyConfig.subscription && subscription}">
                         <g:link class="item ${params.viewTab == 'additionalInformation' ? 'active' : ''}"
                                 controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
                                 params="${parame+[viewTab: 'additionalInformation']}">
@@ -199,16 +199,16 @@
 
             </g:if>
 
-            <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
-                <g:if test="${params.viewTab == 'additionalInformation'}">
-                    <div class="la-inline-lists">
-                            <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig       : surveyConfig,
-                                                                                                  subscription       : subscription,
-                                                                                                  visibleProviders: providerRoles,
-                                                                                                  surveyResults      : surveyResults]"/>
-                    </div>
-                </g:if>
+
+            <g:if test="${params.viewTab == 'additionalInformation' && surveyConfig.subscription && subscription}">
+                <div class="la-inline-lists">
+                    <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig    : surveyConfig,
+                                                                                          subscription    : subscription,
+                                                                                          visibleProviders: providerRoles,
+                                                                                          surveyResults   : surveyResults]"/>
+                </div>
             </g:if>
+
 
             <g:if test="${params.viewTab == 'overview'}">
                     <laser:render template="/templates/survey/generalInfos"/>

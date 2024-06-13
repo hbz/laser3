@@ -2566,12 +2566,9 @@ class MyInstitutionController  {
         result.ownerId = result.surveyInfo.owner?.id
 
         result.surveyResults = []
-        result.minimalInput = false
 
         result.surveyConfig.getSortedProperties().each{ PropertyDefinition propertyDefinition ->
             SurveyResult surre = SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, result.surveyConfig, propertyDefinition)
-            if(surre.getValue() != null)
-                result.minimalInput = true
             result.surveyResults << surre
         }
 
@@ -2632,73 +2629,80 @@ class MyInstitutionController  {
         SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
 
         List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, surveyConfig)
+        result.minimalInput = false
 
-        boolean allResultHaveValue = true
-        List<PropertyDefinition> notProcessedMandatoryProperties = []
-        surveyResults.each { SurveyResult surre ->
-            SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
-            if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm()) {
-                allResultHaveValue = false
-                notProcessedMandatoryProperties << surre.type.getI10n('name')
+        surveyResults.each{ SurveyResult surre ->
+            if(surre.getValue() != null)
+                result.minimalInput = true
+        }
+
+        if(result.minimalInput) {
+            boolean allResultHaveValue = true
+            List<PropertyDefinition> notProcessedMandatoryProperties = []
+            surveyResults.each { SurveyResult surre ->
+                SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
+                if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm()) {
+                    allResultHaveValue = false
+                    notProcessedMandatoryProperties << surre.type.getI10n('name')
+                }
             }
-        }
 
-        boolean noParticipation = false
-        if(surveyInfo.isMandatory) {
-            if(surveyConfig && surveyConfig.subSurveyUseForTransfer){
-                noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
+            boolean noParticipation = false
+            if (surveyInfo.isMandatory) {
+                if (surveyConfig && surveyConfig.subSurveyUseForTransfer) {
+                    noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
+                }
             }
-        }
 
-        if(!noParticipation && notProcessedMandatoryProperties.size() > 0){
-            flash.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')]) as String
-        }
-        else if(noParticipation || allResultHaveValue){
-            surveyOrg.finishDate = new Date()
-            if (!surveyOrg.save()) {
-                flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
-            } else {
-                flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess') as String
-                sendSurveyFinishMail = true
+            if (!noParticipation && notProcessedMandatoryProperties.size() > 0) {
+                flash.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')]) as String
+            } else if (noParticipation || allResultHaveValue) {
+                surveyOrg.finishDate = new Date()
+                if (!surveyOrg.save()) {
+                    flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
+                } else {
+                    flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess') as String
+                    sendSurveyFinishMail = true
+                }
+            } else if (!noParticipation && allResultHaveValue) {
+                surveyOrg.finishDate = new Date()
+                if (!surveyOrg.save()) {
+                    flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
+                } else {
+                    flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess') as String
+                    sendSurveyFinishMail = true
+                }
             }
-        }
-        else if(!noParticipation && allResultHaveValue){
-            surveyOrg.finishDate = new Date()
-            if (!surveyOrg.save()) {
-                flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
-            } else {
-                flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess') as String
-                sendSurveyFinishMail = true
-            }
-        }
 
-        if(sendSurveyFinishMail) {
-            boolean sendMailToSurveyOwner = true
+            if (sendSurveyFinishMail) {
+                boolean sendMailToSurveyOwner = true
 
-            if(!surveyInfo.isMandatory && OrgSetting.get(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS) != OrgSetting.SETTING_NOT_FOUND && OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY).rdValue == RDStore.YN_YES){
-                int countAllResultsIsRefNo = 0
-                int countAllResultsIsRef = 0
-                surveyResults.each { SurveyResult surre ->
-                    if (surre.type.isRefdataValueType()){
-                        countAllResultsIsRef++
-                        if( surre.refValue == RDStore.YN_NO || surre.refValue == null) {
-                            countAllResultsIsRefNo++
+                if (!surveyInfo.isMandatory && OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS) != OrgSetting.SETTING_NOT_FOUND && OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY).rdValue == RDStore.YN_YES) {
+                    int countAllResultsIsRefNo = 0
+                    int countAllResultsIsRef = 0
+                    surveyResults.each { SurveyResult surre ->
+                        if (surre.type.isRefdataValueType()) {
+                            countAllResultsIsRef++
+                            if (surre.refValue == RDStore.YN_NO || surre.refValue == null) {
+                                countAllResultsIsRefNo++
+                            }
                         }
                     }
+
+                    if (countAllResultsIsRefNo == countAllResultsIsRef) {
+                        sendMailToSurveyOwner = false
+                    }
+
                 }
 
-                if(countAllResultsIsRefNo == countAllResultsIsRef){
-                    sendMailToSurveyOwner = false
+                if (sendMailToSurveyOwner) {
+                    mailSendService.emailToSurveyOwnerbyParticipationFinish(surveyInfo, result.institution)
                 }
-
+                mailSendService.emailToSurveyParticipationByFinish(surveyInfo, result.institution)
             }
-
-            if(sendMailToSurveyOwner) {
-                mailSendService.emailToSurveyOwnerbyParticipationFinish(surveyInfo, result.institution)
-            }
-            mailSendService.emailToSurveyParticipationByFinish(surveyInfo, result.institution)
+        }else {
+            flash.error = g.message(code: 'surveyResult.finish.inputNecessary')
         }
-
 
         redirect(url: request.getHeader('referer'))
     }

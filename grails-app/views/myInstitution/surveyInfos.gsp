@@ -7,12 +7,12 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
-    <ui:exportDropdown>
+   %{-- <ui:exportDropdown>
         <ui:exportDropdownItem>
             <g:link class="item" controller="myInstitution" action="surveyInfos"
                     params="${params + [exportXLSX: true, surveyConfigID: surveyConfig.id]}">${message(code: 'survey.exportSurvey')}</g:link>
         </ui:exportDropdownItem>
-    </ui:exportDropdown>
+    </ui:exportDropdown>--}%
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon text="${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}" type="Survey">
@@ -95,18 +95,6 @@
 <br/>
 
 <g:if test="${editable}">
-    <g:if test="${!minimalInput}">
-        <span class="la-delay la-popup-tooltip" data-content="${message(code: 'surveyResult.finish.inputNecessary')}">
-            <g:link class="ui button green disabled"
-                    controller="myInstitution"
-                    action="surveyInfoFinish"
-                    id="${surveyInfo.id}"
-                    params="[surveyConfigID: surveyConfig.id]">
-                <g:message code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finish.info2'}"/>
-            </g:link>
-        </span>
-    </g:if>
-    <g:else>
         <g:link class="ui button green js-open-confirm-modal"
                 data-confirm-messageUrl="${g.createLink(controller: 'ajaxHtml', action: 'getSurveyFinishMessage', params: [id: surveyInfo.id, surveyConfigID: surveyConfig.id])}"
                 data-confirm-term-how="concludeBinding"
@@ -118,7 +106,6 @@
                 params="[surveyConfigID: surveyConfig.id]">
             <g:message code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finish.info2'}"/>
         </g:link>
-    </g:else>
 </g:if>
 <br/>
 <br/>
