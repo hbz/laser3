@@ -1465,10 +1465,8 @@ class ControlledListService {
             qryParams.query = params.query
         }
         if(params.tableView) {
-            String qryString1 = "select p from SubscriptionPackage sp join sp.pkg pkg join pkg.provider p where sp.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${providerNameFilter} group by p.id order by p.sortname asc",
-            qryString2 = "select p from Provider p where p.createdBy = :context ${providerNameFilter}"
-            results.addAll(Provider.executeQuery(qryString1, qryParams))
-            results.addAll(Provider.executeQuery(qryString2, qryParams))
+            String qryString = "select p from Provider p where ${providerNameFilter} order by p.sortname asc"
+            results.addAll(Provider.executeQuery(qryString, qryParams))
         }
         else {
             if(params.displayWekbFlag) {
@@ -1505,13 +1503,8 @@ class ControlledListService {
             qryParams.query = params.query
         }
         if(params.tableView) {
-            qryParams.context = institution
-            String qryString1 = "select vendor from SubscriptionPackage sp, PackageVendor pv join pv.vendor vendor where sp.pkg = pv.pkg and sp.subscription in (select oo.sub from OrgRole oo where oo.org = :context ${consortiumFilter}) and ${vendorNameFilter} group by vendor.id order by vendor.sortname asc",
-            qryString2 = "select vendor from VendorRole vr join vr.vendor vendor where vr.subscription in (select oo.sub from OrgRole oo where oo.org = :context ${consortiumFilter}) and ${vendorNameFilter} group by vendor.id order by vendor.sortname asc",
-            qryString3 = "select vendor from Vendor vendor where vendor.createdBy = :context and ${vendorNameFilter} order by vendor.sortname asc"
-            results.addAll(Vendor.executeQuery(qryString1, qryParams))
-            results.addAll(Vendor.executeQuery(qryString2, qryParams))
-            results.addAll(Vendor.executeQuery(qryString3, qryParams))
+            String qryString = "select vendor from Vendor vendor where ${vendorNameFilter} order by vendor.sortname asc"
+            results.addAll(Vendor.executeQuery(qryString, qryParams))
         }
         else {
             if(params.displayWekbFlag) {

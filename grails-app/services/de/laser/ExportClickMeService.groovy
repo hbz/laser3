@@ -4045,7 +4045,7 @@ class ExportClickMeService {
      * @param showTransferFields should the subscription transfer fields be included in the export?
      * @return the output in the desired format
      */
-    def exportSubscriptions(LinkedHashSet<Subscription> result, Map<String, Object> selectedFields, FORMAT format, boolean showTransferFields = false) {
+    def exportSubscriptions(List<Subscription> result, Map<String, Object> selectedFields, FORMAT format, boolean showTransferFields = false) {
         Locale locale = LocaleUtils.getCurrentLocale()
         Org contextOrg = contextService.getOrg()
         Map<String, Object> selectedExportFields = [:]
