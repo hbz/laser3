@@ -9,7 +9,7 @@
            value="${ClickMeConfig.findAllByContextOrgAndClickMeType(contextService.getOrg(), ExportClickMeService.SURVEY_EVALUATION, [sort: 'configOrder'])}"/>
     <g:each in="${clickMeConfigs}" var="clickMeConfig">
         <ui:actionsDropdownItem tooltip="${clickMeConfig.note}" class="triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
-                                params="${params + [exportController: controllerName, exportAction: actionName, clickMeType: ExportClickMeService.SURVEY_EVALUATION, id: params.id, clickMeConfigId: clickMeConfig.id, surveyConfigID: surveyConfig.id, exportFileName: exportFileName]}"
+                                params="${params + [exportController: 'survey', exportAction: 'surveyEvaluation', clickMeType: ExportClickMeService.SURVEY_EVALUATION, id: params.id, clickMeConfigId: clickMeConfig.id, surveyConfigID: surveyConfig.id, exportFileName: exportFileName]}"
                                 text="Export: ${clickMeConfig.name}"/>
     </g:each>
 
@@ -28,7 +28,7 @@
 
         <g:each in="${clickMeConfigsCostItems}" var="clickMeConfig">
             <ui:actionsDropdownItem tooltip="${clickMeConfig.note}" class="triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
-                                    params="${params + [exportController: controllerName, exportAction: actionName, clickMeType: ExportClickMeService.SURVEY_COST_ITEMS, id: params.id, clickMeConfigId: clickMeConfig.id, surveyConfigID: surveyConfig.id, exportFileName: exportFileName]}"
+                                    params="${params + [exportController: 'survey', exportAction: 'exportSurCostItems', clickMeType: ExportClickMeService.SURVEY_COST_ITEMS, id: params.id, clickMeConfigId: clickMeConfig.id, surveyConfigID: surveyConfig.id, exportFileName: exportFileName]}"
                                     text="${message(code: 'survey.exportSurveyCostItems')}: ${clickMeConfig.name}"/>
         </g:each>
 
@@ -47,7 +47,7 @@
                value="${ClickMeConfig.findAllByContextOrgAndClickMeType(contextService.getOrg(), ExportClickMeService.SURVEY_RENEWAL_EVALUATION, [sort: 'configOrder'])}"/>
         <g:each in="${clickMeConfigsRenewal}" var="clickMeConfig">
             <ui:actionsDropdownItem tooltip="${clickMeConfig.note}" class="triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
-                                    params="${params + [exportController: controllerName, exportAction: actionName, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: params.id, clickMeConfigId: clickMeConfig.id, surveyConfigID: surveyConfig.id, exportFileName: exportFileName]}"
+                                    params="${params + [exportController: 'survey', exportAction: 'renewalEvaluation', clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: params.id, clickMeConfigId: clickMeConfig.id, surveyConfigID: surveyConfig.id, exportFileName: exportFileName]}"
                                     text="${message(code: 'renewalEvaluation.exportRenewal')}: ${clickMeConfig.name}"/>
         </g:each>
 

@@ -194,8 +194,6 @@ class SubscriptionsQueryService {
             )
             qry_params.put('name_filter', params.q)
             qry_params.put('linkType', RDStore.LINKTYPE_LICENSE)
-            if(params.orgRole != "Subscription Consortia")
-                qry_params.subRoleTypes.add(RDStore.OR_SUBSCRIPTION_CONSORTIA)
             filterSet = true
         }
         // eval property filter

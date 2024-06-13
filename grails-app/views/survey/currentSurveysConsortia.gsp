@@ -7,7 +7,7 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
-    <ui:exportDropdown>
+%{--    <ui:exportDropdown>
         <ui:exportDropdownItem>
             <g:link class="item" controller="survey" action="currentSurveysConsortia"
                     params="${params + [exportXLSX: true]}">${message(code: 'survey.exportSurveys')}</g:link>
@@ -16,7 +16,7 @@
             <g:link class="item" controller="survey" action="currentSurveysConsortia"
                     params="${params + [exportXLSX: true, surveyCostItems: true]}">${message(code: 'survey.exportSurveyCostItems')}</g:link>
         </ui:exportDropdownItem>
-    </ui:exportDropdown>
+    </ui:exportDropdown>--}%
     <laser:render template="actions"/>
 </ui:controlButtons>
 

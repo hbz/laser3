@@ -7,7 +7,7 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
-    <ui:exportDropdown>
+  %{--  <ui:exportDropdown>
         <ui:exportDropdownItem>
             <g:link class="item" controller="myInstitution" action="currentSurveys"
                     params="${params + [exportXLSX: true]}">${message(code: 'survey.exportSurveys')}</g:link>
@@ -16,7 +16,7 @@
             <g:link class="item" controller="myInstitution" action="currentSurveys"
                     params="${params + [exportXLSX: true, surveyCostItems: true]}">${message(code: 'survey.exportSurveyCostItems')}</g:link>
         </ui:exportDropdownItem>
-    </ui:exportDropdown>
+    </ui:exportDropdown>--}%
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon message="currentSurveys.label" type="survey" total="${countSurveys.values().sum { it }}" floated="true" />

@@ -707,8 +707,8 @@ class SubscriptionController {
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
-    def templateForSurveyParticipantsBulkWithUpload() {
-        log.debug("templateForSurveyParticipantsBulkWithUpload :: ${params}")
+    def templateForMembersBulkWithUpload() {
+        log.debug("templateForMembersBulkWithUpload :: ${params}")
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
 
         String filename = "template_sub_members_import"
@@ -719,7 +719,7 @@ class SubscriptionController {
         List<Org> consortiaMembers = Org.executeQuery(fsr.query, fsr.queryParams, params)
 
 
-        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-NR", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label')]
+        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-NR", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label'), message(code: 'subscription.label')]
 
         ArrayList rowData = []
         ArrayList row
@@ -733,6 +733,11 @@ class SubscriptionController {
             row.add(org.sortname)
             row.add(org.name)
             row.add(org.libraryType.getI10n('value'))
+            Subscription subscription = result.subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
+            if(subscription){
+                row.add(subscription.getLabel())
+            }
+
             rowData.add(row)
         }
 

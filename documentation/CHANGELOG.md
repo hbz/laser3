@@ -13,6 +13,8 @@
 
 5762    13.06.2024  dev     3.4         Andreas Bug         unsinnige Beschränkung aufgehoben
 
+5761    13.06.2024  dev     3.4         Andreas Bug         500er bei der Lizenzsuche aufgehoben für Nichtkonsortialstellen
+
 5752    10.06.2024  dev     3.4         Andreas Bug         Merkmalsverwaltung für Anbieter und Lieferanten geöffnet
 
 5751    10.06.2024  dev     3.4         Andreas Bug         dublette Erzeugung von VendorRoles unterbunden

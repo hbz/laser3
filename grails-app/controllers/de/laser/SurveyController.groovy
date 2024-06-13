@@ -1082,7 +1082,7 @@ class SurveyController {
 
         List<Org> members = Org.executeQuery(fsr.query, fsr.queryParams, params)
 
-        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-NR", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label')]
+        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-NR", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label'), message(code: 'surveyconfig.orgs.label')]
 
         ArrayList rowData = []
         ArrayList row
@@ -1096,6 +1096,12 @@ class SurveyController {
             row.add(org.sortname)
             row.add(org.name)
             row.add(org.libraryType.getI10n('value'))
+
+            SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, result.surveyConfig)
+            if(surveyOrg){
+                row.add(RDStore.YN_YES.getI10n('value'))
+            }
+
             rowData.add(row)
         }
 
@@ -1930,15 +1936,13 @@ class SurveyController {
                 filename =params.filename
             }
 
-            result.costItems = CostItem.findAllBySurveyOrgInListAndCostItemStatusNotEqual(SurveyOrg.findAllBySurveyConfig(result.surveyConfig), RDStore.COST_ITEM_DELETED).sort {it.surveyOrg.org.sortname}
-
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             Map<String, Object> selectedFields = [:]
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             Set<String> contactSwitch = []
             contactSwitch.addAll(params.list("contactSwitch"))
             contactSwitch.addAll(params.list("addressSwitch"))
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyCostItems(result.costItems, selectedFields, ExportClickMeService.FORMAT.XLS, contactSwitch)
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyCostItemsForOwner(result.surveyConfig, selectedFields, ExportClickMeService.FORMAT.XLS, contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
