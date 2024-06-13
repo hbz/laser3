@@ -14,8 +14,8 @@
     </div>
 
     <div class="field four wide">
-        <ui:select class="ui search  dropdown" name="contactLang.id"
-                   from="${RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)}"
+        <ui:select class="ui search dropdown" name="contactLang.id"
+                   from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)}"
                    optionKey="id"
                    optionValue="value"
                    value="${contactInstance?.language?.id}"
@@ -27,7 +27,7 @@
         <g:textField id="content" name="content" value="${contactInstance?.content}"/>
     </div>
     <div class="field one wide">
-        <button type="button"  class="ui icon negative button la-modern-button la-margin-top-1-7em removeContactElement">
+        <button type="button"  class="ui icon negative button la-modern-button removeContactElement">
             <i class="trash alternate outline icon"></i>
         </button>
     </div>
