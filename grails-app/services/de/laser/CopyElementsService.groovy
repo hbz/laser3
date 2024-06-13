@@ -149,9 +149,9 @@ class CopyElementsService {
             Set<RefdataValue> excludes = [RDStore.LINKTYPE_LICENSE]
             if(params.isRenewSub)
                 excludes << RDStore.LINKTYPE_FOLLOWS
-            result.sourceLinks = Links.executeQuery("select li from Links li where :sub in (li.sourceSubscription,li.destinationSubscription) and li.linkType not in (:linkTypes) and owner = :context", [sub: sourceObject, linkTypes: excludes, context: contextOrg])
+            result.sourceLinks = Links.executeQuery("select li from Links li where :sub in (li.sourceSubscription,li.destinationSubscription) and li.sourceSubscription != null and li.destinationSubscription != null and li.linkType not in (:linkTypes) and owner = :context", [sub: sourceObject, linkTypes: excludes, context: contextOrg])
             if(targetObject) {
-                result.targetLinks = Links.executeQuery("select li from Links li where :sub in (li.sourceSubscription,li.destinationSubscription) and li.linkType not in (:linkTypes) and owner = :context", [sub: targetObject, linkTypes: excludes, context: contextOrg])
+                result.targetLinks = Links.executeQuery("select li from Links li where :sub in (li.sourceSubscription,li.destinationSubscription) and li.sourceSubscription != null and li.destinationSubscription != null and li.linkType not in (:linkTypes) and owner = :context", [sub: targetObject, linkTypes: excludes, context: contextOrg])
             }
         }
 
@@ -163,9 +163,9 @@ class CopyElementsService {
             result.target_visibleVendors = licenseService.getVisibleVendors(targetObject)
 
             Set<RefdataValue> excludes = [RDStore.LINKTYPE_LICENSE]
-            result.sourceLinks = Links.executeQuery("select li from Links li where :lic in (li.sourceLicense,li.destinationLicense) and li.linkType not in (:linkTypes) and owner = :context", [lic: sourceObject, linkTypes: excludes, context: contextOrg])
+            result.sourceLinks = Links.executeQuery("select li from Links li where :lic in (li.sourceLicense,li.destinationLicense) and li.sourceLicense != null and li.destinationLicense != null and li.linkType not in (:linkTypes) and owner = :context", [lic: sourceObject, linkTypes: excludes, context: contextOrg])
             if(targetObject) {
-                result.targetLinks = Links.executeQuery("select li from Links li where :lic in (li.sourceLicense,li.destinationLicense) and li.linkType not in (:linkTypes) and owner = :context", [lic: targetObject, linkTypes: excludes, context: contextOrg])
+                result.targetLinks = Links.executeQuery("select li from Links li where :lic in (li.sourceLicense,li.destinationLicense) and li.sourceLicense != null and li.destinationLicense != null and li.linkType not in (:linkTypes) and owner = :context", [lic: targetObject, linkTypes: excludes, context: contextOrg])
             }
         }
 
