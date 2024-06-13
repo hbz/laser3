@@ -11,6 +11,8 @@
 
 5763    13.06.2024  dev     3.4         Andreas Bug         Falsches Argument beim Lizenzexport behoben
 
+5762    13.06.2024  dev     3.4         Andreas Bug         unsinnige Beschränkung aufgehoben
+
 5752    10.06.2024  dev     3.4         Andreas Bug         Merkmalsverwaltung für Anbieter und Lieferanten geöffnet
 
 5751    10.06.2024  dev     3.4         Andreas Bug         dublette Erzeugung von VendorRoles unterbunden
