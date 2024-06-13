@@ -478,7 +478,7 @@
                                     <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: vendor.globalUID, status: 'FETCH_ALL']">
                                         <div class="content la-space-right">
                                             <i class="icon filter"></i> <g:message code="subscription.plural.total" />
-                                        &nbsp;<div class="ui blue circular label">${subLinks.size()}</div>
+                                        &nbsp;<div class="ui blue circular label">${subLinks}</div>
                                         </div>
                                     </g:link>
                                 </div>
@@ -499,7 +499,7 @@
                                     <div class="content la-space-right">
                                         <g:link controller="myInstitution" action="currentLicenses" params="[vendor: vendor.id, filterSubmit: 'Filtern']">
                                             <i class="icon filter"></i> <g:message code="license.plural.total" />
-                                            &nbsp;<div class="ui blue circular label">${licLinks.size()}</div>
+                                            &nbsp;<div class="ui blue circular label">${licLinks}</div>
                                         </g:link>
                                     </div>
                                 </div>
