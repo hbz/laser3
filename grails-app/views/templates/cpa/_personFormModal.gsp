@@ -512,17 +512,21 @@
                 if (JSPC.app.contactElementCount <= 3) {
 
                     JSPC.app.contactElementCount = JSPC.app.contactElementCount + 1;
-                    $(JSPC.app.contactContainer).append(data);
+                   $(JSPC.app.contactContainer).append(data);
+
+                    let lastRow = $(JSPC.app.contactContainer).find('.la-js-contactIcon').last();
+
                     $('#contactFields').attr('id', 'contactFields' + JSPC.app.contactElementCount);
 
                     $('#contactElements').after(JSPC.app.contactContainer);
 
-                      let iconType = buttonClicked.attr("id");
-                      alert(iconType);
+                      let iconType = buttonClicked.attr("id").split('cct-')[1];
                       let icon = $(".la-js-contactIcon");
 
+
                       deleteIconClass();
-                      changeIcon(iconType.split('cct-')[1], icon);
+                      changeIcon(iconType, lastRow);
+
                       $('.contactField  option[value="' + iconType + '"]').prop("selected", true);
                       $(".dropdown").dropdown();
 
@@ -559,7 +563,6 @@
     });
 
 %{--$('#removeContactElement').click(function () {
-    alert("test");
     if (JSPC.app.contactElementCount != 0) {
         // $('.contactField').last().remove();
         $(this).parents('.contactField').remove();
@@ -572,9 +575,7 @@
         $('#addContactElement').removeAttr('disabled').attr('class', 'ui icon button');
     }
 });--}%
-        let test = function() {
 
-        }
         /* CONTACT END */
 
     %{--        /* ADDRESS START */
