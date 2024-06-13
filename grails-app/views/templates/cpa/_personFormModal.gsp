@@ -504,6 +504,7 @@
 
 
     $('.la-js-addContactElement').click(function () {
+
         let buttonClicked =    $(this);
         $.ajax({
             url: "<g:createLink controller="ajaxHtml" action="contactFields"/>",
@@ -514,25 +515,22 @@
                     JSPC.app.contactElementCount = JSPC.app.contactElementCount + 1;
                    $(JSPC.app.contactContainer).append(data);
 
-                    let lastRow = $(JSPC.app.contactContainer).find('.la-js-contactIcon').last();
+                    let lastRowIcon = $(JSPC.app.contactContainer).find('.la-js-contactIcon').last();
 
                     $('#contactFields').attr('id', 'contactFields' + JSPC.app.contactElementCount);
 
                     $('#contactElements').after(JSPC.app.contactContainer);
 
-                      let iconType = buttonClicked.attr("id").split('cct-')[1];
-                      let icon = $(".la-js-contactIcon");
+                    let iconType = buttonClicked.attr("id").split('cct-')[1];
+                    let icon = $(".la-js-contactIcon");
 
+                    //deleteIconClass();
+                    changeIcon(iconType, lastRowIcon);
 
-                      deleteIconClass();
-                      changeIcon(iconType, lastRow);
+                    $('.contactField  option[value="' + iconType + '"]').prop("selected", true);
+                    $(".dropdown").dropdown();
 
-                      $('.contactField  option[value="' + iconType + '"]').prop("selected", true);
-                      $(".dropdown").dropdown();
-
-
-
-
+                    JSPC.app.seeIfDropdownIsChecked();
 
                     $('.removeContactElement').click(function () {
 
@@ -561,7 +559,7 @@
             }
         });
     });
-
+        /* CONTACT END */
 %{--$('#removeContactElement').click(function () {
     if (JSPC.app.contactElementCount != 0) {
         // $('.contactField').last().remove();
@@ -576,7 +574,7 @@
     }
 });--}%
 
-        /* CONTACT END */
+
 
     %{--        /* ADDRESS START */
             $('#addAddressElement').click(function () {
@@ -677,22 +675,25 @@
 
 
 
-        function deleteIconClass() {
-          $(".la-js-contactIcon").removeAttr("class");
+        function deleteIconClass(icon) {
+          icon.removeAttr("class");
         }
-        $(".dropdown.contentType select").on("change", function () {
+        JSPC.app.seeIfDropdownIsChecked = function() {
+            $(".dropdown.contentType select").on("change", function () {
 
-          let icon = $(".la-js-contactIcon");
-          let value = $(this).val();
+              let icon = $(this).parents('.contactField').find('.la-js-contactIcon');
+              let value = $(this).val();
 
-          deleteIconClass();
-          changeIcon(value, icon)
-        });
+              console.log("icon: ");
+              console.log(icon);
+
+              deleteIconClass(icon);
+              changeIcon(value, icon)
+            });
+        }
 
         function changeIcon(value, icon) {
-            console.log("value: " + value);
-            console.log("icon: " + icon);
-           deleteIconClass();
+           deleteIconClass(icon);
            switch (value) {
             case "${RDStore.CCT_EMAIL.id}":
               icon.addClass("icon large la-js-contactIcon envelope outline");
