@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5764    13.06.2024  dev     3.4         Andreas Bug         500er und falsche Sortierung bei neuen Merkmalsgruppen aufgehoben
+
+5763    13.06.2024  dev     3.4         Andreas Bug         Falsches Argument beim Lizenzexport behoben
+
 5752    10.06.2024  dev     3.4         Andreas Bug         Merkmalsverwaltung für Anbieter und Lieferanten geöffnet
 
 5751    10.06.2024  dev     3.4         Andreas Bug         dublette Erzeugung von VendorRoles unterbunden

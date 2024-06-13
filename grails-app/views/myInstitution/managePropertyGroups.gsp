@@ -52,7 +52,7 @@
                                         <i class="icon arrow up"></i>
                                     </g:link>
                                 </g:if>
-                                <g:else>
+                                <g:elseif test="${typeEntry.value.size() > 1}">
                                     <g:if test="${i > 0}">
                                         <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveUp', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
                                                 role="button">
@@ -62,7 +62,7 @@
                                     <g:else>
                                         <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
                                     </g:else>
-                                    <g:if test="${i < propDefGroups.size()-1}">
+                                    <g:if test="${i < typeEntry.value.size()-1}">
                                         <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveDown', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
                                                 role="button">
                                             <i class="icon arrow down"></i>
@@ -71,7 +71,7 @@
                                     <g:else>
                                         <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
                                     </g:else>
-                                </g:else>
+                                </g:elseif>
                             </td>
                             <td>
                                 <ui:xEditable owner="${pdGroup}" field="name" />

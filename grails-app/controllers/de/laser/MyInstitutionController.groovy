@@ -4301,14 +4301,13 @@ join sub.orgRelations or_sub where
                         }
                         else {
                             if (params.name && ownerType) {
-                                //continue with testings - migration and new creation
-                                int position = PropertyDefinitionGroup.executeQuery('select max(pdg.order) from PropertyDefinitionGroup pdg where pdg.description = :objType and pdg.tenant = :tenant order by pdg.order', [objType: params.description, tenant: result.institution])[0]
+                                int position = PropertyDefinitionGroup.executeQuery('select max(pdg.order) from PropertyDefinitionGroup pdg where pdg.ownerType = :objType and pdg.tenant = :tenant', [objType: ownerType, tenant: result.institution])[0]
                                 propDefGroup = new PropertyDefinitionGroup(
                                         name: params.name,
                                         description: params.description,
                                         tenant: result.institution,
                                         ownerType: ownerType,
-                                        order: Math.max(position, 0) + 1,
+                                        order: position + 1,
                                         isVisible: true
                                 )
                                 if (propDefGroup.save()) {
