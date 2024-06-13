@@ -323,6 +323,9 @@ class ExportClickMeService {
                             'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label'],
                             'costItem.invoiceNumber'                    : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
                             'costItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
+                            'costItem.pkg'                              : [field: 'costItem.pkg.name', label: 'Package Name', message: 'package.label'],
+                            'costItem.issueEntitlement'                 : [field: 'costItem.issueEntitlement.tipp.name', label: 'Title', message: 'issueEntitlement.label'],
+                            'costItem.issueEntitlementGroup'            : [field: 'costItem.issueEntitlementGroup.name', label: 'Title Group Name', message: 'package.label'],
                     ]
             ],
 
@@ -1078,6 +1081,9 @@ class ExportClickMeService {
                             'costItem.costDescription'                  : [field: 'costDescription', label: 'Description', message: 'default.description.label'],
                             'costItem.invoiceNumber'                    : [field: 'invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
                             'costItem.orderNumber'                      : [field: 'order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
+                            'costItem.pkg'                              : [field: 'pkg.name', label: 'Package Name', message: 'package.label'],
+                            'costItem.issueEntitlement'                 : [field: 'issueEntitlement.tipp.name', label: 'Title', message: 'issueEntitlement.label'],
+                            'costItem.issueEntitlementGroup'            : [field: 'issueEntitlementGroup.name', label: 'Title Group Name', message: 'package.label'],
                     ]
             ],
 
@@ -1610,6 +1616,9 @@ class ExportClickMeService {
                             'participantSubCostItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label'],
                             'participantSubCostItem.invoiceNumber'                    : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
                             'participantSubCostItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
+                            'participantSubCostItem.pkg'                              : [field: 'costItem.pkg.name', label: 'Package Name', message: 'package.label'],
+                            'participantSubCostItem.issueEntitlement'                 : [field: 'costItem.issueEntitlement.tipp.name', label: 'Title', message: 'issueEntitlement.label'],
+                            'participantSubCostItem.issueEntitlementGroup'            : [field: 'costItem.issueEntitlementGroup.name', label: 'Title Group Name', message: 'package.label'],
                     ]
             ],
 
@@ -4294,7 +4303,7 @@ class ExportClickMeService {
      * @param contactSources which set of contacts should be considered (public or private)?
      * @return the output in the desired format
      */
-    def exportSurveyCostItems(ArrayList<CostItem> result, Map<String, Object> selectedFields, FORMAT format, Set<String> contactSources) {
+    def exportSurveyCostItemsForOwner(SurveyConfig surveyConfig, Map<String, Object> selectedFields, FORMAT format, Set<String> contactSources) {
         Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
@@ -4311,13 +4320,30 @@ class ExportClickMeService {
 
         List titles = _exportTitles(selectedExportFields, locale, null, null, contactSources, null, format)
 
+        List<CostItem> costItems = CostItem.findAllBySurveyOrgInListAndCostItemStatusNotEqualAndPkgIsNull(SurveyOrg.findAllBySurveyConfig(surveyConfig), RDStore.COST_ITEM_DELETED).sort {it.surveyOrg.org.sortname}
+
         List exportData = []
-        result.each { CostItem costItem ->
+        costItems.each { CostItem costItem ->
             _setCostItemRow(costItem, selectedExportFields, exportData, format, contactSources)
         }
 
         Map sheetData = [:]
         sheetData[messageSource.getMessage('financials.costItem', null, locale)] = [titleRow: titles, columnData: exportData]
+
+        if (surveyConfig.packageSurvey) {
+            String sheetName = ''
+            costItems = CostItem.findAllBySurveyOrgInListAndCostItemStatusNotEqualAndPkgIsNotNull(SurveyOrg.findAllBySurveyConfig(surveyConfig), RDStore.COST_ITEM_DELETED).sort { it.surveyOrg.org.sortname }
+            selectedExportFields.put('pkg', [field: 'pkg.name', label: 'Package Name', message: 'package.label'])
+            titles = _exportTitles(selectedExportFields, locale, null, null, contactSources, null, format)
+
+            exportData = []
+            costItems.each { CostItem costItem ->
+                _setCostItemRow(costItem, selectedExportFields, exportData, format, contactSources)
+            }
+
+            sheetName = messageSource.getMessage('surveyCostItemsPackages.label', null, locale)
+            sheetData[sheetName] = [titleRow: titles, columnData: exportData]
+        }
 
         return exportService.generateXLSXWorkbook(sheetData)
     }
