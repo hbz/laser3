@@ -428,6 +428,7 @@ class ExportClickMeService {
                     fields: [
                             'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
                             'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
+                            'vendor.altnames'          : [field: 'vendors.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
                             'vendor.url'               : [field: 'vendors.url', label: 'Url', message: 'exportClickMe.agency.url'],
                     ]
             ],
@@ -5987,8 +5988,8 @@ class ExportClickMeService {
                         case 'vendor.subscriptions':
                             String consortiaFilter = ''
                             if(context.isCustomerType_Consortium())
-                                consortiaFilter = ' and s.instanceOf = null'
-                            List nameOfSubscriptions = Subscription.executeQuery('select s.name from VendorRole vr join vr.subscription s, OrgRole oo where vr.subscription = oo.sub and vr.vendor = :vendor and s.status = :current and oo.org = :context'+consortiaFilter, [vendor: result, current: RDStore.SUBSCRIPTION_CURRENT, context: context])
+                                consortiaFilter = ' and (s.instanceOf = null or not exists(select vri from VendorRole vri where vri.subscription = s.instanceOf))'
+                            List nameOfSubscriptions = Subscription.executeQuery('select s.name from VendorRole vr join vr.subscription s, OrgRole oo where s = oo.sub and vr.vendor = :vendor and s.status = :current and oo.org = :context'+consortiaFilter+' order by s.name', [vendor: result, current: RDStore.SUBSCRIPTION_CURRENT, context: context])
                             row.add(createTableCell(format, nameOfSubscriptions.join('; ')))
                             break
                         case 'vendor.supportedLibrarySystems':
@@ -6087,7 +6088,13 @@ class ExportClickMeService {
                             row.add(createTableCell(format, packageNames))
                             break
                         case 'provider.platforms':
-                            row.add(createTableCell(format, result.packages.nominalPlatform.name.join('; ')))
+                            String platformNames
+                            if(result.platforms.size() > 10) {
+                                Set<Platform> platformSubSet = result.platforms.take(10)
+                                platformNames = "${platformSubSet.name.join('\n')} ${messageSource.getMessage('export.overflow', [result.platforms.size()-10] as Object[], LocaleUtils.getCurrentLocale())}"
+                            }
+                            else platformNames = result.platforms.name.join('\n')
+                            row.add(createTableCell(format, platformNames))
                             break
                         case 'provider.subscriptions':
                             String consortiaFilter = ''
