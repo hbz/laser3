@@ -291,57 +291,54 @@
 
     <g:if test="${showContacts}">
         <g:if test="${addContacts}">
-        %{-- Buttons for selection of kind of contact START --}%
-            <div class="ui wrapping spaced buttons">
-                <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_EMAIL.id}"><i class="icon  envelope outline"></i>E-Mail hinzufügen</a>
-                <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_FAX.id}"><i class="tty circle icon"></i>Fax hinzufügen</a>
-                <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_MOBILE.id}"><i class="mobile alternate circle icon"></i>Mobil hinzufügen</a>
-                <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_PHONE.id}"><i class="phone circle icon"></i>Telefon hinzufügen</a>
-                <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_URL.id}"><i class="globe circle icon"></i>Url hinzufügen</a>
-            </div>
-        %{-- Buttons for selection of kind of contact END --}%
             <div class="field">
-                <br />
                 <label>
                     <g:message code="person.contacts.label"/>:
                 </label>
-
-                <g:if test="${personInstance}">
-                    <g:each in="${personInstance.contacts?.toSorted()}" var="contact" status="i">
-                        <div class="three fields contactField" id="contactFields${i}">
-                            <div class="field one wide la-contactIconField">
-                                <i class="icon large envelope outline la-js-contactIcon"></i>
-                            </div>
-                            <div class="field wide four">
-                                <input type="text" readonly value="${contact.contentType.getI10n('value')}"/>
-                            </div>
-
-                            <div class="field four wide">
-                                <ui:select class="ui search dropdown" name="contactLang${contact.id}"
-                                           from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)}"
-                                           optionKey="id"
-                                           optionValue="value"
-                                           value="${contact.language?.id}"
-                                           noSelection="['null': '']"/>
-                            </div>
-
-                            <div class="field seven wide">
-                                <g:textField name="content${contact.id}" value="${contact.content}"/>
-                            </div>
-                            <div class="field one wide">
-                                <button type="button"  class="ui icon negative button la-modern-button removeContactElement">
-                                    <i class="trash alternate outline icon"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </g:each>
-                </g:if>
+                %{-- Buttons for selection of kind of contact START --}%
+                <div class="ui wrapping spaced buttons">
+                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_EMAIL.id}"><i class="icon  envelope outline"></i>E-Mail hinzufügen</a>
+                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_FAX.id}"><i class="tty circle icon"></i>Fax hinzufügen</a>
+                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_MOBILE.id}"><i class="mobile alternate circle icon"></i>Mobil hinzufügen</a>
+                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_PHONE.id}"><i class="phone circle icon"></i>Telefon hinzufügen</a>
+                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_URL.id}"><i class="globe circle icon"></i>Url hinzufügen</a>
+                </div>
+                %{-- Buttons for selection of kind of contact END --}%
             </div>
 
 
+            <g:if test="${personInstance}">
+                <g:each in="${personInstance.contacts?.toSorted()}" var="contact" status="i">
+                    <div class="three fields contactField" id="contactFields${i}">
+                        <div class="field one wide la-contactIconField">
+                            <i class="icon large envelope outline la-js-contactIcon"></i>
+                        </div>
+                        <div class="field wide four">
+                            <input type="text" readonly value="${contact.contentType.getI10n('value')}"/>
+                        </div>
 
-            <br />
-            <br />
+                        <div class="field four wide">
+                            <ui:select class="ui search dropdown" name="contactLang${contact.id}"
+                                       from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)}"
+                                       optionKey="id"
+                                       optionValue="value"
+                                       value="${contact.language?.id}"
+                                       noSelection="['null': '']"/>
+                        </div>
+
+                        <div class="field seven wide">
+                            <g:textField name="content${contact.id}" value="${contact.content}"/>
+                        </div>
+                        <div class="field one wide">
+                            <button type="button"  class="ui icon negative button la-modern-button removeContactElement">
+                                <i class="trash alternate outline icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </g:each>
+            </g:if>
+
+
             <div class="field">
                 <div class="three fields contactField" id="contactFields${personInstance?.contacts ? personInstance.contacts.size()+1 : 1}">
                     <div class="field one wide la-contactIconField">
@@ -547,12 +544,12 @@
                     let iconType = buttonClicked.attr("id").split('cct-')[1];
                     let icon = $(".la-js-contactIcon");
 
-                    changeIcon(iconType, lastRowIcon);
+                    JSPC.app.changeIcon(iconType, lastRowIcon);
 
                     $('.contactField  option[value="' + iconType + '"]').last().prop("selected", true);
                     $(".dropdown").dropdown();
 
-                    JSPC.app.seeIfDropdownIsChecked();
+                    JSPC.app.changeIconRegardingDropdown();
                     JSPC.app.removeContactElement();
 
 
@@ -682,26 +679,26 @@
         }
 
 
-
-        function deleteIconClass(icon) {
+        %{--   Delete the icon classes before adding new one        --}%
+        JSPC.app.deleteIconClass = function (icon) {
           icon.removeAttr("class");
         }
-        JSPC.app.seeIfDropdownIsChecked = function() {
+
+        %{--  Change icon when contact dropdown is changed          --}%
+        JSPC.app.changeIconRegardingDropdown = function() {
             $(".dropdown.contentType select").on("change", function () {
 
               let icon = $(this).parents('.contactField').find('.la-js-contactIcon');
               let value = $(this).val();
 
-              console.log("icon: ");
-              console.log(icon);
-
-              deleteIconClass(icon);
-              changeIcon(value, icon)
+              JSPC.app.deleteIconClass(icon);
+              JSPC.app.changeIcon(value, icon)
             });
         }
 
-        function changeIcon(value, icon) {
-           deleteIconClass(icon);
+        %{--   Change the icon classes        --}%
+        JSPC.app.changeIcon = function (value, icon) {
+           JSPC.app.deleteIconClass(icon);
            switch (value) {
             case "${RDStore.CCT_EMAIL.id}":
               icon.addClass("icon large la-js-contactIcon envelope outline");
