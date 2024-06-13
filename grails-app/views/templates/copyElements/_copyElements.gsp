@@ -864,7 +864,7 @@
                 $takeSpecificSubscriptionEditors:   $('input:checkbox[name="subscription.takeSpecificSubscriptionEditors"]'),
                 $deleteSpecificSubscriptionEditors: $('input:checkbox[name="subscription.deleteSpecificSubscriptionEditors"]'),
                 $takeAltname:                       $('input:checkbox[name="copyObject.takeAltnames"]'),
-                $deleteAltname:                      $('input:checkbox[name="copyObject.deleteAltnames"]'),
+                $deleteAltname:                     $('input:checkbox[name="copyObject.deleteAltnames"]'),
                 $takeIdentifier:                    $('input:checkbox[name="copyObject.takeIdentifierIds"]'),
                 $deleteIdentifier:                  $('input:checkbox[name="copyObject.deleteIdentifierIds"]'),
                 $takeLinks:                         $('input:checkbox[name="copyObject.takeLinks"]'),
