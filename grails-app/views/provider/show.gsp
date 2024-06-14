@@ -398,7 +398,7 @@
                                         <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: provider.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id]">
                                             <div class="content la-space-right">
                                                 <i class="icon filter"></i> <g:message code="subscription.plural.current" />
-                                            &nbsp;<div class="ui blue circular label">${subLinks}</div>
+                                            &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}</div>
                                             </div>
                                         </g:link>
                                     </div>
@@ -406,7 +406,7 @@
                                         <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: provider.globalUID, status: 'FETCH_ALL']">
                                             <div class="content la-space-right">
                                                 <i class="icon filter"></i> <g:message code="subscription.plural.total" />
-                                            &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}</div>
+                                            &nbsp;<div class="ui blue circular label">${subLinks}</div>
                                             </div>
                                         </g:link>
                                     </div>
@@ -419,14 +419,14 @@
                                         <div class="content la-space-right">
                                             <g:link controller="myInstitution" action="currentLicenses" params="[licensor: provider.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']">
                                                 <i class="icon filter"></i> <g:message code="license.plural.current" />
-                                                &nbsp;<div class="ui blue circular label">${licLinks}</div></g:link>
+                                                &nbsp;<div class="ui blue circular label">${currentLicensesCount}</div></g:link>
                                         </div>
                                     </div>
                                     <div class="ui item">
                                         <div class="content la-space-right">
                                             <g:link controller="myInstitution" action="currentLicenses" params="[licensor: provider.id, filterSubmit: 'Filtern']">
                                                 <i class="icon filter"></i> <g:message code="license.plural.total" />
-                                                &nbsp;<div class="ui blue circular label">${currentLicensesCount}</div></g:link>
+                                                &nbsp;<div class="ui blue circular label">${licLinks}</div></g:link>
                                         </div>
                                     </div>
                                 </div>
