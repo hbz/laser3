@@ -7,6 +7,7 @@
              msgClose="${message(code: 'default.button.cancel')}"
              msgSave="${message(code: 'default.button.save.label')}">
     <g:form id="person_form" class="ui form" url="${url}" method="POST">
+        <g:set var="personRole" value="${[]}"/>
         <g:if test="${!personInstance}">
             <input name="tenant.id" type="hidden" value="${tenant.id}"/>
             <input name="isPublic" type="hidden" value="${personInstance?.isPublic ?: (isPublic ?: false)}"/>
@@ -20,13 +21,11 @@
                 <input name="personRoleVendor" type="hidden" value="${vendor.id}"/>
             </g:if>
         </g:if>
-
-    %{--Only for public contact person for Provider/Agency --}%
-        <%--<g:if test="${contactPersonForProviderAgencyPublic && !personInstance}">
-            <input name="personRoleOrg" type="hidden" value="${tenant.id}"/>
-            <input name="functionType" type="hidden" value="${presetFunctionType.id}"/>
-            <input name="last_name" type="hidden" value="${presetFunctionType.getI10n('value')}"/>
-        </g:if>--%>
+        <g:elseif test="${personInstance}">
+            <%
+                personRole = personInstance.getPersonRoleByTarget([org: org, provider: provider, vendor: vendor])
+            %>
+        </g:elseif>
 
         <g:if test="${!contactPersonForProviderPublic && !contactPersonForVendorPublic}">
 
@@ -225,7 +224,7 @@
 
                                 <g:each in="${functions ?: PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
                                         var="functionType">
-                                    <option <%=(personInstance ? (functionType.id in personInstance.getPersonRoleByOrg(org ?: contextOrg).functionType?.id) : (presetFunctionType?.id == functionType.id)) ? 'selected="selected"' : ''%>
+                                    <option <%=(personInstance ? (functionType.id in personRole.functionType?.id) : (presetFunctionType?.id == functionType.id)) ? 'selected="selected"' : ''%>
                                             value="${functionType.id}">
                                         ${functionType.getI10n('value')}
                                     </option>
@@ -243,7 +242,7 @@
 
                                 <g:each in="${positions ?: PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
                                         var="positionType">
-                                    <option <%=(personInstance ? (positionType.id in personInstance.getPersonRoleByOrg(org ?: contextOrg).positionType?.id) : (presetPositionType?.id == positionType.id)) ? 'selected="selected"' : ''%>
+                                    <option <%=(personInstance ? (positionType.id in personRole.positionType?.id) : (presetPositionType?.id == positionType.id)) ? 'selected="selected"' : ''%>
                                             value="${positionType.id}">
                                         ${positionType.getI10n('value')}
                                     </option>
@@ -270,7 +269,7 @@
                     <g:each in="${personInstance.contacts?.toSorted()}" var="contact" status="i">
                         <div class="three fields contactField" id="contactFields${i}">
                             <div class="field wide four ">
-                                <input type="text" readonly value="${contact.contentType.getI10n('value')}"/>
+                                <input type="text" name="contact${contact.id}" readonly value="${contact.contentType.getI10n('value')}"/>
                             </div>
 
                             <div class="field wide four">
@@ -566,7 +565,7 @@
         let filledOut = false;
         if(elems !== null) {
             for(let i = 0; i < elems.length; i++) {
-                filledOut = elems[i].val() !== null && elems[i].val() !== "null" && elems[i].val().length > 0
+                filledOut = typeof(elems[i] === 'undefined') || (elems[i].val() !== null && elems[i].val() !== "null" && elems[i].val().length > 0)
                 if(filledOut)
                     break;
             }
