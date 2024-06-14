@@ -26,6 +26,7 @@ class PackageService {
     LinkGenerator grailsLinkGenerator
     MessageSource messageSource
     GlobalSourceSyncService globalSourceSyncService
+    SubscriptionsQueryService subscriptionsQueryService
 
     boolean titleCleanupRunning = false
 
@@ -298,6 +299,9 @@ class PackageService {
         result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
         result.contextOrg = contextService.getOrg()
         result.contextCustomerType = result.contextOrg.getCustomerType()
+
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([status: 'FETCH_ALL', linkedPkg: result.packageInstance, count: true], '', result.contextOrg)
+        result.subscriptionCounts = result.packageInstance ? Subscription.executeQuery( "select count(*) " + tmpQ[0], tmpQ[1] )[0] : 0
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 

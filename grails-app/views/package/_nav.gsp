@@ -13,6 +13,6 @@
 
     <ui:subNavItem controller="package" action="tippChanges" params="${[id:params.id]}" message="package.show.nav.tippChanges" />
 
-    <ui:subNavItem controller="package" action="linkedSubscriptions" params="${[id:params.id]}" message="package.show.nav.linkedSubscriptions" />
+    <ui:subNavItem controller="package" action="linkedSubscriptions" counts="${subscriptionCounts}" params="${[id:params.id]}" message="package.show.nav.linkedSubscriptions" />
 
 </ui:subNav>
