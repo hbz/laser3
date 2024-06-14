@@ -344,9 +344,9 @@ class ExportClickMeService {
                     label: 'Agency',
                     message: 'vendor.label',
                     fields: [
-                            'vendor.sortname'          : [field: 'sub.vendors.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
-                            'vendor.name'              : [field: 'sub.vendors.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
-                            'vendor.url'               : [field: 'sub.vendors.homepage', label: 'Url', message: 'exportClickMe.agency.url'],
+                            'vendor.sortname'          : [field: 'sub.vendors.sortname', label: 'Sortname', message: 'exportClickMe.vendor.sortname'],
+                            'vendor.name'              : [field: 'sub.vendors.name', label: 'Name', message: 'exportClickMe.vendor.name', defaultChecked: 'true' ],
+                            'vendor.url'               : [field: 'sub.vendors.homepage', label: 'Url', message: 'exportClickMe.vendor.url'],
                     ]
             ],
 
@@ -426,10 +426,10 @@ class ExportClickMeService {
                     label: 'Vendor',
                     message: 'vendor.label',
                     fields: [
-                            'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
-                            'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
-                            'vendor.altnames'          : [field: 'vendors.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
-                            'vendor.url'               : [field: 'vendors.url', label: 'Url', message: 'exportClickMe.agency.url'],
+                            'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.vendor.sortname'],
+                            'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.vendor.name', defaultChecked: 'true' ],
+                            'vendor.altnames'          : [field: 'vendors.altnames.name', label: 'Alt Name', message: 'exportClickMe.vendor.altnames'],
+                            'vendor.url'               : [field: 'vendors.url', label: 'Url', message: 'exportClickMe.vendor.url'],
                     ]
             ],
 
@@ -706,9 +706,9 @@ class ExportClickMeService {
                     label: 'Vendor',
                     message: 'vendor.label',
                     fields: [
-                            'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
-                            'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
-                            'vendor.url'               : [field: 'vendors.url', label: 'Url', message: 'exportClickMe.agency.url'],
+                            'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.vendor.sortname'],
+                            'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.vendor.name', defaultChecked: 'true' ],
+                            'vendor.url'               : [field: 'vendors.url', label: 'Url', message: 'exportClickMe.vendor.url'],
                     ]
             ],
 
@@ -938,9 +938,9 @@ class ExportClickMeService {
                     label: 'Agency',
                     message: 'vendor.label',
                     fields: [
-                            'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
-                            'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
-                            'vendor.url'               : [field: 'vendors.url', label: 'Url', message: 'exportClickMe.agency.url']
+                            'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.vendor.sortname'],
+                            'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.vendor.name', defaultChecked: 'true' ],
+                            'vendor.url'               : [field: 'vendors.url', label: 'Url', message: 'exportClickMe.vendor.url']
                     ]
             ],
 
@@ -4049,13 +4049,13 @@ class ExportClickMeService {
 
     /**
      * Exports the given fields from the given subscriptions
-     * @param result the subscription set to export
+     * @param result the subscription set or list to export
      * @param selectedFields the fields which should appear
      * @param format the {@link FORMAT} to be exported
      * @param showTransferFields should the subscription transfer fields be included in the export?
      * @return the output in the desired format
      */
-    def exportSubscriptions(List<Subscription> result, Map<String, Object> selectedFields, FORMAT format, boolean showTransferFields = false) {
+    def exportSubscriptions(Collection<Subscription> result, Map<String, Object> selectedFields, FORMAT format, boolean showTransferFields = false) {
         Locale locale = LocaleUtils.getCurrentLocale()
         Org contextOrg = contextService.getOrg()
         Map<String, Object> selectedExportFields = [:]
@@ -5493,7 +5493,7 @@ class ExportClickMeService {
                         row.add(createTableCell(format, ' '))
                     }
                 }
-                else if (fieldKey.contains('altnames')) {
+                else if (fieldKey == 'subscription.altnames') {
                     if(subscription.altnames) {
                         row.add(createTableCell(format, subscription.altnames.collect { AlternativeName alt -> alt.name }.join('\n')))
                     }
