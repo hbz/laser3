@@ -96,7 +96,7 @@
 
         </div>
 
-        <div class="three fields">
+        <div class="two fields">
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>

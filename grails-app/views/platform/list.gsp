@@ -45,8 +45,6 @@
 						<tbody>
 						<g:each in="${records}" var="record" status="jj">
 							<tr>
-								<g:set var="pkg" value="${Package.findByGokbId(record.uuid)}"/>
-								<g:set var="org" value="${Org.findByGokbId(record.providerUuid)}"/>
 								<g:set var="platformInstance" value="${Platform.findByGokbId(record.uuid)}"/>
 								<td>
 									${ (params.int('offset') ?: 0)  + jj + 1 }
@@ -74,11 +72,11 @@
 									</g:if>
 								</td>
 								<td>
-									<g:if test="${platformInstance && platformInstance.org}">
-										<g:if test="${platformInstance.org.gokbId != null && RDStore.OT_PROVIDER.id in platformInstance.org.getAllOrgTypeIds()}">
-											<ui:wekbIconLink type="org" gokbId="${platformInstance.org.gokbId}" />
+									<g:if test="${platformInstance && platformInstance.provider}">
+										<g:if test="${platformInstance.provider.gokbId}">
+											<ui:wekbIconLink type="provider" gokbId="${platformInstance.provider.gokbId}" />
 										</g:if>
-										<g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
+										<g:link controller="provider" action="show" id="${platformInstance.provider.id}">${platformInstance.provider.name}</g:link>
 									</g:if>
 									<g:elseif test="${record.providerUuid}">
 										${record.providerName}
