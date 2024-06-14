@@ -500,9 +500,20 @@
 %{--    $(JSPC.app.addressContainer).attr('id', 'addressElementsContainer');--}%
     $(JSPC.app.contactContainer).attr('id', 'contactElementsContainer');
 
-    /* CONTACT START */
+%{--    Deal with accordion in case already any input--}%
+    $(".accordion").accordion();
+    let input = [$("#title"), $("#first_name"), $("#middle_name")];
 
-
+    let found = false;
+    for (var i = 0; i < input.length; i++) {
+        if ($(input[i]).val().trim() !== "") {
+        found = true;
+        console.log("Non empty");
+        $(".title").addClass("active");
+        $(".content").addClass("active");
+        break;
+        }
+    }
 
     JSPC.app.removeContactElement = function () {
 
@@ -564,90 +575,82 @@
             }
         });
     });
-        /* CONTACT END */
-%{--$('#removeContactElement').click(function () {
-    if (JSPC.app.contactElementCount != 0) {
-        // $('.contactField').last().remove();
-        $(this).parents('.contactField').remove();
 
+
+%{--   Delete the icon classes before adding new one        --}%
+    JSPC.app.deleteIconClass = function (icon) {
+        icon.removeAttr("class");
     }
-    JSPC.app.contactElementCount = $(".contactField").length;
 
-    if (JSPC.app.contactElementCount == 0) {
-        $(JSPC.app.contactContainer).empty().remove();
-        $('#addContactElement').removeAttr('disabled').attr('class', 'ui icon button');
+%{--  Change icon when contact dropdown is changed          --}%
+    JSPC.app.changeIconRegardingDropdown = function() {
+        $(".dropdown.contentType select").on("change", function () {
+
+          let icon = $(this).parents('.contactField').find('.la-js-contactIcon');
+          let value = $(this).val();
+
+          JSPC.app.deleteIconClass(icon);
+          JSPC.app.changeIcon(value, icon)
+        });
     }
-});--}%
+
+%{--   Change the icon classes        --}%
+    JSPC.app.changeIcon = function (value, icon) {
+       JSPC.app.deleteIconClass(icon);
+       switch (value) {
+        case "${RDStore.CCT_EMAIL.id}":
+          icon.addClass("icon large la-js-contactIcon envelope outline");
+          break;
+        case "${RDStore.CCT_FAX.id}":
+          icon.addClass("icon large la-js-contactIcon tty");
+          break;
+        case "${RDStore.CCT_MOBILE.id}":
+          icon.addClass("icon large la-js-contactIcon mobile alternate");
+          break;
+        case "${RDStore.CCT_PHONE.id}":
+          icon.addClass("icon large la-js-contactIcon phone");
+          break;
+        case "${RDStore.CCT_PHONE.id}":
+          icon.addClass("icon large la-js-contactIcon phone");
+          break;
+        case "${RDStore.CCT_URL.id}":
+          icon.addClass("icon large la-js-contactIcon globe");
+          break;
+      }
+    }
 
 
+    $('#cust_prop_add_value_private').submit(function(e) {
+        e.preventDefault();
+        console.log("redirect obstructed, continue implementing!");
+        bb8.ajax4remoteForm($(this));
+    });
 
-    %{--        /* ADDRESS START */
-            $('#addAddressElement').click(function () {
-                $.ajax({
-                    url: "<g:createLink controller="ajaxHtml" action="addressFields" params="[multipleAddresses: true]"/>",
-                    type: "POST",
-                    success: function (data) {
-                        if (JSPC.app.addressElementCount <= 3) {
-
-                            JSPC.app.addressElementCount = JSPC.app.addressElementCount + 1;
-                            $(JSPC.app.addressContainer).append(data);
-                            $('#addressFields').attr('id', 'addressFields' + JSPC.app.addressElementCount);
-
-                            $('#addressElements').after(JSPC.app.addressContainer);
-                        } else {
-                            $('#addAddressElement').attr('class', 'ui icon button disable');
-                            $('#addAddressElement').attr('disabled', 'disabled');
-                        }
-                        r2d2.initDynamicUiStuff('#addressElementsContainer');
-                    },
-                    error: function (j, status, eThrown) {
-                        console.log('Error ' + eThrown)
-                    }
-                });
-            });
-
-            $('#removeAddressElement').click(function () {
-                if (JSPC.app.addressElementCount != 0) {
-                    $('.addressField').remove();
-                }
-                JSPC.app.addressElementCount = $(".addressField").length;
-
-                if (JSPC.app.addressElementCount == 0) {
-                    $(JSPC.app.addressContainer).empty().remove();
-                    $('#addAddressElement').removeAttr('disabled').attr('class', 'ui icon button');
-                }
-            });
-            /* ADDRESS END */--}%
-        $('#cust_prop_add_value_private').submit(function(e) {
-            e.preventDefault();
-            console.log("redirect obstructed, continue implementing!");
-            bb8.ajax4remoteForm($(this));
-        });
-
-        $('#person_form').submit(function(e) {
-            e.preventDefault();
-            JSPC.app.addressElementCount = $(".addressField").length;
-            JSPC.app.contactElementCount = $(".contactField").length;
-            if($.fn.form.settings.rules.functionOrPosition() && $('#last_name').val().length > 0) {
-                let addressElements = null, contactElements = null;
-                if(JSPC.app.contactElementCount == 1) {
-                    contactElements = [$('#'+$.escapeSelector('contactLang.id')), $('#content')];
-                }
-                if(JSPC.app.addressElementCount == 1) {
-                    addressElements = [$('#type'), $('#name'), $('#additionFirst'), $('#additionSecond'), $('#street_1'), $('#street_2'), $('#zipcode'), $('#city'), $('#pob'), $('#pobZipcode'), $('#pobCity'), $('#country'), $('#region')];
-                }
-                if((JSPC.app.addressElementCount == 0 || !JSPC.app.areElementsFilledOut(addressElements)) &&
-                   (JSPC.app.contactElementCount == 0 || !JSPC.app.areElementsFilledOut(contactElements))) {
-                    if(confirm("${message(code:'person.create.noAddressConfirm')}")) {
-                        $('#person_form').unbind('submit').submit();
-                    }
-                }
-                else $('#person_form').unbind('submit').submit();
+    $('#person_form').submit(function(e) {
+        e.preventDefault();
+        JSPC.app.addressElementCount = $(".addressField").length;
+        JSPC.app.contactElementCount = $(".contactField").length;
+        if($.fn.form.settings.rules.functionOrPosition() && $('#last_name').val().length > 0) {
+            let addressElements = null, contactElements = null;
+            if(JSPC.app.contactElementCount == 1) {
+                contactElements = [$('#'+$.escapeSelector('contactLang.id')), $('#content')];
             }
-            else if($('#functionType').length === 0 && $('#positionType').length === 0) {
-                $('#person_form').unbind('submit').submit();
+            if(JSPC.app.addressElementCount == 1) {
+                addressElements = [$('#type'), $('#name'), $('#additionFirst'), $('#additionSecond'), $('#street_1'), $('#street_2'), $('#zipcode'), $('#city'), $('#pob'), $('#pobZipcode'), $('#pobCity'), $('#country'), $('#region')];
             }
-        });
+            if((JSPC.app.addressElementCount == 0 || !JSPC.app.areElementsFilledOut(addressElements)) &&
+               (JSPC.app.contactElementCount == 0 || !JSPC.app.areElementsFilledOut(contactElements))) {
+                if(confirm("${message(code:'person.create.noAddressConfirm')}")) {
+                    $('#person_form').unbind('submit').submit();
+                }
+            }
+            else $('#person_form').unbind('submit').submit();
+        }
+        else if($('#functionType').length === 0 && $('#positionType').length === 0) {
+            $('#person_form').unbind('submit').submit();
+        }
+    });
+
 
     JSPC.app.areElementsFilledOut = function (elems) {
         let filledOut = false;
@@ -662,64 +665,10 @@
         return filledOut;
     };
 
-        /* Deal with accordion in case already any input */
-
-        $(".accordion").accordion();
-        let input = [$("#title"), $("#first_name"), $("#middle_name")];
-
-        let found = false;
-        for (var i = 0; i < input.length; i++) {
-          if ($(input[i]).val().trim() !== "") {
-            found = true;
-            console.log("Non empty");
-            $(".title").addClass("active");
-            $(".content").addClass("active");
-            break;
-          }
-        }
 
 
-        %{--   Delete the icon classes before adding new one        --}%
-        JSPC.app.deleteIconClass = function (icon) {
-          icon.removeAttr("class");
-        }
 
-        %{--  Change icon when contact dropdown is changed          --}%
-        JSPC.app.changeIconRegardingDropdown = function() {
-            $(".dropdown.contentType select").on("change", function () {
 
-              let icon = $(this).parents('.contactField').find('.la-js-contactIcon');
-              let value = $(this).val();
-
-              JSPC.app.deleteIconClass(icon);
-              JSPC.app.changeIcon(value, icon)
-            });
-        }
-
-        %{--   Change the icon classes        --}%
-        JSPC.app.changeIcon = function (value, icon) {
-           JSPC.app.deleteIconClass(icon);
-           switch (value) {
-            case "${RDStore.CCT_EMAIL.id}":
-              icon.addClass("icon large la-js-contactIcon envelope outline");
-              break;
-            case "${RDStore.CCT_FAX.id}":
-              icon.addClass("icon large la-js-contactIcon tty");
-              break;
-            case "${RDStore.CCT_MOBILE.id}":
-              icon.addClass("icon large la-js-contactIcon mobile alternate");
-              break;
-            case "${RDStore.CCT_PHONE.id}":
-              icon.addClass("icon large la-js-contactIcon phone");
-              break;
-            case "${RDStore.CCT_PHONE.id}":
-              icon.addClass("icon large la-js-contactIcon phone");
-              break;
-            case "${RDStore.CCT_URL.id}":
-              icon.addClass("icon large la-js-contactIcon globe");
-              break;
-          }
-        }
 
 
 </laser:script>
