@@ -39,10 +39,8 @@
             <g:elseif test="${actionName == 'addressbook'}">
                 <div class="divider"></div>
                 <g:if test="${editable}">
-                    <g:if test="${(institution.isCustomerType_Consortium()) && !isProviderOrAgency}">
-                        <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForInstitution.label"/></a>
-                        <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution', ${orgInstance.id});"><g:message code="address.add.addressForInstitution.label"/></a>
-                    </g:if>
+                    <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForInstitution.label"/></a>
+                    <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution', ${orgInstance.id});"><g:message code="address.add.addressForInstitution.label"/></a>
                 </g:if>
                 <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
             </g:elseif>
@@ -102,14 +100,7 @@
         <g:elseif test="${actionName == 'addressbook'}">
             <div class="divider"></div>
             <g:if test="${editable}">
-                <g:if test="${(institution.isCustomerType_Consortium()) && !isProviderOrAgency}">
-                    <a href="#createPersonModal" class="item" data-ui="modal"
-                       onclick="JSPC.app.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForInstitution.label"/></a>
-                </g:if>
-                <g:if test="${isProviderOrAgency}">
-                    <a href="#createPersonModal" class="item" data-ui="modal"
-                       onclick="JSPC.app.personCreate('contactPersonForProviderAgency', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForProviderAgency.label"/></a>
-                </g:if>
+                <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForInstitution.label"/></a>
             </g:if>
             <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
         </g:elseif>

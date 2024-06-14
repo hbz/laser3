@@ -15,15 +15,13 @@
     <g:if test="${inContextOrg}">
         <ui:subNavItem controller="organisation" action="contacts" params="${[id: institution.id]}" message="menu.institutions.publicContacts" />
     </g:if>
-    <g:elseif test="${(customerTypeService.isConsortium( contextCustomerType ) && !isProviderOrAgency)}">
+    <g:elseif test="${(customerTypeService.isConsortium( contextCustomerType ))}">
         <ui:subNavItem controller="organisation" action="contacts" params="${breadcrumbParams}" message="menu.institutions.publicContacts" />
     </g:elseif>
     <g:else>
-        <g:if test="${!isProviderOrAgency}">
-            <ui:subNavItem controller="organisation" action="contacts" message="menu.institutions.publicContacts" disabled="true" />
-        </g:if>
+        <ui:subNavItem controller="organisation" action="contacts" message="menu.institutions.publicContacts" disabled="true" />
     </g:else>
-    <g:if test="${!isProviderOrAgency}">
+    <g:if test="${orgInstance.getCustomerType() in [CustomerTypeService.ORG_INST_PRO,CustomerTypeService.ORG_INST_BASIC]}">
         <ui:securedSubNavItem controller="organisation" action="readerNumber" params="${breadcrumbParams}" message="menu.institutions.readerNumbers"/>
 
         <g:if test="${tmplAccessPointsActive}">
@@ -48,25 +46,25 @@
     <g:if test="${!inContextOrg && contextCustomerType in ['ORG_INST_PRO','ORG_CONSORTIUM_BASIC','ORG_CONSORTIUM_PRO']}">
         <ui:subNavItem controller="organisation" action="addressbook" params="${breadcrumbParams}" message="menu.institutions.myAddressbook"/>
     </g:if>
-    <g:if test="${!isProviderOrAgency}">
-        <g:if test="${inContextOrg}">
-            <ui:securedSubNavItem instRole="INST_ADM" controller="myInstitution" action="users" message="org.nav.users.shy" />
-        </g:if>
-        <g:else>
-            <%-- this kind of check is necessary because it should not be displayed at all if user has no specRole --%>
-            <sec:ifAnyGranted roles="ROLE_ADMIN">
-                <ui:subNavItem controller="organisation" action="users" params="${breadcrumbParams}" message="org.nav.users.shy"/>
-            </sec:ifAnyGranted>
-        </g:else>
-        <g:if test="${inContextOrg}">
-            <ui:securedSubNavItem instRole="INST_ADM" affiliationOrg="${orgInstance}"
-                                  controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.dataTransfer.shy" />
-        </g:if>
-        <g:elseif test="${accessService.otherOrgAndComboCheckPermAffiliation_or_ROLEADMIN(orgInstance, CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_ADM')}">
-            <ui:subNavItem controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.dataTransfer.shy"/>
-        </g:elseif>
-        <g:else>
-            <ui:subNavItem message="org.nav.dataTransfer.shy" disabled="disabled" />
-        </g:else>
+    <g:if test="${inContextOrg}">
+        <ui:securedSubNavItem instRole="INST_ADM" controller="myInstitution" action="users" message="org.nav.users.shy" />
     </g:if>
+    <g:else>
+    <%-- this kind of check is necessary because it should not be displayed at all if user has no specRole --%>
+        <sec:ifAnyGranted roles="ROLE_ADMIN">
+            <ui:subNavItem controller="organisation" action="users" params="${breadcrumbParams}" message="org.nav.users.shy"/>
+        </sec:ifAnyGranted>
+    </g:else>
+    <g:if test="${inContextOrg}">
+        <ui:securedSubNavItem instRole="INST_ADM" affiliationOrg="${orgInstance}"
+                              controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.dataTransfer.shy" />
+    </g:if>
+    <g:elseif test="${accessService.otherOrgAndComboCheckPermAffiliation_or_ROLEADMIN(orgInstance, CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_ADM')}">
+        <ui:subNavItem controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.dataTransfer.shy"/>
+    </g:elseif>
+    <%-- sense???
+    <g:else>
+        <ui:subNavItem message="org.nav.dataTransfer.shy" disabled="disabled" />
+    </g:else>
+    --%>
 </ui:subNav>
