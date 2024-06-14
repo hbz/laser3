@@ -4,7 +4,7 @@
 
 <g:set var="modalID" value="${modalID ?: 'copyFilteredEmailAddresses_ajaxModal'}"/>
 
-<ui:modal id="${modalID}" text="${orgList ? message(code:'menu.institutions.copy_emailaddresses', args:[orgList.size()?:0]) : message(code:'menu.institutions.copy_emailaddresses.button')}" hideSubmitButton="true">
+<ui:modal id="${modalID}" text="${orgList ? message(code:'menu.institutions.copy_emailaddresses', args:[orgList.size()?:0, message(code: 'org.institution.plural')]) : message(code:'menu.institutions.copy_emailaddresses.button')}" hideSubmitButton="true">
 
     <div class="ui form">
         <%--<div class="field">

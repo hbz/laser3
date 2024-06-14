@@ -154,9 +154,9 @@
                     <label for="qp_electronicBillings">${message(code: 'vendor.invoicing.formats.label')}</label>
                     <select name="qp_electronicBillings" id="qp_electronicBillings" multiple="multiple" class="ui search selection dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_FORMAT)}" var="invoiceFormat">
-                            <option <%=Params.getLongList(params, 'qp_electronicBillings').contains(invoiceFormat.value) ? 'selected=selected"' : ''%> value="${invoiceFormat.value}">
-                                ${invoiceFormat.getI10n("value")}
+                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_FORMAT)}" var="invoicingFormat">
+                            <option <%=Params.getLongList(params, 'qp_electronicBillings').contains(invoicingFormat.value) ? 'selected=selected"' : ''%> value="${invoicingFormat.value}">
+                                ${invoicingFormat.getI10n("value")}
                             </option>
                         </g:each>
                     </select>

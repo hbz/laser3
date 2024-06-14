@@ -65,7 +65,7 @@
                                                           data_confirm_term_how="ok"
                                                           class="js-open-confirm-modal-xEditable"
                                                           owner="${provider.altnames[0]}" field="name" overwriteEditable="${editable && !provider.gokbId}"/>
-                                            <g:if test="${editable && provider.gokbId}">
+                                            <g:if test="${editable && !provider.gokbId}">
                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: provider.altnames[0].id]"
                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [provider.altnames[0].name])}"
                                                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(provider.altnames[0])}')">

@@ -65,11 +65,7 @@
                     <dl>
                         <dt><g:message code="default.name.label" /></dt>
                         <dd>
-                            <ui:xEditable
-                                    data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                    data_confirm_term_how="ok"
-                                    class="js-open-confirm-modal-xEditable"
-                                    owner="${orgInstance}" field="name"
+                            <ui:xEditable owner="${orgInstance}" field="name"
                                     overwriteEditable="${editable}"/>
                         </dd>
                     </dl>
@@ -77,11 +73,7 @@
                         <dl>
                             <dt><g:message code="org.sortname.label" /></dt>
                             <dd>
-                                <ui:xEditable
-                                        data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                        data_confirm_term_how="ok"
-                                        class="js-open-confirm-modal-xEditable"
-                                        owner="${orgInstance}" field="sortname" overwriteEditable="${editable && !orgInstance.gokbId}"/>
+                                <ui:xEditable owner="${orgInstance}" field="sortname" overwriteEditable="${editable}"/>
                             </dd>
                         </dl>
                     </g:if>
@@ -92,10 +84,7 @@
                                 <g:if test="${orgInstance.altnames}">
                                     <div class="title" id="altname_title">
                                         <div data-objId="${genericOIDService.getOID(orgInstance.altnames[0])}">
-                                            <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                          data_confirm_term_how="ok"
-                                                          class="js-open-confirm-modal-xEditable"
-                                                          owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable}"/>
+                                            <ui:xEditable owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable}"/>
                                             <g:if test="${editable}">
                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [orgInstance.altnames[0].name])}"
@@ -110,11 +99,7 @@
                                         <g:each in="${orgInstance.altnames.drop(1)}" var="altname">
                                             <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
                                                 <div class="content la-space-right">
-                                                    <ui:xEditable
-                                                            data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                            data_confirm_term_how="ok"
-                                                            class="js-open-confirm-modal-xEditable"
-                                                            owner="${altname}" field="name" overwriteEditable="${editable}"/>
+                                                    <ui:xEditable owner="${altname}" field="name" overwriteEditable="${editable}"/>
                                                 </div>
                                                 <g:if test="${editable}">
                                                     <div class="content la-space-right">
@@ -140,11 +125,7 @@
                     <dl>
                         <dt><g:message code="default.url.label"/></dt>
                         <dd>
-                            <ui:xEditable
-                                    data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                    data_confirm_term_how="ok"
-                                    class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                    owner="${orgInstance}" type="url" field="url"  overwriteEditable="${editable}"/>
+                            <ui:xEditable owner="${orgInstance}" type="url" field="url"  overwriteEditable="${editable}"/>
                             <g:if test="${orgInstance.url}">
                                 <ui:linkWithIcon href="${orgInstance.url}" />
                             </g:if>

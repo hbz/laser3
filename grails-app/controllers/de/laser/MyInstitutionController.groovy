@@ -985,7 +985,7 @@ class MyInstitutionController  {
         }
 
         if(params.containsKey('qp_electronicBillings')) {
-            queryArgs << "exists (select eb from p.electronicBillings eb where eb.invoiceFormat in (:electronicBillings))"
+            queryArgs << "exists (select eb from p.electronicBillings eb where eb.invoicingFormat in (:electronicBillings))"
             queryParams.put('electronicBillings', Params.getRefdataList(params, 'qp_electronicBillings'))
         }
 
@@ -4305,7 +4305,7 @@ join sub.orgRelations or_sub where
                         }
                         else {
                             if (params.name && ownerType) {
-                                int position = PropertyDefinitionGroup.executeQuery('select max(pdg.order) from PropertyDefinitionGroup pdg where pdg.ownerType = :objType and pdg.tenant = :tenant', [objType: ownerType, tenant: result.institution])[0]
+                                int position = PropertyDefinitionGroup.executeQuery('select coalesce(max(pdg.order), 0) from PropertyDefinitionGroup pdg where pdg.ownerType = :objType and pdg.tenant = :tenant', [objType: ownerType, tenant: result.institution])[0]
                                 propDefGroup = new PropertyDefinitionGroup(
                                         name: params.name,
                                         description: params.description,
