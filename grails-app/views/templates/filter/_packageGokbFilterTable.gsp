@@ -186,14 +186,30 @@
                         <td>
                             <g:if test="${record.containsKey('currentTippCount')}">
                                 <g:if test="${record.currentTippCount}">
-                                    ${record.currentTippCount}
+                                    <g:if test="${pkg}">
+                                        <g:link controller="package" action="current" id="${pkg.id}">
+                                            ${record.currentTippCount}
+                                        </g:link>
+                                    </g:if>
+                                    <g:else>
+                                        ${record.currentTippCount}
+                                    </g:else>
                                 </g:if>
                                 <g:else>
-                                    0
+                                    <g:if test="${pkg}">
+                                        <g:link controller="package" action="current" id="${pkg.id}">
+                                            0
+                                        </g:link>
+                                    </g:if>
+                                    <g:else>
+                                        0
+                                    </g:else>
                                 </g:else>
                             </g:if>
                             <g:elseif test="${pkg}">
-                                ${pkg.getCurrentTippsCount()}
+                                <g:link controller="package" action="current" id="${pkg.id}">
+                                    ${pkg.getCurrentTippsCount()}
+                                </g:link>
                             </g:elseif>
                         </td>
                     </g:if>
@@ -247,7 +263,7 @@
                                         <g:if test="${vendor.gokbId}">
                                             <ui:wekbIconLink type="vendor" gokbId="${vendor.gokbId}" />
                                         </g:if>
-                                        <g:link controller="vendor" action="show" id="${vendor.id}">${vendor.sortname}</g:link>
+                                        <g:link controller="vendor" action="show" id="${vendor.id}">${vendor.name}</g:link>
                                     </li>
                                 </g:each>
                                 <g:each in="${nonSyncedVendors}" var="vendor">

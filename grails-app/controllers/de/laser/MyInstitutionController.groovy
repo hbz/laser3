@@ -985,7 +985,7 @@ class MyInstitutionController  {
         }
 
         if(params.containsKey('qp_electronicBillings')) {
-            queryArgs << "exists (select eb from p.electronicBillings eb where eb.invoiceFormat in (:electronicBillings))"
+            queryArgs << "exists (select eb from p.electronicBillings eb where eb.invoicingFormat in (:electronicBillings))"
             queryParams.put('electronicBillings', Params.getRefdataList(params, 'qp_electronicBillings'))
         }
 
@@ -1170,7 +1170,34 @@ class MyInstitutionController  {
                 query += ' and s.hasPerpetualAccess = false '
         }
         else query += ')' //opened in line 1100 or 1105
+        Set<String> queryArgs = []
+        if(params.containsKey('qp_supportedLibrarySystems')) {
+            queryArgs << "exists (select ls from v.supportedLibrarySystems ls where ls.librarySystem in (:librarySystems))"
+            queryParams.put('librarySystems', Params.getRefdataList(params, 'qp_supportedLibrarySystems'))
+        }
 
+        if(params.containsKey('qp_electronicBillings')) {
+            queryArgs << "exists (select eb from v.electronicBillings eb where eb.invoicingFormat in (:electronicBillings))"
+            queryParams.put('electronicBillings', Params.getRefdataList(params, 'qp_electronicBillings'))
+        }
+
+        if(params.containsKey('qp_invoiceDispatchs')) {
+            queryArgs << "exists (select idi from v.invoiceDispatchs idi where idi.invoiceDispatch in (:invoiceDispatchs))"
+            queryParams.put('invoiceDispatchs', Params.getRefdataList(params, 'qp_invoiceDispatchs'))
+        }
+
+        if(params.containsKey('curatoryGroup') || params.containsKey('curatoryGroupType')) {
+            queryArgs << "v.gokbId in (:wekbIds)"
+            queryParams.wekbIds = result.wekbRecords.keySet()
+        }
+        if(queryArgs) {
+            query += ' and '+queryArgs.join(' and ')
+        }
+        if(params.containsKey('sort')) {
+            query += " order by ${params.sort} ${params.order ?: 'asc'}, v.name ${params.order ?: 'asc'} "
+        }
+        else
+            query += " order by v.sortname "
 
         String currentSubQuery = "select vr from VendorRole vr, OrgRole oo join oo.sub s where vr.subscription = s and s.status = :current and oo.org = :contextOrg order by s.name, s.startDate desc"
         Map<String, Object> currentSubParams = [current: RDStore.SUBSCRIPTION_CURRENT, contextOrg: result.institution]
@@ -4305,7 +4332,7 @@ join sub.orgRelations or_sub where
                         }
                         else {
                             if (params.name && ownerType) {
-                                int position = PropertyDefinitionGroup.executeQuery('select max(pdg.order) from PropertyDefinitionGroup pdg where pdg.ownerType = :objType and pdg.tenant = :tenant', [objType: ownerType, tenant: result.institution])[0]
+                                int position = PropertyDefinitionGroup.executeQuery('select coalesce(max(pdg.order), 0) from PropertyDefinitionGroup pdg where pdg.ownerType = :objType and pdg.tenant = :tenant', [objType: ownerType, tenant: result.institution])[0]
                                 propDefGroup = new PropertyDefinitionGroup(
                                         name: params.name,
                                         description: params.description,

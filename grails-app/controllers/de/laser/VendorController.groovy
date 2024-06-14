@@ -89,7 +89,7 @@ class VendorController {
         }
 
         if(params.containsKey('qp_electronicBillings')) {
-            queryArgs << "exists (select eb from v.electronicBillings eb where eb.invoiceFormat in (:electronicBillings))"
+            queryArgs << "exists (select eb from v.electronicBillings eb where eb.invoicingFormat in (:electronicBillings))"
             queryParams.put('electronicBillings', Params.getRefdataList(params, 'qp_electronicBillings'))
         }
 

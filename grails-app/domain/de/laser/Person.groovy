@@ -351,12 +351,37 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
     }
 
     /**
+     * Retrieves all person-provider links which point to the given provider
+     * @param provider the {@link Provider} to which the persons are linked to
+     * @return a {@link Set} of {@link PersonRole} links pointing to the given {@link Provider}
+     */
+    LinkedHashSet<PersonRole> getPersonRoleByProvider(Provider provider) {
+        return roleLinks.findAll {it.provider?.id == provider.id}
+    }
+
+    /**
      * Retrieves all person-vendor links which point to the given vendor
      * @param vendor the {@link Vendor} to which the persons are linked to
      * @return a {@link Set} of {@link PersonRole} links pointing to the given {@link Vendor}
      */
     LinkedHashSet<PersonRole> getPersonRoleByVendor(Vendor vendor) {
         return roleLinks.findAll {it.vendor?.id == vendor.id}
+    }
+
+    /**
+     * Retrieves all person-target links which point to the given person
+     * @param target the {@link Org}, {@link Person} or {@link Vendor}, defined as a map, to which the persons are linked to
+     * @return a {@link Set} of {@link PersonRole} links pointing to the given target
+     */
+    Set<PersonRole> getPersonRoleByTarget(Map target) {
+        Set result = []
+        if(target.org != null)
+            result = roleLinks.findAll { PersonRole pr -> pr.org?.id == target.org.id}
+        else if(target.provider != null)
+            result = roleLinks.findAll { PersonRole pr -> pr.provider?.id == target.provider.id}
+        else if(target.vendor != null)
+            result = roleLinks.findAll { PersonRole pr -> pr.vendor?.id == target.vendor.id}
+        result
     }
 
     @Override

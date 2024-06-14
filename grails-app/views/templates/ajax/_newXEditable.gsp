@@ -3,7 +3,16 @@
 <g:if test="${wrapper == 'altname'}">
     <div class="ui item" data-objId="${objOID}">
         <div class="content la-space-right">
-            <ui:xEditable owner="${ownObj}" field="${field}" overwriteEditable="${overwriteEditable}"/>
+            <g:if test="${ownObj.provider || ownObj.vendor}">
+                <ui:xEditable
+                        data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                        data_confirm_term_how="ok"
+                        class="js-open-confirm-modal-xEditable"
+                        owner="${ownObj}" field="${field}" overwriteEditable="${overwriteEditable}"/>
+            </g:if>
+            <g:else>
+                <ui:xEditable owner="${ownObj}" field="${field}" overwriteEditable="${overwriteEditable}"/>
+            </g:else>
         </div>
         <div class="content la-space-right">
             <g:if test="${ownObj.subscription && showConsortiaFunctions}">

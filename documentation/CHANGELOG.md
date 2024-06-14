@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5768    14.06.2024  rc-3.4  3.4         Andreas Bug         Export der Lizenzübertragungen schlug fehl
+
+5767    14.06.2024  rc-3.4  3.4         Andreas Bug         Bearbeitungsrechte im privaten Addressbuch fehlten
+
+5765    14.06.2024  rc-3.4  3.4         Andreas Bug         Angaben einer Konsortialstelle waren öffentlich bearbeitbar
+
 5764    13.06.2024  dev     3.4         Andreas Bug         500er und falsche Sortierung bei neuen Merkmalsgruppen aufgehoben
 
 5763    13.06.2024  dev     3.4         Andreas Bug         Falsches Argument beim Lizenzexport behoben

@@ -101,14 +101,10 @@
 
         </div>
 
-        <div class="three fields">
+        <div class="two fields">
 
             <laser:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true, label:message(code: 'subscription.property.search')]"/>
 
-
-        </div>
-
-        <div class="two fields">
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
                 <ui:select class="ui dropdown" name="type"
@@ -118,7 +114,9 @@
                            value="${params.type}"
                            noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
+        </div>
 
+        <div class="one fields">
             <div class="field">
                 <label>${message(code: 'surveyInfo.options')}</label>
 
