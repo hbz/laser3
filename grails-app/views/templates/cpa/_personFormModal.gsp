@@ -516,20 +516,19 @@
     }
 
     JSPC.app.removeContactElement = function () {
-
         $('.removeContactElement').click(function () {
-
             if (JSPC.app.contactElementCount != 0) {
                 $(this).parents('.contactField').remove();
             }
-            JSPC.app.contactElementCount = $(".contactField").length;
-
-            if (JSPC.app.contactElementCount == 0) {
-                $(JSPC.app.contactContainer).empty().remove();
-                $('.la-js-addContactElement').removeClass('disabled');
-            }
-             //JSPC.app.contactElementCount = JSPC.app.contactElementCount - 1;
+            JSPC.app.checkIfMoreThanFourContactElements();
         });
+    }
+
+    JSPC.app.checkIfMoreThanFourContactElements = function() {
+        JSPC.app.contactElementCount = $(".contactField").length;
+        if (JSPC.app.contactElementCount <= 3) {
+            $('.la-js-addContactElement').removeClass('disabled');
+        }
     }
 
     JSPC.app.removeContactElement();
@@ -559,7 +558,7 @@
 
                     $('.contactField  option[value="' + iconType + '"]').last().prop("selected", true);
                     $(".dropdown").dropdown();
-
+                    JSPC.app.checkIfMoreThanFourContactElements();
                     JSPC.app.changeIconRegardingDropdown();
                     JSPC.app.removeContactElement();
 
