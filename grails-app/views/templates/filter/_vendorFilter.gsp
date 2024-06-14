@@ -141,7 +141,7 @@
                     <select name="qp_supportedLibrarySystems" id="qp_supportedLibrarySystems" multiple="multiple" class="ui search selection dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_SUPPORTED_LIBRARY_SYSTEM)}" var="sls">
-                            <option <%=Params.getLongList(params, 'qp_supportedLibrarySystems').contains(sls.value) ? 'selected=selected"' : ''%> value="${sls.value}">
+                            <option <%=Params.getLongList(params, 'qp_supportedLibrarySystems').contains(sls.id) ? 'selected=selected"' : ''%> value="${sls.id}">
                                 ${sls.getI10n("value")}
                             </option>
                         </g:each>
@@ -155,7 +155,7 @@
                     <select name="qp_electronicBillings" id="qp_electronicBillings" multiple="multiple" class="ui search selection dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_FORMAT)}" var="invoicingFormat">
-                            <option <%=Params.getLongList(params, 'qp_electronicBillings').contains(invoicingFormat.value) ? 'selected=selected"' : ''%> value="${invoicingFormat.value}">
+                            <option <%=Params.getLongList(params, 'qp_electronicBillings').contains(invoicingFormat.id) ? 'selected=selected"' : ''%> value="${invoicingFormat.id}">
                                 ${invoicingFormat.getI10n("value")}
                             </option>
                         </g:each>
@@ -169,7 +169,7 @@
                     <select name="qp_invoiceDispatchs" id="qp_invoiceDispatchs" multiple="multiple" class="ui search selection dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_DISPATCH)}" var="invoiceDispatch">
-                            <option <%=Params.getLongList(params, 'qp_invoiceDispatchs').contains(invoiceDispatch.value) ? 'selected=selected"' : ''%> value="${invoiceDispatch.value}">
+                            <option <%=Params.getLongList(params, 'qp_invoiceDispatchs').contains(invoiceDispatch.id) ? 'selected=selected"' : ''%> value="${invoiceDispatch.id}">
                                 ${invoiceDispatch.getI10n("value")}
                             </option>
                         </g:each>
