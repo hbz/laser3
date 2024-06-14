@@ -124,15 +124,15 @@
 
                                 </div>
 
-                                <div class="ui icon blue button la-modern-button "><i
+                                <div class="ui icon blue button la-modern-button"><i
                                         class="ui angle double down icon"></i>
                                 </div>
                                 <g:if test="${(params.tab == 'selectedIEs') && editable && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
-                                    <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
+                                    <g:link class="ui icon negative button la-modern-button la-popup-tooltip la-delay"
                                             action="processRemoveIssueEntitlementsSurvey"
                                             params="${[id: subscriberSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
-                                        <i class="shopping basket icon"></i>
+                                        <i class="la-basket-shopping slash icon"></i>
                                     </g:link>
                                 </g:if>
                             </div>

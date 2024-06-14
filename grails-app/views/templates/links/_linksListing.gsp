@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.Subscription; de.laser.License" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.Subscription; de.laser.License; de.laser.Links" %>
 <laser:serviceInjection/>
 
 
@@ -93,7 +93,7 @@
                                         <g:else>
                                             <g:if test="${pair.propertySet && pair instanceof License}">
                                                 <div id="derived-license-properties-toggle${link.id}"
-                                                        class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                                        class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                                         data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
                                                     <i class="ui angle double down icon"></i>
                                                 </div>
@@ -110,7 +110,8 @@
                                                                 editmode               : editable,
                                                                 context                : entry,
                                                                 atConsortialParent     : atConsortialParent,
-                                                                link                   : link
+                                                                link                   : link,
+                                                                linkInstanceType       : Links.class.name
                                                       ]}"/>
                                         <g:if test="${editable}">
                                             <g:if test="${subscriptionLicenseLink}">
@@ -127,6 +128,21 @@
                                                             <i class="unlink icon"></i>
                                                         </g:link>
                                                     </span>
+                                                    <g:if test="${atConsortialParent}">
+                                                        <div class="or" data-text="|"></div>
+                                                        <span class="la-popup-tooltip la-delay"
+                                                              data-content="${message(code: 'license.details.unlink.child')}">
+                                                            <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
+                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.child.license")}"
+                                                                    data-confirm-term-how="unlink"
+                                                                    controller="subscription" action="unlinkLicense"
+                                                                    params="${[license: link.sourceLicense.id, id: subscription.id, unlinkWithChildren: true]}"
+                                                                    role="button"
+                                                                    aria-label="${message(code: 'ariaLabel.unlink.universal')}">
+                                                                <i class="la-share slash icon"></i>
+                                                            </g:link>
+                                                        </span>
+                                                    </g:if>
                                                 </div>
                                             </g:if>
                                             <g:else>
@@ -189,7 +205,8 @@
                              editmode               : editable,
                              subscriptionLicenseLink: true,
                              atConsortialParent     : contextOrg == subscription.getConsortia(),
-                             context                : subscription
+                             context                : subscription,
+                             linkInstanceType       : Links.class.name
                     ]
                 } else {
                     model = [tmplText          : addLink,
@@ -198,7 +215,8 @@
                              tmplModalID       : 'sub_add_link',
                              editmode          : editable,
                              atConsortialParent: atConsortialParent,
-                             context           : entry
+                             context           : entry,
+                             linkInstanceType  : Links.class.name
                     ]
                 }
             %>

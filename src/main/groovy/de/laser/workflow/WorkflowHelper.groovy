@@ -3,6 +3,9 @@ package de.laser.workflow
 import de.laser.RefdataValue
 import de.laser.storage.RDStore
 
+/**
+ * Helper class supporting the display of reports
+ */
 class WorkflowHelper {
 
     static String getCssColorByStatus(RefdataValue status) {

@@ -2,7 +2,7 @@
 <laser:serviceInjection />
 <g:set var="wekb" value="${ElasticSearchHelper.getCurrentApiSource()}"/>
 
-<laser:render template="/myInstitution/reporting/details/top" />
+<laser:render template="/myInstitution/reporting/details/details_top" />
 
 <div class="ui segment">
     <table class="ui table la-js-responsive-table la-table compact">
@@ -11,6 +11,9 @@
             <th></th>
             <th>${message(code:'org.sortname.label')}</th>
             %{-- TODO --}%<th>${labels.first().trim() in ['Verteilung', 'Distribution'] ? 'Name' : labels.first().trim()}</th>%{-- TODO --}%
+%{--            <g:if test="${query == 'org-country'}">--}%
+%{--                <th>${message(code:'org.region.label')}</th>--}%
+%{--            </g:if>--}%
             <g:if test="${query == 'org-x-property'}">
                 <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
@@ -32,6 +35,11 @@
                     <td>
                         <g:link controller="organisation" action="show" id="${org.id}" target="_blank">${org.name}</g:link>
                     </td>
+%{--                    <g:if test="${query == 'org-country'}">--}%
+%{--                        <td>--}%
+%{--                            ${org.region?.getI10n('value')}--}%
+%{--                        </td>--}%
+%{--                    </g:if>--}%
                     <g:if test="${query == 'org-x-property'}">
                         <td>
                             <uiReporting:objectProperties owner="${org}" tenant="${contextService.getOrg()}" propDefId="${id}" />
@@ -64,7 +72,7 @@
                     </g:if>
                     %{--
                     <td>
-                        <g:each in="${[RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT]}" var="ft">
+                        <g:each in="${[RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_INVOICING_CONTACT, RDStore.PRS_FUNC_TECHNICAL_SUPPORT]}" var="ft">
                             <g:each in="${org.getContactPersonsByFunctionType(true, ft)}" var="person">
                                 <span>
                                     ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}:

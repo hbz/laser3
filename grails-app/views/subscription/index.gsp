@@ -17,7 +17,7 @@
     </h1>
 </g:if>
 
-<ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
+<ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleProviders="${providerRoles}">
     <laser:render template="iconSubscriptionIsChild"/>
     <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
@@ -25,13 +25,13 @@
 
 <laser:render template="nav"/>
 
-<g:if test="${permanentTilesProcessRunning}">
+<g:if test="${permanentTitlesProcessRunning}">
     <div class="ui icon warning message">
         <i class="info icon"></i>
         <div class="content">
             <div class="header">Info</div>
 
-            <p>${message(code: 'subscription.details.permanentTilesProcessRunning.info')}</p>
+            <p>${message(code: 'subscription.details.permanentTitlesProcessRunning.info')}</p>
         </div>
     </div>
 </g:if>
@@ -80,29 +80,23 @@
     </div>
 </g:if>
 <div class="ui grid">
-
-    <div class="row">
-        <div class="column">
-
-            <g:if test="${entitlements && entitlements.size() > 0}">
-
-                <g:if test="${subscription.packages.size() > 1}">
-                    <a class="ui right floated button" data-href="#showPackagesModal" data-ui="modal"><g:message
-                            code="subscription.details.details.package.label"/></a>
-                </g:if>
-
-                <g:if test="${subscription.packages.size() == 1}">
-                    <g:link class="ui right floated button" controller="package" action="show"
-                            id="${subscription.packages[0].pkg.id}"><g:message
-                            code="subscription.details.details.package.label"/></g:link>
-                </g:if>
-            </g:if>
-            <g:else>
-                ${message(code: 'subscription.details.no_ents')}
-            </g:else>
-
+    <g:if test="${subscription.packages}">
+        <div class="sixteen wide column">
+            <div class="la-inline-lists">
+                <div id="packages" class="la-padding-top-1em"></div>
+            </div>
         </div>
-    </div><!--.row-->
+    </g:if>
+
+
+    <g:if test="${entitlements && entitlements.size() == 0}">
+        <div class="row">
+            <div class="column">
+                ${message(code: 'subscription.details.no_ents')}
+            </div>
+        </div><!--.row-->
+    </g:if>
+
 </div><!--.grid-->
     <g:if test="${issueEntitlementEnrichment}">
         <div class="ui grid">
@@ -205,7 +199,7 @@
 
 <div class="ui bottom attached tab active segment">
 
-    <laser:render template="/templates/filter/tipp_ieFilter"/>
+    <laser:render template="/templates/filter/tipp_ieFilter" model="[forTitles: tab]"/>
 
 <div id="downloadWrapper"></div>
 
@@ -421,7 +415,7 @@
                                         <div class="ui fluid segment title" data-ajaxTippId="${ie.tipp.id}" data-ajaxIeId="${ie ? ie.id : null}">
                                             <div class="ui stackable equal width grid">
                                                 <g:set var="participantPerpetualAccessToTitle"
-                                                       value="${surveyService.listParticipantPerpetualAccessToTitle(subscription.getSubscriber(), ie.tipp)}"/>
+                                                       value="${surveyService.listParticipantPerpetualAccessToTitle(subscription.getSubscriberRespConsortia(), ie.tipp)}"/>
                                                 <g:if test="${participantPerpetualAccessToTitle.size() > 0}">
                                                     <g:if test="${ie.perpetualAccessBySub && ie.perpetualAccessBySub != subscription}">
                                                         <g:link controller="subscription" action="index" id="${ie.perpetualAccessBySub.id}">
@@ -447,7 +441,6 @@
                                                 </div>
 
                                                 <div class="one wide column">
-
                                                     <span class="la-vertical-centered">${counter++}</span>
                                                 </div>
 
@@ -472,8 +465,7 @@
                                                 <div class="four wide column">
 
                                                     <!-- START TEMPLATE -->
-                                                    <laser:render template="/templates/identifier"
-                                                                  model="${[tipp: ie.tipp]}"/>
+                                                    <laser:render template="/templates/identifier" model="${[tipp: ie.tipp]}"/>
                                                     <!-- END TEMPLATE -->
                                                 </div>
 
@@ -490,8 +482,6 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-
-
                                                         </g:if>
                                                     </g:each>
                                                 </div>
@@ -499,11 +489,9 @@
                                                 <div class="one wide column">
                                                     <div class="ui right floated buttons">
                                                         <div class="right aligned wide column">
-
                                                         </div>
-
-                                                        <div class="ui icon blue button la-modern-button "><i
-                                                                class="ui angle double down icon"></i>
+                                                        <div class="ui icon blue button la-modern-button">
+                                                            <i class="ui angle double down icon"></i>
                                                         </div>
                                                         <g:if test="${editable}">
                                                             <g:if test="${subscription.ieGroups.size() > 0}">
@@ -536,15 +524,6 @@
 
                                         <div class="ui fluid segment content" data-ajaxTargetWrap="true">
                                             <div class="ui stackable grid" data-ajaxTarget="true">
-
-
-    %{--
-                                                <laser:render template="/templates/titles/title_long_accordion"
-                                                              model="${[ie         : ie, tipp: ie.tipp,
-                                                                        showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]}"/>
-
-    --}%
-
 
                                                 <div class="three wide column">
                                                     <div class="ui list la-label-list">
@@ -719,24 +698,6 @@
 <div id="magicArea">
 </div>
 
-<laser:render template="export/individuallyExportIEsModal" model="[modalID: 'individuallyExportIEsModal']"/>
-
-<ui:modal id="showPackagesModal" message="subscription.packages.label" hideSubmitButton="true">
-    <div class="ui ordered list">
-        <g:each in="${subscription.packages.sort { it.pkg.name.toLowerCase() }}" var="subPkg">
-            <div class="item">
-                ${subPkg.pkg.name}
-                <g:if test="${subPkg.pkg.contentProvider}">
-                    (${subPkg.pkg.contentProvider.name})
-                </g:if>:
-                <g:link controller="package" action="show" id="${subPkg.pkg.id}"><g:message
-                        code="subscription.details.details.package.label"/></g:link>
-            </div>
-        </g:each>
-    </div>
-
-</ui:modal>
-
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.hideModal = function () {
@@ -866,5 +827,22 @@
 
     JSPC.app.loadFilter();
     --%>
+
+    JSPC.app.loadPackages = function () {
+    $.ajax({
+        url: "<g:createLink controller="ajaxHtml" action="getPackageData"/>",
+                  data: {
+                      subscription: "${subscription.id}"
+                  }
+              }).done(function(response){
+                  $("#packages").html(response);
+                  r2d2.initDynamicUiStuff("#packages");
+              })
+          }
+
+    JSPC.app.loadPackages();
 </laser:script>
+
+<g:render template="/clickMe/export/js"/>
+
 <laser:htmlEnd/>

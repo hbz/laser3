@@ -22,6 +22,8 @@ class SystemTagLib {
         g.set( var:'docstoreService',               bean:'docstoreService' )
         g.set( var:'escapeService',                 bean:'escapeService')
         g.set( var:'exportClickMeService',          bean:'exportClickMeService')
+        g.set( var:'exportService',                 bean:'exportService')
+        g.set( var:'financeService',                 bean:'financeService')
         g.set( var:'filterService',                 bean:'filterService' )
         g.set( var:'formService',                   bean:'formService' )
         g.set( var:'genericOIDService',             bean:'genericOIDService' )
@@ -32,6 +34,7 @@ class SystemTagLib {
         g.set( var:'packageService',                bean:'packageService')
         g.set( var:'pendingChangeService',          bean:'pendingChangeService')
         g.set( var:'propertyService',               bean:'propertyService')
+        g.set( var:'providerService',               bean:'providerService' )
         g.set( var:'subscriptionsQueryService',     bean:'subscriptionsQueryService' )
         g.set( var:'subscriptionControllerService', bean:'subscriptionControllerService' )
         g.set( var:'subscriptionService',           bean:'subscriptionService' )
@@ -40,6 +43,7 @@ class SystemTagLib {
         g.set( var:'taskService',                   bean:'taskService' )
         g.set( var:'userService',                   bean:'userService' )
         g.set( var:'workflowService',               bean:'workflowService' )
+        g.set( var:'vendorService',                 bean:'vendorService' )
         g.set( var:'yodaService',                   bean:'yodaService' )
     }
 

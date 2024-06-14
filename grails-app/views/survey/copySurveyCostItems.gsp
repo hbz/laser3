@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem; de.laser.storage.RDConstants;" %>
 <laser:htmlStart message="surveyInfo.copySurveyCostItems" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -16,7 +16,7 @@
     <uiSurvey:status object="${surveyInfo}"/>
 </ui:h1HeaderWithIcon>
 
-<g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_TITLE_SELECTION]}">
+<g:if test="${surveyConfig.subscription}">
     <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
@@ -35,195 +35,15 @@
 </g:if>
 <g:else>
 
-    <div class="ui tablet stackable steps">
+    <g:render template="multiYearsSubs"/>
 
-        <div class="${(actionName == 'compareMembersOfTwoSubs') ? 'active' : ''} step">
-            <div class="content">
-                <div class="title">
-                    <g:link controller="survey" action="compareMembersOfTwoSubs"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]">
-                        ${message(code: 'surveyInfo.transferMembers')}
-                    </g:link>
-                </div>
-
-                <div class="description">
-                    <i class="exchange icon"></i>${message(code: 'surveyInfo.transferMembers')}
-                </div>
-            </div>
-
-            <g:if test="${transferWorkflow && transferWorkflow.transferMembers == 'true'}">
-                <g:link controller="survey" action="setSurveyTransferConfig"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferMembers: false]">
-                    <i class="check bordered large green icon"></i>
-                </g:link>
-            </g:if>
-            <g:else>
-                <g:link controller="survey" action="setSurveyTransferConfig"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferMembers: true]">
-                    <i class="close bordered large red icon"></i>
-                </g:link>
-            </g:else>
-
-        </div>
-
-        <g:if test="${surveyConfig.subSurveyUseForTransfer}">
-            <div class="${(actionName == 'copySubPackagesAndIes') ? 'active' : ''} step">
-
-                <div class="content">
-                    <div class="title">
-                        <g:link controller="survey" action="copySubPackagesAndIes"
-                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]">
-                            ${message(code: 'copySubPackagesAndIes.label')}
-                        </g:link>
-                    </div>
-
-                    <div class="description">
-                        <i class="gift icon"></i>${message(code: 'copySubPackagesAndIes.label')}
-                    </div>
-                </div>
-            &nbsp;&nbsp;
-                <g:if test="${transferWorkflow && transferWorkflow.transferSubPackagesAndIes == 'true'}">
-                    <g:link controller="survey" action="setSurveyTransferConfig"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSubPackagesAndIes: false]">
-                        <i class="check bordered large green icon"></i>
-                    </g:link>
-                </g:if>
-                <g:else>
-                    <g:link controller="survey" action="setSurveyTransferConfig"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSubPackagesAndIes: true]">
-                        <i class="close bordered large red icon"></i>
-                    </g:link>
-                </g:else>
-
-            </div>
-        </g:if>
-
-        <div class="${(actionName == 'copyProperties' && params.tab == 'surveyProperties') ? 'active' : ''} step">
-
-            <div class="content">
-                <div class="title">
-                    <g:link controller="survey" action="copyProperties"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: 'surveyProperties', targetSubscriptionId: targetSubscription?.id]">
-                        ${message(code: 'copyProperties.surveyProperties.short')}
-                    </g:link>
-                </div>
-
-                <div class="description">
-                    <i class="tags icon"></i>${message(code: 'properties')}
-                </div>
-            </div>
-
-            <g:if test="${transferWorkflow && transferWorkflow.transferSurveyProperties == 'true'}">
-                <g:link controller="survey" action="setSurveyTransferConfig"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSurveyProperties: false]">
-                    <i class="check bordered large green icon"></i>
-                </g:link>
-            </g:if>
-            <g:else>
-                <g:link controller="survey" action="setSurveyTransferConfig"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSurveyProperties: true]">
-                    <i class="close bordered large red icon"></i>
-                </g:link>
-            </g:else>
-        </div>
-
-        <div class="${(actionName == 'copyProperties' && params.tab == 'customProperties') ? 'active' : ''}  step">
-
-            <div class="content">
-                <div class="title">
-                    <g:link controller="survey" action="copyProperties"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: 'customProperties', targetSubscriptionId: targetSubscription?.id]">
-                        ${message(code: 'copyProperties.customProperties.short')}
-                    </g:link>
-                </div>
-
-                <div class="description">
-                    <i class="tags icon"></i>${message(code: 'properties')}
-                </div>
-            </div>
-
-            <g:if test="${transferWorkflow && transferWorkflow.transferCustomProperties == 'true'}">
-                <g:link controller="survey" action="setSurveyTransferConfig"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferCustomProperties: false]">
-                    <i class="check bordered large green icon"></i>
-                </g:link>
-            </g:if>
-            <g:else>
-                <g:link controller="survey" action="setSurveyTransferConfig"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferCustomProperties: true]">
-                    <i class="close bordered large red icon"></i>
-                </g:link>
-            </g:else>
-
-        </div>
-
-        <div class="${(actionName == 'copyProperties' && params.tab == 'privateProperties') ? 'active' : ''} step">
-
-            <div class="content">
-                <div class="title">
-                    <g:link controller="survey" action="copyProperties"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: 'privateProperties', targetSubscriptionId: targetSubscription?.id]">
-                        ${message(code: 'copyProperties.privateProperties.short')}
-                    </g:link>
-                </div>
-
-                <div class="description">
-                    <i class="tags icon"></i>${message(code: 'properties')}
-                </div>
-            </div>
-
-            <g:if test="${transferWorkflow && transferWorkflow.transferPrivateProperties == 'true'}">
-                <g:link controller="survey" action="setSurveyTransferConfig"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferPrivateProperties: false]">
-                    <i class="check bordered large green icon"></i>
-                </g:link>
-            </g:if>
-            <g:else>
-                <g:link controller="survey" action="setSurveyTransferConfig"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferPrivateProperties: true]">
-                    <i class="close bordered large red icon"></i>
-                </g:link>
-            </g:else>
-
-        </div>
-
-        <div class="${(actionName == 'copySurveyCostItems') ? 'active' : ''} step">
-
-            <div class="content">
-                <div class="title">
-                    <g:link controller="survey" action="copySurveyCostItems"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]">
-                        ${message(code: 'copySurveyCostItems.surveyCostItems')}
-                    </g:link>
-                </div>
-
-                <div class="description">
-                    <i class="money bill alternate outline icon"></i>${message(code: 'copySurveyCostItems.surveyCostItem')}
-                </div>
-            </div>
-
-            <g:if test="${transferWorkflow && transferWorkflow.transferSurveyCostItems == 'true'}">
-                <g:link controller="survey" action="setSurveyTransferConfig"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSurveyCostItems: false]">
-                    <i class="check bordered large green icon"></i>
-                </g:link>
-            </g:if>
-            <g:else>
-                <g:link controller="survey" action="setSurveyTransferConfig"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSurveyCostItems: true]">
-                    <i class="close bordered large red icon"></i>
-                </g:link>
-            </g:else>
-
-        </div>
-
-
-
-    </div>
+    <g:render template="navCompareMembers"/>
 
     <h2 class="ui header">
         ${message(code: 'surveyInfo.copySurveyCostItems')}
     </h2>
+
+    <g:render template="costItemsByCostItemElementTable"/>
 
 
     <ui:greySegment>
@@ -245,7 +65,7 @@
                             <br/>
                             <g:link controller="subscription" action="members"
                                     id="${parentSubscription.id}">${message(code: 'renewalEvaluation.orgsInSub')}</g:link>
-                            <ui:totalNumber total="${parentSubscription.getDerivedSubscribers().size()}"/>
+                            <ui:totalNumber total="${parentSubscription.getDerivedNonHiddenSubscribers().size()}"/>
                         </g:if>
                     </h3>
                 </div>
@@ -265,7 +85,7 @@
                             <g:link controller="subscription" action="members"
                                     id="${parentSuccessorSubscription.id}">${message(code: 'renewalEvaluation.orgsInSub')}</g:link>
                             <ui:totalNumber
-                                    total="${parentSuccessorSubscription.getDerivedSubscribers().size()}"/>
+                                    total="${parentSuccessorSubscription.getDerivedNonHiddenSubscribers().size()}"/>
 
                         </g:if>
                     </h3>
@@ -298,12 +118,16 @@
                     <th>${message(code: 'subscription.details.consortiaMembers.label')}</th>
                     <th>${message(code: 'copySurveyCostItems.oldCostItem')}</th>
                     <th>${message(code: 'copySurveyCostItems.surveyCostItem')}
-                        <g:if test="${surveyConfig.comment}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                  data-content="${surveyConfig.comment}">
-                                <i class="question circle icon"></i>
-                            </span>
-                        </g:if>
+                        %{--<br><g:set var="costItemElements"
+                               value="${costItemsByCostItemElement.collect {RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT))}}"/>
+
+                        <ui:select name="selectedCostItemElementID"
+                                   from="${costItemElements}"
+                                   optionKey="id"
+                                   optionValue="value"
+                                   value="${selectedCostItemElementID}"
+                                   class="ui dropdown"
+                                   id="selectedCostItemElementID"/>--}%
                     </th>
                     <th>${message(code: 'copySurveyCostItems.newCostItem')}</th>
                     <th></th>
@@ -313,17 +137,10 @@
                 <g:each in="${participantsList}" var="participant" status="i">
                     <g:set var="oldCostItem" value="${0.0}"/>
                     <g:set var="oldCostItemAfterTax" value="${0.0}"/>
-                    <g:set var="costElement"
-                           value="${RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE}"/>
-
-                    <g:if test="${participant.surveyCostItem}">
-                        <g:set var="costElement"
-                               value="${participant.surveyCostItem.costItemElement}"/>
-                    </g:if>
 
                     <tr class="">
                         <td>
-                            <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, costElement, RDStore.COST_ITEM_DELETED)}">
+                            <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(participant.newSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}">
                                 <g:checkBox name="selectedSurveyCostItem" value="${participant.surveyCostItem.id}"
                                             checked="false"/>
                             </g:if>
@@ -356,101 +173,127 @@
                         </td>
                         <td>
                             <g:if test="${participant.oldSub}">
-                                <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.oldSub, institution, costElement, RDStore.COST_ITEM_DELETED)}"
-                                        var="costItemParticipantSub">
+                                <table class="ui very basic compact table">
+                                    <tbody>
+                                    <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.oldSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}"
+                                            var="costItemParticipantSub">
+                                        <tr>
+                                            <td>
+                                                <strong><g:formatNumber
+                                                        number="${costItemParticipantSub.costInBillingCurrencyAfterTax}"
+                                                        minFractionDigits="2"
+                                                        maxFractionDigits="2" type="number"/></strong>
 
-                                    ${costItemParticipantSub.costItemElement?.getI10n('value')}<br/>
-                                    <strong><g:formatNumber
-                                            number="${costItemParticipantSub.costInBillingCurrencyAfterTax}"
-                                            minFractionDigits="2"
-                                            maxFractionDigits="2" type="number"/></strong>
+                                                (<g:formatNumber number="${costItemParticipantSub.costInBillingCurrency}"
+                                                                 minFractionDigits="2"
+                                                                 maxFractionDigits="2" type="number"/>)
+                                            </td>
+                                            <td>
+                                                ${costItemParticipantSub.billingCurrency?.getI10n('value')}
+                                            </td>
 
-                                    (<g:formatNumber number="${costItemParticipantSub.costInBillingCurrency}"
-                                                     minFractionDigits="2"
-                                                     maxFractionDigits="2" type="number"/>)
+                                        </tr>
+                                        <g:set var="sumOldCostItem"
+                                               value="${sumOldCostItem + costItemParticipantSub.costInBillingCurrency ?: 0}"/>
+                                        <g:set var="sumOldCostItemAfterTax"
+                                               value="${sumOldCostItemAfterTax + costItemParticipantSub.costInBillingCurrencyAfterTax ?: 0}"/>
 
-                                    ${(costItemParticipantSub.billingCurrency?.getI10n('value')?.split('-')).first()}
-                                    <g:set var="sumOldCostItem"
-                                           value="${sumOldCostItem + costItemParticipantSub.costInBillingCurrency ?: 0}"/>
-                                    <g:set var="sumOldCostItemAfterTax"
-                                           value="${sumOldCostItemAfterTax + costItemParticipantSub.costInBillingCurrencyAfterTax ?: 0}"/>
-
-                                    <g:set var="oldCostItem"
-                                           value="${costItemParticipantSub.costInBillingCurrency ?: null}"/>
-                                    <g:set var="oldCostItemAfterTax"
-                                           value="${costItemParticipantSub.costInBillingCurrencyAfterTax ?: null}"/>
-                                </g:each>
+                                        <g:set var="oldCostItem"
+                                               value="${oldCostItem + (costItemParticipantSub.costInBillingCurrency ?: 0.0)}"/>
+                                        <g:set var="oldCostItemAfterTax"
+                                               value="${oldCostItemAfterTax + (costItemParticipantSub.costInBillingCurrencyAfterTax ?: 0.0)}"/>
+                                    </g:each>
+                                    </tbody>
+                                </table>
                             </g:if>
                         </td>
 
                         <td>
 
                             <g:if test="${participant.surveyCostItem}">
-                                ${participant.surveyCostItem.costItemElement?.getI10n('value')}<br/>
-                                <strong><g:formatNumber
-                                        number="${participant.surveyCostItem.costInBillingCurrencyAfterTax}"
-                                        minFractionDigits="2"
-                                        maxFractionDigits="2" type="number"/></strong>
+                                <table class="ui very basic compact table">
+                                    <tbody>
+                                    <tr>
+                                        <td>
+                                            <strong><g:formatNumber
+                                                    number="${participant.surveyCostItem.costInBillingCurrencyAfterTax}"
+                                                    minFractionDigits="2"
+                                                    maxFractionDigits="2" type="number"/></strong>
 
-                                (<g:formatNumber number="${participant.surveyCostItem.costInBillingCurrency}"
-                                                 minFractionDigits="2"
-                                                 maxFractionDigits="2" type="number"/>)
+                                            (<g:formatNumber number="${participant.surveyCostItem.costInBillingCurrency}"
+                                                             minFractionDigits="2"
+                                                             maxFractionDigits="2" type="number"/>)
 
-                                ${(participant.surveyCostItem.billingCurrency?.getI10n('value')?.split('-')).first()}
+                                        </td>
+                                        <td>
+                                            ${participant.surveyCostItem.billingCurrency?.getI10n('value')}
+                                        </td>
+                                        <g:set var="sumSurveyCostItem"
+                                               value="${sumSurveyCostItem + participant.surveyCostItem.costInBillingCurrency ?: 0}"/>
+                                        <g:set var="sumSurveyCostItemAfterTax"
+                                               value="${sumSurveyCostItemAfterTax + participant.surveyCostItem.costInBillingCurrencyAfterTax ?: 0}"/>
+                                        <td>
+                                            <g:if test="${oldCostItem || oldCostItemAfterTax}">
+                                                <strong><g:formatNumber
+                                                        number="${((participant.surveyCostItem.costInBillingCurrencyAfterTax - oldCostItemAfterTax) / oldCostItemAfterTax) * 100}"
+                                                        minFractionDigits="2"
+                                                        maxFractionDigits="2" type="number"/>%</strong>
 
-                                <g:set var="sumSurveyCostItem"
-                                       value="${sumSurveyCostItem + participant.surveyCostItem.costInBillingCurrency ?: 0}"/>
-                                <g:set var="sumSurveyCostItemAfterTax"
-                                       value="${sumSurveyCostItemAfterTax + participant.surveyCostItem.costInBillingCurrencyAfterTax ?: 0}"/>
-
-                                <g:if test="${oldCostItem || oldCostItemAfterTax}">
-                                    <br/><strong><g:formatNumber
-                                        number="${((participant.surveyCostItem.costInBillingCurrencyAfterTax - oldCostItemAfterTax) / oldCostItemAfterTax) * 100}"
-                                        minFractionDigits="2"
-                                        maxFractionDigits="2" type="number"/>%</strong>
-
-                                    (<g:formatNumber
-                                        number="${((participant.surveyCostItem.costInBillingCurrency - oldCostItem) / oldCostItem) * 100}"
-                                        minFractionDigits="2"
-                                        maxFractionDigits="2" type="number"/>%)
-                                </g:if>
-
+                                                (<g:formatNumber
+                                                    number="${((participant.surveyCostItem.costInBillingCurrency - oldCostItem) / oldCostItem) * 100}"
+                                                    minFractionDigits="2"
+                                                    maxFractionDigits="2" type="number"/>%)
+                                            </g:if>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
                             </g:if>
                         </td>
 
                         <td>
                             <g:if test="${participant.newSub}">
-                                <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, costElement, RDStore.COST_ITEM_DELETED)}"
-                                        var="costItemParticipantSuccessorSub">
+                                <table class="ui very basic compact table">
+                                    <tbody>
+                                    <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}"
+                                            var="costItemParticipantSuccessorSub">
 
-                                    ${costItemParticipantSuccessorSub.costItemElement?.getI10n('value')}<br/>
-                                    <strong><g:formatNumber
-                                            number="${costItemParticipantSuccessorSub.costInBillingCurrencyAfterTax}"
-                                            minFractionDigits="2"
-                                            maxFractionDigits="2" type="number"/></strong>
+                                        <tr>
+                                            <td>
+                                                <strong><g:formatNumber
+                                                        number="${costItemParticipantSuccessorSub.costInBillingCurrencyAfterTax}"
+                                                        minFractionDigits="2"
+                                                        maxFractionDigits="2" type="number"/></strong>
 
-                                    (<g:formatNumber number="${costItemParticipantSuccessorSub.costInBillingCurrency}"
-                                                     minFractionDigits="2"
-                                                     maxFractionDigits="2" type="number"/>)
+                                                (<g:formatNumber number="${costItemParticipantSuccessorSub.costInBillingCurrency}"
+                                                                 minFractionDigits="2"
+                                                                 maxFractionDigits="2" type="number"/>)
+                                            </td>
+                                            <td>
+                                                ${costItemParticipantSuccessorSub.billingCurrency?.getI10n('value')}
+                                            </td>
+                                            <td>
+                                                <g:set var="sumNewCostItem"
+                                                       value="${sumNewCostItem + costItemParticipantSuccessorSub.costInBillingCurrency ?: 0}"/>
+                                                <g:set var="sumNewCostItemAfterTax"
+                                                       value="${sumNewCostItemAfterTax + costItemParticipantSuccessorSub.costInBillingCurrencyAfterTax ?: 0}"/>
 
-                                    ${(costItemParticipantSuccessorSub.billingCurrency?.getI10n('value')?.split('-')).first()}
-                                    <g:set var="sumNewCostItem"
-                                           value="${sumNewCostItem + costItemParticipantSuccessorSub.costInBillingCurrency ?: 0}"/>
-                                    <g:set var="sumNewCostItemAfterTax"
-                                           value="${sumNewCostItemAfterTax + costItemParticipantSuccessorSub.costInBillingCurrencyAfterTax ?: 0}"/>
+                                                <g:if test="${oldCostItem || oldCostItemAfterTax}">
+                                                    <strong><g:formatNumber
+                                                            number="${((costItemParticipantSuccessorSub.costInBillingCurrencyAfterTax - oldCostItemAfterTax) / oldCostItemAfterTax) * 100}"
+                                                            minFractionDigits="2"
+                                                            maxFractionDigits="2" type="number"/>%</strong>
 
-                                    <g:if test="${oldCostItem || oldCostItemAfterTax}">
-                                        <br/><strong><g:formatNumber
-                                            number="${((costItemParticipantSuccessorSub.costInBillingCurrencyAfterTax - oldCostItemAfterTax) / oldCostItemAfterTax) * 100}"
-                                            minFractionDigits="2"
-                                            maxFractionDigits="2" type="number"/>%</strong>
-
-                                        (<g:formatNumber
-                                            number="${((costItemParticipantSuccessorSub.costInBillingCurrency - oldCostItem) / oldCostItem) * 100}"
-                                            minFractionDigits="2"
-                                            maxFractionDigits="2" type="number"/>%)
-                                    </g:if>
-                                </g:each>
+                                                    (<g:formatNumber
+                                                        number="${((costItemParticipantSuccessorSub.costInBillingCurrency - oldCostItem) / oldCostItem) * 100}"
+                                                        minFractionDigits="2"
+                                                        maxFractionDigits="2" type="number"/>%)
+                                                </g:if>
+                                            </td>
+                                        </tr>
+                                    </g:each>
+                                    </tbody>
+                                </table>
                             </g:if>
                         </td>
                         <td>
@@ -458,6 +301,30 @@
                                 <g:link mapping="subfinance" controller="finance" action="index"
                                         params="${[sub: participant.newSub.id]}"
                                         class="ui button icon"><i class="icon clipboard"></i></g:link>
+                            </g:if>
+
+                            <g:if test="${surveyConfig.subSurveyUseForTransfer}">
+                                <g:set var="multiYearResultProperties"
+                                       value="${surveyService.getMultiYearResultProperties(surveyConfig, Org.get(participant.id))}"/>
+                                <g:if test="${multiYearResultProperties.size () > 0}">
+                                    <br>
+                                    <br>
+
+                                    <div class="ui icon"
+                                         data-tooltip="${message(code: 'surveyProperty.label') + ': ' + multiYearResultProperties.collect { it.getI10n('name') }.join(', ') + ' = ' + message(code: 'refdata.Yes')}">
+                                        <i class="bordered colored info icon"></i>
+                                    </div>
+                                </g:if>
+                            </g:if>
+
+                            <g:if test="${SurveyOrg.findByOrgAndSurveyConfig(Org.get(participant.id), surveyConfig)}">
+                                <br>
+                                <br>
+
+                                <div class="ui icon"
+                                     data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
+                                    <i class="bordered colored chart pie icon"></i>
+                                </div>
                             </g:if>
                         </td>
                     </tr>
@@ -481,7 +348,7 @@
                                          maxFractionDigits="2" type="number"/>)
 
                         <g:if test="${sumOldCostItemAfterTax || sumOldCostItem}">
-                            <br/><strong><g:formatNumber
+                            <strong><g:formatNumber
                                 number="${((sumSurveyCostItemAfterTax - sumOldCostItemAfterTax) / sumOldCostItemAfterTax) * 100}"
                                 minFractionDigits="2"
                                 maxFractionDigits="2" type="number"/>%</strong>
@@ -498,7 +365,7 @@
                                          maxFractionDigits="2" type="number"/>)
 
                         <g:if test="${sumOldCostItemAfterTax || sumOldCostItem}">
-                            <br/><strong><g:formatNumber
+                            <strong><g:formatNumber
                                 number="${((sumNewCostItemAfterTax - sumOldCostItemAfterTax) / sumOldCostItemAfterTax) * 100}"
                                 minFractionDigits="2"
                                 maxFractionDigits="2" type="number"/>%</strong>
@@ -540,8 +407,8 @@
         })
     </laser:script>
 
-    <g:form action="setSurveyCompleted" method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
+    <g:form action="setStatus" method="post" class="ui form"
+            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, newStatus: 'setSurveyCompleted']">
 
         <div class="ui right floated compact segment">
             <div class="ui checkbox">
@@ -553,4 +420,13 @@
 
     </g:form>
 </g:else>
+
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('#selectedCostItemElementID').on('change', function() {
+        var selectedCostItemElementID = $(this).val()
+        var url = "<g:createLink controller="survey" action="$actionName" params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID]}"/>&selectedCostItemElementID="+selectedCostItemElementID;
+            location.href = url;
+         });
+</laser:script>
 <laser:htmlEnd />

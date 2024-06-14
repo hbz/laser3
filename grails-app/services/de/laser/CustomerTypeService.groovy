@@ -52,10 +52,21 @@ class CustomerTypeService {
 
     //
 
+    /**
+     * Determines whether the view to be rendered is the normal version or the version for support type customers
+     * @param view the view to render
+     * @return the view path, suffixed with "_support" if the context institution is a support type customer
+     * @see #ORG_SUPPORT
+     */
     String getCustomerTypeDependingView(String view) {
         contextService.getOrg().isCustomerType_Support() ? view + '_support' : view
     }
 
+    /**
+     * Gets all institutions matching the given customer type
+     * @param customerType the customer type (see the constants defined in this service) to be retrieved
+     * @return a {@link List} of matching institutions ({@link Org})
+     */
     List<Org> getAllOrgsByCustomerType(String customerType) {
         Role role = Role.findByAuthority(customerType)
         if (role) {
@@ -70,26 +81,50 @@ class CustomerTypeService {
 
     //
 
+    /**
+     * Gets the template path for the actions fragment, depending on the context institution's customer type
+     * @return the appropriate actions template path
+     */
     String getActionsTemplatePath() {
         getCustomerTypeDependingView('actions')
     }
 
+    /**
+     * Gets the template path for the navigation fragment, depending on the context institution's customer type
+     * @return the appropriate navigation template path
+     */
     String getNavTemplatePath() {
         getCustomerTypeDependingView('nav')
     }
 
+    /**
+     * Gets the template path for the license filter fragment, depending on the context institution's customer type
+     * @return the appropriate license filter path
+     */
     String getLicenseFilterTemplatePath() {
         getCustomerTypeDependingView('/templates/license/licenseFilter')
     }
 
+    /**
+     * Gets the template path for the subscription filter fragment, depending on the context institution's customer type
+     * @return the appropriate subscription filter path
+     */
     String getSubscriptionFilterTemplatePath() {
         getCustomerTypeDependingView('/templates/subscription/subscriptionFilter')
     }
 
+    /**
+     * Gets the template path for the consortium subscription filter fragment, depending on the context consortium's customer type
+     * @return the appropriate consortium subscription filter path
+     */
     String getConsortiaSubscriptionFilterTemplatePath() {
         getCustomerTypeDependingView('/templates/subscription/consortiaSubscriptionFilter')
     }
 
+    /**
+     * Gets the template path for the subscription management fragment, depending on the context institution's customer type
+     * @return the appropriate subscription management path
+     */
     String getNavSubscriptionManagementTemplatePath() {
         getCustomerTypeDependingView('/templates/management/navSubscriptionManagement')
     }

@@ -30,7 +30,7 @@ class SubscriptionsQueryService {
      *     <li>filterSet the flag for the export whether a filter has been applied</li>
      * </ol>
      */
-    List myInstitutionCurrentSubscriptionsBaseQuery(params, String joinQuery = "", Org contextOrg = null) {
+    List myInstitutionCurrentSubscriptionsBaseQuery(Map params, String joinQuery = "", Org contextOrg = null) {
         contextOrg = contextOrg ?: contextService.getOrg()
 
         def date_restriction
@@ -111,6 +111,14 @@ class SubscriptionsQueryService {
 
                 base_qry += "AND ( exists ( select idMatch.id from OrgRole as idMatch where idMatch.sub = s and idMatch.org.globalUID = :identifier ) ) "
             }
+            else if (params.identifier.startsWith('provider:')) {
+
+                base_qry += "AND ( exists ( select idMatch.id from ProviderRole as idMatch where idMatch.subscription = s and idMatch.provider.globalUID = :identifier ) ) "
+            }
+            else if (params.identifier.startsWith('vendor:')) {
+
+                base_qry += "AND ( exists ( select idMatch.id from VendorRole as idMatch where idMatch.subscription = s and idMatch.vendor.globalUID = :identifier ) ) "
+            }
             else if (params.identifier.startsWith('license:')) {
 
                 base_qry += "AND ( exists ( select idMatch.id from Links li join li.sourceLicense idMatch where li.destinationSubscription = s and li.linkType = :linkType and idMatch.globalUID = :identifier ) ) "
@@ -156,13 +164,13 @@ class SubscriptionsQueryService {
         }
 
         if (params.provider) {
-            base_qry += (" and  exists ( select orgR from OrgRole as orgR where orgR.sub = s and orgR.org.id = :provider) ")
+            base_qry += (" and ( exists ( select pr from ProviderRole as pr where pr.subscription = s and pr.provider.id = :provider) or exists ( select vr from VendorRole as vr where vr.subscription = s and vr.vendor.id = :provider) )")
             qry_params.put('provider', (params.provider as Long))
             filterSet = true
         }
 
         if (params.providers && params.providers != "") {
-            base_qry += (" and  exists ( select orgR from OrgRole as orgR where orgR.sub = s and orgR.org.id in (:providers)) ")
+            base_qry += (" and ( exists ( select pr from ProviderRole as pr where pr.subscription = s and pr.provider.id in (:providers)) or exists ( select vr from VendorRole as vr where vr.subscription = s and vr.vendor.id in (:provider)) )")
             qry_params.put('providers', Params.getLongList(params, 'providers'))
             filterSet = true
         }
@@ -170,20 +178,22 @@ class SubscriptionsQueryService {
         if (params.q?.length() > 0) {
             base_qry += (
                     " and ( genfunc_filter_matcher(s.name, :name_filter) = true " + // filter by subscription
+                            " or exists ( select altname.subscription from AlternativeName altname where altname.subscription = s and genfunc_filter_matcher(altname.name, :name_filter) = true ) " + // filter by altname
                             " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and genfunc_filter_matcher(sp.pkg.name, :name_filter) = true ) " + // filter by pkg
                             " or exists ( select li.sourceLicense from Links li where li.destinationSubscription = s and li.linkType = :linkType and genfunc_filter_matcher(li.sourceLicense.reference, :name_filter) = true ) " + // filter by license
-                            " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and" +
-                            "   orgR.roleType in (:subRoleTypes) and ( " +
-                                " genfunc_filter_matcher(orgR.org.name, :name_filter) = true " +
-                                " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true " +
-                            " ) ) " + // filter by Anbieter, Konsortium, Agency
+                            " or exists ( select altname.license from AlternativeName altname, Links li where altname.license = li.sourceLicense and li.destinationSubscription = s and li.linkType = :linkType and genfunc_filter_matcher(altname.name, :name_filter) = true ) " + // filter by license altname
+                            " or exists ( select pr from ProviderRole as pr where pr.subscription = s and ( " +
+                                " genfunc_filter_matcher(pr.provider.name, :name_filter) = true " +
+                                " or genfunc_filter_matcher(pr.provider.sortname, :name_filter) = true " +
+                            " ) )" + // filter by Anbieter (Provider)
+                            " or exists ( select vr from VendorRole as vr where vr.subscription = s and ( " +
+                                " genfunc_filter_matcher(vr.vendor.name, :name_filter) = true " +
+                                " or genfunc_filter_matcher(vr.vendor.sortname, :name_filter) = true " +
+                            " ) )" + // filter by Lieferant (Vendor ex Agency)
                          " ) "
             )
             qry_params.put('name_filter', params.q)
             qry_params.put('linkType', RDStore.LINKTYPE_LICENSE)
-            qry_params.put('subRoleTypes', [RDStore.OR_AGENCY, RDStore.OR_PROVIDER])
-            if(params.orgRole != "Subscription Consortia")
-                qry_params.subRoleTypes.add(RDStore.OR_SUBSCRIPTION_CONSORTIA)
             filterSet = true
         }
         // eval property filter
@@ -256,23 +266,23 @@ class SubscriptionsQueryService {
                 needs to be dealt separately, must not be and-linked
                 */
                 if (params.hasPerpetualAccess) {
-                    if(params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) {
+                    if (Long.valueOf(params.hasPerpetualAccess) == RDStore.YN_YES.id) {
                         base_qry += "or s.hasPerpetualAccess = :hasPerpetualAccess) "
                         qry_params.put('hasPerpetualAccess', true)
                     }
-                    else if(params.hasPerpetualAccess == RDStore.YN_NO.id.toString()) {
+                    else if (Long.valueOf(params.hasPerpetualAccess) == RDStore.YN_NO.id) {
                         base_qry += "and s.hasPerpetualAccess = :hasPerpetualAccess) "
                         qry_params.put('hasPerpetualAccess', false)
                     }
                     filterSet = true
                 }
-                else base_qry += ")" //opened in line 268 or 272
+                else base_qry += ")" //opened in line 245 or 249
             }
-            else if(params.status != 'FETCH_ALL') base_qry += ")" //opened in line 268 or 272
+            else if(params.status != 'FETCH_ALL') base_qry += ")" //opened in line 245 or 249
         }
-        if (!(RDStore.SUBSCRIPTION_CURRENT.id.toString() in params.status) && params.hasPerpetualAccess) {
+        if (!(RDStore.SUBSCRIPTION_CURRENT.id in Params.getLongList(params,'status')) && params.hasPerpetualAccess) {
             base_qry += " and s.hasPerpetualAccess = :hasPerpetualAccess "
-            qry_params.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
+            qry_params.put('hasPerpetualAccess', (Long.valueOf(params.hasPerpetualAccess) == RDStore.YN_YES.id))
             filterSet = true
         }
 
@@ -319,6 +329,13 @@ class SubscriptionsQueryService {
             }
         }
 
+        if (params.linkedPkg) {
+            base_qry += " and exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and sp.pkg = :linkedPkg) "
+            qry_params.put('linkedPkg', params.linkedPkg)
+        }
+
+
+
         if (params.referenceYears) {
             base_qry += " and s.referenceYear in (:referenceYears) "
             Set<Year> referenceYears = []
@@ -330,15 +347,15 @@ class SubscriptionsQueryService {
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
-            if(params.sort != "providerAgency")
+            if(!(params.sort in ["provider", "vendor"]))
                 base_qry += (params.sort=="s.name") ? " order by LOWER(${params.sort}) ${params.order}":" order by ${params.sort} ${params.order}"
-        } else {
-            base_qry += " order by lower(trim(s.name)) asc, s.startDate, s.endDate, s.instanceOf desc"
+        } else if(!params.containsKey('count')) {
+            base_qry += " order by lower(trim(s.name)) asc, s.startDate, s.endDate, s.referenceYear, s.instanceOf desc"
             if(joinQuery)
                 base_qry += ", so.org.sortname asc"
         }
 
-        //log.debug("query: ${base_qry} && params: ${qry_params}")
+//        log.debug("query: ${base_qry} && params: ${qry_params}")
 
         return [base_qry, qry_params, filterSet]
     }

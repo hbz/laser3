@@ -13,9 +13,7 @@
 
 
 <ui:controlButtons>
-    <ui:exportDropdown>
-        <ui:actionsDropdownItem data-ui="modal" href="#individuallyExportModal" message="renewalEvaluation.exportRenewal"/>
-    </ui:exportDropdown>
+    <laser:render template="exports"/>
     <laser:render template="actions"/>
 </ui:controlButtons>
 
@@ -23,7 +21,7 @@
 
 <uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="${actionName}"/>
 
-<g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_TITLE_SELECTION]}">
+<g:if test="${surveyConfig.subscription}">
     <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
@@ -36,7 +34,7 @@
 <br />
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
+    <g:if test="${surveyConfig.subscription}">
         <i class="icon clipboard outline la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
             ${surveyConfig.getConfigNameShort()}
@@ -59,39 +57,6 @@
     <ui:messages data="${[message: message(code: 'renewalEvaluation.dynamicSite')]}"/>
 
     <ui:greySegment>
-
-        %{--<h3 class="ui header">
-        <g:message code="renewalEvaluation.parentSubscription"/>:
-        <g:if test="${parentSubscription}">
-            <g:link controller="subscription" action="show"
-                    id="${parentSubscription.id}">${parentSubscription.dropdownNamingConvention()}</g:link>
-        </g:if>
-
-        <br/>
-        <br/>
-        <g:message code="renewalEvaluation.parentSuccessorSubscription"/>:
-        <g:if test="${parentSuccessorSubscription}">
-            <g:link controller="subscription" action="show"
-                    id="${parentSuccessorSubscription.id}">${parentSuccessorSubscription.dropdownNamingConvention()}</g:link>
-
-            <g:if test="${parentSuccessorSubscription.getSubscriber().size() > 0}">
-                <g:link controller="subscription" action="copyElementsIntoSubscription" id="${parentSubscription.id}"
-                        params="[sourceObjectId: genericOIDService.getOID(parentSubscription), targetObjectId: genericOIDService.getOID(parentSuccessorSubscription), isRenewSub: true, fromSurvey: true]"
-                        class="ui button ">
-                    <g:message code="renewalEvaluation.newSub.change"/>
-                </g:link>
-            </g:if>
-
-        </g:if>
-        <g:else>
-            <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo.id}"
-                    params="[surveyConfig: surveyConfig.id, parentSub: parentSubscription.id]"
-                    class="ui button ">
-                <g:message code="renewalEvaluation.newSub"/>
-            </g:link>
-        </g:else>
-        <br />
-        </h3>--}%
 
         <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
         <div class="ui horizontal segments">
@@ -279,7 +244,7 @@
                 </thead>
                 <tbody>
                 <g:each in="${orgsWithMultiYearTermSub}" var="sub" status="i">
-                    <g:set value="${sub.getSubscriber()}" var="subscriberOrg"/>
+                    <g:set value="${sub.getSubscriberRespConsortia()}" var="subscriberOrg"/>
                     <tr>
                         <td class="center aligned">
                             ${i + 1}
@@ -333,7 +298,7 @@
                 </thead>
                 <tbody>
                 <g:each in="${orgsWithParticipationInParentSuccessor}" var="sub" status="i">
-                    <g:set value="${sub.getSubscriber()}" var="subscriberOrg"/>
+                    <g:set value="${sub.getSubscriberRespConsortia()}" var="subscriberOrg"/>
                     <tr>
                         <td class="center aligned">
                             ${i + 1}
@@ -371,8 +336,8 @@
     </ui:greySegment>
 
 
-    <g:form action="workflowRenewalSent" method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
+    <g:form action="setSurveyWorkFlowInfos" method="post" class="ui form"
+            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, setSurveyWorkFlowInfo: 'workflowRenewalSent']">
 
         <div class="ui right floated compact segment">
             <div class="ui checkbox">
@@ -383,8 +348,6 @@
         </div>
 
     </g:form>
-
-    <laser:render template="export/individuallyExportRenewModal" model="[modalID: 'individuallyExportModal']" />
 
 
     <laser:script file="${this.getGroovyPageFileName()}">

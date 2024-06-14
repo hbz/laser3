@@ -22,7 +22,7 @@
         </colgroup>
         <thead>
             <tr>
-                <th class="la-js-dont-hide-this-card" >${message(code:'property.table.property')}</th>
+                <th>${message(code:'property.table.property')}</th>
                 <th>${message(code:'default.value.label')}</th>
                 <g:if test="${ownobj instanceof License}">
                     <th>${message(code:'property.table.paragraph')}</th>
@@ -33,14 +33,14 @@
         </thead>
     </g:if>
     <tbody>
-        <g:each in="${orphanedProperties.sort{a, b -> a.type.getI10n('name').toLowerCase() <=> b.type.getI10n('name').toLowerCase() ?: a.getValue() <=> b.getValue() ?: a.id <=> b.id }}" var="prop">
+        <g:each in="${orphanedProperties}" var="prop">
             %{-- TODO : ERMS-3058 - check if $calledFromSurvey@subscription/_properties.gsp must be applied here --}%
             <g:set var="overwriteEditable" value="${(prop.tenant?.id == contextOrg.id && editable) || (!prop.tenant && editable)}"/>
 
             <g:if test="${(prop.tenant?.id == contextOrg.id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
                 <g:if test="${prop.type.descr == prop_desc}">
                     <tr>
-                        <td class="la-js-dont-hide-this-card">
+                        <td>
                             <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
                                 ${prop.type.getI10n('name')}
                                 <g:if test="${prop.type.getI10n('expl')}">
@@ -72,7 +72,7 @@
                                 <ui:xEditable owner="${prop}" type="date" field="dateValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                             </g:elseif>
                             <g:elseif test="${prop.type.isURLType()}">
-                                <ui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" class="la-overflow la-ellipsis" />
+                                <ui:xEditable owner="${prop}" type="url" field="urlValue" validation="maxlength" maxlength="255" overwriteEditable="${overwriteEditable}" class="la-overflow la-ellipsis" />
                                 <g:if test="${prop.value}">
                                     <ui:linkWithIcon href="${prop.value}" />
                                 </g:if>
@@ -89,7 +89,7 @@
                         <td>
                             <ui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </td>
-                        <td class="x la-js-editmode-container">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
+                        <td class="x">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
                             <g:if test="${overwriteEditable && (prop.hasProperty("instanceOf") && !prop.instanceOf)}">
                                 <g:if test="${showConsortiaFunctions}">
                                     <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
@@ -115,7 +115,7 @@
                                                               data-update="${custom_props_div}"
                                                               role="button"
                                             >
-                                                <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
+                                                <i class="icon la-thumbtack slash"></i>
                                             </ui:remoteLink>
                                         </g:if>
                                         <g:else>
@@ -138,7 +138,7 @@
                                                               data-update="${custom_props_div}"
                                                               role="button"
                                             >
-                                                <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
+                                                <i class="icon la-thumbtack slash"></i>
                                             </ui:remoteLink>
                                         </g:else>
                                     </g:if>
@@ -162,7 +162,7 @@
                                                           data-update="${custom_props_div}"
                                                           role="button"
                                         >
-                                            <i class="thumbtack icon la-js-editmode-icon"></i>
+                                            <i class="thumbtack icon"></i>
                                         </ui:remoteLink>
                                     </g:else>
                                 </g:if>
@@ -175,7 +175,7 @@
                                                               data-content="${message(code:'property.visible.active.tooltip')}" data-position="left center"
                                                               data-update="${custom_props_div}"
                                             >
-                                                <i class="icon eye la-js-editmode-icon"></i>
+                                                <i class="icon eye"></i>
                                             </ui:remoteLink>
                                         </g:if>
                                         <g:else>
@@ -184,7 +184,7 @@
                                                               data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                               data-content="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
                                                               data-update="${custom_props_div}">
-                                                <i class="icon eye slash la-js-editmode-icon"></i>
+                                                <i class="icon eye slash"></i>
                                             </ui:remoteLink>
                                         </g:else>
                                     </g:if>
@@ -225,7 +225,7 @@
                                                       data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                       data-content="${message(code:'property.visible.active.tooltip')}" data-position="left center"
                                                       data-update="${custom_props_div}">
-                                        <i class="icon eye la-js-editmode-icon"></i>
+                                        <i class="icon eye"></i>
                                     </ui:remoteLink>
                                 </g:if>
                                 <g:else>
@@ -234,7 +234,7 @@
                                                       data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                       data-content="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
                                                       data-update="${custom_props_div}">
-                                        <i class="icon eye slash la-js-editmode-icon"></i>
+                                        <i class="icon eye slash"></i>
                                     </ui:remoteLink>
                                 </g:else>
                                 <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />

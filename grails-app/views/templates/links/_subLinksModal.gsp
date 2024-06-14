@@ -60,6 +60,20 @@
             urlParams.controller = 'organisation'
             urlParams.action = 'linkOrgs'
             break
+        case Provider.class.name: header = message(code:"provider.linking.header")
+            thisString = context.name
+            lookupName = "lookupproviders"
+            instanceType = message(code:"provider.label")
+            urlParams.controller = 'provider'
+            urlParams.action = 'link'
+            break
+        case Vendor.class.name: header = message(code:"vendor.linking.header")
+            thisString = context.name
+            lookupName = "lookupVendors"
+            instanceType = message(code:"vendor.label")
+            urlParams.controller = 'vendor'
+            urlParams.action = 'link'
+            break
     }
 %>
 
@@ -72,6 +86,9 @@
                 List<RefdataValue> refdataValues = []
                 if(linkInstanceType == Combo.class.name) {
                     refdataValues << RDStore.COMBO_TYPE_FOLLOWS
+                }
+                else if(linkInstanceType in [ProviderLink.class.name, VendorLink.class.name]) {
+                    refdataValues << RDStore.PROVIDER_LINK_FOLLOWS
                 }
                 else {
                     refdataValues.addAll(RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)-RDStore.LINKTYPE_LICENSE)
@@ -90,6 +107,16 @@
                             if(context == link.fromOrg)
                                 perspIndex = 0
                             else if(context == link.toOrg)
+                                perspIndex = 1
+                            else perspIndex = 0
+                            linkType = "${genericOIDService.getOID(rv)}§${perspIndex}"
+                        }
+                    }
+                    else if(linkInstanceType in [Provider.class.name, Vendor.class.name]) {
+                        if(link && link.type == rv) {
+                            if(context == link.from)
+                                perspIndex = 0
+                            else if(context == link.to)
                                 perspIndex = 1
                             else perspIndex = 0
                             linkType = "${genericOIDService.getOID(rv)}§${perspIndex}"
@@ -119,6 +146,9 @@
             <g:if test="${linkInstanceType == Combo.class.name}">
                 <g:set var="pair" value="${context == link.fromOrg ? link.toOrg : link.fromOrg}"/>
             </g:if>
+            <g:if test="${linkInstanceType in [Provider.class.name, Vendor.class.name]}">
+                <g:set var="pair" value="${context == link.from ? link.to : link.from}"/>
+            </g:if>
             <g:else>
                 <g:set var="pair" value="${link.getOther(context)}"/>
                 <g:set var="comment" value="${DocContext.findByLink(link)}"/>
@@ -139,7 +169,7 @@
         <g:else>
             <g:set var="selectPair" value="pair_new"/>
             <g:set var="selectLink" value="linkType_new"/>
-            <g:if test="${linkInstanceType != Combo.class.name}">
+            <g:if test="${linkInstanceType == Links.class.name}">
                 <g:set var="linkComment" value="linkComment_new"/>
             </g:if>
         </g:else>
@@ -149,6 +179,21 @@
                     <g:hiddenField name="${selectLink}" value="${genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)}§${1}"/>
                 </g:if>
                 <g:else>
+                    <g:if test="${linkInstanceType == Links.class.name && !link}">
+                        <div class="row">
+                            <div class="four wide column">
+                                <g:message code="provider.label"/>
+                            </div>
+                            <div class="twelve wide column">
+                                <div class="ui search selection dropdown la-full-width" id="providerFilter">
+                                    <input type="hidden" name="providerFilter"/>
+                                    <i class="dropdown icon"></i>
+                                    <input type="text" class="search"/>
+                                    <div class="default text"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </g:if>
                     <div class="row">
                         <div class="four wide column">
                             ${thisString}
@@ -165,7 +210,7 @@
                     </div>
                     <div class="twelve wide column">
                         <g:if test="${link}">
-                            <input type="hidden" name="${selectPair}" value="${linkInstanceType == Combo.class.name ? pair : genericOIDService.getOID(pair)}"/>
+                            <input type="hidden" name="${selectPair}" value="${linkInstanceType in [Combo.class.name, ProviderLink.class.name, VendorLink.class.name] ? pair : genericOIDService.getOID(pair)}"/>
                             ${pair}
                         </g:if>
                         <g:else>
@@ -178,7 +223,7 @@
                         </g:else>
                     </div>
                 </div>
-                <g:if test="${linkInstanceType != Combo.class.name}">
+                <g:if test="${linkInstanceType == Links.class.name}">
                     <div class="row">
                         <div class="four wide column">
                             <g:message code="default.linking.comment" />
@@ -194,13 +239,47 @@
 </ui:modal>
 <g:if test="${!link}">
     <laser:script file="${this.getGroovyPageFileName()}">
-        $("#${selectPair}").dropdown({
+        function initPairDropdown(selProv) {
+            let providerFilter = '';
+            let minChars = 1;
+            if(typeof(selProv) !== 'undefined' && selProv.length > 0) {
+                providerFilter = '&providerFilter='+selProv;
+                minChars = 0;
+            }
+            $("#${selectPair}").dropdown({
+                apiSettings: {
+                    url: "<g:createLink controller="ajaxJson" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=${atConsortialParent}&ctx=${genericOIDService.getOID(context)}"+providerFilter,
+                    cache: false
+                },
+                clearable: true,
+                minCharacters: minChars
+            });
+        }
+        $("#providerFilter").dropdown({
             apiSettings: {
-                url: "<g:createLink controller="ajaxJson" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=${atConsortialParent}&ctx=${genericOIDService.getOID(context)}",
+                url: "<g:createLink controller="ajaxJson" action="lookupProviders"/>?query={query}",
                 cache: false
             },
             clearable: true,
             minCharacters: 1
+        });
+        <g:if test="${context instanceof Subscription || context instanceof License}">
+            <g:if test="${!subscriptionLicenseLink}">
+                <g:set var="firstProvider" value="${context.orgRelations.find { OrgRole oo -> oo.roleType.id in [RDStore.OR_PROVIDER.id, RDStore.OR_LICENSOR.id] }?.org}"/>
+            </g:if>
+            <g:if test="${firstProvider}">
+                let providerOID = "${genericOIDService.getOID(firstProvider)}";
+                let providerText = "${firstProvider.name}";
+                $("#providerFilter").dropdown('set value', providerOID).dropdown('set text', providerText);
+                initPairDropdown(providerOID);
+            </g:if>
+            <g:else>
+                initPairDropdown();
+            </g:else>
+        </g:if>
+        $("#providerFilter").change(function() {
+            let selProv = $("#providerFilter").dropdown('get value');
+            initPairDropdown(selProv);
         });
     </laser:script>
 </g:if>

@@ -10,7 +10,7 @@ import de.laser.DocContext
 import de.laser.GenericOIDService
 import de.laser.PendingChangeService
 import de.laser.AddressbookService
-import de.laser.WekbStatsService
+import de.laser.WekbNewsService
 import de.laser.WorkflowService
 import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
@@ -24,6 +24,7 @@ import de.laser.License
 import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.OrgRole
+import de.laser.Provider
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.ReportingFilter
@@ -47,6 +48,7 @@ import de.laser.Task
 import de.laser.TaskService
 import de.laser.TitleInstancePackagePlatform
 import de.laser.UserSetting
+import de.laser.Vendor
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
@@ -101,7 +103,7 @@ class AjaxHtmlController {
     SubscriptionService subscriptionService
     SubscriptionControllerService subscriptionControllerService
     TaskService taskService
-    WekbStatsService wekbStatsService
+    WekbNewsService wekbNewsService
     WorkflowService workflowService
 
     /**
@@ -125,21 +127,31 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def addObject() {
-        def resultObj, owner
+        def resultObj, owner = genericOIDService.resolveOID(params.owner)
         switch(params.object) {
-            case "altname": owner= Org.get(params.owner)
-                resultObj = AlternativeName.construct([org: owner, name: 'Unknown'])
+            case "altname": Map<String, Object> config = [name: 'Unknown']
+                if(owner instanceof License)
+                    config.license = owner
+                else if(owner instanceof Org)
+                    config.org = owner
+                else if(owner instanceof Provider)
+                    config.provider = owner
+                else if(owner instanceof Subscription)
+                    config.subscription = owner
+                else if(owner instanceof Vendor)
+                    config.vendor = owner
+                resultObj = AlternativeName.construct(config)
                 if(resultObj) {
-                    render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "name", overwriteEditable: true]
+                    render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, showConsortiaFunctions: contextService.getOrg().isCustomerType_Consortium(), ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "name", overwriteEditable: true]
                 }
                 break
-            case "frontend": owner= Org.get(params.owner)
+            case "frontend":
                 resultObj = new DiscoverySystemFrontend([org: owner, frontend: RDStore.GENERIC_NULL_VALUE]).save()
                 if(resultObj) {
                     render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "frontend", config: RDConstants.DISCOVERY_SYSTEM_FRONTEND, overwriteEditable: true]
                 }
                 break
-            case "index": owner= Org.get(params.owner)
+            case "index":
                 resultObj = new DiscoverySystemIndex([org: owner, index: RDStore.GENERIC_NULL_VALUE]).save()
                 if(resultObj) {
                     render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "index", config: RDConstants.DISCOVERY_SYSTEM_INDEX, overwriteEditable: true]
@@ -217,14 +229,14 @@ class AjaxHtmlController {
      * @return the template fragment for the changes
      */
     @Secured(['ROLE_USER'])
-    def wekbChangesFlyout() {
-        log.debug('ajaxHtmlController.wekbChangesFlyout ' + params)
+    def wekbNewsFlyout() {
+        log.debug('ajaxHtmlController.wekbNewsFlyout ' + params)
 
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(null, params)
-        result.wekbChanges = wekbStatsService.getCurrentChanges()
+        result.wekbNews = wekbNewsService.getCurrentNews()
         result.tmplView = 'details'
 
-        render template: '/myInstitution/wekbChanges', model: result
+        render template: '/myInstitution/wekbNews', model: result
     }
 
     //-------------------------------------------------- subscription/show ---------------------------------------------
@@ -241,11 +253,11 @@ class AjaxHtmlController {
         result.editable = entry.isEditableBy(result.user)
         if(entry instanceof Subscription) {
             result.subscription = (Subscription) entry
-            result.atConsortialParent = result.contextOrg.id == result.subscription.getConsortia()?.id ? "true" : "false"
+            result.atConsortialParent = result.contextOrg.id == result.subscription.getConsortia()?.id && !result.subscription.instanceOf ? "true" : "false"
         }
         else if(entry instanceof License) {
             result.license = (License) entry
-            result.atConsortialParent = result.contextOrg == result.license.getLicensingConsortium() ? "true" : "false"
+            result.atConsortialParent = result.contextOrg == result.license.getLicensingConsortium() && !result.license.instanceOf ? "true" : "false"
         }
         List<RefdataValue> linkTypes = RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)
         if(result.subscriptionLicenseLink) {
@@ -271,7 +283,7 @@ class AjaxHtmlController {
         result.roleObject = result.subscription
         result.roleRespValue = 'Specific subscription editor'
         result.editmode = result.subscription.isEditableBy(contextService.getUser())
-        result.accessConfigEditable = contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_INST_BASIC) || (contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.subscription.getSubscriber().id == contextOrg.id)
+        result.accessConfigEditable = contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_INST_BASIC) || (contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.subscription.getSubscriberRespConsortia().id == contextOrg.id)
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.subscription.packages.pkg.gokbId.each { String uuid ->
             Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: uuid])
@@ -309,7 +321,7 @@ class AjaxHtmlController {
             result.packages << packageInfos
         }
 
-        render template: '/survey/packages', model: result
+        render template: '/survey/generalPackageData', model: result
     }
 
     /**
@@ -360,17 +372,31 @@ class AjaxHtmlController {
     }
 
     /**
-     * Retrieves a list of provider and agency {@link Org}s for table view
-     * @return the result of {@link de.laser.ControlledListService#getProvidersAgencies(grails.web.servlet.mvc.GrailsParameterMap)}
+     * Retrieves a list of {@link Provider}s for table view
+     * @return the result of {@link de.laser.ControlledListService#getProviders(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
-    def lookupProvidersAgencies() {
-        Map<String, Object> model = [:], result = controlledListService.getProvidersAgencies(params)
-        model.orgList = result.results
+    def lookupProviders() {
+        Map<String, Object> model = [:], result = controlledListService.getProviders(params)
+        model.providerList = result.results
         model.tmplShowCheckbox = true
         model.tmplConfigShow = ['sortname', 'name', 'altname', 'isWekbCurated']
         model.fixedHeader = 'la-ignore-fixed'
-        render template: "/templates/filter/orgFilterTable", model: model
+        render template: "/templates/filter/providerFilterTable", model: model
+    }
+
+    /**
+     * Retrieves a list of {@link Vendor}s for table view
+     * @return the result of {@link de.laser.ControlledListService#getVendors(grails.web.servlet.mvc.GrailsParameterMap)}
+     */
+    @Secured(['ROLE_USER'])
+    def lookupVendors() {
+        Map<String, Object> model = [:], result = controlledListService.getVendors(params)
+        model.vendorList = result.results
+        model.tmplShowCheckbox = true
+        model.tmplConfigShow = ['sortname', 'name', 'isWekbCurated', 'linkVendors']
+        model.fixedHeader = 'la-ignore-fixed'
+        render template: "/templates/filter/vendorFilterTable", model: model
     }
 
     /**
@@ -424,6 +450,9 @@ class AjaxHtmlController {
         }
     }
 
+    /**
+     * Opens the task reading modal
+     */
     @Secured(['ROLE_USER'])
     def readTask() {
         Map<String, Object> result = [:]
@@ -456,11 +485,18 @@ class AjaxHtmlController {
                     model.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) and o.sector.id = :orgSector order by LOWER(o.sortname) nulls last", [orgSector: RDStore.O_SECTOR_HIGHER_EDU.id, orgType: RDStore.OT_INSTITUTION.id])
                 model.tenant = model.contextOrg.id
                 break
-            case 'addressForProviderAgency':
-                if(params.orgId)
-                    model.orgId = params.orgId
+            case 'addressForProvider':
+                if(params.providerId)
+                    model.providerId = params.providerId
                 else
-                    model.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) ) and o.sector.id = :orgSector order by LOWER(o.sortname) nulls last", [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]])
+                    model.providerList = Provider.executeQuery("from Provider p order by LOWER(p.sortname), LOWER(p.name)")
+                model.tenant = model.contextOrg.id
+                break
+            case 'addressForVendor':
+                if(params.vendorId)
+                    model.vendorId = params.vendorId
+                else
+                    model.vendorList = Vendor.executeQuery("from Vendor v order by LOWER(v.sortname), LOWER(v.name)")
                 model.tenant = model.contextOrg.id
                 break
             default: model.orgId = params.orgId ?: model.contextOrg.id
@@ -538,8 +574,10 @@ class AjaxHtmlController {
         result.showAddresses = params.showAddresses == "true" ? true : ''
         result.addAddresses = params.showAddresses == "true" ? true : ''
         result.org = params.org ? Org.get(params.long('org')) : null
-        result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
-        if(result.contextOrg.isCustomerType_Consortium()){
+        result.provider = params.provider ? Provider.get(params.long('provider')) : null
+        result.vendor = params.vendor ? Vendor.get(params.long('vendor')) : null
+        result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_INVOICING_CONTACT, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
+        if (result.contextOrg.isCustomerType_Consortium() || result.contextOrg.isCustomerType_Support()) {
             result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
         }
         result.positions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
@@ -554,19 +592,36 @@ class AjaxHtmlController {
                     result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_HIGHER_EDU.id, orgType: RDStore.OT_INSTITUTION.id])
                 }
                 break
-            case 'contactPersonForProviderAgency':
-            case 'contactPersonForProviderAgencyPublic':
-                result.isPublic    = params.contactFor == 'contactPersonForProviderAgencyPublic'
+            case 'contactPersonForProvider':
+            case 'contactPersonForProviderPublic':
+                result.isPublic    = params.contactFor == 'contactPersonForProviderPublic'
                 Set<RefdataValue> excludes = [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
                 if(params.existsWekbRecord)
                     excludes.addAll([RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_METADATA])
                 result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - excludes
                 result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
-                if (result.org) {
-                    result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label") + ' (' + result.org.toString() + ')'
-                } else {
-                    result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label")
-                    result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]])
+                if (result.provider) {
+                    result.modalText = message(code: "person.create_new.contactPersonForProvider.label") + ' (' + result.provider.sortname + ')'
+                }
+                else {
+                    result.modalText = message(code: "person.create_new.contactPersonForProvider.label")
+                    result.provList = Provider.executeQuery("from Provider p order by LOWER(p.sortname), LOWER(p.name)")
+                }
+                break
+            case 'contactPersonForVendor':
+            case 'contactPersonForVendorPublic':
+                result.isPublic    = params.contactFor == 'contactPersonForVendorPublic'
+                Set<RefdataValue> excludes = [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
+                if(params.existsWekbRecord)
+                    excludes.addAll([RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_METADATA])
+                result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - excludes
+                result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
+                if (result.vendor) {
+                    result.modalText = message(code: "person.create_new.contactPersonForVendor.label") + ' (' + result.vendor.sortname + ')'
+                }
+                else {
+                    result.modalText = message(code: "person.create_new.contactPersonForVendor.label")
+                    result.venList = Vendor.executeQuery("from Vendor v order by LOWER(v.sortname), LOWER(v.name)")
                 }
                 break
             case 'contactPersonForPublic':
@@ -591,8 +646,10 @@ class AjaxHtmlController {
 
         if (result.personInstance){
             result.org = result.personInstance.getBelongsToOrg()
-            result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
-            if(contextOrg.isCustomerType_Consortium()){
+            result.vendor = PersonRole.executeQuery("select distinct(pr.vendor) from PersonRole as pr where pr.prs = :person ", [person: result.personInstance])[0]
+            result.provider = PersonRole.executeQuery("select distinct(pr.provider) from PersonRole as pr where pr.prs = :person ", [person: result.personInstance])[0]
+            result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_INVOICING_CONTACT, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
+            if (contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Support()) {
                 result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
             }
             result.positions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
@@ -600,15 +657,27 @@ class AjaxHtmlController {
             if (result.org || (params.org && params.org instanceof String)) {
                 result.org = params.org ? Org.get(params.long('org')) : result.org
                 List allOrgTypeIds =result.org.getAllOrgTypeIds()
-                if(RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds){
-                    result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
-                    result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
-                    result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForProviderAgency.label")]) + ' (' + result.org.toString() + ')'
-                    result.contactPersonForProviderAgencyPublic = result.personInstance.isPublic
-                }else{
-                    result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForInstitution.label")]) + ' (' + result.org.toString() + ')'
-                }
-            }else {
+                result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForInstitution.label")]) + ' (' + result.org.toString() + ')'
+            }
+            else if(result.provider != null || params.containsKey('provider')) {
+                Provider prv = Provider.get(params.long('provider'))
+                if(prv)
+                    result.provider = prv
+                result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
+                result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
+                result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForProvider.label")]) + ' (' + result.provider.toString() + ')'
+                result.contactPersonForProviderPublic = result.personInstance.isPublic
+            }
+            else if(result.vendor != null || params.containsKey('vendor')) {
+                Vendor ven = Provider.get(params.long('vendor'))
+                if(ven)
+                    result.provider = ven
+                result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
+                result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
+                result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForVendor.label")]) + ' (' + result.provider.toString() + ')'
+                result.contactPersonForVendorPublic = result.personInstance.isPublic
+            }
+            else {
                 result.modalText = message(code: 'default.edit.label', args: [message(code: 'person.label')])
             }
 
@@ -654,6 +723,24 @@ class AjaxHtmlController {
             Map<String, Object> derivedPropDefGroups = loadFor.getCalculatedPropDefGroups(contextService.getOrg())
             render view: '/subscription/_licProp', model: [license: loadFor, derivedPropDefGroups: derivedPropDefGroups, linkId: params.linkId]
         }
+    }
+
+    /**
+     * Opens the modal for selection title with kbart upload
+     */
+    @Secured(['ROLE_USER'])
+    def kbartSelectionUpload() {
+        log.debug('ajaxHtmlController.kbartSelectionUpload ' + params)
+        Map<String,Object> result = [subscription:Subscription.get(params.id)]
+        Org contextOrg = contextService.getOrg()
+        result.institution = contextOrg
+        result.tab = params.tab
+
+        if(params.surveyConfigID){
+            result.surveyConfig = SurveyConfig.findById(params.surveyConfigID)
+        }
+
+        render template: '/subscription/KBARTSelectionUploadFormModal', model: result
     }
 
     // ----- surveyInfos -----
@@ -1141,20 +1228,29 @@ class AjaxHtmlController {
 
             // myInstitution::action:WF_X:id
             // subscription:id:action:WF_X:id
-            if (key[0] in [License.class.name, Subscription.class.name, Org.class.name]) {
+            if (key[0] in [License.class.name, Org.class.name, Provider.class.name, Subscription.class.name, Vendor.class.name]) {
 
                 if (key[0] == License.class.name) {
                     result.targetObject = License.get( key[1] )
                     result.tmplFormUrl  = createLink(controller: 'lic', action: key[2], id: key[1])
                 }
+                else if (key[0] == Org.class.name){
+                    result.targetObject = Org.get( key[1] )
+                    result.tmplFormUrl  = createLink(controller: 'org', action: key[2], id: key[1])
+                }
+                else if (key[0] == Provider.class.name){
+                    result.targetObject = Provider.get( key[1] )
+                    result.tmplFormUrl  = createLink(controller: 'provider', action: key[2], id: key[1])
+                }
                 else if (key[0] == Subscription.class.name) {
                     result.targetObject = Subscription.get( key[1] )
                     result.tmplFormUrl  = createLink(controller: 'subscription', action: key[2], id: key[1])
                 }
-                else {
-                    result.targetObject = Org.get( key[1] )
-                    result.tmplFormUrl  = createLink(controller: 'org', action: key[2], id: key[1])
+                else if (key[0] == Vendor.class.name) {
+                    result.targetObject = Vendor.get( key[1] )
+                    result.tmplFormUrl  = createLink(controller: 'vendor', action: key[2], id: key[1])
                 }
+
             }
             else if (key[0] == 'myInstitution') {
                 result.tmplFormUrl  = createLink(controller: 'myInstitution', action: key[2])
@@ -1262,7 +1358,7 @@ class AjaxHtmlController {
                             if ( docCtx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET ) {
                                 check = (doc.owner.id == ctxOrgId) || (docCtx.targetOrg.id == ctxOrgId)
                             }
-                            if ( docCtx.shareConf == RDStore.SHARE_CONF_CONSORTIUM || docCtx.shareConf == RDStore.SHARE_CONF_ALL ) {
+                            if ( docCtx.shareConf == RDStore.SHARE_CONF_ALL ) {
                                 // context based restrictions must be applied
                                 check = true
                             }

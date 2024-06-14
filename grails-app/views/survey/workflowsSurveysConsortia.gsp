@@ -98,7 +98,6 @@
 
         <div class="three fields">
 
-
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
                 <ui:select class="ui dropdown" name="type"
@@ -108,21 +107,6 @@
                               value="${params.type}"
                               noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
-
-            %{--<div class="field">
-                <label>${message(code: 'default.status.label')}</label>
-                <select id="filterStatus" name="filterStatus" multiple="" class="ui search selection fluid dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                    <g:each in="${RefdataCategory.getAllRefdataValues(de.laser.storage.RDConstants.SURVEY_STATUS)}"
-                            var="status">
-                        <option <%=(params.list('filterStatus').contains(status.id.toString())) ? 'selected="selected"' : ''%>
-                                value="${status.id}" title="${status.getI10n('value')}">
-                            ${status.getI10n('value')}
-                        </option>
-                    </g:each>
-                </select>
-            </div>--}%
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.options')}</label>
@@ -154,6 +138,34 @@
                                    tabindex="0">
                         </div>
                     </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkPackageSurvey">${message(code: 'surveyconfig.packageSurvey.label')}</label>
+                            <input id="checkPackageSurvey" name="checkPackageSurvey" type="checkbox"
+                                   <g:if test="${params.checkPackageSurvey}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkVendorSurvey">${message(code: 'surveyconfig.vendorSurvey.label')}</label>
+                            <input id="checkVendorSurvey" name="checkVendorSurvey" type="checkbox"
+                                   <g:if test="${params.checkVendorSurvey}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkInvoicingInformation">${message(code: 'surveyconfig.invoicingInformation.label')}</label>
+                            <input id="checkInvoicingInformation" name="checkInvoicingInformation" type="checkbox"
+                                   <g:if test="${params.checkInvoicingInformation}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -337,7 +349,7 @@
 
 
                     <td class="center aligned">
-                        <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+                        <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
                             <g:link controller="survey" action="surveyCostItems" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig.id]" class="ui icon">
                                 <div class="ui circular ${surveyConfig.costItemsFinish ? "green" : ""} label">
@@ -372,6 +384,15 @@
                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
                             <i class="pencil icon"></i>
                         </g:link>
+
+                        <g:if test="${editable}">
+                            <g:link controller="survey" action="copySurvey" id="${surveyInfo.id}"
+                                    params="[surveyConfigID: surveyConfig.id, q: surveyConfig?.subscription?.providers ? surveyConfig.subscription.providers[0].name : '']"
+                                    class="ui icon blue button la-modern-button">
+                                <i class="icon copy"></i>
+                                </div>
+                            </g:link>
+                        </g:if>
                     </td>
 
                 </tr>

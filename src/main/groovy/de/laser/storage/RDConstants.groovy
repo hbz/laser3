@@ -2,6 +2,10 @@ package de.laser.storage
 
 import groovy.transform.CompileStatic
 
+/**
+ * Container class for reference data category names
+ * @see de.laser.RefdataCategory
+ */
 @CompileStatic
 class RDConstants {
 
@@ -13,9 +17,15 @@ class RDConstants {
 
     public static final String CATEGORY_A_F           = 'category.a.f'
     public static final String CATEGORY_BAUTABELLEN   = 'category.bautabellen'
+    public static final String CATEGORY_DETAIL        = 'category.detail.inspiration'
     public static final String CATEGORY_EUROMONITOR   = 'category.euromonitor'
     public static final String CATEGORY_IGI           = 'category.igi'
     public static final String CATEGORY_JURIS         = 'category.juris'
+    public static final String CATEGORY_PNAS          = 'category.pnas'
+    public static final String CATEGORY_SCIENTIFIC    = 'category.scientific.net.rup'
+    public static final String CATEGORY_SCOPUS        = 'category.scopus'
+    public static final String CATEGORY_TOTAL_MATERIA = 'category.total.materia'
+    public static final String CATEGORY_ULLMANNS      = 'category.ullmans'
     public static final String CATEGORY_UNWTO         = 'category.unwto'
     public static final String CATEGORY_WORLD_BANK    = 'category.world.bank'
     public static final String CLUSTER_ROLE           = 'cluster.role'
@@ -128,6 +138,8 @@ class RDConstants {
     public static final String PLATFORM_STATISTICS_FORMAT     = 'platform.statistics.format'
     public static final String PLATFORM_STATISTICS_FREQUENCY  = 'platform.statistics.frequency'
     public static final String PLATFORM_STATUS                = 'platform.status'
+    public static final String PROVIDER_STATUS                = 'provider.status'
+    public static final String PROVIDER_LINK_TYPE             = 'provider.link.type'
 
     public static final String REGIONS_DE             = 'regions.de'
     public static final String REGIONS_AT             = 'regions.at'
@@ -179,6 +191,12 @@ class RDConstants {
 
     public static final String USER_SETTING_DASHBOARD_TAB = 'user.setting.dashboard.tab'
     public static final String USER_SETTING_THEME         = 'user.setting.theme'
+
+    public static final String VENDOR_STATUS                    = 'vendor.status'
+    public static final String VENDOR_SUPPORTED_LIBRARY_SYSTEM  = 'vendor.ordering.supported.library.system'
+    public static final String VENDOR_ELECTRONIC_DELIVERY_DELAY = 'vendor.ordering.electronic.delivery.delay'
+    public static final String VENDOR_INVOICING_FORMAT          = 'vendor.invoicing.format'
+    public static final String VENDOR_INVOICING_DISPATCH        = 'vendor.invoicing.dispatch'
 
     public static final String WF_WORKFLOW_TARGET_ROLE  = 'workflow.workflow.target.role'
     public static final String WF_WORKFLOW_TARGET_TYPE  = 'workflow.workflow.target.type'

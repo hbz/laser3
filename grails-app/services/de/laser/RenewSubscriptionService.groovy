@@ -58,7 +58,7 @@ class RenewSubscriptionService extends AbstractLockableService {
                         Subscription subscription = Subscription.get(id)
                         if ((subscription._getCalculatedType() == CalculatedType.TYPE_LOCAL) && subscription.isAllowToAutomaticRenewAnnually() && !subscription._getCalculatedSuccessor()) {
                             boolean fail = false
-                            Org org = subscription.getSubscriber()
+                            Org org = subscription.getSubscriberRespConsortia()
 
                             def newProperties = subscription.properties
                             Subscription copySub = new Subscription()

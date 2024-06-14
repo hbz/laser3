@@ -82,6 +82,7 @@
     <laser:render template="/templates/cpa/person_table"
               model="${[persons       : visiblePersons,
                         showContacts  : true,
+                        showOptions : true,
                         tmplConfigShow: ['lineNumber', 'name', 'showContacts', 'function', 'position']
               ]}"/>
 
@@ -161,13 +162,10 @@
 <div class="ui bottom attached tab segment ${params.tab == 'addresses' ? 'active' : ''}" data-tab="addresses">
 
     <laser:render template="/templates/cpa/address_table" model="${[
-            hideAddressType     : true,
             addresses           : addresses,
             tmplShowDeleteButton: true,
-            controller          : 'org',
-            action              : 'show',
-            id                  : orgInstance.id,
-            editable            : editable
+            editable            : editable,
+            showOptions : true
     ]}"/>
 
 </div>

@@ -1,3 +1,4 @@
+<%@ page import="de.laser.utils.DateUtils" %>
 <laser:htmlStart message="menu.yoda.userRoleMatrix" />
 
 <ui:breadcrumbs>
@@ -21,6 +22,26 @@
                                 <td>${user.username}</td>
                                 <td>${user.display}</td>
                                 <td>${user.email}</td>
+                                <td>${user.lastLogin ? DateUtils.getLocalizedSDF_noTime().format(user.lastLogin):''}</td>
+                                <td>
+                                    <ui:booleanIcon value="${user.enabled}"/>
+                                    <g:if test="${user.enabled}">
+                                        ${message(code:'user.enabled.label')}
+                                    </g:if>
+                                    <g:else>
+                                        ${message(code:'user.accountDisabled.label')}
+                                    </g:else>
+                                </td>
+%{--                                <td>--}%
+%{--                                    <label>${message(code:'user.accountExpired.label')}</label>--}%
+%{--                                    <ui:booleanIcon value="${user.accountExpired}"/>--}%
+
+%{--                                    <label>${message(code:'user.accountLocked.label')}</label>--}%
+%{--                                    <ui:booleanIcon value="${user.accountLocked}"/>--}%
+
+%{--                                    <label>${message(code:'user.passwordExpired.label')}</label>--}%
+%{--                                    <ui:booleanIcon value="${user.passwordExpired}"/>--}%
+%{--                                </td>--}%
                                 <td class="x">
                                     <g:link controller="user" action="edit" id="${user.id}" class="ui icon button">
                                         <i class="ui icon write"></i>

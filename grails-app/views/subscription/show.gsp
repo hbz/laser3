@@ -1,13 +1,17 @@
-<%@ page import="de.laser.config.ConfigMapper; de.laser.Person; de.laser.PersonRole; de.laser.Subscription; de.laser.Links; java.text.SimpleDateFormat;de.laser.properties.PropertyDefinition; de.laser.OrgRole; de.laser.License;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.interfaces.CalculatedType" %>
+<%@ page import="de.laser.config.ConfigMapper; de.laser.Person; de.laser.PersonRole; de.laser.Subscription; de.laser.Links; java.text.SimpleDateFormat;de.laser.properties.PropertyDefinition; de.laser.OrgRole; de.laser.License;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.interfaces.CalculatedType; de.laser.FormService; de.laser.AuditConfig" %>
 <laser:htmlStart message="subscription.details.label" serviceInjection="true"/>
 
-%{-- help sidebar --}%
-<laser:render template="/templates/help/subscription_show"/>
+%{-- flyouts --}%
+<laser:render template="/templates/flyouts/help/subscription_show"/>
+
+
 <ui:debugInfo>
     <div style="padding: 1em 0;">
+        <p>sub.dateCreated: ${subscription.dateCreated}</p>
+        <p>sub.lastUpdated: ${subscription.lastUpdated}</p>
         <p>sub.type: ${subscription.type}</p>
 
-        <p>sub.subscriber: ${subscription.subscriber}</p>
+        <p>sub.getSubscriberRespConsortia(): ${subscription.getSubscriberRespConsortia()}</p>
 
         <p>sub.instanceOf: <g:if test="${subscription.instanceOf}">
             <g:link action="show" id="${subscription.instanceOf.id}">${subscription.instanceOf.name}</g:link>
@@ -26,7 +30,7 @@
     <laser:render template="${customerTypeService.getActionsTemplatePath()}"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
+<ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleProviders="${providerRoles}" visibleVendors="${visibleVendors}">
     <laser:render template="iconSubscriptionIsChild"/>
     <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
@@ -38,13 +42,13 @@
 
 <laser:render template="${customerTypeService.getNavTemplatePath()}"/>
 
-<g:if test="${permanentTilesProcessRunning}">
+<g:if test="${permanentTitlesProcessRunning}">
     <div class="ui icon warning message">
         <i class="info icon"></i>
         <div class="content">
             <div class="header">Info</div>
 
-            <p>${message(code: 'subscription.details.permanentTilesProcessRunning.info')}</p>
+            <p>${message(code: 'subscription.details.permanentTitlesProcessRunning.info')}</p>
         </div>
     </div>
 </g:if>
@@ -63,10 +67,190 @@
                 <div class="ui card la-time-card">
                     <div class="content">
                         <dl>
+                            <dt class="control-label"><g:message code="org.altname.label" /></dt>
+                            <dd>
+                                <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion">
+                                    <g:if test="${subscription.altnames}">
+                                        <div class="title" id="altname_title">
+                                            <div data-objId="${genericOIDService.getOID(subscription.altnames[0])}">
+                                                <div class="content la-space-right">
+                                                    <g:if test="${!subscription.altnames[0].instanceOf}">
+                                                        <ui:xEditable owner="${subscription.altnames[0]}" field="name"/>
+                                                    </g:if>
+                                                    <g:else>
+                                                        ${subscription.altnames[0].name}
+                                                    </g:else>
+                                                </div>
+                                                <g:if test="${editable}">
+                                                    <g:if test="${showConsortiaFunctions}">
+                                                        <g:if test="${!subscription.altnames[0].instanceOf}">
+                                                            <g:if test="${! AuditConfig.getConfig(subscription.altnames[0])}">
+                                                                <ui:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                                                               controller="ajax"
+                                                                               action="toggleAlternativeNameAuditConfig"
+                                                                               params='[ownerId: "${subscription.id}",
+                                                                                        ownerClass: "${subscription.class}",
+                                                                                        showConsortiaFunctions: true,
+                                                                                        (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
+                                                                               ]'
+                                                                               data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.altname", args: [subscription.altnames[0].name])}"
+                                                                               data-confirm-term-how="inherit"
+                                                                               id="${subscription.altnames[0].id}"
+                                                                               data-content="${message(code:'property.audit.off.tooltip')}"
+                                                                               role="button"
+                                                                >
+                                                                    <i class="icon la-thumbtack slash"></i>
+                                                                </ui:link>
+                                                                <div class="ui buttons">
+                                                                    <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
+                                                                                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
+                                                                                   data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                        <i class="trash alternate outline icon"></i>
+                                                                    </ui:remoteLink>
+                                                                </div>
+                                                            </g:if>
+                                                            <g:else>
+                                                                <ui:link class="ui icon green button la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                                                               controller="ajax" action="toggleAlternativeNameAuditConfig"
+                                                                               params='[ownerId: "${subscription.altnames[0].id}",
+                                                                                        ownerClass: "${subscription.altnames[0].class}",
+                                                                                        showConsortiaFunctions: true,
+                                                                                        (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
+                                                                               ]'
+                                                                               id="${subscription.altnames[0].id}"
+                                                                               data-content="${message(code:'property.audit.on.tooltip')}"
+                                                                               data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.identifier", args: [subscription.altnames[0].name])}"
+                                                                               data-confirm-term-how="inherit"
+                                                                               role="button"
+                                                                >
+                                                                    <i class="thumbtack icon"></i>
+                                                                </ui:link>
+                                                            </g:else>
+                                                        </g:if>
+                                                        <g:else>
+                                                            <div class="ui buttons">
+                                                                <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
+                                                                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
+                                                                               data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(subscription.altnames[0])}')">
+                                                                    <i class="trash alternate outline icon"></i>
+                                                                </ui:remoteLink>
+                                                            </div>
+                                                        </g:else>
+                                                    </g:if>
+                                                    <g:elseif test="${subscription.altnames[0].instanceOf}">
+                                                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
+                                                    </g:elseif>
+                                                    <g:else>
+                                                        <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
+                                                                       data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
+                                                                       data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(subscription.altnames[0])}')">
+                                                            <i class="trash alternate outline icon"></i>
+                                                        </ui:remoteLink>
+                                                    </g:else>
+                                                </g:if>
+                                            </div>
+                                            <i class="dropdown icon"></i>
+                                        </div>
+                                        <div class="content">
+                                            <g:each in="${subscription.altnames.drop(1)}" var="altname">
+                                                <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
+                                                    <div class="content la-space-right">
+                                                        <g:if test="${!altname.instanceOf}">
+                                                            <ui:xEditable owner="${altname}" field="name"/>
+                                                        </g:if>
+                                                        <g:else>
+                                                            ${altname.name}
+                                                        </g:else>
+                                                    </div>
+                                                    <g:if test="${editable}">
+                                                        <g:if test="${showConsortiaFunctions}">
+                                                            <g:if test="${!altname.instanceOf}">
+                                                                <g:if test="${! AuditConfig.getConfig(altname)}">
+                                                                    <ui:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                                                                   controller="ajax"
+                                                                                   action="toggleAlternativeNameAuditConfig"
+                                                                                   params='[ownerId: "${subscription.id}",
+                                                                                            ownerClass: "${subscription.class}",
+                                                                                            showConsortiaFunctions: true,
+                                                                                            (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
+                                                                                   ]'
+                                                                                   data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.altname", args: [altname.name])}"
+                                                                                   data-confirm-term-how="inherit"
+                                                                                   id="${altname.id}"
+                                                                                   data-content="${message(code:'property.audit.off.tooltip')}"
+                                                                                   role="button"
+                                                                    >
+                                                                        <i class="icon la-thumbtack slash"></i>
+                                                                    </ui:link>
+                                                                    <div class="ui buttons">
+                                                                        <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
+                                                                                       data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
+                                                                                       data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                            <i class="trash alternate outline icon"></i>
+                                                                        </ui:remoteLink>
+                                                                    </div>
+                                                                </g:if>
+                                                                <g:else>
+                                                                    <ui:link class="ui icon green button la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                                                                   controller="ajax" action="toggleAlternativeNameAuditConfig"
+                                                                                   params='[ownerId: "${altname.id}",
+                                                                                            ownerClass: "${altname.class}",
+                                                                                            showConsortiaFunctions: true,
+                                                                                            (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
+                                                                                   ]'
+                                                                                   id="${altname.id}"
+                                                                                   data-content="${message(code:'property.audit.on.tooltip')}"
+                                                                                   data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.altname", args: [altname.name])}"
+                                                                                   data-confirm-term-how="inherit"
+                                                                                   role="button"
+                                                                    >
+                                                                        <i class="thumbtack icon"></i>
+                                                                    </ui:link>
+                                                                </g:else>
+                                                            </g:if>
+                                                            <g:else>
+                                                                <div class="ui buttons">
+                                                                    <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
+                                                                                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
+                                                                                   data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                        <i class="trash alternate outline icon"></i>
+                                                                    </ui:remoteLink>
+                                                                </div>
+                                                            </g:else>
+                                                        </g:if>
+                                                        <g:elseif test="${altname.instanceOf}">
+                                                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
+                                                        </g:elseif>
+                                                        <g:else>
+                                                            <div class="ui buttons">
+                                                                <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
+                                                                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
+                                                                               data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                    <i class="trash alternate outline icon"></i>
+                                                                </ui:remoteLink>
+                                                            </div>
+                                                        </g:else>
+                                                    </g:if>
+                                                    <g:elseif test="${altname.instanceOf}">
+                                                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
+                                                    </g:elseif>
+                                                </div>
+                                            </g:each>
+                                        </div>
+                                    </g:if>
+                                </div>
+                            </dd>
+                        </dl>
+                        <g:if test="${editable}">
+                            <dl>
+                                <dd><input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code:'org.altname.add')}"></dd>
+                            </dl>
+                        </g:if>
+                        <dl>
                             <dt class="control-label">${message(code: 'subscription.startDate.label')}</dt>
                             <dd><ui:xEditable owner="${subscription}" field="startDate" type="date" validation="datesCheck"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
+                                <dd><ui:auditButton
                                         auditable="[subscription, 'startDate']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
@@ -75,7 +259,7 @@
                             <dd><ui:xEditable owner="${subscription}" field="endDate" type="date"
                                                  validation="datesCheck" overwriteEditable="${editable && !subscription.isAutomaticRenewAnnually}"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
+                                <dd><ui:auditButton
                                         auditable="[subscription, 'endDate']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
@@ -84,7 +268,7 @@
                             <dt class="control-label">${message(code: 'subscription.manualCancellationDate.label.shy')}</dt>
                             <dd><ui:xEditable owner="${subscription}" field="manualCancellationDate" type="date"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
+                                <dd><ui:auditButton
                                         auditable="[subscription, 'manualCancellationDate']"
                                         auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
@@ -94,7 +278,7 @@
                             <dt class="control-label">${message(code: 'subscription.referenceYear.label')}</dt>
                             <dd><ui:xEditable owner="${subscription}" field="referenceYear" type="year"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
+                                <dd><ui:auditButton
                                         auditable="[subscription, 'referenceYear']"
                                         auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
@@ -106,7 +290,7 @@
                                                      config="${RDConstants.SUBSCRIPTION_STATUS}"
                                                      constraint="removeValue_deleted"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
+                                <dd><ui:auditButton
                                         auditable="[subscription, 'status']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
@@ -143,7 +327,7 @@
                                                             config="${RDConstants.SUBSCRIPTION_TYPE}"
                                                             constraint="removeValue_administrativeSubscription,removeValue_localSubscription"/>
                                 </dd>
-                                <dd class="la-js-editmode-container">
+                                <dd>
                                     <ui:auditButton auditable="[subscription, 'type']" auditConfigs="${auditConfigs}"/>
                                 </dd>
                             </dl>
@@ -152,7 +336,7 @@
                             <dt class="control-label">${message(code: 'subscription.kind.label')}</dt>
                             <dd><ui:xEditableRefData owner="${subscription}" field="kind" config="${RDConstants.SUBSCRIPTION_KIND}"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
+                                <dd><ui:auditButton
                                         auditable="[subscription, 'kind']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
@@ -160,7 +344,7 @@
                             <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
                             <dd><ui:xEditableRefData owner="${subscription}" field="form" config="${RDConstants.SUBSCRIPTION_FORM}"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
+                                <dd><ui:auditButton
                                         auditable="[subscription, 'form']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
@@ -168,7 +352,7 @@
                             <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
                             <dd><ui:xEditableRefData owner="${subscription}" field="resource" config="${RDConstants.SUBSCRIPTION_RESOURCE}"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
+                                <dd><ui:auditButton
                                         auditable="[subscription, 'resource']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
@@ -186,7 +370,7 @@
                                 <dt class="control-label">${message(code: 'subscription.isPublicForApi.label')}</dt>
                                 <dd><ui:xEditableBoolean owner="${subscription}" field="isPublicForApi"/></dd>
                                 <g:if test="${editable}">
-                                    <dd class="la-js-editmode-container">
+                                    <dd>
                                         <ui:auditButton auditable="[subscription, 'isPublicForApi']" auditConfigs="${auditConfigs}"/>
                                     </dd>
                                 </g:if>
@@ -197,7 +381,7 @@
                                 <%--<dd><ui:xEditableRefData owner="${subscription}" field="hasPerpetualAccess" config="${RDConstants.Y_N}" /></dd>--%>
                                 <dd><ui:xEditableBoolean owner="${subscription}" field="hasPerpetualAccess"/></dd>
                                 <g:if test="${editable}">
-                                    <dd class="la-js-editmode-container">
+                                    <dd>
                                         <ui:auditButton auditable="[subscription, 'hasPerpetualAccess']" auditConfigs="${auditConfigs}"/>
                                     </dd>
                                 </g:if>
@@ -207,7 +391,7 @@
                                 <dt class="control-label">${message(code: 'subscription.hasPublishComponent.label')}</dt>
                                 <dd><ui:xEditableBoolean owner="${subscription}" field="hasPublishComponent"/></dd>
                                 <g:if test="${editable}">
-                                    <dd class="la-js-editmode-container">
+                                    <dd>
                                         <ui:auditButton auditable="[subscription, 'hasPublishComponent']" auditConfigs="${auditConfigs}"/>
                                     </dd>
                                 </g:if>
@@ -217,7 +401,7 @@
                                 <dt class="control-label">${message(code: 'subscription.holdingSelection.label')}</dt>
                                 <dd><ui:xEditableRefData owner="${subscription}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}"/></dd>
                                 <g:if test="${editable}">
-                                    <dd class="la-js-editmode-container">
+                                    <dd>
                                         <ui:auditButton auditable="[subscription, 'holdingSelection']" auditConfigs="${auditConfigs}"/>
                                     </dd>
                                 </g:if>
@@ -233,7 +417,7 @@
                 <div id="packages" class="la-padding-top-1em"></div>
             </g:if>
         <%--
-        <div class="ui card la-js-hideable hidden">
+        <div class="ui card hidden">
             <div class="content">
                 <laser:render template="/templates/links/orgLinksAsList"
                           model="${[roleLinks: visibleOrgRelations,
@@ -242,7 +426,7 @@
                                     editmode: editable,
                                     showPersons: true
                           ]}" />
-                <div class="ui la-vertical buttons la-js-hide-this-card">
+                <div class="ui la-vertical buttons">
 
                     <laser:render template="/templates/links/orgLinksSimpleModal"
                               model="${[linkType: subscription.class.name,
@@ -271,7 +455,7 @@
                                         editmode: editable
                               ]}" />
 
-                </div><!-- la-js-hide-this-card -->
+                </div>
 
             </div>
         </div>
@@ -282,7 +466,7 @@
                     <div class="content">
                         <g:if test="${totalCostPerUse}">
                             <dl>
-                                <dt class="control-label la-js-dont-hide-this-card">${message(code: 'subscription.details.costPerUse.header')}</dt>
+                                <dt class="control-label">${message(code: 'subscription.details.costPerUse.header')}</dt>
                                 <dd><g:formatNumber number="${totalCostPerUse}" type="currency"
                                                     currencyCode="${currencyCode}" maxFractionDigits="2"
                                                     minFractionDigits="2" roundingMode="HALF_UP"/>
@@ -336,7 +520,7 @@
                             <div class="ui divider"></div>
                         </g:if>
                         <dl>
-                            <dt class="control-label la-js-dont-hide-this-card">${message(code: 'default.usage.label')}</dt>
+                            <dt class="control-label">${message(code: 'default.usage.label')}</dt>
                             <dd>
                                 <table class="ui compact celled la-table-inCard la-ignore-fixed table">
                                     <thead>
@@ -413,37 +597,51 @@
             <div id="container-provider">
                 <div class="ui card">
                     <div class="content">
-                        <h2 class="ui header">${message(code: 'subscription.organisations.label')}</h2>
-                        <laser:render template="/templates/links/orgLinksAsList"
-                                  model="${[roleLinks    : visibleOrgRelations,
+                        <h2 class="ui header">${message(code: 'provider.label')}</h2>
+                        <laser:render template="/templates/links/providerLinksAsList"
+                                  model="${[providerRoles: providerRoles,
                                             roleObject   : subscription,
                                             roleRespValue: 'Specific subscription editor',
                                             editmode     : editable,
                                             showPersons  : true
                                   ]}"/>
 
-                        <div class="ui la-vertical buttons la-js-hide-this-card">
+                        <div class="ui la-vertical buttons">
 
-                            <laser:render template="/templates/links/orgLinksSimpleModal"
+                            <laser:render template="/templates/links/providerLinksSimpleModal"
                                       model="${[linkType      : subscription.class.name,
                                                 parent        : genericOIDService.getOID(subscription),
-                                                property      : 'orgs',
-                                                recip_prop    : 'sub',
-                                                tmplRole      : RDStore.OR_PROVIDER,
-                                                tmplType      : RDStore.OT_PROVIDER,
+                                                recip_prop    : 'subscription',
                                                 tmplEntity    : message(code: 'subscription.details.linkProvider.tmplEntity'),
                                                 tmplText      : message(code: 'subscription.details.linkProvider.tmplText'),
                                                 tmplButtonText: message(code: 'subscription.details.linkProvider.tmplButtonText'),
                                                 tmplModalID   : 'modal_add_provider',
                                                 editmode      : editable
                                       ]}"/>
-                            <laser:render template="/templates/links/orgLinksSimpleModal"
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="container-vendor">
+                <div class="ui card">
+                    <div class="content">
+                        <h2 class="ui header">${message(code: 'vendor.label')}</h2>
+                        <laser:render template="/templates/links/vendorLinksAsList"
+                                  model="${[vendorRoles  : vendorRoles,
+                                            roleObject   : subscription,
+                                            roleRespValue: 'Specific subscription editor',
+                                            editmode     : editable,
+                                            showPersons  : true
+                                  ]}"/>
+
+                        <div class="ui la-vertical buttons">
+                            <laser:render template="/templates/links/vendorLinksSimpleModal"
                                       model="${[linkType      : subscription.class.name,
                                                 parent        : genericOIDService.getOID(subscription),
-                                                property      : 'orgs',
-                                                recip_prop    : 'sub',
-                                                tmplRole      : RDStore.OR_AGENCY,
-                                                tmplType      : RDStore.OT_AGENCY,
+                                                recip_prop    : 'subscription',
                                                 tmplEntity    : message(code: 'subscription.details.linkAgency.tmplEntity'),
                                                 tmplText      : message(code: 'subscription.details.linkAgency.tmplText'),
                                                 tmplButtonText: message(code: 'subscription.details.linkAgency.tmplButtonText'),
@@ -451,7 +649,7 @@
                                                 editmode      : editable
                                       ]}"/>
 
-                        </div><!-- la-js-hide-this-card -->
+                        </div>
 
                     </div>
                 </div>
@@ -491,6 +689,28 @@
 <div id="magicArea"></div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
+
+    $('.addListValue').click(function() {
+        let url;
+        let returnSelector;
+        switch($(this).attr('data-objtype')) {
+            case 'altname': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'altname', owner: genericOIDService.getOID(subscription)]"/>';
+                returnSelector = '#altnames';
+                break;
+        }
+
+        $.ajax({
+            url: url,
+            success: function(result) {
+                $(returnSelector).append(result);
+                r2d2.initDynamicUiStuff(returnSelector);
+                r2d2.initDynamicXEditableStuff(returnSelector);
+            }
+        });
+    });
+    JSPC.app.removeListValue = function(objId) {
+        $("div[data-objId='"+objId+"']").remove();
+    }
 
     JSPC.app.unlinkPackage = function(pkg_id) {
       var req_url = "${createLink(controller: 'subscription', action: 'unlinkPackage', params: [subscription: subscription.id])}&package="+pkg_id

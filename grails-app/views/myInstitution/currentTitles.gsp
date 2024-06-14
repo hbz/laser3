@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.remote.ApiSource; de.laser.PermanentTitle; de.laser.Subscription" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.remote.ApiSource; de.laser.PermanentTitle; de.laser.Subscription" %>
 <laser:htmlStart message="myinst.currentTitles.label"/>
 
 <ui:breadcrumbs>
@@ -39,7 +39,7 @@
     --%>
         <g:if test="${num_ti_rows < 1000000}">
             <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
+                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.TIPPS]"/>
             </ui:exportDropdownItem>
         </g:if>
         <g:else>
@@ -90,9 +90,6 @@
             <ui:datepicker label="myinst.currentTitles.subs_valid_on" id="validOn" name="validOn"
                            value="${validOn}"/>
             --%>
-        </div>
-
-        <div class="two fields">
             <div class="field">
                 <label for="filterSub">${message(code: 'subscription.plural')}</label>
                 <div class="ui search selection fluid multiple dropdown" id="filterSub">
@@ -114,11 +111,38 @@
                 --}%
 
             </div>
+        </div>
+
+        <div class="two fields">
 
             <div class="field">
-                <label for="filterPvd">${message(code: 'default.agency.provider.plural.label')}</label>
+                <label for="filterPvd">${message(code: 'provider.label')}</label>
                 <div class="ui search selection fluid multiple dropdown" id="filterPvd">
                     <input type="hidden" name="filterPvd"/>
+                    <div class="default text"><g:message code="default.select.all.label"/></div>
+                    <i class="dropdown icon"></i>
+                </div>
+                %{--
+                <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">
+                    <option <%--<%= (filterPvd.contains("all")) ? 'selected' : '' %>--%>
+                            value="">${message(code: 'default.select.all.label')}</option>
+                    <g:each in="${providers}" var="p">
+                        <%
+                            def pvdId = p[0].toString()
+                            def pvdName = p[1]
+                        %>
+                        <option <%=(filterPvd.contains(pvdId)) ? 'selected' : ''%> value="${pvdId}" title="${pvdName}">
+                            ${pvdName}
+                        </option>
+                    </g:each>
+                </select>
+                --}%
+            </div>
+
+            <div class="field">
+                <label for="filterPvd">${message(code: 'vendor.label')}</label>
+                <div class="ui search selection fluid multiple dropdown" id="filterVen">
+                    <input type="hidden" name="filterVen"/>
                     <div class="default text"><g:message code="default.select.all.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
@@ -426,12 +450,10 @@
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
 </ui:debugInfo>
 
-<laser:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']"/>
-
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('.export').click(function(e) {
         e.preventDefault();
-        $('#individuallyExportTippsModal').modal('hide');
+        $('#exportClickMeModal').modal('hide');
         $('#globalLoadingIndicator').show();
         //the shorthand ?: is not supported???
         let fileformat = $(this).attr('data-fileformat') ? $(this).attr('data-fileformat') : $('#fileformat-query').val();
@@ -439,7 +461,7 @@
         if(fileformat === 'kbart')
             fd = { fileformat: fileformat };
         else {
-            let nativeForm = new FormData($('#individuallyExportTippsModal').find('form')[0]);
+            let nativeForm = new FormData($('#exportClickMeModal').find('form')[0]);
             nativeForm.forEach((value, key) => fd[key] = value);
         }
         <g:each in="${params.keySet()}" var="param">
@@ -485,7 +507,10 @@
 
     JSPC.app.ajaxDropdown($('#filterSub'), '<g:createLink controller="ajaxJson" action="lookupSubscriptions"/>?query={query}&restrictLevel=true', '${params.filterSub}');
     JSPC.app.ajaxDropdown($('#filterPvd'), '<g:createLink controller="ajaxJson" action="lookupProviders"/>?query={query}', '${params.filterPvd}');
+    JSPC.app.ajaxDropdown($('#filterPvd'), '<g:createLink controller="ajaxJson" action="lookupVendors"/>?query={query}', '${params.filterPvd}');
     JSPC.app.ajaxDropdown($('#filterHostPlat'), '<g:createLink controller="ajaxJson" action="lookupPlatforms"/>?query={query}', '${params.filterHostPlat}');
 </laser:script>
+
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd/>

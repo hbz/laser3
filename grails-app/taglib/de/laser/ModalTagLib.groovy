@@ -33,7 +33,6 @@ class ModalTagLib {
             out << '</div>'
         }
     }
-
     //<ui:modal id="myModalDialog" text="${text}" message="local.string" hideSubmitButton="true" modalSize="large/small/tiny/mini" >
     // CONTENT
     // </ui:modal>

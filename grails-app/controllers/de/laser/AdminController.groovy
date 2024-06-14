@@ -1,6 +1,8 @@
 package de.laser
 
+import de.laser.annotations.DebugInfo
 import de.laser.config.ConfigDefaults
+import de.laser.storage.RDConstants
 import de.laser.utils.AppUtils
 import de.laser.helper.DatabaseInfo
 import de.laser.utils.DateUtils
@@ -38,7 +40,6 @@ import java.time.LocalDate
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController  {
 
-    CacheService cacheService
     ContextService contextService
     DataConsistencyService dataConsistencyService
     DataloadService dataloadService
@@ -46,12 +47,15 @@ class AdminController  {
     FilterService filterService
     GenericOIDService genericOIDService
     GlobalSourceSyncService globalSourceSyncService
+    GokbService gokbService
     MailService mailService
-    OrganisationService organisationService
+    PackageService packageService
     PropertyService propertyService
+    ProviderService providerService
     RefdataService refdataService
     SessionFactory sessionFactory
     StatsSyncService statsSyncService
+    VendorService vendorService
 
     /**
      * Empty call, loads empty admin dashboard
@@ -383,6 +387,7 @@ class AdminController  {
                     dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.dbCreate', String),
                     defaultCollate   : DatabaseInfo.getDatabaseCollate(),
                     dbConflicts      : DatabaseInfo.getDatabaseConflicts(),
+                    dbStmtTimeout    : DatabaseInfo.getStatementTimeout(),
                     dbSize           : DatabaseInfo.getDatabaseSize(),
                     dbStatistics     : DatabaseInfo.getDatabaseStatistics(),
                     dbActivity       : DatabaseInfo.getDatabaseActivity(),
@@ -395,6 +400,7 @@ class AdminController  {
                     dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.dbCreate', String), // TODO
                     defaultCollate   : DatabaseInfo.getDatabaseCollate( DatabaseInfo.DS_STORAGE ),
                     dbConflicts      : DatabaseInfo.getDatabaseConflicts( DatabaseInfo.DS_STORAGE ),
+                    dbStmtTimeout    : DatabaseInfo.getStatementTimeout( DatabaseInfo.DS_STORAGE ),
                     dbSize           : DatabaseInfo.getDatabaseSize( DatabaseInfo.DS_STORAGE ),
                     dbStatistics     : DatabaseInfo.getDatabaseStatistics( DatabaseInfo.DS_STORAGE ),
                     dbActivity       : DatabaseInfo.getDatabaseActivity( DatabaseInfo.DS_STORAGE ),
@@ -445,6 +451,15 @@ class AdminController  {
         result
     }
 
+    /**
+     * Runs a check through all {@link Identifier}s whose namespaces have a validation regex defined and checks whether the values match the defined validation patterns
+     * @return a {@link Map} containing for each concerned {@link IdentifierNamespace} the
+     * <ul>
+     *     <li>total count of identifiers</li>
+     *     <li>count of valid identifiers</li>
+     *     <li>count of invalid identifiers</li>
+     * </ul>
+     */
     @Secured(['ROLE_ADMIN'])
     def identifierValidation() {
         Map<String, Object> result = [
@@ -752,14 +767,27 @@ class AdminController  {
     }
 
     /**
-     * Call to view a list of organisations which may be merged. Currently only providers and agencies are being supported
+     * Call to view a list of providers which may be merged
      * because of possible conflicts with the user data registered to institutions
      */
     @Secured(['ROLE_ADMIN'])
-    def mergeOrganisations() {
+    def mergeProviders() {
         Map<String, Object> result = [:]
         if(params.containsKey('source') && params.containsKey('target')) {
-            result = organisationService.mergeOrganisations(genericOIDService.resolveOID(params.source), genericOIDService.resolveOID(params.target), false)
+            result = providerService.mergeProviders(genericOIDService.resolveOID(params.source), genericOIDService.resolveOID(params.target), false)
+        }
+        result
+    }
+
+    /**
+     * Call to view a list of providers which may be merged
+     * because of possible conflicts with the user data registered to institutions
+     */
+    @Secured(['ROLE_ADMIN'])
+    def mergeVendors() {
+        Map<String, Object> result = [:]
+        if(params.containsKey('source') && params.containsKey('target')) {
+            result = vendorService.mergeVendors(genericOIDService.resolveOID(params.source), genericOIDService.resolveOID(params.target), false)
         }
         result
     }
@@ -913,8 +941,25 @@ SELECT * FROM (
                         String newName = pdTo.tenant ? "${pdTo.getI10n("name")} (priv.)" : pdTo.getI10n("name")
                         if (pdFrom && pdTo) {
                             try {
-                                int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo, params.overwrite == 'on', true)
-                                flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName]) as String
+                                Map<String, Integer> counts = propertyService.replacePropertyDefinitions(pdFrom, pdTo, params.overwrite == 'on', true)
+                                if(counts.success == 0 && counts.failures == 0) {
+                                    String instanceType
+                                    switch(pdFrom.descr) {
+                                        case PropertyDefinition.LIC_PROP: instanceType = message(code: 'menu.institutions.replace_prop.licenses')
+                                            break
+                                        case PropertyDefinition.PRS_PROP: instanceType = message(code: 'menu.institutions.replace_prop.persons')
+                                            break
+                                        case PropertyDefinition.SUB_PROP: instanceType = message(code: 'menu.institutions.replace_prop.subscriptions')
+                                            break
+                                        case PropertyDefinition.SVY_PROP: instanceType = message(code: 'menu.institutions.replace_prop.surveys')
+                                            break
+                                        default: instanceType = message(code: 'menu.institutions.replace_prop.default')
+                                            break
+                                    }
+                                    flash.message = message(code: 'menu.institutions.replace_prop.noChanges', args: [instanceType]) as String
+                                }
+                                else
+                                    flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [counts.success, counts.failures, oldName, newName]) as String
                             }
                             catch (Exception e) {
                                 e.printStackTrace()
@@ -1010,25 +1055,13 @@ SELECT * FROM (
                 else if (rdvTo && rdvTo.owner == rdvFrom.owner) {
                     check = true
                 }
-//                else if (! rdvTo && params.xcgRdvGlobalTo) {
-//
-//                    List<String> pParts = params.xcgRdvGlobalTo.split(':')
-//                    if (pParts.size() == 2) {
-//                        RefdataCategory rdvToCat = RefdataCategory.getByDesc(pParts[0].trim())
-//                        RefdataValue rdvToRdv = RefdataValue.getByValueAndCategory(pParts[1].trim(), pParts[0].trim())
-//
-//                        if (rdvToRdv && rdvToRdv.owner == rdvToCat ) {
-//                            rdvTo = rdvToRdv
-//                            check = true
-//                        }
-//                    }
-//                }
-
                 if (check) {
                     try {
                         int count = refdataService.replaceRefdataValues(rdvFrom, rdvTo)
-
-                        flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo} ersetzt."
+                        if(count == 0)
+                            flash.message = "Es mussten keine Referenzwerte ausgetauscht werden."
+                        else
+                            flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo} ersetzt."
                     }
                     catch (Exception e) {
                         log.error( e.toString() )
@@ -1213,6 +1246,11 @@ SELECT * FROM (
         redirect(action: 'listMailTemplates')
     }
 
+    /**
+     * Loads every {@link Subscription} where {@link PermanentTitle} records are supposed to be by definition but have not been generated
+     * @see Subscription#hasPerpetualAccess
+     * @see IssueEntitlement
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def missingPermantTitlesInSubs() {
@@ -1227,6 +1265,30 @@ SELECT * FROM (
         group by s order by s.name''', [orgRole: RDStore.OR_SUBSCRIBER, removed: RDStore.TIPP_STATUS_REMOVED])
 
         result.editable = true
+        result
+    }
+
+    /**
+     * Lists current packages in the we:kb ElasticSearch index.
+     * @return Data from we:kb ES
+     */
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
+    def packageLaserVsWekb() {
+        Map<String, Object> result = [:]
+        result.user = contextService.getUser()
+        SwissKnife.setPaginationParams(result, params, result.user)
+        result.filterConfig = [['q', 'pkgStatus'],
+                               ['provider', 'ddc', 'curatoryGroup'],
+                               ['curatoryGroupType', 'automaticUpdates']]
+        result.tableConfig = ['lineNumber', 'name', 'status', 'counts', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay']
+        if(SpringSecurityUtils.ifAnyGranted('ROLE_YODA'))
+            result.tableConfig << 'yodaActions'
+        result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
+        result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
+        result.putAll(packageService.getWekbPackages(params.clone()))
         result
     }
 }

@@ -1,19 +1,9 @@
 <%@ page import="de.laser.survey.SurveyConfig;" %>
 <br />
-%{--<g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
-    <h3 class="ui icon header"><ui:headerIcon/>
-    <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
-        ${surveyConfig.getConfigNameShort()}
-    </g:link>
-    </h3>
-</g:if>
-<g:else>
-<h3 class="ui left aligned">${surveyConfig.getConfigNameShort()}</h3>
-</g:else>--}%
 
 <div class="four wide column">
 
-        <g:link action="addSubMembersToSurvey" params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]"
+        <g:link action="actionSurveyParticipants" params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab, actionSurveyParticipants: 'addSubMembersToSurvey']"
                 class="ui icon button right floated">
             <g:message code="surveyParticipants.addSubMembersToSurvey"/>
         </g:link>
@@ -45,9 +35,9 @@
 
     <br/><br/>
 
-    <g:form action="deleteSurveyParticipants" data-confirm-id="deleteSurveyParticipants_form" controller="survey"
+    <g:form action="actionSurveyParticipants" data-confirm-id="deleteSurveyParticipants_form" controller="survey"
             method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
+            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab, actionSurveyParticipants: 'deleteSurveyParticipants']">
 
         <h3 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h3>
 
@@ -71,7 +61,7 @@
         <laser:render template="/templates/filter/orgFilterTable"
                       model="[orgList         : surveyParticipantsHasAccess,
                               tmplShowCheckbox: editable,
-                              tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', 'surveySubInfo']
+                              tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', (surveyConfig.subscription ? 'surveySubInfo' : '')]
                       ]"/>
 
 
@@ -95,7 +85,7 @@
         <laser:render template="/templates/filter/orgFilterTable"
                       model="[orgList         : surveyParticipantsHasNotAccess,
                               tmplShowCheckbox: editable,
-                              tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', 'surveySubInfo']
+                              tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', (surveyConfig.subscription ? 'surveySubInfo' : '')]
                       ]"/>
 
         <br/>

@@ -36,12 +36,27 @@
         <tr>
             <th rowspan="2" class="center aligned">${message(code:'sidewide.number')}</th>
             <g:sortableColumn property="roleT.org.sortname" params="${params}" title="${message(code:'myinst.consortiaSubscriptions.member')}" rowspan="2" />
+            <th class="center aligned la-smaller-table-head"  rowspan="2" >
+                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                      data-content="${message(code: 'default.previous.label')}">
+                    <i class="arrow left icon"></i>
+                </span>
+            </th>
             <g:sortableColumn property="subT.name" params="${params}" title="${message(code:'default.subscription.label')}" class="la-smaller-table-head" />
+            <th class="center aligned la-smaller-table-head" rowspan="2" >
+                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                      data-content="${message(code: 'default.next.label')}">
+                    <i class="arrow right icon"></i>
+                </span>
+            </th>
             <g:if test="${'showPackages' in tableConfig}">
                 <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.packages')}</th>
             </g:if>
             <g:if test="${'showProviders' in tableConfig}">
                 <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.provider')}</th>
+            </g:if>
+            <g:if test="${'showVendors' in tableConfig}">
+                <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.vendor')}</th>
             </g:if>
             <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.runningTimes')}</th>
             <g:if test="${'withCostItems' in tableConfig}">
@@ -104,17 +119,20 @@
 
                     <ui:customerTypeProIcon org="${subscr}" />
                 </td>
+                <%
+                    LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(subCons,false)
+                    Long navPrevSubMember = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
+                    Long navNextSubMember = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
+                %>
+                <td class="center aligned">
+                    <g:if test="${navPrevSubMember}">
+                        <g:link controller="subscription" action="show" id="${navPrevSubMember}"><i class="arrow left icon"></i></g:link>
+                    </g:if>
+                </td>
                 <th scope="row" class="la-th-column">
-
                     <div class="la-flexbox la-main-object">
-
                         <i class="icon clipboard outline la-list-icon"></i>
                         <g:link controller="subscription" action="show" id="${subCons.id}">${subCons.name}</g:link>
-                        <g:if test="${subCons._getCalculatedPrevious()}">
-                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.hasPreviousSubscription')}">
-                                <i class="arrow left grey icon"></i>
-                            </span>
-                        </g:if>
                     </div>
                     <g:each in="${linkedLicenses.get(subCons)}" var="linkedLicense">
                         <div class="la-flexbox la-minor-object">
@@ -123,6 +141,11 @@
                         </div>
                     </g:each>
                 </th>
+                <td class="center aligned">
+                    <g:if test="${navNextSubMember}">
+                        <g:link controller="subscription" action="show" id="${navNextSubMember}"><i class="arrow right icon"></i></g:link>
+                    </g:if>
+                </td>
                 <g:if test="${'showPackages' in tableConfig}">
                     <td>
                         <g:each in="${subCons.packages}" var="subPkg">
@@ -137,6 +160,13 @@
                     <td>
                         <g:each in="${subCons.providers}" var="p">
                             <g:link controller="organisation" action="show" id="${p.id}">${p.getDesignation()}</g:link> <br />
+                        </g:each>
+                    </td>
+                </g:if>
+                <g:if test="${'showVendors' in tableConfig}">
+                    <td>
+                        <g:each in="${subCons.vendors}" var="v">
+                            <g:link controller="vendor" action="show" id="${v.id}">${v.sortname}</g:link> <br />
                         </g:each>
                     </td>
                 </g:if>
@@ -247,13 +277,13 @@
         <g:if test="${'withCostItems' in tableConfig}">
             <tfoot>
             <tr>
-                <th class="control-label" colspan="9">
+                <th class="control-label" colspan="11">
                     ${message(code:'financials.totalCostOnPage')}
                 </th>
             </tr>
             <g:each in="${finances}" var="entry">
                 <tr>
-                    <td colspan="${3 + tableConfig.size()}">
+                    <td colspan="${5 + tableConfig.size()}">
                         ${message(code:'financials.sum.billing')} ${entry.key}<br />
                     </td>
                     <td class="la-exposed-bg">

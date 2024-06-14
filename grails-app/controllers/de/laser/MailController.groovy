@@ -3,7 +3,6 @@ package de.laser
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
 import de.laser.storage.RDStore
-import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import grails.plugin.springsecurity.annotation.Secured

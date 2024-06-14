@@ -39,14 +39,14 @@
     <div class="ui bottom attached tab segment" data-tab="platform-filter-tab-help">
         <div class="field">
             <div style="text-align:center; padding:2em 0">
-                <asset:image src="help/reporting.platforms.png" absolute="true" style="width:96%" />
+                <img class="ui fluid image" alt="${message(code:'reporting.ui.global.help')}" src="${resource(dir: 'help', file: 'reporting/global.platforms.png')}"/>
             </div>
         </div>
     </div><!-- .tab -->
 
     <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).provider}" />
     <g:if test="${config}">
-        <input type="hidden" name="filter:provider_source" value="filter-restricting-provider" />
+        <input type="hidden" name="filter:provider_source" value="filter-subset-provider" />
     </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">

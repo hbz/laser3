@@ -25,11 +25,17 @@
                             </div>
                         </div>
                         <div class="item">
-                            <i class="university icon la-list-icon"></i>
+                            <i class="handshake icon la-list-icon"></i>
                             <div class="content">
                                 <g:link controller="myInstitution" action="currentProviders">${message(code:'menu.my.providers')}</g:link>
                             </div>
                         </div>
+%{--                        <div class="item">--}%
+%{--                            <i class="shipping fast icon la-list-icon"></i>--}%
+%{--                            <div class="content">--}%
+%{--                                <g:link controller="myInstitution" action="currentVendors">${message(code:'menu.my.vendors')}</g:link>--}%
+%{--                            </div>--}%
+%{--                        </div>--}%
                     </div>
                 </div>
                 <div class="column">
@@ -41,6 +47,18 @@
                             </div>
                         </div>
                         <div class="item">
+                            <i class="tasks icon la-list-icon"></i>
+                            <div class="content">
+                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
+                            </div>
+                        </div>
+%{--                        <div class="item">--}%
+%{--                            <i class="file alternate icon la-list-icon"></i>--}%
+%{--                            <div class="content">--}%
+%{--                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="documents" message="menu.my.documents" />--}%
+%{--                            </div>--}%
+%{--                        </div>--}%
+                        <div class="item">
                             <i class="chart pie icon la-list-icon"></i>
                             <div class="content">
                                 <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
@@ -49,12 +67,6 @@
                                 <g:else>
                                     <ui:securedMainNavItem orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys"/>
                                 </g:else>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <i class="tasks icon la-list-icon"></i>
-                            <div class="content">
-                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
                             </div>
                         </div>
                     </div>
@@ -117,8 +129,8 @@
 
         <ui:messages data="${flash}" />
 
-        <g:if test="${wekbChanges}">
-            <laser:render template="wekbChanges" model="${[wekbChanges: wekbChanges, tmplView: 'info']}"/>
+        <g:if test="${wekbNews}">
+            <laser:render template="wekbNews" model="${[wekbNews: wekbNews, tmplView: 'info']}"/>
         </g:if>
 
     <%
@@ -176,7 +188,6 @@
         <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
             <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
                 <i class="tasks icon large"></i>
-%{--                ${myWorkflowsCount + allWorkflowsCount} ${message(code:'workflow.plural')}--}%
                 ${allChecklistsCount} ${message(code:'workflow.plural')}
             </a>
         </g:if>
@@ -237,16 +248,6 @@
         <g:if test="${contextService.getOrg().isCustomerType_Pro()}">
         <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
 
-%{--            <g:if test="${editable}">--}%
-%{--                <div class="ui right aligned grid">--}%
-%{--                    <div class="right floated right aligned sixteen wide column">--}%
-%{--                        <a onclick="JSPC.app.createTask();" class="ui button">--}%
-%{--                            ${message(code:'task.create.new')}--}%
-%{--                        </a>--}%
-%{--                    </div>--}%
-%{--                </div>--}%
-%{--            </g:if>--}%
-
             <div class="ui cards">
                 <g:each in="${tasks}" var="tsk">
                     <div class="ui card">
@@ -277,6 +278,12 @@
                                             <g:if test="${tskObj.controller == 'organisation'}">
                                                 <i class="university icon"></i>
                                             </g:if>
+                                            <g:if test="${tskObj.controller == 'provider'}">
+                                                <i class="handshake icon"></i>
+                                            </g:if>
+                                            <g:if test="${tskObj.controller == 'vendor'}">
+                                                <i class="shipping fast icon"></i>
+                                            </g:if>
                                             <g:if test="${tskObj.controller.contains('subscription')}">
                                                 <i class="clipboard outline icon"></i>
                                             </g:if>
@@ -290,9 +297,9 @@
                                                 <i class="chart pie icon"></i>
                                             </g:if>
                                         </span>
-                                    <g:if test="${tskObj.controller.contains('survey')}">
-                                        <g:link controller="${tskObj.controller}" action="show" params="${[id: tskObj.object?.surveyInfo.id, surveyConfigID:tskObj.object?.id]}">${tskObj.object.getSurveyName()}</g:link>
-                                    </g:if>
+                                        <g:if test="${tskObj.controller.contains('survey')}">
+                                            <g:link controller="${tskObj.controller}" action="show" params="${[id: tskObj.object?.surveyInfo.id, surveyConfigID:tskObj.object?.id]}">${tskObj.object.getSurveyName()}</g:link>
+                                        </g:if>
                                         <g:else>
                                             <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
                                         </g:else>
@@ -495,8 +502,6 @@
         JSPC.app.dashboard.loadChanges()
         JSPC.app.dashboard.loadSurveys()
         JSPC.app.dashboard.initWorkflows()
-
-    %{--        JSPC.app.createTask = bb8.ajax4SimpleModalFunction("#modalCreateTask", "<g:createLink controller="ajaxHtml" action="createTask"/>", true);--}%
     </laser:script>
 
     <ui:debugInfo>

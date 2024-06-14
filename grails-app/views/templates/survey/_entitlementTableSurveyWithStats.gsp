@@ -71,7 +71,6 @@
                     </td>
                     <g:if test="${params.tab == 'topUsed'}">
                         <g:set var="usage" value="${usages.get(tipp)}"/>
-                        <%-- continue here: display k-v pairs without concatination --%>
                         <td><g:each in="${usage.keySet()}" var="metric">${metric}<br></g:each></td>
                         <td><g:each in="${usage.keySet()}" var="metric">${usage.get(metric)}<br></g:each></td>
                     </g:if>

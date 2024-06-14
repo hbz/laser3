@@ -1,3 +1,9 @@
+/* Disabled */
+.ui.ui.menu .item.disabled[data-position],
+.ui.ui.menu .item.disabled[data-content]{
+  pointer-events: auto;
+  cursor: help;
+}
 
 .ui.menu{
   .item {
@@ -288,5 +294,7 @@
   overflow-x: auto;
   overflow-y: hidden;
 }
-
-
+.ui.menu .ui.dropdown .menu>.item.la-highlightedMenueItem {
+  color: @orange!important;
+  font-weight: bold!important;
+}

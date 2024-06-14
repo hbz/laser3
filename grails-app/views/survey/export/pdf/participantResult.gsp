@@ -125,9 +125,8 @@
 
     %{-- EXPORT PROBLEM @ laser:render in call stack - ERMS-5437 --}%
     <g:render template="/templates/survey/export/subscriptionSurveyPDF" model="[surveyConfig       : surveyConfig,
-                                                                                costItemSums       : costItemSums,
                                                                                 subscription       : subscription,
-                                                                                visibleOrgRelations: visibleOrgRelations,
+                                                                                visibleProviders: providerRoles,
                                                                                 surveyResults      : surveyResults,
                                                                                 institution: institution,
                                                                                 ownerView: ownerView,
@@ -137,10 +136,9 @@
 <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
 
     <g:render template="/templates/survey/export/generalSurveyPDF" model="[surveyConfig       : surveyConfig,
-                                                                           costItemSums       : costItemSums,
                                                                            subscription       : surveyConfig.subscription,
                                                                            tasks              : tasks,
-                                                                           visibleOrgRelations: visibleOrgRelations,
+                                                                           visibleProviders: providerRoles,
                                                                            institution: institution,
                                                                            ownerView: ownerView]"/>
 </g:if>
@@ -149,9 +147,8 @@
 
     %{-- EXPORT PROBLEM @ laser:render in call stack - ERMS-5437 --}%
     <g:render template="/templates/survey/export/subscriptionSurveyPDF" model="[surveyConfig       : surveyConfig,
-                                                                                costItemSums       : costItemSums,
                                                                                 subscription       : subscription,
-                                                                                visibleOrgRelations: visibleOrgRelations,
+                                                                                visibleProviders: providerRoles,
                                                                                 surveyResults      : surveyResults,
                                                                                 institution: institution,
                                                                                 ownerView: ownerView,

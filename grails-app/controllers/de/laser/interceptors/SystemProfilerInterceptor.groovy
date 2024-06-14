@@ -22,7 +22,7 @@ class SystemProfilerInterceptor implements grails.artefact.Interceptor {
     }
 
     /**
-     * In case a system profiler has
+     * In case a system profiler has been started, benchmarking is being started for the given request
      * @return true
      */
     boolean before() {
@@ -34,6 +34,11 @@ class SystemProfilerInterceptor implements grails.artefact.Interceptor {
         true
     }
 
+    /**
+     * Call to add the context user to the list of active users
+     * @return true
+     * @see SystemActivityProfiler#addActiveUser(de.laser.auth.User)
+     */
     boolean after() {
         // triggered via AjaxOpenController.profiler()
         // println request.requestURL

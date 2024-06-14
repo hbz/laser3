@@ -77,8 +77,16 @@ class PersonController  {
                             // processing dynamic form data
                             //addPersonRoles(personInstance)
                             Org personRoleOrg
+                            Provider personRoleProvider
+                            Vendor personRoleVendor
                             if (params.personRoleOrg) {
                                 personRoleOrg = Org.get(params.personRoleOrg)
+                            }
+                            else if (params.personRoleProvider) {
+                                personRoleProvider = Provider.get(params.personRoleProvider)
+                            }
+                            else if (params.personRoleVendor) {
+                                personRoleVendor = Vendor.get(params.personRoleVendor)
                             }
                             else {
                                 personRoleOrg = contextOrg
@@ -88,9 +96,15 @@ class PersonController  {
                                 params.list('functionType').each {
                                     PersonRole personRole
                                     RefdataValue functionType = RefdataValue.get(it)
-                                    personRole = new PersonRole(prs: personInstance, functionType: functionType, org: personRoleOrg)
+                                    personRole = new PersonRole(prs: personInstance, functionType: functionType)
+                                    if(personRoleOrg)
+                                        personRole.org = personRoleOrg
+                                    else if(personRoleProvider)
+                                        personRole.provider = personRoleProvider
+                                    else if(personRoleVendor)
+                                        personRole.vendor = personRoleVendor
 
-                                    if (PersonRole.findWhere(prs: personInstance, org: personRoleOrg, functionType: functionType)) {
+                                    if (PersonRole.findWhere(prs: personInstance, org: personRoleOrg, vendor: personRoleVendor, provider: personRoleProvider, functionType: functionType)) {
                                         log.debug("ignore adding PersonRole because of existing duplicate")
                                     }
                                     else if (personRole) {
@@ -108,9 +122,15 @@ class PersonController  {
                                 params.list('positionType').each {
                                     PersonRole personRole
                                     RefdataValue positionType = RefdataValue.get(it)
-                                    personRole = new PersonRole(prs: personInstance, positionType: positionType, org: personRoleOrg)
+                                    personRole = new PersonRole(prs: personInstance, positionType: positionType)
+                                    if(personRoleOrg)
+                                        personRole.org = personRoleOrg
+                                    else if(personRoleProvider)
+                                        personRole.provider = personRoleProvider
+                                    else if(personRoleVendor)
+                                        personRole.vendor = personRoleVendor
 
-                                    if (PersonRole.findWhere(prs: personInstance, org: personRoleOrg, positionType: positionType)) {
+                                    if (PersonRole.findWhere(prs: personInstance, org: personRoleOrg, vendor: personRoleVendor, provider: personRoleProvider, positionType: positionType)) {
                                         log.debug("ignore adding PersonRole because of existing duplicate")
                                     }
                                     else if (personRole) {
@@ -216,7 +236,7 @@ class PersonController  {
         }.findAll()
         List<PersonRole> fcba = PersonRole.where {
             prs == personInstance &&
-            functionType == RDStore.PRS_FUNC_FC_BILLING_ADDRESS
+            functionType == RDStore.PRS_FUNC_INVOICING_CONTACT
         }.findAll()
         
 

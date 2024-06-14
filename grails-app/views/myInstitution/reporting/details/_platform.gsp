@@ -1,7 +1,7 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.storage.PropertyStore; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 
-<laser:render template="/myInstitution/reporting/details/top" />
+<laser:render template="/myInstitution/reporting/details/details_top" />
 
 <g:set var="filterCache" value="${GlobalExportHelper.getFilterCache(token)}"/>
 <g:set var="esRecords" value="${filterCache.data.platformESRecords ?: [:]}"/>
@@ -18,7 +18,7 @@
                     String key = GlobalExportHelper.getCachedExportStrategy(token)
                     Map<String, Map> dtConfig = BaseConfig.getCurrentConfigDetailsTable( key ).clone()
 
-                    if (query != 'platform-x-property') { dtConfig.remove('_?_propertyLocal') }
+                    if (query != 'platform-x-property') { dtConfig.remove('_dtField_?_propertyLocal') }
 
                     String wekbProperty
                     if (query == 'platform-x-propertyWekb') {
@@ -54,10 +54,10 @@
                         <g:link controller="platform" action="show" id="${plt.id}" target="_blank">${plt.name}</g:link>
                     </uiReporting:detailsTableTD>
 
-                    <uiReporting:detailsTableTD config="${dtConfig}" field="org">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="provider">
 
-                        <g:if test="${plt.org}">
-                            <g:link controller="org" action="show" id="${plt.org.id}" target="_blank">${plt.org.sortname ?: plt.org.name}</g:link>
+                        <g:if test="${plt.provider}">
+                            <g:link controller="provider" action="show" id="${plt.provider.id}" target="_blank">${plt.provider.sortname ?: plt.provider.name}</g:link>
                         </g:if>
                     </uiReporting:detailsTableTD>
 
@@ -203,15 +203,15 @@
                         </g:else>
                     </uiReporting:detailsTableTD>
 
-                    <g:if test="${dtConfig.containsKey('_?_propertyLocal')}">
-                        <uiReporting:detailsTableTD config="${dtConfig}" field="_?_propertyLocal">
+                    <g:if test="${dtConfig.containsKey('_dtField_?_propertyLocal')}">
+                        <uiReporting:detailsTableTD config="${dtConfig}" field="_dtField_?_propertyLocal">
 
                             <uiReporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${id}" />
 
                         </uiReporting:detailsTableTD>
                     </g:if>
 
-                    <uiReporting:detailsTableTD config="${dtConfig}" field="_+_lastUpdated">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="_dtField_lastUpdated">
 
                         <g:if test="${esRecordIds.contains(plt.id)}">
                             <g:formatDate format="${message(code:'default.date.format.notime')}" date="${DateUtils.parseDateGeneric(esRecords.getAt(plt.id.toString()).lastUpdatedDisplay)}" />
@@ -221,7 +221,7 @@
                         </g:else>
                     </uiReporting:detailsTableTD>
 
-                    <uiReporting:detailsTableTD config="${dtConfig}" field="_+_wekb">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="_dtField_wekb">
 
                         <g:if test="${plt.gokbId}">
                             <g:if test="${esRecordIds.contains(plt.id)}">

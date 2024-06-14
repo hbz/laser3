@@ -101,8 +101,7 @@ class UsageController  {
     }
 
     /**
-     * Fetches for the given institution and provider the usage data from the Nationaler Statistikserver
-     * SUSHI server
+     * Fetches for the given institution and provider the usage data from the Nationaler Statistikserver SUSHI server
      */
     @Secured(['ROLE_ADMIN'])
     def fetchSelection()

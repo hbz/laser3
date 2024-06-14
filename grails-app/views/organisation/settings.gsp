@@ -40,7 +40,7 @@
                 <div class="la-inline-lists">
 
                     <g:if test="${params.tab != 'general'}">
-                    <div class="ui la-dl-no-table la-js-hideable">
+                    <div class="ui la-dl-no-table">
                         <div class="content">
 
                             <table class="ui la-js-responsive-table la-table table">
@@ -143,17 +143,20 @@
                                                                             data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_YES.id}"
                                                                             config="${os.key.rdc}" />
                                                 </g:elseif>
-                                                <g:elseif test="${os.key.type == RefdataValue}">
-                                                    <ui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
-                                                </g:elseif>
-                                                <g:elseif test="${os.key.type == Role}">
-                                                    ${os.getValue()?.getI10n('authority')} (Editierfunktion deaktiviert) <%-- TODO --%>
-                                                </g:elseif>
                                                 <g:elseif test="${OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY == os.key}">
                                                     <ui:xEditable owner="${os}" field="strValue" validation="email"/>
                                                 </g:elseif>
                                                 <g:elseif test="${OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT == os.key}">
                                                     <ui:xEditable owner="${os}" field="strValue" validation="email"/>
+                                                </g:elseif>
+                                                <g:elseif test="${OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY == os.key}">
+                                                    <ui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
+                                                </g:elseif>
+                                                <g:elseif test="${os.key.type == RefdataValue}">
+                                                    <ui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
+                                                </g:elseif>
+                                                <g:elseif test="${os.key.type == Role}">
+                                                    ${os.getValue()?.getI10n('authority')} (Editierfunktion deaktiviert) <%-- TODO --%>
                                                 </g:elseif>
                                                 <g:else>
                                                     <ui:xEditable owner="${os}" field="strValue" />
@@ -193,7 +196,7 @@
                     <g:if test="${params.tab == 'general'}">
                         <ui:flagDeprecated />
 
-                        <div class="ui card la-dl-no-table la-js-hideable">
+                        <div class="ui card la-dl-no-table">
                             <div class="content">
                                 <h2 class="ui header">
                                     ${message(code:'org.confProperties')}

@@ -4,10 +4,14 @@
 <ui:modal id="transferParticipantsModal" message="surveyInfo.transferParticipants"
              msgSave="${message(code: 'surveyInfo.transferParticipants.button')}">
 
+    <h1 class="ui header">
+        ${parentSuccessorSubscription.dropdownNamingConvention()}
+    </h1>
+
     <h3 class="ui header"><g:message code="surveyInfo.transferParticipants.option"/>:</h3>
 
     <g:form class="ui form"
-            url="[controller: 'survey', action: 'processTransferParticipantsByRenewal', params: [id: params.id, surveyConfigID: surveyConfig.id]]">
+            url="[controller: 'survey', action: 'processTransferParticipantsByRenewal', params: [id: params.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id]]">
         <div class="field">
             <g:set var="properties" value="${de.laser.AuditConfig.getConfigs(parentSuccessorSubscription)}"></g:set>
             <g:if test="${properties}">
@@ -88,9 +92,9 @@
             <g:if test="${!auditConfigProvidersAgencies}">
                 <div class="field">
                     <g:set var="providers" value="${parentSuccessorSubscription.getProviders()?.sort { it.name }}"/>
-                    <g:set var="agencies" value="${parentSuccessorSubscription.getAgencies()?.sort { it.name }}"/>
+                    <g:set var="vendors" value="${parentSuccessorSubscription.getVendors()?.sort { it.name }}"/>
 
-                    <g:if test="${(providers || agencies)}">
+                    <g:if test="${(providers || vendors)}">
                         <label><g:message code="surveyInfo.transferParticipants.moreOption"/></label>
 
                         <div class="ui checkbox">
@@ -98,7 +102,7 @@
                             <label for="transferProviderAgency"><g:message
                                     code="surveyInfo.transferParticipants.transferProviderAgency"
                                     args="${superOrgType}"/>
-                            <g:set var="providerAgency" value="${providers + agencies}"/>
+                            <g:set var="providerAgency" value="${providers + vendors}"/>
                             (${providerAgency ? providerAgency.name.join(', ') : ''})
                             </label>
                         </div>
@@ -116,14 +120,14 @@
                         </div>
 
                         <div class="field">
-                            <g:set var="agencies"
-                                   value="${parentSuccessorSubscription.getAgencies()?.sort { it.name }}"/>
-                            <g:if test="${agencies}">
+                            <g:set var="vendors"
+                                   value="${parentSuccessorSubscription.getVendors()?.sort { it.name }}"/>
+                            <g:if test="${vendors}">
                                 <label><g:message code="surveyInfo.transferParticipants.transferAgency"
                                                   args="${superOrgType}"/>:</label>
                                 <g:select class="ui search multiple dropdown"
                                           optionKey="id" optionValue="name"
-                                          from="${agencies}" name="agenciesSelection" value=""
+                                          from="${vendors}" name="vendorsSelection" value=""
                                           noSelection='["": "${message(code: 'surveyInfo.transferParticipants.noSelectionTransferAgency')}"]'/>
                             </g:if>
                         </div>

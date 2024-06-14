@@ -30,8 +30,8 @@
         </thead>
         <tbody>
         <g:each in="${emailAddresses}" var="row">
-            <g:set var="org" value="${row.getKey()}"/>
-            <tr id="${org.id}">
+            <g:set var="org" value="${genericOIDService.resolveOID(row.getKey())}"/>
+            <tr id="${row.getKey()}">
                 <td><g:checkBox id="toCopyMail_${org.id}" name="copyMail" class="orgSelector" value="${org.id}" checked="true"/></td>
                 <td>${org.name} (${org.sortname})</td>
                 <td><span class="address">${row.getValue().join('; ')}</span></td>

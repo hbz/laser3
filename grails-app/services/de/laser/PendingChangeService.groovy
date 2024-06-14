@@ -546,7 +546,7 @@ class PendingChangeService extends AbstractLockableService {
      * Retrieves the counts of changes for each of the packages in the given list
      * @param pkgList the list of packages (as {@link SubscriptionPackage} link objects) whose counts should be retrieved
      * @return a {@link Map} of counts, grouped by events and application status (pending or accepted)
-     * @deprecated unused since we:kb changes are monitored differently and handled by {@link WekbStatsService} / {@link MarkerService}
+     * @deprecated unused since we:kb changes are monitored differently and handled by {@link WekbNewsService} / {@link MarkerService}
      */
     @Deprecated
     Map<String, Integer> getCountsForPackages(Map<SubscriptionPackage, Map<String, RefdataValue>> pkgList) {

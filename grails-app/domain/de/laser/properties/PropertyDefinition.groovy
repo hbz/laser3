@@ -52,8 +52,10 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     public static final String ORG_CONF    = 'Organisation Config'
     public static final String PRS_PROP    = 'Person Property'
     public static final String PLA_PROP    = 'Platform Property'
+    public static final String PRV_PROP    = 'Provider Property'
     public static final String SUB_PROP    = 'Subscription Property'
     public static final String SVY_PROP    = 'Survey Property'
+    public static final String VEN_PROP    = 'Vendor Property'
 
     //sorting is for German terms for the next three arrays; I10n is todo for later
 
@@ -69,6 +71,8 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     @Transient
     public static final String[] AVAILABLE_PRIVATE_DESCR = [
             PRS_PROP,
+            PRV_PROP,
+            VEN_PROP,
             SUB_PROP,
             ORG_PROP,
             PLA_PROP,
@@ -314,6 +318,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      *     <li>{@link #PRS_PROP}</li>
      *     <li>{@link #SUB_PROP}</li>
      *     <li>{@link #SVY_PROP}</li>
+     *     <li>{@link #VEN_PROP}</li>
      * </ul>
      * @return a {@link List} of property definitions which have no tenant, i.e. are public, matching the given object type
      */
@@ -331,6 +336,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      *     <li>{@link #PRS_PROP}</li>
      *     <li>{@link #SUB_PROP}</li>
      *     <li>{@link #SVY_PROP}</li>
+     *     <li>{@link #VEN_PROP}</li>
      * </ul>
      * @param tenant the institution ({@link Org}) whose property definitions should be retrieved
      * @return a {@link List} of property definitions which have the given tenant, matching the given object type
@@ -349,6 +355,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      *     <li>{@link #PRS_PROP}</li>
      *     <li>{@link #SUB_PROP}</li>
      *     <li>{@link #SVY_PROP}</li>
+     *     <li>{@link #VEN_PROP}</li>
      * </ul>
      * @param mandatory should the mandatory properties set or the optional ones
      * @return a {@link List} of property definitions which have no tenant (i.e. are public), matching the given mandatory flag
@@ -367,6 +374,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      *     <li>{@link #PRS_PROP}</li>
      *     <li>{@link #SUB_PROP}</li>
      *     <li>{@link #SVY_PROP}</li>
+     *     <li>{@link #VEN_PROP}</li>
      * </ul>
      * @param mandatory should the mandatory properties set or the optional ones
      * @return a {@link List} of property definitions which have the given tenant, matching the given mandatory flag
@@ -456,7 +464,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
         matches.each { it ->
             if (params.tenant.equals(it.getTenant()?.id?.toString())) {
-                result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
+                result.add([id: "${it.id}", text: "${it.getI10n('name')}", icon: it.multipleOccurrence ? 'redo icon orange' : ''])
             }
         }
 
@@ -572,11 +580,12 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     /**
      * Retrieves all property definitions defined for organisations; returned are all public ones and those defined by the context institution
      * @param contextOrg the context institution whose own property definitions should be returned
+     * @param ownerType the type of property definition, defaulting to {@link PropertyDefinition#ORG_PROP}
      * @return a {@link List} of matching property definitions
      */
     static List<PropertyDefinition> findAllPublicAndPrivateOrgProp(Org contextOrg){
-        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
-                        defList: [PropertyDefinition.ORG_PROP],
+        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr = :ownerType and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
+                        ownerType: PropertyDefinition.ORG_PROP,
                         tenant: contextOrg
                     ])
     }

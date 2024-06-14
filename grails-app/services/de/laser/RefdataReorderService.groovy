@@ -16,10 +16,37 @@ class RefdataReorderService {
      * This overwrites the sorting, so it may be sorted according to German values. Then the display is wrongly sorted in English!!!
      */
     void reorderRefdata() {
+        //country: Germany, Austria and Switzerland first
+        int order = 10
+        List countries = RefdataValue.executeQuery("select rdv from RefdataValue rdv join rdv.owner rdc where rdc.desc = :country order by rdv.value_de asc", [country: RDConstants.COUNTRY])
+        countries.eachWithIndex { RefdataValue ct, int i ->
+            switch(ct.value) {
+                case 'DE': ct.order = 0
+                    break
+                case 'AT': ct.order = 10
+                    break
+                case 'CH': ct.order = 20
+                    break
+                default: ct.order = i*order+30
+                    break
+            }
+            ct.save()
+        }
+        //address type: billing address first
+        order = 10
+        List addressTypes = RefdataValue.executeQuery("select rdv from RefdataValue rdv join rdv.owner rdc where rdc.desc = :addressType order by rdv.value_de asc", [addressType: RDConstants.ADDRESS_TYPE])
+        addressTypes.eachWithIndex { RefdataValue at, int i ->
+            if(at.value == 'Billing address')
+                at.order = 0
+            else {
+                at.order = i*order+10
+            }
+            at.save()
+        }
         //semesters: take the order of insertion and make then the ID ascending
         List semesters = RefdataValue.findAllByOwnerAndOrderIsNull(RefdataCategory.getByDesc(RDConstants.SEMESTER),[sort:'id', order:'asc'])
         //RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 0 where rdv.value = :value',[value:'semester.not.applicable'])
-        int order = 10
+        order = 10
         semesters.each { RefdataValue s ->
             s.order = order
             s.save()
@@ -27,7 +54,20 @@ class RefdataReorderService {
         }
         //price categories: take the order of insertion and make then the ID ascending
         //I do not use the getAllRefdataValues because this does the ordering in an incorrect way
-        List priceCategories = RefdataValue.executeQuery('select rdv from RefdataValue rdv join rdv.owner rdc where rdc.desc in (:priceCategories) order by rdv.id asc',[priceCategories:[RDConstants.CATEGORY_A_F,RDConstants.CATEGORY_BAUTABELLEN,RDConstants.CATEGORY_EUROMONITOR,RDConstants.CATEGORY_IGI,RDConstants.CATEGORY_JURIS,RDConstants.CATEGORY_UNWTO,RDConstants.CATEGORY_WORLD_BANK]])
+        Set<String> catDescs = [RDConstants.CATEGORY_A_F,
+                                RDConstants.CATEGORY_BAUTABELLEN,
+                                RDConstants.CATEGORY_DETAIL,
+                                RDConstants.CATEGORY_EUROMONITOR,
+                                RDConstants.CATEGORY_IGI,
+                                RDConstants.CATEGORY_JURIS,
+                                RDConstants.CATEGORY_PNAS,
+                                RDConstants.CATEGORY_SCIENTIFIC,
+                                RDConstants.CATEGORY_SCOPUS,
+                                RDConstants.CATEGORY_TOTAL_MATERIA,
+                                RDConstants.CATEGORY_ULLMANNS,
+                                RDConstants.CATEGORY_UNWTO,
+                                RDConstants.CATEGORY_WORLD_BANK]
+        List priceCategories = RefdataValue.executeQuery('select rdv from RefdataValue rdv join rdv.owner rdc where rdc.desc in (:priceCategories) order by rdv.id asc',[priceCategories:catDescs])
         order = 0
         priceCategories.each { RefdataValue pc ->
             pc.order = order

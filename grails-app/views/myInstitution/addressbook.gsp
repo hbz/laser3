@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.PersonRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.utils.DateUtils" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.PersonRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.utils.DateUtils" %>
 
 <laser:serviceInjection/>
 
@@ -12,7 +12,7 @@
 <ui:controlButtons>
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+            <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.ADDRESSBOOK]"/>
         </ui:exportDropdownItem>
         <%--
         <g:if test="${filterSet == true}">
@@ -43,23 +43,28 @@
         <g:if test="${editable}">
 
             <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForProviderAgency');"><g:message
-                    code="person.create_new.contactPersonForProviderAgency.label"/></a>
+               onclick="JSPC.app.personCreate('contactPersonForProvider');"><i class="address card outline icon"></i><g:message
+                    code="person.create_new.contactPersonForProvider.label"/></a>
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProvider');"><i class="map marked alternate icon"></i><g:message code="address.add.addressForProvider.label"/></a>
 
-            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProviderAgency');"><g:message code="address.add.addressForProviderAgency.label"/></a>
+            <a href="#createPersonModal" class="item" data-ui="modal"
+               onclick="JSPC.app.personCreate('contactPersonForVendor');"><i class="address card outline icon"></i><g:message
+                    code="person.create_new.contactPersonForVendor.label"/></a>
+
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForVendor');"><i class="map marked alternate icon"></i><g:message code="address.add.addressForVendor.label"/></a>
             <g:if test="${institution.isCustomerType_Consortium()}">
                 <a href="#createPersonModal" class="item" data-ui="modal"
-                   onclick="JSPC.app.personCreate('contactPersonForInstitution');"><g:message
+                   onclick="JSPC.app.personCreate('contactPersonForInstitution');"><i class="address card outline icon"></i><g:message
                         code="person.create_new.contactPersonForInstitution.label"/></a>
 
-                <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution');"><g:message code="address.add.addressForInstitution.label"/></a>
+                <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution');"><i class="map marked alternate icon"></i><g:message code="address.add.addressForInstitution.label"/></a>
             </g:if>
 
             <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message
+               onclick="JSPC.app.personCreate('contactPersonForPublic');"><i class="address card outline icon"></i><g:message
                     code="person.create_new.contactPersonForPublic.label"/></a>
 
-            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForPublic');"><g:message code="address.add.addressForPublic.label"/></a>
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForPublic');"><i class="map marked alternate icon"></i><g:message code="address.add.addressForPublic.label"/></a>
 
         </g:if>
 
@@ -132,9 +137,18 @@
 
                 <div class="inline field">
                     <div class="ui checkbox">
-                        <label for="showOnlyContactPersonForProviderAgency">${message(code: 'person.contactPersonForProviderAgency.label')}</label>
-                        <input id="showOnlyContactPersonForProviderAgency" name="showOnlyContactPersonForProviderAgency" type="checkbox"
-                               <g:if test="${params.showOnlyContactPersonForProviderAgency}">checked=""</g:if>
+                        <label for="showOnlyContactPersonForProvider">${message(code: 'person.contactPersonForProvider.label')}</label>
+                        <input id="showOnlyContactPersonForProvider" name="showOnlyContactPersonForProvider" type="checkbox"
+                               <g:if test="${params.showOnlyContactPersonForProvider}">checked=""</g:if>
+                               tabindex="0">
+                    </div>
+                </div>
+
+                <div class="inline field">
+                    <div class="ui checkbox">
+                        <label for="showOnlyContactPersonForVendor">${message(code: 'person.contactPersonForVendor.label')}</label>
+                        <input id="showOnlyContactPersonForVendor" name="showOnlyContactPersonForVendor" type="checkbox"
+                               <g:if test="${params.showOnlyContactPersonForVendor}">checked=""</g:if>
                                tabindex="0">
                     </div>
                 </div>
@@ -153,7 +167,7 @@
 
 <div class="ui top attached stackable tabular la-tab-with-js menu">
     <a class="${params.tab == 'contacts' ? 'active' : ''} item" data-tab="contacts">
-        ${message(code: 'org.prsLinks.label')}
+        ${message(code: 'org.prsLinks.label')} <span class="ui circular label">${num_visiblePersons}</span>
     </a>
 
     <%--<a class="${params.tab == 'personAddresses' ? 'active' : ''} item" data-tab="personAddresses">
@@ -161,7 +175,7 @@
     </a>--%>
 
     <a class="${params.tab == 'addresses' ? 'active' : ''} item" data-tab="addresses">
-        ${message(code: 'org.addresses.label')}
+        ${message(code: 'org.addresses.label')} <span class="ui circular label">${num_visibleAddresses}</span>
     </a>
 </div>
 
@@ -172,6 +186,7 @@
             offset        : personOffset,
             showContacts  : true,
             showAddresses : true,
+            showOptions : true,
             tmplConfigShow: ['lineNumber', 'organisation', 'function', 'position', 'name', 'showContacts', 'showAddresses']
     ]}"/>
 
@@ -184,14 +199,12 @@
 <div class="ui bottom attached tab segment ${params.tab == 'addresses' ? 'active' : ''}" data-tab="addresses">
 
     <laser:render template="/templates/cpa/address_table" model="${[
-            hideAddressType     : true,
             addresses           : addresses,
             offset              : addressOffset,
             tmplShowDeleteButton: true,
             tmplShowOrgName     : true,
-            controller          : 'org',
-            action              : 'show',
-            editable            : editable
+            editable            : editable,
+            showOptions : true
     ]}"/>
 
     <ui:paginate action="addressbook" controller="myInstitution" params="${params+[tab: 'addresses']}"
@@ -227,27 +240,8 @@
         func();
     }
 
-    $('#individuallyExportModal form').submit(function () {
-        $("#tab").val($('div.tab.active').attr('data-tab'));
-    });
 </laser:script>
 
-<!-- _individuallyExportModal.gsp -->
-<%
-    Map<String, Object> fields = exportClickMeService.getExportAddressFieldsForUI()
-    Map<String, Object> formFields = fields.exportFields as Map, filterFields = fields.filterFields as Map
-    Map<String, Object> urlParams = params.clone()
-    urlParams.remove('tab')
-%>
-
-<ui:modal modalSize="large" id="individuallyExportModal" text="Excel-Export" refreshModal="true" hideSubmitButton="true">
-
-    <g:form action="addressbook" controller="myInstitution" params="${urlParams}">
-        <g:hiddenField name="tab" value="${params.tab}"/>
-        <laser:render template="/templates/export/individuallyExportForm" model="${[currentTabNotice: true, modalID: 'individuallyExportModal', formFields: formFields, filterFields: filterFields, exportFileName: escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}"), orgSwitch: true]}"/>
-    </g:form>
-
-</ui:modal>
-<!-- _individuallyExportModal.gsp -->
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd />

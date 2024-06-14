@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyPackageResult; de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
 <laser:serviceInjection/>
 
 <g:if test="${showOpenParticipantsAgainButtons}">
@@ -165,7 +165,7 @@
     <table class="ui celled sortable table la-js-responsive-table la-table">
         <thead>
         <tr>
-            <g:if test="${showCheckbox}">
+            <g:if test="${showCheckboxForParticipantsHasAccess}">
                 <th>
                     <g:if test="${surveyParticipantsHasAccess}">
                         <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
@@ -184,7 +184,7 @@
                 </g:if>
 
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
-                    <g:each in="${surveyConfig.getSortedSurveyProperties()}" var="surveyProperty">
+                    <g:each in="${surveyConfig.getSortedProperties()}" var="surveyProperty">
                         <th>${surveyProperty.getI10n('name')}
                             <g:if test="${surveyProperty.getI10n('expl')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
@@ -237,6 +237,21 @@
                         ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}
                     </th>
                 </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyPackages')}">
+                    <th>
+                        ${message(code: 'surveyPackages.selectedPackages')}
+                    </th>
+                </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemsPackages')}">
+                    <th>
+                        ${message(code: 'surveyCostItemsPackages.label')}
+                    </th>
+                </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyVendors')}">
+                    <th>
+                        ${message(code: 'surveyVendors.selectedVendors')}
+                    </th>
+                </g:if>
             </g:each>
             <th scope="col" rowspan="2" class="two">${message(code:'default.actions.label')}</th>
         </tr>
@@ -247,11 +262,11 @@
             <g:set var="participant"
                    value="${surveyOrg.org}"/>
             <g:set var="surResults" value="[]"/>
-            <g:each in="${surveyConfig.getSortedSurveyProperties()}" var="surveyProperty">
+            <g:each in="${surveyConfig.getSortedProperties()}" var="surveyProperty">
                 <% surResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participant, surveyConfig, surveyProperty) %>
             </g:each>
             <tr>
-                <g:if test="${showCheckbox}">
+                <g:if test="${showCheckboxForParticipantsHasAccess}">
                     <td>
                         <g:checkBox name="selectedOrgs" value="${participant.id}" checked="false"/>
                     </td>
@@ -355,7 +370,7 @@
 
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
                             <g:set var="subParticipant"
-                                value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                                value="${surveyConfig.subscription?.getDerivedSubscriptionForNonHiddenSubscriber(participant)}"/>
 
                         <g:set var="diffEUR" value="${0}"/>
                         <g:set var="diffUSD" value="${0}"/>
@@ -489,14 +504,14 @@
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                            class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                            class="ui icon blue tiny button la-modern-button"
                                                             target="_blank"><i class="download small icon"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                                class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                                class="ui icon blue tiny button la-modern-button"
                                                                 target="_blank"><i
                                                                 class="download small icon"></i></g:link>
 
@@ -549,9 +564,31 @@
                                     params="${[surveyConfigID: surveyConfig.id,
                                                exportXLS   : true,
                                                tab           : 'selectedIEs']}"
-                                    class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                    class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                     data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
                                     target="_blank"><i class="download icon"></i></g:link>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyPackages')}">
+                        <td>
+                            <g:link controller="survey" action="evaluationParticipant"
+                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id, viewTab: 'packageSurvey', subTab: 'selectPackages']">
+                                ${SurveyPackageResult.countByParticipantAndSurveyConfig(participant, surveyConfig)}
+                            </g:link>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemsPackages')}">
+                        <td>
+                            <g:set var="costItemSumBySelectSurveyPackageOfParticipant" value="${surveyService.getCostItemSumBySelectSurveyPackageOfParticipant(surveyConfig, participant)}"/>
+                            ${costItemSumBySelectSurveyPackageOfParticipant.sumCostInBillingCurrency} (${costItemSumBySelectSurveyPackageOfParticipant.sumCostInBillingCurrencyAfterTax})
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyVendors')}">
+                        <td>
+                            <g:link controller="survey" action="evaluationParticipant"
+                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id, viewTab: 'vendorSurvey', subTab: 'selectVendors']">
+                                ${SurveyVendorResult.countByParticipantAndSurveyConfig(participant, surveyConfig)}
+                            </g:link>
                         </td>
                     </g:if>
                 </g:each>
@@ -562,6 +599,15 @@
                             data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                         <i class="chart pie icon"></i>
                     </g:link>
+
+                    <g:if test="${surveyConfig.subscription}">
+                        <g:set var="participantSub" value="${surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(participant)}"/>
+                            <g:if test="${participantSub}">
+                                <br/>
+                                <g:link controller="subscription" action="show" id="${participantSub.id}"
+                                        class="ui button orange icon"><i class="icon clipboard"></i></g:link>
+                            </g:if>
+                    </g:if>
                 </td>
 
             </tr>
@@ -570,7 +616,7 @@
         </tbody>
         <tfoot>
         <tr>
-            <g:if test="${showCheckbox}">
+            <g:if test="${showCheckboxForParticipantsHasAccess}">
                 <td>
                 </td>
             </g:if>
@@ -629,10 +675,16 @@
                         </g:if>
                     </td>
                 </g:if>
+                <g:elseif test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
+                    <g:each in="${surResults}" var="resultProperty">
+                        <td></td>
+                    </g:each>
+                </g:elseif>
                 <g:else>
                     <td></td>
                 </g:else>
             </g:each>
+            <td></td>
         </tr>
         </tfoot>
     </table>
@@ -697,12 +749,10 @@
     <table class="ui celled sortable table la-js-responsive-table la-table">
         <thead>
         <tr>
-            <g:if test="${showCheckbox}">
-                    <g:if test="${surveyParticipantsHasNotAccess && !(actionName in ['openParticipantsAgain', 'participantsReminder']) && params.tab != 'participantsViewAllNotFinish'}">
+            <g:if test="${showCheckboxForParticipantsHasNoAccess}">
                         <th>
                         <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
                         </th>
-                    </g:if>
             </g:if>
 
             <g:each in="${tmplConfigShow}" var="tmplConfigItem" status="i">
@@ -716,7 +766,7 @@
                 </g:if>
 
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
-                    <g:each in="${surveyConfig.getSortedSurveyProperties()}" var="surveyProperty">
+                    <g:each in="${surveyConfig.getSortedProperties()}" var="surveyProperty">
                         <th>${surveyProperty.getI10n('name')}
                             <g:if test="${surveyProperty.getI10n('expl')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
@@ -769,6 +819,21 @@
                         ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}
                     </th>
                 </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyPackages')}">
+                    <th>
+                        ${message(code: 'surveyPackages.selectedPackages')}
+                    </th>
+                </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemsPackages')}">
+                    <th>
+                        ${message(code: 'surveyCostItemsPackages.label')}
+                    </th>
+                </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyVendors')}">
+                    <th>
+                        ${message(code: 'surveyVendors.selectedVendors')}
+                    </th>
+                </g:if>
 
             </g:each>
             <th scope="col" rowspan="2" class="two">${message(code:'default.actions.label')}</th>
@@ -781,17 +846,15 @@
                    value="${surveyOrg.org}"/>
 
             <g:set var="surResults" value="[]"/>
-            <g:each in="${surveyConfig.getSortedSurveyProperties()}" var="surveyProperty">
+            <g:each in="${surveyConfig.getSortedProperties()}" var="surveyProperty">
                 <% surResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participant, surveyConfig, surveyProperty) %>
             </g:each>
 
             <tr>
-                <g:if test="${showCheckbox}">
-                    <g:if test="${!(actionName in ['openParticipantsAgain', 'participantsReminder']) && params.tab != 'participantsViewAllNotFinish'}">
+                <g:if test="${showCheckboxForParticipantsHasNoAccess}">
                     <td>
                         <g:checkBox name="selectedOrgs" value="${participant.id}" checked="false"/>
                     </td>
-                    </g:if>
                 </g:if>
                 <g:each in="${tmplConfigShow}" var="tmplConfigItem">
 
@@ -890,7 +953,7 @@
 
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
                         <g:set var="subParticipant"
-                               value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                               value="${surveyConfig.subscription?.getDerivedSubscriptionForNonHiddenSubscriber(participant)}"/>
 
                         <g:set var="diffEUR" value="${0}"/>
                         <g:set var="diffUSD" value="${0}"/>
@@ -1024,14 +1087,14 @@
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                            class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                            class="ui icon blue tiny button la-modern-button"
                                                             target="_blank"><i class="download small icon"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                                class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                                class="ui icon blue tiny button la-modern-button"
                                                                 target="_blank"><i
                                                                 class="download small icon"></i></g:link>
 
@@ -1084,9 +1147,31 @@
                                     params="${[surveyConfigID: surveyConfig.id,
                                                exportXLS   : true,
                                                tab           : 'selectedIEs']}"
-                                    class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                    class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                     data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
                                     target="_blank"><i class="download icon"></i></g:link>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyPackages')}">
+                        <td>
+                            <g:link controller="survey" action="evaluationParticipant"
+                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id, viewTab: 'packageSurvey', subTab: 'selectPackages']">
+                                ${SurveyPackageResult.countByParticipantAndSurveyConfig(participant, surveyConfig)}
+                            </g:link>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemsPackages')}">
+                        <td>
+                            <g:set var="costItemSumBySelectSurveyPackageOfParticipant" value="${surveyService.getCostItemSumBySelectSurveyPackageOfParticipant(surveyConfig, participant)}"/>
+                            ${costItemSumBySelectSurveyPackageOfParticipant.sumCostInBillingCurrency} (${costItemSumBySelectSurveyPackageOfParticipant.sumCostInBillingCurrencyAfterTax})
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyVendors')}">
+                        <td>
+                            <g:link controller="survey" action="evaluationParticipant"
+                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id, viewTab: 'vendorSurvey', subTab: 'selectVendors']">
+                                ${SurveyVendorResult.countByParticipantAndSurveyConfig(participant, surveyConfig)}
+                            </g:link>
                         </td>
                     </g:if>
 
@@ -1098,6 +1183,15 @@
                             data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                         <i class="chart pie icon"></i>
                     </g:link>
+
+                    <g:if test="${surveyConfig.subscription}">
+                        <g:set var="participantSub" value="${surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(participant)}"/>
+                        <g:if test="${participantSub}">
+                            <br/>
+                            <g:link controller="subscription" action="show" id="${participantSub.id}"
+                                    class="ui button orange icon"><i class="icon clipboard"></i></g:link>
+                        </g:if>
+                    </g:if>
                 </td>
             </tr>
 
@@ -1105,7 +1199,7 @@
         </tbody>
         <tfoot>
         <tr>
-            <g:if test="${showCheckbox}">
+            <g:if test="${showCheckboxForParticipantsHasNoAccess}">
                 <td>
                 </td>
             </g:if>
@@ -1164,6 +1258,11 @@
                         </g:if>
                     </td>
                 </g:if>
+                <g:elseif test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
+                    <g:each in="${surResults}" var="resultProperty">
+                        <td></td>
+                    </g:each>
+                </g:elseif>
                 <g:else>
                     <td></td>
                 </g:else>
@@ -1238,7 +1337,7 @@
 
 
 <laser:script file="${this.getGroovyPageFileName()}">
-<g:if test="${showCheckbox}">
+<g:if test="${showCheckboxForParticipantsHasAccess || showCheckboxForParticipantsHasNoAccess}">
     $('#orgListToggler').click(function () {
         if ($(this).prop('checked')) {
             $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)

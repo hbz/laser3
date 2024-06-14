@@ -18,11 +18,38 @@
 
 <h2 class="ui left aligned icon header la-clear-before">
     ${message(code: 'subscriptionsManagement.subscriptions.members')}
+    <g:if test="${filteredSubscriptions}">
+        <ui:totalNumber total="${filteredSubscriptions.size()}"/>
+    </g:if>
 </h2>
+
+<g:if test="${params.tab != 'customerIdentifiers'}">
+    <g:form action="${actionName}" params="[tab: params.tab, id: params.id, propertiesFilterPropDef: propertiesFilterPropDef]">
+        <div class="ui toggle checkbox">
+            <input type="checkbox" onchange="this.form.submit()" name="showMembersSubWithMultiYear" ${params.showMembersSubWithMultiYear ? 'checked' : ''}>
+            <label><g:message code="subscriptionsManagement.showMembersSubWithMultiYear"/></label>
+        </div>
+    </g:form>
+</g:if>
+
 
 <laser:render template="${customerTypeService.getNavSubscriptionManagementTemplatePath()}" model="${[args: args]}"/>
 
 <ui:messages data="${flash}"/>
+
+<g:if test="${params.tab != 'customerIdentifiers'}">
+    <ui:filter>
+        <g:form action="membersSubscriptionsManagement" controller="subscription"
+                params="${[id: params.id, tab: params.tab, showMembersSubWithMultiYear: params.showMembersSubWithMultiYear, propertiesFilterPropDef: propertiesFilterPropDef]}"
+                method="get" class="ui form">
+            <laser:render template="/templates/filter/orgFilter"
+                          model="[
+                                  tmplConfigShow      : [['name', 'identifier', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['subRunTimeMultiYear']],
+                                  tmplConfigFormFilter: true
+                          ]"/>
+        </g:form>
+    </ui:filter>
+</g:if>
 
 <g:if test="${params.tab == 'linkLicense'}">
     <laser:render template="/templates/management/linkLicense"/>

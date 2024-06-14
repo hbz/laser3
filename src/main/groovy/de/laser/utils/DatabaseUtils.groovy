@@ -3,9 +3,18 @@ package de.laser.utils
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.RandomStringUtils
 
+/**
+ * Helper class for database query related tasks
+ */
 @Slf4j
 class DatabaseUtils {
 
+    /**
+     * Translates the field into a case-insensitive fuzzy database query argument
+     * @param field the field to translate
+     * @param value the named parameter used in the query
+     * @return a {@link Map} in structure {query, name, value}
+     */
     static Map<String, String> getQueryStruct_ilike(String field, String value) {
 
         String name     = 'p_' + RandomStringUtils.randomAlphanumeric(6)
@@ -26,6 +35,12 @@ class DatabaseUtils {
         [query: query, name: name, value: val]
     }
 
+    /**
+     * Translates the given list of fields into a case-insensitive fuzzy database query argument
+     * @param fields the list of field to translate
+     * @param value the named parameter used in the query
+     * @return a {@link Map} in structure {query, name, value}
+     */
     static Map<String, Object> getQueryStruct_ilike(List<String> fields, String value) {
 
         String name     = 'p_' + RandomStringUtils.randomAlphanumeric(6)

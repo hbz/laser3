@@ -44,10 +44,13 @@ class UiTagLib {
             out << '<h1 class="ui icon header la-clear-before la-noMargin-top">'
         }
 
-        if (attrs.visibleOrgRelations && attrs.visibleOrgRelations instanceof Collection) {
-            attrs.visibleOrgRelations = attrs.visibleOrgRelations.findAll{ it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA }.sort{ it.org.sortname }.collect{ it.org }.join(' – ')
+        if (attrs.visibleProviders && attrs.visibleProviders instanceof Collection) {
+            attrs.visibleProviders = attrs.visibleProviders.collect{ it.provider.name }.join(' – ')
         }
-        if ( (attrs.referenceYear) || (attrs.visibleOrgRelations) ){
+        if (attrs.visibleVendors && attrs.visibleVendors instanceof Collection) {
+            attrs.visibleVendors = attrs.visibleVendors.collect{ it.vendor.name }.join(' – ')
+        }
+        if ( (attrs.referenceYear) || (attrs.visibleProviders) || (attrs.visibleVendors) ){
             out << '<div class="la-subPlusYear">'
         }
         if (attrs.type) {
@@ -55,7 +58,7 @@ class UiTagLib {
         } else {
             out << ui.headerIcon()
         }
-        if ( (attrs.referenceYear)|| (attrs.visibleOrgRelations) ) {
+        if ( (attrs.referenceYear) || (attrs.visibleProviders) || (attrs.visibleVendors) ) {
             out << '<div class="la-subPlusYear-texts">'
         }
         if (attrs.text) {
@@ -73,14 +76,14 @@ class UiTagLib {
         if ( body ) {
             out << body()
         }
-        if ( (attrs.referenceYear)|| (attrs.visibleOrgRelations) ) {
+        if ( (attrs.referenceYear)|| (attrs.visibleProviders) ) {
             out << '<span class="la-subPlusYear-year">'
             out << attrs.referenceYear
             if (attrs.referenceYear) {
                 out << ' – '
             }
             out << '<span class="la-orgRelations">'
-            out << attrs.visibleOrgRelations
+            out << attrs.visibleProviders
             out << '</span>'
             out << '</span>'
             out << '</div>'
@@ -255,12 +258,12 @@ class UiTagLib {
                                         params: ['owner': oid, 'property': [objAttr], keep: true],
                                 )
                                 out << '">'
-                                out << '<i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>'
+                                out << '<i aria-hidden="true" class="icon thumbtack"></i>'
                                 out << '</a>'
                             }
                             else {
                                 out << '<div class="ui simple dropdown icon green button la-modern-button ' + attrs.class + ' la-audit-button" data-content="Wert wird vererbt">'
-                                out   << '<i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>'
+                                out   << '<i aria-hidden="true" class="icon thumbtack"></i>'
                                 out   << '<div class="menu">'
                                 out << g.link( 'Vererbung deaktivieren. Wert für Einrichtung <strong>löschen</strong>',
                                         controller: 'ajax',
@@ -286,7 +289,7 @@ class UiTagLib {
                                     params: ['owner': oid, 'property': [objAttr]],
                             )
                             out << '">'
-                            out << '<i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>'
+                            out << '<i aria-hidden="true" class="icon la-thumbtack slash"></i>'
                             out << '</a>'
                         }
                     }
@@ -370,46 +373,6 @@ class UiTagLib {
 
     def markerSwitch = { attrs, body ->
 
-        MarkerSupport obj   = (attrs.org ?: attrs.package ?: attrs.platform) as MarkerSupport
-        boolean isMarked    = obj.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)
-        String tt           = '?'
-        String tt_list      = message(code: 'marker.WEKB_CHANGES')
-
-        if (attrs.org) {
-            tt = isMarked ? 'Der Anbieter/Lieferant ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um den Anbieter/Lieferant auf die ' + tt_list + ' zu setzen.'
-        }
-        else if (attrs.package) {
-            tt = isMarked ? 'Das Paket ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um das Paket auf die ' + tt_list + ' zu setzen.'
-        }
-        else if (attrs.platform) {
-            tt = isMarked ? 'Der Plattform ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um die Plattform auf die ' + tt_list + ' zu setzen.'
-        }
-
-        if (obj) {
-            String onClick = ui.remoteJsToggler(
-                    controller:     'ajax',
-                    action:         'toggleMarker',
-                    data:           '{oid:\'' + genericOIDService.getOID(obj) + '\', type:\'' + Marker.TYPE.WEKB_CHANGES + '\'}',
-                    update:         '#marker-' + obj.id,
-                    successFunc:    'tooltip.init(\'#marker-' + obj.id + '\')'
-            )
-
-            if (! attrs.ajax) {
-                out << '<span id="marker-' + obj.id + '" style="margin-left:1em;">'
-            }
-
-            out <<      '<a class="ui icon label la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
-            out <<          'data-content="' + tt + '" data-position="top right">'
-            out <<              '<i class="icon purple bookmark' + (isMarked ? '' : ' outline') + '"></i>'
-            out <<      '</a>'
-
-            if (! attrs.ajax) {
-                out << '</span>'
-            }
-        }
     }
 
     //<ui:filter simple="true|false" extended="true|false"> CONTENT </ui:filter>

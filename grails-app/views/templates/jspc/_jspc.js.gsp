@@ -100,8 +100,6 @@ JSPC = {
             'search.API.source',
             'select2.placeholder',
             'select2.noMatchesFound',
-            'statusbar.hideButtons.tooltip',
-            'statusbar.showButtons.tooltip',
             'xEditable.button.cancel',
             'xEditable.button.ok'
     ]
@@ -129,7 +127,7 @@ JSPC = {
             orange:     '#fc8452',
             purple:     '#9a60b4',
             pink:       '#ea7ccc',
-            grey:       '#c4c4c4'
+            grey:       '#d4d4d4'
         },
     },
     helper : { // -- snippets only

@@ -83,9 +83,6 @@ class TaskService {
             case 'Org':
                 tasks.addAll(Task.findAllByOrg(obj as Org, pparams))
                 break
-            case 'Package':
-                tasks.addAll(Task.findAllByPkg(obj as Package, pparams))
-                break
             case 'Subscription':
                 tasks.addAll(Task.findAllBySubscription(obj as Subscription, pparams))
                 break
@@ -140,13 +137,23 @@ class TaskService {
     }
 
     /**
-     * Retrieves all tasks the given user created for the given package
+     * Retrieves all tasks the given user created for the given organisation
      * @param user the user whose tasks should be retrieved
-     * @param obj the package to which the tasks are attached
+     * @param obj the organisation to which the tasks are attached
      * @return a complete list of tasks
      */
-    List<Task> getTasksByCreatorAndObject(User user, Package obj) {
-        (user && obj) ?  Task.findAllByCreatorAndPkg(user, obj) : []
+    List<Task> getTasksByCreatorAndObject(User user, Provider obj) {
+        (user && obj) ?  Task.findAllByCreatorAndProvider(user, obj) : []
+    }
+
+    /**
+     * Retrieves all tasks the given user created for the given organisation
+     * @param user the user whose tasks should be retrieved
+     * @param obj the organisation to which the tasks are attached
+     * @return a complete list of tasks
+     */
+    List<Task> getTasksByCreatorAndObject(User user, Vendor obj) {
+        (user && obj) ?  Task.findAllByCreatorAndVendor(user, obj) : []
     }
 
     /**
@@ -229,6 +236,13 @@ class TaskService {
         tasks
     }
 
+    /**
+     * Gets the tasks for the given object for which the given user or institution is responsible
+     * @param user the user responsible for those tasks which should be retrieved
+     * @param org the institution responsible for those tasks which should be retrieved
+     * @param obj the object to which the tasks are related
+     * @return a list of tasks
+     */
     List<Task> getTasksByResponsiblesAndObject(User user, Org org, Object obj) {
         List<Task> tasks = []
         String tableName = ''
@@ -240,14 +254,17 @@ class TaskService {
                 case 'Org':
                     tableName = 'org'
                     break
-                case 'Package':
-                    tableName = 'pkg'
-                    break
                 case 'Subscription':
                     tableName = 'subscription'
                     break
                 case 'SurveyConfig':
                     tableName = 'surveyConfig'
+                    break
+                case 'Provider':
+                    tableName = 'provider'
+                    break
+                case 'Vendor':
+                    tableName = 'vendor'
                     break
             }
             String query = "select distinct(t) from Task t where ${tableName}=:obj and (responsibleUser=:user or responsibleOrg=:org) order by endDate"
@@ -266,21 +283,11 @@ class TaskService {
 
         result.validResponsibleOrgs         = contextOrg ? [contextOrg] : []
         result.validResponsibleUsers        = getUserDropdown(contextOrg)
-        result.validPackages                = _getPackagesDropdown()
         result.validOrgsDropdown            = _getOrgsDropdown(contextOrg)
         result.validSubscriptionsDropdown   = _getSubscriptionsDropdown(contextOrg, false)
         result.validLicensesDropdown        = _getLicensesDropdown(contextOrg, false)
 
         result
-    }
-
-    /**
-     * Gets a list of all packages for dropdown output
-     * @return a list of packages
-     */
-    private List<Package> _getPackagesDropdown() {
-        List<Package> validPackages        = Package.findAll("from Package p where p.name != '' and p.name != null order by lower(p.sortname) asc") // TODO
-        validPackages
     }
 
     /**

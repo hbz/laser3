@@ -1,21 +1,18 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.survey.SurveyResult" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.survey.SurveyResult" %>
 <laser:htmlStart message="surveyShow.label" serviceInjection="true"/>
+
+<ui:debugInfo>
+    <div style="padding: 1em 0;">
+        <p>surveyInfo.dateCreated: ${surveyInfo.dateCreated}</p>
+        <p>surveyInfo.lastUpdated: ${surveyInfo.lastUpdated}</p>
+    </div>
+</ui:debugInfo>
+
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
 <ui:controlButtons>
-    <ui:exportDropdown>
-        <ui:exportDropdownItem>
-            <g:link class="item" controller="survey" action="show"
-                    params="${params + [exportXLSX: true, surveyConfigID: surveyConfig.id]}">${message(code: 'survey.exportSurvey')}</g:link>
-        </ui:exportDropdownItem>
-        <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
-        <ui:exportDropdownItem>
-            <g:link class="item" controller="survey" action="show"
-                    params="${params + [exportXLSX: true, surveyCostItems: true]}">${message(code: 'survey.exportSurveyCostItems')}</g:link>
-        </ui:exportDropdownItem>
-        </g:if>
-    </ui:exportDropdown>
+    <laser:render template="exports"/>
     <laser:render template="actions"/>
 </ui:controlButtons>
 
@@ -24,7 +21,7 @@
 </ui:h1HeaderWithIcon>
 <uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="${actionName}"/>
 
-<g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_TITLE_SELECTION]}">
+<g:if test="${surveyConfig.subscription}">
 <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
@@ -122,6 +119,43 @@
 
                         </g:if>
 
+                        <g:if test="${surveyInfo.type != RDStore.SURVEY_TYPE_TITLE_SELECTION}">
+                            <dl>
+                                <dt class="control-label">${message(code: 'surveyconfig.packageSurvey.label')}</dt>
+                                <dd>
+                                    <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">
+                                        <ui:xEditableBoolean owner="${surveyConfig}" field="packageSurvey"/>
+                                    </g:if><g:else>
+                                        <ui:xEditableBoolean owner="${surveyConfig}" field="packageSurvey" overwriteEditable="false"/>
+                                    </g:else>
+
+                                    </dd>
+                            </dl>
+
+                            <dl>
+                                <dt class="control-label">${message(code: 'surveyconfig.vendorSurvey.label')}</dt>
+                                <dd>
+                                    <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">
+                                        <ui:xEditableBoolean owner="${surveyConfig}" field="vendorSurvey"/>
+                                    </g:if><g:else>
+                                        <ui:xEditableBoolean owner="${surveyConfig}" field="vendorSurvey" overwriteEditable="false"/>
+                                    </g:else>
+
+                                </dd>
+                            </dl>
+
+                            <dl>
+                                <dt class="control-label">${message(code: 'surveyconfig.invoicingInformation.label')}</dt>
+                                <dd>
+                                    <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">
+                                        <ui:xEditableBoolean owner="${surveyConfig}" field="invoicingInformation"/>
+                                    </g:if><g:else>
+                                        <ui:xEditableBoolean owner="${surveyConfig}" field="invoicingInformation" overwriteEditable="false"/>
+                                    </g:else>
+                                </dd>
+                            </dl>
+                        </g:if>
+
                         <g:if test="${surveyInfo.type == RDStore.SURVEY_TYPE_TITLE_SELECTION}">
                             <dl>
                                 <dt class="control-label">${message(code: 'surveyconfig.pickAndChoosePerpetualAccess.label')}</dt>
@@ -204,23 +238,18 @@
 
             <br />
             <g:if test="${surveyConfig}">
-                <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
+                <g:if test="${surveyConfig.subscription}">
 
-                    <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
-                                                                costItemSums: costItemSums,
-                                                                subscription: surveyConfig.subscription,
-                                                                tasks: tasks,
-                                                                visibleOrgRelations: visibleOrgRelations]"/>
+                    <laser:render template="/templates/survey/subscriptionSurveyForOwner" model="[surveyConfig: surveyConfig,
+                                                                                          subscription: surveyConfig.subscription,
+                                                                                          tasks: tasks,
+                                                                                          visibleProviders: providerRoles]"/>
+
                 </g:if>
 
 
                 <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
-
-                    <laser:render template="/templates/survey/generalSurvey" model="[surveyConfig: surveyConfig,
-                                                                    costItemSums: costItemSums,
-                                                                    subscription: surveyConfig.subscription,
-                                                                    tasks: tasks,
-                                                                    visibleOrgRelations: visibleOrgRelations]"/>
+                    <laser:render template="/templates/survey/generalSurveyForOwner"/>
                 </g:if>
 
             </g:if>
@@ -232,8 +261,8 @@
         <br />
         <br />
 
-        <g:form action="setSurveyConfigFinish" method="post" class="ui form"
-                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
+        <g:form action="setSurveyWorkFlowInfos" method="post" class="ui form"
+                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, setSurveyWorkFlowInfo: 'setSurveyConfigFinish']">
 
             <div class="ui right floated compact segment">
                 <div class="ui checkbox">
@@ -244,6 +273,8 @@
             </div>
 
         </g:form>
+
+
 
     </div><!-- .twelve -->
 

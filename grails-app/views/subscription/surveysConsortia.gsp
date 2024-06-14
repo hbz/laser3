@@ -7,7 +7,7 @@
     <laser:render template="actions"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleProviders="${providerRoles}">
     <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
 <ui:totalNumber class="la-numberHeader" total="${surveys.size()}"/>
@@ -129,7 +129,7 @@
 
 
                 <td class="center aligned">
-                    <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+                    <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
                         <g:link controller="survey" action="surveyCostItems" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]" class="ui icon">
                             <div class="ui circular ${surveyConfig.costItemsFinish ? "green" : ""} label">
@@ -168,6 +168,13 @@
                             <i aria-hidden="true" class="write icon"></i>
                         </g:link>
                     </span>
+
+
+                    <g:link controller="survey" action="copySurvey" id="${surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig.id, q: surveyConfig?.subscription?.providers ? surveyConfig.subscription.providers[0].name : '']"
+                            class="ui icon button blue la-modern-button">
+                        <i aria-hidden="true" class="copy icon"></i>
+                    </g:link>
                 </td>
             </tr>
 

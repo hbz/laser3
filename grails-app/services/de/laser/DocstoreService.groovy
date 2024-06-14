@@ -106,7 +106,7 @@ class DocstoreService {
                         break
                     case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: visible = inOwnerOrg || inTargetOrg
                         break
-                    case [ RDStore.SHARE_CONF_CONSORTIUM, RDStore.SHARE_CONF_ALL ]: visible = true //this remark still counts - definition says that everyone with "access" to target org. How are such access roles defined and where?
+                    case RDStore.SHARE_CONF_ALL: visible = true //this remark still counts - definition says that everyone with "access" to target org. How are such access roles defined and where?
                         break
                     default:
                         if(docctx.shareConf)
@@ -144,12 +144,14 @@ class DocstoreService {
             instanceClause = 'dc.license = :instance'
         else if(instance instanceof Subscription)
             instanceClause = 'dc.subscription = :instance'
-        else if(instance instanceof Package)
-            instanceClause = 'dc.pkg = :instance'
         else if(instance instanceof Links)
             instanceClause = 'dc.link = :instance'
         else if(instance instanceof Org)
             instanceClause = 'dc.org = :instance'
+        else if(instance instanceof Provider)
+            instanceClause = 'dc.provider = :instance'
+        else if(instance instanceof Vendor)
+            instanceClause = 'dc.vendor = :instance'
         else if(instance instanceof SurveyConfig)
             instanceClause = 'dc.surveyConfig = :instance'
         if(instanceClause) {
@@ -185,6 +187,12 @@ class DocstoreService {
         else if (objInstance instanceof Org) {
             query = "dc.org = :instance " + query
         }
+        else if (objInstance instanceof Provider) {
+            query = "dc.provider = :instance " + query
+        }
+        else if (objInstance instanceof Vendor) {
+            query = "dc.vendor = :instance " + query
+        }
         else if (objInstance instanceof SurveyConfig) {
             query = "dc.surveyConfig = :instance " + query
         }
@@ -196,6 +204,13 @@ class DocstoreService {
         Doc.executeQuery("select dc from DocContext dc, Doc d where " + query, queryParams)
     }
 
+    /**
+     * Counts the notes attached to the given object and owned by the given institution.
+     * Notes are technically {@link Doc}s with the type {@link Doc#CONTENT_TYPE_STRING}
+     * @param objInstance the object, one of {@link Subscription}, {@link License}, {@link Org} or {@link SurveyConfig}, to which the notes are attached
+     * @param docOwner the institution {@link Org} whose notes should be counted
+     * @return the count of matching notes
+     */
     int getNotesCount(def objInstance, Org docOwner) {
 
         Map queryParams = [instance: objInstance, del: RDStore.DOC_CTX_STATUS_DELETED, docOwner: docOwner]
@@ -211,6 +226,12 @@ class DocstoreService {
         else if (objInstance instanceof Org) {
             query = "dc.org = :instance " + query
         }
+        else if (objInstance instanceof Provider) {
+            query = "dc.provider = :instance " + query
+        }
+        else if (objInstance instanceof Vendor) {
+            query = "dc.vendor = :instance " + query
+        }
         else if (objInstance instanceof SurveyConfig) {
             query = "dc.surveyConfig = :instance " + query
         }
@@ -222,6 +243,12 @@ class DocstoreService {
         Doc.executeQuery("select count(*) from DocContext dc, Doc d where " + query, queryParams)[0]
     }
 
+    /**
+     * Counts the documents ({@link Doc}s with {@link Doc#contentType} other than note) attached to the given object and owned by the given institution
+     * @param objInstance the object, one of {@link Subscription}, {@link License}, {@link Org} or {@link SurveyConfig}, to which the documents are attached
+     * @param docOwner the institution {@link Org} whose documents should be counted
+     * @return the count of matching documents
+     */
     int getDocsCount(def objInstance, Org docOwner) {
 
         Map queryParams = [instance: objInstance, del: RDStore.DOC_CTX_STATUS_DELETED, docOwner: docOwner]
@@ -236,6 +263,12 @@ class DocstoreService {
         }
         else if (objInstance instanceof Org) {
             query = "dc.org = :instance " + query
+        }
+        else if (objInstance instanceof Provider) {
+            query = "dc.provider = :instance " + query
+        }
+        else if (objInstance instanceof Vendor) {
+            query = "dc.vendor = :instance " + query
         }
         else if (objInstance instanceof SurveyConfig) {
             query = "dc.surveyConfig = :instance " + query

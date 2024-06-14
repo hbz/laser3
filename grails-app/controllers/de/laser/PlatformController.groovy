@@ -5,6 +5,7 @@ import de.laser.auth.User
 import de.laser.ctrl.PlatformControllerService
 import de.laser.annotations.DebugInfo
 import de.laser.helper.Params
+import de.laser.properties.PropertyDefinition
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
@@ -21,6 +22,7 @@ class PlatformController  {
     ContextService contextService
     GokbService gokbService
     PlatformControllerService platformControllerService
+    PropertyService propertyService
 
     //-----
 
@@ -62,10 +64,25 @@ class PlatformController  {
                 user: contextService.getUser(),
                 editUrl: apiSource.editUrl,
                 myPlatformIds: [],
-                flagContentGokb : true // gokbService.doQuery
+                flagContentGokb : true, // gokbService.doQuery
+                propList: PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PLA_PROP], contextService.getOrg())
         ]
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-
+        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
+        if(queryCuratoryGroups.code == 404) {
+            result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String
+        }
+        else {
+            if (queryCuratoryGroups) {
+                List recordsCuratoryGroups = queryCuratoryGroups.result
+                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+            }
+        }
+        result.curatoryGroupTypes = [
+                [value: 'Provider', name: message(code: 'package.curatoryGroup.provider')],
+                [value: 'Vendor', name: message(code: 'package.curatoryGroup.vendor')],
+                [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
+        ]
         Map queryParams = [componentType: "Platform"]
 
         if(params.q) {
@@ -85,7 +102,7 @@ class PlatformController  {
         else if(!params.filterSet) {
             result.filterSet = true
             queryParams.status = "Current"
-            params.status = RDStore.PLATFORM_STATUS_CURRENT.id
+            params.platStatus = RDStore.PLATFORM_STATUS_CURRENT.id
         }
 
         if (params.ipSupport) {
@@ -100,9 +117,24 @@ class PlatformController  {
             result.filterSet = true
             queryParams.counterCertified = Params.getRefdataList(params, 'counterCertified').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
         }
+        if(params.counterSushiSupport) {
+            result.filterSet = true
+            queryParams.counterSushiSupport = params.list('counterSushiSupport') //ask David about proper convention
+        }
+        if (params.curatoryGroup) {
+            result.filterSet = true
+            queryParams.curatoryGroupExact = params.curatoryGroup
+        }
+
+        if (params.curatoryGroupType) {
+            result.filterSet = true
+            queryParams.curatoryGroupType = params.curatoryGroupType
+        }
 
         // overridden pagination - all uuids are required
-        Map wekbResultMap = gokbService.doQuery(result, [offset:0, max:1000, status: params.status], queryParams)
+        Map wekbResultMap = gokbService.doQuery(result, [offset:0, max:10000, status: params.status], queryParams)
+        if(!wekbResultMap)
+            result.error = message(code: 'wekb.error.404') as String
 
         // ? --- copied from myInstitutionController.currentPlatforms()
         String instanceFilter = ""
@@ -199,10 +231,21 @@ class PlatformController  {
             if (f1Set) { wekbResultMap.records = wekbResultMap.records.findAll { f1Result.contains(it.uuid) } }
             if (f2Set) { wekbResultMap.records = wekbResultMap.records.findAll { f2Result.contains(it.uuid) } }
         }
+
+        if (params.filterPropDef) {
+            result.filterSet = true
+            String propQuery = "select p.gokbId from Platform p where p.gokbId in (:wekbIds)"
+            Map<String, Object> propParams = [wekbIds: wekbResultMap.records.collect { Map hit -> hit.uuid }]
+            Map<String, Object> psq = propertyService.evalFilterQuery(params, propQuery, 'p', propParams)
+            propQuery = psq.query
+            propParams.putAll(psq.queryParams)
+            wekbResultMap.records = wekbResultMap.records.findAll { Platform.executeQuery(propQuery, propParams).contains(it.uuid) }
+        }
         wekbResultMap.recordsCount = wekbResultMap.records.size()
         wekbResultMap.records      = wekbResultMap.records.drop((int) result.offset).take((int) result.max) // pagination
 
         result.putAll(wekbResultMap)
+
         result
     }
 
@@ -225,7 +268,7 @@ class PlatformController  {
         result.flagContentGokb = true // gokbService.executeQuery
         result.platformInstanceRecord = [:]
         Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
-        if (queryResult.error && queryResult.error == 404) {
+        if ((queryResult.error && queryResult.error == 404) || !queryResult) {
             flash.error = message(code:'wekb.error.404') as String
         }
         else if (queryResult) {

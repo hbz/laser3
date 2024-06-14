@@ -3,7 +3,7 @@
 
 
 
-<g:if test="${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')}">
+<g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
 <ui:actionsDropdown>
         <g:if test="${actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia'}">
             <laser:render template="actionsCreate"/>
@@ -14,24 +14,24 @@
                 <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
                 <div class="divider"></div>
 
-                <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_RENEWAL.id}">
-                    <ui:actionsDropdownItem controller="survey" action="copySurvey" params="[id: params.id]"
-                                               message="copySurvey.label"/>
 
-                    <ui:actionsDropdownItem controller="survey" action="copyElementsIntoSurvey" params="[sourceObjectId: genericOIDService.getOID(surveyConfig)]"
-                                               message="survey.copyElementsIntoSurvey"/>
-                    <div class="ui divider"></div>
-                </g:if>
+            <ui:actionsDropdownItem controller="survey" action="copySurvey" params="[id: params.id]"
+                                    message="copySurvey.label"/>
+
+            <ui:actionsDropdownItem controller="survey" action="copyElementsIntoSurvey" params="[sourceObjectId: genericOIDService.getOID(surveyConfig)]"
+                                    message="survey.copyElementsIntoSurvey"/>
+            <div class="ui divider"></div>
+
 
                 <g:if test="${surveyInfo && (surveyInfo.status.id == RDStore.SURVEY_READY.id) && surveyInfo.checkOpenSurvey()}">
-                    <ui:actionsDropdownItem controller="survey" action="processBackInProcessingSurvey" params="[id: params.id]"
+                    <ui:actionsDropdownItem controller="survey" action="setStatus" params="[id: params.id, newStatus: 'processBackInProcessingSurvey']"
                                                message="backInProcessingSurvey.button"
                                                />
                     <div class="ui divider"></div>
                 </g:if>
 
                 <g:if test="${surveyInfo && (surveyInfo.status.id == RDStore.SURVEY_IN_PROCESSING.id) && surveyInfo.checkOpenSurvey()}">
-                    <ui:actionsDropdownItem controller="survey" action="processOpenSurvey" params="[id: params.id]"
+                    <ui:actionsDropdownItem controller="survey" action="setStatus" params="[id: params.id, newStatus: 'processOpenSurvey']"
                                                message="openSurvey.button"
                                                tooltip="${message(code: "openSurvey.button.info2")}"/>
                     <ui:actionsDropdownItem data-ui="modal"
@@ -41,15 +41,8 @@
                 </g:if>
 
                 <g:if test="${surveyInfo && (surveyInfo.status.id == RDStore.SURVEY_IN_PROCESSING.id) && !surveyInfo.checkOpenSurvey()}">
-                    <ui:actionsDropdownItemDisabled controller="survey" action="processOpenSurvey"
-                                                       params="[id: params.id]"
-                                                       message="openSurvey.button"
-                                                       tooltip="${message(code: "openSurvey.button.info")}"/>
-
-                    <ui:actionsDropdownItemDisabled data-ui="modal"
-                                                    href="#openSurveyNow"
-                                                       message="openSurveyNow.button"
-                                                       tooltip="${message(code: "openSurveyNow.button.info")}"/>
+                    <ui:actionsDropdownItemDisabled message="openSurvey.button" tooltip="${message(code: "openSurvey.button.info")}"/>
+                    <ui:actionsDropdownItemDisabled message="openSurveyNow.button" tooltip="${message(code: "openSurveyNow.button.info")}"/>
                     <div class="ui divider"></div>
                 </g:if>
 
@@ -84,13 +77,13 @@
                         && surveyInfo.status.id in [RDStore.SURVEY_SURVEY_COMPLETED.id, RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_COMPLETED.id]}">
 
                     <g:if test="${surveyInfo && surveyInfo.status.id == RDStore.SURVEY_SURVEY_COMPLETED.id}">
-                        <ui:actionsDropdownItem controller="survey" action="setInEvaluation" params="[id: params.id]"
+                        <ui:actionsDropdownItem controller="survey" action="setStatus" params="[id: params.id, newStatus: 'setInEvaluation']"
                                                    message="evaluateSurvey.button" tooltip=""/>
                         <div class="ui divider"></div>
                     </g:if>
 
                     <g:if test="${surveyInfo && surveyInfo.status.id == RDStore.SURVEY_IN_EVALUATION.id}">
-                        <ui:actionsDropdownItem controller="survey" action="setCompleted" params="[id: params.id]"
+                        <ui:actionsDropdownItem controller="survey" action="setStatus" params="[id: params.id, newStatus: 'setCompleted']"
                                                    message="completeSurvey.button" tooltip=""/>
                         <div class="ui divider"></div>
 
@@ -99,13 +92,13 @@
                 %{-- Only for Survey with Renewal End --}%
 
                 <g:if test="${(!surveyConfig.subSurveyUseForTransfer) && surveyInfo && surveyInfo.status.id in [RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_SURVEY_COMPLETED.id]}">
-                    <ui:actionsDropdownItem controller="survey" action="setCompleted" params="[id: params.id]"
+                    <ui:actionsDropdownItem controller="survey" action="setStatus" params="[id: params.id, newStatus: 'setCompleted']"
                                                message="completeSurvey.button" tooltip=""/>
                     <div class="ui divider"></div>
 
                 </g:if>
 
-                <g:if test="${surveyInfo.type in [RDStore.SURVEY_TYPE_SUBSCRIPTION] && surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_SURVEY_COMPLETED.id]}">
+                <g:if test="${surveyInfo.type in [RDStore.SURVEY_TYPE_SUBSCRIPTION] && surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_SURVEY_COMPLETED.id, RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_COMPLETED.id]}">
                     <ui:actionsDropdownItem controller="survey" action="copySurveyCostItemsToSub" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]"
                                                message="surveyInfo.copySurveyCostItems" tooltip=""/>
                     <div class="ui divider"></div>
@@ -156,7 +149,7 @@
     <ui:modal id="openSurveyAgain" text="${message(code:'openSurveyAgain.button')}" msgSave="${message(code:'openSurveyAgain.button')}">
 
         <g:form class="ui form"
-                url="[controller: 'survey', action: 'openSurveyAgain', params: [id: params.id, surveyConfigID: surveyConfig.id], method: 'post']">
+                url="[controller: 'survey', action: 'setStatus', params: [id: params.id, surveyConfigID: surveyConfig.id, newStatus: 'openSurveyAgain'], method: 'post']">
             <div class="field">
                 <ui:datepicker label="surveyInfo.endDate.new" id="newEndDate" name="newEndDate" placeholder="surveyInfo.endDate.new" />
             </div>
@@ -170,7 +163,7 @@
 <ui:modal id="openSurveyNow" text="${message(code:'openSurveyNow.button')}" msgSave="${message(code:'openSurveyNow.button')}">
 
     <g:form class="ui form"
-            url="[controller:'survey', action:'processOpenSurvey', params:[id: params.id, startNow: true], method: 'post']">
+            url="[controller:'survey', action:'setStatus', params:[id: params.id, startNow: true, newStatus: 'processOpenSurvey'], method: 'post']">
         <div class="field">
             <p>${message(code: "openSurveyNow.button.info2")}</p>
         </div>
@@ -184,7 +177,7 @@
               msgSave="${message(code: 'endSurvey.button')}">
 
         <g:form class="ui form"
-                url="[controller: 'survey', action: 'processEndSurvey', params: [id: params.id], method: 'post']">
+                url="[controller: 'survey', action: 'setStatus', params: [id: params.id, newStatus: 'processEndSurvey'], method: 'post']">
             <div class="field">
                 <p><strong>${message(code: "endSurvey.button.info")}</strong></p>
             </div>

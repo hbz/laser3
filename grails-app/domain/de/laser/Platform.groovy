@@ -44,7 +44,9 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
   Date counter4LastRun
   Date counter5LastRun
 
+  @Deprecated
   Org org
+  Provider provider
 
   SortedSet altnames
 
@@ -74,7 +76,8 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
             status column:'plat_status_rv_fk'
    serviceProvider column:'plat_servprov_rv_fk'
   softwareProvider column:'plat_softprov_rv_fk'
-              org  column: 'plat_org_fk', index: 'plat_org_idx'
+               org column:'plat_org_fk', index: 'plat_org_idx'
+          provider column:'plat_provider_fk', index: 'plat_provider_idx'
              dateCreated column: 'plat_date_created'
              lastUpdated column: 'plat_last_updated'
     lastUpdatedCascading column: 'plat_last_updated_cascading'
@@ -96,18 +99,22 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
     softwareProvider(nullable:true)
     gokbId (blank:false, unique: true, maxSize:511)
     org             (nullable:true)
+    provider        (nullable:true)
     lastUpdatedCascading (nullable: true)
     counter4LastRun (nullable: true)
     counter5LastRun (nullable: true)
   }
 
+    /**
+     * Compares the current platform to the given one, based on the sortname of the provider (if exists), if not or equal, then by the name of the platform
+     * @param that the object to be compared
+     * @return the comparison result (-1, 0 or 1)
+     */
   @Override
   int compareTo(Platform that) {
     int result = 0
-    if(this.org && that.org) {
-      if(this.org.sortname && that.org.sortname)
-        result = this.org.sortname <=> that.org.sortname
-      else result = this.org.name <=> that.org.name
+    if(this.provider && that.provider) {
+      result = this.provider <=> that.provider
     }
     if(result == 0)
         result = this.name <=> that.name
@@ -155,6 +162,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
    * @param subscriptionPackage the subscription (represented by the {@link SubscriptionPackage} link) whose configurations should be verified
    * @return true if there are access point configurations linked to this platform and the given subscription package, false otherwise
    */
+    @Deprecated
   boolean usesPlatformAccessPoints(SubscriptionPackage subscriptionPackage){
     // look for OrgAccessPointLinks for this platform and a given subscriptionPackage, if we can find that "marker",
     // we know the AccessPoints are not derived from the AccessPoints configured for the platform
@@ -180,6 +188,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
    * @param params the parameter map which contains the filter parameters
    * @return a {@link List} of {@link Map}s in the format [id: id, text: text], containing the selectable records
    */
+    @Deprecated
   static def refdataFind(GrailsParameterMap params) {
     GenericOIDService genericOIDService = BeanStore.getGenericOIDService()
 

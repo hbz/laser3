@@ -61,6 +61,70 @@
             </thead>
             <tbody>
 
+            <g:if test="${sourceObject.hasProperty("altnames")}">
+                <tr data-type="altnames" data-element="copyObject.takeAltname">
+                    <td data-element="source">
+                        <div>
+                            <strong><i class="tag icon"></i>&nbsp;${message(code: 'org.altname.label')}:</strong><br />
+                            <g:each in="${sourceAltnames}" var="altname">
+                                <div data-oid="${genericOIDService.getOID(altname)}">
+                                    ${altname.name}<br />
+                                </div>
+                            </g:each>
+                        </div>
+                    </td>
+                    <g:if test="${isConsortialObjects}">
+                        <td class="center aligned">
+                            <div class="ui checkbox la-toggle-radio la-inherit">
+                                <g:each in="${sourceAltnames}" var="altname">
+                                    <g:checkBox name="copyObject.toggleAudit" value="${genericOIDService.getOID(altname)}"
+                                                checked="${AuditConfig.getConfig(altname) ? 'true' : 'false'}"/>
+                                </g:each>
+                            </div>
+                        </td>
+                    </g:if>
+
+                %{--COPY:--}%
+                    <td class="center aligned">
+                        <g:each in="${sourceAltnames}" var="altname">
+                            <div class="la-element">
+                                <div class="ui checkbox la-toggle-radio la-replace">
+                                    <g:checkBox name="copyObject.takeAltnames" value="${genericOIDService.getOID(altname)}" data-action="copy"/>
+                                </div>
+                            </div>
+                            <br />
+                        </g:each>
+                    </td>
+                    <g:if test="${!copyObject}">
+                        <td data-element="target">
+                            <div>
+                                <strong><i class="tag icon"></i>&nbsp;${message(code: 'org.altname.label')}:</strong><br />
+                                <g:each in="${targetAltnames}" var="altname">
+                                    <div data-oid="${genericOIDService.getOID(altname)}">
+                                        ${altname.name}<br />
+                                    </div>
+                                    <%
+                                        if (AuditConfig.getConfig(altname)) {
+                                            println '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                        }
+                                    %>
+                                </g:each>
+                            </div>
+                        </td>
+                    %{--DELETE:--}%
+                        <td>
+                            <g:each in="${targetAltnames}" var="altname">
+                                <div class="la-element">
+                                    <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
+                                        <g:checkBox name="copyObject.deleteAltnames" value="${genericOIDService.getOID(altname)}" data-action="delete" checked="${false}"/>
+                                    </div>
+                                </div>
+                                <br />
+                            </g:each>
+                        </td>
+                    </g:if>
+                </tr>
+            </g:if>
             <g:each in="${copyElementsService.allowedProperties(sourceObject)}" var="objProperty">
                 <tr data-type="property" data-element="copyObject.take${objProperty}">
                     <td data-element="source">
@@ -230,20 +294,20 @@
                     </g:if>
                 </tr>
             </g:if>
-            <g:if test="${sourceObject.hasProperty("orgRelations") && !contextService.getOrg().isCustomerType_Support()}">
-                <tr data-type="takeOrgRelations" data-element="copyObject.takeOrgRelations">
+            <g:if test="${!contextService.getOrg().isCustomerType_Support()}">
+                <tr data-type="takeProviders" data-element="copyObject.takeProviders">
                     <td data-element="source">
                         <div>
-                <g:if test="${!source_visibleOrgRelations}">
-                    <strong><i class="university icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
+                <g:if test="${!source_visibleProviders}">
+                    <strong><i class="handshake icon"></i>&nbsp;${message(code: "provider.label")}:
                     </strong>
                 </g:if>
-                <g:each in="${source_visibleOrgRelations}" var="source_role">
-                    <g:if test="${source_role.org}">
+                <g:each in="${source_visibleProviders}" var="source_role">
+                    <g:if test="${source_role.provider}">
                         <div data-oid="${genericOIDService.getOID(source_role)}" class="la-multi-sources">
-                            <strong><i class="university icon"></i>&nbsp;${source_role.roleType.getI10n("value")}:</strong>
-                            <g:link controller="organisation" action="show" target="_blank" id="${source_role.org.id}">
-                                ${source_role.org.name}
+                            <strong><i class="handshake icon"></i>&nbsp:</strong>
+                            <g:link controller="provider" action="show" target="_blank" id="${source_role.provider.id}">
+                                ${source_role.provider.name}
                             </g:link>
                             <br />
                         </div>
@@ -253,10 +317,10 @@
             </td>
                 <g:if test="${isConsortialObjects}">
                     <td class="center aligned">
-                        <g:each in="${source_visibleOrgRelations}" var="source_role">
-                            <g:if test="${source_role.org}">
+                        <g:each in="${source_visibleProviders}" var="source_role">
+                            <g:if test="${source_role.provider}">
                                 <div class="ui checkbox la-toggle-radio la-share">
-                                    <input class="ui checkbox" type="checkbox" name="toggleShareOrgRoles"
+                                    <input class="ui checkbox" type="checkbox" name="toggleShareProviderRoles"
                                            value="${source_role.class.name}:${source_role.id}" ${source_role.isShared ? 'checked' : ''}/>
                                 </div>
                                 <br />
@@ -268,10 +332,10 @@
 %{--    TODO : markup fail            </td>--}%
             %{--AKTIONEN:--}%
                 <td class="center aligned">
-                    <g:each in="${source_visibleOrgRelations}" var="source_role">
-                        <g:if test="${source_role.org}">
+                    <g:each in="${source_visibleProviders}" var="source_role">
+                        <g:if test="${source_role.provider}">
                             <div class="ui checkbox la-toggle-radio la-replace">
-                                <g:checkBox name="copyObject.takeOrgRelations" data-action="copy" value="${genericOIDService.getOID(source_role)}" checked="${true}"/>
+                                <g:checkBox name="copyObject.takeProviders" data-action="copy" value="${genericOIDService.getOID(source_role)}" checked="${true}"/>
                             </div>
                             <br />
                         </g:if>
@@ -280,18 +344,109 @@
                 <g:if test="${!copyObject}">
                     <td data-element="target">
                         <div>
-                            <g:if test="${!target_visibleOrgRelations}">
-                                <strong><i class="university icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
+                            <g:if test="${!target_visibleProviders}">
+                                <strong><i class="handshake icon"></i>&nbsp;${message(code: "provider.label")}:
                                 </strong>
                             </g:if>
-                            <g:each in="${target_visibleOrgRelations}" var="target_role">
-                                <g:if test="${target_role.org}">
+                            <g:each in="${target_visibleProviders}" var="target_role">
+                                <g:if test="${target_role.provider}">
                                     <div data-oid="${genericOIDService.getOID(target_role)}">
-                                        <strong><i class="university icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
-                                        </strong>
-                                        <g:link controller="organisation" action="show" target="_blank"
-                                                id="${target_role.org.id}">
-                                            ${target_role.org.name}
+                                        <strong><i class="handshake icon"></i></strong>
+                                        <g:link controller="provider" action="show" target="_blank"
+                                                id="${target_role.provider.id}">
+                                            ${target_role.provider.name}
+                                        </g:link>
+                                        <g:if test="${isConsortialObjects}">
+                                            <div class="right aligned wide column">
+                                                <g:if test="${target_role.isShared}">
+                                                    <span data-position="top left" class="la-popup-tooltip la-delay"
+                                                          data-content="${message(code: 'property.share.tooltip.on')}">
+                                                        <i class="la-share icon"></i>
+                                                    </span>
+
+                                                </g:if>
+                                                <g:else>
+                                                    <span data-position="top left" class="la-popup-tooltip la-delay"
+                                                          data-content="${message(code: 'property.share.tooltip.off')}">
+                                                        <i class="la-share slash icon"></i>
+                                                    </span>
+                                                </g:else>
+                                            </div>
+                                        </g:if>
+                                    </div>
+                                    <br />
+                                </g:if>
+                            </g:each>
+                        </div>
+                    </td>
+                    <td>
+                        <g:each in="${target_visibleProviders}" var="target_role">
+                            <g:if test="${target_role.provider}">
+                                <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
+                                    <g:checkBox name="copyObject.deleteProviders" data-action="delete" value="${genericOIDService.getOID(target_role)}" checked="${false}"/>
+                                </div>
+                                <br />
+                            </g:if>
+                        </g:each>
+                    </td>
+                </g:if>
+                </tr>
+            </g:if>
+
+            <g:if test="${!contextService.getOrg().isCustomerType_Support()}">
+                <tr data-type="takeVendors" data-element="copyObject.takeVendors">
+                    <td data-element="source">
+                        <div>
+                <g:if test="${!source_visibleVendors}">
+                    <strong><i class="shipping fast icon"></i>&nbsp;${message(code: "vendor.plural")}:
+                    </strong>
+                </g:if>
+                <g:each in="${source_visibleVendors}" var="source_role">
+                        <div data-oid="${genericOIDService.getOID(source_role)}" class="la-multi-sources">
+                            <strong><i class="shipping fast icon"></i>&nbsp;</strong>
+                            <g:link controller="vendor" action="show" target="_blank" id="${source_role.vendor.id}">
+                                ${source_role.vendor.name}
+                            </g:link>
+                            <br />
+                        </div>
+                </g:each>
+                </div>
+            </td>
+                <g:if test="${isConsortialObjects}">
+                    <td class="center aligned">
+                        <g:each in="${source_visibleVendors}" var="source_role">
+                                <div class="ui checkbox la-toggle-radio la-share">
+                                    <input class="ui checkbox" type="checkbox" name="toggleShareVendorRoles"
+                                           value="${source_role.class.name}:${source_role.id}" ${source_role.isShared ? 'checked' : ''}/>
+                                </div>
+                                <br />
+                        </g:each>
+                    </td>
+                </g:if>
+
+%{--    TODO : markup fail            </td>--}%
+            %{--AKTIONEN:--}%
+                <td class="center aligned">
+                    <g:each in="${source_visibleVendors}" var="source_role">
+                            <div class="ui checkbox la-toggle-radio la-replace">
+                                <g:checkBox name="copyObject.takeVendors" data-action="copy" value="${genericOIDService.getOID(source_role)}" checked="${true}"/>
+                            </div>
+                            <br />
+                    </g:each>
+                </td>
+                <g:if test="${!copyObject}">
+                    <td data-element="target">
+                        <div>
+                            <g:if test="${!target_visibleVendors}">
+                                <strong><i class="shipping fast icon"></i>&nbsp;${message(code: "vendor.plural")}:
+                                </strong>
+                            </g:if>
+                            <g:each in="${target_visibleVendors}" var="target_role">
+                                    <div data-oid="${genericOIDService.getOID(target_role)}">
+                                        <strong><i class="shipping fast icon"></i></strong>
+                                        <g:link controller="vendor" action="show" target="_blank"
+                                                id="${target_role.vendor.id}">
+                                            ${target_role.vendor.name}
                                         </g:link>
                                         <g:if test="${isConsortialObjects}">
                                             <div class="right aligned wide column">
@@ -312,18 +467,15 @@
                                         </g:if>
                                     </div>
                                     <br />
-                                </g:if>
                             </g:each>
                         </div>
                     </td>
                     <td>
-                        <g:each in="${target_visibleOrgRelations}" var="target_role">
-                            <g:if test="${target_role.org}">
+                        <g:each in="${target_visibleVendors}" var="target_role">
                                 <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
-                                    <g:checkBox name="copyObject.deleteOrgRelations" data-action="delete" value="${genericOIDService.getOID(target_role)}" checked="${false}"/>
+                                    <g:checkBox name="copyObject.deleteVendors" data-action="delete" value="${genericOIDService.getOID(target_role)}" checked="${false}"/>
                                 </div>
                                 <br />
-                            </g:if>
                         </g:each>
                     </td>
                 </g:if>
@@ -337,16 +489,16 @@
                             <strong>
                                 <i class="address card icon"></i> ${message(code: 'subscription.specificSubscriptionEditors')}:
                             </strong>
-                            <g:each in="${source_visibleOrgRelations}" var="source_role">
-                                <g:if test="${source_role.org}">
-                                    <g:if test="${Person.getPublicByOrgAndObjectResp(source_role.org, sourceObject, 'Specific subscription editor') ||
-                                            Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.org, sourceObject, 'Specific subscription editor', contextService.getOrg())}">
+                            <g:each in="${source_visibleProviders}" var="source_role">
+                                <g:if test="${source_role.provider}">
+                                    <g:if test="${Person.getPublicByOrgAndObjectResp(source_role.provider, sourceObject, 'Specific subscription editor') ||
+                                            Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.provider, sourceObject, 'Specific subscription editor', contextService.getOrg())}">
 
                                     <%-- public --%>
-                                        <g:each in="${Person.getPublicByOrgAndObjectResp(source_role.org, sourceObject, 'Specific subscription editor')}"
+                                        <g:each in="${Person.getPublicByOrgAndObjectResp(source_role.provider, sourceObject, 'Specific subscription editor')}"
                                                 var="resp">
 
-                                            <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
+                                            <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.provider, 'Specific subscription editor'))}"
                                                  class="la-multi-sources">
                                                 <span class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'address.public')}"
@@ -355,18 +507,18 @@
                                                 </span>
                                                 ${resp}
                                                 (<strong><i
-                                                    class="university icon"></i>&nbsp;${source_role.roleType.getI10n("value")}:
+                                                    class="handshake icon"></i>&nbsp;${source_role.roleType.getI10n("value")}:
                                             </strong>
-                                                <g:link controller="organisation" action="show" target="_blank"
-                                                        id="${source_role.org.id}">${source_role.org.name}</g:link>)
+                                                <g:link controller="provider" action="show" target="_blank"
+                                                        id="${source_role.provider.id}">${source_role.provider.name}</g:link>)
                                             </div>
                                             <br />
                                         </g:each>
                                     <%-- public --%>
                                     <%-- private --%>
-                                        <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.org, sourceObject, 'Specific subscription editor', contextService.getOrg())}"
+                                        <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.provider, sourceObject, 'Specific subscription editor', contextService.getOrg())}"
                                                 var="resp">
-                                            <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
+                                            <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.provider, 'Specific subscription editor'))}"
                                                  class="la-multi-sources">
                                                 <span class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'address.private')}"
@@ -377,8 +529,8 @@
                                                 (<strong><i
                                                     class="university icon"></i>&nbsp;${source_role.roleType.getI10n("value")}:
                                             </strong>
-                                                <g:link controller="organisation" action="show" target="_blank"
-                                                        id="${source_role.org.id}">${source_role.org.name}</g:link>)
+                                                <g:link controller="provider" action="show" target="_blank"
+                                                        id="${source_role.provider.id}">${source_role.provider.name}</g:link>)
                                             </div>
                                             <br />
                                         </g:each><%-- private --%>
@@ -394,29 +546,29 @@
 
                 %{--AKTIONEN:--}%
                     <td class="center aligned">
-                        <g:each in="${source_visibleOrgRelations}" var="source_role">
-                            <g:if test="${source_role.org}">
+                        <g:each in="${source_visibleProviders}" var="source_role">
+                            <g:if test="${source_role.provider}">
                             <%-- public --%>
-                                <g:if test="${Person.getPublicByOrgAndObjectResp(source_role.org, sourceObject, 'Specific subscription editor')}">
-                                    <g:each in="${Person.getPublicByOrgAndObjectResp(source_role.org, sourceObject, 'Specific subscription editor')}"
+                                <g:if test="${Person.getPublicByOrgAndObjectResp(source_role.provider, sourceObject, 'Specific subscription editor')}">
+                                    <g:each in="${Person.getPublicByOrgAndObjectResp(source_role.provider, sourceObject, 'Specific subscription editor')}"
                                             var="resp">
                                         <div class="ui checkbox la-toggle-radio la-replace">
                                             <g:checkBox name="subscription.takeSpecificSubscriptionEditors"
                                                         data-action="copy"
-                                                        value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
+                                                        value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.provider, 'Specific subscription editor'))}"
                                                         checked="${true}"/>
                                         </div>
                                         <br />
                                     </g:each>
                                 </g:if><%-- public --%>
                             <%-- private --%>
-                                <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.org, sourceObject, 'Specific subscription editor', contextService.getOrg())}">
-                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.org, sourceObject, 'Specific subscription editor', contextService.getOrg())}"
+                                <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.provider, sourceObject, 'Specific subscription editor', contextService.getOrg())}">
+                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.provider, sourceObject, 'Specific subscription editor', contextService.getOrg())}"
                                             var="resp">
                                         <div class="ui checkbox la-toggle-radio la-replace">
                                             <g:checkBox name="subscription.takeSpecificSubscriptionEditors"
                                                         data-action="copy"
-                                                        value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.org, 'Specific subscription editor'))}"
+                                                        value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.provider, 'Specific subscription editor'))}"
                                                         checked="${true}"/>
                                         </div>
                                         <br />
@@ -431,15 +583,15 @@
                                 <strong>
                                     <i class="address card icon"></i> ${message(code: 'subscription.specificSubscriptionEditors')}:
                                 </strong>
-                                <g:each in="${target_visibleOrgRelations}" var="target_role">
-                                    <g:if test="${target_role.org}">
-                                        <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.org, targetObject, 'Specific subscription editor', contextService.getOrg()) ||
-                                                Person.getPublicByOrgAndObjectResp(target_role.org, targetObject, 'Specific subscription editor')}">
+                                <g:each in="${target_visibleProviders}" var="target_role">
+                                    <g:if test="${target_role.provider}">
+                                        <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.provider, targetObject, 'Specific subscription editor', contextService.getOrg()) ||
+                                                Person.getPublicByOrgAndObjectResp(target_role.provider, targetObject, 'Specific subscription editor')}">
                                         <%-- public --%>
-                                            <g:each in="${Person.getPublicByOrgAndObjectResp(target_role.org, targetObject, 'Specific subscription editor')}"
+                                            <g:each in="${Person.getPublicByOrgAndObjectResp(target_role.provider, targetObject, 'Specific subscription editor')}"
                                                     var="resp">
 
-                                                <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
+                                                <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.provider, 'Specific subscription editor'))}"
                                                      class="la-multi-sources">
                                                     <span class="la-popup-tooltip la-delay"
                                                           data-content="${message(code: 'address.public')}"
@@ -448,19 +600,19 @@
                                                     </span>
                                                     ${resp}
                                                     (<strong><i
-                                                        class="university icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
+                                                        class="handshake icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
                                                 </strong>
-                                                    <g:link controller="organisation" action="show" target="_blank"
-                                                            id="${target_role.org.id}">${target_role.org.name}</g:link>)
+                                                    <g:link controller="provider" action="show" target="_blank"
+                                                            id="${target_role.provider.id}">${target_role.provider.name}</g:link>)
                                                 </div>
                                                 <br />
                                             </g:each>
                                         <%-- public --%>
                                         <%-- private --%>
 
-                                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.org, targetObject, 'Specific subscription editor', contextService.getOrg())}"
+                                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.provider, targetObject, 'Specific subscription editor', contextService.getOrg())}"
                                                     var="resp">
-                                                <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
+                                                <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.provider, 'Specific subscription editor'))}"
                                                      class="la-multi-sources">
                                                     <span class="la-popup-tooltip la-delay"
                                                           data-content="${message(code: 'address.private')}"
@@ -471,8 +623,8 @@
                                                     (<strong><i
                                                         class="university icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
                                                 </strong>
-                                                    <g:link controller="organisation" action="show" target="_blank"
-                                                            id="${target_role.org.id}">${target_role.org.name}</g:link>)
+                                                    <g:link controller="provider" action="show" target="_blank"
+                                                            id="${target_role.provider.id}">${target_role.provider.name}</g:link>)
                                                 </div>
                                                 <br />
                                             </g:each>
@@ -483,30 +635,30 @@
                             </div>
                         </td>
                         <td>
-                            <g:each in="${target_visibleOrgRelations}" var="target_role">
-                                <g:if test="${target_role.org}">
+                            <g:each in="${target_visibleProviders}" var="target_role">
+                                <g:if test="${target_role.provider}">
 
                                 <%-- public --%>
-                                    <g:if test="${Person.getPublicByOrgAndObjectResp(target_role.org, sourceObject, 'Specific subscription editor')}">
-                                        <g:each in="${Person.getPublicByOrgAndObjectResp(target_role.org, sourceObject, 'Specific subscription editor')}"
+                                    <g:if test="${Person.getPublicByOrgAndObjectResp(target_role.provider, sourceObject, 'Specific subscription editor')}">
+                                        <g:each in="${Person.getPublicByOrgAndObjectResp(target_role.provider, sourceObject, 'Specific subscription editor')}"
                                                 var="resp">
                                             <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                                 <g:checkBox name="subscription.deleteSpecificSubscriptionEditors"
                                                             data-action="delete"
-                                                            value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
+                                                            value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.provider, 'Specific subscription editor'))}"
                                                             checked="${false}"/>
                                             </div>
                                             <br />
                                         </g:each>
                                     </g:if><%-- public --%>
                                 <%-- private --%>
-                                    <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.org, sourceObject, 'Specific subscription editor', contextService.getOrg())}">
-                                        <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.org, sourceObject, 'Specific subscription editor', contextService.getOrg())}"
+                                    <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.provider, sourceObject, 'Specific subscription editor', contextService.getOrg())}">
+                                        <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.provider, sourceObject, 'Specific subscription editor', contextService.getOrg())}"
                                                 var="resp">
                                             <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                                 <g:checkBox name="subscription.deleteSpecificSubscriptionEditors"
                                                             data-action="delete"
-                                                            value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.org, 'Specific subscription editor'))}"
+                                                            value="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.provider, 'Specific subscription editor'))}"
                                                             checked="${false}"/>
                                             </div>
                                             <br />
@@ -705,10 +857,14 @@
             checkboxes: {
                 $takeLicenses:                      $('input:checkbox[name="copyObject.takeLicenses"]'),
                 $deleteLicenses:                    $('input:checkbox[name="copyObject.deleteLicenses"]'),
-                $takeOrgRelations:                  $('input:checkbox[name="copyObject.takeOrgRelations"]'),
-                $deleteOrgRelations:                $('input:checkbox[name="copyObject.deleteOrgRelations"]'),
+                $takeProviders:                     $('input:checkbox[name="copyObject.takeProviders"]'),
+                $deleteProviders:                   $('input:checkbox[name="copyObject.deleteProviders"]'),
+                $takeVendors:                       $('input:checkbox[name="copyObject.takeVendors"]'),
+                $deleteVendors:                     $('input:checkbox[name="copyObject.deleteVendors"]'),
                 $takeSpecificSubscriptionEditors:   $('input:checkbox[name="subscription.takeSpecificSubscriptionEditors"]'),
                 $deleteSpecificSubscriptionEditors: $('input:checkbox[name="subscription.deleteSpecificSubscriptionEditors"]'),
+                $takeAltname:                       $('input:checkbox[name="copyObject.takeAltnames"]'),
+                $deleteAltname:                     $('input:checkbox[name="copyObject.deleteAltnames"]'),
                 $takeIdentifier:                    $('input:checkbox[name="copyObject.takeIdentifierIds"]'),
                 $deleteIdentifier:                  $('input:checkbox[name="copyObject.deleteIdentifierIds"]'),
                 $takeLinks:                         $('input:checkbox[name="copyObject.takeLinks"]'),
@@ -720,12 +876,16 @@
 
                 scc.checkboxes.$takeLicenses.change(function (event) { scc.takeLicenses(this); } ).trigger('change');
                 scc.checkboxes.$deleteLicenses.change(function (event) { scc.deleteLicenses(this); } ).trigger('change');
-                scc.checkboxes.$takeOrgRelations.change(function (event) { scc.takeOrgRelations(this); } ).trigger('change');
-                scc.checkboxes.$deleteOrgRelations.change(function (event) { scc.deleteOrgRelations(this); } ).trigger('change');
+                scc.checkboxes.$takeProviders.change(function (event) { scc.takeProviders(this); } ).trigger('change');
+                scc.checkboxes.$deleteProviders.change(function (event) { scc.deleteProviders(this); } ).trigger('change');
+                scc.checkboxes.$takeVendors.change(function (event) { scc.takeVendors(this); } ).trigger('change');
+                scc.checkboxes.$deleteVendors.change(function (event) { scc.deleteVendors(this); } ).trigger('change');
                 scc.checkboxes.$takeSpecificSubscriptionEditors.change(function (event) { scc.takeSpecificSubscriptionEditors(this); } ).trigger('change');
                 scc.checkboxes.$deleteSpecificSubscriptionEditors.change(function (event) { scc.deleteSpecificSubscriptionEditors(this); } ).trigger('change');
                 scc.checkboxes.$takeSpecificSubscriptionEditors.change(function (event) { scc.takeSpecificSubscriptionEditors(this); } ).trigger('change');
                 scc.checkboxes.$deleteSpecificSubscriptionEditors.change(function (event) { scc.deleteSpecificSubscriptionEditors(this); } ).trigger('change');
+                scc.checkboxes.$takeAltname.change(function (event) { scc.takeAltname(this); } ).trigger('change');
+                scc.checkboxes.$deleteAltname.change(function (event) { scc.deleteAltname(this); } ).trigger('change');
                 scc.checkboxes.$takeIdentifier.change(function (event) { scc.takeIdentifier(this); } ).trigger('change');
                 scc.checkboxes.$deleteIdentifier.change(function (event) { scc.deleteIdentifier(this); } ).trigger('change');
                 scc.checkboxes.$takeLinks.change(function (event) { scc.takeLinks(this); } ).trigger('change');
@@ -746,11 +906,18 @@
                 JSPC.app.subCopyController._handleDeleted(elem, 'takeLicenses')
             },
 
-            takeOrgRelations: function (elem) {
-                JSPC.app.subCopyController._handleTake(elem, 'takeOrgRelations', 'takeOrgRelations')
+            takeProviders: function (elem) {
+                JSPC.app.subCopyController._handleTake(elem, 'takeProviders', 'takeProviders')
             },
-            deleteOrgRelations: function (elem) {
-                JSPC.app.subCopyController._handleDeleted(elem, 'takeOrgRelations')
+            deleteProviders: function (elem) {
+                JSPC.app.subCopyController._handleDeleted(elem, 'takeProviders')
+            },
+
+            takeVendors: function (elem) {
+                JSPC.app.subCopyController._handleTake(elem, 'takeVendors', 'takeVendors')
+            },
+            deleteVendors: function (elem) {
+                JSPC.app.subCopyController._handleDeleted(elem, 'takeVendors')
             },
 
             takeSpecificSubscriptionEditors: function (elem) {
@@ -770,6 +937,13 @@
                 } else {
                     $('.table tr td[data-element="subscription.takeSpecificSubscriptionEditors.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
                 }
+            },
+
+            takeAltname: function (elem) {
+                JSPC.app.subCopyController._handleTake(elem, 'takeAltname', 'takeAltnames')
+            },
+            deleteAltname: function (elem) {
+                JSPC.app.subCopyController._handleDeleted(elem, 'takeAltname')
             },
 
             takeIdentifier: function (elem) {

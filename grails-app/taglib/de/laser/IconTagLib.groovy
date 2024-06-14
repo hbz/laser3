@@ -38,6 +38,7 @@ class IconTagLib {
                 icon = 'bordered la-object-database'
                 break
             case 'ebook':
+            case 'monograph':
                 icon = 'bordered la-object-ebook'
                 break
             case 'file':
@@ -50,6 +51,7 @@ class IconTagLib {
                 icon = 'question circle bordered inverted grey la-object-extended'
                 break
             case 'journal':
+            case 'serial':
                 icon = 'bordered la-object-journal'
                 break
             case 'gasco':
@@ -57,6 +59,9 @@ class IconTagLib {
                 break
             case 'marker':
                 icon = 'bordered inverted purple bookmark la-object-extended'
+                break
+            case 'package':
+                icon = 'bordered la-package la-object-extended'
                 break
             case 'search':
                 icon = 'search'
@@ -167,23 +172,26 @@ class IconTagLib {
         String dc = message(code: 'default.title.label')
         String icon = 'question'
 
-        switch (attrs.type) {
-            case [ 'Journal' ]:
-                dc = message(code: 'spotlight.journaltitle')
-                icon = 'newspaper outline'
-                break
-            case [ 'Database' ]:
-                dc = message(code: 'spotlight.databasetitle')
-                icon = 'database'
-                break
-            case [ 'Book', 'EBook' ]:
-                dc = message(code: 'spotlight.ebooktitle')
-                icon = 'tablet alternate'
-                break
-            case 'Other':
-                dc = message(code: 'spotlight.othertitle')
-                icon = 'film'
-                break
+        if (attrs.type) {
+
+            switch (attrs.type.toLowerCase()) {
+                case ['journal', 'serial']:
+                    dc = attrs.type
+                    icon = 'newspaper outline'
+                    break
+                case ['database']:
+                    dc = attrs.type
+                    icon = 'database'
+                    break
+                case ['book', 'ebook', 'monograph']:
+                    dc = attrs.type
+                    icon = 'tablet alternate'
+                    break
+                case 'other':
+                    dc = attrs.type
+                    icon = 'film'
+                    break
+            }
         }
         if (hideSurroundingMarkup) {
             out << '<div class="la-inline-flexbox la-popup-tooltip la-delay"'
@@ -291,11 +299,8 @@ class IconTagLib {
         out << '<span class="la-long-tooltip la-popup-tooltip la-delay"'
         out << ' data-position="bottom center" data-content="' + tt +'">'
         out << '<i class="forward icon' + color + '"></i>'
-//        out << '<i class="double angle right icon' + color + '"></i>'
         out << '</span>'
     }
-
-    // <ui:myIcon type="wekbchanges" color="optional" />
 
     def markerIcon = { attrs, body ->
         String tooltip = attrs.type ? message(code: 'marker.' + attrs.type ) : message(code: 'marker.label')
@@ -316,5 +321,30 @@ class IconTagLib {
         }
         out << '<i class="icon ' + (attrs.color ? attrs.color + ' ' : '') + 'star"></i>'
         out << '</span>'
+    }
+
+    def usageIcon = { attrs, body ->
+        String tt = message(code: 'default.usage.label')
+        String color = attrs.color ? ' grey' : '' // tmp override
+
+        out << '<span class="la-long-tooltip la-popup-tooltip la-delay"'
+        out << ' data-position="bottom center" data-content="' + tt +'">'
+        out << '<i class="chart bar icon' + color + '"></i>'
+        out << '</span>'
+    }
+
+    def booleanIcon = { attrs, body ->
+        String icon = 'question circle yellow'
+
+        if (attrs.value === true) {
+            icon = 'check circle green'
+        }
+        else if(attrs.value === false) {
+            icon = 'minus circle red'
+        }
+        else if (attrs.value === null) {
+            'minus circle orange'
+        }
+        out << '<i class="icon ' + icon + '"></i>'
     }
 }

@@ -1,17 +1,25 @@
+<%@ page import="de.laser.survey.SurveyOrg;" %>
 <laser:serviceInjection/>
 <table class="ui table la-js-responsive-table la-table">
     <colgroup>
         <col style="width:  15px;">
-        <col style="width: 236px;">
+        <g:if test="${tmplShowOrgName}">
+                <col style="width: 236px;">
+        </g:if>
         <col style="width: 118px;">
         <col style="width:  82px;">
-        <col style="width:  82px;">
+        <g:if test="${showSurveyInvoicingInformation}">
+                <col style="width:  82px;">
+        </g:if>
+        <g:if test="${showOptions}">
+            <col style="width:  82px;">
+        </g:if>
     </colgroup>
     <thead>
     <tr>
         <th>${message(code: 'sidewide.number')}</th>
         <g:if test="${tmplShowOrgName}">
-            <g:sortableColumn params="${params}" property="pr.org.sortname" title="${message(code: 'person.organisation.label')}"/>
+            <g:sortableColumn params="${params}" property="sortname" title="${message(code: 'person.organisation.label')}"/>
         </g:if>
         <th>
             ${message(code: 'default.type.label')}
@@ -19,7 +27,12 @@
         <th>
             ${message(code: 'address.label')}
         </th>
-        <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+        <g:if test="${showSurveyInvoicingInformation}">
+            <th>${message(code: 'surveyOrg.address.selected')}</th>
+        </g:if>
+        <g:if test="${showOptions}">
+            <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+        </g:if>
     </tr>
     </thead>
     <tbody>
@@ -30,9 +43,21 @@
             </td>
             <g:if test="${tmplShowOrgName}">
                 <td>
-                    <i class="icon university la-list-icon"></i>
-                    <g:link controller="organisation" action="addressbook"
-                            id="${address.org.id}">${address.org.name} (${address.org.sortname})</g:link>
+                    <g:if test="${address.org}">
+                        <i class="icon university la-list-icon"></i>
+                        <g:link controller="organisation" action="addressbook"
+                                id="${address.org.id}">${address.org.name} (${address.org.sortname})</g:link>
+                    </g:if>
+                    <g:if test="${address.provider}">
+                        <i class="icon handshake la-list-icon"></i>
+                        <g:link controller="provider" action="addressbook"
+                                id="${address.provider.id}">${address.provider.name} (${address.provider.sortname})</g:link>
+                    </g:if>
+                    <g:if test="${address.vendor}">
+                        <i class="icon shipping fast la-list-icon"></i>
+                        <g:link controller="vendor" action="addressbook"
+                                id="${address.vendor.id}">${address.vendor.name} (${address.vendor.sortname})</g:link>
+                    </g:if>
                 </td>
             </g:if>
             <td>
@@ -86,24 +111,63 @@
                     </div>
                 </div>
             </td>
-            <td class="x">
-                <g:if test="${editable && tmplShowDeleteButton}">
-
-                    <button type="button" onclick="JSPC.app.editAddress(${address.id})" class="ui icon button blue la-modern-button"
-                            role="button"
-                            aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                        <i aria-hidden="true" class="write icon"></i>
-                    </button>
-                    <g:link class="ui negative button icon js-open-confirm-modal la-modern-button"
-                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.address.addressbook")}"
-                            data-confirm-term-how="delete"
-                            controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: genericOIDService.getOID(address)]"
-                            role="button"
-                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                        <i class="trash alternate outline icon"></i>
-                    </g:link>
+        <g:if test="${showSurveyInvoicingInformation}">
+            <td>
+                <g:if test="${editable && controllerName == 'myInstitution'}">
+                    <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndAddress(participant, surveyConfig, address)}">
+                        <g:link controller="myInstitution" action="surveyInfos"
+                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: false, addressId: address.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation']">
+                            <i class="check bordered large green icon"></i>
+                        </g:link>
+                    </g:if>
+                    <g:else>
+                        <g:link controller="myInstitution" action="surveyInfos"
+                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: true, addressId: address.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation']">
+                            <i class="close bordered large red icon"></i>
+                        </g:link>
+                    </g:else>
                 </g:if>
+                <g:elseif test="${editable && controllerName == 'survey'}">
+                    <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndAddress(participant, surveyConfig, address)}">
+                        <g:link controller="survey" action="evaluationParticipant"
+                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: false, addressId: address.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', participant: participant.id]">
+                            <i class="check bordered large green icon"></i>
+                        </g:link>
+                    </g:if>
+                    <g:else>
+                        <g:link controller="survey" action="evaluationParticipant"
+                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: true, addressId: address.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', participant: participant.id]">
+                            <i class="close bordered large red icon"></i>
+                        </g:link>
+                    </g:else>
+                </g:elseif>
+                <g:else>
+                    <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndAddress(participant, surveyConfig, address)}">
+                        <i class="check bordered large green icon"></i>
+                    </g:if>
+                </g:else>
             </td>
+        </g:if>
+            <g:if test="${showOptions}">
+                <td class="x">
+                    <g:if test="${editable && tmplShowDeleteButton}">
+
+                        <button type="button" onclick="JSPC.app.editAddress(${address.id})" class="ui icon button blue la-modern-button"
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                            <i aria-hidden="true" class="write icon"></i>
+                        </button>
+                        <g:link class="ui negative button icon js-open-confirm-modal la-modern-button"
+                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.address.addressbook")}"
+                                data-confirm-term-how="delete"
+                                controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: genericOIDService.getOID(address)]"
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                            <i class="trash alternate outline icon"></i>
+                        </g:link>
+                    </g:if>
+                </td>
+            </g:if>
         </tr>
     </g:each>
     </tbody>

@@ -134,23 +134,31 @@
             </dd>
         </dl>
 
-        <g:if test="${visibleOrgRelations}">
+        <g:if test="${visibleProviders}">
 
             <br/>
             <br/>
-            <g:each in="${visibleOrgRelations}" var="role">
-                <g:if test="${role.org}">
+            <g:each in="${visibleProviders}" var="role">
                     <h2>
-                        <g:if test="${role.roleType.value == RDStore.OR_PROVIDER.value}">
-                            ${message(code: 'default.provider.label')}
-                        </g:if>
-                        <g:elseif test="${role.roleType.value == RDStore.OR_AGENCY.value}">
-                            ${message(code: 'default.agency.label')}
-                        </g:elseif>
+                        ${message(code: 'provider.label')}
                     </h2>
-                    <g:link absolute="true" controller="organisation" action="show"
-                            id="${role.org.id}">${role.org.name}</g:link>
-                </g:if>
+                    <g:link absolute="true" controller="provider" action="show"
+                            id="${role.provider.id}">${role.provider.name}</g:link>
+            </g:each>
+
+            <br/>
+            <br/>
+        </g:if>
+        <g:if test="${visibleVendors}">
+
+            <br/>
+            <br/>
+            <g:each in="${visibleVendors}" var="role">
+                    <h2>
+                        ${message(code: 'vendor.label')}
+                    </h2>
+                    <g:link absolute="true" controller="vendor" action="show"
+                            id="${role.vendor.id}">${role.vendor.name}</g:link>
             </g:each>
 
             <br/>
@@ -221,8 +229,8 @@
                 packageInfos.packageInstance = subscriptionPackage.pkg
 
                 Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: subscriptionPackage.pkg.gokbId])
-                if (queryResult.warning) {
-                    List records = queryResult.warning.result
+                if (queryResult) {
+                    List records = queryResult.result
                     packageInfos.packageInstanceRecord = records ? records[0] : [:]
                 }
                 packages << packageInfos
@@ -385,314 +393,7 @@
         </g:if>
 </g:if>
 
-<g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
-    <g:set var="costItemSurvey"
-           value="${surveyOrg ? CostItem.findBySurveyOrg(surveyOrg) : null}"/>
-
-    <g:if test="${surveyInfo.owner.id != institution.id && ((costItemSums && costItemSums.subscrCosts) || costItemSurvey)}">
-        <g:set var="showCostItemSurvey" value="${true}"/>
-
-        <div>
-            <h2><g:message code="surveyConfigsInfo.costItems"/></h2>
-            <%
-                def elementSign = 'notSet'
-                String icon = ''
-            %>
-
-            <table>
-                <thead>
-                <tr>
-                    <th colspan="4">
-                        <g:message code="surveyConfigsInfo.oldPrice"/>
-                    </th>
-                    <th colspan="4">
-                        <g:message code="surveyConfigsInfo.newPrice"/>
-                    </th>
-                    <th rowspan="2">Diff.</th>
-                </tr>
-                <tr>
-
-                    <th><g:message code="financials.costItemElement"/></th>
-                    <th><g:message code="financials.invoice_total"/></th>
-                    <th><g:message code="financials.newCosts.taxTypeAndRate"/></th>
-                    <th><g:message
-                            code="financials.newCosts.totalAmount"/></th>
-
-                    <th><g:message code="financials.costItemElement"/></th>
-                    <th><g:message code="financials.invoice_total"/></th>
-                    <th><g:message code="financials.newCosts.taxTypeAndRate"/></th>
-                    <th><g:message
-                            code="financials.newCosts.totalAmount"/></th>
-
-                </tr>
-                </thead>
-
-
-                <tbody>
-                <g:if test="${costItemSums && costItemSums.subscrCosts}">
-                    <g:each in="${costItemSums.subscrCosts.sort { it.costItemElement }}" var="costItem">
-                        <tr>
-                            <td>
-                                <%
-                                    elementSign = 'notSet'
-                                    icon = ''
-                                    if (costItem.costItemElementConfiguration) {
-                                        elementSign = costItem.costItemElementConfiguration
-                                    }
-                                    switch (elementSign) {
-                                        case RDStore.CIEC_POSITIVE:
-                                            icon = '+'
-                                            break
-                                        case RDStore.CIEC_NEGATIVE:
-                                            icon = '-'
-                                            break
-                                        case RDStore.CIEC_NEUTRAL:
-                                            icon = ''
-                                            break
-                                        default:
-                                            icon = ''
-                                            break
-                                    }
-                                %>
-                                ${raw(icon)}
-
-                                ${costItem.costItemElement?.getI10n('value')}
-                            </td>
-                            <td>
-                                <strong>
-                                    <g:formatNumber
-                                            number="${costItem.costInBillingCurrency}"
-                                            minFractionDigits="2" maxFractionDigits="2"
-                                            type="number"/>
-                                </strong>
-
-                                ${(costItem.billingCurrency?.getI10n('value').split('-')).first()}
-                            </td>
-                            <td>
-                                <g:if test="${costItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
-                                    ${RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")}
-                                </g:if>
-                                <g:elseif test="${costItem.taxKey}">
-                                    ${costItem.taxKey.taxType?.getI10n("value") + " (" + costItem.taxKey.taxRate + "%)"}
-                                </g:elseif>
-                            </td>
-                            <td>
-                                <strong>
-                                    <g:formatNumber
-                                            number="${costItem.costInBillingCurrencyAfterTax}"
-                                            minFractionDigits="2" maxFractionDigits="2"
-                                            type="number"/>
-                                </strong>
-
-                                ${(costItem.billingCurrency?.getI10n('value').split('-')).first()}
-
-                                <g:if test="${costItem.startDate || costItem.endDate}">
-                                    <br/>(${formatDate(date: costItem.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItem.endDate, format: message(code: 'default.date.format.notime'))})
-                                </g:if>
-                            </td>
-
-                            <g:if test="${costItemSurvey && costItemSurvey.costItemElement == costItem.costItemElement}">
-                                <g:set var="showCostItemSurvey" value="${false}"/>
-                                <td>
-                                    <%
-                                        elementSign = 'notSet'
-                                        icon = ''
-                                        if (costItemSurvey.costItemElementConfiguration) {
-                                            elementSign = costItemSurvey.costItemElementConfiguration
-                                        }
-                                        switch (elementSign) {
-                                            case RDStore.CIEC_POSITIVE:
-                                                icon = '+'
-                                                break
-                                            case RDStore.CIEC_NEGATIVE:
-                                                icon = '-'
-                                                break
-                                            case RDStore.CIEC_NEUTRAL:
-                                                icon = ''
-                                                break
-                                            default:
-                                                icon = ''
-                                                break
-                                        }
-                                    %>
-                                    ${raw(icon)}
-
-                                    ${costItemSurvey.costItemElement?.getI10n('value')}
-                                </td>
-                                <td>
-                                    <strong>
-                                        <g:formatNumber
-                                                number="${costItemSurvey.costInBillingCurrency}"
-                                                minFractionDigits="2" maxFractionDigits="2"
-                                                type="number"/>
-                                    </strong>
-
-                                    ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
-                                </td>
-                                <td>
-                                    <g:if test="${costItemSurvey.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
-                                        ${RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")}
-                                    </g:if>
-                                    <g:elseif test="${costItemSurvey.taxKey}">
-                                        ${costItemSurvey.taxKey.taxType?.getI10n("value") + " (" + costItemSurvey.taxKey.taxRate + "%)"}
-                                    </g:elseif>
-                                </td>
-                                <td>
-                                    <strong>
-                                        <g:formatNumber
-                                                number="${costItemSurvey.costInBillingCurrencyAfterTax}"
-                                                minFractionDigits="2" maxFractionDigits="2"
-                                                type="number"/>
-                                    </strong>
-
-                                    ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
-
-
-                                    <g:if test="${costItemSurvey.startDate || costItemSurvey.endDate}">
-                                        <br/>(${formatDate(date: costItemSurvey.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey.endDate, format: message(code: 'default.date.format.notime'))})
-                                    </g:if>
-
-                                    <g:if test="${costItemSurvey.costDescription}">
-                                        <br/>
-                                        (${costItemSurvey.costDescription})
-                                    </g:if>
-                                </td>
-
-                            </g:if>
-                            <g:else>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </g:else>
-
-                            <td>
-                                <g:if test="${costItemSurvey && costItemSurvey.costItemElement == costItem.costItemElement}">
-
-                                    <g:set var="oldCostItem"
-                                           value="${costItem.costInBillingCurrency ?: 0.0}"/>
-
-                                    <g:set var="newCostItem"
-                                           value="${costItemSurvey.costInBillingCurrency ?: 0.0}"/>
-
-                                    <strong><g:formatNumber
-                                            number="${(newCostItem - oldCostItem)}"
-                                            minFractionDigits="2" maxFractionDigits="2" type="number"/>
-                                        <br/>
-                                        (<g:formatNumber
-                                                number="${((newCostItem - oldCostItem) / oldCostItem) * 100}"
-                                                minFractionDigits="2"
-                                                maxFractionDigits="2" type="number"/>%)</strong>
-                                </g:if>
-                            </td>
-                        </tr>
-                    </g:each>
-                </g:if>
-
-                <g:if test="${showCostItemSurvey && costItemSurvey}">
-                    <tr>
-
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-
-                        <td>
-                            <%
-                                elementSign = 'notSet'
-                                icon = ''
-                                if (costItemSurvey.costItemElementConfiguration) {
-                                    elementSign = costItemSurvey.costItemElementConfiguration
-                                }
-                                switch (elementSign) {
-                                    case RDStore.CIEC_POSITIVE:
-                                        icon = '+'
-                                        break
-                                    case RDStore.CIEC_NEGATIVE:
-                                        icon = '-'
-                                        break
-                                    case RDStore.CIEC_NEUTRAL:
-                                        icon = ''
-                                        break
-                                    default:
-                                        icon = ''
-                                        break
-                                }
-                            %>
-                            ${raw(icon)}
-
-                            ${costItemSurvey.costItemElement?.getI10n('value')}
-
-                        </td>
-                        <td>
-                            <strong>
-                                <g:formatNumber
-                                        number="${costItemSurvey.costInBillingCurrency}"
-                                        minFractionDigits="2" maxFractionDigits="2"
-                                        type="number"/>
-                            </strong>
-
-                            ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
-                        </td>
-                        <td>
-                            <g:if test="${costItemSurvey.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
-                                ${RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")}
-                            </g:if>
-                            <g:elseif test="${costItemSurvey.taxKey}">
-                                ${costItemSurvey.taxKey.taxType?.getI10n("value") + " (" + costItemSurvey.taxKey.taxRate + "%)"}
-                            </g:elseif>
-                        </td>
-                        <td>
-                            <strong>
-                                <g:formatNumber
-                                        number="${costItemSurvey.costInBillingCurrencyAfterTax}"
-                                        minFractionDigits="2" maxFractionDigits="2"
-                                        type="number"/>
-                            </strong>
-
-                            ${(costItemSurvey.billingCurrency?.getI10n('value').split('-')).first()}
-
-                            <g:set var="newCostItem"
-                                   value="${costItemSurvey.costInBillingCurrency ?: 0.0}"/>
-
-                            <g:if test="${costItemSurvey.startDate || costItemSurvey.endDate}">
-                                <br/>(${formatDate(date: costItemSurvey.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey.endDate, format: message(code: 'default.date.format.notime'))})
-                            </g:if>
-
-                            <g:if test="${costItemSurvey.costDescription}">
-                                <br/>
-                                (${costItemSurvey.costDescription})
-                            </g:if>
-                        </td>
-
-                        <td>
-                        </td>
-                    </tr>
-                </g:if>
-
-                </tbody>
-            </table>
-
-        </div>
-    </g:if>
-
-    <g:if test="${surveyInfo.owner.id == institution.id && costItemSums.consCosts}">
-        <div class="ui card la-dl-no-table">
-            <div class="content">
-                <g:if test="${costItemSums.ownCosts}">
-                    <g:if test="${(contextOrg.id != subscription.getConsortia()?.id && subscription.instanceOf) || !subscription.instanceOf}">
-                        <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.ownCosts')}</h2>
-                        <g:render template="/subscription/financials" model="[data: costItemSums.ownCosts]"/>
-                    </g:if>
-                </g:if>
-                <g:if test="${costItemSums.consCosts}">
-                    <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.consCosts')}</h2>
-                    <g:render template="/subscription/financials" model="[data: costItemSums.consCosts]"/>
-                </g:if>
-            </div>
-        </div>
-    </g:if>
-</g:if>
+<laser:render template="/templates/survey/costsWithSub"/>
 
 <g:if test="${surveyResults}">
 

@@ -1,10 +1,8 @@
 package de.laser
 
 import de.laser.annotations.RefdataInfo
-import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
-import de.laser.CustomerTypeService
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
@@ -72,9 +70,10 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     Date lastUpdatedCascading
 
     SortedSet ids
+    SortedSet altnames
 
     static transients = [
-            'referenceConcatenated', 'licensingConsortium', 'licensor', 'licensee', 'providers', 'agencies',
+            'referenceConcatenated', 'licensingConsortium', 'licensor', 'licensee', 'providers', 'vendors',
             'calculatedPropDefGroups', 'genericLabel', 'nonDeletedDerivedLicenses'
     ] // mark read-only accessor methods
 
@@ -86,7 +85,8 @@ class License extends AbstractBaseWithCalculatedLastUpdated
           orgRelations       :     OrgRole,
           prsLinks       :     PersonRole,
           derivedLicenses:    License,
-          propertySet    :   LicenseProperty
+          propertySet    :   LicenseProperty,
+          altnames       :   AlternativeName
   ]
 
   static mappedBy = [
@@ -97,7 +97,8 @@ class License extends AbstractBaseWithCalculatedLastUpdated
           orgRelations:      'lic',
           prsLinks:      'lic',
           derivedLicenses: 'instanceOf',
-          propertySet:  'owner'
+          propertySet:  'owner',
+          altnames: 'license'
   ]
 
   static mapping = {
@@ -157,7 +158,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     @Override
     Collection<String> getLogIncluded() {
-        [ 'startDate', 'endDate', 'licenseUrl', 'licenseCategory', 'status', 'openEnded', 'isPublicForApi' ]
+        [ 'reference', 'startDate', 'endDate', 'licenseUrl', 'licenseCategory', 'status', 'openEnded', 'isPublicForApi' ]
     }
     @Override
     Collection<String> getLogExcluded() {
@@ -208,13 +209,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
      */
     @Override
     boolean checkSharePreconditions(ShareableTrait sharedObject) {
-        // needed to differentiate OrgRoles
-        if (sharedObject instanceof OrgRole) {
-            if (showUIShareButton() && sharedObject.roleType.value == 'Licensor') {
-                return true
-            }
-        }
-        false
+        return (sharedObject instanceof ProviderRole || sharedObject instanceof VendorRole) && showUIShareButton()
     }
 
     /**
@@ -226,13 +221,13 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Toggles the sharing of a {@link DocContext} or {@link OrgRole}
+     * Toggles the sharing of a {@link DocContext}, {@link OrgRole} or {@link VendorRole}
      * @param sharedObject the object which should be shared or not
      */
     void updateShare(ShareableTrait sharedObject) {
         log.debug('updateShare: ' + sharedObject)
 
-        if (sharedObject instanceof DocContext || sharedObject instanceof OrgRole) {
+        if (sharedObject instanceof DocContext || sharedObject instanceof OrgRole || sharedObject instanceof VendorRole || sharedObject instanceof ProviderRole) {
             if (sharedObject.isShared) {
                 List<License> newTargets = License.findAllByInstanceOf(this)
                 log.debug('found targets: ' + newTargets)
@@ -268,10 +263,22 @@ class License extends AbstractBaseWithCalculatedLastUpdated
             }
         }
         orgRelations.each{ sharedObject ->
-            targets.each{ sub ->
+            targets.each{ lic ->
                 if (sharedObject.isShared) {
-                    log.debug('adding for: ' + sub)
-                    sharedObject.addShareForTarget_trait(sub)
+                    log.debug('adding for: ' + lic)
+                    sharedObject.addShareForTarget_trait(lic)
+                }
+                else {
+                    log.debug('deleting all shares')
+                    sharedObject.deleteShare_trait()
+                }
+            }
+        }
+        VendorRole.findAllBySubscription(this).each { sharedObject ->
+            targets.each { lic ->
+                if (sharedObject.isShared) {
+                    log.debug('adding for: ' + lic)
+                    sharedObject.addShareForTarget_trait(lic)
                 }
                 else {
                     log.debug('deleting all shares')
@@ -300,20 +307,20 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     /**
      * Retrieves all organisation linked as providers to this license
-     * @return a {@link List} of {@link Org}s linked as provider
+     * @return a {@link List} of {@link Provider}s linked as provider
      */
-    List<Org> getProviders() {
-        Org.executeQuery("select og.org from OrgRole og where og.lic =:lic and og.roleType in (:provider)",
-                [lic: this, provider: [RDStore.OR_PROVIDER, RDStore.OR_LICENSOR]])
+    List<Provider> getProviders() {
+        Provider.executeQuery("select pvr.provider from ProviderRole pvr where pvr.license = :lic order by pvr.provider.sortname",
+                [lic: this])
     }
 
     /**
-     * Retrieves all organisation linked as agencies to this license
-     * @return a {@link List} of {@link Org}s linked as agency
+     * Retrieves all vendors linked to this license
+     * @return a {@link List} of linked {@link Vendor}s
      */
-    List<Org> getAgencies() {
-        Org.executeQuery("select og.org from OrgRole og where og.lic =:lic and og.roleType = :agency",
-                [lic: this, agency: RDStore.OR_AGENCY])
+    List<Vendor> getVendors() {
+        Vendor.executeQuery("select vr.vendor from VendorRole vr where vr.license = :lic order by vr.vendor.sortname",
+                [lic: this])
     }
 
     /**
@@ -377,6 +384,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
      * Retrieves the providers and agencies for this license
      * @return a set of {@link Org}s
      */
+    @Deprecated
     Set<Org> getProviderAgency() {
         orgRelations.findAll { OrgRole or ->
             or.roleType in [RDStore.OR_LICENSOR, RDStore.OR_AGENCY]

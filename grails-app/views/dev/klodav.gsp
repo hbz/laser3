@@ -9,9 +9,73 @@
 </h1>
 
 <div class="ui segment">
-    <p class="ui header">
-        <i class="icon large users"></i> various
-    </p>
+    <p class="ui header">Icons #1</p>
+    <div class="ui list">
+        <div class="item">
+            <i class="icon large poll"></i>
+            <div class="content"> Umfragen (poll) </div>
+        </div>
+        <div class="item">
+            <i class="icon large chartline"></i>
+            <div class="content"> Dashboard (chartline) </div>
+        </div>
+        <div class="item">
+            <i class="icon large chart pie"></i>
+            <div class="content"> Reporting (chart pie)</div>
+        </div>
+        <div class="item">
+            <i class="icon large chart bar"></i>
+            <div class="content"> Statistik (chart bar)</div>
+        </div>
+    </div>
+</div>
+
+<div class="ui segment">
+    <p class="ui header">Icons #2</p>
+    <div class="ui list">
+        <div class="item">
+            <i class="icon large handshake"></i>
+            <div class="content"> Anbieter (handshake)</div>
+        </div>
+        <div class="item">
+            <i class="icon large boxes"></i>
+            <div class="content"> Lieferanten (boxes)</div>
+        </div>
+        <div class="item">
+            <i class="icon large university"></i>
+            <div class="content"> Einrichtungen (university)</div>
+        </div>
+        <div class="item">
+            <i class="icon large cloud"></i>
+            <div class="content"> Plattformen (cloud)</div>
+        </div>
+        <div class="item">
+            <i class="icon large clipboard"></i>
+            <div class="content"> Lizenzen (clipboard)</div>
+        </div>
+        <div class="item">
+            <i class="icon large balance scale"></i>
+            <div class="content"> Verträge (balance scale)</div>
+        </div>
+        <div class="item">
+            <i class="icon large gift"></i>
+            <div class="content"> Pakete (gift)</div>
+        </div>
+    </div>
+</div>
+
+<div class="ui segment">
+    <p class="ui header">Icons #3</p>
+    <div class="ui list">
+        <div class="item">
+            <i class="icon large forward"></i>
+            <div class="content"> Mehrjahreslaufzeit (forward)</div>
+        </div>
+    </div>
+</div>
+
+<div class="ui segment">
+    <p class="ui header">Links</p>
     <div class="ui list">
         <div class="item">
             <i class="icon large fake"></i>
@@ -31,6 +95,14 @@
         </div>
     </div>
 </div>
+
+<pre>
+    springSecurity.errors.login.expired             ${message(code:'springSecurity.errors.login.expired')}
+    springSecurity.errors.login.passwordExpired     ${message(code:'springSecurity.errors.login.passwordExpired')}
+    springSecurity.errors.login.locked              ${message(code:'springSecurity.errors.login.locked')}
+    springSecurity.errors.login.disabled            ${message(code:'springSecurity.errors.login.disabled')}
+    springSecurity.errors.login.fail                ${message(code:'springSecurity.errors.login.fail')}
+</pre>
 
 <div class="ui segment">
     <p class="ui header">

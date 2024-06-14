@@ -35,7 +35,7 @@
         </div>
     </g:if>
 
-<laser:render template="KBARTSelectionUploadFormModal"/>
+<%-- <laser:render template="KBARTSelectionUploadFormModal"/> --%>
 
 <ui:modal id="linkToIssueEntitlementGroup" message="subscription.details.addEntitlements.add_selectedToIssueEntitlementGroup"
           refreshModal="true"
@@ -354,7 +354,7 @@
                                        data-content="${message(code: 'tipp.tooltip.myArea')}"></i>
 
                                     <div class="ui la-segment-with-icon">
-                                        <g:if test="${(tipp.titleType == 'Journal')}">
+                                        <g:if test="${(tipp.titleType == 'serial')}">
                                             <g:set var="coverageStatements"
                                                    value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.coverages : [:]}"/>
                                             <div class="ui stackable grid"></div>
@@ -436,9 +436,6 @@
 </g:form>
 
 </div>
-
-
-<laser:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']" />
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
@@ -545,5 +542,7 @@
     JSPC.app.loadFilter();
     --%>
 </laser:script>
+
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd />

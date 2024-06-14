@@ -6,16 +6,15 @@ import de.laser.system.SystemEvent
 import de.laser.utils.CodeUtils
 import de.laser.utils.PasswordUtils
 import grails.converters.JSON
+import grails.core.GrailsApplication
 import grails.core.GrailsClass
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
-import grails.core.GrailsApplication
-import grails.web.Action
+import grails.plugin.springsecurity.annotation.Secured
 import grails.web.mapping.UrlMappingInfo
 import grails.web.mapping.UrlMappingsHolder
 import org.apache.http.HttpStatus
-import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.CredentialsExpiredException
 import org.springframework.security.authentication.DisabledException
@@ -134,11 +133,11 @@ class LoginController {
       else if (exception instanceof CredentialsExpiredException) {
         msg = g.message(code: "springSecurity.errors.login.passwordExpired")
       }
-      else if (exception instanceof DisabledException) {
-        msg = g.message(code: "springSecurity.errors.login.disabled")
-      }
       else if (exception instanceof LockedException) {
         msg = g.message(code: "springSecurity.errors.login.locked")
+      }
+      else if (exception instanceof DisabledException) {
+          msg = g.message(code: "springSecurity.errors.login.disabled")
       }
       else {
         msg = g.message(code: "springSecurity.errors.login.fail")
@@ -227,9 +226,10 @@ class LoginController {
         boolean valid = false
 
         UrlMappingsHolder urlMappingsHolder = BeanStore.getUrlMappingsHolder()
-        UrlMappingInfo mappingInfo = urlMappingsHolder.matchAll(savedRequest.getRequestURI()).first()
+        UrlMappingInfo[] matchedMappingInfo = urlMappingsHolder.matchAll(savedRequest.getRequestURI())
 
-        if (mappingInfo) {
+        if (matchedMappingInfo.length > 0) {
+            UrlMappingInfo mappingInfo = matchedMappingInfo.first()
             GrailsClass controller = mappingInfo.hasProperty('controllerClass') ? mappingInfo.controllerClass :
                     CodeUtils.getAllControllerArtefacts().find {
                         it.clazz.simpleName == mappingInfo.controllerName.capitalize() + 'Controller'

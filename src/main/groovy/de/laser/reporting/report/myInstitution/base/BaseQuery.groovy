@@ -16,6 +16,10 @@ import org.springframework.context.MessageSource
 import java.sql.Timestamp
 import java.time.Year
 
+/**
+ * This class contains general methods for data querying.
+ * Those methods are being shared by classes specifying queries for each object individually
+ */
 class BaseQuery {
 
     static String NO_DATA_LABEL              = 'noData.label'
@@ -26,8 +30,11 @@ class BaseQuery {
     static String NO_PLATFORM_LABEL          = 'noPlatform.label'
     static String NO_PLATFORM_PROVIDER_LABEL = 'noPlatformProvider.label'
     static String NO_PROVIDER_LABEL          = 'noProvider.label'
+    static String NO_VENDOR_LABEL            = 'noVendor.label'
     static String NO_STARTDATE_LABEL         = 'noStartDate.label'
     static String NO_ENDDATE_LABEL           = 'noEndDate.label'
+
+    static List<String> REFDATA_QUERY = ['select ref.id, ref.value_de, count(*) ', ' group by ref.id, ref.value_de order by ref.value_de' ]
 
     static def NO_DATA_ID           = null
     static int NO_COUNTERPART_ID    = 0 // dyn.neg.values for unmapped es refdata
@@ -37,6 +44,12 @@ class BaseQuery {
 
     static String SQM_MASK      = "\\\\\'"
 
+    /**
+     * Delivers an empty result map for initial chart display
+     * @param query the query string assembling the chart
+     * @param chart the chart data
+     * @return a map containing initial values
+     */
     static Map<String, Object> getEmptyResult(String query, String chart) {
         return [
                 chart       : chart,
@@ -47,6 +60,12 @@ class BaseQuery {
         ]
     }
 
+    /**
+     * Gets the labels for the given config and requested in the given map
+     * @param config the configuration from where the labels should be read off
+     * @param params the request parameter map
+     * @return the labels illustrating the report
+     */
     static List<String> getQueryLabels(Map<String, Object> config, GrailsParameterMap params) {
 
         List<String> labels = getQueryLabels(config, params.query)
@@ -57,6 +76,12 @@ class BaseQuery {
         labels
     }
 
+    /**
+     * Gets the labels for the query parameters
+     * @param config the configuration from where the labels should be read off
+     * @param query the data being queried
+     * @return the labels illustrating the report
+     */
     static List<String> getQueryLabels(Map<String, Object> config, String query) {
         List<String> meta = []
 
@@ -86,6 +111,13 @@ class BaseQuery {
         meta
     }
 
+    /**
+     * Gets the details of the object being addressed by key and ID from the given list
+     * @param id the database ID of the requested object
+     * @param key the key whose value should be read off from the given object
+     * @param ddList the list of candidate objects
+     * @return the value being defined in the given object under the given key
+     */
     static Object getDataDetailsByIdAndKey(Long id, String key, List<Map<String, Object>> ddList) {
         def result
 
@@ -98,6 +130,15 @@ class BaseQuery {
         result
     }
 
+    /**
+     * Performs the given generic object query with the given settings, filling the given result map
+     * @param query the parameters being requested
+     * @param dataHql the query input, translated into HQL
+     * @param dataDetailsHql the query for the details of the queried data
+     * @param nonMatchingHql the query for non matching objects
+     * @param idList the list of database IDs
+     * @param result the result map being filled
+     */
     static void handleGenericQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List<Long> idList, Map<String, Object> result) {
 
         result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
@@ -115,6 +156,15 @@ class BaseQuery {
         handleGenericNonMatchingData( query, nonMatchingHql, idList, result )
     }
 
+    /**
+     * Performs the given generic object query with the given settings, filling the given result map and sorting between matched and orphaned objects
+     * @param query the parameters being requested
+     * @param dataHql the query input, translated into HQL
+     * @param dataDetailsHql the query for the details of the queried data
+     * @param idList the list of database IDs
+     * @param orphanedIdList the list of database object IDs which are orphaned
+     * @param result the result map being filled
+     */
     static void handleGenericAllSignOrphanedQuery(String query, String dataHql, String dataDetailsHql, List<Long> idList, List<Long> orphanedIdList, Map<String, Object> result) {
 
         result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
@@ -135,6 +185,14 @@ class BaseQuery {
         }
     }
 
+    /**
+     * Performs the given generic object query with the given settings, filling the given result map
+     * @param query the parameters being requested
+     * @param dataHql the query input, translated into HQL
+     * @param dataDetailsHql the data details query
+     * @param idList the list of database IDs
+     * @param result the result map being filled
+     */
     static void handleGenericAllQuery(String query, String dataHql, String dataDetailsHql, List<Long> idList, Map<String, Object> result) {
 
         result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
@@ -151,6 +209,15 @@ class BaseQuery {
         }
     }
 
+    /**
+     * Performs the given reference data query with the given settings
+     * @param query the parameters being requested
+     * @param dataHql the query input, translated into HQL
+     * @param dataDetailsHql the data details query
+     * @param nonMatchingHql the query for non matching objects
+     * @param idList the list of database IDs
+     * @param result the result map being filled
+     */
     static void handleGenericRefdataQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List<Long> idList, Map<String, Object> result) {
 
         result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
@@ -168,6 +235,15 @@ class BaseQuery {
         handleGenericNonMatchingData( query, nonMatchingHql, idList, result )
     }
 
+    /**
+     * Performs the given role query with the given settings
+     * @param query the parameters being requested
+     * @param dataHql the query input, translated into HQL
+     * @param dataDetailsHql the data details query
+     * @param nonMatchingHql the query for non matching objects
+     * @param idList the list of database IDs
+     * @param result the result map being filled
+     */
     static void handleGenericRoleQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List<Long> idList, Map<String, Object> result) {
 
         result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
@@ -185,6 +261,13 @@ class BaseQuery {
         handleGenericNonMatchingData( query, nonMatchingHql, idList, result )
     }
 
+    /**
+     * Generic handler for no matching data queries
+     * @param query the parameters being requested
+     * @param hql the query input, translated into HQL
+     * @param idList the list of database IDs
+     * @param result the result map being filled
+     */
     static void handleGenericNonMatchingData(String query, String hql, List<Long> idList, Map<String, Object> result) {
 
         List<Long> noDataList = idList ? Org.executeQuery( hql, [idList: idList] ) : []
@@ -192,6 +275,13 @@ class BaseQuery {
         handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
     }
 
+    /**
+     * Output for a query delivering no matching data
+     * @param query the data being queried
+     * @param label the chart label key
+     * @param noDataList the list of IDs where no data is matching
+     * @param result the result map being filled
+     */
     static void handleGenericNonMatchingData1Value_TMP(String query, String label, List<Long> noDataList, Map<String, Object> result) {
 
         if (noDataList) {
@@ -206,6 +296,13 @@ class BaseQuery {
         }
     }
 
+    /**
+     * Output for a query delivering no matching data
+     * @param query the data being queried
+     * @param label the chart label key
+     * @param noDataIdList the list of IDs where no data is matching
+     * @param result the result map being filled
+     */
     static void handleGenericNonMatchingData2Values_TMP(String query, String label, List<Long> noDataIdList, Map<String, Object> result) {
 
         if (noDataIdList) {
@@ -222,6 +319,14 @@ class BaseQuery {
         }
     }
 
+    /**
+     * Performs the given role query with the given settings
+     * @param query the parameters being requested
+     * @param dataHql the query input, translated into HQL
+     * @param dataDetailsHql the details of the queried data
+     * @param idList the list of database object IDs
+     * @param result the result map being filled
+     */
     static void handleGenericBooleanQuery(String query, String dataHql, String dataDetailsHql, List<Long> idList, Map<String, Object> result) {
 
         result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
@@ -239,6 +344,14 @@ class BaseQuery {
         }
     }
 
+    /**
+     * Performs the given date query with the given settings
+     * @param query the parameters being requested
+     * @param dataHql the query input, translated into HQL
+     * @param dataDetailsHql the details of the queried data
+     * @param idList the list of database object IDs
+     * @param result the result map being filled
+     */
     static void handleGenericDateQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List<Long> idList, Map<String, Object> result) {
 
         result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
@@ -260,6 +373,14 @@ class BaseQuery {
         handleGenericNonMatchingData( query, nonMatchingHql, idList, result )
     }
 
+    /**
+     * Performs the given identifier query with the given settings
+     * @param query the parameters being requested
+     * @param dataHqlPart the part of query input, translated into HQL
+     * @param dataDetailsHqlPart the details of the queried data
+     * @param idList the list of database object IDs
+     * @param result the result map being filled
+     */
     static void handleGenericIdentifierXQuery(String query, String dataHqlPart, String dataDetailsHqlPart, String nonMatchingHql, List<Long> idList, Map<String, Object> result) {
 
         result.data = idList ? Org.executeQuery(
@@ -290,6 +411,15 @@ class BaseQuery {
         handleGenericNonMatchingData2Values_TMP(query, NO_IDENTIFIER_LABEL, noDataList, result)
     }
 
+    /**
+     * Performs the given property query with the given settings
+     * @param query the parameters being requested
+     * @param dataHqlPart the query input, translated into HQL
+     * @param dataDetailsHqlPart the details of the queried data
+     * @param idList the list of database object IDs
+     * @param ctxOrg the context institution who is tenant of the (private) properties
+     * @param result the result map being filled
+     */
     static void handleGenericPropertyXQuery(String query, String dataHqlPart, String dataDetailsHqlPart, List<Long> idList, Org ctxOrg, Map<String, Object> result) {
 
         String lang = LocaleUtils.getCurrentLang()
@@ -324,6 +454,13 @@ class BaseQuery {
         }
     }
 
+    /**
+     * Performs the given generic query with the given settings, matching for a given year ring
+     * @param query the parameters being requested
+     * @param domainClass the type of object being queried
+     * @param idList the list of database object IDs
+     * @param result the result map being filled
+     */
     static void handleGenericAnnualXQuery(String query, String domainClass, List<Long> idList, Map<String, Object> result) {
 
         List dd = Org.executeQuery( 'select min(YEAR(dc.startDate)), max(YEAR(dc.endDate)) from ' + domainClass + ' dc where dc.id in (:idList)', [idList: idList] )
@@ -377,6 +514,11 @@ class BaseQuery {
         handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
     }
 
+    /**
+     * Retrieves for the given token the associated chart label
+     * @param token the token for which the label is being requested
+     * @return the matching message token
+     */
     static String getChartLabel(String token) {
         //println 'getChartLabel(): ' + token
         MessageSource messageSource = BeanStore.getMessageSource()

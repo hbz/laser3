@@ -50,7 +50,7 @@
 	<label for="country">
 		<g:message code="org.country.label" />
 	</label>
-	<ui:select id="country" name="country.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.COUNTRY)}"
+	<ui:select id="country" name="country.id" from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.COUNTRY)}"
 			  optionKey="id" optionValue="value" value="${orgInstance?.country?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 

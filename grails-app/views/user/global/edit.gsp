@@ -1,4 +1,4 @@
-<%@ page import="de.laser.auth.UserRole;de.laser.Org;de.laser.auth.Role" %>
+<%@ page import="de.laser.auth.UserRole;de.laser.Org;de.laser.auth.Role;de.laser.utils.DateUtils;" %>
 <laser:htmlStart message="user.edit.label" serviceInjection="true"/>
 
         <laser:render template="/user/global/breadcrumb" model="${[ params:params ]}"/>
@@ -55,6 +55,7 @@
                                     <ui:xEditableBoolean owner="${user}" field="enabled" />
                                 </div>
                             </g:if>
+
                         </div><!-- .form -->
                     </div><!-- .content -->
                 </div><!-- .card -->
@@ -86,6 +87,68 @@
                         </div><!-- .content -->
                     </div><!-- .card -->
                 </g:if>
+
+                <g:if test="${contextService.getUser().isYoda() || contextService.getUser().isAdmin()}">
+                    <div class="ui card">
+                        <div class="ui content">
+                            <h2 class="ui dividing orange header">
+                                <i class="exclamation triangle small icon"></i>
+                                <span class="content">${message(code: 'default.adminsOnly.label')}</span>
+                            </h2>
+                            <div class="ui form">
+%{--                                <div class="ui field">--}%
+%{--                                    <label>--}%
+%{--                                        ${message(code:'user.enabled.label')}--}%
+%{--                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.disabled')}">--}%
+%{--                                            <i class="question circle icon"></i>--}%
+%{--                                        </span>--}%
+%{--                                    </label>--}%
+%{--                                    <ui:xEditableBoolean owner="${user}" field="enabled" overwriteEditable="true"/>--}%
+%{--                                </div>--}%
+                                <div class="ui field">
+                                    <label>
+                                        ${message(code:'user.accountExpired.label')}
+                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.expired')}">
+                                            <i class="question circle icon"></i>
+                                        </span>
+                                    </label>
+                                    <ui:xEditableBoolean owner="${user}" field="accountExpired" overwriteEditable="true"/>
+                                </div>
+                                <div class="ui field">
+                                    <label>
+                                        ${message(code:'user.accountLocked.label')}
+                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.locked')}">
+                                            <i class="question circle icon"></i>
+                                        </span>
+                                    </label>
+                                    <ui:xEditableBoolean owner="${user}" field="accountLocked" overwriteEditable="true"/>
+                                </div>
+%{--                                <div class="ui field">--}%
+%{--                                    <label>--}%
+%{--                                        ${message(code:'user.passwordExpired.label')}--}%
+%{--                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.passwordExpired')}">--}%
+%{--                                            <i class="question circle icon"></i>--}%
+%{--                                        </span>--}%
+%{--                                    </label>--}%
+%{--                                    <ui:xEditableBoolean owner="${user}" field="passwordExpired" overwriteEditable="true"/>--}%
+%{--                                </div>--}%
+                                <div class="ui field">
+                                    <label>${message(code:'user.lastLogin.label')}</label>
+                                    <p>${user.lastLogin ? DateUtils.getLocalizedSDF_noZ().format(user.lastLogin) : message(code: 'default.unknown')}</p>
+                                </div>
+                                <div class="ui field">
+                                    <label>${message(code:'user.invalidLoginAttempts.label')}</label>
+                                    <p>${user.invalidLoginAttempts ?: 0}</p>
+                                </div>
+                                <div class="ui field">
+                                    <label>${message(code:'default.lastUpdated.label')}</label>
+                                    <p>${DateUtils.getLocalizedSDF_noZ().format(user.lastUpdated)}</p>
+                                </div>
+                            </div><!-- .form -->
+                        </div><!-- .content -->
+                    </div><!-- .card -->
+                </g:if>
+
             </div>
         </div><!-- .column -->
 

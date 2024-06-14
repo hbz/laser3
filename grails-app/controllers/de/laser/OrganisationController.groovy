@@ -10,9 +10,9 @@ import de.laser.properties.OrgProperty
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.properties.PropertyDefinition
-import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.system.SystemEvent
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
@@ -51,9 +51,10 @@ class OrganisationController  {
     GenericOIDService genericOIDService
     GokbService gokbService
     IdentifierService identifierService
+    InfoService infoService
+    LinksGenerationService linksGenerationService
     OrganisationControllerService organisationControllerService
     OrganisationService organisationService
-    OrgTypeService orgTypeService
     PropertyService propertyService
     TaskService taskService
     UserControllerService userControllerService
@@ -158,7 +159,8 @@ class OrganisationController  {
         ]
         List<OrgSetting.KEYS> mailSet = [
                 OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY,
-                OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT
+                OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT,
+                OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY
         ]
 
         result.settings = []
@@ -200,7 +202,6 @@ class OrganisationController  {
         }
         */
 
-//        result.allPlatforms = Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')
         result
     }
 
@@ -462,165 +463,6 @@ class OrganisationController  {
     }
 
     /**
-     * Call to list non-academic institutions such as providers. The list may be rendered
-     * as HTML or a configurable Excel worksheet or CSV file. The export contains more fields
-     * than the HTML table due to reasons of space in the HTML page
-     * @return a list of provider organisations, either as HTML table or as Excel/CSV export
-     * @see OrganisationService#exportOrg(java.util.List, java.lang.Object, boolean, java.lang.String)
-     * @see ExportClickMeService#getExportOrgFields(java.lang.String)
-     */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
-    })
-    def listProvider() {
-        Map<String, Object> result = [:]
-        result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-        result.user        = contextService.getUser()
-        result.editable    = contextService.is_ORG_COM_EDITOR_or_ROLEADMIN()
-
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
-        if(queryCuratoryGroups.error == 404) {
-            result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
-        }
-        else {
-            if (queryCuratoryGroups) {
-                List recordsCuratoryGroups = queryCuratoryGroups.result
-                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
-            }
-        }
-        /*
-        we:kb implementation missing but currently not needed anyway; see _orgFilter
-        Map queryRoles = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/refdatas?category=Role') //await Moe's construction
-        if(queryRoles.error == 404) {
-            result.error = message(code:'wekb.error.'+queryRoles.error) as String
-        }
-        else {
-            if (queryRoles.warning) {
-                List recordsRoles = queryRoles.warning.result
-                result.roles = recordsRoles
-            }
-        }
-        */
-
-        params.orgSector    = RDStore.O_SECTOR_PUBLISHER.id
-        params.orgType      = [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]
-        params.sort        = params.sort ?: " LOWER(o.sortname), LOWER(o.name)"
-
-        FilterService.Result fsr = filterService.getOrgQuery(params)
-        List<Org> orgListTotal = Org.findAll(fsr.query, fsr.queryParams)
-        result.filterSet = params.filterSet ? true : false
-
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-        result.currentProviderIdList = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.getOrg()).toList()
-        result.wekbRecords = organisationService.getWekbOrgRecords(params, result)
-        if (params.curatoryGroup || params.providerRole)
-            orgListTotal = orgListTotal.findAll { Org org -> org.gokbId in result.wekbRecords.keySet() }
-
-        if (params.isMyX) {
-            List<String> xFilter = params.list('isMyX')
-            Set<Long> f1Result = [], f2Result = []
-            boolean   f1Set = false, f2Set = false
-
-            if (xFilter.contains('ismyx_exclusive')) {
-                f1Result.addAll( orgListTotal.findAll { result.currentProviderIdList.contains( it.id ) }.collect{ it.id } )
-                f1Set = true
-            }
-            if (xFilter.contains('ismyx_not')) {
-                f1Result.addAll( orgListTotal.findAll { ! result.currentProviderIdList.contains( it.id ) }.collect{ it.id }  )
-                f1Set = true
-            }
-            if (xFilter.contains('wekb_exclusive')) {
-                f2Result.addAll( orgListTotal.findAll {it.gokbId != null }.collect{ it.id } )
-                f2Set = true
-            }
-            if (xFilter.contains('wekb_not')) {
-                f2Result.addAll( orgListTotal.findAll { it.gokbId == null }.collect{ it.id }  )
-                f2Set = true
-            }
-
-            if (f1Set) { orgListTotal = orgListTotal.findAll { f1Result.contains(it.id) } }
-            if (f2Set) { orgListTotal = orgListTotal.findAll { f2Result.contains(it.id) } }
-        }
-
-        result.orgListTotal = orgListTotal.size()
-        result.orgList      = orgListTotal.drop((int) result.offset).take((int) result.max)
-
-        String message = message(code: 'export.all.providers') as String
-        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-        String datetoday = sdf.format(new Date())
-        String filename = message+"_${datetoday}"
-
-        /*
-        if ( params.exportXLS) {
-            params.remove('max')
-            try {
-                SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(orgListTotal, message, false, "xls")
-                // Write the output to a file
-
-                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                wb.write(response.outputStream)
-                response.outputStream.flush()
-                response.outputStream.close()
-                wb.dispose()
-
-                return
-            }
-            catch (Exception e) {
-                log.error("Problem",e);
-                response.sendError(HttpStatus.SC_INTERNAL_SERVER_ERROR)
-                return
-            }
-        }
-        else */
-        Map<String, Object> selectedFields = [:]
-        Set<String> contactSwitch = []
-        if(params.fileformat) {
-            if (params.filename) {
-                filename =params.filename
-            }
-            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-            contactSwitch.addAll(params.list("contactSwitch"))
-            contactSwitch.addAll(params.list("addressSwitch"))
-            switch(params.fileformat) {
-                case 'xlsx':
-                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.XLS, contactSwitch)
-                    response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-                    response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    wb.write(response.outputStream)
-                    response.outputStream.flush()
-                    response.outputStream.close()
-                    wb.dispose()
-                    return
-                case 'csv':
-                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-                    response.contentType = "text/csv"
-                    ServletOutputStream out = response.outputStream
-                    out.withWriter { writer ->
-                        writer.write((String) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.CSV, contactSwitch))
-                    }
-                    out.close()
-                    return
-                case 'pdf':
-                    Map<String, Object> pdfOutput = exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.PDF, contactSwitch)
-
-                    byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
-                    response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
-                    response.setContentType('application/pdf')
-                    response.outputStream.withStream { it << pdf }
-                    return
-            }
-        }
-        else {
-            result
-        }
-    }
-
-    /**
      * Call to open the identifier creation modal; checks which namespaces are available for the given organisation
      * @return the identifier construction modal
      * @see IdentifierNamespace
@@ -770,7 +612,7 @@ class OrganisationController  {
 
     /**
      * Takes the given parameters and updates the given identifier record.
-     * Leitweg-IDs (the identifier necessary for the North-Rhine Westphalia billing system) are autogenerated; they
+     * Leitweg-IDs (the identifier necessary for the North-Rhine Westphalia invoicing system) are autogenerated; they
      * can get actual values only by editing. That is why pattern validation is taking place here
      * @return the identifier list view
      */
@@ -878,7 +720,7 @@ class OrganisationController  {
             redirect(url: request.getHeader('referer'))
             return
         }
-        List<Platform> allPlatforms = organisationService.getAllPlatforms()
+        List<Platform> allPlatforms = organisationService.getAllPlatformsForContextOrg(contextService.getOrg())
 
         render template: '/templates/customerIdentifier/modal_create', model: [orgInstance: org, allPlatforms: allPlatforms]
     }
@@ -929,55 +771,6 @@ class OrganisationController  {
                 render view: 'create', model: [orgInstance: orgInstance]
                 break
         }
-    }
-
-    /**
-     * Creates a new provider organisation with the given parameters
-     * @return the details view of the provider or the creation view in case of an error
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
-    })
-    def createProvider() {
-        Org.withTransaction {
-
-            Org orgInstance = new Org(name: params.provider, sector: RDStore.O_SECTOR_PUBLISHER, status: RDStore.O_STATUS_CURRENT)
-            if (orgInstance.save()) {
-
-                orgInstance.addToOrgType(RDStore.OT_PROVIDER)
-                orgInstance.save()
-
-                flash.message = message(code: 'default.created.message', args: [message(code: 'org.label'), orgInstance.name]) as String
-                redirect action: 'show', id: orgInstance.id
-                return
-            }
-            else {
-                log.error("Problem creating org: ${orgInstance.errors}");
-                flash.message = message(code: 'org.error.createProviderError', args: [orgInstance.errors]) as String
-                redirect(action: 'findProviderMatches')
-                return
-            }
-        }
-    }
-
-    /**
-     * Call to create a new provider; offers first a query for the new name to insert in order to exclude duplicates
-     * @return the empty form (with a submit to proceed with the new organisation) or a list of eventual name matches
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
-    })
-    def findProviderMatches() {
-
-        Map<String, Object> result = [:]
-        if ( params.proposedProvider ) {
-
-            result.providerMatches= Org.executeQuery("from Org as o where exists (select roletype from o.orgType as roletype where roletype = :provider ) and (lower(o.name) like :searchName or lower(o.sortname) like :searchName ) ",
-                    [provider: RDStore.OT_PROVIDER, searchName: "%${params.proposedProvider.toLowerCase()}%"])
-        }
-        result
     }
 
     /**
@@ -1036,20 +829,47 @@ class OrganisationController  {
         result
     }
 
-    @Secured(['ROLE_YODA'])
     @UnstableFeature
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_PRO )
+    })
     @Check404(domain=Org)
     def info() {
-        Map<String,Object> ctrlResult = organisationControllerService.info(this, params)
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
+        Map<String,Object> info = [:]
+        String view = ''
 
-        Map<String,Object> result = ctrlResult.result as Map<String, Object>
-        if (!result) {
+        if (! result) {
             response.sendError(401); return
         }
-        if (! (contextService.getOrg().isCustomerType_Consortium() && result.orgInstance.isCustomerType_Inst())) {
+
+        Org ctxOrg = contextService.getOrg()
+        Org org    = result.orgInstance as Org
+
+        if (! org.isInfoAccessibleFor(ctxOrg)) {
             response.sendError(401); return
         }
-        result
+        else if (ctxOrg.isCustomerType_Consortium() && org.isCustomerType_Inst()) {
+            info = infoService.getInfo_ConsAtInst(ctxOrg, org)
+            view = 'info/info_consAtInst'
+        }
+        else if (ctxOrg.isCustomerType_Inst() && ctxOrg == org) {
+            info = infoService.getInfo_Inst(ctxOrg)
+            view = 'info/info_inst'
+        }
+
+        result.subscriptionMap          = info.subscriptionMap
+        result.subscriptionTimelineMap  = info.subscriptionTimelineMap
+        result.licenseMap               = info.licenseMap
+        result.licenseTimelineMap       = info.licenseTimelineMap
+        result.providerMap              = info.providerMap
+        result.providerTimelineMap      = info.providerTimelineMap
+        result.surveyMap                = info.surveyMap
+        result.surveyTimelineMap        = info.surveyTimelineMap
+        result.costs                    = info.costs
+
+        render view: view, model: result
     }
 
 
@@ -1072,8 +892,6 @@ class OrganisationController  {
 
         result.availableOrgTypes = RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE)-RDStore.OT_CONSORTIUM
         result.missing = [:]
-        if(result.error)
-            flash.error = result.error //to display we:kb's eventual 404
 
         if(result.inContextOrg && result.institution.eInvoice) {
             Identifier leitID = result.institution.getLeitID()
@@ -1105,20 +923,20 @@ class OrganisationController  {
             }
         }
 
-        if(!result.isProviderOrAgency){
+        //if(!result.isProviderOrAgency){
             result.orgInstance.createCoreIdentifiersIfNotExist()
-        }
+        //}
+        /*
+        TODO move to ProviderController.show()
         else {
             Set<Package> packages = []
             OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and exists(select sp from SubscriptionPackage sp join sp.subscription s join s.orgRelations ooo where ooo.org = :ctx and sp.pkg = oo.pkg)', [ctx: result.institution, org: result.orgInstance]).each { OrgRole oo ->
                 packages << oo.pkg
             }
-            /*
             ATTEMPT! Tendancy goes over to link packages with providers, not as much titles with packages. If data gets missing, this query must be reconsidered and reactivated!
             OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and oo.tipp in (select ie.tipp from IssueEntitlement ie join ie.subscription s join s.orgRelations ooo where ooo.org = :ctx)', [ctx: result.institution, org: result.orgInstance]).each { OrgRole oo ->
                 packages << oo.tipp.pkg
             }
-            */
             result.packages = packages.sort { Package pkg -> pkg.sortname }
             //may become a performance bottleneck - SUBJECT OF OBSERVATION!
             String subConsortialFilter = '', licConsortialFilter = ''
@@ -1131,6 +949,7 @@ class OrganisationController  {
             result.licLinks = OrgRole.executeQuery('select distinct(oo.lic) from OrgRole oo join oo.lic l where oo.org = :org and exists(select ooo from OrgRole ooo where l = ooo.lic and ooo.org = :ctx)'+licConsortialFilter+' order by l.reference, l.startDate, l.endDate',[org: result.orgInstance, ctx: result.institution])
             result.currentLicensesCount = OrgRole.executeQuery('select distinct(oo.lic) from OrgRole oo join oo.lic l where l.status = :current and oo.org = :org and exists(select li from Links li where li.sourceLicense = l and li.destinationSubscription in (select s from OrgRole oos join oos.sub s where oos.org = :ctx and s.status = :subCurrent'+subConsortialFilter+')) and exists(select ooo from OrgRole ooo where l = ooo.lic and ooo.org = :ctx)'+licConsortialFilter+' order by l.reference, l.startDate, l.endDate',[org: result.orgInstance, ctx: result.institution, subCurrent: RDStore.SUBSCRIPTION_CURRENT, current: RDStore.LICENSE_CURRENT]).size()
         }
+        */
 
         if (result.orgInstance.createdBy) {
 			result.createdByOrgGeneralContacts = PersonRole.executeQuery(
@@ -1177,24 +996,17 @@ class OrganisationController  {
         if(!params.tab)
             params.tab = 'identifier'
 
-        //IF ORG is a Provider and is NOT ex we:kb
-        if(!result.orgInstance.gokbId && (result.orgInstance.sector == RDStore.O_SECTOR_PUBLISHER || RDStore.OT_PROVIDER.id in result.allOrgTypeIds)) {
-            result.editable_identifier = userService.hasFormalAffiliation(result.user, result.orgInstance, 'INST_EDITOR') ||
-                    contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        if (contextService.getOrg().isCustomerType_Consortium()) {
+            List<Long> consortia = Combo.executeQuery('select c.id from Combo c where c.type = :type and c.fromOrg = :target and c.toOrg = :context',[type:RDStore.COMBO_TYPE_CONSORTIUM,target:result.orgInstance,context:result.institution])
+            if(consortia.size() == 1 && userService.hasFormalAffiliation(result.user, result.institution, 'INST_EDITOR'))
+                result.editable_identifier = true
         }
-        else if(!result.orgInstance.gokbId) {
-            if (contextService.getOrg().isCustomerType_Consortium()) {
-                List<Long> consortia = Combo.executeQuery('select c.id from Combo c where c.type = :type and c.fromOrg = :target and c.toOrg = :context',[type:RDStore.COMBO_TYPE_CONSORTIUM,target:result.orgInstance,context:result.institution])
-                if(consortia.size() == 1 && userService.hasFormalAffiliation(result.user, result.institution, 'INST_EDITOR'))
-                    result.editable_identifier = true
-            }
-            else
-                result.editable_identifier = userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.orgInstance, 'INST_EDITOR')
-        }
+        else
+            result.editable_identifier = userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.orgInstance, 'INST_EDITOR')
 
-        if(!(RDStore.OT_PROVIDER.id in result.allOrgTypeIds)){
-            result.orgInstance.createCoreIdentifiersIfNotExist()
-        }
+        //if(!(RDStore.OT_PROVIDER.id in result.allOrgTypeIds)){
+        result.orgInstance.createCoreIdentifiersIfNotExist()
+        //}
 
         Boolean inContextOrg = result.inContextOrg
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
@@ -1215,9 +1027,9 @@ class OrganisationController  {
             // adding default settings
             organisationService.initMandatorySettings(result.orgInstance)
             if(params.tab == 'customerIdentifiers') {
-                result.allPlatforms = organisationService.getAllPlatforms()
-                Map<String, Object> queryParams = [customer: result.orgInstance]
-                String query = "select ci from CustomerIdentifier ci join ci.platform platform where ci.customer = :customer"
+                result.allPlatforms = organisationService.getAllPlatformsForContextOrg(result.institution)
+                Map<String, Object> queryParams = [customer: result.orgInstance, context: result.institution]
+                String query = "select ci from CustomerIdentifier ci join ci.platform platform where ci.customer = :customer and platform in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (select oo.sub from OrgRole oo where oo.org = :context))"
                 if(params.customerIdentifier) {
                     query += " and ci.value like (:customerIdentifier)"
                     queryParams.customerIdentifier = "%${params.customerIdentifier.toLowerCase()}%"
@@ -1234,7 +1046,7 @@ class OrganisationController  {
                     query += " and platform in (:wekbPlatforms)"
                     queryParams.wekbPlatforms = result.allPlatforms
                 }
-                String sort = " order by platform.org.name asc"
+                String sort = " order by platform.provider.name asc"
                 if(params.sort) {
                     sort = " order by ${params.sort} ${params.order}"
                 }
@@ -1443,7 +1255,9 @@ class OrganisationController  {
         Map filterParams = params
         filterParams.org = genericOIDService.getOID(result.orgInstance)
 
-        result.users = userService.getUserSet(filterParams)
+        Map userData = userService.getUserMap(filterParams)
+        result.total = userData.count
+        result.users = userData.data
         result.titleMessage = "${result.orgInstance.name} - ${message(code:'org.nav.users')}"
         result.inContextOrg = false
         result.multipleAffiliationsWarning = true
@@ -1466,10 +1280,8 @@ class OrganisationController  {
                 deleteLink: 'deleteUser',
                 users: result.users,
                 showAllAffiliations: false,
-                modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA'),
                 availableComboOrgs: availableComboOrgs
         ]
-        result.total = result.users.size()
         render view: '/user/global/list', model: result
     }
 
@@ -1632,6 +1444,22 @@ class OrganisationController  {
         render view: 'delete', model: result
     }
 
+    @Secured(['ROLE_ADMIN'])
+    def disableAllUsers() {
+        List disabledAccounts = []
+
+        Org org = Org.get(params.id)
+        if (org) {
+            User.executeQuery('select u from User u where u.formalOrg = :org and u.enabled = true', [org: org]).each { User usr ->
+                usr.enabled = false
+                usr.save()
+                disabledAccounts.add([usr.id, usr.username])
+            }
+            SystemEvent.createEvent('SYSTEM_UA_FLAG_DISABLED', [org: [org.id, org.name], disabled: disabledAccounts])
+        }
+        redirect action:'users', id:params.id, params:[disabledAccounts: disabledAccounts]
+    }
+
     /**
      * Call to list the public contacts of the given organisation
      * @return a table view of public contacts
@@ -1694,11 +1522,20 @@ class OrganisationController  {
         visiblePersons.each { Person p ->
             Contact mail = Contact.findByPrsAndContentType(p, RDStore.CCT_EMAIL)
             if(mail) {
-                Set<String> mails = emailAddresses.get(p.roleLinks.org[0])
-                if(!mails)
-                    mails = []
-                mails << mail.content
-                emailAddresses.put(p.roleLinks.org[0], mails)
+                String oid
+                if(p.roleLinks.org[0]) {
+                    oid = genericOIDService.getOID(p.roleLinks.org[0])
+                }
+                else if(p.roleLinks.vendor[0]) {
+                    oid = genericOIDService.getOID(p.roleLinks.vendor[0])
+                }
+                if(oid) {
+                    Set<String> mails = emailAddresses.get(oid)
+                    if(!mails)
+                        mails = []
+                    mails << mail.content
+                    emailAddresses.put(oid, mails)
+                }
             }
         }
         result.emailAddresses = emailAddresses
@@ -1836,7 +1673,7 @@ class OrganisationController  {
      */
     @Secured(['ROLE_USER'])
     def linkOrgs() {
-        organisationControllerService.linkOrgs(params)
+        linksGenerationService.linkOrgs(params)
         redirect action: 'show', id: params.context
     }
 
@@ -1845,7 +1682,7 @@ class OrganisationController  {
      */
     @Secured(['ROLE_USER'])
     def unlinkOrg() {
-        organisationControllerService.unlinkOrg(params)
+        linksGenerationService.unlinkOrg(params)
         redirect action: 'show', id: params.id
     }
 
@@ -2082,21 +1919,14 @@ class OrganisationController  {
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        result.rdvAllPersonFunctions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
+        result.rdvAllPersonFunctions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_INVOICING_CONTACT, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
         result.rdvAllPersonPositions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
 
-        if ((result.institution.isCustomerType_Consortium() || result.institution.isCustomerType_Support() )&& result.orgInstance) {
+        if ((result.institution.isCustomerType_Consortium() || result.institution.isCustomerType_Support()) && result.orgInstance) {
             params.org = result.orgInstance
             result.rdvAllPersonFunctions << RDStore.PRS_FUNC_GASCO_CONTACT
         }else{
             params.org = result.institution
-        }
-
-        List allOrgTypeIds = result.orgInstance.getAllOrgTypeIds()
-        if(RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds){
-            result.rdvAllPersonFunctions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
-            result.rdvAllPersonPositions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
-
         }
 
         params.sort = params.sort ?: 'p.last_name, p.first_name'
@@ -2119,11 +1949,23 @@ class OrganisationController  {
         visiblePersons.each { Person p ->
             Contact mail = Contact.findByPrsAndContentType(p, RDStore.CCT_EMAIL)
             if(mail) {
-                Set<String> mails = emailAddresses.get(p.roleLinks.org[0])
-                if(!mails)
-                    mails = []
-                mails << mail.content
-                emailAddresses.put(p.roleLinks.org[0], mails)
+                String oid
+                if(p.roleLinks.org[0]) {
+                    oid = genericOIDService.getOID(p.roleLinks.org[0])
+                }
+                else if(p.roleLinks.vendor[0]) {
+                    oid = genericOIDService.getOID(p.roleLinks.vendor[0])
+                }
+                else if(p.roleLinks.provider[0]) {
+                    oid = genericOIDService.getOID(p.roleLinks.provider[0])
+                }
+                if(oid) {
+                    Set<String> mails = emailAddresses.get(oid)
+                    if(!mails)
+                        mails = []
+                    mails << mail.content
+                    emailAddresses.put(oid, mails)
+                }
             }
         }
         result.emailAddresses = emailAddresses

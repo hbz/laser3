@@ -78,14 +78,16 @@ class YodaController {
     FormService formService
     GokbService gokbService
     GlobalSourceSyncService globalSourceSyncService
+    ProviderService providerService
     def quartzScheduler
     RenewSubscriptionService renewSubscriptionService
     StatsSyncService statsSyncService
     StatusUpdateService statusUpdateService
     SubscriptionService subscriptionService
     SurveyUpdateService surveyUpdateService
+    VendorService vendorService
     YodaService yodaService
-    WekbStatsService wekbStatsService
+    WekbNewsService wekbNewsService
 
     /**
      * Shows the Yoda-dashboard
@@ -96,7 +98,7 @@ class YodaController {
         Map<String, Object> result = [
                 docStore: AppUtils.getDocumentStorageInfo()
         ]
-        result
+        result 
     }
 
     /**
@@ -183,6 +185,9 @@ class YodaController {
         result
     }
 
+    /**
+     * Call to open the list of ${@link FilterChainProxy}s
+     */
     @Secured(['ROLE_YODA'])
     def systemOddments() {
         Map<String, Object> result = [:]
@@ -607,7 +612,7 @@ class YodaController {
         log.debug("match package holdings to issue entitlement holdings ...")
         flash.message = "Bestände werden korrigiert ..."
         yodaService.matchPackageHoldings(params.long('pkgId'))
-        redirect controller: 'package', action: 'index'
+        redirect(url: request.getHeader('referer'))
     }
 
     @Deprecated
@@ -641,6 +646,9 @@ class YodaController {
         redirect controller: 'home'
     }
 
+    /**
+     * Lists the currently created bulk files (= the export cache)
+     */
     @Secured(['ROLE_YODA'])
     Map<String, Object> manageTempUsageFiles() {
         File dir = new File(GlobalService.obtainFileStorageLocation())
@@ -649,6 +657,10 @@ class YodaController {
         [tempFiles: tempFiles]
     }
 
+    /**
+     * Deletes the given temp file; intended for debugging purposes (= file creation test)
+     * @return redirects back to the list view @ {@link #manageTempUsageFiles()}
+     */
     @Secured(['ROLE_YODA'])
     def deleteTempFile() {
         if(params.containsKey('filename')) {
@@ -857,7 +869,7 @@ class YodaController {
         else {
             log.debug("process running, lock is set!")
         }
-        redirect controller: 'package'
+        redirect(url: request.getHeader('referer'))
     }
 
     /**
@@ -878,7 +890,7 @@ class YodaController {
         }
         flash.message = "Pakete werden nachgehalten ..."
 
-        redirect controller: 'package'
+        redirect(url: request.getHeader('referer'))
     }
 
     /**
@@ -906,26 +918,45 @@ class YodaController {
     }
 
     /**
-     * Call to reload all provider / agency data from the specified we:kb instance.
+     * Call to reload all provider data from the specified we:kb instance.
      * Note that the organisations whose data should be updated need a we:kb ID for match;
      * if no match is being found for the given we:kb ID, a new record will be created!
      */
     @Secured(['ROLE_YODA'])
-    def reloadWekbOrg() {
+    def reloadWekbProvider() {
         if(!globalSourceSyncService.running) {
             log.debug("start reloading ...")
-            if(params.containsKey('componentType')) {
-                executorService.execute({
-                    Thread.currentThread().setName("GlobalDataUpdate_Org")
-                    globalSourceSyncService.reloadData(params.componentType)
-                    yodaService.expungeRemovedComponents(params.componentType)
-                })
-            }
+            executorService.execute({
+                Thread.currentThread().setName("GlobalDataUpdate_Provider")
+                globalSourceSyncService.reloadData('Org')
+                yodaService.expungeRemovedComponents(Org.class.name)
+            })
         }
         else {
             log.debug("process running, lock is set!")
         }
         redirect controller: 'organisation', action: 'listProvider'
+    }
+
+    /**
+     * Call to reload all vendor (agency) data from the specified we:kb instance.
+     * Note that the vendors whose data should be updated need a we:kb ID for match;
+     * if no match is being found for the given we:kb ID, a new record will be created!
+     */
+    @Secured(['ROLE_YODA'])
+    def reloadWekbVendor() {
+        if(!globalSourceSyncService.running) {
+            log.debug("start reloading ...")
+            executorService.execute({
+                Thread.currentThread().setName("GlobalDataUpdate_Vendor")
+                globalSourceSyncService.reloadData('Vendor')
+                yodaService.expungeRemovedComponents(Vendor.class.name)
+            })
+        }
+        else {
+            log.debug("process running, lock is set!")
+        }
+        redirect controller: 'vendor', action: 'index'
     }
 
     /**
@@ -937,7 +968,6 @@ class YodaController {
     def reloadWekbPlatform() {
         if(!globalSourceSyncService.running) {
             log.debug("start reloading ...")
-            //continue here with tests
             executorService.execute({
                 Thread.currentThread().setName("GlobalDataUpdate_Platform")
                 globalSourceSyncService.reloadData('Platform')
@@ -951,9 +981,25 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    def reloadWekbChanges() {
-        log.info('--> reloadWekbChanges')
-        wekbStatsService.updateCache()
+    def migrateProviders() {
+        providerService.migrateProviders()
+        redirect controller: 'myInstitution', action: 'dashboard'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def migrateVendors() {
+        vendorService.migrateVendors()
+        redirect controller: 'myInstitution', action: 'dashboard'
+    }
+
+    /**
+     * Updates the recent we:kb changes cache
+     * @return redirects back to the dashboard
+     */
+    @Secured(['ROLE_YODA'])
+    def reloadwekbNews() {
+        log.info('--> reloadwekbNews')
+        wekbNewsService.updateCache()
         redirect controller: 'myInstitution', action: 'dashboard'
     }
 
@@ -963,9 +1009,9 @@ class YodaController {
      */
     @Secured(['ROLE_YODA'])
     def manageGlobalSources() {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [editable: true]
         log.debug("manageGlobalSources ..")
-        result.sources = GlobalRecordSource.list()
+        result.sources = GlobalRecordSource.list([sort: 'id'])
 
         result
     }
@@ -1594,7 +1640,7 @@ class YodaController {
                     ies.eachWithIndex { IssueEntitlement issueEntitlement, int i ->
                         //log.debug("now processing record ${offset+i} out of ${ieCount}")
                         TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
-                        Org owner = issueEntitlement.subscription.subscriber
+                        Org owner = issueEntitlement.subscription.getSubscriberRespConsortia()
                         issueEntitlement.perpetualAccessBySub = issueEntitlement.subscription
                         issueEntitlement.save()
 

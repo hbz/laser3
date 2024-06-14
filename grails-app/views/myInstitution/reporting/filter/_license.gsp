@@ -4,7 +4,13 @@
         <div class="menu ui top attached tabular la-tab-with-js">
             <a class="active item" data-tab="lic-filter-tab-1">${message(code:'license.plural')}</a>
             %{--<a class="item" data-tab="lic-filter-tab-2">Einrichtung</a>--}%
-            <a class="item" data-tab="lic-filter-tab-3">${message(code:'default.ProviderAgency.singular')}</a>
+            <a class="item" data-tab="lic-filter-tab-3">${message(code:'license.licensor.label')}</a>
+            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).provider}">
+                <a class="item" data-tab="lic-filter-tab-4">${message(code:'provider.label')}</a>
+            </g:if>
+            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).vendor}">
+                <a class="item" data-tab="lic-filter-tab-5">${message(code:'default.vendor.export.label')}</a>
+            </g:if>
         </div><!-- .menu -->
 
         <div class="ui bottom attached active tab segment" data-tab="lic-filter-tab-1">
@@ -65,3 +71,45 @@
             </g:each>
 
         </div><!-- .tab -->
+
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).provider}" />
+        <g:if test="${config}">
+
+            <div class="ui bottom attached tab segment" data-tab="lic-filter-tab-4">
+                <div class="field">
+                    <label for="filter:provider_source">${message(code:'reporting.ui.global.filter.selection')}</label>
+
+                    <g:select name="filter:provider_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getSourceLabel(config.meta.cfgKey, it)}}" value="${params.get('filter:provider_source')}" />
+                </div>
+
+                <g:each in="${config.filter.default}" var="cfgFilter">
+                    <div class="fields <uiReporting:numberToString number="${cfgFilter.size()}" min="2"/>">
+                        <g:each in="${cfgFilter}" var="field">
+                            <uiReporting:filterField config="${config}" field="${field}" key="provider" />
+                        </g:each>
+                    </div>
+                </g:each>
+            </div><!-- .tab -->
+
+        </g:if>
+
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).vendor}" />
+        <g:if test="${config}">
+
+            <div class="ui bottom attached tab segment" data-tab="lic-filter-tab-5">
+                <div class="field">
+                    <label for="filter:vendor_source">${message(code:'reporting.ui.global.filter.selection')}</label>
+
+                    <g:select name="filter:vendor_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getSourceLabel(config.meta.cfgKey, it)}}" value="${params.get('filter:vendor_source')}" />
+                </div>
+
+                <g:each in="${config.filter.default}" var="cfgFilter">
+                    <div class="fields <uiReporting:numberToString number="${cfgFilter.size()}" min="2"/>">
+                        <g:each in="${cfgFilter}" var="field">
+                            <uiReporting:filterField config="${config}" field="${field}" key="vendor" />
+                        </g:each>
+                    </div>
+                </g:each>
+            </div><!-- .tab -->
+
+        </g:if>

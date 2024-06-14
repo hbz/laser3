@@ -50,7 +50,7 @@
 
                             <input name="auditNewIdentifier" id="auditNewIdentifier" type="hidden" value="false"/>
                             <button id="auditNewIdentifierToggle" data-content="${message(code: 'property.audit.off.tooltip')}" class="ui icon blue button la-modern-button la-audit-button la-popup-tooltip la-delay">
-                                <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
+                                <i aria-hidden="true" class="icon la-thumbtack slash"></i>
                             </button>
                         </div>
                         </g:if>
@@ -70,11 +70,12 @@
     $("#idExpl").hide();
     let dictionary = {};
     let pattern;
+    let placeholder;
     <g:each in="${namespacesWithValidations}" var="entry">
         <g:set var="key" value="${entry.getKey()}"/>
         <g:set var="ns" value="${entry.getValue()}"/>
         pattern = '${ns.pattern}';
-        dictionary['${key}'] = {pattern: pattern.replaceAll('&#92;','\\'), prompt: '${ns.prompt}', placeholder: '${ns.placeholder}'.replaceAll('&quot;','"')};
+        dictionary['${key}'] = {pattern: pattern.replaceAll('&#92;','\\'), prompt: '${ns.prompt}', placeholder: '${ns.placeholder.replaceAll("'",'"')}'.replaceAll('&quot;','"')};
     </g:each>
 
     $.fn.form.settings.rules.identifierRegex = function() {

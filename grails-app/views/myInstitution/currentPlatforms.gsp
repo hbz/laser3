@@ -19,11 +19,11 @@
             <th>${message(code:'sidewide.number')}</th>
             <g:sortableColumn property="p.normname" title="${message(code: 'default.name.label')}" />
             <th>${message(code:'default.url.label')}</th>
-            <th>${message(code:'default.provider.label')}</th>
-            <th>${message(code:'accessPoint.plural')}</th>
+            <th>${message(code:'provider.label')}</th>
+            <%--<th>${message(code:'accessPoint.plural')}</th>--%>
             <th>${message(code:'myinst.currentPlatforms.assignedSubscriptions')}</th>
             <th class="center aligned"><ui:markerIcon type="WEKB_CHANGES" /></th>
-            <th>${message(code:'org.isWekbCurated.label')}</th>
+            <%--<th>${message(code:'org.isWekbCurated.label')}</th>--%>
         </tr>
         </thead>
         <tbody>
@@ -41,25 +41,30 @@
                     </g:if>
                 </td>
                 <td>
-                    <g:if test="${platformInstance.org}">
-                        <g:if test="${platformInstance.org.gokbId != null}">
-                            <ui:wekbIconLink type="org" gokbId="${platformInstance.org.gokbId}" />
+                    <g:if test="${platformInstance.provider}">
+                        <g:if test="${platformInstance.provider.gokbId != null}">
+                            <ui:wekbIconLink type="provider" gokbId="${platformInstance.provider.gokbId}" />
                         </g:if>
-                        <g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
+                        <g:link controller="provider" action="show" id="${platformInstance.provider.id}">${platformInstance.provider.getDesignation()}</g:link>
                     </g:if>
                 </td>
-                <td>
+                <%--<td>
                     <g:each in="${platformInstance.getContextOrgAccessPoints(contextOrg)}" var="oap" >
                         <g:link controller="accessPoint" action="edit_${oap.accessMethod.value.toLowerCase()}" id="${oap.id}">${oap.name} (${oap.accessMethod.getI10n('value')})</g:link> <br />
                     </g:each>
-                </td>
+                </td>--%>
                 <td>
                     <g:if test="${subscriptionMap.get('platform_' + platformInstance.id)}">
                         <ul class="la-simpleList">
                             <g:each in="${subscriptionMap.get('platform_' + platformInstance.id)}" var="sub">
                                 <li>
-                                    <g:link controller="subscription" action="show" id="${sub.id}">${sub}<br /></g:link>
-
+                                    <%
+                                        String period = sub.startDate ? g.formatDate(date: sub.startDate, format: message(code: 'default.date.format.notime'))  : ''
+                                        period = sub.endDate ? period + ' - ' + g.formatDate(date: sub.endDate, format: message(code: 'default.date.format.notime'))  : ''
+                                        period = period ? '('+period+')' : ''
+                                    %>
+                                    <g:link controller="subscription" action="show" id="${sub.id}">${sub} ${period}</g:link>
+                                    <%--
                                     <g:if test="${sub.packages}">
                                         <g:each in="${sub.deduplicatedAccessPointsForOrgAndPlatform(contextOrg, platformInstance)}" var="orgap">
                                             <div class="la-flexbox">
@@ -71,6 +76,7 @@
                                             </div>
                                         </g:each>
                                     </g:if>
+                                    --%>
                                 </li>
                             </g:each>
                         </ul>
@@ -78,10 +84,10 @@
                 </td>
                 <td class="center aligned">
                     <g:if test="${platformInstance.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
-                        <ui:markerIcon type="WEKB_CHANGES" color="purple" />
+                        <ui:cbItemMarkerAction platform="${platformInstance}" type="${Marker.TYPE.WEKB_CHANGES}" simple="true"/>
                     </g:if>
                 </td>
-                <td>
+                <%--<td>
                     <g:if test="${platformInstance.org}">
                         <div class="la-flexbox">
                             <g:if test="${platformInstance.org.gokbId != null && RDStore.OT_PROVIDER.id in platformInstance.org.getAllOrgTypeIds()}">
@@ -90,7 +96,7 @@
                         </div>
                     </g:if>
                 </td>
-                <%--<td class="center aligned">
+                <td class="center aligned">
                 </td>--%>
             </tr>
         </g:each>

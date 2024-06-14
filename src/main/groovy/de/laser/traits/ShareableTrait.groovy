@@ -2,6 +2,9 @@ package de.laser.traits
 
 import de.laser.DocContext
 import de.laser.OrgRole
+import de.laser.Provider
+import de.laser.ProviderRole
+import de.laser.VendorRole
 import de.laser.interfaces.ShareSupport
 import de.laser.storage.BeanStore
 
@@ -24,7 +27,7 @@ trait ShareableTrait {
 
     /**
      * Sets the sharing flag for the given target object
-     * @param target the {@link DocContext} or {@link OrgRole} which should be shared with members
+     * @param target the {@link DocContext}, {@link OrgRole} or {@link VendorRole} which should be shared with members
      */
     @Transient
     def addShareForTarget_trait(ShareSupport target) {
@@ -36,11 +39,17 @@ trait ShareableTrait {
         if (this instanceof OrgRole) {
             BeanStore.getShareService().addOrgRoleShareForTarget(this, target)
         }
+        if (this instanceof ProviderRole) {
+            BeanStore.getShareService().addProviderRoleShareForTarget(this, target)
+        }
+        if (this instanceof VendorRole) {
+            BeanStore.getShareService().addVendorRoleShareForTarget(this, target)
+        }
     }
 
     /**
      * Unsets the sharing flag from the given target object
-     * @param target the {@link DocContext} or {@link OrgRole} whose sharing with members should be abandoned
+     * @param target the {@link DocContext}, {@link OrgRole} or {@link VendorRole} whose sharing with members should be abandoned
      */
     @Transient
     def deleteShareForTarget_trait(ShareSupport target) {
@@ -52,10 +61,16 @@ trait ShareableTrait {
         if (this instanceof OrgRole) {
             BeanStore.getShareService().deleteOrgRoleShareForTarget(target)
         }
+        if (this instanceof ProviderRole) {
+            BeanStore.getShareService().deleteProviderRoleShareForTarget(target)
+        }
+        if (this instanceof VendorRole) {
+            BeanStore.getShareService().deleteVendorRoleShareForTarget(target)
+        }
     }
 
     /**
-     * Removes sharing links from the given {@link DocContext} or {@link OrgRole}
+     * Removes sharing links from the given {@link DocContext}, {@link OrgRole} or {@link VendorRole}
      */
     @Transient
     def deleteShare_trait() {
@@ -66,6 +81,12 @@ trait ShareableTrait {
         }
         if (this instanceof OrgRole) {
             OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: this])
+        }
+        if (this instanceof ProviderRole) {
+            ProviderRole.executeUpdate('delete from ProviderRole pvr where pvr.sharedFrom = :sf', [sf: this])
+        }
+        if (this instanceof VendorRole) {
+            VendorRole.executeUpdate('delete from VendorRole vr where vr.sharedFrom = :sf', [sf: this])
         }
     }
 }

@@ -33,7 +33,8 @@
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="organisation" action="index">${message(code:'menu.admin.allOrganisations')}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="manageOrganisations">${message(code:'menu.admin.manageOrganisations')}</ui:link>
-                <ui:link addItemAttributes="true" controller="admin" action="mergeOrganisations">${message(code:'menu.admin.mergeOrganisations')}</ui:link>
+                <ui:link addItemAttributes="true" controller="admin" action="mergeProviders">${message(code:'menu.admin.mergeProviders')}</ui:link>
+                <ui:link addItemAttributes="true" controller="admin" action="mergeVendors">${message(code:'menu.admin.mergeVendors')}</ui:link>
             </div>
         </div>
 
@@ -52,6 +53,7 @@
 
         <div class="divider"></div>
         <ui:link addItemAttributes="true" controller="admin" action="missingPermantTitlesInSubs">${message(code:'menu.admin.missingPermantTitlesInSubs')}</ui:link>
+        <ui:link addItemAttributes="true" controller="admin" action="packageLaserVsWekb">${message(code:'menu.admin.packageLaserVsWekb')}</ui:link>
         <div class="divider"></div>
 
         <div class="item" role="menuitem" aria-haspopup="true">

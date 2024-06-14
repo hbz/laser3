@@ -3,7 +3,7 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#private-property-wrapper-xxx"); --}%
 
-<%@ page import="de.laser.CustomerTypeService; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; java.net.URL" %>
+<%@ page import="de.laser.utils.LocaleUtils; de.laser.CustomerTypeService; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; java.net.URL" %>
 <laser:serviceInjection />
 
 
@@ -15,7 +15,7 @@
 </g:if>
 
 <table class="ui compact la-js-responsive-table la-table-inCard table">
-    <g:set var="privateProperties" value="${ownobj.propertySet.findAll { cp -> cp.type.tenant?.id == contextOrg.id && cp.tenant?.id == contextOrg.id }}"/>
+    <g:set var="privateProperties" value="${ownobj.propertySet.findAll { cp -> cp.type.tenant?.id == contextOrg.id && cp.tenant?.id == contextOrg.id }.sort{ cp -> cp.type[de.laser.utils.LocaleUtils.getLocalizedAttributeName('name')].toLowerCase() }}"/>
     <g:if test="${privateProperties}">
         <colgroup>
             <col class="la-prop-col-1">
@@ -28,7 +28,7 @@
         </colgroup>
         <thead>
             <tr>
-                <th class="la-js-dont-hide-this-card">${message(code:'property.table.property')}</th>
+                <th>${message(code:'property.table.property')}</th>
                 <th>${message(code:'default.value.label')}</th>
                 <g:if test="${ownobj instanceof License}">
                     <th>${message(code:'property.table.paragraph')}</th>
@@ -39,7 +39,7 @@
         </thead>
     </g:if>
     <tbody>
-        <g:each in="${privateProperties.sort{a, b -> a.type.getI10n('name').toLowerCase() <=> b.type.getI10n('name').toLowerCase() ?: a.getValue() <=> b.getValue() ?: a.id <=> b.id }}" var="prop">
+        <g:each in="${privateProperties}" var="prop">
             <g:if test="${prop.type.tenant?.id == tenant?.id}">
                 <tr>
                     <td>
@@ -79,7 +79,7 @@
                             <ui:xEditable owner="${prop}" type="date" field="dateValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.isURLType()}">
-                            <ui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" class="la-overflow la-ellipsis"/>
+                            <ui:xEditable owner="${prop}" type="url" field="urlValue" validation="maxlength" maxlength="255" overwriteEditable="${overwriteEditable}" class="la-overflow la-ellipsis"/>
                             <g:if test="${prop.value}">
                                 <ui:linkWithIcon href="${prop.value}" />
                             </g:if>
@@ -97,7 +97,7 @@
                     <td>
                         <ui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                     </td>
-                    <td class="x la-js-editmode-container">
+                    <td class="x">
                         <g:if test="${overwriteEditable == true}">
                             <ui:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal"
                                               controller="ajax"

@@ -128,12 +128,12 @@
                                                 <g:if test="${isConsortialObjects}">
                                                     <g:if test="${docctx.isShared}">
                                                         <span data-position="top left" class="la-popup-tooltip la-delay la-float-right" data-content="${message(code:'property.share.tooltip.on')}">
-                                                            <i class="la-share icon la-js-editmode-icon"></i>
+                                                            <i class="la-share icon"></i>
                                                         </span>
                                                     </g:if>
                                                     <g:else>
                                                         <span data-position="top left" class="la-popup-tooltip la-delay la-float-right" data-content="${message(code:'property.share.tooltip.off')}">
-                                                            <i class="la-share slash icon la-js-editmode-icon"></i>
+                                                            <i class="la-share slash icon"></i>
                                                         </span>
                                                     </g:else>
                                                 </g:if>
@@ -234,12 +234,12 @@
                                                             <g:if test="${isConsortialObjects}">
                                                                 <g:if test="${docctx.isShared}">
                                                                     <span data-position="top left" class="la-popup-tooltip la-delay la-float-right" data-content="${message(code:'property.share.tooltip.on')}">
-                                                                        <i class="la-share icon la-js-editmode-icon"></i>
+                                                                        <i class="la-share icon"></i>
                                                                     </span>
                                                                 </g:if>
                                                                 <g:else>
                                                                     <span data-position="top left" class="la-popup-tooltip la-delay la-float-right" data-content="${message(code:'property.share.tooltip.off')}">
-                                                                        <i class="la-share slash icon la-js-editmode-icon"></i>
+                                                                        <i class="la-share slash icon"></i>
                                                                     </span>
                                                                 </g:else>
                                                             </g:if>
@@ -248,12 +248,12 @@
                                                             <div class="right aligned wide column">
                                                                 <g:if test="${docctx.isShared}">
                                                                     <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
-                                                                        <i class="la-share icon la-js-editmode-icon"></i>
+                                                                        <i class="la-share icon"></i>
                                                                     </span>
                                                                 </g:if>
                                                                 <g:else>
                                                                     <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
-                                                                        <i class="la-share slash icon la-js-editmode-icon"></i>
+                                                                        <i class="la-share slash icon"></i>
                                                                     </span>
                                                                 </g:else>
 
@@ -438,10 +438,12 @@
         <g:else>
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
-                    <g:set var="surveyConfig" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(genericOIDService.resolveOID(sourceObjectId), true)}" />
-                    <g:link controller="survey" action="renewalEvaluation" id="${surveyConfig?.surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button js-click-control">
-                        <g:message code="renewalEvaluation.back"/>
-                    </g:link>
+                    <g:set var="surveyConfig" value="${SurveyConfig.get(Long.valueOf(fromSurvey))}"/>
+                    <g:if test="${surveyConfig.isSubSurveyUseForTransfer()}">
+                        <g:link controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" class="ui button js-click-control">
+                            <g:message code="renewalEvaluation.back"/>
+                        </g:link>
+                    </g:if>
                 </div>
                 <div class="eight wide field" style="text-align: right;">
                     <g:set var="submitDisabled" value="${(sourceObject && targetObject)? '' : 'disabled'}"/>

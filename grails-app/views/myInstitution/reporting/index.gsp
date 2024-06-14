@@ -113,12 +113,36 @@
                 <div class="fields two">
                     <div class="field">
                         <label for="filter-chooser">${message(code:'reporting.ui.global.filter.base')}</label>
-                        <g:select name="filter-chooser"
-                                  from="${cfgFilterList}"
-                                  optionKey="${{it}}"
-                                  optionValue="${{BaseConfig.getFilterLabel(it)}}"
-                                  class="ui selection dropdown la-not-clearable"
-                                  noSelection="${['': message(code: 'default.select.choose.label')]}" />
+%{--                        <g:select name="filter-chooser"--}%
+%{--                                  from="${cfgFilterList}"--}%
+%{--                                  optionKey="${{it}}"--}%
+%{--                                  optionValue="${{BaseConfig.getFilterLabel(it)}}"--}%
+%{--                                  class="ui selection dropdown la-not-clearable"--}%
+%{--                                  noSelection="${['': message(code: 'default.select.choose.label')]}" />--}%
+
+%{--                        <select id="filter-chooser" name="filter-chooser" class="ui selection dropdown la-not-clearable">--}%
+%{--                            <option value="">${message(code: 'default.select.choose.label')}</option>--}%
+%{--                            <g:each in="${cfgFilterList}" var="cfg">--}%
+%{--                                <option class="item" value="${cfg}">${BaseConfig.getFilterLabel(cfg)}</option>--}%
+%{--                            </g:each>--}%
+%{--                        </select>--}%
+
+                        <div id="filter-chooser" class="ui selection dropdown la-not-clearable">
+                            <input type="hidden" name="filter-chooser">
+                            <i class="dropdown icon"></i>
+                            <div class="default text">${message(code: 'default.select.choose.label')}</div>
+                            <div class="menu">
+                                <g:each in="${cfgFilterList}" var="cfg">
+                                    <div class="item" data-value="${cfg}">
+                                        <i class="${BaseConfig.getIcon(cfg)} icon grey"></i> ${BaseConfig.getFilterLabel(cfg)}
+                                    </div>
+                                </g:each>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label></label>
+                        <div>${message(code:'reporting.cfg.filter.asterisk')}</div>
                     </div>
                 </div>
             </div>
@@ -126,7 +150,7 @@
 
         <div id="filter-wrapper">
             <g:if test="${filter}">
-                <laser:render template="/myInstitution/reporting/filter/form" />
+                <laser:render template="/myInstitution/reporting/filter/filter_form" />
             </g:if>
         </div>
 
@@ -190,7 +214,10 @@
             $('#filter-chooser').on ('change', function (e) {
                 $.ajax({
                     url: '<g:createLink controller="myInstitution" action="reporting" />',
-                    data: { init: true, filter: $(this).val() },
+                    data: {
+                        init: true,
+                        filter: $('input[name=filter-chooser]').val()   /* filter: $(this).val() */
+                    },
                     dataType: 'html',
                     beforeSend: function (xhr) { $('#globalLoadingIndicator').show(); }
                 })

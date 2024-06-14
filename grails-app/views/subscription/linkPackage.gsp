@@ -25,7 +25,11 @@
 
 
 <g:if test="${!error}">
-    <laser:render template="/templates/filter/packageGokbFilter"/>
+    <laser:render template="/templates/filter/packageGokbFilter" model="[tmplConfigShow: [
+            ['q', 'pkgStatus'],
+            ['provider', 'vendor', 'ddc', 'curatoryGroup'],
+            ['curatoryGroupType', 'automaticUpdates']
+    ]]"/>
 </g:if>
 
 <ui:messages data="${flash}"/>
@@ -45,139 +49,15 @@
 
 
 <g:if test="${records}">
-
-    <table class="ui sortable celled la-js-responsive-table la-table table">
-        <thead>
-        <tr>
-            <th>${message(code: 'sidewide.number')}</th>
-            <g:sortableColumn property="name"
-                              title="${message(code: 'package.show.pkg_name')}"
-                              params="${params}"/>
-            <th>${message(code: 'package.status.label')}</th>
-            <g:sortableColumn property="titleCount"
-                              title="${message(code: 'package.compare.overview.tipps')}"
-                              params="${params}"/>
-            <g:sortableColumn property="providerName" title="${message(code: 'package.content_provider')}"
-                              params="${params}"/>
-            <g:sortableColumn property="nominalPlatformName"
-                              title="${message(code: 'platform.label')}"
-                              params="${params}"/>
-            <th>${message(code: 'package.curatoryGroup.label')}</th>
-            <th>${message(code: 'package.source.automaticUpdates')}</th>
-            <g:sortableColumn property="lastUpdatedDisplay"
-                              title="${message(code: 'package.lastUpdated.label')}"
-                              params="${params}"/>
-            <th>${message(code: 'default.action.label')}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <g:each in="${records}" var="record" status="jj">
-            <tr>
-                <g:set var="pkg" value="${Package.findByGokbId(record.uuid)}"/>
-                <g:set var="org" value="${Org.findByGokbId(record.providerUuid)}"/>
-                <g:set var="plat" value="${Platform.findByGokbId(record.nominalPlatformUuid)}"/>
-                <td>${(params.int('offset') ?: 0) + jj + 1}</td>
-                <td>
-                <%--UUID: ${record.uuid} --%>
-                <%--Package: ${Package.findByGokbId(record.uuid)} --%>
-                    <g:if test="${pkg}">
-                        <g:link controller="package" action="show"
-                                id="${pkg.id}">${record.name}</g:link>
-                    </g:if>
-                    <g:else>
-                        ${record.name} <a target="_blank"
-                                          href="${editUrl ? editUrl + '/public/packageContent/?id=' + record.uuid : '#'}"><i
-                                title="we:kb Link" class="external alternate icon"></i></a>
-                    </g:else>
-                </td>
-                <td>
-                    ${RefdataValue.getByValueAndCategory(record.status, RDConstants.PACKAGE_STATUS)?.getI10n("value")}
-                </td>
-                <td>
-                    <g:if test="${record.currentTippCount}">
-                        ${record.currentTippCount}
-                    </g:if>
-                    <g:else>
-                        0
-                    </g:else>
-                </td>
-                <td><g:if test="${org}"><g:link
-                        controller="organisation" action="show"
-                        id="${org.id}">${record.providerName}</g:link></g:if>
-                <g:else>${record.providerName}</g:else>
-                </td>
-                <td><g:if test="${plat}"><g:link
-                        controller="platform" action="show"
-                        id="${plat.id}">${record.nominalPlatformName}</g:link></g:if>
-                    <g:else>${record.nominalPlatformName}</g:else></td>
-                <td>
-                    <div class="ui bulleted list">
-                        <g:each in="${record.curatoryGroups}" var="curatoryGroup">
-                            <div class="item"><g:link url="${editUrl.endsWith('/') ? editUrl : editUrl+'/'}resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name}</g:link></div>
-                        </g:each>
-                    </div>
-                </td>
-                <td>
-                    <g:if test="${record.source?.automaticUpdates}">
-                        <g:message code="package.index.result.automaticUpdates"/>
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${record.source.frequency}">
-                            <i class="question circle icon"></i>
-                        </span>
-                    </g:if>
-                    <g:else>
-                        <g:message code="package.index.result.noAutomaticUpdates"/>
-                    </g:else>
-                </td>
-                <td>
-                    <g:if test="${record.lastUpdatedDisplay}">
-                        <g:formatDate formatName="default.date.format.notime"
-                                      date="${DateUtils.parseDateGeneric(record.lastUpdatedDisplay)}"/>
-                    </g:if>
-                </td>
-                <td class="right aligned">
-                    <g:if test="${editable && (!pkgs || !(record.uuid in pkgs))}">
-                        <g:set var="disabled" value="${bulkProcessRunning ? 'disabled' : ''}" />
-                        <button type="button" class="ui icon button la-popup-tooltip la-delay ${disabled}"
-                                data-addUUID="${record.uuid}"
-                                data-packageName="${record.name}"
-                                data-ui="modal"
-                                data-href="#linkPackageModal"
-                                data-content="${message(code: 'subscription.details.linkPackage.button', args: [record.name])}"><g:message
-                                code="subscription.details.linkPackage.label"/></button>
-
-                    </g:if>
-                %{--<g:else>
-                    <g:set var="hasCostItems"
-                           value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.pkg.gokbId = :record and ci.subPkg.subscription = :sub', [record: record.uuid, sub: subscription])}"/>
-                    <g:if test="${editable && !hasCostItems}">
-                        <div class="ui icon negative buttons">
-                            <button class="ui button la-selectable-button"
-                                    onclick="JSPC.app.unlinkPackage(${Package.findByGokbId(record.uuid)?.id})">
-                                <i class="unlink icon"></i>
-                            </button>
-                        </div>
-                    </g:if>
-                    <g:elseif test="${editable && hasCostItems}">
-                        <div class="ui icon negative buttons la-popup-tooltip"
-                             data-content="${message(code: 'subscription.delete.existingCostItems')}">
-                            <button class="ui disabled button la-selectable-button">
-                                <i class="unlink icon"></i>
-                            </button>
-                        </div>
-                    </g:elseif>
-                    <br/>
-                </g:else>--}%
-                </td>
-            </tr>
-        </g:each>
-        </tbody>
-    </table>
-
-
+    <laser:render template="/templates/filter/packageGokbFilterTable"
+                  model="[
+                          tmplConfigShow: ['lineNumber', 'name', 'status', 'titleCount', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'linkPackage'],
+                          pkgs: pkgs,
+                          bulkProcessRunning: bulkProcessRunning
+                  ]"
+    />
     <ui:paginate action="linkPackage" controller="subscription" params="${params}"
                     max="${max}" total="${recordsCount}"/>
-
 </g:if>
 <g:else>
     <g:if test="${filterSet}">
@@ -208,23 +88,30 @@
             <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="question circle icon"></i></span></label>
         </div>
         <div class="four fields">
-            <div class="field">
-                <ui:select class="ui dropdown search selection" id="holdingSelection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id" optionValue="value"/>
-            </div>
-            <g:if test="${institution.isCustomerType_Consortium()}">
+            <g:if test="${subscription.instanceOf && auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')}">
                 <div class="field">
-                    <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
-                        <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherited')}" class="ui icon green button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="true">
-                            <i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>
-                        </button>
-                    </g:if>
-                    <g:else>
-                        <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherit')}" class="ui icon blue button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="false">
-                            <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
-                        </button>
-                    </g:else>
+                    ${subscription.holdingSelection.getI10n('value')}
                 </div>
             </g:if>
+            <g:else>
+                <div class="field">
+                    <ui:select class="ui dropdown search selection" id="holdingSelection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id" optionValue="value"/>
+                </div>
+                <g:if test="${institution.isCustomerType_Consortium() && !subscription.instanceOf}">
+                    <div class="field">
+                        <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                            <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherited')}" class="ui icon green button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="true">
+                                <i aria-hidden="true" class="icon thumbtack"></i>
+                            </button>
+                        </g:if>
+                        <g:else>
+                            <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherit')}" class="ui icon blue button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="false">
+                                <i aria-hidden="true" class="icon la-thumbtack slash"></i>
+                            </button>
+                        </g:else>
+                    </div>
+                </g:if>
+            </g:else>
             <div class="field">
                 <div class="ui checkbox toggle">
                     <g:checkBox name="createEntitlements"/>

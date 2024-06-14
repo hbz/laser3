@@ -138,9 +138,10 @@ aside.ui.accordion .title:not(.ui) {
         }
     }
     .la-hero {
-        padding-top: 7rem !important;
+        padding-top: 2.5rem !important;
         .button {
-            background-color: #f1ebe5;
+            border: 2px solid @white!important;
+            line-height: 1.5;
         }
     }
     .masthead h1.ui.header{

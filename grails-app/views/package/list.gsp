@@ -63,9 +63,7 @@
                             <g:link action="show" id="${packageInstance.id}">${packageInstance.name}</g:link>
                         </td>
                         <td>
-                            <g:each in="${packageInstance.orgs}" var="orgLink">
-                                <g:link controller="organisation" action="show" id="${orgLink.org.id}">${orgLink.org.name}</g:link> <br />
-                            </g:each>
+                            <g:link controller="provider" action="show" id="${packageInstance.provider.id}">${packageInstance.provider.name}</g:link> <br />
                         </td>
                         <td><g:formatDate date="${packageInstance.dateCreated}" format="${message(code:'default.date.format.noZ')}"/></td>
                         <td><g:formatDate date="${packageInstance.lastUpdated}" format="${message(code:'default.date.format.noZ')}"/></td>

@@ -43,10 +43,6 @@
                         <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForInstitution.label"/></a>
                         <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution', ${orgInstance.id});"><g:message code="address.add.addressForInstitution.label"/></a>
                     </g:if>
-                    <g:if test="${isProviderOrAgency}">
-                        <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForProviderAgency', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForProviderAgency.label"/></a>
-                        <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProviderAgency', ${orgInstance.id});"><g:message code="address.add.addressForProviderAgency.label"/></a>
-                    </g:if>
                 </g:if>
                 <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
             </g:elseif>
@@ -60,17 +56,16 @@
             </g:elseif>
         </g:if>
 
-        <g:if test="${contextService.getUser().isYoda() && contextService.getOrg().isCustomerType_Consortium() && orgInstance.isCustomerType_Inst()}">
-            <div class="divider"></div>
-            <ui:actionsDropdownItem controller="org" action="info" message="menu.institutions.org.info" params="[id: orgInstance.id]" />
-        </g:if>
-
-        <g:if test="${actionName == 'show'}">
-            <sec:ifAnyGranted roles="ROLE_ADMIN">
+        <sec:ifAnyGranted roles="ROLE_ADMIN">
+            <g:if test="${actionName in ['show']}">
                 <div class="divider"></div>
+                <g:link class="item js-open-confirm-modal la-popup-tooltip la-delay" action="disableAllUsers" id="${params.id}"
+                        data-confirm-tokenMsg="${message(code: "confirm.dialog.disable.allInstUsers")}" data-confirm-term-how="ok">
+                    <i class="user lock icon"></i> ${message(code:'org.disableAllUsers.label')}
+                </g:link>
                 <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate outline icon"></i> ${message(code:'deletion.org')}</g:link>
-            </sec:ifAnyGranted>
-        </g:if>
+            </g:if>
+        </sec:ifAnyGranted>
     </ui:actionsDropdown>
 </g:if>
 <g:elseif test="${contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )}">
@@ -128,6 +123,15 @@
             </g:if>
             <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
         </g:elseif>
+        <sec:ifAnyGranted roles="ROLE_ADMIN">
+            <g:if test="${actionName in ['show']}">
+                <div class="divider"></div>
+                <g:link class="item js-open-confirm-modal la-popup-tooltip la-delay" action="disableAllUsers" id="${params.id}"
+                        data-confirm-tokenMsg="${message(code: "confirm.dialog.disable.allInstUsers")}" data-confirm-term-how="ok">
+                    <i class="user lock icon"></i> ${message(code:'org.disableAllUsers.label')}
+                </g:link>
+            </g:if>
+        </sec:ifAnyGranted>
     </ui:actionsDropdown>
 </g:elseif>
 <g:else>

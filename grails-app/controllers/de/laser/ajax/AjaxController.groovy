@@ -70,7 +70,7 @@ class AjaxController {
     def refdata_config = [
     "ContentProvider" : [
       domain:'Org',
-      countQry:"select count(o) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
+      countQry:"select count(*) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
       rowQry:"select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
       qryParams:[
               [
@@ -88,7 +88,7 @@ class AjaxController {
     ],
     "Licenses" : [
       domain:'License',
-      countQry:"select count(l) from License as l",
+      countQry:"select count(*) from License as l",
       rowQry:"select l from License as l",
       qryParams:[],
       cols:['reference'],
@@ -96,7 +96,7 @@ class AjaxController {
     ],
     'Currency' : [
       domain:'RefdataValue',
-      countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='" + RDConstants.CURRENCY + "'",
+      countQry:"select count(*) from RefdataValue as rdv where rdv.owner.desc='" + RDConstants.CURRENCY + "'",
       rowQry:"select rdv from RefdataValue as rdv where rdv.owner.desc='" + RDConstants.CURRENCY + "'",
       qryParams:[
                    [
@@ -109,7 +109,7 @@ class AjaxController {
     ],
     "allOrgs" : [
             domain:'Org',
-            countQry:"select count(o) from Org as o where lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
+            countQry:"select count(*) from Org as o where lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
             rowQry:"select o from Org as o where lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
             qryParams:[
                     [
@@ -127,7 +127,7 @@ class AjaxController {
     ],
     "CommercialOrgs" : [
             domain:'Org',
-            countQry:"select count(o) from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
+            countQry:"select count(*) from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
             rowQry:"select o from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
             qryParams:[
                     [
@@ -315,7 +315,7 @@ class AjaxController {
             // If we werent able to locate a specific config override, assume the ID is just a refdata key
             config = [
                 domain      :'RefdataValue',
-                countQry    :"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='" + params.id + "'",
+                countQry    :"select count(*) from RefdataValue as rdv where rdv.owner.desc='" + params.id + "'",
                 rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='" + params.id + "' order by rdv.order asc, rdv.value_" + lang,
                 qryParams   :[],
                 cols        :['value'],
@@ -635,6 +635,134 @@ class AjaxController {
             owner.updateShare(or)
         }
         or.delete()
+
+        redirect(url: request.getHeader('referer'))
+    }
+
+    /**
+     * Adds a relation link from a given object to a {@link Vendor}
+     */
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def addVendorRole() {
+        def owner  = genericOIDService.resolveOID(params.parent)
+
+        Set<Vendor> vendors = Vendor.findAllByIdInList(params.list('selectedVendors'))
+        vendors.each{ vendorToLink ->
+            boolean duplicateVendorRole = false
+
+            if(params.recip_prop == 'subscription') {
+                duplicateVendorRole = VendorRole.findAllBySubscriptionAndVendor(owner, vendorToLink) ? true : false
+            }
+            else if(params.recip_prop == 'license') {
+                duplicateVendorRole = VendorRole.findAllByLicenseAndVendor(owner, vendorToLink) ? true : false
+            }
+
+            if(! duplicateVendorRole) {
+                VendorRole new_link = new VendorRole(vendor: vendorToLink)
+                new_link[params.recip_prop] = owner
+
+                if (new_link.save()) {
+                    // log.debug("Org link added")
+                    if (owner.checkSharePreconditions(new_link)) {
+                        new_link.isShared = true
+                        new_link.save()
+
+                        owner.updateShare(new_link)
+                    }
+                } else {
+                    log.error("Problem saving new vendor link ..")
+                    new_link.errors.each { e ->
+                        log.error( e.toString() )
+                    }
+                }
+            }
+        }
+        redirect(url: request.getHeader('referer'))
+    }
+
+    /**
+     * Deletes the given relation link between a {@link Vendor} and its target
+     */
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def delVendorRole() {
+        VendorRole vr = VendorRole.get(params.id)
+
+        def owner
+        if(vr.subscription)
+            owner = vr.subscription
+        else if(vr.license)
+            owner = vr.license
+        if (owner instanceof ShareSupport && vr.isShared) {
+            vr.isShared = false
+            owner.updateShare(vr)
+        }
+        vr.delete()
+
+        redirect(url: request.getHeader('referer'))
+    }
+
+    /**
+     * Adds a relation link from a given object to a {@link Provider}
+     */
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def addProviderRole() {
+        def owner  = genericOIDService.resolveOID(params.parent)
+
+        Set<Provider> providers = Provider.findAllByIdInList(params.list('selectedProviders'))
+        providers.each{ providerToLink ->
+            boolean duplicateProviderRole = false
+
+            if(params.recip_prop == 'subscription') {
+                duplicateProviderRole = ProviderRole.findAllBySubscriptionAndProvider(owner, providerToLink) ? true : false
+            }
+            else if(params.recip_prop == 'license') {
+                duplicateProviderRole = ProviderRole.findAllByLicenseAndProvider(owner, providerToLink) ? true : false
+            }
+
+            if(! duplicateProviderRole) {
+                ProviderRole new_link = new ProviderRole(provider: providerToLink)
+                new_link[params.recip_prop] = owner
+
+                if (new_link.save()) {
+                    // log.debug("Org link added")
+                    if (owner.checkSharePreconditions(new_link)) {
+                        new_link.isShared = true
+                        new_link.save()
+
+                        owner.updateShare(new_link)
+                    }
+                } else {
+                    log.error("Problem saving new provider link ..")
+                    new_link.errors.each { e ->
+                        log.error( e.toString() )
+                    }
+                }
+            }
+        }
+        redirect(url: request.getHeader('referer'))
+    }
+
+    /**
+     * Deletes the given relation link between a {@link Provider} its target
+     */
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def delProviderRole() {
+        ProviderRole pvr = ProviderRole.get(params.id)
+
+        def owner
+        if(pvr.subscription)
+            owner = pvr.subscription
+        else if(pvr.license)
+            owner = pvr.license
+        if (owner instanceof ShareSupport && pvr.isShared) {
+            pvr.isShared = false
+            owner.updateShare(pvr)
+        }
+        pvr.delete()
 
         redirect(url: request.getHeader('referer'))
     }
@@ -1024,27 +1152,27 @@ class AjaxController {
         }
     }
 
+    /**
+     * Toggles the state of a marker for a we:kb object, i.e. whether it is on the user's watchlist or not
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def toggleMarker() {
 
         MarkerSupport obj   = genericOIDService.resolveOID(params.oid) as MarkerSupport
         User user           = contextService.getUser()
-        Marker.TYPE type    = Marker.TYPE.WEKB_CHANGES // TODO
+        Marker.TYPE type    = params.type ? Marker.TYPE.get(params.type) : Marker.TYPE.UNKOWN
 
         Map attrs = [ type: type, ajax: true ]
 
         if (params.simple) { attrs.simple = true }
 
-        if (obj instanceof Org) {
-            attrs.org = obj
-        }
-        else if (obj instanceof Package) {
-            attrs.package = obj
-        }
-        else if (obj instanceof Platform) {
-            attrs.platform = obj
-        }
+             if (obj instanceof Org)        { attrs.org = obj }
+        else if (obj instanceof Package)    { attrs.package = obj }
+        else if (obj instanceof Platform)   { attrs.platform = obj }
+        else if (obj instanceof Provider)   { attrs.provider = obj }
+        else if (obj instanceof Vendor)     { attrs.vendor = obj }
+        else if (obj instanceof TitleInstancePackagePlatform) { attrs.tipp = obj }
 
         if (obj.isMarked(user, type)) {
             obj.removeMarker(user, type)
@@ -1160,6 +1288,19 @@ class AjaxController {
             subscriptionService.inheritIdentifier(owner, identifier)
         }
         render template: "/templates/meta/identifierList", model: identifierService.prepareIDsForTable(owner)
+    }
+
+    /**
+     * Toggles inheritance of the given alternative name, i.e. passes or retires an alternative name to or from member objects
+     */
+    @Secured(['ROLE_USER'])
+    def toggleAlternativeNameAuditConfig() {
+        def owner = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
+        if(formService.validateToken(params)) {
+            AlternativeName altName  = AlternativeName.get(params.id)
+            subscriptionService.inheritAlternativeName(owner, altName)
+        }
+        redirect(url: request.getHeader('referer'))
     }
 
     /**
@@ -1564,32 +1705,6 @@ class AjaxController {
     }
 
     /**
-     * De-/activates the editing mode in certain views. Viewing mode prevents editing of values in those views despite
-     * the context user has editing rights to the object
-     * @return the changed view
-     */
-    @Transactional
-    @Secured(['ROLE_USER'])
-    def toggleEditMode() {
-        log.debug ('toggleEditMode()')
-
-        User user = contextService.getUser()
-        def show = params.showEditMode
-
-        if (show) {
-            def setting = user.getSetting(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)
-
-            if (show == 'true') {
-                setting.setValue(RDStore.YN_YES)
-            }
-            else if (show == 'false') {
-                setting.setValue(RDStore.YN_NO)
-            }
-        }
-        render show
-    }
-
-    /**
      * Adds an identifier to the given owner object
      */
     @Secured(['ROLE_USER'])
@@ -1863,7 +1978,13 @@ class AjaxController {
                         }
 
                         if(target_object instanceof Subscription && params.name == 'hasPerpetualAccess'){
-                            if(!subscriptionService.checkThreadRunning('permanentTilesProcess_'+target_object.id)) {
+                            boolean packageProcess = false
+                            for(SubscriptionPackage sp: target_object.packages) {
+                                packageProcess = subscriptionService.checkThreadRunning('permanentTitlesProcess_' + sp.pkg.id + '_' + contextService.getOrg().id)
+                                if(packageProcess)
+                                    break
+                            }
+                            if(!subscriptionService.checkThreadRunning('permanentTitlesProcess_'+target_object.id) && !packageProcess) {
                                 if (params.value == true && target_object.hasPerpetualAccess != params.value) {
                                     subscriptionService.setPermanentTitlesBySubscription(target_object)
                                 }
@@ -1881,7 +2002,7 @@ class AjaxController {
                                     result = target_object."${params.name}"
                                 }
                             }else {
-                                result = [status: 'error', msg: "${message(code: 'subscription.details.permanentTilesProcessRunning.info')}"]
+                                result = [status: 'error', msg: "${message(code: 'subscription.details.permanentTitlesProcessRunning.info')}"]
                                 render result as JSON
                                 return
                             }
@@ -2087,15 +2208,27 @@ class AjaxController {
     def generateCostPerUse() {
         Map<String, Object> ctrlResult = subscriptionControllerService.getStatsDataForCostPerUse(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_OK) {
+            if(ctrlResult.result.containsKey('alternatePeriodStart') && ctrlResult.result.containsKey('alternatePeriodEnd')) {
+                SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+                ctrlResult.result.selectedPeriodNotCovered = message(code: 'default.stats.error.selectedPeriodNotCovered', args: [sdf.format(ctrlResult.result.alternatePeriodStart), sdf.format(ctrlResult.result.alternatePeriodEnd)] as Object[])
+            }
             ctrlResult.result.costPerUse = [:]
             if(ctrlResult.result.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
-                ctrlResult.result.costPerUse.consortialData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "consortial")
-                if (ctrlResult.result.institution.isCustomerType_Inst_Pro()) {
-                    ctrlResult.result.costPerUse.ownData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
+                Map<String, Object> costPerUseConsortial = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "consortial")
+                ctrlResult.result.costPerUse.consortialData = costPerUseConsortial.costPerMetric
+                ctrlResult.result.consortialCosts = costPerUseConsortial.costsAllYears
+                if (ctrlResult.result.contextOrg.isCustomerType_Inst_Pro()) {
+                    Map<String, Object> costPerUseOwn = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
+                    ctrlResult.result.costPerUse.ownData = costPerUseOwn.costPerMetric
+                    ctrlResult.result.ownCosts = costPerUseOwn.costsAllYears
                 }
             }
-            else ctrlResult.result.costPerUse.ownData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
-            render template: "/subscription/costPerUse", model: ctrlResult.result
+            else {
+                Map<String, Object> costPerUseOwn = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
+                ctrlResult.result.costPerUse.ownData = costPerUseOwn.costPerMetric
+                ctrlResult.result.ownCosts = costPerUseOwn.costsAllYears
+            }
+            render template: "/templates/stats/costPerUse", model: ctrlResult.result
         }
         else [error: ctrlResult.error]
     }

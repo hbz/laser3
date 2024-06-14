@@ -11,16 +11,21 @@
 
 <ui:h1HeaderWithIcon type="finance">
     ${g.message(code: "financials.editCost")}:
-    <g:if test="${showVisibilitySettings && costItem.isVisibleForSubscriber}">
+    <g:if test="${costItem.sub}">
         <div class="ui orange label">
-            <strong>${costItem.sub.getSubscriber()}</strong>
+            <strong>${costItem.sub.getSubscriberRespConsortia()}</strong>
         </div>
     </g:if>
-    <g:elseif test="${subscription}">
+    <g:elseif test="${costItem.surveyOrg}">
         <div class="ui orange label">
-            <strong>${subscription.getSubscriber().name}</strong>
+            <strong>${costItem.surveyOrg.org.name}</strong>
         </div>
     </g:elseif>
+    <g:else>
+        <div class="ui orange label">
+            <strong>${costItem.owner.name}</strong>
+        </div>
+    </g:else>
 </ui:h1HeaderWithIcon>
 
 <ui:objectStatus object="${costItem}" status="${costItem.costItemStatus}"/>

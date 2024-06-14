@@ -1,18 +1,21 @@
 <%@ page import="de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
-<g:set var="wekbAPI" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
-
-    <g:if test="${isProviderOrAgency}">
-        <g:set var="entityName" value="${message(code: 'default.provider.label')}"/>
-    </g:if>
-    <g:elseif test="${institutionalView}">
+    <g:if test="${institutionalView}">
         <g:set var="entityName" value="${message(code: 'org.institution.label')}"/>
-    </g:elseif>
+    </g:if>
     <g:else>
         <g:set var="entityName" value="${message(code: 'org.label')}"/>
     </g:else>
 
-<laser:htmlStart message="${isProviderOrAgency ? 'menu.institutions.provider.show' : 'menu.institutions.org.show'}" serviceInjection="true" />
+<laser:htmlStart message="${'menu.institutions.org.show'}" serviceInjection="true" />
+
+<ui:debugInfo>
+    <div style="padding: 1em 0;">
+        <p>orgInstance.dateCreated: ${orgInstance.dateCreated}</p>
+        <p>orgInstance.lastUpdated: ${orgInstance.lastUpdated}</p>
+    </div>
+</ui:debugInfo>
+
 
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView, consortialView: consortialView]}"/>
@@ -25,13 +28,8 @@
     <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
 </ui:h1HeaderWithIcon>
 
-
 <ui:anualRings object="${orgInstance}" controller="organisation" action="show" navNext="${navNextOrg}"
                navPrev="${navPrevOrg}"/>
-
-%{--<g:if test="${isProviderOrAgency}">--}%
-%{--    <ui:cbItemMarkerAction org="${orgInstance}"/>--}%
-%{--</g:if>--}%
 
 <g:if test="${missing.size() > 0}">
     <div class="ui icon message warning">
@@ -51,7 +49,7 @@
     </div>
 </g:if>
 
-<laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, isProviderOrAgency: isProviderOrAgency]}"/>
+<laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
 <ui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
@@ -72,7 +70,7 @@
                                     data_confirm_term_how="ok"
                                     class="js-open-confirm-modal-xEditable"
                                     owner="${orgInstance}" field="name"
-                                    overwriteEditable="${editable && orgInstanceRecord == null}"/>
+                                    overwriteEditable="${editable}"/>
                         </dd>
                     </dl>
                     <g:if test="${!inContextOrg || isGrantedOrgRoleAdminOrOrgEditor}">
@@ -97,8 +95,8 @@
                                             <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                                           data_confirm_term_how="ok"
                                                           class="js-open-confirm-modal-xEditable"
-                                                          owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable && orgInstanceRecord == null}"/>
-                                            <g:if test="${editable && orgInstanceRecord == null}">
+                                                          owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable}"/>
+                                            <g:if test="${editable}">
                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [orgInstance.altnames[0].name])}"
                                                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(orgInstance.altnames[0])}')">
@@ -116,9 +114,9 @@
                                                             data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                                             data_confirm_term_how="ok"
                                                             class="js-open-confirm-modal-xEditable"
-                                                            owner="${altname}" field="name" overwriteEditable="${editable && orgInstanceRecord == null}"/>
+                                                            owner="${altname}" field="name" overwriteEditable="${editable}"/>
                                                 </div>
-                                                <g:if test="${editable && orgInstanceRecord == null}">
+                                                <g:if test="${editable}">
                                                     <div class="content la-space-right">
                                                         <div class="ui buttons">
                                                             <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
@@ -134,7 +132,7 @@
                                     </div>
                                 </g:if>
                             </div>
-                            <g:if test="${orgInstanceRecord == null}">
+                            <g:if test="${editable}">
                                 <input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}">
                             </g:if>
                         </dd>
@@ -146,7 +144,7 @@
                                     data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                     data_confirm_term_how="ok"
                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                    owner="${orgInstance}" type="url" field="url"  overwriteEditable="${editable && orgInstanceRecord == null}"/>
+                                    owner="${orgInstance}" type="url" field="url"  overwriteEditable="${editable}"/>
                             <g:if test="${orgInstance.url}">
                                 <ui:linkWithIcon href="${orgInstance.url}" />
                             </g:if>
@@ -234,32 +232,6 @@
                     </div>
                 </div><!-- .card -->
             </g:if>
-            <g:if test="${isProviderOrAgency && orgInstanceRecord}">
-                <div class="ui card">
-                    <div class="content">
-                        <dl>
-                            <dt>
-                                <g:message code="org.metadataDownloaderURL.label" />
-                            </dt>
-                            <dd>
-                                <g:if test="${orgInstanceRecord.metadataDownloaderURL}">
-                                    ${orgInstanceRecord.metadataDownloaderURL} <ui:linkWithIcon href="${orgInstanceRecord.metadataDownloaderURL}"/>
-                                </g:if>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>
-                                <g:message code="org.KBARTDownloaderURL.label" />
-                            </dt>
-                            <dd>
-                                <g:if test="${orgInstanceRecord.kbartDownloaderURL}">
-                                    ${orgInstanceRecord.kbartDownloaderURL} <ui:linkWithIcon href="${orgInstanceRecord.kbartDownloaderURL}"/>
-                                </g:if>
-                            </dd>
-                        </dl>
-                    </div>
-                </div><!-- .card -->
-            </g:if>
 
             <%--
             <div class="ui card">
@@ -267,13 +239,13 @@
                     <dl>
                         <dt><g:message code="org.sector.label" /></dt>
                         <dd>
-                            <ui:xEditableRefData owner="${orgInstance}" field="sector" config="${RDConstants.ORG_SECTOR}" overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor && orgInstanceRecord == null}"/>
+                            <ui:xEditableRefData owner="${orgInstance}" field="sector" config="${RDConstants.ORG_SECTOR}" overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor}"/>
                         </dd>
                     </dl>
                     <dl>
                         <dt>${message(code: 'default.status.label')}</dt>
                         <dd>
-                            <ui:xEditableRefData owner="${orgInstance}" field="status" config="${RDConstants.ORG_STATUS}" overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor && orgInstanceRecord == null}"/>
+                            <ui:xEditableRefData owner="${orgInstance}" field="status" config="${RDConstants.ORG_STATUS}" overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor}"/>
                         </dd>
                     </dl>
                     <g:if test="${orgInstance.status == RDStore.ORG_STATUS_RETIRED}">
@@ -502,370 +474,6 @@
                 </div><!-- .card -->
             </g:if>
 
-            <%--
-            <div class="ui card">
-                <div class="content">
-                    <g:if test="${orgInstance.isCustomerType_Inst()}">
-                        <h2 class="ui header"><g:message code="org.publicContacts.label"/></h2>
-                    </g:if>
-
-                        <g:if test="${(orgInstance.id == institution.id && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR'))}">
-                            <g:link action="contacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
-                                    class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
-                        </g:if>
-                </div>
-
-                <div class="description">
-                    <dl>
-                        <dt>
-                            <dd>
-                            <laser:render template="publicContacts" model="[isProviderOrAgency: isProviderOrAgency, existsWekbRecord: orgInstanceRecord != null]"/>
-
-                            <g:if test="${isProviderOrAgency && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
-                                <div class="ui list">
-
-                                    <div class="item">
-
-                                        <a href="#createPersonModal" class="ui button" data-ui="modal"
-                                           onclick="JSPC.app.personCreate('contactPersonForProviderAgencyPublic', ${orgInstance.id}, '&supportType=${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.id}');"><g:message
-                                                code="personFormModalTechnichalSupport"/></a>
-
-                                    </div>
-                                    <div class="item">
-
-                                        <a href="#createPersonModal" class="ui button" data-ui="modal"
-                                           onclick="JSPC.app.personCreate('contactPersonForProviderAgencyPublic', ${orgInstance.id}, '&supportType=${RDStore.PRS_FUNC_SERVICE_SUPPORT.id}');"><g:message
-                                                code="personFormModalServiceSupport"/></a>
-
-                                    </div>
-                                </div>
-                            </g:if>
-                            <g:if test="${!isProviderOrAgency}">
-                                <div class="ui cards">
-
-                                    <%
-                                        Set<String> typeNames = new TreeSet<String>()
-                                        typeNames.add(RDStore.ADDRESS_TYPE_BILLING.getI10n('value'))
-                                        typeNames.add(RDStore.ADDRESS_TYPE_POSTAL.getI10n('value'))
-                                        Map<String, List> typeAddressMap = [:]
-                                        orgInstance.addresses.each {
-                                            it.type.each { type ->
-                                                String typeName = type.getI10n('value')
-                                                typeNames.add(typeName)
-                                                List addresses = typeAddressMap.get(typeName) ?: []
-                                                addresses.add(it)
-                                                typeAddressMap.put(typeName, addresses)
-                                            }
-                                        }
-                                    %>
-                                    <g:each in="${typeNames}" var="typeName">
-                                        <div class="card">
-                                            <div class="content">
-                                                <div class="header la-primary-header">${typeName}</div>
-                                                <div class="description">
-                                                    <div class="ui divided middle aligned list la-flex-list">
-                                                        <% List addresses = typeAddressMap.get(typeName) %>
-                                                        <g:each in="${addresses}" var="a">
-                                                            <g:if test="${a.org}">
-                                                                <laser:render template="/templates/cpa/address" model="${[
-                                                                        hideAddressType     : true,
-                                                                        address             : a,
-                                                                        tmplShowDeleteButton: false,
-                                                                        controller          : 'org',
-                                                                        action              : 'show',
-                                                                        id                  : orgInstance.id,
-                                                                        editable            : false
-                                                                ]}"/>
-                                                            </g:if>
-                                                        </g:each>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </g:each>
-                                </div>
-                            </g:if>
-
-                            <g:if test="${isProviderOrAgency}">
-
-                                <div class="ui cards">
-                                    <%
-                                        List visiblePersons = addressbookService.getVisiblePersons("addressbook",[org: orgInstance, sort: 'p.last_name, p.first_name'])
-                                    %>
-                                    <g:each in="${visiblePersons}" var="person">
-                                        <%
-                                            SortedSet<String> roles = new TreeSet<String>()
-                                            person.roleLinks.each { PersonRole pr ->
-                                                if(pr.functionType)
-                                                    roles << pr.functionType.getI10n('value')
-                                                if(pr.positionType)
-                                                    roles << pr.positionType.getI10n('value')
-                                            }
-                                        %>
-                                        <div class="card divided">
-                                            <div class="content">
-                                                <div class="header la-primary-header">${roles.join(' / ')}</div>
-                                                <div class="description">
-                                                    <div class="ui middle aligned list la-flex-list">
-                                                        <laser:render template="/templates/cpa/person_full_details" model="${[
-                                                                person                 : person,
-                                                                personContext          : orgInstance,
-                                                                tmplShowDeleteButton   : true,
-                                                                tmplShowFunctions      : false,
-                                                                tmplShowPositions      : true,
-                                                                tmplShowResponsiblities: true,
-                                                                tmplConfigShow         : ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax', 'address'],
-                                                                controller             : 'organisation',
-                                                                action                 : 'show',
-                                                                id                     : orgInstance.id,
-                                                                editable               : false,
-                                                                noSelection            : true
-                                                        ]}"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </g:each>
-                                </div>
-                            </dd>
-                        </g:if>
-                        </dt>
-                    </dl>
-                </div>
-            </div><!-- .card -->
-            --%>
-
-            <g:if test="${isProviderOrAgency}">
-
-                <div class="ui card">
-                    <div class="content">
-                        <div class="ui accordion">
-                            <div class="title">
-                                <i class="dropdown icon la-dropdown-accordion"></i>
-                                <div class="ui horizontal relaxed list">
-                                    <div class="item">
-                                        <strong><g:message code="org.platforms.label" /></strong>
-                                        &nbsp;<div class="ui blue circular label">${orgInstance.platforms.size()}</div>
-                                    </div>
-                                    <div class="item">
-                                        <strong><g:message code="package.plural" /></strong>
-                                        &nbsp;<div class="ui blue circular label">${packages.size()}</div>
-                                    </div>
-                                    <div class="item">
-                                        <strong><g:message code="subscription.plural" /></strong>
-                                        &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}/${subLinks.size()}</div>
-                                    </div>
-                                    <div class="item">
-                                        <strong><g:message code="license.plural" /></strong>
-                                        &nbsp;<div class="ui blue circular label">${currentLicensesCount}/${licLinks.size()}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="content">
-                                <p class="ui header">%{--<i class="icon cloud"></i>--}% <g:message code="org.platforms.label" /></p>
-
-                                <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${orgInstance.platforms}" var="platform">
-                                        <g:if test="${platform.status == RDStore.PLATFORM_STATUS_CURRENT}">
-                                            <div class="ui item">
-                                                <div class="content la-space-right">
-                                                    <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
-                                                </div>
-                                            </div>
-                                        </g:if>
-                                    </g:each>
-                                </div>
-
-                                <p class="ui header">%{--<i class="icon gift"></i>--}% <g:message code="package.plural" /></p>
-
-                                <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${packages}" var="pkg">
-                                        <div class="ui item">
-                                            <div class="content la-space-right">
-                                                <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
-                                            </div>
-                                        </div>
-                                    </g:each>
-                                </div>
-
-                                <p class="ui header">%{--<i class="icon clipboard"></i>--}% <g:message code="subscription.plural" /></p>
-
-                                <div class="ui divided middle aligned selection list la-flex-list">
-                                    <div class="ui item">
-                                        <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: orgInstance.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id]">
-                                            <div class="content la-space-right">
-                                                <i class="icon filter"></i> <g:message code="subscription.plural.current" />
-                                            &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}</div>
-                                            </div>
-                                        </g:link>
-                                    </div>
-                                    <div class="ui item">
-                                        <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: orgInstance.globalUID, status: 'FETCH_ALL']">
-                                            <div class="content la-space-right">
-                                                <i class="icon filter"></i> <g:message code="subscription.plural.total" />
-                                            &nbsp;<div class="ui blue circular label">${subLinks.size()}</div>
-                                            </div>
-                                        </g:link>
-                                    </div>
-                                </div>
-
-                                <p class="ui header">%{--<i class="icon balance scale"></i>--}% <g:message code="license.plural" /></p>
-
-                                <div class="ui divided middle aligned selection list la-flex-list">
-                                    <div class="ui item">
-                                        <div class="content la-space-right">
-                                            <g:link controller="myInstitution" action="currentLicenses" params="[licensor: orgInstance.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']">
-                                                <i class="icon filter"></i> <g:message code="license.plural.current" />
-                                                &nbsp;<div class="ui blue circular label">${currentLicensesCount}</div></g:link>
-                                        </div>
-                                    </div>
-                                    <div class="ui item">
-                                        <div class="content la-space-right">
-                                            <g:link controller="myInstitution" action="currentLicenses" params="[licensor: orgInstance.id, filterSubmit: 'Filtern']">
-                                                <i class="icon filter"></i> <g:message code="license.plural.total" />
-                                                &nbsp;<div class="ui blue circular label">${licLinks.size()}</div></g:link>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                %{--
-                <div class="ui card">
-                    <div class="content">
-                        <div class="ui accordion">
-                            <div class="title">
-                                <i class="dropdown icon la-dropdown-accordion"></i> <g:message code="org.platforms.label" />
-                                &nbsp;<div class="ui blue circular label">${orgInstance.platforms.size()}</div>
-                            </div>
-                            <div class="content">
-                                <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${orgInstance.platforms}" var="platform">
-                                        <g:if test="${platform.status == RDStore.PLATFORM_STATUS_CURRENT}">
-                                            <div class="ui item">
-                                                <div class="content la-space-right">
-                                                    <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
-                                                </div>
-                                            </div>
-                                        </g:if>
-                                    </g:each>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                    <div class="ui card">
-                        <div class="content">
-                            <div class="ui accordion">
-                                <div class="title">
-                                    <i class="dropdown icon la-dropdown-accordion"></i> <g:message code="package.plural" />
-                                    &nbsp;<div class="ui blue circular label">${packages.size()}</div>
-                                </div>
-                                <div class="content">
-                                    <div class="ui divided middle aligned selection list la-flex-list">
-                                        <g:each in="${packages}" var="pkg">
-                                            <div class="ui item">
-                                                <div class="content la-space-right">
-                                                    <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
-                                                </div>
-                                            </div>
-                                        </g:each>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                <div class="ui card">
-                    <div class="content">
-                        <div class="ui accordion">
-                            <div class="title">
-                                <i class="dropdown icon la-dropdown-accordion"></i> <g:message code="subscription.plural" />
-                                &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}/${subLinks.size()}</div>
-                            </div>
-                            <div class="content">
-                                <div class="ui divided middle aligned selection list la-flex-list">
-                                    <div class="ui item">
-                                        <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: orgInstance.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id]">
-                                            <div class="content la-space-right">
-                                                <i class="icon filter"></i> <g:message code="subscription.plural.current" />
-                                                &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}</div>
-                                            </div>
-                                        </g:link>
-                                    </div>
-                                    <div class="ui item">
-                                        <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: orgInstance.globalUID, status: 'FETCH_ALL']">
-                                            <div class="content la-space-right">
-                                                <i class="icon filter"></i> <g:message code="subscription.plural.total" />
-                                                &nbsp;<div class="ui blue circular label">${subLinks.size()}</div>
-                                            </div>
-                                        </g:link>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="ui card">
-                    <div class="content">
-                        <div class="ui accordion">
-                            <div class="title">
-                                <i class="dropdown icon la-dropdown-accordion"></i> <g:message code="license.plural" />
-                                &nbsp;<div class="ui blue circular label">${currentLicensesCount}/${licLinks.size()}</div>
-                            </div>
-                            <div class="content">
-                                <div class="ui divided middle aligned selection list la-flex-list">
-                                    <div class="ui item">
-                                        <div class="content la-space-right">
-                                            <g:link controller="myInstitution" action="currentLicenses" params="[licensor: orgInstance.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']">
-                                                <i class="icon filter"></i> <g:message code="license.plural.current" />
-                                                &nbsp;<div class="ui blue circular label">${currentLicensesCount}</div></g:link>
-                                        </div>
-                                    </div>
-                                    <div class="ui item">
-                                        <div class="content la-space-right">
-                                            <g:link controller="myInstitution" action="currentLicenses" params="[licensor: orgInstance.id, filterSubmit: 'Filtern']">
-                                                <i class="icon filter"></i> <g:message code="license.plural.total" />
-                                                &nbsp;<div class="ui blue circular label">${licLinks.size()}</div></g:link>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                --}%
-                        <%--
-                        <div class="ui accordion">
-                            <div class="title">
-                                <i class="dropdown icon la-dropdown-accordion"></i>
-                            </div>
-                            <div class="content">
-                                <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${subLinks}" var="subLink">
-                                        <div class="ui item">
-                                            <div class="content la-space-right">
-                                                <strong><g:link controller="subscription" action="show"
-                                                                id="${subLink.id}">${subLink.name} (${subLink.status.getI10n('value')})
-                                                                <g:if test="${subLink.startDate && subLink.endDate}">
-                                                                    (${ DateUtils.getLocalizedSDF_noTime().format(subLink.startDate)}-${DateUtils.getLocalizedSDF_noTime().format(subLink.endDate)})
-                                                                </g:if>
-                                                </g:link>
-                                                </strong>
-                                            </div>
-                                        </div>
-                                    </g:each>
-                                </div>
-                            </div>
-                        </div>
-                        --%>
-            </g:if>
-
-            <g:if test="${!isProviderOrAgency}">
                 <g:if test="${(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || institution.isCustomerType_Consortium()) && (institution != orgInstance)}">
                     <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">
                         <div class="ui card">
@@ -924,7 +532,6 @@
                         </div><!-- .card -->
                     </g:if>
                 </g:if>
-            </g:if>
 
             <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support() || contextService.getOrg().isCustomerType_Inst_Pro()}">
                 <div id="new-dynamic-properties-block">
@@ -974,7 +581,6 @@
                         <g:if test="${PersonRole.executeQuery('select pr from Person p join p.roleLinks pr where pr.org = :org and ((p.isPublic = false and p.tenant = :ctx) or p.isPublic = true)', [org: orgInstance, ctx: institution]) ||
                                 Address.executeQuery('select a from Address a where a.org = :org and (a.tenant = :ctx or a.tenant = null)', [org: orgInstance, ctx: institution])}">
                             <table class="ui compact table">
-                                <g:if test="${!isProviderOrAgency}">
                                     <tr>
                                         <td>
                                             <div class="ui segment la-timeLineSegment-contact">
@@ -984,12 +590,9 @@
                                                         <g:each in="${persons}" var="prs">
                                                             <div class="row">
                                                                 <div class="two wide column">
-                                                                    <g:if test="${orgInstanceRecord}">
-                                                                        <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + orgInstance.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
-                                                                    </g:if>
-                                                                    <g:elseif test="${prs.isPublic}">
+                                                                    <g:if test="${prs.isPublic}">
                                                                         <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
-                                                                    </g:elseif>
+                                                                    </g:if>
                                                                     <g:else>
                                                                         <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                     </g:else>
@@ -1023,7 +626,7 @@
                                                                 </div>
                                                             </div>
                                                         </g:each>
-                                                        <g:set var="persons" value="${orgInstance.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_FC_BILLING_ADDRESS)}"/>
+                                                        <g:set var="persons" value="${orgInstance.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_INVOICING_CONTACT)}"/>
                                                         <g:each in="${persons}" var="prs">
                                                             <div class="row">
                                                                 <div class="two wide column">
@@ -1035,7 +638,7 @@
                                                                     </g:else>
                                                                 </div>
                                                                 <div class="fourteen wide column">
-                                                                    <div class="ui label">${RDStore.PRS_FUNC_FC_BILLING_ADDRESS.getI10n('value')}</div>
+                                                                    <div class="ui label">${RDStore.PRS_FUNC_INVOICING_CONTACT.getI10n('value')}</div>
                                                                     <div class="ui header">${prs}</div>
                                                                     <g:each in="${prs.roleLinks}" var="personRole">
                                                                         <g:if test="${personRole.org.id == orgInstance.id && personRole.positionType}">
@@ -1124,70 +727,6 @@
                                             </td>
                                         </tr>
                                     </g:if>
-                                </g:if>
-                                <g:if test="${isProviderOrAgency}">
-                                    <g:set var="providerContacts" value="${orgInstance.getContactPersonsByFunctionType(true, null, orgInstanceRecord != null)}"/>
-                                    <%--
-                                    <g:if test="${isProviderOrAgency && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
-                                        <tr>
-                                            <td>
-                                                <a href="#createPersonModal" class="ui button" data-ui="modal"
-                                                   onclick="JSPC.app.personCreate('contactPersonForProviderAgencyPublic', ${orgInstance.id}, '&supportType=${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.id}');"><g:message
-                                                        code="personFormModalTechnichalSupport"/></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <a href="#createPersonModal" class="ui button" data-ui="modal"
-                                                   onclick="JSPC.app.personCreate('contactPersonForProviderAgencyPublic', ${orgInstance.id}, '&supportType=${RDStore.PRS_FUNC_SERVICE_SUPPORT.id}');"><g:message
-                                                        code="personFormModalServiceSupport"/></a>
-                                            </td>
-                                        </tr>
-                                    </g:if>
-                                    --%>
-                                    <tr>
-                                        <td>
-                                            <g:if test="${providerContacts}">
-                                                <div class="ui segment la-timeLineSegment-contact">
-                                                    <div class="la-timeLineGrid">
-                                                        <div class="ui grid">
-                                                            <g:each in="${providerContacts}" var="prs">
-                                                                <div class="row">
-                                                                    <div class="two wide column">
-                                                                        <g:if test="${orgInstanceRecord}">
-                                                                            <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + orgInstance.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
-                                                                        </g:if>
-                                                                        <g:elseif test="${prs.isPublic}">
-                                                                            <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
-                                                                        </g:elseif>
-                                                                        <g:else>
-                                                                            <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
-                                                                        </g:else>
-                                                                    </div>
-                                                                    <div class="fourteen wide column">
-                                                                        <div class="ui label">${prs.roleLinks.collect { PersonRole pr -> pr.roleType.getI10n('value')}.join (' / ')}</div>
-                                                                        <g:if test="${!(prs.last_name in [RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value'), RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value'), RDStore.PRS_FUNC_METADATA.getI10n('value')])}"><div class="ui header">${prs}</div></g:if>
-                                                                        <g:if test="${prs.contacts}">
-                                                                            <g:each in="${prs.contacts.toSorted()}" var="contact">
-                                                                                <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
-                                                                                    <laser:render template="/templates/cpa/contact" model="${[
-                                                                                            overwriteEditable   : (orgInstanceRecord == null && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
-                                                                                            contact             : contact,
-                                                                                            tmplShowDeleteButton: (orgInstanceRecord == null && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
-                                                                                    ]}"/>
-                                                                                </g:if>
-                                                                            </g:each>
-                                                                        </g:if>
-                                                                    </div>
-                                                                </div>
-                                                            </g:each>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </g:if>
-                                        </td>
-                                    </tr>
-                                </g:if>
                             </table>
                         </g:if>
                     </div>
@@ -1203,16 +742,9 @@
                                         <g:message code="org.contactpersons.and.addresses.my"/>
                                     </div>
                                     <div class="right aligned four wide column">
-                                        <g:if test="${isProviderOrAgency}">
-                                            <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForProviderAgency" data-ui="modal">
-                                                <i aria-hidden="true" class="plus icon"></i>
-                                            </a>
-                                        </g:if>
-                                        <g:else>
-                                            <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForInstitution" data-ui="modal">
-                                                <i aria-hidden="true" class="plus icon"></i>
-                                            </a>
-                                        </g:else>
+                                        <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForInstitution" data-ui="modal">
+                                            <i aria-hidden="true" class="plus icon"></i>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -1461,13 +993,13 @@
         let url;
         let returnSelector;
         switch($(this).attr('data-objtype')) {
-            case 'altname': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'altname', owner: orgInstance.id]"/>';
+            case 'altname': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'altname', owner: genericOIDService.getOID(orgInstance)]"/>';
                 returnSelector = '#altnames';
                 break;
-            case 'frontend': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'frontend', owner: orgInstance.id]"/>';
+            case 'frontend': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'frontend', owner: genericOIDService.getOID(orgInstance)]"/>';
                 returnSelector = '#discoverySystemsFrontend';
                 break;
-            case 'index': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'index', owner: orgInstance.id]"/>';
+            case 'index': url = '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'index', owner: genericOIDService.getOID(orgInstance)]"/>';
                 returnSelector = '#discoverySystemsIndex';
                 break;
         }
@@ -1486,18 +1018,12 @@
     }
 
     JSPC.app.personCreate = function (contactFor, org, supportType = "") {
-        <g:if test="${orgInstanceRecord}">
-            let existsWekbRecord = "&existsWekbRecord=true";
-        </g:if>
-        <g:else>
-            let existsWekbRecord = "";
-        </g:else>
-        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&org=' + org + existsWekbRecord + '&showAddresses=false&showContacts=true' + supportType;
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&org=' + org + '&showAddresses=false&showContacts=true' + supportType;
         var func = bb8.ajax4SimpleModalFunction("#personModal", url);
         func();
     }
 
-<g:if test="${editable && orgInstanceRecord == null}">
+<g:if test="${editable}">
     let confirmationCard = $('#js-confirmationCard');
     $('.js-open-confirm-modal-xEditable', confirmationCard).editable('destroy').editable().on('shown', function() {
                                     r2d2.initDynamicUiStuff('.js-open-confirm-modal-xEditable');

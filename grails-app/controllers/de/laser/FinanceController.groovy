@@ -93,18 +93,18 @@ class FinanceController  {
                 if(result.subscription.instanceOf){
                     result.currentSurveysCounts = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                             [sub: result.subscription.instanceOf,
-                             org: result.subscription.getSubscriber(),
+                             org: result.subscription.getSubscriberRespConsortia(),
                              invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]]).size()
                     result.currentCostItemCounts = result.financialData.subscr ? result.financialData.subscr.count : result.financialData.cons.count
                 }else{
                     result.currentSurveysCounts = SurveyConfig.findAllBySubscription(result.subscription).size()
                     result.currentCostItemCounts = "${result.financialData.own.count}/${result.financialData.cons.count}"
                 }
-                result.currentMembersCounts =  Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',[parent: result.subscription, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])[0]
+                result.currentMembersCounts =  Subscription.executeQuery('select count(*) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',[parent: result.subscription, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])[0]
             }else{
                 result.currentSurveysCounts = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                         [sub: result.subscription.instanceOf,
-                         org: result.subscription.getSubscriber(),
+                         org: result.subscription.getSubscriberRespConsortia(),
                          invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]]).size()
                 if (result.institution.isCustomerType_Inst_Pro()) {
                     if(result.subscription.instanceOf)
@@ -213,7 +213,7 @@ class FinanceController  {
                 titles.addAll([message(code:'org.sortName.label'),message(code:'financials.newCosts.costParticipants'),message(code:'financials.isVisibleForSubscriber')])
             titles.add(message(code: 'financials.newCosts.costTitle'))
             if(viewMode == "cons")
-                titles.add(message(code:'default.provider.label'))
+                titles.add(message(code:'provider.label'))
             titles.addAll([message(code: 'default.subscription.label'), message(code:'subscription.startDate.label'), message(code: 'subscription.endDate.label'),
                            message(code: 'financials.costItemConfiguration'), message(code: 'package.label'), message(code: 'issueEntitlement.label'),
                            message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'), message(code: 'financials.dateTo'), message(code:'financials.financialYear'),
@@ -318,7 +318,7 @@ class FinanceController  {
                                     row.add(message(code:'financials.costItemConfiguration.notSet'))
                                 //subscription package
                                 cellnum++
-                                row.add(ci.subPkg ? ci.subPkg.pkg.name:'')
+                                row.add(ci.pkg ? ci.pkg.name:'')
                                 //issue entitlement
                                 cellnum++
                                 row.add(ci.issueEntitlement ? ci.issueEntitlement?.tipp?.name:'')
@@ -497,6 +497,9 @@ class FinanceController  {
         render(template: "/finance/ajaxModal", model: result)
     }
 
+    /**
+     * Same call as {@link #editCostItem}, but instead of a modal, the editing is done in a new view
+     */
     @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()

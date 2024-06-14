@@ -350,14 +350,18 @@ class ApiCollectionReader {
         )
         */
         Map<String, Object> subParams = [subId: subPkg.subscription.id], pkgParams = [pkgId: subPkg.pkg.id], ieParams = [sub: subPkg.subscription.id, pkg: subPkg.pkg.id]
-        List<GroovyRowResult> ieRows = sql.rows("select ie_id, ie_guid, ie_access_start_date, ie_access_end_date, ie_last_updated, (select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk) as tipp_medium, ie_perpetual_access_by_sub_fk, " +
-                "tipp_guid, tipp_name, tipp_host_platform_url, tipp_gokb_id, tipp_pkg_fk, tipp_date_first_in_print, tipp_date_first_online, tipp_first_author, tipp_first_editor, " +
-                "tipp_publisher_name, tipp_imprint, tipp_volume, tipp_edition_number, tipp_last_updated, tipp_series_name, tipp_subject_reference, (select rdv_value from refdata_value where rdv_id = tipp_access_type_rv_fk) as tipp_access_type, (select rdv_value from refdata_value where rdv_id = tipp_open_access_rv_fk) as tipp_open_access, " +
-                "tipp_last_updated, tipp_id, (select rdv_value from refdata_value where rdv_id = tipp_status_rv_fk) as tipp_status, " +
-                "case tipp_title_type when 'Journal' then 'serial' when 'Book' then 'monograph' when 'Database' then 'database' else 'other' end as title_type " +
-                "from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id " +
-                "where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg order by tipp_sort_name",
-                ieParams)
+        int limit = 50000, ieCount = sql.rows("select count(*) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg", ieParams)[0]["count"]
+        List<GroovyRowResult> ieRows = []
+        for(int i = 0; i < ieCount; i += limit) {
+            ieRows.addAll(sql.rows("select ie_id, ie_guid, ie_access_start_date, ie_access_end_date, ie_last_updated, (select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk) as tipp_medium, ie_perpetual_access_by_sub_fk, " +
+                    "tipp_guid, tipp_name, tipp_host_platform_url, tipp_gokb_id, tipp_pkg_fk, tipp_date_first_in_print, tipp_date_first_online, tipp_first_author, tipp_first_editor, " +
+                    "tipp_publisher_name, tipp_imprint, tipp_volume, tipp_edition_number, tipp_last_updated, tipp_series_name, tipp_subject_reference, (select rdv_value from refdata_value where rdv_id = tipp_access_type_rv_fk) as tipp_access_type, (select rdv_value from refdata_value where rdv_id = tipp_open_access_rv_fk) as tipp_open_access, " +
+                    "tipp_last_updated, tipp_id, (select rdv_value from refdata_value where rdv_id = tipp_status_rv_fk) as tipp_status, " +
+                    "tipp_title_type as title_type " +
+                    "from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id " +
+                    "where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg order by tipp_sort_name limit :limit offset :offset",
+                    ieParams+[limit: limit, offset: i]))
+        }
         JsonSlurper slurper = new JsonSlurper()
         log.debug("now fetching additional params ...")
         List<GroovyRowResult> priceItemRows = sql.rows("select pi_tipp_fk, json_agg(json_build_object('listCurrency', (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk), 'listPrice', pi_list_price, 'localCurrency', (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk), 'localPrice', pi_local_price)) as price_items from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId group by pi_tipp_fk", subParams),
@@ -369,15 +373,15 @@ class ApiCollectionReader {
         //platformsOfSubscription = sql.rows('select plat_id, plat_gokb_id, plat_name, plat_guid, plat_primary_url, (select rdv_value from refdata_value where rdv_id = plat_status_rv_fk) as plat_status from platform join title_instance_package_platform on tipp_plat_fk = plat_id join issue_entitlement on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId', subParams),
         packageOfSubscription = sql.rows("select pkg_guid, pkg_gokb_id, pkg_name, (select rdv_value from refdata_value where rdv_id = pkg_status_rv_fk) as pkg_status from package where pkg_id = :pkgId", pkgParams),
         packageIDs = sql.rows("select idns_ns, id_value from identifier join identifier_namespace on id_ns_fk = idns_id join package on pkg_id = id_pkg_fk where pkg_id = :pkgId", pkgParams),
-        packageAltNames = sql.rows("select altname_name from alternative_name where altname_pkg_fk = :pkgId", pkgParams),
-        titlePublishers = sql.rows("select or_tipp_fk, json_agg(json_build_object('roleType', rdv_value, 'globalUID', org_guid, 'gokbId', org_gokb_id, 'name', org_name, 'sortname', org_sortname, 'endDate', coalesce(to_char(or_end_date,'"+ApiToolkit.DATE_TIME_PATTERN_SQL+"')), 'startDate', coalesce(to_char(or_start_date,'"+ApiToolkit.DATE_TIME_PATTERN_SQL+"')))) as publishers from org_role join refdata_value on or_roletype_fk = rdv_id join org on or_org_fk = org_id join issue_entitlement on or_tipp_fk = ie_tipp_fk where ie_subscription_fk = :subId group by or_tipp_fk", subParams)
+        packageAltNames = sql.rows("select altname_name from alternative_name where altname_pkg_fk = :pkgId", pkgParams)
+        //titlePublishers = sql.rows("select or_tipp_fk, json_agg(json_build_object('roleType', rdv_value, 'globalUID', org_guid, 'gokbId', org_gokb_id, 'name', org_name, 'sortname', org_sortname, 'endDate', coalesce(to_char(or_end_date,'"+ApiToolkit.DATE_TIME_PATTERN_SQL+"')), 'startDate', coalesce(to_char(or_start_date,'"+ApiToolkit.DATE_TIME_PATTERN_SQL+"')))) as publishers from org_role join refdata_value on or_roletype_fk = rdv_id join org on or_org_fk = org_id join issue_entitlement on or_tipp_fk = ie_tipp_fk where ie_subscription_fk = :subId group by or_tipp_fk", subParams)
         Map<Long, Map> priceItemMap = priceItemRows.collectEntries { GroovyRowResult row -> [row['pi_tipp_fk'], slurper.parseText(row['price_items'].toString())] },
         identifierMap = idRows.collectEntries { GroovyRowResult row -> [row['id_tipp_fk'], slurper.parseText(row['identifiers'].toString())] },
         coverageMap = coverageRows.collectEntries { GroovyRowResult row -> [row['tc_tipp_fk'], slurper.parseText(row['coverages'].toString())] },
         ddcMap = ddcRows.collectEntries { GroovyRowResult row -> [row['ddc_tipp_fk'], slurper.parseText(row['ddcs'].toString())] },
-        languageMap = langRows.collectEntries { GroovyRowResult row -> [row['lang_tipp_fk'], slurper.parseText(row['languages'].toString())] },
+        languageMap = langRows.collectEntries { GroovyRowResult row -> [row['lang_tipp_fk'], slurper.parseText(row['languages'].toString())] }
         //platformMap = ExportService.preprocessRows(platformsOfSubscription, 'plat_id'),
-        publisherMap = titlePublishers.collectEntries { GroovyRowResult row -> [row['or_tipp_fk'], slurper.parseText(row['publishers'].toString())] }
+        //publisherMap = titlePublishers.collectEntries { GroovyRowResult row -> [row['or_tipp_fk'], slurper.parseText(row['publishers'].toString())] }
         Map<Long, List<GroovyRowResult>> altNameMap = ExportService.preprocessRows(altNameRows, 'altname_tipp_fk')
         Map<String, Object> pkgData = packageOfSubscription.get(0)
         pkgData.ids = packageIDs
@@ -401,7 +405,7 @@ class ApiCollectionReader {
             row.ddcs = ddcMap.containsKey(row['tipp_id']) ? ddcMap.get(row['tipp_id']) : []
             row.languages = languageMap.containsKey(row['tipp_id']) ? languageMap.get(row['tipp_id']) : []
             row.altnames = altNameMap.containsKey(row['tipp_id']) ? altNameMap.get(row['tipp_id']) : []
-            row.publishers = publisherMap.containsKey(row['tipp_id']) ? publisherMap.get(row['tipp_id']) : []
+            row.publishers = [] //publisherMap.containsKey(row['tipp_id']) ? publisherMap.get(row['tipp_id']) : []
             if(ignoreRelation != ApiReader.IGNORE_ALL) {
                 //println "processing references"
                 if(ignoreRelation == ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE) {

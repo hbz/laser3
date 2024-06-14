@@ -6,6 +6,7 @@
         <h2 class="ui header">${message(code: 'subscription.packages.label')}</h2>
         <div class="ui accordion la-accordion-showMore">
         <g:each in="${subscription.packages}" var="sp">
+            <g:set var="packageInstanceRecord" value="${packageMetadata.get(sp.pkg.gokbId)}"/>
             <% String buttonColor = ""
             if(sp.pendingChangeConfig.size() > 0) {
                 buttonColor = "green"
@@ -25,19 +26,20 @@
                             </div>
                             <div class="three wide column">
                                 <div>
-                                    <g:if test="${sp.pkg.contentProvider}">
-                                        <i aria-hidden="true" class="handshake grey outline icon la-popup-tooltip la-delay" data-content="${message(code: 'default.provider.label')}"></i>
-                                        <g:link controller="org" action="show" id="${sp.pkg.contentProvider.id}">${sp.pkg.contentProvider.name}</g:link>
-                                        <g:if test="${sp.pkg.contentProvider.url}"><ui:linkWithIcon href="${sp.pkg.contentProvider.url.startsWith('http') ? sp.pkg.contentProvider.url : 'http://' + sp.pkg.contentProvider.url}"/></g:if>
-                                        <g:if test="${sp.pkg.contentProvider.gokbId}"><ui:wekbIconLink type="org" gokbId="${sp.pkg.contentProvider.gokbId}"/></g:if>
+                                    <g:if test="${sp.pkg.provider}">
+                                        <i aria-hidden="true" class="handshake grey outline icon la-popup-tooltip la-delay" data-content="${message(code: 'provider.label')}"></i>
+                                        <g:link controller="provider" action="show" id="${sp.pkg.provider.id}">${sp.pkg.provider.name}</g:link>
+                                        <g:if test="${sp.pkg.provider.homepage}"><ui:linkWithIcon href="${sp.pkg.provider.homepage.startsWith('http') ? sp.pkg.provider.homepage : 'http://' + sp.pkg.provider.homepage}"/></g:if>
+                                        <g:if test="${sp.pkg.provider.gokbId}"><ui:wekbIconLink type="provider" gokbId="${sp.pkg.provider.gokbId}"/></g:if>
                                     </g:if>
                                 </div>
-                                <g:each in="${sp.pkg.agencies}" var="agency">
+                                <g:each in="${sp.pkg.vendors}" var="pv">
+                                    <g:set var="vendorRecord" value="${packageInstanceRecord.vendors.find { rec -> rec.vendorUuid == pv.vendor.gokbId }}"/>
                                     <div>
-                                        <i aria-hidden="true" class="shipping fast grey icon la-popup-tooltip la-delay" data-content="${message(code: 'default.agency.label')}"></i>
-                                        <g:link controller="org" action="show" id="${agency.id}">${agency.name}</g:link>
-                                        <g:if test="${agency.url}"><ui:linkWithIcon href="${agency.url.startsWith('http') ? agency.url : 'http://' + agency.url}"/></g:if>
-                                        <g:if test="${agency.gokbId}"><ui:wekbIconLink type="vendor" gokbId="${agency.gokbId}"/></g:if>
+                                        <i aria-hidden="true" class="shipping fast grey icon la-popup-tooltip la-delay" data-content="${message(code: 'vendor.label')}"></i>
+                                        <g:link controller="vendor" action="show" id="${pv.vendor.id}">${pv.vendor.name}</g:link>
+                                        <g:if test="${vendorRecord.homepage}"><ui:linkWithIcon href="${vendorRecord.homepage.startsWith('http') ? vendorRecord.homepage : 'http://' + vendorRecord.homepage}"/></g:if>
+                                        <g:if test="${pv.vendor.gokbId}"><ui:wekbIconLink type="vendor" gokbId="${pv.vendor.gokbId}"/></g:if>
                                     </div>
                                 </g:each>
                             </div>
@@ -61,13 +63,13 @@
                             </div>
                             <div class="six wide right aligned column">
                                 <g:if test="${editmode}">
-                                    <div class="ui icon blue button la-modern-button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
+                                    <div class="ui icon blue button la-modern-button ${buttonColor} la-popup-tooltip la-delay"
                                          data-content="${message(code:'subscription.packages.config.header')}">
                                         <i class="ui angle double down icon"></i>
                                     </div>
                                     <%
                                         String unlinkDisabled = '', unlinkDisabledTooltip = null
-                                        Set<Subscription> blockingCostItems = CostItem.executeQuery('select ci.subPkg.subscription from CostItem ci where (ci.subPkg.subscription = :sub or ci.subPkg.subscription.instanceOf = :sub) and ci.subPkg.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted', [pkg: sp.pkg, deleted: RDStore.COST_ITEM_DELETED, sub: sp.subscription, context: institution])
+                                        Set<Subscription> blockingCostItems = CostItem.executeQuery('select ci.sub from CostItem ci where (ci.sub = :sub or ci.sub.instanceOf = :sub) and ci.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted', [pkg: sp.pkg, deleted: RDStore.COST_ITEM_DELETED, sub: sp.subscription, context: institution])
                                         if(showConsortiaFunctions) {
                                             if(auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')) {
                                                 unlinkDisabled = 'disabled'
@@ -89,7 +91,7 @@
                                     <g:if test="${showConsortiaFunctions && !sp.subscription.instanceOf}">
                                         <div class="ui buttons">
                                             <div class="ui simple dropdown negative icon button la-modern-button ${unlinkDisabled}" data-content="${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}">
-                                                <i aria-hidden="true" class="chain broken icon la-js-editmode-icon"></i>
+                                                <i aria-hidden="true" class="chain broken icon"></i>
                                                 <div class="menu">
                                                     <g:link controller="subscription" action="unlinkPackage" class="${btnClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'withIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
                                                             data-confirm-term-how="delete" role="button" aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
@@ -103,7 +105,7 @@
                                             </div>
                                             <div class="or" data-text="|"></div>
                                             <div class="ui simple dropdown negative icon button la-modern-button ${unlinkDisabled}" data-content="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}">
-                                                <i aria-hidden="true" class="eraser icon la-js-editmode-icon"></i>
+                                                <i aria-hidden="true" class="eraser icon"></i>
                                                 <div class="menu">
                                                     <g:link controller="subscription" action="unlinkPackage" class="${btnClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'onlyIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name])}"
                                                             data-confirm-term-how="delete" role="button" aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
@@ -177,12 +179,22 @@
                                         </div>
                                     </g:else>
                                 </g:if>
+
+                                <g:if test="${subscription.packages.size() > 1}">
+                                    <a class="ui right floated button" data-href="#showPackagesModal" data-ui="modal"><g:message
+                                            code="subscription.details.details.package.label"/></a>
+                                </g:if>
+
+                                <g:if test="${subscription.packages.size() == 1}">
+                                    <g:link class="ui right floated button" controller="package" action="show"
+                                            id="${subscription.packages[0].pkg.id}"><g:message
+                                            code="subscription.details.details.package.label"/></g:link>
+                                </g:if>
                             </div>
                         </div>
                     </g:else>
                 </div>
                 <div class="ui fluid segment content">
-                    <g:set var="packageInstanceRecord" value="${packageMetadata.get(sp.pkg.gokbId)}"/>
                     <div class="ui grid">
                         <div class="eight wide column">
                             <dl>
@@ -553,4 +565,20 @@
             </g:each>
         </div>
     </div><!-- .content -->
+
+    <ui:modal id="showPackagesModal" message="subscription.packages.label" hideSubmitButton="true">
+        <div class="ui ordered list">
+            <g:each in="${subscription.packages.sort { it.pkg.name.toLowerCase() }}" var="subPkg">
+                <div class="item">
+                    ${subPkg.pkg.name}
+                    <g:if test="${subPkg.pkg.provider}">
+                        (${subPkg.pkg.provider.name})
+                    </g:if>:
+                    <g:link controller="package" action="show" id="${subPkg.pkg.id}"><g:message
+                            code="subscription.details.details.package.label"/></g:link>
+                </div>
+            </g:each>
+        </div>
+
+    </ui:modal>
 </div>

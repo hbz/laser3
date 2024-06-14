@@ -14,14 +14,19 @@ import de.laser.License
 import de.laser.LicenseService
 import de.laser.LinksGenerationService
 import de.laser.OrganisationService
+import de.laser.Package
+import de.laser.Provider
 import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
 import de.laser.SubscriptionDiscountScale
 import de.laser.SubscriptionService
+import de.laser.Vendor
 import de.laser.auth.Role
 import de.laser.cache.EhcacheWrapper
 import de.laser.finance.PriceItem
 import de.laser.helper.Params
+import de.laser.properties.ProviderProperty
+import de.laser.properties.VendorProperty
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -279,33 +284,34 @@ class AjaxJsonController {
      */
     @Secured(['ROLE_USER'])
     def checkCascade() {
-        Map<String, Object> result = [sub:true, subPkg:true, ie:true]
+        Map<String, Object> result = [sub:true, pkg:true, ie:true]
         if (!params.subscription && ((params.package && params.issueEntitlement) || params.issueEntitlement)) {
             result.sub = false
-            result.subPkg = false
+            result.pkg = false
             result.ie = false
         }
         else if (params.subscription) {
             Subscription sub = (Subscription) genericOIDService.resolveOID(params.subscription)
             if (!sub) {
                 result.sub = false
-                result.subPkg = false
+                result.pkg = false
                 result.ie = false
             }
             else if (params.issueEntitlement) {
                 if (!params.package || params.package.contains('null')) {
-                    result.subPkg = false
+                    result.pkg = false
                     result.ie = false
                 }
                 else if (params.package && !params.package.contains('null')) {
-                    SubscriptionPackage subPkg = (SubscriptionPackage) genericOIDService.resolveOID(params.package)
-                    if(!subPkg || subPkg.subscription != sub) {
-                        result.subPkg = false
+                    Package pkg = (Package) genericOIDService.resolveOID(params.package)
+                    SubscriptionPackage subPkg = (SubscriptionPackage) SubscriptionPackage.findBySubscriptionAndPkg(sub, pkg)
+                    if(!pkg || subPkg.subscription != sub) {
+                        result.pkg = false
                         result.ie = false
                     }
                     else {
                         IssueEntitlement ie = (IssueEntitlement) genericOIDService.resolveOID(params.issueEntitlement)
-                        if(!ie || ie.subscription != subPkg.subscription || ie.tipp.pkg != subPkg.pkg) {
+                        if(!ie || ie.subscription != subPkg.subscription || ie.tipp.pkg != pkg) {
                             result.ie = false
                         }
                     }
@@ -413,6 +419,10 @@ class AjaxJsonController {
                             break
                         case PropertyDefinition.ORG_PROP: values = OrgProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.getOrg(),false)
                             break
+                        case PropertyDefinition.PRV_PROP: values = ProviderProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.getOrg(),false)
+                            break
+                        case PropertyDefinition.VEN_PROP: values = VendorProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.getOrg(),false)
+                            break
                         case PropertyDefinition.PLA_PROP: values = PlatformProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.getOrg(),false)
                             break
                         case PropertyDefinition.PRS_PROP: values = PersonProperty.findAllByType(propDef)
@@ -427,9 +437,9 @@ class AjaxJsonController {
                             String consortialFilter = contextService.getOrg().isCustomerType_Consortium() ? ' and sp.owner.instanceOf = null' : ''
                             values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp left join sp.owner.orgRelations oo where sp.type = :propDef and ((sp.tenant = :tenant or ((sp.tenant != :tenant and sp.isPublic = true) or sp.instanceOf != null) and :tenant in oo.org))'+consortialFilter,[propDef:propDef, tenant:contextService.getOrg()])
                             break
-                        case PropertyDefinition.ORG_PROP: values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and ((op.tenant = :tenant and op.isPublic = true) or op.tenant = null)',[propDef:propDef,tenant:contextService.getOrg()])
+                        /*case PropertyDefinition.ORG_PROP: values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and ((op.tenant = :tenant and op.isPublic = true) or op.tenant = null)',[propDef:propDef,tenant:contextService.getOrg()])
                             break
-                    /*case PropertyDefinition.PLA_PROP: values = PlatformProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.getOrg(),false)
+                    case PropertyDefinition.PLA_PROP: values = PlatformProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.getOrg(),false)
                         break
                     case PropertyDefinition.PRS_PROP: values = PersonProperty.findAllByType(propDef)
                         break*/
@@ -519,7 +529,7 @@ class AjaxJsonController {
                 name: fuzzyString,
                 status: RDStore.O_STATUS_DELETED
         ]
-        String countQry = "select count(o) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status)"
+        String countQry = "select count(*) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status)"
         String rowQry = "select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status) order by o.name asc"
 
         List cq = Org.executeQuery(countQry,query_params)
@@ -589,12 +599,17 @@ class AjaxJsonController {
         }
     }
 
+    /**
+     * Reads from cache the current complection percentage of the given process in order to update the progress bar
+     */
     @Secured(['ROLE_USER'])
     def checkProgress() {
         EhcacheWrapper userCache = contextService.getUserCache(params.cachePath)
-        Map<String, Object> result = [percent: userCache.get(params.cacheKey)]
-        if(result.percent == 100)
-            userCache.remove(params.cacheKey)
+        Map<String, Object> result = [percent: userCache.get('progress'), label: userCache.get('label')]
+        if(result.percent == 100) {
+            userCache.remove('progress')
+            userCache.remove('label')
+        }
         render result as JSON
     }
 
@@ -782,6 +797,15 @@ class AjaxJsonController {
     }
 
     /**
+     * Retrieves a list of vendors for dropdown display
+     * @return the result of {@link de.laser.ControlledListService#getVendors(grails.web.servlet.mvc.GrailsParameterMap)}
+     */
+    @Secured(['ROLE_USER'])
+    def lookupVendors() {
+        render controlledListService.getVendors(params) as JSON
+    }
+
+    /**
      * Retrieves a list of subscription packages for dropdown display
      * @return the result of {@link de.laser.ControlledListService#getSubscriptionPackages(grails.web.servlet.mvc.GrailsParameterMap)}
      */
@@ -835,6 +859,9 @@ class AjaxJsonController {
         }
     }
 
+    /**
+     * Call to retrieve all possible title series for the given context
+     */
     @Secured(['ROLE_USER'])
     def getAllPossibleSeries() {
         Map result = [:]
@@ -843,12 +870,15 @@ class AjaxJsonController {
                 break
             case 'status': result.results = controlledListService.getAllPossibleSeriesByStatus(params)
                 break
-            case 'sub': result.results = controlledListService.getAllPossibleSeriesBySub(genericOIDService.resolveOID(params.obj), params.query)
+            case 'sub': result.results = controlledListService.getAllPossibleSeriesBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
                 break
         }
         render result as JSON
     }
 
+    /**
+     * Call to retrieve all possible title subjects for the given context
+     */
     @Secured(['ROLE_USER'])
     def getAllPossibleSubjects() {
         Map result = [:]
@@ -857,12 +887,15 @@ class AjaxJsonController {
                 break
             case 'status': result.results = controlledListService.getAllPossibleSubjectsByStatus(params)
                 break
-            case 'sub': result.results = controlledListService.getAllPossibleSubjectsBySub(genericOIDService.resolveOID(params.obj), params.query)
+            case 'sub': result.results = controlledListService.getAllPossibleSubjectsBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
                 break
         }
         render result as JSON
     }
 
+    /**
+     * Call to retrieve all possible Dewey decimal classifications (DDCs) for the given context
+     */
     @Secured(['ROLE_USER'])
     def getAllPossibleDdcs() {
         Map result = [:]
@@ -871,12 +904,15 @@ class AjaxJsonController {
                 break
             case 'status': result.results = controlledListService.getAllPossibleDdcsByStatus(params)
                 break
-            case 'sub': result.results = controlledListService.getAllPossibleDdcsBySub(genericOIDService.resolveOID(params.obj), params.query)
+            case 'sub': result.results = controlledListService.getAllPossibleDdcsBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
                 break
         }
         render result as JSON
     }
 
+    /**
+     * Call to retrieve all possible title languages for the given context
+     */
     @Secured(['ROLE_USER'])
     def getAllPossibleLanguages() {
         Map result = [:]
@@ -885,12 +921,15 @@ class AjaxJsonController {
                 break
             case 'status': result.results = controlledListService.getAllPossibleLanguagesByStatus(params)
                 break
-            case 'sub': result.results = controlledListService.getAllPossibleLanguagesBySub(genericOIDService.resolveOID(params.obj), params.query)
+            case 'sub': result.results = controlledListService.getAllPossibleLanguagesBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
                 break
         }
         render result as JSON
     }
 
+    /**
+     * Call to retrieve all possible first online publishing years for the given context
+     */
     @Secured(['ROLE_USER'])
     def getAllPossibleDateFirstOnlineYears() {
         Map result = [:]
@@ -899,12 +938,15 @@ class AjaxJsonController {
                 break
             case 'status': result.results = controlledListService.getAllPossibleDateFirstOnlineYearByStatus(params)
                 break
-            case 'sub': result.results = controlledListService.getAllPossibleDateFirstOnlineYearBySub(genericOIDService.resolveOID(params.obj), params.query)
+            case 'sub': result.results = controlledListService.getAllPossibleDateFirstOnlineYearBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
                 break
         }
         render result as JSON
     }
 
+    /**
+     * Call to retrieve all possible title medium types for the given context
+     */
     @Secured(['ROLE_USER'])
     def getAllPossibleMediumTypes() {
         Map result = [:]
@@ -913,12 +955,15 @@ class AjaxJsonController {
                 break
             case 'status': result.results = controlledListService.getAllPossibleMediumTypesByStatus(params)
                 break
-            case 'sub': result.results = controlledListService.getAllPossibleMediumTypesBySub(genericOIDService.resolveOID(params.obj), params.query)
+            case 'sub': result.results = controlledListService.getAllPossibleMediumTypesBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
                 break
         }
         render result as JSON
     }
 
+    /**
+     * Call to retrieve all possible title types for the given context
+     */
     @Secured(['ROLE_USER'])
     def getAllPossibleTitleTypes() {
         Map result = [:]
@@ -927,12 +972,15 @@ class AjaxJsonController {
                 break
             case 'status': result.results = controlledListService.getAllPossibleTitleTypesByStatus(params)
                 break
-            case 'sub': result.results = controlledListService.getAllPossibleTitleTypesBySub(genericOIDService.resolveOID(params.obj), params.query)
+            case 'sub': result.results = controlledListService.getAllPossibleTitleTypesBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
                 break
         }
         render result as JSON
     }
 
+    /**
+     * Call to retrieve all possible title publishers (not providers nor vendors!) for the given context
+     */
     @Secured(['ROLE_USER'])
     def getAllPossiblePublishers() {
         Map result = [:]
@@ -941,12 +989,15 @@ class AjaxJsonController {
                 break
             case 'status': result.results = controlledListService.getAllPossiblePublisherByStatus(params)
                 break
-            case 'sub': result.results = controlledListService.getAllPossiblePublisherBySub(genericOIDService.resolveOID(params.obj), params.query)
+            case 'sub': result.results = controlledListService.getAllPossiblePublisherBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
                 break
         }
         render result as JSON
     }
 
+    /**
+     * Call to retrieve all possible coverage depths for the given context
+     */
     @Secured(['ROLE_USER'])
     def getAllPossibleCoverageDepths() {
         Map result = [:]
@@ -955,20 +1006,23 @@ class AjaxJsonController {
                 break
             case 'status': result.results = controlledListService.getAllPossibleCoverageDepthsByStatus(params)
                 break
-            case 'sub': result.results = controlledListService.getAllPossibleCoverageDepthsBySub(genericOIDService.resolveOID(params.obj), params.query)
+            case 'sub': result.results = controlledListService.getAllPossibleCoverageDepthsBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
                 break
         }
         render result as JSON
     }
 
+    /**
+     * Retrieves the selected organisation for the organisation merge table
+     */
     @Secured(['ROLE_USER'])
-    def loadOrganisationForMerge() {
+    def loadProviderForMerge() {
         Map<String, Object> mergeInfo = [:]
         if(params.containsKey('source') && params.source.length() > 0) {
-            mergeInfo = organisationService.mergeOrganisations(genericOIDService.resolveOID(params.source), null, true)
+            mergeInfo = organisationService.mergeProviders(genericOIDService.resolveOID(params.source), null, true)
         }
         else if(params.containsKey('target') && params.target.length() > 0) {
-            mergeInfo = organisationService.mergeOrganisations(genericOIDService.resolveOID(params.target), null, true)
+            mergeInfo = organisationService.mergeProviders(genericOIDService.resolveOID(params.target), null, true)
         }
         render mergeInfo as JSON
     }
@@ -1150,12 +1204,29 @@ class AjaxJsonController {
     def getEmailAddresses() {
         Map result = [:]
 
-        if (params.orgIdList) {
-            List<Long> orgIds = Params.getLongList_forCommaSeparatedString(params, 'orgIdList')
-            List<Org> orgList = orgIds ? Org.findAllByIdInList(orgIds) : []
+        if (params.orgIdList || params.providerIdList || params.vendorIdList) {
 
-            String query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "
-            Map<String, Object> queryParams = [orgs: orgList]
+            String query
+            Map<String, Object> queryParams
+            if(params.containsKey('providerIdList')) {
+                List<Long> providerIds = Params.getLongList_forCommaSeparatedString(params, 'providerIdList')
+                List<Provider> providerList = providerIds ? Provider.findAllByIdInList(providerIds) : []
+                query = "select distinct p from Person as p inner join p.roleLinks pr where pr.provider in (:providers) "
+                queryParams = [providers: providerList]
+            }
+            else if(params.containsKey('vendorIdList')) {
+                List<Long> vendorIds = Params.getLongList_forCommaSeparatedString(params, 'vendorIdList')
+                List<Vendor> vendorList = vendorIds ? Vendor.findAllByIdInList(vendorIds) : []
+                query = "select distinct p from Person as p inner join p.roleLinks pr where pr.vendor in (:vendors) "
+                queryParams = [vendors: vendorList]
+            }
+            else {
+                List<Long> orgIds = Params.getLongList_forCommaSeparatedString(params, 'orgIdList')
+                List<Org> orgList = orgIds ? Org.findAllByIdInList(orgIds) : []
+                query = "select distinct p from Person as p inner join p.roleLinks pr where pr.org in (:orgs) "
+                queryParams = [orgs: orgList]
+            }
+
 
             boolean showPrivateContactEmails = Boolean.valueOf(params.isPrivate)
             boolean showPublicContactEmails = Boolean.valueOf(params.isPublic)
@@ -1187,12 +1258,20 @@ class AjaxJsonController {
             List<Person> persons = Person.executeQuery(query, queryParams)
             persons.each { Person p ->
                 Contact mail = Contact.findByPrsAndContentType(p, RDStore.CCT_EMAIL)
+                String key
+                //prefix "org" is correct for selector in template
+                if(p.roleLinks[0].provider)
+                    key = "org${p.roleLinks.provider.id[0]}"
+                else if(p.roleLinks[0].vendor)
+                    key = "org${p.roleLinks.vendor.id[0]}"
+                else
+                    key = "org${p.roleLinks.org.id[0]}"
                 if(mail) {
-                    Set<String> mails = result.get("org${p.roleLinks.org.id[0]}".toString())
+                    Set<String> mails = result.get(key)
                     if(!mails)
                         mails = []
                     mails << mail.content
-                    result.put("org${p.roleLinks.org.id[0]}".toString(), mails)
+                    result.put(key, mails)
                 }
             }
         }
@@ -1264,5 +1343,11 @@ class AjaxJsonController {
         else {
             render result as JSON
         }
+    }
+
+    @Secured(['ROLE_USER'])
+    def checkSUSHIConnection() {
+        Map<String, Object> result = subscriptionService.checkSUSHIConnection(params.long('org'), params.long('platform'), params.customerId, params.requestorId)
+        render result as JSON
     }
 }

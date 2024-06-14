@@ -4,8 +4,8 @@
 <%--OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')} @ ${institution}--%>
 <g:set var="overwriteEditable" value="${editable || userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')}" />
 
-<ui:card message="task.plural" class="notes la-js-hideable ${css_class}" href="#modalCreateTask" editable="${overwriteEditable}">
-    <div class="ui relaxed divided list  la-js-dont-hide-this-card">
+<ui:card message="task.plural" class="notes ${css_class}" href="#modalCreateTask" editable="${overwriteEditable}">
+    <div class="ui relaxed divided list">
     <g:each in="${tasks}" var="tsk">
         <g:if test="${tsk.status == RDStore.TASK_STATUS_DONE}">
             <g:set var="icon" value="check circle outline"/>
@@ -37,7 +37,7 @@
                 <i class="large la-list-icon la-popup-tooltip la-delay icon ${icon}" data-content="${tooltip}"></i>
                 <div class="content">
                     <a class="header la-js-toggle-showThis" onclick="JSPC.app.editTask(${tsk.id});">${tsk.title}</a>
-                    <g:if test="${controllerName != 'organisation' && controllerName != 'survey'}">
+                    <g:if test="${!(controllerName in ['organisation', 'survey', 'provider', 'vendor'])}">
                         <a class="header la-js-toggle-hideThis" onclick="JSPC.app.readTask(${tsk.id});">${tsk.title}</a>
                     </g:if>
                     <div class="description">${message(code:'task.endDate.label')}
@@ -47,7 +47,7 @@
             </div>
 
 
-        %{--<div class="ui grid la-js-dont-hide-this-card">
+        %{--<div class="ui grid">
             <div class="twelve wide column summary">
 
                     <g:if test="${tsk.status == RDStore.TASK_STATUS_DONE}">

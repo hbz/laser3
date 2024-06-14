@@ -2,6 +2,9 @@ package de.laser.storage
 
 import groovy.transform.CompileStatic
 
+/**
+ * Container class for frequently used constants
+ */
 @CompileStatic
 class Constants {
 

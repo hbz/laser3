@@ -1,7 +1,8 @@
 package de.laser
 
 import de.laser.annotations.RefdataInfo
-import de.laser.auth.*
+import de.laser.auth.Role
+import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.convenience.Marker
 import de.laser.finance.CostItem
@@ -18,23 +19,8 @@ import org.apache.commons.lang3.StringUtils
 
 /**
  * An organisation record.
- * Organisations may represent in LAS:eR:
- * <ol>
- *     <li>academic institutions</li>
- *     <li>commercial organisations: editors or publishing houses</li>
- * </ol>
- * Institutions may be: university or public libraries, research organisations, or other academic institutions.
- * Above that, organisations may be editors, providers, publishers, agencies. They are called by the super term "organisations".
- * The main difference between organisations and institutions is that institutions may have user accounts linked to them whereas publishers, agencies etc. are not supposed to have such.
- * There are above that several ways to distinguish technically an organisation from an institution:
- * <ul>
- *     <li>institutions have a customer type</li>
- *     <li>the organisational types are different, see {@link RDConstants#ORG_TYPE}</li>
- *     <li>a well maintained institution record has the sector set to 'Academic' while (other) organisations are usually set to 'Commercial'</li>
- *     <li>institutions are linked with different org role types to other objects than other organisations are (see the controlled list under {@link RDConstants#ORGANISATIONAL_ROLE} for the role types)</li>
- *     <li>institution metadata is maintained in LAS:eR directly whereas providers should curate themselves in we:kb; organisations thus have a we:kb-ID (stored as {@link #gokbId}, naming is legacy) which serves as synchronisation
- *     key between the data in the two webapps</li>
- * </ul>
+ * Organisations represent in LAS:eR academic institutions.
+ * Institutions may be: university or public libraries, research organisations, or other academic institutions. Their customer status is being represented by a setting called CustomerType (see {@link de.laser.OrgSetting.KEYS#CUSTOMER_TYPE})
  * @see OrgRole
  * @see OrgSetting
  */
@@ -56,6 +42,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     String importSource         // "nationallizenzen.de", "edb des hbz"
     Date lastImportDate
 
+    @Deprecated
     String gokbId
     String comment
     String ipRange
@@ -240,8 +227,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
              gokbId (nullable:true, blank:true)
         lastUpdatedCascading (nullable: true)
     }
-
-    static final Set<String> WEKB_PROPERTIES = ['homepage', 'metadataDownloaderURL', 'kbartDownloaderURL', 'roles']
 
     /**
      * Checks if the organisation is marked as deleted
@@ -845,6 +830,13 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         return Identifier.findByOrgAndNs(this, IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID))
     }
 
+    boolean isInfoAccessibleFor(Org ctx) {
+        if (this.isCustomerType_Inst() && ctx.isCustomerType_Pro()) {
+            return (this.id == ctx.id) || (ctx.isCustomerType_Consortium() && Combo.findByToOrgAndFromOrgAndType(ctx, this, RDStore.COMBO_TYPE_CONSORTIUM))
+        }
+        return false
+    }
+
     /**
      * Checks if the organisation is being marked for the given user with the given marker type
      * @param user the {@link User} whose watchlist should be checked
@@ -881,6 +873,12 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         }
     }
 
+    /**
+     * Compares the given organisation with another. Compared are name and id; id because otherwise, SortedSet would eliminate organisation
+     * duplicates
+     * @param o the object to be compared
+     * @return the comparison result (-1, 0 or 1)
+     */
     @Override
     int compareTo(Org o) {
         int result = sortname <=> o.sortname

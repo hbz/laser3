@@ -41,23 +41,6 @@
 
 <g:if test="${filterPropDef}">
 
-%{--<div class="ui segment">
-
-    <strong>${message(code: 'subscriptionsManagement.propertySelected')}: ${filterPropDef?.getI10n('name')}</strong>
-    <br />${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
-    <g:if test="${filterPropDef?.isRefdataValueType()}">
-        <g:set var="refdataValues" value="${[]}"/>
-        <g:each in="${RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
-                var="refdataValue">
-            <g:set var="refdataValues"
-                   value="${refdataValues + refdataValue?.getI10n('value')}"/>
-        </g:each>
-        <br />
-        (${refdataValues.join('/')})
-    </g:if>
-
-</div>--}%
-
     <g:set var="editableOld" value="${editable}"/>
 
     <div class="ui segment">

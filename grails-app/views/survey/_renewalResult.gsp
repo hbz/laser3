@@ -104,6 +104,10 @@
                     </span>
                 </g:if>
 
+                <g:if test="${participantResult.sub}">
+                    <ui:xEditableAsIcon owner="${participantResult.sub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
+                </g:if>
+
             </td>
             <td>
                 ${participantResult.resultOfParticipation.getResult()}
@@ -218,16 +222,19 @@
 
             <td>
 
-                <g:set var="costItem" value="${participantResult.resultOfParticipation.getCostItem()}"/>
+                <g:set var="costItems" value="${participantResult.resultOfParticipation.getCostItems()}"/>
 
-                <g:if test="${costItem}">
-                    <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}" minFractionDigits="2"
-                                            maxFractionDigits="2" type="number"/></strong>
+                <g:if test="${costItems}">
+                    <g:each in="${costItems}" var="costItem">
+                        <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}" minFractionDigits="2"
+                                                maxFractionDigits="2" type="number"/></strong>
 
-                    (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
-                                     maxFractionDigits="2" type="number"/>)
+                        (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
+                                         maxFractionDigits="2" type="number"/>)
 
-                    ${(costItem.billingCurrency?.getI10n('value')?.split('-'))?.first()}
+                        ${costItem.billingCurrency?.getI10n('value')}
+                        <br>
+                    </g:each>
                 </g:if>
             </td>
             <td class="x">
@@ -242,7 +249,7 @@
                 <g:if test="${participantResult.sub}">
                     <br/>
                     <g:link controller="subscription" action="show" id="${participantResult.sub?.id}"
-                            class="ui button icon"><i class="icon clipboard"></i></g:link>
+                            class="ui button orange icon"><i class="icon clipboard"></i></g:link>
                 </g:if>
             </td>
 

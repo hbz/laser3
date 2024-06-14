@@ -4,15 +4,12 @@ import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractBase
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.PriceItem
-import de.laser.stats.Counter4Report
-import de.laser.stats.Counter5Report
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import groovy.util.logging.Slf4j
 
 import javax.persistence.Transient
-import java.text.Normalizer
 
 /**
  * A title record within a local holding. Technically a {@link TitleInstancePackagePlatform} record entry with a {@link Subscription} foreign key. But there are a few more things to note:
@@ -141,7 +138,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       Subscription subscription = (Subscription) configMap.subscription
       TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) configMap.tipp
       IssueEntitlement ie = findBySubscriptionAndTippAndStatusNotEqual(subscription,tipp, RDStore.TIPP_STATUS_REMOVED)
-      if(!ie && !PermanentTitle.findByOwnerAndTipp(subscription.subscriber, tipp)) {
+      if(!ie && !PermanentTitle.findByOwnerAndTipp(subscription.getSubscriberRespConsortia(), tipp)) {
           ie = new IssueEntitlement(subscription: subscription, tipp: tipp, medium: tipp.medium, status:tipp.status, accessType: tipp.accessType, openAccess: tipp.openAccess, name: tipp.name)
           //ie.generateSortTitle()
       }
@@ -151,11 +148,11 @@ class IssueEntitlement extends AbstractBase implements Comparable {
                 if (subscription.hasPerpetualAccess && ie.status != RDStore.TIPP_STATUS_EXPECTED) {
                     ie.perpetualAccessBySub = subscription
 
-                    if (!PermanentTitle.findByOwnerAndTipp(subscription.subscriber, tipp)) {
+                    if (!PermanentTitle.findByOwnerAndTipp(subscription.getSubscriberRespConsortia(), tipp)) {
                         PermanentTitle permanentTitle = new PermanentTitle(subscription: subscription,
                                 issueEntitlement: ie,
                                 tipp: tipp,
-                                owner: subscription.subscriber).save()
+                                owner: subscription.getSubscriberRespConsortia()).save()
                     }
                 }
 

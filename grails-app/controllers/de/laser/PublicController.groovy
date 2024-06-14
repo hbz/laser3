@@ -296,4 +296,16 @@ class PublicController {
         }
         render result as JSON
     }
+
+
+    /**
+     * @return the frontend view with sample area for frontend developing and showcase
+     */
+    @Secured(['permitAll'])
+    def licensingModel() {
+        Map<String, Object> result = [:]
+        result.mappingColsBasic = ["asService", "accessRights", "community", "wekb"]
+        result.mappingColsPro = ["management", "organisation", "reporting", "api"]
+        result
+    }
 }

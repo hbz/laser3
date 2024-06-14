@@ -86,7 +86,7 @@
             <%--</g:if>--%>
         </g:else>
 
-        <g:if test="${(tipp.titleType == 'Book') && (tipp.volume || showEmptyFields)}">
+        <g:if test="${(tipp.titleType == 'monograph') && (tipp.volume || showEmptyFields)}">
             <div class="item">
                 <i class="grey icon la-books la-popup-tooltip la-delay"
                    data-content="${message(code: 'tipp.volume')}"></i>
@@ -103,7 +103,7 @@
             </div>
         </g:if>
 
-        <g:if test="${(tipp.titleType == 'Book') && (tipp.firstAuthor || showEmptyFields)}">
+        <g:if test="${(tipp.titleType == 'monograph') && (tipp.firstAuthor || showEmptyFields)}">
             <div class="item">
                 <i class="grey icon user circle la-popup-tooltip la-delay"
                    data-content="${message(code: 'tipp.firstAuthor')}"></i>
@@ -121,7 +121,7 @@
             </div>
         </g:if>
 
-        <g:if test="${(tipp.titleType == 'Book') && (tipp.firstEditor || showEmptyFields)}">
+        <g:if test="${(tipp.titleType == 'monograph') && (tipp.firstEditor || showEmptyFields)}">
             <div class="item">
                 <i class="grey icon industry circle la-popup-tooltip la-delay"
                    data-content="${message(code: 'tipp.firstEditor')}"></i>
@@ -138,7 +138,7 @@
             </div>
         </g:if>
 
-%{--        <g:if test="${(tipp.titleType == 'Book') && (tipp.editionStatement || showEmptyFields)}">
+%{--        <g:if test="${(tipp.titleType == 'monograph') && (tipp.editionStatement || showEmptyFields)}">
             <div class="item">
                 <i class="grey icon copy la-popup-tooltip la-delay"
                    data-content="${message(code: 'title.editionStatement.label')}"></i>
@@ -155,7 +155,7 @@
             </div>
         </g:if>--}%
 
-        <g:if test="${(tipp.titleType == 'Book') && (tipp.editionNumber || showEmptyFields)}">
+        <g:if test="${(tipp.titleType == 'monograph') && (tipp.editionNumber || showEmptyFields)}">
             <div class="item">
                 <i class="grey icon copy la-popup-tooltip la-delay"
                    data-content="${message(code: 'tipp.editionNumber.tooltip')}"></i>
@@ -172,7 +172,7 @@
             </div>
         </g:if>
 
-        <g:if test="${(tipp.titleType == 'Book') && (tipp.summaryOfContent || showEmptyFields)}">
+        <g:if test="${(tipp.titleType == 'monograph') && (tipp.summaryOfContent || showEmptyFields)}">
             <div class="item">
                 <i class="grey icon desktop la-popup-tooltip la-delay"
                    data-content="${message(code: 'title.summaryOfContent.label')}"></i>
@@ -359,7 +359,7 @@
 
                                 %{--<g:each in="${apisources}" var="gokbAPI">
                                     <g:if test="${provider.gokbId}">
-                                        <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                        <a role="button" class="ui icon tiny blue button la-popup-tooltip la-delay"
                                            data-content="${message(code: 'wekb')}"
                                            href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/orgContent/?id=' + provider.gokbId : '#'}"
                                            target="_blank"><i class="la-gokb  icon"></i>
