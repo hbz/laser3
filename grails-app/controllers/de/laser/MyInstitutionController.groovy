@@ -2513,7 +2513,7 @@ class MyInstitutionController  {
                         group by o order by lower(o.name) """
         )
 
-        Set providerIds = providerService.getCurrentProviderIdsOfProviders( contextService.getOrg() )
+        Set providerIds = providerService.getCurrentProviderIds( contextService.getOrg() )
 
         result.providers = providerIds.isEmpty() ? [] : Provider.findAllByIdInList(providerIds).sort { it?.name }
 

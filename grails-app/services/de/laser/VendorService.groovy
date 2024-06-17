@@ -615,8 +615,8 @@ class VendorService {
 
     }
 
-    Set<Long> getCurrentVendorIdsOfVendors(Org context) {
-        Set<Long> result = VendorRole.executeQuery("select vr.id from VendorRole vr join vr.vendor as v where vr.sub in (select sub from OrgRole where org = :context and roleType in (:roleTypes))",
+    Set<Long> getCurrentVendorIds(Org context) {
+        Set<Long> result = VendorRole.executeQuery("select vr.id from VendorRole vr join vr.vendor as v where vr.subscription in (select sub from OrgRole where org = :context and roleType in (:roleTypes))",
                 [context:context,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]])
         result
     }

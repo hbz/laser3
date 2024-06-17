@@ -466,14 +466,14 @@ class ProviderService {
         result
     }
 
-    Set<Long> getCurrentProviderIdsOfProviders(Org context) {
-        Set<Long> result = ProviderRole.executeQuery("select p.id from ProviderRole pr join pr.provider as p where pr.sub in (select sub from OrgRole where org = :context and roleType in (:roleTypes))",
+    Set<Long> getCurrentProviderIds(Org context) {
+        Set<Long> result = ProviderRole.executeQuery("select p.id from ProviderRole pr join pr.provider as p where pr.subscription in (select sub from OrgRole where org = :context and roleType in (:roleTypes))",
                 [context: context, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]])
         result
     }
 
-    Set<Provider> getCurrentProvidersOfProviders(Org context) {
-        Set<Provider> result = ProviderRole.executeQuery("select p from ProviderRole pr join pr.provider as p where pr.sub in (select sub from OrgRole where org = :context and roleType in (:roleTypes))",
+    Set<Provider> getCurrentProviders(Org context) {
+        Set<Provider> result = ProviderRole.executeQuery("select p from ProviderRole pr join pr.provider as p where pr.subscription in (select sub from OrgRole where org = :context and roleType in (:roleTypes))",
                 [context: context, roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]])
         result
     }

@@ -129,7 +129,7 @@ class SurveyController {
         }
 
         prf.setBenchmark("after surveyYears and before current org ids of providers and vendors")
-        result.providers = providerService.getCurrentProvidersOfProviders( (Org) result.institution )
+        result.providers = providerService.getCurrentProviders( (Org) result.institution )
         prf.setBenchmark("after providers and vendors and before subscriptions")
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution])
@@ -213,7 +213,7 @@ class SurveyController {
 
         result.propList = PropertyDefinition.executeQuery( "select surpro.surveyProperty from SurveyConfigProperties as surpro join surpro.surveyConfig surConfig join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg order by surpro.surveyProperty.name_de asc", [contextOrg: result.institution]).groupBy {it}.collect {it.key}
 
-        result.providers = providerService.getCurrentProvidersOfProviders( contextService.getOrg() )
+        result.providers = providerService.getCurrentProviders( contextService.getOrg() )
 
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution])
@@ -368,7 +368,7 @@ class SurveyController {
             }
         }
 
-        Set providerIds = providerService.getCurrentProviderIdsOfProviders( contextService.getOrg() )
+        Set providerIds = providerService.getCurrentProviderIds( contextService.getOrg() )
 
         result.providers = providerIds.isEmpty() ? [] : Provider.findAllByIdInList(providerIds).sort { it?.name }
 
@@ -448,7 +448,7 @@ class SurveyController {
             }
         }
 
-        Set providerIds = providerService.getCurrentProviderIdsOfProviders( contextService.getOrg() )
+        Set providerIds = providerService.getCurrentProviderIds( contextService.getOrg() )
 
         result.providers = providerIds.isEmpty() ? [] : Provider.findAllByIdInList(providerIds).sort { it?.name }
 

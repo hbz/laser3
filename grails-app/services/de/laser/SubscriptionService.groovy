@@ -299,7 +299,7 @@ class SubscriptionService {
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
 
-        Set providerIds = providerService.getCurrentProviderIdsOfProviders( contextService.getOrg() )
+        Set providerIds = providerService.getCurrentProviderIds( contextService.getOrg() )
 
         result.providers = providerIds.isEmpty() ? [] : Provider.findAllByIdInList(providerIds).sort { it?.name }
 
