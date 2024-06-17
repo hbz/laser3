@@ -38,6 +38,10 @@
         </form>
     </ui:filter>
 
+    <h3 class="ui icon header la-clear-before la-noMargin-top">
+        <span class="ui circular label">${issueEntitlementsFilterCount}</span> <g:message code="title.filter.result"/>
+    </h3>
+
     <div class="ui grid">
         <div class="row">
             <div class="column">
