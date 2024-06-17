@@ -6,15 +6,6 @@
         <ui:crumb text="${institution.getDesignation()}" class="active"/>
     </g:if>
     <g:else>
-        <g:if test="${isProviderOrAgency}">
-            <g:if test="${orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(institution).toList().contains(orgInstance.id)}">
-                <ui:crumb message="menu.my.providers" controller="myInstitution" action="currentProviders"/>
-            </g:if>
-            <g:else>
-                <ui:crumb message="menu.public.all_providers" controller="organisation" action="listProvider"/>
-            </g:else>
-        </g:if>
-        <g:else>
             <g:if test="${consortialView}">
                 <ui:crumb message="menu.my.consortia" controller="myInstitution" action="currentConsortia"/>
             </g:if>
@@ -29,7 +20,6 @@
                     <ui:crumb message="menu.public.all_insts" controller="org" action="listInstitution"/>
                 </g:else>
             </g:else>
-        </g:else>
 
         <ui:crumb text="${orgInstance.getDesignation()}" class="active"/>
     </g:else>

@@ -35,6 +35,7 @@ import de.laser.Platform
 import de.laser.PropertyService
 import de.laser.Provider
 import de.laser.ProviderRole
+import de.laser.ProviderService
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.Subscription
@@ -125,6 +126,7 @@ class SurveyControllerService {
     OrgTypeService orgTypeService
     PackageService packageService
     PropertyService propertyService
+    ProviderService providerService
     SubscriptionService subscriptionService
     SubscriptionControllerService subscriptionControllerService
     SubscriptionsQueryService subscriptionsQueryService
@@ -2867,9 +2869,9 @@ class SurveyControllerService {
                     }
                 }
 
-                Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.getOrg())
+                Set providerIds = providerService.getCurrentProviderIdsOfProviders( contextService.getOrg() )
 
-                result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
+                result.providers = providerIds.isEmpty() ? [] : Provider.findAllByIdInList(providerIds).sort { it?.name }
 
                 List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
                 result.filterSet = tmpQ[2]
