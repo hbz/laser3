@@ -377,6 +377,14 @@
         }
 
         JSPC.app.removePhysicalAddress = function() {
+          // removing multiple at once from Hausanschrift
+          $("#create_address").form("remove fields", [
+            "street_1",
+            "street_2",
+            "zipcode",
+            "city"
+          ]);
+
             // adding multiple at once to Postanschrift
           $("#create_address").form("add rule", "pob", {
             rules: [
@@ -402,13 +410,7 @@
               }
             ]
           });
-          // removing multiple at once from Hausanschrift
-          $("#create_address").form("remove fields", [
-            "street_1",
-            "street_2",
-            "zipcode",
-            "city"
-          ]);
+
         }
 
         $("#buttonPhysicalAddress").click(function () {
@@ -430,7 +432,6 @@
         });
 
         let postalAddressInputs = [
-          $("#type"),
           $("#pob"),
           $("#pobZipcode"),
           $("#pobCity")
@@ -438,21 +439,53 @@
         let physicalAddressInputs = [
           $("#street_1"),
           $("#street_2"),
+          $("#additionFirst"),
+          $("#additionSecond"),
           $("#zipcode"),
           $("#city")
         ];
 
-        JSPC.app.deleteInputs = function (elems) {
-          for (let i = 0; i < elems.length; i++) {
-            $(elems[i]).val(null);
-          }
+        let postalAddressFound = false;
+        for (var i = 0; i < postalAddressInputs.length; i++) {
+
+            if ($(postalAddressInputs[i]).val() !== "") {
+                postalAddressFound = true;
+                console.log("postalAddressInputs: Non empty");
+                $("#buttonPostalAddress").addClass("active");
+                $("#buttonPhysicalAddress").removeClass("active");
+                $("#physicalAddress").addClass("disabled");
+                $("#postalAddress").removeClass("disabled");
+                $("#create_address").form("remove fields", ["street_1","street_2","zipcode","city"]);
+                break;
+            }
         }
 
+        let physicalAddressFound = false;
+        for (var i = 0; i < physicalAddressInputs.length; i++) {
 
-        JSPC.app.updateDropdown = function() {
-            var dropdownRegion = $('#region');
-            var selectedCountry = $("#country").val();
-            var selectedRegions = ${raw(params.list('region') as String)};
+            if ($(physicalAddressInputs[i]).val() !== "") {
+                physicalAddressFound = true;
+                console.log("physicalAddressInputs: Non empty");
+                $("#buttonPhysicalAddress").addClass("active");
+                $("#buttonPostalAddress").removeClass("active");
+                $("#postalAddress").addClass("disabled");
+                $("#physicalAddress").removeClass("disabled");
+                $("#create_address").form("remove fields", ["pob", "pobZipcode", "pobCity"]);
+                break;
+            }
+        }
+
+    JSPC.app.deleteInputs = function (elems) {
+      for (let i = 0; i < elems.length; i++) {
+        $(elems[i]).val(null);
+      }
+    }
+
+
+    JSPC.app.updateDropdown = function() {
+        var dropdownRegion = $('#region');
+        var selectedCountry = $("#country").val();
+        var selectedRegions = ${raw(params.list('region') as String)};
 
             dropdownRegion.empty();
             dropdownRegion.append('<option selected="true" disabled>${message(code: 'default.select.choose.label')}</option>');
@@ -476,6 +509,7 @@
         if($("#country").val()) { JSPC.app.updateDropdown(); }
 
         $("#country").change(function() { JSPC.app.updateDropdown(); });
+
 
 
 

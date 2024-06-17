@@ -504,7 +504,6 @@
     for (var i = 0; i < input.length; i++) {
         if ($(input[i]).val().trim() !== "") {
         found = true;
-        console.log("Non empty");
         $(".title").addClass("active");
         $(".content").addClass("active");
         break;
