@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5772    17.06.2024  rc-3.4  3.4         Andreas Bug         Dokumente ohne Bezug wurden nicht dargestellt
+
+5770    17.06.2024  rc-3.4  3.4         Andreas Bug         obsoleten Read-Link entfernt
+
 5768    14.06.2024  rc-3.4  3.4         Andreas Bug         Export der Lizenzübertragungen schlug fehl
 
 5767    14.06.2024  rc-3.4  3.4         Andreas Bug         Bearbeitungsrechte im privaten Addressbuch fehlten
