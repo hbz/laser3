@@ -151,23 +151,23 @@
             </div><!-- .field -->
                 <!-- Alternating contact buttons START-->
             <div class="ui blue buttons" style="width: 100%">
-                <button class="ui active button" id="la-js-buttonSurname">
+                <div class="ui active button" id="la-js-buttonSurname">
                     <h2 class="ui icon inverted header">
                         <i class="address card outline icon"></i>
                         <div class="content">
                             Nachname
                         </div>
                     </h2>
-                </button>
+                </div>
                 <div class="or" data-text="<g:message code='search.advancedSearch.option.OR' />"></div>
-                <button class="ui button" id="la-js-buttonFunction">
+                <div class="ui button" id="la-js-buttonFunction">
                     <h2 class="ui icon inverted header">
                         <i class="wrench icon"></i>
                         <div class="content">
                             Funktionsbezeichnung
                         </div>
                     </h2>
-                </button>
+                </div>
             </div>
             <!-- Alternating contact buttons END-->
             <br><br>

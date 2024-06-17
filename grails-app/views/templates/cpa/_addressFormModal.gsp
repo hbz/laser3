@@ -108,23 +108,23 @@
 
         <!-- Alternating address Buttons START-->
         <div class="ui blue buttons" style="width: 100%">
-            <button class="ui active button" id="buttonPhysicalAddress">
+            <div class="ui active button" id="buttonPhysicalAddress">
                 <h2 class="ui icon inverted header">
                     <i class="map marked alternate icon"></i>
                     <div class="content">
                         <g:message code="address.streetaddress.label" />
                     </div>
                 </h2>
-            </button>
+            </div>
             <div class="or" data-text="<g:message code='search.advancedSearch.option.OR' />"></div>
-            <button class="ui button" id="buttonPostalAddress">
+            <div class="ui button" id="buttonPostalAddress">
                 <h2 class="ui icon inverted header">
                     <i class="inbox icon"></i>
                     <div class="content">
                         <g:message code="address.pob.label" />
                     </div>
                 </h2>
-            </button>
+            </div>
         </div>
         <!-- Alternating address Buttons END-->
         <!-- Alternating address Table START-->
