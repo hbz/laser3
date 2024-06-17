@@ -64,6 +64,7 @@ class SubscriptionService {
     LinksGenerationService linksGenerationService
     MessageSource messageSource
     PropertyService propertyService
+    ProviderService providerService
     RefdataService refdataService
     StatsSyncService statsSyncService
     SubscriptionsQueryService subscriptionsQueryService
@@ -298,9 +299,9 @@ class SubscriptionService {
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
 
-        Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.getOrg() )
+        Set providerIds = providerService.getCurrentProviderIds( contextService.getOrg() )
 
-        result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
+        result.providers = providerIds.isEmpty() ? [] : Provider.findAllByIdInList(providerIds).sort { it?.name }
 
         result
     }

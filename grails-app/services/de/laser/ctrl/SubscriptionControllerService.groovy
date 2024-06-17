@@ -92,6 +92,7 @@ class SubscriptionControllerService {
     PackageService packageService
     PendingChangeService pendingChangeService
     PropertyService propertyService
+    ProviderService providerService
     OrgTypeService orgTypeService
     StatsSyncService statsSyncService
     SubscriptionService subscriptionService
@@ -3551,9 +3552,9 @@ class SubscriptionControllerService {
                     }
                 }
 
-                Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.getOrg())
+                Set providerIds = providerService.getCurrentProviderIds( contextService.getOrg() )
 
-                result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
+                result.providers = providerIds.isEmpty() ? [] : Provider.findAllByIdInList(providerIds).sort { it?.name }
 
                 List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
                 result.filterSet = tmpQ[2]
