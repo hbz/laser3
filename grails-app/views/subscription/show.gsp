@@ -416,50 +416,6 @@
             <g:if test="${subscription.packages}">
                 <div id="packages" class="la-padding-top-1em"></div>
             </g:if>
-        <%--
-        <div class="ui card hidden">
-            <div class="content">
-                <laser:render template="/templates/links/orgLinksAsList"
-                          model="${[roleLinks: visibleOrgRelations,
-                                    roleObject: subscription,
-                                    roleRespValue: 'Specific subscription editor',
-                                    editmode: editable,
-                                    showPersons: true
-                          ]}" />
-                <div class="ui la-vertical buttons">
-
-                    <laser:render template="/templates/links/orgLinksSimpleModal"
-                              model="${[linkType: subscription.class.name,
-                                        parent: genericOIDService.getOID(subscription),
-                                        property: 'orgs',
-                                        recip_prop: 'sub',
-                                        tmplRole: RDStore.OR_PROVIDER,
-                                        tmplType: RDStore.OT_PROVIDER,
-                                        tmplEntity:message(code:'subscription.details.linkProvider.tmplEntity'),
-                                        tmplText:message(code:'subscription.details.linkProvider.tmplText'),
-                                        tmplButtonText:message(code:'subscription.details.linkProvider.tmplButtonText'),
-                                        tmplModalID:'modal_add_provider',
-                                        editmode: editable
-                              ]}" />
-                    <laser:render template="/templates/links/orgLinksSimpleModal"
-                              model="${[linkType: subscription.class.name,
-                                        parent: genericOIDService.getOID(subscription),
-                                        property: 'orgs',
-                                        recip_prop: 'sub',
-                                        tmplRole: RDStore.OR_AGENCY,
-                                        tmplType: RDStore.OT_AGENCY,
-                                        tmplEntity: message(code:'subscription.details.linkAgency.tmplEntity'),
-                                        tmplText: message(code:'subscription.details.linkAgency.tmplText'),
-                                        tmplButtonText: message(code:'subscription.details.linkAgency.tmplButtonText'),
-                                        tmplModalID:'modal_add_agency',
-                                        editmode: editable
-                              ]}" />
-
-                </div>
-
-            </div>
-        </div>
-        --%>
             <div class="ui card" id="licenses"></div>
             <g:if test="${usage}">
                 <div class="ui card la-dl-no-table">

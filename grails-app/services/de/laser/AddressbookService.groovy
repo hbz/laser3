@@ -150,16 +150,9 @@ class AddressbookService {
             qParts << '('+posParts.join(' OR ')+')'
         }
 
-        if (params.showOnlyContactPersonForInstitution || params.exportOnlyContactPersonForInstitution){
-            qParts << "(exists (select roletype from org.orgType as roletype where roletype.id = :instType ) and org.sector.id = :instSector )"
-            qParams << [instSector: RDStore.O_SECTOR_HIGHER_EDU.id, instType: RDStore.OT_INSTITUTION.id]
-        }
-        if(params.showOnlyContactPersonForProvider || params.exportOnlyContactPersonForProvider) {
-            qParts << "provider != null"
-        }
-        if(params.showOnlyContactPersonForVendor || params.exportOnlyContactPersonForVendor) {
-            qParts << "vendor != null"
-        }
+        Map<String, Object> instProvVenFilter = getInstitutionProviderVendorFilter(params)
+        qParts.add(instProvVenFilter.qParts)
+        qParams.putAll(instProvVenFilter.qParams)
 
         String query = "SELECT distinct(p), ${sort} FROM Person AS p join p.roleLinks pr left join pr.org org left join pr.vendor vendor left join pr.provider provider WHERE " + qParts.join(" AND ")
 
@@ -237,15 +230,9 @@ class AddressbookService {
             qParams << [selectedTypes: Params.getLongList(params, 'type')]
         }
 
-        if (params.showOnlyContactPersonForInstitution || params.exportOnlyContactPersonForInstitution){
-            qParts << "(exists (select roletype from org.orgType as roletype where roletype.id = :instType ) and org.sector.id = :instSector )"
-            qParams << [instSector: RDStore.O_SECTOR_HIGHER_EDU.id, instType: RDStore.OT_INSTITUTION.id]
-        }
-
-        if (params.showOnlyContactPersonForProvider || params.exportOnlyContactPersonForProvider){
-            qParts << "(exists (select roletype from org.orgType as roletype where roletype.id in (:orgType)) and org.sector.id = :orgSector )"
-            qParams << [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]]
-        }
+        Map<String, Object> instProvVenFilter = getInstitutionProviderVendorFilter(params)
+        qParts.add(instProvVenFilter.qParts)
+        qParams.putAll(instProvVenFilter.qParams)
 
         String query = "SELECT distinct(a), ${sortquery} FROM Address AS a left join a.org org left join a.provider provider left join a.vendor vendor WHERE " + qParts.join(" AND ")
 
@@ -269,6 +256,24 @@ class AddressbookService {
             result = result.collect { row -> row[0] }
         }
         result
+    }
+
+    private Map<String, Object> getInstitutionProviderVendorFilter(Map params) {
+        List qParts = []
+        Map qParams = [:]
+        if (params.showOnlyContactPersonForInstitution || params.exportOnlyContactPersonForInstitution){
+            qParts << "(exists (select roletype from org.orgType as roletype where roletype.id = :instType ) and org.sector.id = :instSector )"
+            qParams << [instSector: RDStore.O_SECTOR_HIGHER_EDU.id, instType: RDStore.OT_INSTITUTION.id]
+        }
+
+        if (params.showOnlyContactPersonForProvider || params.exportOnlyContactPersonForProvider){
+            qParts << "provider != null"
+        }
+
+        if (params.showOnlyContactPersonForVendor || params.exportOnlyContactPersonForVendor){
+            qParts << "vendor != null"
+        }
+        [qParts: "(${qParts.join(' or ')})", qParams: qParams]
     }
 
 }

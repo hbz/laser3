@@ -2,10 +2,6 @@
 
 <laser:htmlStart message="menu.institutions.myAddressbook" serviceInjection="true"/>
 
-<g:set var="allOrgTypeIds" value="${orgInstance.getAllOrgTypeIds()}"/>
-<g:set var="isProviderOrAgency"
-       value="${RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds}"/>
-
 <laser:render template="breadcrumb" model="${[orgInstance: orgInstance, params: params]}"/>
 
 <ui:controlButtons>

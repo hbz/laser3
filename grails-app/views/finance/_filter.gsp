@@ -19,7 +19,7 @@
 
         <g:form url="${formUrl}" method="get" class="ui form">
 
-            <div class="three fields">
+            <div class="four fields">
                 <%-- this test includes the check if the filter is called for a subscription consortia --%>
                 <g:if test="${subMembers}">
                     <div class="field">
@@ -44,9 +44,18 @@
                     </div>
                 </g:if>
                 <div class="field">
-                    <label>${message(code:'default.myProviderAgency.label')}</label>
+                    <label>${message(code:'menu.my.providers')}</label>
                     <div class="ui multiple search selection dropdown newFilter" id="filterSubProviders">
                         <input type="hidden" name="filterSubProviders">
+                        <i class="dropdown icon"></i>
+                        <input type="text" class="search">
+                        <div class="default text"><g:message code="default.select.all.label"/></div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>${message(code:'menu.my.vendors')}</label>
+                    <div class="ui multiple search selection dropdown newFilter" id="filterSubVendors">
+                        <input type="hidden" name="filterSubVendors">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
@@ -299,7 +308,8 @@
             fixedSubscriptionString = "&ctx=${fixedSubscription.class.name}:${fixedSubscription.id}"
         </g:if>
         const links = {
-            "filterSubProviders": "${createLink([controller:"ajaxJson", action:"lookupProvidersAgencies"])}?query={query}&forFinanceView=true",
+            "filterSubProviders": "${createLink([controller:"ajaxJson", action:"lookupProviders"])}?query={query}&forFinanceView=true",
+            "filterSubVendors": "${createLink([controller:"ajaxJson", action:"lookupVendors"])}?query={query}&forFinanceView=true",
             "filterCISub": "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?status="+subStatus+"&query={query}",
             "filterCIPkg": "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?status="+subStatus+fixedSubscriptionString+"&query={query}",
             "filterCIInvoiceNumber": "${createLink([controller:"ajaxJson", action:"lookupInvoiceNumbers"])}?query={query}",
@@ -317,6 +327,9 @@
                     break;
                 case 'filterSubProviders':
                     values = [<g:each in="${filterPresets?.filterSubProviders}" var="subProvider" status="i">'${genericOIDService.getOID(subProvider)}'<g:if test="${i < filterPresets.filterSubProviders.size()-1}">,</g:if></g:each>];
+                    break;
+                case 'filterSubVendors':
+                    values = [<g:each in="${filterPresets?.filterSubVendors}" var="subVendor" status="i">'${genericOIDService.getOID(subVendor)}'<g:if test="${i < filterPresets.filterSubVendors.size()-1}">,</g:if></g:each>];
                     break;
                 case 'filterCIInvoiceNumber':
                     values = [<g:each in="${filterPresets?.filterCIInvoiceNumber}" var="invoiceNumber" status="i">'${invoiceNumber}'<g:if test="${i < filterPresets.filterCIInvoiceNumber.size()-1}">,</g:if></g:each>];

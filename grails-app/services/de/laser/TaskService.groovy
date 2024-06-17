@@ -325,8 +325,6 @@ class TaskService {
                 String consQuery = 'select new map(o.id as id, o.name as name, o.sortname as sortname) from OrgSetting os join os.org o where os.key = :customerType and os.roleValue in (:consortium) order by '+params.sort
                 validOrgs.addAll(Org.executeQuery(consQuery, [customerType: OrgSetting.KEYS.CUSTOMER_TYPE, consortium: Role.findAllByAuthorityInList([CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_CONSORTIUM_BASIC])]))
             }
-            String provQuery = 'select new map(o.id as id, o.name as name, o.sortname as sortname) from Org o join o.orgType ot where ot in (:providerAgency) order by '+params.sort
-            validOrgs.addAll(Org.executeQuery(provQuery, [providerAgency: [RDStore.OT_PROVIDER, RDStore.OT_AGENCY]]))
             validOrgs = validOrgs.sort { a, b -> !a.sortname ? !b.sortname ? 0 : 1 : !b.sortname ? -1 : a.sortname <=> b.sortname }
             validOrgs.each { row ->
                 Long optionKey = row.id
