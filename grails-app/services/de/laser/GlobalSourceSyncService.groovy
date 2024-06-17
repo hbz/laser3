@@ -60,7 +60,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippStatus = [:],
             packageStatus = [:],
             orgStatus = [:],
-            orgTypes = [:],
             currency = [:],
             accessType = [:],
             openAccess = [:],
@@ -2732,13 +2731,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
         orgStatus.put(RDStore.ORG_STATUS_RETIRED.value,RDStore.ORG_STATUS_RETIRED)
         RefdataCategory.getAllRefdataValues(RDConstants.CURRENCY).each { RefdataValue rdv ->
             currency.put(rdv.value, rdv)
-        }
-        List<RefdataValue> staticOrgTypes = [RDStore.OT_AGENCY, RDStore.OT_CONSORTIUM, RDStore.OT_INSTITUTION, RDStore.OT_LICENSOR, RDStore.OT_PROVIDER, RDStore.OT_PUBLISHER]
-        RefdataValue.findAllByIdNotInListAndOwner(staticOrgTypes.collect { RefdataValue rdv -> rdv.id }, RDStore.OT_AGENCY.owner).each { RefdataValue rdv ->
-            orgTypes.put(rdv.value, rdv)
-        }
-        staticOrgTypes.each { RefdataValue rdv ->
-            orgTypes.put(rdv.value, rdv)
         }
         RefdataCategory.getAllRefdataValues(RDConstants.DDC).each { RefdataValue rdv ->
             ddc.put(rdv.value, rdv)

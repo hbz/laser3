@@ -878,8 +878,8 @@ class FinanceService {
             }
             //providers
             if(params.filterSubProviders) {
-                subFilterQuery += " and sub in (select oo.sub from OrgRole as oo where oo.org in (:filterSubProviders)) "
-                List<Org> filterSubProviders = []
+                subFilterQuery += " and sub in (select pvr.subscription from ProviderRole as pvr where pvr.provider in (:filterSubProviders)) "
+                List<Provider> filterSubProviders = []
                 String[] subProviders
                 if(params.filterSubProviders.contains(","))
                     subProviders = params.filterSubProviders.split(',')
@@ -888,6 +888,19 @@ class FinanceService {
                     filterSubProviders.add(genericOIDService.resolveOID(subProvider))
                 }
                 queryParams.filterSubProviders = filterSubProviders
+            }
+            //vendors
+            if(params.filterSubVendors) {
+                subFilterQuery += " and sub in (select vr.subscription from VendorRole as vr where vr.vendor in (:filterSubVendors)) "
+                List<Vendor> filterSubVendors = []
+                String[] subVendors
+                if(params.filterSubVendors.contains(","))
+                    subVendors = params.filterSubVendors.split(',')
+                else subVendors = [params.filterSubVendors]
+                subVendors.each { String subVendor ->
+                    filterSubVendors.add(genericOIDService.resolveOID(subVendor))
+                }
+                queryParams.filterSubVendors = filterSubVendors
             }
             //subscription status
             //we have to distinct between not existent and present but zero length

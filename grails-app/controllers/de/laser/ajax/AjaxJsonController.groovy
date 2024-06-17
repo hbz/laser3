@@ -699,15 +699,6 @@ class AjaxJsonController {
     }
 
     /**
-     * Retrieves a list of provider and agency {@link Org}s for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getProvidersAgencies(grails.web.servlet.mvc.GrailsParameterMap)}
-     */
-    @Secured(['ROLE_USER'])
-    def lookupProvidersAgencies() {
-        render controlledListService.getProvidersAgencies(params) as JSON
-    }
-
-    /**
      * Retrieves a list of {@link Org}s in general for dropdown display
      * @return the result of {@link de.laser.ControlledListService#getOrgs(grails.web.servlet.mvc.GrailsParameterMap)}
      */

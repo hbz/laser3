@@ -117,9 +117,8 @@ class OrganisationController  {
         result.contextOrg = result.institution //for the properties template
 
         List<Long> orgInstanceTypeIds = result.orgInstance.getAllOrgTypeIds()
-        boolean isProviderOrAgency = (RDStore.OT_PROVIDER.id in orgInstanceTypeIds) || (RDStore.OT_AGENCY.id in orgInstanceTypeIds)
 
-        Boolean hasAccess = ! isProviderOrAgency && (
+        Boolean hasAccess = (
                 (result.inContextOrg && userService.hasFormalAffiliation(result.user, result.orgInstance, 'INST_ADM')) ||
                 (isComboRelated && userService.hasFormalAffiliation(result.user, result.institution, 'INST_ADM')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
@@ -492,16 +491,12 @@ class OrganisationController  {
         List<IdentifierNamespace> nsList = IdentifierNamespace.executeQuery(
                 'select idns from IdentifierNamespace idns where (idns.nsType = :org or idns.nsType = null) and idns.isFromLaser = true and idns.ns not in (:primaryExcludes) order by idns.name_' + LocaleUtils.getCurrentLang() + ', idns.ns',
                 [org: Org.class.name, primaryExcludes: primaryExcludes])
-        if((RDStore.OT_PROVIDER.id in org.getAllOrgTypeIds()) || (RDStore.OT_AGENCY.id in org.getAllOrgTypeIds())) {
-            nsList = nsList - IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS) + IdentifierNamespace.findByNs(IdentifierNamespace.ROR_ID) //ROR_ID is CORE_ORG_NS and not unique
-        }
-        else {
-            nsList = nsList - IdentifierNamespace.findAllByNsInList([IdentifierNamespace.CROSSREF_FUNDER_ID, IdentifierNamespace.DBPEDIA, IdentifierNamespace.LOC_ID, IdentifierNamespace.VIAF, IdentifierNamespace.WIKIDATA_ID])
-            if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID) })
-                nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID)
-            if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR) })
-                nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR)
-        }
+
+        nsList = nsList - IdentifierNamespace.findAllByNsInList([IdentifierNamespace.CROSSREF_FUNDER_ID, IdentifierNamespace.DBPEDIA, IdentifierNamespace.LOC_ID, IdentifierNamespace.VIAF, IdentifierNamespace.WIKIDATA_ID])
+        if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID) })
+            nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID)
+        if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR) })
+            nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR)
 
         Map<String, Object> namespacesWithValidations = organisationService.getNamespacesWithValidations()
 
