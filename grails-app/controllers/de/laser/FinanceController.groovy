@@ -226,7 +226,6 @@ class FinanceController  {
                            message(code: 'financials.invoice_number'), message(code: 'financials.order_number')])
             SimpleDateFormat dateFormat = DateUtils.getLocalizedSDF_noTime()
             LinkedHashMap<Subscription,List<Org>> subscribers = [:]
-            LinkedHashMap<Subscription,Set<Org>> providers = [:]
             LinkedHashMap<Subscription,BudgetCode> costItemGroups = [:]
             OrgRole.findAllByRoleTypeInList([RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]).each { it ->
                 List<Org> orgs = subscribers.get(it.sub)
@@ -234,13 +233,6 @@ class FinanceController  {
                     orgs = [it.org]
                 else orgs.add(it.org)
                 subscribers.put(it.sub,orgs)
-            }
-            OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
-                Set<Org> orgs = providers.get(it.sub)
-                if(orgs == null)
-                    orgs = [it.org]
-                else orgs.add(it.org)
-                providers.put(it.sub,orgs)
             }
             CostItemGroup.findAll().each{ cig -> costItemGroups.put(cig.costItem,cig.budgetCode) }
             withFormat {
@@ -284,10 +276,21 @@ class FinanceController  {
                                     //provider
                                     cellnum++
                                     if(ci.sub) {
-                                        Set<Org> orgRoles = ci.sub.orgRelations.findAll { OrgRole oo -> oo.roleType in [RDStore.OR_PROVIDER,RDStore.OR_AGENCY] }.collect { it.org }
+                                        Set<Provider> providerRoles = Provider.executeQuery('select pvr.provider from ProviderRole pvr where pvr.subscription = :sub', [sub: ci.sub])
                                         String cellValue = ""
-                                        orgRoles.each { or ->
-                                            cellValue += or.name
+                                        providerRoles.each { pvr ->
+                                            cellValue += pvr.name
+                                        }
+                                        row.add(cellValue)
+                                    }
+                                    else row.add(" ")
+                                    //vendor
+                                    cellnum++
+                                    if(ci.sub) {
+                                        Set<Vendor> vendorRoles = Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription = :sub', [sub: ci.sub])
+                                        String cellValue = ""
+                                        vendorRoles.each { vr ->
+                                            cellValue += vr.name
                                         }
                                         row.add(cellValue)
                                     }

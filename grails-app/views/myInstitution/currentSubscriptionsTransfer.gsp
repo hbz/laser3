@@ -274,8 +274,11 @@
                    <th scope="col" rowspan="3" class="center aligned">
                         ${message(code: 'sidewide.number')}
                     </th>
-                    <g:sortableColumn scope="col" rowspan="3" params="${params}" property="providerAgency"
-                                      title="${message(code: 'provider.label')} / ${message(code: 'vendor.label')}"/>
+                    <g:sortableColumn scope="col" rowspan="3" params="${params}" property="provider"
+                                      title="${message(code: 'provider.label')}"/>
+
+                    <g:sortableColumn scope="col" rowspan="3" params="${params}" property="vendor"
+                                      title="${message(code: 'vendor.label')}"/>
 
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="name"
                                       title="${message(code: 'subscription')}"/>
@@ -396,6 +399,8 @@
                                     </g:if>
                                 </g:link><br/>
                             </g:each>
+                        </td>
+                        <td>
                             <g:each in="${s.vendors}" var="vendor">
                                 <g:link controller="vendor" action="show" id="${vendor.id}">
                                     ${fieldValue(bean: vendor, field: "name")}

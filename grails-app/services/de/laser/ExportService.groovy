@@ -2487,20 +2487,6 @@ class ExportService {
 		//LinkedHashMap<Subscription,List<Org>> subscribers = [:]
 		//LinkedHashMap<Subscription,Set<Org>> providers = [:]
 		LinkedHashMap<Subscription, BudgetCode> costItemGroups = [:]
-		/*OrgRole.findAllByRoleTypeInList([RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]).each { it ->
-			List<Org> orgs = subscribers.get(it.sub)
-			if(orgs == null)
-				orgs = [it.org]
-			else orgs.add(it.org)
-			subscribers.put(it.sub,orgs)
-		}
-		OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
-			Set<Org> orgs = providers.get(it.sub)
-			if (orgs == null)
-				orgs = [it.org]
-			else orgs.add(it.org)
-			providers.put(it.sub, orgs)
-		}*/
 		XSSFCellStyle csPositive = workbook.createCellStyle()
 		csPositive.setFillForegroundColor(new XSSFColor(new Color(198,239,206)))
 		csPositive.setFillPattern(FillPatternType.SOLID_FOREGROUND)
@@ -2534,8 +2520,10 @@ class ExportService {
 			if(viewMode == "cons")
 				titles.addAll([messageSource.getMessage('org.sortName.label',null,locale),messageSource.getMessage('financials.newCosts.costParticipants',null,locale),messageSource.getMessage('financials.isVisibleForSubscriber',null,locale)])
 			titles.add(messageSource.getMessage( 'financials.newCosts.costTitle',null,locale))
-			if(viewMode == "cons")
-				titles.add(messageSource.getMessage('provider.label',null,locale))
+			if(viewMode == "cons") {
+				titles.add(messageSource.getMessage('provider.label', null, locale))
+				titles.add(messageSource.getMessage('vendor.label', null, locale))
+			}
 			titles.addAll([messageSource.getMessage('default.subscription.label',null,locale), messageSource.getMessage('subscription.startDate.label',null,locale), messageSource.getMessage('subscription.endDate.label',null,locale),
 						   messageSource.getMessage('financials.costItemConfiguration',null,locale), messageSource.getMessage('package.label',null,locale), messageSource.getMessage('issueEntitlement.label',null,locale),
 						   messageSource.getMessage('financials.datePaid',null,locale), messageSource.getMessage('financials.dateFrom',null,locale), messageSource.getMessage('financials.dateTo',null,locale), messageSource.getMessage('financials.financialYear',null,locale),
@@ -2597,10 +2585,21 @@ class ExportService {
 						//provider
 						cell = row.createCell(cellnum++)
 						if(ci.sub) {
-							Set<Org> orgRoles = ci.sub.orgRelations.findAll { OrgRole oo -> oo.roleType in [RDStore.OR_PROVIDER,RDStore.OR_AGENCY] }.collect { it.org }
+							Set<Provider> providerRoles = Provider.executeQuery('select pvr.provider from ProviderRole pvr where pvr.subscription = :sub', [sub: ci.sub])
 							String cellValue = ""
-							orgRoles.each { Org or ->
-								cellValue += or.name
+							providerRoles.each { Provider pvr ->
+								cellValue += pvr.name
+							}
+							cell.setCellValue(cellValue)
+						}
+						else cell.setCellValue("")
+						//vendor
+						cell = row.createCell(cellnum++)
+						if(ci.sub) {
+							Set<Vendor> vendorRoles = Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription = :sub', [sub: ci.sub])
+							String cellValue = ""
+							vendorRoles.each { Vendor vr ->
+								cellValue += vr.name
 							}
 							cell.setCellValue(cellValue)
 						}

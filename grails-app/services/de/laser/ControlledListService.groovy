@@ -167,9 +167,12 @@ class ControlledListService {
             }
         }
         if(params.providerFilter) {
-            queryString += " and exists (select op from OrgRole op where op.sub = s and op.roleType in (:providerRoleTypes) and op.org = :filterProvider) "
-            filter.providerRoleTypes = [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
+            queryString += " and exists (select pvr from ProviderRole pvr where pvr.subscription = s and pvr.provider = :filterProvider) "
             filter.filterProvider = genericOIDService.resolveOID(params.providerFilter)
+        }
+        if(params.vendorFilter) {
+            queryString += " and exists (select vr from VendorRole vr where vr.subscription = s and vr.vendor = :filterVendor) "
+            filter.filterVendor = genericOIDService.resolveOID(params.providerVendor)
         }
         Set<String> refdataFields = ['form','resource','kind']
         refdataFields.each { String refdataField ->

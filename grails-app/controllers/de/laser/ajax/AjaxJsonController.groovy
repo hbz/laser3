@@ -708,7 +708,7 @@ class AjaxJsonController {
     }
 
     /**
-     * Retrieves a list of provider {@link Org}s and their associated {@link Platform}s for dropdown display
+     * Retrieves a list of {@link Provider}s and their associated {@link Platform}s for dropdown display
      * @return a {@link List} of {@link Map}s of structure
      * {
      *   name: provider name,
@@ -723,11 +723,11 @@ class AjaxJsonController {
     def lookupProviderAndPlatforms() {
         List result = []
 
-        List<Org> provider = Org.executeQuery('SELECT o FROM Org o JOIN o.orgType ot WHERE ot = :ot', [ot: RDStore.OT_PROVIDER])
+        List<Provider> provider = Org.executeQuery('SELECT p FROM Provider p', [ot: RDStore.OT_PROVIDER])
         provider.each{ prov ->
             Map<String, Object> pp = [name: prov.name, value: prov.class.name + ":" + prov.id, platforms:[]]
 
-            Platform.findAllByOrg(prov).each { plt ->
+            Platform.findAllByProvider(prov).each { plt ->
                 pp.platforms.add([name: plt.name, value: plt.class.name + ":" + plt.id])
             }
             result.add(pp)

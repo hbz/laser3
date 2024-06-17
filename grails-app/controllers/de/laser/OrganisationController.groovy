@@ -973,9 +973,7 @@ class OrganisationController  {
         else
             result.editable_identifier = userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.orgInstance, 'INST_EDITOR')
 
-        //if(!(RDStore.OT_PROVIDER.id in result.allOrgTypeIds)){
         result.orgInstance.createCoreIdentifiersIfNotExist()
-        //}
 
         Boolean inContextOrg = result.inContextOrg
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)

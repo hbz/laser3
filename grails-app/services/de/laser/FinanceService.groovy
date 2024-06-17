@@ -798,13 +798,6 @@ class FinanceService {
                         result.cons.ids = consortialCostRows.id
                         //result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElementConfiguration ciec where ci.id in (:ids) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder+', ciec.value desc',[ids:consortialCostRows],[max:configMap.max, offset:configMap.offsets.consOffset]).toSet()
                         result.cons.costItems = consortialCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
-                        //very ugly ... any ways to achieve this more elegantly are greatly appreciated!!
-                        /*if(configMap.sortConfig.consSort == 'oo.org.sortname') {
-                            result.cons.costItems = result.cons.costItems.sort{ ciA, ciB ->
-                                ciA.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]}?.org?.sortname?.toLowerCase() <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]}?.org?.sortname?.toLowerCase() ?:
-                                        ciA.sub?.orgRelations?.find { oo -> oo.roleType in [RDStore.OR_AGENCY,RDStore.OR_PROVIDER]}?.org?.name?.toLowerCase() <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_AGENCY,RDStore.OR_PROVIDER]}?.org?.name?.toLowerCase() ?:
-                                        ciA.sub?.name?.toLowerCase() <=> ciB.sub?.name?.toLowerCase() }
-                        }*/
                         result.cons.sums = calculateResults(consortialCostItems.id)
                     }
                     break

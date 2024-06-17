@@ -160,7 +160,7 @@ class SubscriptionControllerService {
                 }
             }
             Set<RefdataValue> wekbFunctionTypes = [RDStore.PRS_FUNC_METADATA, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT]
-            result.visiblePrsLinks.addAll(PersonRole.executeQuery('select pr from PersonRole pr where (pr.org in (select oo.org from OrgRole oo where oo.sub = :s and oo.roleType = :provider) or pr.org in (select oo.org from OrgRole oo where oo.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = :s))) and pr.functionType in (:wekbFunctionTypes)', [s: result.subscription, provider: RDStore.OR_PROVIDER, wekbFunctionTypes: wekbFunctionTypes]))
+            result.visiblePrsLinks.addAll(PersonRole.executeQuery('select pr from PersonRole pr where (pr.provider in (select pvr.provider from ProviderRole pvr where pvr.subscription = :s) or pr.provider in (select pkg.provider from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :s)) and pr.functionType in (:wekbFunctionTypes)', [s: result.subscription, wekbFunctionTypes: wekbFunctionTypes]))
             //}
             if(ConfigMapper.getShowStatsInfo()) {
                 prf.setBenchmark('usage')
