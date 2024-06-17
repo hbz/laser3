@@ -50,9 +50,6 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('hasInstAdmin')}">
                 <th>${message(code: 'org.hasInstAdmin.label')}</th>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
-                <th>${message(code: 'org.isWekbCurated.label')}</th>
-            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('status')}">
                 <th>${message(code: 'default.status.label')}</th>
             </g:if>
