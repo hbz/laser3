@@ -47,9 +47,7 @@
             default:
                 if(it.org) {
                     //fallback: documents are visible if share configuration is missing or obsolete
-                    if (!it.shareConf) {
-                        visible = it.org == null
-                    }
+                    visible = inOwnerOrg
                 }
                 else if(inOwnerOrg || it.sharedFrom)
                     //other owner objects than orgs - in particular licenses and subscriptions: visibility is set if the owner org visits the owner object or sharing is activated

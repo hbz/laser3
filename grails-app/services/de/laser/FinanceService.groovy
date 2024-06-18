@@ -798,13 +798,6 @@ class FinanceService {
                         result.cons.ids = consortialCostRows.id
                         //result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElementConfiguration ciec where ci.id in (:ids) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder+', ciec.value desc',[ids:consortialCostRows],[max:configMap.max, offset:configMap.offsets.consOffset]).toSet()
                         result.cons.costItems = consortialCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
-                        //very ugly ... any ways to achieve this more elegantly are greatly appreciated!!
-                        /*if(configMap.sortConfig.consSort == 'oo.org.sortname') {
-                            result.cons.costItems = result.cons.costItems.sort{ ciA, ciB ->
-                                ciA.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]}?.org?.sortname?.toLowerCase() <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]}?.org?.sortname?.toLowerCase() ?:
-                                        ciA.sub?.orgRelations?.find { oo -> oo.roleType in [RDStore.OR_AGENCY,RDStore.OR_PROVIDER]}?.org?.name?.toLowerCase() <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_AGENCY,RDStore.OR_PROVIDER]}?.org?.name?.toLowerCase() ?:
-                                        ciA.sub?.name?.toLowerCase() <=> ciB.sub?.name?.toLowerCase() }
-                        }*/
                         result.cons.sums = calculateResults(consortialCostItems.id)
                     }
                     break
@@ -878,8 +871,8 @@ class FinanceService {
             }
             //providers
             if(params.filterSubProviders) {
-                subFilterQuery += " and sub in (select oo.sub from OrgRole as oo where oo.org in (:filterSubProviders)) "
-                List<Org> filterSubProviders = []
+                subFilterQuery += " and sub in (select pvr.subscription from ProviderRole as pvr where pvr.provider in (:filterSubProviders)) "
+                List<Provider> filterSubProviders = []
                 String[] subProviders
                 if(params.filterSubProviders.contains(","))
                     subProviders = params.filterSubProviders.split(',')
@@ -888,6 +881,19 @@ class FinanceService {
                     filterSubProviders.add(genericOIDService.resolveOID(subProvider))
                 }
                 queryParams.filterSubProviders = filterSubProviders
+            }
+            //vendors
+            if(params.filterSubVendors) {
+                subFilterQuery += " and sub in (select vr.subscription from VendorRole as vr where vr.vendor in (:filterSubVendors)) "
+                List<Vendor> filterSubVendors = []
+                String[] subVendors
+                if(params.filterSubVendors.contains(","))
+                    subVendors = params.filterSubVendors.split(',')
+                else subVendors = [params.filterSubVendors]
+                subVendors.each { String subVendor ->
+                    filterSubVendors.add(genericOIDService.resolveOID(subVendor))
+                }
+                queryParams.filterSubVendors = filterSubVendors
             }
             //subscription status
             //we have to distinct between not existent and present but zero length

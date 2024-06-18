@@ -50,9 +50,6 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('hasInstAdmin')}">
                 <th>${message(code: 'org.hasInstAdmin.label')}</th>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
-                <th>${message(code: 'org.isWekbCurated.label')}</th>
-            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('status')}">
                 <th>${message(code: 'default.status.label')}</th>
             </g:if>
@@ -379,16 +376,6 @@
                     <g:else>
                         ${raw(instAdminIcon)}
                     </g:else>
-                </td>
-            </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
-                <td class="center aligned">
-                    <g:if test="${org instanceof Org && org.gokbId != null && org.getAllOrgTypeIds().any { ot -> [RDStore.OT_AGENCY.id, RDStore.OT_PROVIDER.id].contains(ot) }}">
-                        <ui:wekbButtonLink type="org" gokbId="${org.gokbId}" />
-                    </g:if>
-                    <g:elseif test="${org instanceof Vendor && org.gokbId != null}">
-                        <ui:wekbButtonLink type="vendor" gokbId="${org.gokbId}" />
-                    </g:elseif>
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('status')}">

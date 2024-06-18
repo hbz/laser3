@@ -212,11 +212,6 @@ class OrganisationControllerService {
                     return null
                 }
             }
-            //set isMyOrg-flag for relations context -> provider
-            if(OrgSetting.get(result.orgInstance, OrgSetting.KEYS.CUSTOMER_TYPE) == OrgSetting.SETTING_NOT_FOUND) {
-                int relationCheck = OrgRole.executeQuery('select count(oo) from OrgRole oo join oo.sub sub where oo.org = :context and sub in (select os.sub from OrgRole os where os.roleType in (:providerRoles)) and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true))', [context: result.institution, providerRoles: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY], current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED])[0]
-                result.isMyOrg = relationCheck > 0
-            }
         }
         else {
             result.editable = controller._checkIsEditable(user, org)

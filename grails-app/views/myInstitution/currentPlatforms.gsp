@@ -45,7 +45,7 @@
                         <g:if test="${platformInstance.provider.gokbId != null}">
                             <ui:wekbIconLink type="provider" gokbId="${platformInstance.provider.gokbId}" />
                         </g:if>
-                        <g:link controller="provider" action="show" id="${platformInstance.provider.id}">${platformInstance.provider.getDesignation()}</g:link>
+                        <g:link controller="provider" action="show" id="${platformInstance.provider.id}">${platformInstance.provider.name}</g:link>
                     </g:if>
                 </td>
                 <%--<td>
@@ -88,9 +88,9 @@
                     </g:if>
                 </td>
                 <%--<td>
-                    <g:if test="${platformInstance.org}">
+                    <g:if test="${platformInstance.provider}">
                         <div class="la-flexbox">
-                            <g:if test="${platformInstance.org.gokbId != null && RDStore.OT_PROVIDER.id in platformInstance.org.getAllOrgTypeIds()}">
+                            <g:if test="${platformInstance.provider.gokbId != null}">
                                 <ui:wekbButtonLink type="platform" gokbId="${platformInstance.gokbId}" />
                             </g:if>
                         </div>
