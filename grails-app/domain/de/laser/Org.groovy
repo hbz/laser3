@@ -718,17 +718,14 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * The namespaces of those core identifiers are defined at {@link IdentifierNamespace#CORE_ORG_NS}
      */
     void createCoreIdentifiersIfNotExist(){
-        if(!(RDStore.OT_PROVIDER.id in this.getAllOrgTypeIds())){
-
-            boolean isChanged = false
-            IdentifierNamespace.CORE_ORG_NS.each{ coreNs ->
-                if ( ! ids.find {it.ns.ns == coreNs}){
-                    addOnlySpecialIdentifiers(coreNs, IdentifierNamespace.UNKNOWN)
-                    isChanged = true
-                }
+        boolean isChanged = false
+        IdentifierNamespace.CORE_ORG_NS.each{ coreNs ->
+            if ( ! ids.find {it.ns.ns == coreNs}){
+                addOnlySpecialIdentifiers(coreNs, IdentifierNamespace.UNKNOWN)
+                isChanged = true
             }
-            if (isChanged) refresh()
         }
+        if (isChanged) refresh()
     }
 
     /**

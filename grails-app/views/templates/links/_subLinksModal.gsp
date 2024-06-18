@@ -265,7 +265,7 @@
         });
         <g:if test="${context instanceof Subscription || context instanceof License}">
             <g:if test="${!subscriptionLicenseLink}">
-                <g:set var="firstProvider" value="${context.orgRelations.find { OrgRole oo -> oo.roleType.id in [RDStore.OR_PROVIDER.id, RDStore.OR_LICENSOR.id] }?.org}"/>
+                <g:set var="firstProvider" value="${ProviderRole.findBySubscriptionOrLicense(context, context)?.provider}"/>
             </g:if>
             <g:if test="${firstProvider}">
                 let providerOID = "${genericOIDService.getOID(firstProvider)}";

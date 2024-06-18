@@ -233,7 +233,7 @@ class PublicController {
                         " WHERE ident.tipp = ie.tipp AND ident.value LIKE :idv "
 
                     if (params.idns) {
-                        query += " AND io.identifier.ns = :idns "
+                        query += " AND ident.ns = :idns "
 
                         queryParams.put('idns', IdentifierNamespace.get(params.idns))
                     }
@@ -244,6 +244,7 @@ class PublicController {
                 query += " order by LOWER(ie.tipp.sortname)"
 
                 result.issueEntitlements = IssueEntitlement.executeQuery(query, queryParams, [max: result.max, offset: result.offset])
+                result.issueEntitlementsFilterCount = IssueEntitlement.executeQuery("select count(*) " + base_query, queryParams)[0]
             }
             else {
                 redirect controller: 'public', action: 'gasco'

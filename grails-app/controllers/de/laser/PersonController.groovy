@@ -410,10 +410,10 @@ class PersonController  {
 
             }
 
+            Set<Long> toDelete = []
             personInstance.contacts.each { contact ->
                 if (!params.containsKey('contact'+contact.id)) {
-                    personInstance.contacts.remove(contact)
-                    contact.delete()
+                    toDelete << contact.id
                 }
                 else {
                     if (params."content${contact.id}") {
@@ -427,11 +427,13 @@ class PersonController  {
                 }
             }
 
+            Contact.executeUpdate('delete from Contact c where c.id in (:ids)', [ids: toDelete])
+
             if (params.content) {
                 params.list('content').eachWithIndex { content, i ->
                     if (content) {
                         RefdataValue rdvCT = RefdataValue.get(params.list('contentType.id')[i])
-                        RefdataValue contactLang = params['contactLang.id'][i] ? RefdataValue.get(params['contactLang.id'][i]) : null
+                        RefdataValue contactLang = params.list('contactLang.id')[i] ? RefdataValue.get(params.list('contactLang.id')[i]) : null
                         if (RDStore.CCT_EMAIL == rdvCT) {
                             if (!formService.validateEmailAddress(content)) {
                                 flash.error = message(code: 'contact.create.email.error') as String

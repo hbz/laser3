@@ -154,19 +154,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     }
 
     /**
-     * Gets the content provider of this package
-     * @return the {@link Org} linked to this package by {@link OrgRole} of type Content Provider or Provider
-     */
-  @Transient
-  @Deprecated
-  Org getContentProvider() {
-    Org result = orgs.find { OrgRole or ->
-      or.roleType in [RDStore.OR_CONTENT_PROVIDER, RDStore.OR_PROVIDER]
-    }?.org
-    result
-  }
-
-    /**
      * Outputs this package's name and core data for labelling
      * @return the concatenated label of this package
      */
