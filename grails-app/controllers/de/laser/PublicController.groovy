@@ -244,7 +244,7 @@ class PublicController {
                 query += " order by LOWER(ie.tipp.sortname)"
 
                 result.issueEntitlements = IssueEntitlement.executeQuery(query, queryParams, [max: result.max, offset: result.offset])
-                result.issueEntitlementsFilterCount = IssueEntitlement.executeQuery("select count(*) " + query, queryParams)[0]
+                result.issueEntitlementsFilterCount = IssueEntitlement.executeQuery("select count(*) " + base_query, queryParams)[0]
             }
             else {
                 redirect controller: 'public', action: 'gasco'

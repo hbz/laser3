@@ -212,8 +212,9 @@ class FinanceController  {
             if(viewMode == "cons")
                 titles.addAll([message(code:'org.sortName.label'),message(code:'financials.newCosts.costParticipants'),message(code:'financials.isVisibleForSubscriber')])
             titles.add(message(code: 'financials.newCosts.costTitle'))
-            if(viewMode == "cons")
-                titles.add(message(code:'provider.label'))
+            if(viewMode == "cons") {
+                titles.addAll([message(code: 'provider.label'), message(code: 'vendor.label')])
+            }
             titles.addAll([message(code: 'default.subscription.label'), message(code:'subscription.startDate.label'), message(code: 'subscription.endDate.label'),
                            message(code: 'financials.costItemConfiguration'), message(code: 'package.label'), message(code: 'issueEntitlement.label'),
                            message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'), message(code: 'financials.dateTo'), message(code:'financials.financialYear'),

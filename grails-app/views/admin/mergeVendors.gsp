@@ -128,7 +128,7 @@
                 };
             }
             $.ajax({
-                url: '<g:createLink controller="ajaxJson" action="loadProviderForMerge"/>',
+                url: '<g:createLink controller="ajaxJson" action="loadVendorForMerge"/>',
                 data: data,
                 success: success
             });

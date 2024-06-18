@@ -16,11 +16,13 @@ import de.laser.LinksGenerationService
 import de.laser.OrganisationService
 import de.laser.Package
 import de.laser.Provider
+import de.laser.ProviderService
 import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
 import de.laser.SubscriptionDiscountScale
 import de.laser.SubscriptionService
 import de.laser.Vendor
+import de.laser.VendorService
 import de.laser.auth.Role
 import de.laser.cache.EhcacheWrapper
 import de.laser.finance.PriceItem
@@ -76,10 +78,11 @@ class AjaxJsonController {
     GenericOIDService genericOIDService
     LicenseService licenseService
     LinksGenerationService linksGenerationService
-    OrganisationService organisationService
+    ProviderService providerService
     ReportingGlobalService reportingGlobalService
     ReportingLocalService reportingLocalService
     SubscriptionService subscriptionService
+    VendorService vendorService
 
     /**
      * Test call
@@ -1010,10 +1013,25 @@ class AjaxJsonController {
     def loadProviderForMerge() {
         Map<String, Object> mergeInfo = [:]
         if(params.containsKey('source') && params.source.length() > 0) {
-            mergeInfo = organisationService.mergeProviders(genericOIDService.resolveOID(params.source), null, true)
+            mergeInfo = providerService.mergeProviders(genericOIDService.resolveOID(params.source), null, true)
         }
         else if(params.containsKey('target') && params.target.length() > 0) {
-            mergeInfo = organisationService.mergeProviders(genericOIDService.resolveOID(params.target), null, true)
+            mergeInfo = providerService.mergeProviders(genericOIDService.resolveOID(params.target), null, true)
+        }
+        render mergeInfo as JSON
+    }
+
+    /**
+     * Retrieves the selected organisation for the organisation merge table
+     */
+    @Secured(['ROLE_USER'])
+    def loadVendorForMerge() {
+        Map<String, Object> mergeInfo = [:]
+        if(params.containsKey('source') && params.source.length() > 0) {
+            mergeInfo = vendorService.mergeVendors(genericOIDService.resolveOID(params.source), null, true)
+        }
+        else if(params.containsKey('target') && params.target.length() > 0) {
+            mergeInfo = vendorService.mergeVendors(genericOIDService.resolveOID(params.target), null, true)
         }
         render mergeInfo as JSON
     }
