@@ -1,7 +1,7 @@
 <%@ page import="de.laser.properties.PropertyDefinition; de.laser.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.storage.RDConstants" %>
 <laser:serviceInjection/>
 
-<ui:modal  id="${modalID ?: 'personModal'}" formID="person_form"
+<ui:modalAddress  id="${modalID ?: 'personModal'}" formID="person_form"
            modalSize="big"
            text="${modalText ?: message(code: 'person.create_new.label')}"
            msgClose="${message(code: 'default.button.cancel')}"
@@ -464,12 +464,22 @@
               ]
             },
     </g:if>
-    last_name: {
-        identifier: 'last_name',
-        rules: [
-            {
-                type: 'empty',
-                prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
+
+            personRoleProvider: {
+                identifier: 'personRoleProvider',
+                rules: [
+                    {
+                        type: 'empty',
+                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
+                    }
+                ]
+            },
+            last_name: {
+                identifier: 'last_name',
+                rules: [
+                    {
+                        type: 'empty',
+                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
                     }
                 ]
             },
@@ -632,19 +642,19 @@
         bb8.ajax4remoteForm($(this));
     });
 
-    $('#person_form').submit(function(e) {
+    %{--$('#person_form').submit(function(e) {
         alert(JSPC.app.contactElementCount);
         e.preventDefault();
-%{--        JSPC.app.addressElementCount = $(".addressField").length;--}%
+--}%%{--        JSPC.app.addressElementCount = $(".addressField").length;--}%%{--
         JSPC.app.contactElementCount = $(".contactField").length;
         if($.fn.form.settings.rules.functionOrPosition() && $('#last_name').val().length > 0) {
-%{--            let addressElements = null, contactElements = null;--}%
+--}%%{--            let addressElements = null, contactElements = null;--}%%{--
             if(JSPC.app.contactElementCount == 1) {
                 contactElements = [$('#'+$.escapeSelector('contactLang.id')), $('#content')];
             }
-%{--            if(JSPC.app.addressElementCount == 1) {
+--}%%{--            if(JSPC.app.addressElementCount == 1) {
                 addressElements = [$('#type'), $('#name'), $('#additionFirst'), $('#additionSecond'), $('#street_1'), $('#street_2'), $('#zipcode'), $('#city'), $('#pob'), $('#pobZipcode'), $('#pobCity'), $('#country'), $('#region')];
-            }--}%
+            }--}%%{--
     alert(JSPC.app.areElementsFilledOut(contactElements));
             if(JSPC.app.contactElementCount == 0 || !JSPC.app.areElementsFilledOut(contactElements)) {
                 if(confirm("test")) {
@@ -671,8 +681,8 @@
         }
         else filledOut = true;
         return filledOut;
-    };
+    };--}%
 
     </laser:script>
 
-</ui:modal>
+</ui:modalAddress>
