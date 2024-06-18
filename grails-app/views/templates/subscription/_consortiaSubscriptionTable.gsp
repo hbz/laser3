@@ -30,7 +30,6 @@
     </g:if>
 </g:if>
 <g:if test="${entries}">
-    <g:set var="start" value="${System.currentTimeMillis()}"/>
     <table class="ui celled sortable table la-js-responsive-table la-table la-ignore-fixed">
         <thead>
         <tr>
@@ -159,7 +158,7 @@
                 <g:if test="${'showProviders' in tableConfig}">
                     <td>
                         <g:each in="${subCons.providers}" var="p">
-                            <g:link controller="organisation" action="show" id="${p.id}">${p.getDesignation()}</g:link> <br />
+                            <g:link controller="provider" action="show" id="${p.id}">${p.sortname}</g:link> <br />
                         </g:each>
                     </td>
                 </g:if>
