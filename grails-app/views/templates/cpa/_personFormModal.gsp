@@ -481,6 +481,15 @@
                         prompt: '<g:message code="person.create.missing_function"/>'
                     }
                 ]
+            },
+            content: {
+                identifier: 'content',
+                rules: [
+                    {
+                        type: 'empty',
+                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
+                    }
+                ]
             }
         }
     });
@@ -624,20 +633,21 @@
     });
 
     $('#person_form').submit(function(e) {
+        alert(JSPC.app.contactElementCount);
         e.preventDefault();
-        JSPC.app.addressElementCount = $(".addressField").length;
+%{--        JSPC.app.addressElementCount = $(".addressField").length;--}%
         JSPC.app.contactElementCount = $(".contactField").length;
         if($.fn.form.settings.rules.functionOrPosition() && $('#last_name').val().length > 0) {
-            let addressElements = null, contactElements = null;
+%{--            let addressElements = null, contactElements = null;--}%
             if(JSPC.app.contactElementCount == 1) {
                 contactElements = [$('#'+$.escapeSelector('contactLang.id')), $('#content')];
             }
 %{--            if(JSPC.app.addressElementCount == 1) {
                 addressElements = [$('#type'), $('#name'), $('#additionFirst'), $('#additionSecond'), $('#street_1'), $('#street_2'), $('#zipcode'), $('#city'), $('#pob'), $('#pobZipcode'), $('#pobCity'), $('#country'), $('#region')];
             }--}%
-            if((JSPC.app.addressElementCount == 0 || !JSPC.app.areElementsFilledOut(addressElements)) &&
-               (JSPC.app.contactElementCount == 0 || !JSPC.app.areElementsFilledOut(contactElements))) {
-                if(confirm("${message(code:'person.create.noAddressConfirm')}")) {
+    alert(JSPC.app.areElementsFilledOut(contactElements));
+            if(JSPC.app.contactElementCount == 0 || !JSPC.app.areElementsFilledOut(contactElements)) {
+                if(confirm("test")) {
                     $('#person_form').unbind('submit').submit();
                 }
             }
@@ -650,6 +660,7 @@
 
 
     JSPC.app.areElementsFilledOut = function (elems) {
+
         let filledOut = false;
         if(elems !== null) {
             for(let i = 0; i < elems.length; i++) {
