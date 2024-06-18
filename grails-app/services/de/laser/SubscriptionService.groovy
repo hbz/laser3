@@ -536,11 +536,12 @@ class SubscriptionService {
 
             result.providers = Provider.executeQuery(queryProviders, queryParamsProviders) as Set<Provider>
             result.totalCount = costs.size()
-            result.totalSubsCount = costs.sub.unique().size()
-            result.totalMembers = new TreeSet<Org>()
-            costs.each { row ->
-                result.totalMembers << row.orgs
-            }
+            Set<Subscription> uniqueSubs = []
+            uniqueSubs.addAll(costs.sub)
+            result.totalSubsCount = uniqueSubs.size()
+            SortedSet<Org> totalMembers = new TreeSet<Org>()
+            totalMembers.addAll(costs.orgs)
+            result.totalMembers = totalMembers
             if(params.fileformat) {
                 result.entries = costs
                 result.entries.sub.each { Subscription subCons ->

@@ -151,8 +151,10 @@ class AddressbookService {
         }
 
         Map<String, Object> instProvVenFilter = getInstitutionProviderVendorFilter(params)
-        qParts.add(instProvVenFilter.qParts)
-        qParams.putAll(instProvVenFilter.qParams)
+        if(instProvVenFilter.containsKey('qParams')) {
+            qParts.add(instProvVenFilter.qParts)
+            qParams.putAll(instProvVenFilter.qParams)
+        }
 
         String query = "SELECT distinct(p), ${sort} FROM Person AS p join p.roleLinks pr left join pr.org org left join pr.vendor vendor left join pr.provider provider WHERE " + qParts.join(" AND ")
 
@@ -231,8 +233,10 @@ class AddressbookService {
         }
 
         Map<String, Object> instProvVenFilter = getInstitutionProviderVendorFilter(params)
-        qParts.add(instProvVenFilter.qParts)
-        qParams.putAll(instProvVenFilter.qParams)
+        if(instProvVenFilter.containsKey('qParts')) {
+            qParts.add(instProvVenFilter.qParts)
+            qParams.putAll(instProvVenFilter.qParams)
+        }
 
         String query = "SELECT distinct(a), ${sortquery} FROM Address AS a left join a.org org left join a.provider provider left join a.vendor vendor WHERE " + qParts.join(" AND ")
 
@@ -273,7 +277,10 @@ class AddressbookService {
         if (params.showOnlyContactPersonForVendor || params.exportOnlyContactPersonForVendor){
             qParts << "vendor != null"
         }
-        [qParts: "(${qParts.join(' or ')})", qParams: qParams]
+        if(qParts) {
+            [qParts: "(${qParts.join(' or ')})", qParams: qParams]
+        }
+        else [:]
     }
 
 }
