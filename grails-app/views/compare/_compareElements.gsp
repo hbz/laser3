@@ -197,48 +197,6 @@
                 </td>
                 <g:each in="${objects}" var="object">
                     <td>
-                    <g:each in="${object.orgRelations?.sort{it.org.name}}" var="role">
-                        <g:if test="${role.roleType in [RDStore.OR_AGENCY, RDStore.OR_PROVIDER, RDStore.OR_LICENSOR]}">
-                            <g:if test="${Person.getPublicByOrgAndObjectResp(role.org, object, 'Specific subscription editor') ||
-                                    Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, object, 'Specific subscription editor', contextOrg)}">
-
-                            <%-- public --%>
-                                <g:each in="${Person.getPublicByOrgAndObjectResp(role.org, object, 'Specific subscription editor')}"
-                                        var="resp">
-                                    <span class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'address.public')}"
-                                          data-position="top right">
-                                        <i class="address card icon"></i>
-                                    </span>
-                                    ${resp}
-                                    (<strong><i
-                                        class="university icon"></i>&nbsp;${role.roleType.getI10n("value")}:
-                                </strong>
-                                    <g:link controller="organisation" action="show" target="_blank"
-                                            id="${role.org.id}">${role.org.name}</g:link>)
-                                    <br />
-                                </g:each>
-                            <%-- public --%>
-                            <%-- private --%>
-                                <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, object, 'Specific subscription editor', contextOrg)}"
-                                        var="resp">
-                                    <span class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'address.private')}"
-                                          data-position="top right">
-                                        <i class="address card outline icon"></i>
-                                    </span>
-                                    ${resp}
-                                    (<strong><i
-                                        class="university icon"></i>&nbsp;${role.roleType.getI10n("value")}:
-                                </strong>
-                                    <g:link controller="organisation" action="show" target="_blank"
-                                            id="${role.org.id}">${role.org.name}</g:link>)
-                                    <br />
-                                </g:each><%-- private --%>
-                            </g:if>
-                        </g:if>
-                    </g:each>
-
                     <g:each in="${object.providers}" var="provider">
                             <g:if test="${Person.getPublicByOrgAndObjectResp(provider, object, 'Specific subscription editor') ||
                                     Person.getPrivateByOrgAndObjectRespFromAddressbook(provider, object, 'Specific subscription editor', contextOrg)}">

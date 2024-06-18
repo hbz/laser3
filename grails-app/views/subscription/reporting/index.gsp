@@ -139,10 +139,11 @@
 
                             JSPC.app.reporting.current.chart.echart = echart;
 
-                            $('#query-export-button').removeAttr('disabled');
-                            if (JSPC.app.reporting.current.request.query.indexOf('timeline-') == 0) {
+                            let $dhs = $('#queryHelpModal .help-section[data-help-section=' + JSPC.app.reporting.current.request.query + ']');
+                            if ($dhs.length) {
                                 $('#query-help-button').removeAttr('disabled');
                             }
+                            $('#query-export-button').removeAttr('disabled');
                         }
                     })
                     .fail (function (data) {

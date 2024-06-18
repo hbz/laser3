@@ -88,9 +88,9 @@
                     </g:if>
                 </td>
                 <%--<td>
-                    <g:if test="${platformInstance.org}">
+                    <g:if test="${platformInstance.provider}">
                         <div class="la-flexbox">
-                            <g:if test="${platformInstance.org.gokbId != null && RDStore.OT_PROVIDER.id in platformInstance.org.getAllOrgTypeIds()}">
+                            <g:if test="${platformInstance.provider.gokbId != null}">
                                 <ui:wekbButtonLink type="platform" gokbId="${platformInstance.gokbId}" />
                             </g:if>
                         </div>

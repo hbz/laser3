@@ -2031,11 +2031,16 @@ class FilterService {
                 whereClauses << "tipp_medium_rv_fk = any(:medium)"
             }
             if(configMap.filterPvd != null && !configMap.filterPvd.isEmpty()) {
-                List<Object> providers = [], providerRoleTypes = [RDStore.OR_CONTENT_PROVIDER.id, RDStore.OR_PROVIDER.id, RDStore.OR_AGENCY.id, RDStore.OR_PUBLISHER.id]
+                List<Object> providers = []
                 providers.addAll(listReaderWrapper(configMap, 'filterPvd').collect { Long.parseLong(it.split(':')[1])} )
                 params.providers = connection.createArrayOf('bigint', providers.toArray())
-                params.providerRoleTypes = connection.createArrayOf('bigint', providerRoleTypes.toArray())
-                whereClauses << "exists(select or_id from org_role where or_pkg_fk = pkg_id and or_org_fk = any(:providers) and or_roletype_fk = any(:providerRoleTypes))"
+                whereClauses << "pkg_provider_fk = any(:providers)"
+            }
+            if(configMap.filterVen != null && !configMap.filterVen.isEmpty()) {
+                List<Object> vendors = []
+                vendors.addAll(listReaderWrapper(configMap, 'filterVen').collect { Long.parseLong(it.split(':')[1])} )
+                params.vendors = connection.createArrayOf('bigint', vendors.toArray())
+                whereClauses << "exists(select pv_id from package_vendor where pv_pkg_fk = pkg_id and pv_vendor_fk = any(:vendors))"
             }
             if(configMap.filterHostPlat != null && !configMap.filterHostPlat.isEmpty()) {
                 List<Object> hostPlatforms = []
