@@ -512,10 +512,13 @@
 
     JSPC.app.removeContactElement = function () {
         $('.removeContactElement').click(function () {
-            if (JSPC.app.contactElementCount != 0) {
+            JSPC.app.checkIfMoreThanFourContactElements();
+            if (JSPC.app.contactElementCount != 1) {
                 $(this).parents('.contactField').remove();
             }
-            JSPC.app.checkIfMoreThanFourContactElements();
+            else {
+            }
+
         });
     }
 
@@ -629,9 +632,9 @@
             if(JSPC.app.contactElementCount == 1) {
                 contactElements = [$('#'+$.escapeSelector('contactLang.id')), $('#content')];
             }
-            if(JSPC.app.addressElementCount == 1) {
+%{--            if(JSPC.app.addressElementCount == 1) {
                 addressElements = [$('#type'), $('#name'), $('#additionFirst'), $('#additionSecond'), $('#street_1'), $('#street_2'), $('#zipcode'), $('#city'), $('#pob'), $('#pobZipcode'), $('#pobCity'), $('#country'), $('#region')];
-            }
+            }--}%
             if((JSPC.app.addressElementCount == 0 || !JSPC.app.areElementsFilledOut(addressElements)) &&
                (JSPC.app.contactElementCount == 0 || !JSPC.app.areElementsFilledOut(contactElements))) {
                 if(confirm("${message(code:'person.create.noAddressConfirm')}")) {
