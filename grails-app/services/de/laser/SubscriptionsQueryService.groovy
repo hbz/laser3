@@ -75,7 +75,7 @@ class SubscriptionsQueryService {
                             " AND s.instanceOf is not null "
                 qry_params << ['roleType':role_sub_consortia, 'activeInst':contextOrg]
             } else {
-                if (params.showParentsAndChildsSubs) {
+                if (params.showParentsAndChildsSubs || params.identifier?.startsWith('vendor:')) {
                     base_qry =  " from Subscription as s ${joinQuery} where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) "
                     qry_params << ['roleType':role_sub_consortia, 'activeInst':contextOrg]
                 } else {//nur Parents
