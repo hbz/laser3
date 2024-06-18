@@ -260,7 +260,7 @@ class ReportingGlobalService {
                     result.tmpl = TMPL_PATH_CHART + cfg.getAt('chartTemplate')
                 }
             }
-            else if (prefix in ['org', 'member', 'consortium', /*'provider', 'agency', */ 'licensor']) {
+            else if (prefix in [ 'org', 'member', 'consortium' ]) {
                 result.putAll( OrganisationQuery.query(clone) )
                 result.labels.tooltip = getTooltipLabels(clone)
 
@@ -430,7 +430,7 @@ class ReportingGlobalService {
                     else if (prefix in [ BaseConfig.KEY_LICENSE ]) {
                         result.list = idList ? License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList]) : []
                     }
-                    else if (prefix in [ 'licensor', 'org', 'member', 'consortium', /*'provider', 'agency' */]) {
+                    else if (prefix in [ 'org', 'member', 'consortium' ]) {
                         result.list = idList ? Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList]) : []
                         result.tmpl = TMPL_PATH_DETAILS + BaseConfig.KEY_ORGANISATION
                     }
