@@ -310,7 +310,7 @@
                             <i class="icon large envelope outline la-js-contactIcon"></i>
                         </div>
                         <div class="field wide four">
-                            <input type="text" readonly value="${contact.contentType.getI10n('value')}"/>
+                            <input type="text" name="contact${contact.id}" readonly value="${contact.contentType.getI10n('value')}"/>
                         </div>
 
                         <div class="field four wide">
