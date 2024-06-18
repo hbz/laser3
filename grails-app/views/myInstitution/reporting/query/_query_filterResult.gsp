@@ -15,9 +15,6 @@
 
 <g:elseif test="${filter == BaseConfig.KEY_LICENSE}">
     ${message(code: 'reporting.filter.result.license.part', args: [filterResult.data.licenseIdList.size()])}
-    <g:if test="${filterResult.data.licensorIdList.size()}">
-        ${message(code: 'reporting.filter.result.and.licensor', args: [filterResult.data.licensorIdList.size()])}
-    </g:if>
     <g:if test="${filterResult.data.providerIdList}">
         ${message(code: 'reporting.filter.result.and.provider', args: [filterResult.data.providerIdList.size()])}
     </g:if>

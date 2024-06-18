@@ -15,7 +15,7 @@
         </button>
     </g:if>
 
-    <g:if test="${queryPart in ['org', 'member', 'consortium', 'licensor' /*, 'provider', 'vendor' */]}">
+    <g:if test="${queryPart in ['org', 'member', 'consortium', /* 'provider', 'vendor' */]}"><!-- TODO -->
         <button id="details-copy-email-button" class="ui icon button la-modern-button" data-href="#detailsCopyEmailModal" data-ui="modal">
             <i class="icon envelope"></i>
         </button>

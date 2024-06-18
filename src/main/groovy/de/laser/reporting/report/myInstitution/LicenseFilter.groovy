@@ -177,7 +177,6 @@ class LicenseFilter extends BaseFilter {
 
 //        println 'licenses >> ' + result.licenseIdList.size()
 //        println 'member >> ' + result.memberIdList.size()
-//        println 'licensor >> ' + result.licensorIdList.size()
 
         filterResult
     }
@@ -205,16 +204,13 @@ class LicenseFilter extends BaseFilter {
                     [ licenseIdList: queryParams.licenseIdList ]
             )
         }
-        if (partKey == 'licensor') {
-            queryParams.put( 'roleTypes', [RDStore.OR_LICENSOR] )
-        }
 
         String cmbKey = BaseConfig.FILTER_PREFIX + partKey + '_'
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each { key ->
             //println key + " >> " + params.get(key)
-            List<String> validPartKeys = ['member', 'licensor']
+            List<String> validPartKeys = [ 'member' ]
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
