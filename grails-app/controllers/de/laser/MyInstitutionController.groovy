@@ -2596,7 +2596,6 @@ class MyInstitutionController  {
         }
 
         params.viewTab = params.viewTab ?: 'overview'
-        params.subTab = params.subTab ?: 'allPackages'
 
         result = surveyService.participantResultGenerics(result, result.institution, params)
 
