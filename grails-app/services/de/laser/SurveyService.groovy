@@ -2473,6 +2473,7 @@ class SurveyService {
                     if (ids.size() > 0) {
                         uuidPkgs = ids
                     } else {
+                        //Fallback with fake UUID
                         uuidPkgs = ['fakeUuids']
                     }
                 }
@@ -2518,7 +2519,8 @@ class SurveyService {
                     if (ids.size() > 0) {
                         configVendorIds = ids
                     } else {
-                        configVendorIds = ['fakeUuids']
+                        //Fallback with fake ID
+                        configVendorIds = [0]
                     }
                     result.selectedVendorIdList = configVendorIds
                 }
