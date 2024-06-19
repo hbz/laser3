@@ -1,7 +1,7 @@
 <%@ page import="de.laser.properties.PropertyDefinition; de.laser.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.storage.RDConstants" %>
 <laser:serviceInjection/>
 
-<ui:modalAddress  id="${modalID ?: 'personModal'}" formID="person_form"
+<ui:modalAddress  id="${modalID ?: 'personModal'}" form="person_form"
            modalSize="big"
            text="${modalText ?: message(code: 'person.create_new.label')}"
            msgClose="${message(code: 'default.button.cancel')}"
@@ -333,43 +333,46 @@
                     </div>
                 </g:each>
             </g:if>
+            <g:else >
+                <div class="field">
+                    <div class="three fields contactField" id="contactFields${personInstance?.contacts ? personInstance.contacts.size()+1 : 1}">
+                        <div class="field one wide la-contactIconField">
+                            <i class="icon large envelope outline la-js-contactIcon"></i>
+                        </div>
+                        <div class="field wide four">
+                            <ui:select class="ui dropdown contentType" name="contentType.id"
+                                       from="${[RDStore.CCT_EMAIL, RDStore.CCT_FAX, RDStore.CCT_MOBILE, RDStore.CCT_PHONE, RDStore.CCT_URL]}"
+                                       optionKey="id"
+                                       optionValue="value"
+                                       value="${contactInstance?.contentType?.id}"/>
+                        </div>
 
 
-            <div class="field">
-                <div class="three fields contactField" id="contactFields${personInstance?.contacts ? personInstance.contacts.size()+1 : 1}">
-                    <div class="field one wide la-contactIconField">
-                        <i class="icon large envelope outline la-js-contactIcon"></i>
-                    </div>
-                    <div class="field wide four">
-                        <ui:select class="ui dropdown contentType" name="contentType.id"
-                                   from="${[RDStore.CCT_EMAIL, RDStore.CCT_FAX, RDStore.CCT_MOBILE, RDStore.CCT_PHONE, RDStore.CCT_URL]}"
-                                   optionKey="id"
-                                   optionValue="value"
-                                   value="${contactInstance?.contentType?.id}"/>
-                    </div>
+
+                        <div class="field four wide">
+                            <ui:select class="ui search dropdown" name="contactLang.id"
+                                       from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)}"
+                                       optionKey="id"
+                                       optionValue="value"
+                                       value="${contactInstance?.language?.id}"
+                                       noSelection="['null': message(code: 'person.contacts.selectLang.default')]"/>
+                        </div>
 
 
-
-                    <div class="field four wide">
-                        <ui:select class="ui search dropdown" name="contactLang.id"
-                                   from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)}"
-                                   optionKey="id"
-                                   optionValue="value"
-                                   value="${contactInstance?.language?.id}"
-                                   noSelection="['null': message(code: 'person.contacts.selectLang.default')]"/>
-                    </div>
-
-
-                    <div class="field seven wide">
-                        <g:textField id="content" name="content" value="${contactInstance?.content}"/>
-                    </div>
-                    <div class="field one wide">
-                        <button type="button"  class="ui icon negative button la-modern-button removeContactElement">
-                            <i class="trash alternate outline icon"></i>
-                        </button>
+                        <div class="field seven wide">
+                            <g:textField id="content" name="content" value="${contactInstance?.content}"/>
+                        </div>
+                        %{--                    <div class="field one wide">
+                                                <button type="button"  class="ui icon negative button la-modern-button removeContactElement">
+                                                    <i class="trash alternate outline icon"></i>
+                                                </button>
+                                            </div>--}%
                     </div>
                 </div>
-            </div>
+            </g:else>
+
+
+
 
 
             <div id="contactElements"></div>
