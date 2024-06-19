@@ -162,7 +162,7 @@ class ApiOrg {
         }
 
         result.addresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery(adrQuery, queryParams), ApiReader.NO_CONSTRAINT) // de.laser.Address
-        result.contacts     = ApiCollectionReader.getContactCollection(org.contacts, ApiReader.NO_CONSTRAINT)  // de.laser.Contact
+        result.contacts     = ApiCollectionReader.getContactCollection([], ApiReader.NO_CONSTRAINT)  // de.laser.Contact tmp fix until 3.0
         result.identifiers  = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
         result.persons      = ApiCollectionReader.getPrsLinkCollection(
                 org.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context

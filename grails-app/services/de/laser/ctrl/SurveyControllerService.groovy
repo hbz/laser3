@@ -2099,7 +2099,7 @@ class SurveyControllerService {
                              participant: org
                             ])[0]
 
-                    Subscription memberSub = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.targetParentSub, org, startDate, endDate, false, result.targetParentSub.status, inheritedAttributes, null, true, null, null)
+                    Subscription memberSub = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.targetParentSub, org, startDate, endDate, false, result.targetParentSub.status, inheritedAttributes, null, true, true, null, null)
 
                     if(memberSub) {
                         result.newSubs << memberSub
@@ -4465,9 +4465,10 @@ class SurveyControllerService {
             excludes.addAll(PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key + PendingChangeConfiguration.NOTIFICATION_SUFFIX })
             Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name, result.parentSuccessorSubscription.id, excludes)
 
-            boolean transferProviderAgency = params.transferProviderAgency ? true : false
+            boolean transferProvider = params.transferProvider ? true : false
+            boolean transferVendor = params.transferVendor ? true : false
             List<Long> providersSelection = Params.getLongList(params, 'providersSelection')
-            List<Long> agenciesSelection = Params.getLongList(params, 'agenciesSelection')
+            List<Long> vendorsSelection = Params.getLongList(params, 'vendorsSelection')
 
             Integer countNewSubs = 0
 
@@ -4508,7 +4509,7 @@ class SurveyControllerService {
                             newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 2.year) : null
                         }
-                        Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection)
+                        Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
                             countNewSubs++
                             result.newSubs.addAll(subscription)
@@ -4518,7 +4519,7 @@ class SurveyControllerService {
                             newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 3.year) : null
                         }
-                        Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection)
+                        Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
                             countNewSubs++
                             result.newSubs.addAll(subscription)
@@ -4528,7 +4529,7 @@ class SurveyControllerService {
                             newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 4.year) : null
                         }
-                        Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection)
+                        Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
                             countNewSubs++
                             result.newSubs.addAll(subscription)
@@ -4539,7 +4540,7 @@ class SurveyControllerService {
                             newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 5.year) : null
                         }
-                        Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection)
+                        Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
                             countNewSubs++
                             result.newSubs.addAll(subscription)
@@ -4551,7 +4552,7 @@ class SurveyControllerService {
                                 newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                                 newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
                             }
-                            Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection)
+                            Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                             if(subscription){
                                 countNewSubs++
                                 result.newSubs.addAll(subscription)
@@ -4567,7 +4568,7 @@ class SurveyControllerService {
                 if (sub.isCurrentMultiYearSubscriptionToParentSub()) {
                     Org org = sub.getSubscriberRespConsortia()
                     if (!(result.parentSuccessortParticipantsList && org.id in result.parentSuccessortParticipantsList.id)) {
-                        Subscription subscription = _processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection)
+                        Subscription subscription = _processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
                             countNewSubs++
                             result.newSubs.addAll(subscription)
@@ -4893,7 +4894,7 @@ class SurveyControllerService {
      * @param params the request parameter map
      * @return the new member subscription instance
      */
-    private def _processAddMember(Subscription oldSub, Subscription newParentSub, Org org, Date newStartDate, Date newEndDate, boolean multiYear, RefdataValue status, Set<AuditConfig> inheritedAttributes, List<License> licensesToProcess, boolean transferProviderAgency, List<Long> providersSelection, List<Long> agenciesSelection ) {
+    private def _processAddMember(Subscription oldSub, Subscription newParentSub, Org org, Date newStartDate, Date newEndDate, boolean multiYear, RefdataValue status, Set<AuditConfig> inheritedAttributes, List<License> licensesToProcess, boolean transferProvider, boolean transferVendor, List<Long> providersSelection, List<Long> vendorsSelection ) {
 
         Org institution = contextService.getOrg()
         Subscription memberSub
@@ -4941,22 +4942,27 @@ class SurveyControllerService {
                     new OrgRole(org: org, sub: memberSub, roleType: RDStore.OR_SUBSCRIBER_CONS).save()
                     new OrgRole(org: institution, sub: memberSub, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).save()
 
-                    if (transferProviderAgency) {
+                    if (transferProvider) {
                         newParentSub.getProviders().each { provider ->
-                            new ProviderRole(provider: provider, sub: memberSub).save()
+                            new ProviderRole(provider: provider, subscription: memberSub).save()
                         }
-                        newParentSub.getVendors().each { provider ->
-                            new VendorRole(vendor: provider, sub: memberSub).save()
-                        }
-                    } else {
+                    }
+                    else {
                         if (providersSelection) {
                             providersSelection.each { providerID ->
-                                new ProviderRole(provider: Provider.get(providerID), sub: memberSub).save()
+                                new ProviderRole(provider: Provider.get(providerID), subscription: memberSub).save()
                             }
                         }
-                        if (agenciesSelection) {
-                            agenciesSelection.each { vendorID ->
-                                new VendorRole(vendor: Vendor.get(vendorID), sub: memberSub).save()
+                    }
+                    if (transferVendor) {
+                        newParentSub.getVendors().each { vendor ->
+                            new VendorRole(vendor: vendor, subscription: memberSub).save()
+                        }
+                    }
+                    else {
+                        if (vendorsSelection) {
+                            vendorsSelection.each { vendorID ->
+                                new VendorRole(vendor: Vendor.get(vendorID), subscription: memberSub).save()
                             }
                         }
                     }

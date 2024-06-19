@@ -542,7 +542,7 @@ class DeletionService {
 
         List altnames       = new ArrayList(org.altnames)
         List addresses      = new ArrayList(org.addresses)
-        List contacts       = new ArrayList(org.contacts)
+        //List contacts       = new ArrayList(org.contacts)
         List prsLinks       = new ArrayList(org.prsLinks)
         List persons        = Person.findAllByTenant(org)
         List affils         = User.findAllByFormalOrg(org)
@@ -597,7 +597,7 @@ class DeletionService {
 
         result.info << ['Alternativnamen', altnames]
         result.info << ['Adressen', addresses]
-        result.info << ['Kontaktdaten', contacts]
+        //result.info << ['Kontaktdaten', contacts]
         result.info << ['Personen', prsLinks, FLAG_BLOCKER]
         result.info << ['Personen (tenant)', persons, FLAG_BLOCKER]
         result.info << ['Nutzerzugehörigkeiten', affils, FLAG_BLOCKER]
@@ -702,8 +702,10 @@ class DeletionService {
                     addresses.each{ tmp -> tmp.delete() }
 
                     // contacts
+                    /*
                     org.contacts.clear()
                     contacts.each{ tmp -> tmp.delete() }
+                    */
 
                     // private properties
                     org.propertySet.clear()
