@@ -3933,7 +3933,7 @@ class SubscriptionControllerService {
             if(params.order)
                 sort += params.order
         }
-        FilterService.Result fsr = filterService.getOrgComboQuery(orgParams, result.institution as Org)
+        FilterService.Result fsr = filterService.getOrgQuery(orgParams)
         if (fsr.isFilterSet) { orgParams.filterSet = true }
 
         if (params.filterPropDef) {
