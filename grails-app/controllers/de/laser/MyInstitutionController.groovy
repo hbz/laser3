@@ -1312,6 +1312,9 @@ class MyInstitutionController  {
 
         Map<String, Object> selectedFields = [:]
 
+        if(params.identifier?.startsWith('vendor:') && result.institution.isCustomerType_Consortium())
+            result.vendorNotice = true
+
         if(params.fileformat) {
             if (params.filename) {
                 filename =params.filename

@@ -75,7 +75,7 @@ class SubscriptionsQueryService {
                             " AND s.instanceOf is not null "
                 qry_params << ['roleType':role_sub_consortia, 'activeInst':contextOrg]
             } else {
-                if (params.showParentsAndChildsSubs) {
+                if (params.showParentsAndChildsSubs || params.identifier?.startsWith('vendor:')) {
                     base_qry =  " from Subscription as s ${joinQuery} where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) "
                     qry_params << ['roleType':role_sub_consortia, 'activeInst':contextOrg]
                 } else {//nur Parents
@@ -164,8 +164,14 @@ class SubscriptionsQueryService {
         }
 
         if (params.provider) {
-            base_qry += (" and ( exists ( select pr from ProviderRole as pr where pr.subscription = s and pr.provider.id = :provider) or exists ( select vr from VendorRole as vr where vr.subscription = s and vr.vendor.id = :provider) )")
-            qry_params.put('provider', (params.provider as Long))
+            try {
+                qry_params.put('provider', (params.provider as Long)) //first because of exception thrown; base_qry will then added correctly
+                base_qry += (" and ( exists ( select pr from ProviderRole as pr where pr.subscription = s and pr.provider.id = :provider) or exists ( select vr from VendorRole as vr where vr.subscription = s and vr.vendor.id = :provider) )")
+            }
+            catch (NumberFormatException ignored) {
+                base_qry += (" and ( exists ( select pr from ProviderRole as pr join pr.provider p where pr.subscription = s and (genfunc_filter_matcher(p.name, :provider) = true or genfunc_filter_matcher(p.sortname, :provider) = true) ) or exists ( select vr from VendorRole as vr join vr.vendor v where vr.subscription = s and (genfunc_filter_matcher(v.name, :provider) = true or genfunc_filter_matcher(v.sortname, :provider) = true) ) )")
+                qry_params.put('provider', params.provider)
+            }
             filterSet = true
         }
 

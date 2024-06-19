@@ -92,9 +92,9 @@
 
                 <div class="ui tiny header">${message(code: 'provider.label')}</div>
                 <div class="ui secondary wrapping menu la-tab-with-js">
-                    <g:each in="${providerMap}" var="prov,subList">
+                    <g:each in="${providerMap}" var="prov,subList" status="i">
                         <g:set var="provider" value="${Provider.get(prov)}" />
-                        <a href="#" class="item" data-tab="provider-${provider.id}">
+                        <a href="#" class="item ${i == 0 ? 'active' : ''}" data-tab="provider-${provider.id}">
                             ${provider.sortname ?: provider.name} <span class="ui blue circular tiny label">${subList.size()}</span>
                         </a>
                     </g:each>
@@ -239,9 +239,9 @@
             <div class="stats_provider stats-content">
                 <div class="chartWrapper" id="cw-provider"></div>
 
-                <g:each in="${providerMap}" var="prov,subList">
+                <g:each in="${providerMap}" var="prov,subList" status="i">
                     <g:set var="provider" value="${Provider.get(prov)}" />
-                    <div class="ui tab segment" data-tab="provider-${provider.id}">
+                    <div class="ui tab segment ${i == 0 ? 'active' : ''}" data-tab="provider-${provider.id}">
 
                         <table class="ui table very compact">
                             <thead>
