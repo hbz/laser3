@@ -574,7 +574,7 @@
     <aside class="five wide column la-sidekick">
         <div class="ui one cards">
             <%
-                Map<String, List> privateTypeAddressMap = [:]
+                Map<String, List> publicTypeAddressMap = [:], privateTypeAddressMap = [:]
                 Set<String> typeNames = new TreeSet<String>()
                 typeNames.add(RDStore.ADDRESS_TYPE_BILLING.getI10n('value'))
                 typeNames.add(RDStore.ADDRESS_TYPE_POSTAL.getI10n('value'))
@@ -634,6 +634,62 @@
                                         </g:if>
                                     </td>
                                 </tr>
+                                <%
+                                    vendor.addresses.each { Address a ->
+                                        a.type.each { type ->
+                                            String typeName = type.getI10n('value')
+                                            typeNames.add(typeName)
+                                            if(!a.tenant) {
+                                                List addresses = publicTypeAddressMap.get(typeName) ?: []
+                                                addresses.add(a)
+                                                publicTypeAddressMap.put(typeName, addresses)
+                                            }
+                                            else if(a.tenant.id == institution.id) {
+                                                List addresses = privateTypeAddressMap.get(typeName) ?: []
+                                                addresses.add(a)
+                                                privateTypeAddressMap.put(typeName, addresses)
+                                            }
+                                        }
+                                    }
+                                %>
+                                <g:if test="${publicTypeAddressMap}">
+                                    <tr>
+                                        <td>
+                                            <div class="ui segment la-timeLineSegment-contact">
+                                                <div class="la-timeLineGrid">
+                                                    <div class="ui grid">
+                                                        <g:each in="${typeNames}" var="typeName">
+                                                            <% List publicAddresses = publicTypeAddressMap.get(typeName) %>
+                                                            <g:if test="${publicAddresses}">
+                                                                <div class="row">
+                                                                    <div class="two wide column">
+
+                                                                    </div>
+                                                                    <div class="fourteen wide column">
+                                                                        <div class="ui label">${typeName}</div>
+                                                                        <g:each in="${publicAddresses}" var="a">
+                                                                            <g:if test="${a.vendor}">
+                                                                                <laser:render template="/templates/cpa/address" model="${[
+                                                                                        hideAddressType     : true,
+                                                                                        address             : a,
+                                                                                        tmplShowDeleteButton: false,
+                                                                                        controller          : 'org',
+                                                                                        action              : 'show',
+                                                                                        id                  : vendor.id,
+                                                                                        editable            : false
+                                                                                ]}"/>
+                                                                            </g:if>
+                                                                        </g:each>
+                                                                    </div>
+                                                                </div>
+                                                            </g:if>
+                                                        </g:each>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </g:if>
                             </table>
                         </g:if>
                     </div>
