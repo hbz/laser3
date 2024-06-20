@@ -1074,7 +1074,6 @@ class SurveyController {
         String filename = "template_survey_participants_import"
 
         params.orgType = RDStore.OT_INSTITUTION.id
-        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         params.sub = ctrlResult.subscription
 

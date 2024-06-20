@@ -3264,7 +3264,6 @@ class MyInstitutionController  {
             // new: filter preset
             result.comboType = 'Consortium'
             params.orgType = RDStore.OT_INSTITUTION.id
-            params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
 
             if (params.selectedOrgs) {
                 if (formService.validateToken(params)) {
@@ -3567,7 +3566,6 @@ class MyInstitutionController  {
                 }
             }
         }
-        //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())

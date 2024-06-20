@@ -141,7 +141,6 @@ class ApiOrg {
         result.funderHskType  = org.funderHskType?.value
         result.subjectGroup   = org.subjectGroup?.collect { OrgSubjectGroup subjectGroup -> subjectGroup.subjectGroup.value }
         result.libraryNetwork = org.libraryNetwork?.value
-        result.sector         = org.sector?.value
         result.type           = org.orgType?.collect{ it.value }
         result.status         = org.status?.value
 

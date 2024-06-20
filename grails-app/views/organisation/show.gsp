@@ -218,12 +218,6 @@
             <div class="ui card">
                 <div class="content">
                     <dl>
-                        <dt><g:message code="org.sector.label" /></dt>
-                        <dd>
-                            <ui:xEditableRefData owner="${orgInstance}" field="sector" config="${RDConstants.ORG_SECTOR}" overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor}"/>
-                        </dd>
-                    </dl>
-                    <dl>
                         <dt>${message(code: 'default.status.label')}</dt>
                         <dd>
                             <ui:xEditableRefData owner="${orgInstance}" field="status" config="${RDConstants.ORG_STATUS}" overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor}"/>

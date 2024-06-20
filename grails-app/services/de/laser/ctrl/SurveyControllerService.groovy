@@ -243,7 +243,6 @@ class SurveyControllerService {
 
             // new: filter preset
             params.orgType = RDStore.OT_INSTITUTION.id
-            params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
 
             if (params.tab == 'selectedParticipants') {
                 params.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id)
@@ -257,7 +256,6 @@ class SurveyControllerService {
             GrailsParameterMap cloneParams = params.clone()
             cloneParams.removeAll { it.value != '' }
             cloneParams.orgType = RDStore.OT_INSTITUTION.id
-            cloneParams.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
             cloneParams.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id)
             cloneParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
             cloneParams.sub = result.subscription
@@ -331,7 +329,6 @@ class SurveyControllerService {
 
             // new: filter preset
             params.orgType = RDStore.OT_INSTITUTION.id
-            params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
 
             result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
@@ -434,7 +431,6 @@ class SurveyControllerService {
 
             // new: filter preset
             params.orgType = RDStore.OT_INSTITUTION.id
-            params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
 
             result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
