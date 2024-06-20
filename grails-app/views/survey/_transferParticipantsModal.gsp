@@ -1,5 +1,6 @@
-<%@ page import="de.laser.RefdataValue; de.laser.License" %>
-<g:set var="auditConfigProvidersAgencies" value="${parentSuccessorSubscription.orgRelations?.findAll {it.isShared}}" />
+<%@ page import="de.laser.RefdataValue; de.laser.License; de.laser.ProviderRole; de.laser.VendorRole" %>
+<g:set var="auditConfigProviders" value="${ProviderRole.findAllBySubscriptionAndIsShared(parentSuccessorSubscription, true)}" />
+<g:set var="auditConfigVendors" value="${VendorRole.findAllBySubscriptionAndIsShared(parentSuccessorSubscription, true)}" />
 
 <ui:modal id="transferParticipantsModal" message="surveyInfo.transferParticipants"
              msgSave="${message(code: 'surveyInfo.transferParticipants.button')}">
@@ -41,17 +42,27 @@
                 <g:message code="copyElementsIntoObject.noAuditConfig"/>
             </g:else>
 
-            <g:if test="${auditConfigProvidersAgencies}">
+            <g:if test="${auditConfigProviders}">
                 <label><g:message code="property.share.tooltip.on" />:</label>
                 <div class="ui bulleted list">
-                    <g:each in="${auditConfigProvidersAgencies}" var="role" >
+                    <g:each in="${auditConfigProviders}" var="role" >
                         <div class="item">
-                            <strong> ${role.roleType.getI10n("value")}</strong>:
-                        ${role.org.name}
+                            <strong> <g:message code="provider.label"/></strong>:
+                        ${role.provider.name}
                         </div>
                     </g:each>
                 </div>
-
+            </g:if>
+            <g:if test="${auditConfigVendors}">
+                <label><g:message code="property.share.tooltip.on" />:</label>
+                <div class="ui bulleted list">
+                    <g:each in="${auditConfigVendors}" var="role" >
+                        <div class="item">
+                            <strong> <g:message code="vendor.label"/></strong>:
+                        ${role.vendor.name}
+                        </div>
+                    </g:each>
+                </div>
             </g:if>
 
         </div>
@@ -89,21 +100,20 @@
                 </g:else>
             </div>--}%
 
-            <g:if test="${!auditConfigProvidersAgencies}">
+            <g:if test="${!auditConfigProviders}">
                 <div class="field">
                     <g:set var="providers" value="${parentSuccessorSubscription.getProviders()?.sort { it.name }}"/>
-                    <g:set var="vendors" value="${parentSuccessorSubscription.getVendors()?.sort { it.name }}"/>
 
-                    <g:if test="${(providers || vendors)}">
+                    <g:if test="${providers}">
                         <label><g:message code="surveyInfo.transferParticipants.moreOption"/></label>
 
                         <div class="ui checkbox">
-                            <input type="checkbox" id="transferProviderAgency" name="transferProviderAgency" checked>
-                            <label for="transferProviderAgency"><g:message
-                                    code="surveyInfo.transferParticipants.transferProviderAgency"
+                            <input type="checkbox" id="transferProvider" name="transferProvider" checked>
+                            <label for="transferProvider"><g:message
+                                    code="surveyInfo.transferParticipants.transferAllProviders"
                                     args="${superOrgType}"/>
-                            <g:set var="providerAgency" value="${providers + vendors}"/>
-                            (${providerAgency ? providerAgency.name.join(', ') : ''})
+                            <g:set var="provider" value="${providers}"/>
+                            (${provider ? provider.name.join(', ') : ''})
                             </label>
                         </div>
 
@@ -119,21 +129,46 @@
                             </g:if>
                         </div>
 
+                    </g:if>
+                    <g:else>
+                        <g:message code="surveyInfo.transferParticipants.noTransferProvider"
+                                   args="${superOrgType}"/>
+                    </g:else>
+                </div>
+            </g:if>
+
+            <g:if test="${!auditConfigVendors}">
+                <div class="field">
+                    <g:set var="vendors" value="${parentSuccessorSubscription.getVendors()?.sort { it.name }}"/>
+
+                    <g:if test="${vendors}">
+                        <label><g:message code="surveyInfo.transferParticipants.moreOption"/></label>
+
+                        <div class="ui checkbox">
+                            <input type="checkbox" id="transferVendor" name="transferVendor" checked>
+                            <label for="transferVendor"><g:message
+                                    code="surveyInfo.transferParticipants.transferAllVendors"
+                                    args="${superOrgType}"/>
+                            <g:set var="vendor" value="${vendors}"/>
+                            (${vendor ? vendor.name.join(', ') : ''})
+                            </label>
+                        </div>
+
                         <div class="field">
                             <g:set var="vendors"
                                    value="${parentSuccessorSubscription.getVendors()?.sort { it.name }}"/>
                             <g:if test="${vendors}">
-                                <label><g:message code="surveyInfo.transferParticipants.transferAgency"
+                                <label><g:message code="surveyInfo.transferParticipants.transferVendor"
                                                   args="${superOrgType}"/>:</label>
                                 <g:select class="ui search multiple dropdown"
                                           optionKey="id" optionValue="name"
                                           from="${vendors}" name="vendorsSelection" value=""
-                                          noSelection='["": "${message(code: 'surveyInfo.transferParticipants.noSelectionTransferAgency')}"]'/>
+                                          noSelection='["": "${message(code: 'surveyInfo.transferParticipants.noSelectionTransferVendor')}"]'/>
                             </g:if>
                         </div>
                     </g:if>
                     <g:else>
-                        <g:message code="surveyInfo.transferParticipants.noTransferProviderAgency"
+                        <g:message code="surveyInfo.transferParticipants.noTransferVendor"
                                    args="${superOrgType}"/>
                     </g:else>
                 </div>

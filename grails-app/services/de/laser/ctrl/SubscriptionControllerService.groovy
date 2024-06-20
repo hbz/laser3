@@ -3933,7 +3933,7 @@ class SubscriptionControllerService {
             if(params.order)
                 sort += params.order
         }
-        FilterService.Result fsr = filterService.getOrgComboQuery(orgParams, result.institution as Org)
+        FilterService.Result fsr = filterService.getOrgQuery(orgParams)
         if (fsr.isFilterSet) { orgParams.filterSet = true }
 
         if (params.filterPropDef) {
@@ -3941,8 +3941,7 @@ class SubscriptionControllerService {
             fsr.query = efq.query
             fsr.queryParams = efq.queryParams as Map<String, Object>
         }
-        fsr.query = fsr.query.replaceFirst("select o from ", "select o.id from ")
-        List<Long> filteredOrgIds = Org.executeQuery(fsr.query, fsr.queryParams, orgParams+[id:parentSub.id])
+        List<Long> filteredOrgIds = Org.executeQuery('select o.id '+fsr.query, fsr.queryParams, orgParams+[id:parentSub.id])
 
         Set parentSubs = []
         if(params.showMembersSubWithMultiYear){
@@ -3952,7 +3951,7 @@ class SubscriptionControllerService {
         }
         parentSubs << parentSub
 
-        Set rows = Subscription.executeQuery("select sub,o from OrgRole oo join oo.sub sub join oo.org o where sub.instanceOf in (:parents) "+sort,[parents:parentSubs])
+        Set rows = Subscription.executeQuery("select sub,o from OrgRole oo join oo.sub sub join oo.org o where sub.instanceOf in (:parents) and o != :ctx "+sort,[parents:parentSubs, ctx: result.institution])
         List<Map> filteredSubChilds = []
         rows.each { row ->
             Org subscriber = row[1]
