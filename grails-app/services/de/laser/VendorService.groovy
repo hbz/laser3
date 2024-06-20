@@ -397,7 +397,7 @@ class VendorService {
                         if(!equivalent) {
                             pr.vendor = replacement
                             //ERMS-5775
-                            if(replacement.gokbId == pr.prs.isPublic) {
+                            if(replacement.gokbId && pr.prs.isPublic) {
                                 pr.prs.isPublic = false
                                 pr.prs.save()
                             }

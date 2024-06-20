@@ -387,7 +387,7 @@ class ProviderService {
                         if(!equivalent) {
                             pr.provider = replacement
                             //ERMS-5775
-                            if(replacement.gokbId == pr.prs.isPublic) {
+                            if(replacement.gokbId && pr.prs.isPublic) {
                                 pr.prs.isPublic = false
                                 pr.prs.save()
                             }
