@@ -31,63 +31,75 @@
             <div class="field">
                 <div class="two fields">
                     <g:if test="${!isPublic}">
-                        <div class="field required">
+
                             <g:if test="${orgList}">
-                                <label for="personRoleOrg">
-                                    <g:message code="person.belongsTo"/> <g:message code="messageRequiredField" />
-                                </label>
-                                <g:select class="ui search dropdown"
-                                          name="personRoleOrg"
-                                          from="${orgList}"
-                                          value="${org?.id}"
-                                          optionKey="id"
-                                          optionValue="${{ it.sortname ?: it.name }}"
-                                          noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                                <div class="field required">
+                                    <label for="personRoleOrg">
+                                        <g:message code="person.belongsTo"/> <g:message code="messageRequiredField" />
+                                    </label>
+                                    <g:select class="ui search dropdown"
+                                              name="personRoleOrg"
+                                              from="${orgList}"
+                                              value="${org?.id}"
+                                              optionKey="id"
+                                              optionValue="${{ it.sortname ?: it.name }}"
+                                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                                </div>
                             </g:if>
                             <g:if test="${provList}">
-                                <label for="personRoleOrg">
-                                    <g:message code="person.belongsTo"/> <g:message code="messageRequiredField" />
-                                </label>
-                                <g:select class="ui search dropdown"
-                                          name="personRoleProvider"
-                                          from="${provList}"
-                                          value="${provider?.id}"
-                                          optionKey="id"
-                                          optionValue="${{ it.sortname ?: it.name }}"
-                                          noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                                <div class="field required">
+                                    <label for="personRoleOrg">
+                                        <g:message code="person.belongsTo"/> <g:message code="messageRequiredField" />
+                                    </label>
+                                    <g:select class="ui search dropdown"
+                                              name="personRoleProvider"
+                                              from="${provList}"
+                                              value="${provider?.id}"
+                                              optionKey="id"
+                                              optionValue="${{ it.sortname ?: it.name }}"
+                                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                                </div>
                             </g:if>
                             <g:if test="${venList}">
-                                <label for="personRoleOrg">
-                                    <g:message code="person.belongsTo"/> <g:message code="messageRequiredField" />
-                                </label>
-                                <g:select class="ui search dropdown"
-                                          name="personRoleVendor"
-                                          from="${venList}"
-                                          value="${ven?.id}"
-                                          optionKey="id"
-                                          optionValue="${{ it.sortname ?: it.name }}"
-                                          noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                                <div class="field required">
+                                    <label for="personRoleOrg">
+                                        <g:message code="person.belongsTo"/> <g:message code="messageRequiredField" />
+                                    </label>
+                                    <g:select class="ui search dropdown"
+                                              name="personRoleVendor"
+                                              from="${venList}"
+                                              value="${ven?.id}"
+                                              optionKey="id"
+                                              optionValue="${{ it.sortname ?: it.name }}"
+                                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                                </div>
                             </g:if>
                             <g:if test="${org}">
-                                <label for="personRoleOrg">
-                                    <g:message code="person.belongsTo"/>
-                                </label>
-                                <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link>
-                                <input name="personRoleOrg" type="hidden" value="${org.id}"/>
+                                <div class="field">
+                                    <label for="personRoleOrg">
+                                        <g:message code="person.belongsTo"/>
+                                    </label>
+                                    <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link>
+                                    <input name="personRoleOrg" type="hidden" value="${org.id}"/>
+                                </div>
                             </g:if>
                             <g:elseif test="${provider}">
-                                <label for="personRoleProvider">
-                                    <g:message code="person.belongsTo"/>
-                                </label>
-                                <g:link controller="provider" action="show" id="${provider.id}">${provider.name}</g:link>
-                                <input name="personRoleProvider" type="hidden" value="${provider.id}"/>
+                                <div class="field">
+                                    <label for="personRoleProvider">
+                                        <g:message code="person.belongsTo"/>
+                                    </label>
+                                    <g:link controller="provider" action="show" id="${provider.id}">${provider.name}</g:link>
+                                    <input name="personRoleProvider" type="hidden" value="${provider.id}"/>
+                                </div>
                             </g:elseif>
                             <g:elseif test="${vendor}">
-                                <label for="personRoleVendor">
-                                    <g:message code="person.belongsTo"/>
-                                </label>
-                                <g:link controller="vendor" action="show" id="${vendor.id}">${vendor.name}</g:link>
-                                <input name="personRoleVendor" type="hidden" value="${vendor.id}"/>
+                                <div class="field required">
+                                    <label for="personRoleVendor">
+                                        <g:message code="person.belongsTo"/>
+                                    </label>
+                                    <g:link controller="vendor" action="show" id="${vendor.id}">${vendor.name}</g:link>
+                                    <input name="personRoleVendor" type="hidden" value="${vendor.id}"/>
+                                </div>
                             </g:elseif>
                         %{--<g:else>
                             <label for="personRoleOrg">
@@ -96,7 +108,7 @@
                             <i class="icon university la-list-icon"></i>${org?.name}
                             <input id="personRoleOrg" name="personRoleOrg" type="hidden" value="${org?.id}"/>
                         </g:else>--}%
-                        </div>
+
                     </g:if>
                 %{-- <g:if test="${actionName != 'contacts'}">
                      <div class="field">
@@ -172,7 +184,7 @@
             <div class="field">
                 <div class="two fields">
 
-                    <div class="field wide twelve ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
+                    <div class="field wide twelve required">
                         <label id="la-js-nameOrFunction" for="last_name">
                             <g:message code="person.last_name.label"/> <g:message code="messageRequiredField" />
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
@@ -321,7 +333,7 @@
                         </div>
 
                         <div class="field seven wide">
-                            <g:textField class="la-js-contactContent" name="content${contact.id}" value="${contact.content}"/>
+                            <g:textField class="la-js-contactContent" data-validate="contactContent" name="content${contact.id}" value="${contact.content}"/>
                         </div>
                         <div class="field one wide">
                             <button type="button"  class="ui icon negative button la-modern-button removeContactElement">
@@ -358,7 +370,7 @@
 
 
                         <div class="field eight wide">
-                            <g:textField class="la-js-contactContent" id="content" name="content" value="${contactInstance?.content}"/>
+                            <g:textField class="la-js-contactContent" data-validate="contactContent" id="content" name="content" value="${contactInstance?.content}"/>
                         </div>
                     </div>
                 </div>
@@ -409,12 +421,17 @@
             return false
         }
     };
+%{--    $.fn.form.settings.rules.emailRegex = function() {
+        if ( $(".la-js-contactContent").val() ) {
+
+        }
+        else {
+            return true
+        }
+    };--}%
 
 
     JSPC.app.formValidation = function () {
-    console.log("----------------------------------");
-console.log($(".la-js-contactContent").length);
-    console.log("----------------------------------");
         $('#person_form').form({
             on: 'submit',
             inline: true,
@@ -472,13 +489,17 @@ console.log($(".la-js-contactContent").length);
                         }
                     ]
                 },
-                content: {
-                    identifier: 'content',
+                contactContent: {
+                    identifier: 'contactContent',
                     rules: [
                         {
                             type: 'isMinimalOneContactFilled',
                             prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
                         }
+%{--                        {
+                            type: 'emailRegex',
+                            prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
+                        }--}%
                     ]
                 }
             }
@@ -621,7 +642,7 @@ console.log($(".la-js-contactContent").length);
     });
 
     tooltip.init("#${modalID ?: 'personModal'}");
-
+    JSPC.app.formValidation();
 %{--    Deal with accordion in case already any input--}%
     $(".accordion").accordion();
 
@@ -629,7 +650,7 @@ console.log($(".la-js-contactContent").length);
 
      JSPC.app.removeContactElement();
 
-    JSPC.app.formValidation();
+
 
     %{--$('#person_form').submit(function(e) {
         alert(JSPC.app.contactElementCount);
