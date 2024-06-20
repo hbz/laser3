@@ -109,26 +109,35 @@ JSPC.app.reporting.current.chart.option = {
             let di = params[0].dataIndex
             let prev = di > 0 ? JSPC.app.reporting.current.chart.option.dataset.source[di - 1] : null
 
+            str += '<div style="display:grid; grid-template-columns:auto auto;">'
             for (let i=0; i<params.length; i++) {
                 let v = params[i].data[ params[i].seriesIndex + 2 ]
                 let ci = new Intl.NumberFormat(JSPC.config.language, { style: 'currency', currency: 'EUR' }).format( v )
 
+                let marker = params[i].marker
+                if (!marker) {
+                    marker = '<span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#d3dae3;"></span>'
+                }
+                str += '<div>' + marker + ' ' + params[i].seriesName + '</div>'
+                str += '<div style="text-align:right;">'
+
                 if (prev) {
-                    let perc = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
+                    let perc = ''
                     let delta = (v - prev[ params[i].seriesIndex + 2 ]) / prev[ params[i].seriesIndex + 2 ]
                     if (delta) {
                         perc = new Intl.NumberFormat(JSPC.config.language, { style: 'percent', maximumFractionDigits:2, minimumFractionDigits:2 }).format( delta )
                     }
-                    let marker = params[i].marker
-                    if (!marker) {
-                        marker = '<span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#d3dae3;"></span>'
-                    }
-                    str += '<br/>' + marker + ' ' + params[i].seriesName + '&nbsp;&nbsp;&nbsp;<span style="float:right"><span style="font-size:12px">' + perc + '</span>&nbsp;&nbsp;&nbsp;<strong>' + ci + '</strong></span>'
+                    str += '<span style="font-size:12px;padding-left:1.5em;">' + perc + '</span><strong style="padding-left:1em;">' + ci + '</strong>'
                 }
                 else {
-                    str += JSPC.app.reporting.helper.tooltip.getEntry(params[i].marker, params[i].seriesName, ci)
+                    str += '<strong style="padding-left:1.5em;">' + ci + '</strong>'
                 }
+                str += '</div>'
+%{--                else {--}%
+%{--                    str += JSPC.app.reporting.helper.tooltip.getEntry(params[i].marker, params[i].seriesName, ci)--}%
+%{--                }--}%
             }
+            str += '</div>'
             return str
         },
     },

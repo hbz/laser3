@@ -418,7 +418,7 @@
                     <tbody>
                         <g:each in="${costs.costItems}" var="ci" status="jj">
                             <%
-                                String icon         = '<i class="question circle icon"></i>'
+                                String icon         = '<i class="grey question circle icon"></i>'
                                 String dataTooltip  = message(code:'financials.costItemConfiguration.notSet')
 
                                 switch (ci.costItemElementConfiguration) {

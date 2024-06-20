@@ -97,17 +97,17 @@
                                             ${message(code:"org.setting.${os.key}", default: "${os.key}")}
                                             <g:if test="${OrgSetting.KEYS.NATSTAT_SERVER_ACCESS == os.key}">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.NATSTAT_SERVER_ACCESS.tooltip')}">
-                                                    <i class="question circle icon"></i>
+                                                    <i class="grey question circle icon"></i>
                                                 </span>
                                             </g:if>
                                             <g:elseif test="${OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.OAMONITOR_SERVER_ACCESS.tooltip')}">
-                                                    <i class="question circle icon"></i>
+                                                    <i class="grey question circle icon"></i>
                                                 </span>
                                             </g:elseif>
                                             <g:elseif test="${OrgSetting.KEYS.EZB_SERVER_ACCESS == os.key}">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.EZB.tooltip')}">
-                                                    <i class="question circle icon"></i>
+                                                    <i class="grey question circle icon"></i>
                                                 </span>
                                             </g:elseif>
                                         </td>

@@ -65,7 +65,7 @@
         <div class="field">
             <label for="filterPropDef">
                 Merkmal
-                <i aria-hidden="true" class="question circle icon la-popup"></i>
+                <i aria-hidden="true" class="grey question circle icon la-popup"></i>
                 <div class="ui  popup ">
                     <i aria-hidden="true" class="shield alternate icon"></i> = Mein Merkmal
                 </div>
@@ -199,7 +199,7 @@
         <div class="field">
             <label for="filterPropDef">
                 Merkmal
-                <i aria-hidden="true" class="question circle icon la-popup"></i>
+                <i aria-hidden="true" class="grey question circle icon la-popup"></i>
                 <div class="ui  popup ">
                     <i aria-hidden="true" class="shield alternate icon"></i> = Mein Merkmal
                 </div>
@@ -232,7 +232,7 @@
             &lt;div class=&quot;field&quot;&gt;
             &lt;label <strong>for=&quot;filterPropDef&quot;</strong>&gt;
         Merkmal
-        &lt;i class=&quot;question circle icon la-popup&quot;&gt;&lt;/i&gt;
+        &lt;i class=&quot;grey question circle icon la-popup&quot;&gt;&lt;/i&gt;
         &lt;div class=&quot;ui  popup &quot;&gt;
         &lt;i class=&quot;shield alternate icon&quot;&gt;&lt;/i&gt; = Meine Merkmal
         &lt;/div&gt;

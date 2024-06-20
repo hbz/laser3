@@ -92,7 +92,7 @@
                     <g:if test="${propKey.getI10n('expl')}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${propKey.getI10n('expl')}">
-                            <i class="question circle icon"></i>
+                            <i class="grey question circle icon"></i>
                         </span>
                     </g:if>
                 </g:if>

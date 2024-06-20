@@ -179,7 +179,7 @@
                                                     data-position="right center"
                                                     data-content="${message(code: 'surveyCostItems.bulkOption.info')}">
                             ${message(code: 'surveyCostItems.bulkOption.label')}
-                            <i class="question circle icon"></i>
+                            <i class="grey question circle icon"></i>
                         </span></h3>
 
                         <div class="ui basic segment">
