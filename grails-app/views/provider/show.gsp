@@ -719,6 +719,44 @@
                                         }
                                     }
                                 %>
+                                <g:if test="${publicTypeAddressMap}">
+                                    <tr>
+                                        <td>
+                                            <div class="ui segment la-timeLineSegment-contact">
+                                                <div class="la-timeLineGrid">
+                                                    <div class="ui grid">
+                                                        <g:each in="${typeNames}" var="typeName">
+                                                            <% List publicAddresses = publicTypeAddressMap.get(typeName) %>
+                                                            <g:if test="${publicAddresses}">
+                                                                <div class="row">
+                                                                    <div class="two wide column">
+
+                                                                    </div>
+                                                                    <div class="fourteen wide column">
+                                                                        <div class="ui label">${typeName}</div>
+                                                                        <g:each in="${publicAddresses}" var="a">
+                                                                            <g:if test="${a.provider}">
+                                                                                <laser:render template="/templates/cpa/address" model="${[
+                                                                                        hideAddressType     : true,
+                                                                                        address             : a,
+                                                                                        tmplShowDeleteButton: false,
+                                                                                        controller          : 'org',
+                                                                                        action              : 'show',
+                                                                                        id                  : provider.id,
+                                                                                        editable            : false
+                                                                                ]}"/>
+                                                                            </g:if>
+                                                                        </g:each>
+                                                                    </div>
+                                                                </div>
+                                                            </g:if>
+                                                        </g:each>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </g:if>
                             </table>
                         </g:if>
                     </div>
