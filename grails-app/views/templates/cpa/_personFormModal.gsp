@@ -28,7 +28,6 @@
         </g:elseif>
 
         <g:if test="${!contactPersonForProviderPublic && !contactPersonForVendorPublic}">
-
             <div class="field">
                 <div class="two fields">
                     <g:if test="${!isPublic}">
@@ -99,7 +98,6 @@
                         </g:else>--}%
                         </div>
                     </g:if>
-
                 %{-- <g:if test="${actionName != 'contacts'}">
                      <div class="field">
                          <g:if test="${institution}">
@@ -323,7 +321,7 @@
                         </div>
 
                         <div class="field seven wide">
-                            <g:textField name="content${contact.id}" value="${contact.content}"/>
+                            <g:textField class="la-js-contactContent" name="content${contact.id}" value="${contact.content}"/>
                         </div>
                         <div class="field one wide">
                             <button type="button"  class="ui icon negative button la-modern-button removeContactElement">
@@ -359,65 +357,16 @@
                         </div>
 
 
-                        <div class="field seven wide">
-                            <g:textField id="content" name="content" value="${contactInstance?.content}"/>
+                        <div class="field eight wide">
+                            <g:textField class="la-js-contactContent" id="content" name="content" value="${contactInstance?.content}"/>
                         </div>
-                        %{--                    <div class="field one wide">
-                                                <button type="button"  class="ui icon negative button la-modern-button removeContactElement">
-                                                    <i class="trash alternate outline icon"></i>
-                                                </button>
-                                            </div>--}%
                     </div>
                 </div>
             </g:else>
-
-
-
-
-
             <div id="contactElements"></div>
         </g:if>
 
     </g:if>
-
-<%--<g:if test="${showAddresses}">
-    <div class="field">
-        <br />
-        <label>
-            <g:message code="person.addresses.label"/>:
-        </label>
-        <g:if test="${personInstance}">
-            <div class="ui divided middle aligned list la-flex-list addressField">
-                <g:each in="${personInstance.addresses.sort { it.type.each { it?.getI10n('value') } }}"
-                        var="address">
-                    <laser:render template="/templates/cpa/address"
-                              model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
-                </g:each>
-            </div>
-        </g:if>
-    </div>
-    <g:if test="${addAddresses}">
-        <button type="button" id="addAddressElement" class="ui icon button">
-            <i class="plus green circle icon"></i>
-        </button>
-
-        <button type="button" id="removeAddressElement" class="ui icon button">
-            <i class="minus red circle icon"></i>
-        </button>
-
-        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-              data-content="${message(code: 'person.addresses.add.button')}">
-            <i class="question circle icon"></i>
-        </span>
-
-        <br />
-        <br />
-        <laser:render template="/templates/cpa/addressFields" model="[multipleAddresses: true]"/>
-
-        <div id="addressElements"></div>
-    </g:if>
-
-</g:if>--%>
 
 </g:form>
 
@@ -452,62 +401,90 @@
     $.fn.form.settings.rules.functionOrPosition = function() {
         return $('#functionType').dropdown('get value').length > 0
     };
-    $('#person_form').form({
-        on: 'submit',
-        inline: true,
-        fields: {
-    <g:if test="${orgList}">
-        personRoleOrg: {
-          identifier: 'personRoleOrg',
-          rules: [
-            {
-              type: 'empty',
-              prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
-                }
-              ]
-            },
-    </g:if>
-
-            personRoleProvider: {
-                identifier: 'personRoleProvider',
-                rules: [
-                    {
-                        type: 'empty',
-                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
-                    }
-                ]
-            },
-            last_name: {
-                identifier: 'last_name',
-                rules: [
-                    {
-                        type: 'empty',
-                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
-                    }
-                ]
-            },
-            functionType: {
-                identifier: 'functionType',
-                rules: [
-                    {
-                        type: 'functionOrPosition',
-                        prompt: '<g:message code="person.create.missing_function"/>'
-                    }
-                ]
-            },
-            content: {
-                identifier: 'content',
-                rules: [
-                    {
-                        type: 'empty',
-                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
-                    }
-                ]
-            }
+    $.fn.form.settings.rules.isMinimalOneContactFilled = function() {
+        if ( $(".la-js-contactContent").val() ) {
+            return  true
         }
-    });
+        else {
+            return false
+        }
+    };
 
-    tooltip.init("#${modalID ?: 'personModal'}");
+
+    JSPC.app.formValidation = function () {
+    console.log("----------------------------------");
+console.log($(".la-js-contactContent").length);
+    console.log("----------------------------------");
+        $('#person_form').form({
+            on: 'submit',
+            inline: true,
+            fields: {
+        <g:if test="${orgList}">
+            personRoleOrg: {
+              identifier: 'personRoleOrg',
+              rules: [
+                {
+                  type: 'empty',
+                  prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+                    }
+                  ]
+                },
+        </g:if>
+        <g:if test="${provList}">
+            personRoleProvider: {
+              identifier: 'personRoleProvider',
+              rules: [
+                {
+                  type: 'empty',
+                  prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+                        }
+                      ]
+                    },
+        </g:if>
+        <g:if test="${venList}">
+            personRoleVendor: {
+              identifier: 'personRoleVendor',
+              rules: [
+                {
+                  type: 'empty',
+                  prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+                            }
+                          ]
+                        },
+        </g:if>
+
+
+                last_name: {
+                    identifier: 'last_name',
+                    rules: [
+                        {
+                            type: 'empty',
+                            prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
+                        }
+                    ]
+                },
+                functionType: {
+                    identifier: 'functionType',
+                    rules: [
+                        {
+                            type: 'empty',
+                            prompt: '<g:message code="person.create.missing_function"/>'
+                        }
+                    ]
+                },
+                content: {
+                    identifier: 'content',
+                    rules: [
+                        {
+                            type: 'isMinimalOneContactFilled',
+                            prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
+                        }
+                    ]
+                }
+            }
+        });
+    }
+
 
 %{--    JSPC.app.addressElementCount = $(".addressField").length;--}%
     JSPC.app.contactElementCount = $(".contactField").length;
@@ -518,17 +495,19 @@
 %{--    $(JSPC.app.addressContainer).attr('id', 'addressElementsContainer');--}%
     $(JSPC.app.contactContainer).attr('id', 'contactElementsContainer');
 
-%{--    Deal with accordion in case already any input--}%
-    $(".accordion").accordion();
-    let input = [$("#title"), $("#first_name"), $("#middle_name")];
 
-    let found = false;
-    for (var i = 0; i < input.length; i++) {
-        if ($(input[i]).val().trim() !== "") {
-        found = true;
-        $(".title").addClass("active");
-        $(".content").addClass("active");
-        break;
+
+    JSPC.app.isNamesDetailsAlreadyFilled = function () {
+        let input = [$("#title"), $("#first_name"), $("#middle_name")];
+
+        let found = false;
+        for (var i = 0; i < input.length; i++) {
+            if ($(input[i]).val() !== "") {
+            found = true;
+            $(".title").addClass("active");
+            $(".content").addClass("active");
+            break;
+            }
         }
     }
 
@@ -540,7 +519,6 @@
             }
             else {
             }
-
         });
     }
 
@@ -550,8 +528,6 @@
             $('.la-js-addContactElement').removeClass('disabled');
         }
     }
-
-    JSPC.app.removeContactElement();
 
     $('.la-js-addContactElement').click(function () {
 
@@ -581,13 +557,11 @@
                     JSPC.app.checkIfMoreThanFourContactElements();
                     JSPC.app.changeIconRegardingDropdown();
                     JSPC.app.removeContactElement();
-
-
-
                 } else {
                     $('.la-js-addContactElement').addClass( 'disabled');
                 }
                 r2d2.initDynamicUiStuff('#contactElementsContainer');
+                JSPC.app.formValidation();
             },
             error: function (j, status, eThrown) {
                 console.log('Error ' + eThrown)
@@ -636,6 +610,7 @@
           icon.addClass("icon large la-js-contactIcon globe");
           break;
       }
+
     }
 
 
@@ -644,6 +619,17 @@
         console.log("redirect obstructed, continue implementing!");
         bb8.ajax4remoteForm($(this));
     });
+
+    tooltip.init("#${modalID ?: 'personModal'}");
+
+%{--    Deal with accordion in case already any input--}%
+    $(".accordion").accordion();
+
+     JSPC.app.isNamesDetailsAlreadyFilled();
+
+     JSPC.app.removeContactElement();
+
+    JSPC.app.formValidation();
 
     %{--$('#person_form').submit(function(e) {
         alert(JSPC.app.contactElementCount);

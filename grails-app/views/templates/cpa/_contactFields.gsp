@@ -24,7 +24,7 @@
 
 
     <div class="field seven wide">
-        <g:textField id="content" name="content" value="${contactInstance?.content}"/>
+        <g:textField class="la-js-contactContent" id="content" name="content" value="${contactInstance?.content}"/>
     </div>
     <div class="field one wide">
         <button type="button"  class="ui icon negative button la-modern-button removeContactElement">
