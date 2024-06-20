@@ -595,7 +595,7 @@
                         <g:if test="${PersonRole.executeQuery('select pr from Person p join p.roleLinks pr where pr.vendor = :vendor and ((p.isPublic = false and p.tenant = :ctx) or p.isPublic = true)', [vendor: vendor, ctx: institution]) ||
                                 Address.executeQuery('select a from Address a where a.vendor = :vendor and (a.tenant = :ctx or a.tenant = null)', [vendor: vendor, ctx: institution])}">
                             <table class="ui compact table">
-                                <g:set var="vendorContacts" value="${vendorService.getContactPersonsByFunctionType(vendor, institution, true, null, true)}"/>
+                                <g:set var="vendorContacts" value="${vendorService.getContactPersonsByFunctionType(vendor, institution, true, null)}"/>
                                 <tr>
                                     <td>
                                         <g:if test="${vendorContacts}">
