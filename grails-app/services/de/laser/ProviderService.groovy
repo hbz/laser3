@@ -38,7 +38,7 @@ class ProviderService {
      * @param exWekb should only contacts being retrieved which come from the provider itself (i.e. from we:kb)?
      * @return a {@link List} of {@link Person}s matching to the function type
      */
-    List<Person> getContactPersonsByFunctionType(Provider provider, Org contextOrg, boolean onlyPublic, RefdataValue functionType = null, boolean exWekb = false) {
+    List<Person> getContactPersonsByFunctionType(Provider provider, Org contextOrg, boolean onlyPublic, RefdataValue functionType = null) {
         Map<String, Object> queryParams = [provider: provider]
         String functionTypeFilter = ''
         if(functionType) {
@@ -46,18 +46,10 @@ class ProviderService {
             queryParams.functionType = functionType
         }
         if (onlyPublic) {
-            if(exWekb) {
-                Person.executeQuery(
-                        'select distinct p from Person as p inner join p.roleLinks pr where pr.provider = :provider '+functionTypeFilter+' and p.tenant = null',
-                        queryParams
-                )
-            }
-            else {
-                Person.executeQuery(
-                        'select distinct p from Person as p inner join p.roleLinks pr where pr.provider = :provider and p.isPublic = true and p.tenant != null '+functionTypeFilter,
-                        queryParams
-                )
-            }
+            Person.executeQuery(
+                    'select distinct p from Person as p inner join p.roleLinks pr where pr.provider = :provider and p.isPublic = true '+functionTypeFilter,
+                    queryParams
+            )
         }
         else {
             queryParams.ctx = contextOrg
@@ -287,10 +279,9 @@ class ProviderService {
 
         List ids            = new ArrayList(provider.ids)
 
-        List providerLinks       = ProviderRole.findAllByProvider(provider)
+        List providerLinks  = ProviderRole.findAllByProvider(provider)
 
         List addresses      = new ArrayList(provider.addresses)
-        List contacts       = new ArrayList(provider.contacts)
 
         List prsLinks       = PersonRole.findAllByProvider(provider)
         List docContexts    = new ArrayList(provider.documents)
@@ -311,7 +302,6 @@ class ProviderService {
         result.info << ['ProviderRoles', providerLinks]
 
         result.info << ['Adressen', addresses]
-        result.info << ['Kontaktdaten', contacts]
         result.info << ['Personen', prsLinks]
         result.info << ['Aufgaben', tasks]
         result.info << ['Dokumente', docContexts]
@@ -341,6 +331,7 @@ class ProviderService {
                         id.save()
                     }
 
+                    int updateCount = 0, deleteCount = 0
                     providerLinks.each { ProviderRole pvr ->
                         Map<String, Object> checkParams = [target: replacement]
                         String targetClause = ''
@@ -352,7 +343,7 @@ class ProviderService {
                             targetClause = 'pvr.license = :lic'
                             checkParams.lic = pvr.license
                         }
-                        List providerRoleCheck = OrgRole.executeQuery('select pvr from ProviderRole pvr where pvr.provider = :target and '+targetClause, checkParams)
+                        List providerRoleCheck = ProviderRole.executeQuery('select pvr from ProviderRole pvr where pvr.provider = :target and '+targetClause, checkParams)
                         if(!providerRoleCheck) {
                             pvr.provider = replacement
                             pvr.save()
@@ -361,14 +352,11 @@ class ProviderService {
                             pvr.delete()
                         }
                     }
+                    log.debug("${updateCount} provider roles updated, ${deleteCount} provider roles deleted because already existent")
 
                     // addresses
                     provider.addresses.clear()
                     log.debug("${Address.executeUpdate('update Address a set a.provider = :target where a.org = :source', genericParams)} addresses updated")
-
-                    // contacts
-                    provider.contacts.clear()
-                    log.debug("${Contact.executeUpdate('update Contact c set c.provider = :target where c.org = :source', genericParams)} contacts updated")
 
                     // custom properties
                     provider.propertySet.clear()
@@ -391,7 +379,27 @@ class ProviderService {
                     log.debug("${InvoicingVendor.executeUpdate('update InvoicingVendor iv set iv.provider = :target where iv.provider = :source', genericParams)} invoicing vendors updated")
 
                     // persons
-                    log.debug("${Person.executeUpdate('update Person p set p.provider = :target where p.provider = :source', genericParams)} persons updated")
+                    List<Person> targetPersons = Person.executeQuery('select pr.prs from PersonRole pr where pr.provider = :target', [target: replacement])
+                    updateCount = 0
+                    deleteCount = 0
+                    PersonRole.findAllByProvider(provider).each { PersonRole pr ->
+                        Person equivalent = targetPersons.find { Person pT -> pT.last_name == pr.prs.last_name && pT.tenant == pT.tenant }
+                        if(!equivalent) {
+                            pr.provider = replacement
+                            //ERMS-5775
+                            if(replacement.gokbId == pr.prs.isPublic) {
+                                pr.prs.isPublic = false
+                                pr.prs.save()
+                            }
+                            pr.save()
+                            updateCount++
+                        }
+                        else {
+                            pr.delete()
+                            deleteCount++
+                        }
+                    }
+                    log.debug("${updateCount} contacts updated, ${deleteCount} contacts deleted because already existent")
 
                     // tasks
                     log.debug("${Task.executeUpdate('update Task t set t.provider = :target where t.provider = :source', genericParams)} tasks updated")

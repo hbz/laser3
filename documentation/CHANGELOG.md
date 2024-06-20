@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5775    20.06.2024  rc-3.4  3.4         Andreas Feature     Umkodierung von ehemals öffentlichen Anbieter-/Lieferantenkontakten
+
 5772    17.06.2024  rc-3.4  3.4         Andreas Bug         Dokumente ohne Bezug wurden nicht dargestellt
 
 5770    17.06.2024  rc-3.4  3.4         Andreas Bug         obsoleten Read-Link entfernt

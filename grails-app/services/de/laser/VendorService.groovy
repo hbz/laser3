@@ -48,7 +48,7 @@ class VendorService {
      * @param exWekb should only contacts being retrieved which come from the provider itself (i.e. from we:kb)?
      * @return a {@link List} of {@link Person}s matching to the function type
      */
-    List<Person> getContactPersonsByFunctionType(Vendor vendor, Org contextOrg, boolean onlyPublic, RefdataValue functionType = null, boolean exWekb = false) {
+    List<Person> getContactPersonsByFunctionType(Vendor vendor, Org contextOrg, boolean onlyPublic, RefdataValue functionType = null) {
         Map<String, Object> queryParams = [vendor: vendor]
         String functionTypeFilter = ''
         if(functionType) {
@@ -56,18 +56,10 @@ class VendorService {
             queryParams.functionType = functionType
         }
         if (onlyPublic) {
-            if(exWekb) {
-                Person.executeQuery(
-                        'select distinct p from Person as p inner join p.roleLinks pr where pr.vendor = :vendor '+functionTypeFilter+' and p.tenant = null',
-                        queryParams
-                )
-            }
-            else {
-                Person.executeQuery(
-                        'select distinct p from Person as p inner join p.roleLinks pr where pr.vendor = :vendor and p.isPublic = true and p.tenant != null '+functionTypeFilter,
-                        queryParams
-                )
-            }
+            Person.executeQuery(
+                    'select distinct p from Person as p inner join p.roleLinks pr where pr.vendor = :vendor and p.isPublic = true and p.tenant != null '+functionTypeFilter,
+                    queryParams
+            )
         }
         else {
             queryParams.ctx = contextOrg
@@ -288,11 +280,10 @@ class VendorService {
         Map<String, Object> result = [:]
 
         // gathering references
-
-        List vendorLinks       = VendorRole.findAllByVendor(vendor)
+        List ids            = new ArrayList(vendor.ids)
+        List vendorLinks    = VendorRole.findAllByVendor(vendor)
 
         List addresses      = new ArrayList(vendor.addresses)
-        List contacts       = new ArrayList(vendor.contacts)
 
         List prsLinks       = VendorRole.findAllByVendor(vendor)
         List docContexts    = new ArrayList(vendor.documents)
@@ -312,11 +303,10 @@ class VendorService {
 
         //result.info << ['Links: Orgs', links, FLAG_BLOCKER]
 
-        //result.info << ['Identifikatoren', ids]
+        result.info << ['Identifikatoren', ids]
         result.info << ['VendorRoles', vendorLinks]
 
         result.info << ['Adressen', addresses]
-        result.info << ['Kontaktdaten', contacts]
         result.info << ['Personen', prsLinks]
         result.info << ['Aufgaben', tasks]
         result.info << ['Dokumente', docContexts]
@@ -338,14 +328,14 @@ class VendorService {
 
                 try {
                     Map<String, Object> genericParams = [source: vendor, target: replacement]
-                    /* identifiers
+                    /* identifiers */
                     vendor.ids.clear()
                     ids.each { Identifier id ->
                         id.provider = replacement
                         id.save()
                     }
-                    */
 
+                    int updateCount = 0, deleteCount = 0
                     vendorLinks.each { VendorRole vr ->
                         Map<String, Object> checkParams = [target: replacement]
                         String targetClause = ''
@@ -357,23 +347,22 @@ class VendorService {
                             targetClause = 'vr.license = :lic'
                             checkParams.lic = vr.license
                         }
-                        List vendorRoleCheck = OrgRole.executeQuery('select vr from VendorRole vr where vr.vendor = :target and '+targetClause, checkParams)
+                        List vendorRoleCheck = VendorRole.executeQuery('select vr from VendorRole vr where vr.vendor = :target and '+targetClause, checkParams)
                         if(!vendorRoleCheck) {
                             vr.vendor = replacement
                             vr.save()
+                            updateCount++
                         }
                         else {
                             vr.delete()
+                            deleteCount++
                         }
                     }
+                    log.debug("${updateCount} vendor roles updated, ${deleteCount} vendor roles deleted because already existent")
 
                     // addresses
                     vendor.addresses.clear()
                     log.debug("${Address.executeUpdate('update Address a set a.vendor = :target where a.org = :source', genericParams)} addresses updated")
-
-                    // contacts
-                    vendor.contacts.clear()
-                    log.debug("${Contact.executeUpdate('update Contact c set c.vendor = :target where c.org = :source', genericParams)} contacts updated")
 
                     // custom properties
                     vendor.propertySet.clear()
@@ -401,14 +390,26 @@ class VendorService {
 
                     // persons
                     List<Person> targetPersons = Person.executeQuery('select pr.prs from PersonRole pr where pr.vendor = :target', [target: replacement])
+                    updateCount = 0
+                    deleteCount = 0
                     PersonRole.findAllByVendor(vendor).each { PersonRole pr ->
                         Person equivalent = targetPersons.find { Person pT -> pT.last_name == pr.prs.last_name && pT.tenant == pT.tenant }
                         if(!equivalent) {
                             pr.vendor = replacement
+                            //ERMS-5775
+                            if(replacement.gokbId == pr.prs.isPublic) {
+                                pr.prs.isPublic = false
+                                pr.prs.save()
+                            }
                             pr.save()
+                            updateCount++
                         }
-                        else pr.delete()
+                        else {
+                            pr.delete()
+                            deleteCount++
+                        }
                     }
+                    log.debug("${updateCount} contacts updated, ${deleteCount} contacts deleted because already existent")
 
                     // tasks
                     log.debug("${Task.executeUpdate('update Task t set t.vendor = :target where t.vendor = :source', genericParams)} tasks updated")
@@ -495,12 +496,12 @@ class VendorService {
 
     Set<Platform> getSubscribedPlatforms(Vendor vendor, Org contextOrg) {
         /*
-        may cause overlaod; for hbz data, the filter must be excluded
+        may cause overload; for hbz data, the filter must be excluded
         String instanceFilter = ''
         if(contextOrg.isCustomerType_Consortium())
             instanceFilter = 'and s.instanceOf = null'
         */
-        Platform.executeQuery('select pkg.nominalPlatform from PackageVendor pv, VendorRole vr, OrgRole oo join oo.sub s join pv.pkg pkg where pv.vendor = :vendor and pv.vendor = vr.vendor and vr.subscription = s and s.status = :current and oo.org = :contextOrg ', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, contextOrg: contextOrg])
+        Platform.executeQuery('select pkg.nominalPlatform from PackageVendor pv join pv.pkg pkg, SubscriptionPackage sp join sp.subscription s, OrgRole oo where pv.vendor = :vendor and pv.pkg = sp.pkg and s.status = :current and oo.org = :contextOrg ', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, contextOrg: contextOrg])
     }
 
     Map<String, Object> getResultGenerics(GrailsParameterMap params) {
