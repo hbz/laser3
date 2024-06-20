@@ -57,7 +57,7 @@ class VendorService {
         }
         if (onlyPublic) {
             Person.executeQuery(
-                    'select distinct p from Person as p inner join p.roleLinks pr where pr.vendor = :vendor and p.isPublic = true and p.tenant != null '+functionTypeFilter,
+                    'select distinct p from Person as p inner join p.roleLinks pr where pr.vendor = :vendor and p.isPublic = true '+functionTypeFilter,
                     queryParams
             )
         }
