@@ -262,7 +262,7 @@ class UserController {
             return
         }
 
-        result.availableOrgs = Org.executeQuery('from Org o where o.sector = :sector order by o.name', [sector: RDStore.O_SECTOR_HIGHER_EDU])
+        result.availableOrgs = Org.executeQuery('from Org o order by o.name')
 
         render view: '/user/global/create', model: result
     }

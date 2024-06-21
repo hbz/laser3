@@ -146,7 +146,6 @@ class ApiOAMonitor {
 
             // RefdataValues
 
-            result.sector       = org.sector?.value
             result.type         = org.orgType?.collect{ it.value }
             result.status       = org.status?.value
 

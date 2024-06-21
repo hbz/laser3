@@ -59,9 +59,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     Date lastUpdated
     Date lastUpdatedCascading
 
-    @RefdataInfo(cat = RDConstants.ORG_SECTOR)
-    RefdataValue sector
-
     @RefdataInfo(cat = RDConstants.ORG_STATUS)
     RefdataValue status
 
@@ -152,7 +149,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         eInvoice            column:'org_e_invoice'
         eInvoicePortal      column:'org_e_invoice_portal_fk', lazy: false
         gokbId              column:'org_gokb_id', type:'text'
-            sector          column:'org_sector_rv_fk', lazy: false
             status          column:'org_status_rv_fk'
     retirementDate          column:'org_retirement_date'
            country          column:'org_country_rv_fk'
@@ -199,7 +195,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
       retirementDate(nullable:true)
              comment(nullable:true, blank:true, maxSize:2048)
              ipRange(nullable:true, blank:true, maxSize:1024)
-              sector(nullable:true)
            shortcode(nullable:true, blank:true, maxSize:128)
                scope(nullable:true, blank:true, maxSize:128)
           categoryId(nullable:true, blank:true, maxSize:128)

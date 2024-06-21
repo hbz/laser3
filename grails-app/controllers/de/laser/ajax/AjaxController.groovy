@@ -125,24 +125,24 @@ class AjaxController {
             cols:['name'],
             format:'map'
     ],
-    "CommercialOrgs" : [
-            domain:'Org',
-            countQry:"select count(*) from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
-            rowQry:"select o from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
-            qryParams:[
-                    [
-                            param:'sSearch',
-                            onameClosure: { value ->
-                                String result = '%'
-                                if ( value && ( value.length() > 0 ) )
-                                    result = "%${value.trim().toLowerCase()}%"
-                                result
-                            }
-                    ]
-            ],
-            cols:['name'],
-            format:'map'
-    ]
+//    "CommercialOrgs" : [
+//            domain:'Org',
+//            countQry:"select count(*) from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
+//            rowQry:"select o from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
+//            qryParams:[
+//                    [
+//                            param:'sSearch',
+//                            onameClosure: { value ->
+//                                String result = '%'
+//                                if ( value && ( value.length() > 0 ) )
+//                                    result = "%${value.trim().toLowerCase()}%"
+//                                result
+//                            }
+//                    ]
+//            ],
+//            cols:['name'],
+//            format:'map'
+//    ]
   ]
 
     /**

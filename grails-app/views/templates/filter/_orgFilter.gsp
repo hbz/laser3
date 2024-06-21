@@ -202,19 +202,6 @@
                 </div>
             </g:if>
 
-            <g:if test="${field.equalsIgnoreCase('sector')}">
-                <div class="field">
-                    <label for="orgSector">${message(code: 'org.sector.label')}</label>
-                    <g:set var="orgSectors" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.ORG_SECTOR])}" scope="request"/>
-                    <ui:select class="ui dropdown search" id="orgSector" name="orgSector"
-                                  from="${orgSectors}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${params.orgSector}"
-                                  noSelection="${['':message(code:'default.select.choose.label')]}"/>
-                </div>
-            </g:if>
-
             <g:if test="${field.equalsIgnoreCase('country&region')}">
                 <laser:render template="/templates/filter/orgRegionsFilter" />
             </g:if>
