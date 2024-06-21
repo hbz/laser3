@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5776    21.06.2024  rc-3.4  3.4         Andreas Feature     fehlende Relationen nachgereicht
+
 5777    20.06.2024  rc-3.4  3.4         David   Feature     Org.sector entfernen
 
 5775    20.06.2024  rc-3.4  3.4         Andreas Feature     Umkodierung von ehemals öffentlichen Anbieter-/Lieferantenkontakten
