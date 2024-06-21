@@ -147,7 +147,11 @@
 
             <br><br>
 
-            <g:render template="costItemsByCostItemElementTable"/>
+            <g:if test="${costItemsByCostItemElementOfSubs}">
+                <g:render template="costItemsByCostItemElementTable" model="${[costItemsByCTE: costItemsByCostItemElementOfSubs, header: g.message(code: 'costItem.label')+' in '+ g.message(code: 'subscription.label')]}"/>
+            </g:if>
+
+            <g:render template="costItemsByCostItemElementTable" model="${[costItemsByCTE: costItemsByCostItemElement, header: g.message(code: 'costItem.label')+' in '+ g.message(code: 'survey.label')]}"/>
 
             <br/>
             <g:if test="${(params.tab == 'selectedSubParticipants' && selectedSubParticipants.size() > 0) || (params.tab == 'selectedParticipants' && selectedParticipants.size() > 0)}">
