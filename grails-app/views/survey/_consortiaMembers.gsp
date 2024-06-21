@@ -1,4 +1,19 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.storage.RDStore;" %>
+
+<g:if test="${selectedSubParticipantsCount == 0}">
+    <div class="four wide column">
+
+        <g:link action="actionSurveyParticipants"
+                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab, actionSurveyParticipants: 'addSubMembersToSurvey']"
+                class="ui icon button right floated">
+            <g:message code="surveyParticipants.addSubMembersToSurvey"/>
+        </g:link>
+        <br/>
+        <br/>
+
+    </div>
+</g:if>
+
 <br />
 
 <ui:filter>
