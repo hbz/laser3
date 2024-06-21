@@ -19,7 +19,7 @@ class CustomMigrationCallbacks {
 
 	GrailsApplication grailsApplication
 
-	static void _localChangelogMigration_april22() {
+	static void _localChangelogMigration_2022_04() {
 		groovy.sql.Sql sql = new groovy.sql.Sql(BeanStore.getDataSource())
 
 		int count1 = (sql.rows("select * from databasechangelog where filename like 'done/pre%'")).size()
@@ -59,10 +59,7 @@ class CustomMigrationCallbacks {
 		}
 	}
 
-	/**
-	 * Cleanup method for obsolete changelog files (up to 2023-05-31)
-	 */
-	static void _localChangelogMigration_july24() {
+	static void _localChangelogMigration_2023_06() {
 		groovy.sql.Sql sql = new groovy.sql.Sql(BeanStore.getDataSource())
 
 		String[] ranges = ['changelogs/2023-01-%', 'changelogs/2023-02-%', 'changelogs/2023-03-%', 'changelogs/2023-04-%', 'changelogs/2023-05-%']
@@ -89,22 +86,35 @@ class CustomMigrationCallbacks {
 		}
 	}
 
-	/**
-	 * Cleanup method for obsolete changelog files for the storage database (up to 2023-05-31)
-	 */
-	static void _localChangelogMigration_july24_storage() {
-		groovy.sql.Sql sql = new groovy.sql.Sql(BeanStore.getStorageDataSource())
+	static void _localChangelogMigration_2024_06() {
+		groovy.sql.Sql sql = new groovy.sql.Sql(BeanStore.getDataSource())
 
-		int count = (sql.rows("select * from databasechangelog where filename like 'changelogs/2022-%'")).size()
+		int count = (sql.rows("select * from databasechangelog where filename like 'changelogs/2023-%'")).size()
 
 		if (count) {
 			sql.withTransaction {
 				println '--------------------------------------------------------------------------------'
 				println '-     Cleanup database migration table'
-				println '-        changelogs/2022-%'
-				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelogs/', 'legacy/') where filename like 'changelogs/2022-%'")
-				println '-        changelogs/2023-02-%'
-				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelogs/', 'legacy/') where filename like 'changelogs/2023-02-%'")
+				println '-        changelogs/2023-%'
+				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelogs/', 'legacy/') where filename like 'changelogs/2023-%'")
+
+				sql.commit()
+				println '--------------------------------------------------------------------------------'
+			}
+		}
+	}
+
+	static void _localChangelogMigration_2024_06_storage() {
+		groovy.sql.Sql sql = new groovy.sql.Sql(BeanStore.getStorageDataSource())
+
+		int count = (sql.rows("select * from databasechangelog where filename like 'changelogs/2023-%'")).size()
+
+		if (count) {
+			sql.withTransaction {
+				println '--------------------------------------------------------------------------------'
+				println '-     Cleanup storage migration table'
+				println '-        changelogs/2023-%'
+				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelogs/', 'legacy/') where filename like 'changelogs/2023-%'")
 
 				sql.commit()
 				println '--------------------------------------------------------------------------------'
@@ -124,8 +134,8 @@ class CustomMigrationCallbacks {
 	 */
 	void onStartMigration(Database database, Liquibase liquibase, String changelogName) {
 
-		_localChangelogMigration_july24()
-		_localChangelogMigration_july24_storage()
+		_localChangelogMigration_2024_06()
+		_localChangelogMigration_2024_06_storage()
 
 		List allIds = liquibase.getDatabaseChangeLog().getChangeSets().collect { ChangeSet it -> it.filePath + '::' + it.id + '::' + it.author }
 		List ranIds = database.getRanChangeSetList().collect { RanChangeSet it -> it.changeLog + '::' + it.id + '::' + it.author }
