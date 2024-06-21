@@ -1736,32 +1736,6 @@ class AjaxController {
     }
 
     /**
-     * Resolves the given oid and returns the object if found
-     * @param oid the oid key to resolve
-     * @return the object matching to the given oid, null otherwise
-     */
-    @Secured(['ROLE_USER'])
-  def resolveOID2(String oid) {
-    String[] oid_components = oid.split(':')
-    def result
-
-    Class dc = CodeUtils.getDomainClass(oid_components[0])
-    if (dc) {
-      if (oid_components[1] == '__new__') {
-        result = dc.refdataCreate(oid_components)
-        // log.debug("Result of create ${oid} is ${result?.id}");
-      }
-      else {
-        result = dc.get(oid_components[1])
-      }
-    }
-    else {
-      log.error("resolve OID failed to identify a domain class. Input was ${oid_components}");
-    }
-    result
-  }
-
-    /**
      * Revokes the given affiliation from the given user to the given institution.
      * Expected is a structure userId:orgId:roleId
      * @return redirects to the referer
@@ -1799,7 +1773,7 @@ class AjaxController {
         log.debug("editableSetValue ${params}")
 
         def result = null
-        def target_object = resolveOID2(params.pk)
+        def target_object = genericOIDService.resolveOID(params.pk)
 
         try {
             if (target_object) {
@@ -2078,68 +2052,6 @@ class AjaxController {
             redirect(url: request.getHeader('referer'))
             return
         }
-    }
-
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    def dashboardChangesSetAccept() {
-        _setDashboardChangesStatus(RDStore.PENDING_CHANGE_ACCEPTED)
-    }
-
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    def dashboardChangesSetReject() {
-        _setDashboardChangesStatus(RDStore.PENDING_CHANGE_REJECTED)
-    }
-
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    @Transactional
-    private _setDashboardChangesStatus(RefdataValue refdataValue){
-        log.debug("DsetDashboardChangesStatus - refdataValue="+refdataValue.value)
-
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result.institution = contextService.getOrg()
-        flash.error = ''
-
-        if (! (result.user as User).isFormal(result.institution as Org)) {
-            flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
-            response.sendError(HttpStatus.SC_FORBIDDEN)
-            return
-        }
-
-        if (params.id) {
-            PendingChange pc = PendingChange.get(params.long('id'))
-            if (pc){
-                pc.status = refdataValue
-                pc.actionDate = new Date()
-                if(!pc.save()) {
-                    throw new ChangeAcceptException("problems when submitting new pending change status: ${pc.errors}")
-                }
-            } else {
-                flash.error += message(code:'dashboardChanges.err.toChangeStatus.doesNotExist')
-            }
-        } else {
-            flash.error += message(code:'dashboardChanges.err.toChangeStatus.doesNotExist')
-        }
-
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
-        result.acceptedOffset = params.acceptedOffset ? params.int("acceptedOffset") : result.offset
-        result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
-        def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
-        Map<String, Object> pendingChangeConfigMap = [
-                contextOrg: result.institution,
-                consortialView: (result.institution as Org).isCustomerType_Consortium(),
-                periodInDays:periodInDays,
-                max:result.max,
-                acceptedOffset:result.acceptedOffset,
-                pendingOffset: result.pendingOffset
-        ]
-        Map<String, Object> changes = pendingChangeService.getChanges(pendingChangeConfigMap)
-        changes.max = result.max
-        changes.editable = result.editable
-        render template: '/myInstitution/changesWrapper', model: changes
     }
 
     /**

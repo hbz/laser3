@@ -73,6 +73,9 @@
         </g:each>
         </tbody>
     </table>
+
+    <br>
+    <br>
 </g:if>
 <g:else>
     <g:if test="${surveyConfig.subSurveyUseForTransfer && actionName == 'compareMembersOfTwoSubs'}">

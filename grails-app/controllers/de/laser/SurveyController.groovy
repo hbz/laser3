@@ -1355,7 +1355,7 @@ class SurveyController {
             }
         }else {
             ctrlResult.result
-            redirect(action: 'compareMembersOfTwoSubs', id: params.id, params: [surveyConfigID: ctrlResult.result.surveyConfig.id, targetSubscriptionId: ctrlResult.result.targetParentSub?.id])
+            redirect(action: 'compareMembersOfTwoSubs', id: params.id, params: [surveyConfigID: ctrlResult.result.surveyConfig.id, targetSubscriptionId: ctrlResult.result.targetSubscription?.id])
             return
         }
 
@@ -2325,7 +2325,7 @@ class SurveyController {
             ctrlResult.result
             flash.message = message(code: 'surveyInfo.transfer.info', args: [ctrlResult.result.countNewSubs, ctrlResult.result.newSubs.size() ?: 0]) as String
 
-            redirect(action: 'compareMembersOfTwoSubs', id: params.id, params: [surveyConfigID: ctrlResult.result.surveyConfig.id])
+            redirect(action: 'compareMembersOfTwoSubs', id: params.id, params: [surveyConfigID: ctrlResult.result.surveyConfig.id, targetSubscriptionId: ctrlResult.result.targetSubscription?.id])
             return
         }
 
