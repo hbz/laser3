@@ -374,8 +374,6 @@ class PendingChangeService extends AbstractLockableService {
                     packageConfigMap.notify.put([spId, spPkg, dateEntry, spSub], packageSettings)
                 }
             }
-            //log.debug(packageConfigMap.notify.keySet().collect { List pkgSetting -> pkgSetting[0] }.toListString())
-            //log.debug(packageConfigMap.prompt.keySet().collect { List pkgSetting -> pkgSetting[0] }.toListString())
             /*
                 I need to:
                 - get the concerned subscription IDs

@@ -74,13 +74,11 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     static transients = [
             'referenceConcatenated', 'licensingConsortium', 'licensor', 'licensee', 'providers', 'vendors',
-            'calculatedPropDefGroups', 'genericLabel', 'nonDeletedDerivedLicenses'
+            'calculatedPropDefGroups', 'nonDeletedDerivedLicenses'
     ] // mark read-only accessor methods
 
   static hasMany = [
           ids            : Identifier,
-          //pkgs           :         Package,
-          //subscriptions:Subscription,
           documents      :    DocContext,
           orgRelations       :     OrgRole,
           vendorRelations     : VendorRole,
@@ -93,8 +91,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
   static mappedBy = [
           ids:           'lic',
-          //pkgs:          'license',
-          //subscriptions: 'owner',
           documents:     'license',
           orgRelations:      'lic',
           vendorRelations     : 'license',
@@ -131,8 +127,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
        propertySet sort:'type', order:'desc', batchSize: 10
 
               ids               sort: 'ns', batchSize: 10
-              //pkgs            batchSize: 10
-              //subscriptions   sort:'name',order:'asc', batchSize: 10
               orgRelations      batchSize: 10
               prsLinks          batchSize: 10
               derivedLicenses   batchSize: 10
@@ -416,11 +410,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
             or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]
         }?.collect { OrgRole or -> or.org }
   }
-
-    @Deprecated
-    String getGenericLabel() {
-        return reference
-    }
 
     /**
      * Checks if the given user may edit this license

@@ -2054,68 +2054,6 @@ class AjaxController {
         }
     }
 
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    def dashboardChangesSetAccept() {
-        _setDashboardChangesStatus(RDStore.PENDING_CHANGE_ACCEPTED)
-    }
-
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    def dashboardChangesSetReject() {
-        _setDashboardChangesStatus(RDStore.PENDING_CHANGE_REJECTED)
-    }
-
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    @Transactional
-    private _setDashboardChangesStatus(RefdataValue refdataValue){
-        log.debug("DsetDashboardChangesStatus - refdataValue="+refdataValue.value)
-
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result.institution = contextService.getOrg()
-        flash.error = ''
-
-        if (! (result.user as User).isFormal(result.institution as Org)) {
-            flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
-            response.sendError(HttpStatus.SC_FORBIDDEN)
-            return
-        }
-
-        if (params.id) {
-            PendingChange pc = PendingChange.get(params.long('id'))
-            if (pc){
-                pc.status = refdataValue
-                pc.actionDate = new Date()
-                if(!pc.save()) {
-                    throw new ChangeAcceptException("problems when submitting new pending change status: ${pc.errors}")
-                }
-            } else {
-                flash.error += message(code:'dashboardChanges.err.toChangeStatus.doesNotExist')
-            }
-        } else {
-            flash.error += message(code:'dashboardChanges.err.toChangeStatus.doesNotExist')
-        }
-
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
-        result.acceptedOffset = params.acceptedOffset ? params.int("acceptedOffset") : result.offset
-        result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
-        def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
-        Map<String, Object> pendingChangeConfigMap = [
-                contextOrg: result.institution,
-                consortialView: (result.institution as Org).isCustomerType_Consortium(),
-                periodInDays:periodInDays,
-                max:result.max,
-                acceptedOffset:result.acceptedOffset,
-                pendingOffset: result.pendingOffset
-        ]
-        Map<String, Object> changes = pendingChangeService.getChanges(pendingChangeConfigMap)
-        changes.max = result.max
-        changes.editable = result.editable
-        render template: '/myInstitution/changesWrapper', model: changes
-    }
-
     /**
      * Method under development; concept of cost per use is not fully elaborated yet
      * Generates for the given subsciption and its holding a cost per use calculation, i.e. a cost analysis for the regarded COUNTER report

@@ -375,16 +375,6 @@ class AjaxJsonController {
         render result as JSON
     }
 
-    /*@Secured(['ROLE_USER'])
-    def getLinkedLicenses() {
-        render controlledListService.getLinkedObjects([destination:params.subscription, sourceType: License.class.name, linkTypes:[RDStore.LINKTYPE_LICENSE], status:params.status]) as JSON
-    }
-
-    @Secured(['ROLE_USER'])
-    def getLinkedSubscriptions() {
-        render controlledListService.getLinkedObjects([source:params.license, destinationType: Subscription.class.name, linkTypes:[RDStore.LINKTYPE_LICENSE], status:params.status]) as JSON
-    }*/
-
     /**
      * Retrieves a list of reference data values belonging to the category linked to the property definition
      * @return a {@link List} of {@link Map}s of structure [value: database id, name: translated name] for dropdown display
