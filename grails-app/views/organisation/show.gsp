@@ -145,7 +145,7 @@
                                 <g:message code="org.legalPatronName.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.legalPatronName.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="grey question circle icon"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -157,7 +157,7 @@
                                 <g:message code="org.urlGov.label"/>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.urlGov.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="grey question circle icon"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -179,7 +179,7 @@
                                 <g:message code="org.linkResolverBase.label"/>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.linkResolverBase.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="grey question circle icon"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -191,7 +191,7 @@
                                 <g:message code="org.eInvoice.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.eInvoice.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="grey question circle icon"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -203,7 +203,7 @@
                                 <g:message code="org.eInvoicePortal.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.eInvoicePortal.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="grey question circle icon"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -217,12 +217,6 @@
             <%--
             <div class="ui card">
                 <div class="content">
-                    <dl>
-                        <dt><g:message code="org.sector.label" /></dt>
-                        <dd>
-                            <ui:xEditableRefData owner="${orgInstance}" field="sector" config="${RDConstants.ORG_SECTOR}" overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor}"/>
-                        </dd>
-                    </dl>
                     <dl>
                         <dt>${message(code: 'default.status.label')}</dt>
                         <dd>
@@ -340,7 +334,7 @@
                                 <g:message code="org.libraryType.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.libraryType.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="grey question circle icon"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -388,7 +382,7 @@
                                 <g:message code="org.libraryNetwork.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.libraryNetwork.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="grey question circle icon"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -401,7 +395,7 @@
                                 <g:message code="org.funderType.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.funderType.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="grey question circle icon"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -413,7 +407,7 @@
                                 <g:message code="org.funderHSK.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.funderHSK.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="grey question circle icon"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -425,7 +419,7 @@
                                 <g:message code="address.country.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.country.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="grey question circle icon"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -436,7 +430,7 @@
                                 <g:message code="org.region.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.region.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="grey question circle icon"></i>
                                 </span>
                             </dt>
                             <dd>

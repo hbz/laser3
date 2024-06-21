@@ -158,7 +158,7 @@
                             <g:message code="person.last_name.label"/> <g:message code="messageRequiredField" />
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'person.last_name.info')}">
-                                <i class="question circle icon"></i>
+                                <i class="grey question circle icon"></i>
                             </span>
                         </label>
                         <g:textField name="last_name" required="" value="${personInstance?.last_name}"/>
@@ -299,7 +299,7 @@
 
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="${message(code: 'person.contacts.add.button')}">
-                    <i class="question circle icon"></i>
+                    <i class="grey question circle icon"></i>
                 </span>
 
                 <br />
@@ -366,7 +366,7 @@
 
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="${message(code: 'person.addresses.add.button')}">
-                    <i class="question circle icon"></i>
+                    <i class="grey question circle icon"></i>
                 </span>
 
                 <br />

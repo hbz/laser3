@@ -139,7 +139,8 @@
 
                             JSPC.app.reporting.current.chart.echart = echart;
 
-                            let $dhs = $('#queryHelpModal .help-section[data-help-section=' + JSPC.app.reporting.current.request.query + ']');
+                            let escQuery = JSPC.app.reporting.current.request.query.replaceAll('*', '\\*')
+                            let $dhs = $('#queryHelpModal .help-section[data-help-section=' + escQuery + ']');
                             if ($dhs.length) {
                                 $('#query-help-button').removeAttr('disabled');
                             }

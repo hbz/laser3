@@ -2596,7 +2596,6 @@ class MyInstitutionController  {
         }
 
         params.viewTab = params.viewTab ?: 'overview'
-        params.subTab = params.subTab ?: 'allPackages'
 
         result = surveyService.participantResultGenerics(result, result.institution, params)
 
@@ -2654,9 +2653,13 @@ class MyInstitutionController  {
         List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, surveyConfig)
         result.minimalInput = false
 
-        surveyResults.each{ SurveyResult surre ->
-            if(surre.getValue() != null)
-                result.minimalInput = true
+        if(surveyConfig.type != SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+            surveyResults.each { SurveyResult surre ->
+                if (surre.getValue() != null)
+                    result.minimalInput = true
+            }
+        }else {
+            result.minimalInput = true
         }
 
         if(result.minimalInput) {
@@ -3264,7 +3267,6 @@ class MyInstitutionController  {
             // new: filter preset
             result.comboType = 'Consortium'
             params.orgType = RDStore.OT_INSTITUTION.id
-            params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
 
             if (params.selectedOrgs) {
                 if (formService.validateToken(params)) {
@@ -3567,7 +3569,6 @@ class MyInstitutionController  {
                 }
             }
         }
-        //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())

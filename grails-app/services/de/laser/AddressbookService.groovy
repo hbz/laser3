@@ -266,8 +266,8 @@ class AddressbookService {
         List qParts = []
         Map qParams = [:]
         if (params.showOnlyContactPersonForInstitution || params.exportOnlyContactPersonForInstitution){
-            qParts << "(exists (select roletype from org.orgType as roletype where roletype.id = :instType ) and org.sector.id = :instSector )"
-            qParams << [instSector: RDStore.O_SECTOR_HIGHER_EDU.id, instType: RDStore.OT_INSTITUTION.id]
+            qParts << "(exists (select roletype from org.orgType as roletype where roletype.id = :instType ))"
+            qParams << [instType: RDStore.OT_INSTITUTION.id]
         }
 
         if (params.showOnlyContactPersonForProvider || params.exportOnlyContactPersonForProvider){

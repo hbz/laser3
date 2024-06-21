@@ -48,11 +48,11 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
     static transients = ['deleted']
 
     static hasMany = [
-            contacts: Contact,
             addresses: Address,
             propertySet: ProviderProperty,
             altnames: AlternativeName,
             documents: DocContext,
+            links: ProviderRole,
             ids: Identifier,
             platforms: Platform,
             packages: Package,
@@ -62,11 +62,11 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
     ]
 
     static mappedBy = [
-            contacts: 'provider',
             addresses: 'provider',
             propertySet: 'owner',
             altnames: 'provider',
             documents: 'provider',
+            links: 'provider',
             ids: 'provider',
             platforms: 'provider',
             packages: 'provider',
@@ -235,13 +235,6 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
                 altName.provider = p
                 altName.org = null
                 altName.save()
-            }
-        }
-        provider.contacts.each { Contact c ->
-            if(!p.contacts?.find { Contact cOld -> cOld.content == c.content }) {
-                c.provider = p
-                c.org = null
-                c.save()
             }
         }
         provider.addresses.each { Address a ->

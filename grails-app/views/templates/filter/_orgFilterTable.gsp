@@ -90,9 +90,6 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">
                 <th>${message(code: 'default.type.label')}</th>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('sector')}">
-                <th>${message(code: 'org.sector.label')}</th>
-            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('region')}">
                 <th>${message(code: 'org.region.label')}</th>
             </g:if>
@@ -653,9 +650,6 @@
                         ${type.getI10n("value")}
                     </g:each>
                 </td>
-            </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('sector')}">
-                <td>${org.sector?.getI10n('value')}</td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('region')}">
                 <td>${org.region?.getI10n('value')}</td>

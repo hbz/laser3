@@ -78,7 +78,7 @@
                                         <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_all')}</label>
                                     </div>
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'myinst.separate_lics_all.expl')}">
-                                        <i class="question circle icon la-popup"></i>
+                                        <i class="grey question circle icon la-popup"></i>
                                     </span>
                                 </div>
                                 <div class="field">
@@ -194,7 +194,7 @@
                                                                 </div>
                                                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                                       data-content="${message(code: 'myinst.separate_lics_all.expl')}">
-                                                                    <i class="question circle icon la-popup"></i>
+                                                                    <i class="grey question circle icon la-popup"></i>
                                                                 </span>
                                                             </div>
 

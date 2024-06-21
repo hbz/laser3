@@ -280,7 +280,6 @@ class OrganisationController  {
     def listInstitution() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         params.orgType   = RDStore.OT_INSTITUTION.id
-        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
         if(!params.orgStatus && !params.filterSet) {

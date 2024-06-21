@@ -15,7 +15,7 @@
                       model="[
                               tmplConfigShow: [['name', 'identifier', 'type', 'customerType'],
                                                ['discoverySystemsFrontend', 'discoverySystemsIndex', 'apiLevel', 'serverAccess'],
-                                               ['country&region', 'libraryNetwork', 'sector', 'libraryType']],
+                                               ['country&region', 'libraryNetwork', 'libraryType']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>

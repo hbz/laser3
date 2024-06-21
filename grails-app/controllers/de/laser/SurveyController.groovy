@@ -1024,11 +1024,18 @@ class SurveyController {
         ArrayList row
         SurveyOrg.findAllBySurveyConfig(ctrlResult.surveyConfig).each { SurveyOrg surveyOrg ->
             row = []
-            row.add(surveyOrg.org.getIdentifierByType('wibid')?.value)
-            row.add(surveyOrg.org.getIdentifierByType('ISIL')?.value)
-            row.add(surveyOrg.org.getIdentifierByType('ROR ID')?.value)
-            row.add(surveyOrg.org.getIdentifierByType('gnd_org_nr')?.value)
-            row.add(surveyOrg.org.getIdentifierByType('deal_id')?.value)
+            Org org = surveyOrg.org
+            String wibid = org.getIdentifierByType('wibid')?.value
+            String isil = org.getIdentifierByType('ISIL')?.value
+            String ror = org.getIdentifierByType('ROR ID')?.value
+            String gng = org.getIdentifierByType('gnd_org_nr')?.value
+            String deal = org.getIdentifierByType('deal_id')?.value
+
+            row.add(wibid != IdentifierNamespace.UNKNOWN ? wibid : '')
+            row.add(isil != IdentifierNamespace.UNKNOWN ? isil : '')
+            row.add(ror != IdentifierNamespace.UNKNOWN ? ror : '')
+            row.add(gng != IdentifierNamespace.UNKNOWN ? gng : '')
+            row.add(deal != IdentifierNamespace.UNKNOWN ? deal : '')
 
             if(ctrlResult.surveyConfig.subscription){
                 row.add(Platform.executeQuery('select ci.value from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer = (:customer) and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription.instanceOf = :subscription)', [customer: surveyOrg.org, subscription: ctrlResult.surveyConfig.subscription]).join(', '))
@@ -1074,7 +1081,6 @@ class SurveyController {
         String filename = "template_survey_participants_import"
 
         params.orgType = RDStore.OT_INSTITUTION.id
-        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         params.sub = ctrlResult.subscription
 
@@ -1088,11 +1094,18 @@ class SurveyController {
         ArrayList row
         members.each { Org org ->
             row = []
-            row.add(org.getIdentifierByType('wibid')?.value)
-            row.add(org.getIdentifierByType('ISIL')?.value)
-            row.add(org.getIdentifierByType('ROR ID')?.value)
-            row.add(org.getIdentifierByType('gnd_org_nr')?.value)
-            row.add(org.getIdentifierByType('deal_id')?.value)
+
+            String wibid = org.getIdentifierByType('wibid')?.value
+            String isil = org.getIdentifierByType('ISIL')?.value
+            String ror = org.getIdentifierByType('ROR ID')?.value
+            String gng = org.getIdentifierByType('gnd_org_nr')?.value
+            String deal = org.getIdentifierByType('deal_id')?.value
+
+            row.add(wibid != IdentifierNamespace.UNKNOWN ? wibid : '')
+            row.add(isil != IdentifierNamespace.UNKNOWN ? isil : '')
+            row.add(ror != IdentifierNamespace.UNKNOWN ? ror : '')
+            row.add(gng != IdentifierNamespace.UNKNOWN ? gng : '')
+            row.add(deal != IdentifierNamespace.UNKNOWN ? deal : '')
             row.add(org.sortname)
             row.add(org.name)
             row.add(org.libraryType.getI10n('value'))

@@ -343,7 +343,10 @@ class DataloadService {
                     result.sortname = tipp.sortname
 
                     result.medium = tipp.medium?.getMapForES()
-                    result.type = tipp.titleType
+                    result.type = ['id':    null,
+                                   'value':    tipp.titleType,
+                                   'value_de': tipp.titleType,
+                                   'value_en': tipp.titleType]
 
                     List<Org> publishers = tipp.getPublishers()
                     result.publishers = []

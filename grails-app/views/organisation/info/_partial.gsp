@@ -1,6 +1,6 @@
 <%@ page import="de.laser.storage.RDStore" %>
 
-<h2 class="ui small header" style="display:inline-block;background-color:red;color:white;padding:0.5em 1em">DEMO</h2>
+%{--<h2 class="ui small header" style="display:inline-block;background-color:red;color:white;padding:0.5em 1em">DEMO</h2>--}%
 
 <div class="ui vertical secondary fluid menu" style="margin-bottom:2em">
     <a class="ui item stats-toggle" data-target="stats_subscription">
@@ -161,7 +161,7 @@
     /*  border-color: #dedede;*/
     /*}*/
     .stats-content tr.sub {
-      background-color: rgba(0,0,0, 0.03)
+      background-color: rgba(0,0,0, 0.01);
     }
 
     /*.menu > .item.black {*/

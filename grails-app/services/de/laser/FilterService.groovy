@@ -95,10 +95,6 @@ class FilterService {
             query << " exists (select ogr from o.links as ogr where ogr.roleType.id = :orgRole )"
              queryParams << [orgRole : params.long('orgRole')]
         }
-        if (params.orgSector) {
-            query << "o.sector.id in (:orgSector)"
-             queryParams << [orgSector : Params.getLongList(params, 'orgSector')]
-        }
         if (params.orgIdentifier?.length() > 0) {
             query << " ( exists (select ident from Identifier ident join ident.org ioorg " +
                      " where ioorg = o and genfunc_filter_matcher(ident.value, :orgIdentifier) = true ) or " +
@@ -231,10 +227,6 @@ class FilterService {
         if (params.orgType) {
             query << "exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) )"
             queryParams << [orgType : Params.getLongList(params, 'orgType')]
-        }
-        if (params.orgSector) {
-            query << "o.sector.id in (:orgSector)"
-            queryParams << [orgSector : Params.getLongList(params, 'orgSector')]
         }
         if (params.region) {
             query << "o.region.id in (:region)"
@@ -927,10 +919,6 @@ class FilterService {
         if (params.orgType) {
             base_qry += " and exists (select roletype from surveyOrg.org.orgType as roletype where roletype.id = :orgType )"
             queryParams << [orgType : params.long('orgType')]
-        }
-        if (params.orgSector) {
-            base_qry += " and surveyOrg.org.sector.id = :orgSector"
-            queryParams << [orgSector : params.long('orgSector')]
         }
         if (params.region) {
             base_qry += " and surveyOrg.org.region.id in (:region)"
