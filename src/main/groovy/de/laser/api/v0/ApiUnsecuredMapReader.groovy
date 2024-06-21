@@ -2,6 +2,9 @@ package de.laser.api.v0
 
 import de.laser.Address
 import de.laser.Combo
+import de.laser.ElectronicBilling
+import de.laser.InvoiceDispatch
+import de.laser.LibrarySystem
 import de.laser.License
 import de.laser.Org
 import de.laser.OrgSubjectGroup
@@ -413,11 +416,11 @@ class ApiUnsecuredMapReader {
         // RefdataValues
         //result.type                 = pform.type?.value
         result.status               = pform.status?.value
-        result.serviceProvider      = pform.serviceProvider?.value
-        result.softwareProvider     = pform.softwareProvider?.value
+        //result.serviceProvider      = pform.serviceProvider?.value
+        //result.softwareProvider     = pform.softwareProvider?.value
 
         // References
-        result.provider = getOrganisationStubMap(pform.org) // de.laser.Org
+        result.provider = getProviderStubMap(pform.provider) // de.laser.Provider
         result.properties = ApiCollectionReader.getCustomPropertyCollection(pform.propertySet, pform, context)
 
         ApiToolkit.cleanUp(result, true, true)
@@ -435,29 +438,27 @@ class ApiUnsecuredMapReader {
 
         provider = GrailsHibernateUtil.unwrapIfProxy(provider)
 
-        result.globalUID           = provider.globalUID
-        result.gokbId              = provider.gokbId
-        result.name                = provider.name
-        result.altNames            = ApiCollectionReader.getAlternativeNameCollection(provider.altnames)
-        result.sortname            = provider.sortname
-        result.lastUpdated         = ApiToolkit.formatInternalDate(provider._getCalculatedLastUpdated())
+        result.globalUID             = provider.globalUID
+        result.gokbId                = provider.gokbId
+        result.name                  = provider.name
+        result.altNames              = ApiCollectionReader.getAlternativeNameCollection(provider.altnames)
+        result.sortname              = provider.sortname
+        result.lastUpdated           = ApiToolkit.formatInternalDate(provider._getCalculatedLastUpdated())
+        result.homepage              = provider.homepage
+        result.kbartDownloaderURL    = provider.kbartDownloaderURL
+        result.metadataDownloaderURL = provider.metadataDownloaderURL
+        result.inhouseInvoicing      = provider.inhouseInvoicing ? RDStore.YN_YES.value : RDStore.YN_NO.value
+        result.paperInvoice          = provider.paperInvoice ? RDStore.YN_YES.value : RDStore.YN_NO.value
+        result.managementOfCredits   = provider.managementOfCredits ? RDStore.YN_YES.value : RDStore.YN_NO.value
+        result.processingOfCompensationPayments = provider.processingOfCompensationPayments ? RDStore.YN_YES.value : RDStore.YN_NO.value
+        result.individualInvoiceDesign = provider.individualInvoiceDesign ? RDStore.YN_YES.value : RDStore.YN_NO.value
 
         result.retirementDate      = provider.retirementDate ? ApiToolkit.formatInternalDate(provider.retirementDate) : null
 
-        //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
-        //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber
-
         // RefdataValues
 
-        result.eInvoicePortal = provider.eInvoicePortal?.value
-        result.region         = provider.region?.value
-        result.country        = provider.country?.value
-        result.libraryType    = provider.libraryType?.value
-        result.funderType     = provider.funderType?.value
-        result.funderHskType  = provider.funderHskType?.value
-        result.subjectGroup   = provider.subjectGroup?.collect { OrgSubjectGroup subjectGroup -> subjectGroup.subjectGroup.value }
-        result.libraryNetwork = provider.libraryNetwork?.value
-        result.type           = provider.orgType?.collect{ it.value }
+        result.electronicBillings = provider.electronicBillings?.collect { ElectronicBilling eb -> eb.invoicingFormat.value }
+        result.invoiceDispatchs   = provider.invoiceDispatchs?.collect { InvoiceDispatch idi -> idi.invoiceDispatch.value }
         result.status         = provider.status?.value
 
         // References
@@ -466,20 +467,66 @@ class ApiUnsecuredMapReader {
         result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :provider and a.isPublic = true', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.Address w/o tenant
         result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :provider and a.isPublic = false and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.Address w/ tenant
         result.identifiers  = ApiCollectionReader.getIdentifierCollection(provider.ids) // de.laser.Identifier
+        result.packages     = ApiCollectionReader.getPackageCollection(provider.packages)
+        result.platforms    = ApiCollectionReader.getPlatformCollection(provider.platforms)
         result.persons      = ApiCollectionReader.getPrsLinkCollection(
                 provider.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
         ) // de.laser.PersonRole
+        result.invoicingVendors    = ApiCollectionReader.getVendorCollection(provider.invoicingVendors)
 
-        result.orgAccessPoints	= ApiCollectionReader.getOrgAccessPointCollection(provider.accessPoints)
+        result.properties   = ApiCollectionReader.getPropertyCollection(provider, context, ApiReader.IGNORE_NONE) // de.laser.ProviderProperty
 
-        result.properties   = ApiCollectionReader.getPropertyCollection(provider, context, ApiReader.IGNORE_NONE) // de.laser.(OrgCustomProperty, OrgPrivateProperty)
 
-        // Ignored
+        ApiToolkit.cleanUp(result, true, true)
+    }
 
-        //result.incomingCombos       = org.incomingCombos // de.laser.Combo
-        //result.links                = exportHelperService.resolveOrgLinks(org.links) // de.laser.OrgRole
-        //result.membership           = org.membership?.value // RefdataValue
-        //result.outgoingCombos       = org.outgoingCombos // de.laser.Combo
+    /**
+     * Assembles the given vendor attributes into a {@link Map}. The schema of the map can be seen in
+     * schemas.gsp
+     * @param vendor the {@link Vendor} which should be output
+     * @param context the institution ({@link Org}) requesting
+     * @return Map<String, Object>
+     */
+    static Map<String, Object> getVendorMap(Vendor vendor, Org context) {
+        Map<String, Object> result = [:]
+
+        vendor = GrailsHibernateUtil.unwrapIfProxy(vendor)
+
+        result.globalUID             = vendor.globalUID
+        result.gokbId                = vendor.gokbId
+        result.name                  = vendor.name
+        result.altNames              = ApiCollectionReader.getAlternativeNameCollection(vendor.altnames)
+        result.sortname              = vendor.sortname
+        result.lastUpdated           = ApiToolkit.formatInternalDate(vendor._getCalculatedLastUpdated())
+        result.homepage              = vendor.homepage
+        result.researchPlatformForEbooks = vendor.researchPlatformForEbooks
+        result.prequalificationVOLInfo = vendor.prequalificationVOLInfo
+        Set<String> boolFields = ['webShopOrders', 'ediOrders', 'xmlOrders', 'paperInvoice', 'managementOfCredits', 'processingOfCompensationPayments', 'individualInvoiceDesign',
+                                  'technicalSupport', 'shippingMetadata', 'forwardingUsageStatisticsFromPublisher', 'activationForNewReleases', 'exchangeOfIndividualTitles', 'prequalificationVOL']
+        result.putAll(ApiToolkit.readBoolValues(vendor, boolFields))
+
+        result.retirementDate      = vendor.retirementDate ? ApiToolkit.formatInternalDate(vendor.retirementDate) : null
+
+        // RefdataValues
+
+        result.supportedLibrarySystems = vendor.supportedLibrarySystems?.collect { LibrarySystem ls -> ls.librarySystem.value }
+        result.electronicBillings = vendor.electronicBillings?.collect { ElectronicBilling eb -> eb.invoicingFormat.value }
+        result.invoiceDispatchs   = vendor.invoiceDispatchs?.collect { InvoiceDispatch idi -> idi.invoiceDispatch.value }
+        result.status         = vendor.status?.value
+
+        // References
+        Map<String, Object> queryParams = [provider:vendor]
+
+        result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :vendor and a.isPublic = true', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.Address w/o tenant
+        result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :vendor and a.isPublic = false and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.Address w/ tenant
+        result.identifiers  = ApiCollectionReader.getIdentifierCollection(vendor.ids) // de.laser.Identifier
+        result.packages     = ApiCollectionReader.getPackageCollection(vendor.packages)
+        result.persons      = ApiCollectionReader.getPrsLinkCollection(
+                vendor.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
+        ) // de.laser.PersonRole
+
+        result.properties   = ApiCollectionReader.getPropertyCollection(vendor, context, ApiReader.IGNORE_NONE) // de.laser.VendorProperty
+
 
         ApiToolkit.cleanUp(result, true, true)
     }
