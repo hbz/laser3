@@ -1,19 +1,26 @@
 package de.laser.api.v0
 
-
+import de.laser.Address
+import de.laser.Combo
 import de.laser.License
 import de.laser.Org
+import de.laser.OrgSubjectGroup
 import de.laser.Package
 import de.laser.Platform
+import de.laser.Provider
+import de.laser.ProviderLink
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
+import de.laser.Vendor
 import de.laser.base.AbstractCoverage
 import de.laser.finance.Invoice
 import de.laser.finance.PriceItem
 import de.laser.oap.OrgAccessPoint
 import de.laser.finance.Order
+import de.laser.storage.RDStore
 import de.laser.traces.DeletedObject
 import groovy.sql.GroovyRowResult
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 /**
  * This class delivers objects which do not need further authentication because they do not need any or authorisation
@@ -184,6 +191,29 @@ class ApiUnsecuredMapReader {
     }
 
     /**
+     * Returns the essential information for the given provider for API output
+     * @param provider the {@link Provider} called for API
+     * @return Map<String, Object> reflecting the provider details
+     */
+    static Map<String, Object> getProviderStubMap(Provider provider) {
+        if (!provider) {
+            return null
+        }
+        Map<String, Object> result = [:]
+
+        result.globalUID    = provider.globalUID
+        result.gokbId       = provider.gokbId
+        result.name         = provider.name
+        result.sortname     = provider.sortname
+        result.status       = provider.status?.value
+
+        // References
+        result.identifiers = ApiCollectionReader.getIdentifierCollection(provider.ids) // de.laser.Identifier
+
+        ApiToolkit.cleanUp(result, true, true)
+    }
+
+    /**
      * Returns the essential information for the given subscription for API output
      * @param sub the {@link Subscription} called for API
      * @return Map<String, Object> reflecting the subscription details
@@ -227,6 +257,49 @@ class ApiUnsecuredMapReader {
 
         result.medium       = tipp.medium?.value
         result.identifiers  = ApiCollectionReader.getIdentifierCollection(tipp.ids) // de.laser.Identifier
+
+        ApiToolkit.cleanUp(result, true, true)
+    }
+
+    /**
+     * Returns the essential information for the given vendor for API output
+     * @param vendor the {@link Vendor} called for API
+     * @return Map<String, Object> reflecting the vendor details
+     */
+    static Map<String, Object> getVendorStubMap(Vendor vendor) {
+        if (!vendor) {
+            return null
+        }
+        Map<String, Object> result = [:]
+
+        result.globalUID    = vendor.globalUID
+        result.gokbId       = vendor.gokbId
+        result.name         = vendor.name
+        result.sortname     = vendor.sortname
+        result.status       = vendor.status?.value
+
+        // References
+        result.identifiers = ApiCollectionReader.getIdentifierCollection(vendor.ids) // de.laser.Identifier
+
+        ApiToolkit.cleanUp(result, true, true)
+    }
+
+    /**
+     * Returns the given deleted object stub details
+     * @param delObj the {@link DeletedObject} trace to be retrieved
+     * @return a {@link Map} containing the deleted object stub
+     */
+    static Map<String, Object> getDeletedObjectStubMap(DeletedObject delObj) {
+        if (!delObj) {
+            return null
+        }
+        Map<String, Object> result = [:]
+
+        result.globalUID        = delObj.oldGlobalUID
+        result.name             = delObj.oldName
+        result.calculatedType   = delObj.oldCalculatedType
+        result.startDate        = ApiToolkit.formatInternalDate(delObj.oldStartDate)
+        result.endDate          = ApiToolkit.formatInternalDate(delObj.oldEndDate)
 
         ApiToolkit.cleanUp(result, true, true)
     }
@@ -351,21 +424,62 @@ class ApiUnsecuredMapReader {
     }
 
     /**
-     * Returns the given deleted object stub details
-     * @param delObj the {@link DeletedObject} trace to be retrieved
-     * @return a {@link Map} containing the deleted object stub
+     * Assembles the given provider attributes into a {@link Map}. The schema of the map can be seen in
+     * schemas.gsp
+     * @param provider the {@link Provider} which should be output
+     * @param context the institution ({@link Org}) requesting
+     * @return Map<String, Object>
      */
-    static Map<String, Object> getDeletedObjectStubMap(DeletedObject delObj) {
-        if (!delObj) {
-            return null
-        }
+    static Map<String, Object> getProviderMap(Provider provider, Org context) {
         Map<String, Object> result = [:]
 
-        result.globalUID        = delObj.oldGlobalUID
-        result.name             = delObj.oldName
-        result.calculatedType   = delObj.oldCalculatedType
-        result.startDate        = ApiToolkit.formatInternalDate(delObj.oldStartDate)
-        result.endDate          = ApiToolkit.formatInternalDate(delObj.oldEndDate)
+        provider = GrailsHibernateUtil.unwrapIfProxy(provider)
+
+        result.globalUID           = provider.globalUID
+        result.gokbId              = provider.gokbId
+        result.name                = provider.name
+        result.altNames            = ApiCollectionReader.getAlternativeNameCollection(provider.altnames)
+        result.sortname            = provider.sortname
+        result.lastUpdated         = ApiToolkit.formatInternalDate(provider._getCalculatedLastUpdated())
+
+        result.retirementDate      = provider.retirementDate ? ApiToolkit.formatInternalDate(provider.retirementDate) : null
+
+        //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
+        //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber
+
+        // RefdataValues
+
+        result.eInvoicePortal = provider.eInvoicePortal?.value
+        result.region         = provider.region?.value
+        result.country        = provider.country?.value
+        result.libraryType    = provider.libraryType?.value
+        result.funderType     = provider.funderType?.value
+        result.funderHskType  = provider.funderHskType?.value
+        result.subjectGroup   = provider.subjectGroup?.collect { OrgSubjectGroup subjectGroup -> subjectGroup.subjectGroup.value }
+        result.libraryNetwork = provider.libraryNetwork?.value
+        result.type           = provider.orgType?.collect{ it.value }
+        result.status         = provider.status?.value
+
+        // References
+        Map<String, Object> queryParams = [provider:provider]
+
+        result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :provider and a.isPublic = true', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.Address w/o tenant
+        result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :provider and a.isPublic = false and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.Address w/ tenant
+        result.identifiers  = ApiCollectionReader.getIdentifierCollection(provider.ids) // de.laser.Identifier
+        result.persons      = ApiCollectionReader.getPrsLinkCollection(
+                provider.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
+        ) // de.laser.PersonRole
+
+        result.orgAccessPoints	= ApiCollectionReader.getOrgAccessPointCollection(provider.accessPoints)
+
+        result.properties   = ApiCollectionReader.getPropertyCollection(provider, context, ApiReader.IGNORE_NONE) // de.laser.(OrgCustomProperty, OrgPrivateProperty)
+
+        // Ignored
+
+        //result.incomingCombos       = org.incomingCombos // de.laser.Combo
+        //result.links                = exportHelperService.resolveOrgLinks(org.links) // de.laser.OrgRole
+        //result.membership           = org.membership?.value // RefdataValue
+        //result.outgoingCombos       = org.outgoingCombos // de.laser.Combo
 
         ApiToolkit.cleanUp(result, true, true)
     }

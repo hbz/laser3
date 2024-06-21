@@ -2,6 +2,8 @@
 
 Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 3.0
+
 #### 2.15
 
 - removed attribute: `Org.sector`
