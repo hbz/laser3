@@ -2066,8 +2066,8 @@ class AjaxController {
      */
     @Secured(['ROLE_USER'])
     def removeUserRole() {
-        User user = resolveOID2(params.user) as User
-        Role role = resolveOID2(params.role) as Role
+        User user = genericOIDService.resolveOID(params.user) as User
+        Role role = genericOIDService.resolveOID(params.role) as Role
         if (user && role) {
             UserRole.remove(user, role)
         }
