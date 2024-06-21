@@ -526,16 +526,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Creates a new organisation record with the given name
-     * @param value the name of the new organisation
-     * @return the new organisation instance
-     */
-    // called from AjaxController.resolveOID2()
-  static Org refdataCreate(String value) {
-    return new Org(name:value)
-  }
-
-    /**
      * Gets the display string for this organisation; the following cascade is being checked. If one field is not set, the following is being returned:
      * <ol>
      *     <li>sortname</li>

@@ -254,10 +254,8 @@
                                         <tfoot>
                                             <tr>
                                                 <td colspan="2">
-                                                    <g:form class="ui form" controller="ajax" action="addToCollection">
-                                                        <input type="hidden" name="__context" value="${user.class.name}:${user.id}"/>
-                                                        <input type="hidden" name="__newObjectClass" value="${UserRole.class.name}"/>
-                                                        <input type="hidden" name="__recip" value="user"/>
+                                                    <g:form class="ui form" controller="ajax" action="addUserRole">
+                                                        <input type="hidden" name="user" value="${user.class.name}:${user.id}"/>
                                                         <div class="ui fields">
                                                             <div class="field">
                                                                 <g:select from="${Role.findAllByRoleType('global')}"
