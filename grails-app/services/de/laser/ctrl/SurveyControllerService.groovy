@@ -384,6 +384,20 @@ class SurveyControllerService {
                 }
             }
 
+            if(result.selectedSubParticipants){
+                String queryCostItemSub = "select c from CostItem as c where c.pkg is null and c.sub in " +
+                        "(select sub from Subscription sub join sub.orgRelations orgR where orgR.roleType in :roleTypes and sub.instanceOf = :instanceOfSub and orgR.org.id in (:orgIds)) " +
+                        "and c.owner = :owner and c.costItemStatus != :status and c.costItemElement is not null "
+
+                result.costItemsByCostItemElementOfSubs = CostItem.executeQuery(queryCostItemSub, [orgIds: surveyOrgs.orgsWithSubIDs,
+                                                                                                   owner: result.surveyInfo.owner,
+                                                                                                   status: RDStore.COST_ITEM_DELETED,
+                                                                                                   roleTypes : [RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_CONS],
+                                                                                                   instanceOfSub: result.surveyConfig.subscription]).sort {it.costItemElement.getI10n('value')}.groupBy { it.costItemElement }
+                println(queryCostItemSub)
+                println(result.costItemsByCostItemElementOfSubs)
+            }
+
             if (params.selectedCostItemElementID) {
                 params.remove('selectedCostItemElementID')
             }
