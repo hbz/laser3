@@ -49,7 +49,7 @@
                     ${PropertyDefinition.getLocalizedValue(surveyPropertyConfig.surveyProperty.type)}
                     <g:if test="${surveyPropertyConfig.surveyProperty.isRefdataValueType()}">
                         <g:set var="refdataValues" value="${[]}"/>
-                        <g:each in="${RefdataCategory.getAllRefdataValues(surveyPropertyConfig.surveyProperty.refdataCategory)}"
+                        <g:each in="${RefdataCategory.getAllRefdataValuesWithOrder(surveyPropertyConfig.surveyProperty.refdataCategory)}"
                                 var="refdataValue">
                             <g:set var="refdataValues"
                                    value="${refdataValues + refdataValue?.getI10n('value')}"/>
@@ -217,7 +217,7 @@
                         ${PropertyDefinition.getLocalizedValue(surveyResult.type.type)}
                         <g:if test="${surveyResult.type.isRefdataValueType()}">
                             <g:set var="refdataValues" value="${[]}"/>
-                            <g:each in="${RefdataCategory.getAllRefdataValues(surveyResult.type.refdataCategory)}"
+                            <g:each in="${RefdataCategory.getAllRefdataValuesWithOrder(surveyResult.type.refdataCategory)}"
                                     var="refdataValue">
                                 <g:if test="${refdataValue.getI10n('value')}">
                                     <g:set var="refdataValues"
