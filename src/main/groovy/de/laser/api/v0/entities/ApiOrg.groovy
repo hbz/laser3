@@ -108,7 +108,6 @@ class ApiOrg {
         result.gokbId              = org.gokbId
         result.name                = org.name
         result.altNames            = ApiCollectionReader.getAlternativeNameCollection(org.altnames)
-        //result.shortname           = org.sortname //deprecated and to be removed for 3.2
         result.sortname            = org.sortname
         result.lastUpdated         = ApiToolkit.formatInternalDate(org._getCalculatedLastUpdated())
         result.eInvoice            = org.eInvoice ? RDStore.YN_YES.value : RDStore.YN_NO.value
@@ -145,23 +144,10 @@ class ApiOrg {
         result.status         = org.status?.value
 
         // References
-        String adrQuery
         Map<String, Object> queryParams = [org:org]
-        //tmp fix until API v3.0: if Backoffice calls, only private addresses are being given; else if hbz Digitale Inhalte calls, only public addresses are being given; otherwise only public and tenant == context
-        if(context.globalUID == 'org:1d72afe7-67cb-4676-add0-51d3ae66b1b3') {
-            adrQuery = "select a from Address a where a.org = :org and a.tenant = :context"
-            queryParams.context = context
-        }
-        else if(context.globalUID == 'org:e6be24ff-98e4-474d-9ef8-f0eafd843d17') {
-            adrQuery = "select a from Address a where a.org = :org and a.tenant = null"
-        }
-        else {
-            adrQuery = "select a from Address a where a.org = :org and (a.tenant = :context or a.tenant = null)"
-            queryParams.context = context
-        }
 
-        result.addresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery(adrQuery, queryParams), ApiReader.NO_CONSTRAINT) // de.laser.Address
-        result.contacts     = ApiCollectionReader.getContactCollection([], ApiReader.NO_CONSTRAINT)  // de.laser.Contact tmp fix until 3.0
+        result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.org = :org and a.isPublic = true', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.Address w/o tenant
+        result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.org = :org and a.isPublic = false and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.Address w/ tenant
         result.identifiers  = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
         result.persons      = ApiCollectionReader.getPrsLinkCollection(
                 org.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context

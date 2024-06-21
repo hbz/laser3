@@ -165,6 +165,7 @@ class ApiLicense {
         result.globalUID        = lic.globalUID
         result.isPublicForApi   = lic.isPublicForApi ? "Yes" : "No" //implemented for eventual later internal purposes
         result.dateCreated      = ApiToolkit.formatInternalDate(lic.dateCreated)
+        result.altnames         = ApiCollectionReader.getAlternativeNameCollection(lic.altnames)
         result.endDate          = ApiToolkit.formatInternalDate(lic.endDate)
         result.openEnded        = lic.openEnded?.value
         result.lastUpdated      = ApiToolkit.formatInternalDate(lic._getCalculatedLastUpdated())
@@ -237,6 +238,8 @@ class ApiLicense {
                 allOrgRoles = allOrgRoles.unique()
 
                 result.organisations = ApiCollectionReader.getOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_LICENSE, context) // de.laser.OrgRole
+                result.providers	 = ApiCollectionReader.getProviderCollection(lic.getProviders())
+                result.vendors		 = ApiCollectionReader.getVendorCollection(lic.getVendors())
             }
         }
 

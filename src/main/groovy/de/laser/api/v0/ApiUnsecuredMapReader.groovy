@@ -1,19 +1,29 @@
 package de.laser.api.v0
 
-
+import de.laser.Address
+import de.laser.Combo
+import de.laser.ElectronicBilling
+import de.laser.InvoiceDispatch
+import de.laser.LibrarySystem
 import de.laser.License
 import de.laser.Org
+import de.laser.OrgSubjectGroup
 import de.laser.Package
 import de.laser.Platform
+import de.laser.Provider
+import de.laser.ProviderLink
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
+import de.laser.Vendor
 import de.laser.base.AbstractCoverage
 import de.laser.finance.Invoice
 import de.laser.finance.PriceItem
 import de.laser.oap.OrgAccessPoint
 import de.laser.finance.Order
+import de.laser.storage.RDStore
 import de.laser.traces.DeletedObject
 import groovy.sql.GroovyRowResult
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 /**
  * This class delivers objects which do not need further authentication because they do not need any or authorisation
@@ -184,6 +194,29 @@ class ApiUnsecuredMapReader {
     }
 
     /**
+     * Returns the essential information for the given provider for API output
+     * @param provider the {@link Provider} called for API
+     * @return Map<String, Object> reflecting the provider details
+     */
+    static Map<String, Object> getProviderStubMap(Provider provider) {
+        if (!provider) {
+            return null
+        }
+        Map<String, Object> result = [:]
+
+        result.globalUID    = provider.globalUID
+        result.gokbId       = provider.gokbId
+        result.name         = provider.name
+        result.sortname     = provider.sortname
+        result.status       = provider.status?.value
+
+        // References
+        result.identifiers = ApiCollectionReader.getIdentifierCollection(provider.ids) // de.laser.Identifier
+
+        ApiToolkit.cleanUp(result, true, true)
+    }
+
+    /**
      * Returns the essential information for the given subscription for API output
      * @param sub the {@link Subscription} called for API
      * @return Map<String, Object> reflecting the subscription details
@@ -227,6 +260,49 @@ class ApiUnsecuredMapReader {
 
         result.medium       = tipp.medium?.value
         result.identifiers  = ApiCollectionReader.getIdentifierCollection(tipp.ids) // de.laser.Identifier
+
+        ApiToolkit.cleanUp(result, true, true)
+    }
+
+    /**
+     * Returns the essential information for the given vendor for API output
+     * @param vendor the {@link Vendor} called for API
+     * @return Map<String, Object> reflecting the vendor details
+     */
+    static Map<String, Object> getVendorStubMap(Vendor vendor) {
+        if (!vendor) {
+            return null
+        }
+        Map<String, Object> result = [:]
+
+        result.globalUID    = vendor.globalUID
+        result.gokbId       = vendor.gokbId
+        result.name         = vendor.name
+        result.sortname     = vendor.sortname
+        result.status       = vendor.status?.value
+
+        // References
+        result.identifiers = ApiCollectionReader.getIdentifierCollection(vendor.ids) // de.laser.Identifier
+
+        ApiToolkit.cleanUp(result, true, true)
+    }
+
+    /**
+     * Returns the given deleted object stub details
+     * @param delObj the {@link DeletedObject} trace to be retrieved
+     * @return a {@link Map} containing the deleted object stub
+     */
+    static Map<String, Object> getDeletedObjectStubMap(DeletedObject delObj) {
+        if (!delObj) {
+            return null
+        }
+        Map<String, Object> result = [:]
+
+        result.globalUID        = delObj.oldGlobalUID
+        result.name             = delObj.oldName
+        result.calculatedType   = delObj.oldCalculatedType
+        result.startDate        = ApiToolkit.formatInternalDate(delObj.oldStartDate)
+        result.endDate          = ApiToolkit.formatInternalDate(delObj.oldEndDate)
 
         ApiToolkit.cleanUp(result, true, true)
     }
@@ -340,32 +416,117 @@ class ApiUnsecuredMapReader {
         // RefdataValues
         //result.type                 = pform.type?.value
         result.status               = pform.status?.value
-        result.serviceProvider      = pform.serviceProvider?.value
-        result.softwareProvider     = pform.softwareProvider?.value
+        //result.serviceProvider      = pform.serviceProvider?.value
+        //result.softwareProvider     = pform.softwareProvider?.value
 
         // References
-        result.provider = getOrganisationStubMap(pform.org) // de.laser.Org
+        result.provider = getProviderStubMap(pform.provider) // de.laser.Provider
         result.properties = ApiCollectionReader.getCustomPropertyCollection(pform.propertySet, pform, context)
 
         ApiToolkit.cleanUp(result, true, true)
     }
 
     /**
-     * Returns the given deleted object stub details
-     * @param delObj the {@link DeletedObject} trace to be retrieved
-     * @return a {@link Map} containing the deleted object stub
+     * Assembles the given provider attributes into a {@link Map}. The schema of the map can be seen in
+     * schemas.gsp
+     * @param provider the {@link Provider} which should be output
+     * @param context the institution ({@link Org}) requesting
+     * @return Map<String, Object>
      */
-    static Map<String, Object> getDeletedObjectStubMap(DeletedObject delObj) {
-        if (!delObj) {
-            return null
-        }
+    static Map<String, Object> getProviderMap(Provider provider, Org context) {
         Map<String, Object> result = [:]
 
-        result.globalUID        = delObj.oldGlobalUID
-        result.name             = delObj.oldName
-        result.calculatedType   = delObj.oldCalculatedType
-        result.startDate        = ApiToolkit.formatInternalDate(delObj.oldStartDate)
-        result.endDate          = ApiToolkit.formatInternalDate(delObj.oldEndDate)
+        provider = GrailsHibernateUtil.unwrapIfProxy(provider)
+
+        result.globalUID             = provider.globalUID
+        result.gokbId                = provider.gokbId
+        result.name                  = provider.name
+        result.altNames              = ApiCollectionReader.getAlternativeNameCollection(provider.altnames)
+        result.sortname              = provider.sortname
+        result.lastUpdated           = ApiToolkit.formatInternalDate(provider._getCalculatedLastUpdated())
+        result.homepage              = provider.homepage
+        result.kbartDownloaderURL    = provider.kbartDownloaderURL
+        result.metadataDownloaderURL = provider.metadataDownloaderURL
+        result.inhouseInvoicing      = provider.inhouseInvoicing ? RDStore.YN_YES.value : RDStore.YN_NO.value
+        result.paperInvoice          = provider.paperInvoice ? RDStore.YN_YES.value : RDStore.YN_NO.value
+        result.managementOfCredits   = provider.managementOfCredits ? RDStore.YN_YES.value : RDStore.YN_NO.value
+        result.processingOfCompensationPayments = provider.processingOfCompensationPayments ? RDStore.YN_YES.value : RDStore.YN_NO.value
+        result.individualInvoiceDesign = provider.individualInvoiceDesign ? RDStore.YN_YES.value : RDStore.YN_NO.value
+
+        result.retirementDate      = provider.retirementDate ? ApiToolkit.formatInternalDate(provider.retirementDate) : null
+
+        // RefdataValues
+
+        result.electronicBillings = provider.electronicBillings?.collect { ElectronicBilling eb -> eb.invoicingFormat.value }
+        result.invoiceDispatchs   = provider.invoiceDispatchs?.collect { InvoiceDispatch idi -> idi.invoiceDispatch.value }
+        result.status         = provider.status?.value
+
+        // References
+        Map<String, Object> queryParams = [provider:provider]
+
+        result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :provider and a.isPublic = true', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.Address w/o tenant
+        result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :provider and a.isPublic = false and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.Address w/ tenant
+        result.identifiers  = ApiCollectionReader.getIdentifierCollection(provider.ids) // de.laser.Identifier
+        result.packages     = ApiCollectionReader.getPackageCollection(provider.packages)
+        result.platforms    = ApiCollectionReader.getPlatformCollection(provider.platforms)
+        result.persons      = ApiCollectionReader.getPrsLinkCollection(
+                provider.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
+        ) // de.laser.PersonRole
+        result.invoicingVendors    = ApiCollectionReader.getVendorCollection(provider.invoicingVendors)
+
+        result.properties   = ApiCollectionReader.getPropertyCollection(provider, context, ApiReader.IGNORE_NONE) // de.laser.ProviderProperty
+
+
+        ApiToolkit.cleanUp(result, true, true)
+    }
+
+    /**
+     * Assembles the given vendor attributes into a {@link Map}. The schema of the map can be seen in
+     * schemas.gsp
+     * @param vendor the {@link Vendor} which should be output
+     * @param context the institution ({@link Org}) requesting
+     * @return Map<String, Object>
+     */
+    static Map<String, Object> getVendorMap(Vendor vendor, Org context) {
+        Map<String, Object> result = [:]
+
+        vendor = GrailsHibernateUtil.unwrapIfProxy(vendor)
+
+        result.globalUID             = vendor.globalUID
+        result.gokbId                = vendor.gokbId
+        result.name                  = vendor.name
+        result.altNames              = ApiCollectionReader.getAlternativeNameCollection(vendor.altnames)
+        result.sortname              = vendor.sortname
+        result.lastUpdated           = ApiToolkit.formatInternalDate(vendor._getCalculatedLastUpdated())
+        result.homepage              = vendor.homepage
+        result.researchPlatformForEbooks = vendor.researchPlatformForEbooks
+        result.prequalificationVOLInfo = vendor.prequalificationVOLInfo
+        Set<String> boolFields = ['webShopOrders', 'ediOrders', 'xmlOrders', 'paperInvoice', 'managementOfCredits', 'processingOfCompensationPayments', 'individualInvoiceDesign',
+                                  'technicalSupport', 'shippingMetadata', 'forwardingUsageStatisticsFromPublisher', 'activationForNewReleases', 'exchangeOfIndividualTitles', 'prequalificationVOL']
+        result.putAll(ApiToolkit.readBoolValues(vendor, boolFields))
+
+        result.retirementDate      = vendor.retirementDate ? ApiToolkit.formatInternalDate(vendor.retirementDate) : null
+
+        // RefdataValues
+
+        result.supportedLibrarySystems = vendor.supportedLibrarySystems?.collect { LibrarySystem ls -> ls.librarySystem.value }
+        result.electronicBillings = vendor.electronicBillings?.collect { ElectronicBilling eb -> eb.invoicingFormat.value }
+        result.invoiceDispatchs   = vendor.invoiceDispatchs?.collect { InvoiceDispatch idi -> idi.invoiceDispatch.value }
+        result.status         = vendor.status?.value
+
+        // References
+        Map<String, Object> queryParams = [provider:vendor]
+
+        result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :vendor and a.isPublic = true', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.Address w/o tenant
+        result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :vendor and a.isPublic = false and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.Address w/ tenant
+        result.identifiers  = ApiCollectionReader.getIdentifierCollection(vendor.ids) // de.laser.Identifier
+        result.packages     = ApiCollectionReader.getPackageCollection(vendor.packages)
+        result.persons      = ApiCollectionReader.getPrsLinkCollection(
+                vendor.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
+        ) // de.laser.PersonRole
+
+        result.properties   = ApiCollectionReader.getPropertyCollection(vendor, context, ApiReader.IGNORE_NONE) // de.laser.VendorProperty
+
 
         ApiToolkit.cleanUp(result, true, true)
     }
