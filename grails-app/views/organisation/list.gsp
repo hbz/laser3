@@ -56,7 +56,7 @@
                                   tmplConfigShow: [['name', 'identifier', 'type'],
                                                    ['country&region', 'libraryNetwork'],
                                                    ['discoverySystemsFrontend', 'discoverySystemsIndex'],
-                                                   ['sector', 'libraryType', 'subjectGroup']],
+                                                   ['libraryType', 'subjectGroup']],
                                   tmplConfigFormFilter: true
                           ]"/>
             </g:form>
@@ -65,7 +65,7 @@
         <laser:render template="/templates/filter/orgFilterTable"
               model="[orgList: orgList,
                       tmplShowCheckbox: false,
-                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'wibid', 'isil', 'type', 'sector', 'region', 'libraryNetwork', 'libraryType', 'status']
+                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'wibid', 'isil', 'type', 'region', 'libraryNetwork', 'libraryType', 'status']
               ]"/>
 
         <ui:paginate total="${orgListTotal}" params="${params}" max="${max}" offset="${offset}" />

@@ -38,7 +38,7 @@ class ProfileController {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
         result.editable = true
-        result.availableOrgs  = Org.executeQuery('from Org o where o.sector = :sector order by o.sortname', [sector: RDStore.O_SECTOR_HIGHER_EDU])
+        result.availableOrgs  = Org.executeQuery('from Org o order by o.sortname')
         result.availableOrgRoles = Role.findAllByRoleType('user')
 
         result

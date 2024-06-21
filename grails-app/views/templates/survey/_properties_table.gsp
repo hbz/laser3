@@ -34,7 +34,7 @@
                     <g:if test="${surveyPropertyConfig.surveyProperty.getI10n('expl')}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${surveyPropertyConfig.surveyProperty.getI10n('expl')}">
-                            <i class="question circle icon"></i>
+                            <i class="grey question circle icon"></i>
                         </span>
                     </g:if>
 
@@ -199,7 +199,7 @@
                         <g:if test="${surveyResult.type.getI10n('expl')}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                   data-content="${surveyResult.type.getI10n('expl')}">
-                                <i class="question circle icon"></i>
+                                <i class="grey question circle icon"></i>
                             </span>
                         </g:if>
 

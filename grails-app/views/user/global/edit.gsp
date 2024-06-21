@@ -100,7 +100,7 @@
 %{--                                    <label>--}%
 %{--                                        ${message(code:'user.enabled.label')}--}%
 %{--                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.disabled')}">--}%
-%{--                                            <i class="question circle icon"></i>--}%
+%{--                                            <i class="grey question circle icon"></i>--}%
 %{--                                        </span>--}%
 %{--                                    </label>--}%
 %{--                                    <ui:xEditableBoolean owner="${user}" field="enabled" overwriteEditable="true"/>--}%
@@ -109,7 +109,7 @@
                                     <label>
                                         ${message(code:'user.accountExpired.label')}
                                         <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.expired')}">
-                                            <i class="question circle icon"></i>
+                                            <i class="grey question circle icon"></i>
                                         </span>
                                     </label>
                                     <ui:xEditableBoolean owner="${user}" field="accountExpired" overwriteEditable="true"/>
@@ -118,7 +118,7 @@
                                     <label>
                                         ${message(code:'user.accountLocked.label')}
                                         <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.locked')}">
-                                            <i class="question circle icon"></i>
+                                            <i class="grey question circle icon"></i>
                                         </span>
                                     </label>
                                     <ui:xEditableBoolean owner="${user}" field="accountLocked" overwriteEditable="true"/>
@@ -127,7 +127,7 @@
 %{--                                    <label>--}%
 %{--                                        ${message(code:'user.passwordExpired.label')}--}%
 %{--                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.passwordExpired')}">--}%
-%{--                                            <i class="question circle icon"></i>--}%
+%{--                                            <i class="grey question circle icon"></i>--}%
 %{--                                        </span>--}%
 %{--                                    </label>--}%
 %{--                                    <ui:xEditableBoolean owner="${user}" field="passwordExpired" overwriteEditable="true"/>--}%
@@ -254,10 +254,8 @@
                                         <tfoot>
                                             <tr>
                                                 <td colspan="2">
-                                                    <g:form class="ui form" controller="ajax" action="addToCollection">
-                                                        <input type="hidden" name="__context" value="${user.class.name}:${user.id}"/>
-                                                        <input type="hidden" name="__newObjectClass" value="${UserRole.class.name}"/>
-                                                        <input type="hidden" name="__recip" value="user"/>
+                                                    <g:form class="ui form" controller="ajax" action="addUserRole">
+                                                        <input type="hidden" name="user" value="${user.class.name}:${user.id}"/>
                                                         <div class="ui fields">
                                                             <div class="field">
                                                                 <g:select from="${Role.findAllByRoleType('global')}"

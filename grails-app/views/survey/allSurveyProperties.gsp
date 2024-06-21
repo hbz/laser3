@@ -29,7 +29,7 @@
 
     <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyProperty.all.label')}
 
-        <i class="question circle icon la-popup"></i>
+        <i class="grey question circle icon la-popup"></i>
 
         <div class="ui popup">
             <i class="shield alternate icon"></i> = ${message(code: 'subscription.properties.my')}
