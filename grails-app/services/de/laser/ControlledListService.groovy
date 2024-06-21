@@ -1432,7 +1432,9 @@ class ControlledListService {
         }
         else {
             if(params.displayWekbFlag) {
-                String qryString = "select new map(concat('${Provider.class.name}:',p.id) as value,case when p.gokbId != null then concat(p.name,' (we:kb)') else p.name as name) from Provider p where ${providerNameFilter} order by p.sortname asc"
+                if(providerNameFilter)
+                    providerNameFilter = "where ${providerNameFilter}"
+                String qryString = "select new map(concat('${Provider.class.name}:',p.id) as value,case when p.gokbId != null then concat(p.name,' (we:kb)') else p.name end as name) from Provider p ${providerNameFilter} order by p.sortname asc"
                 results.addAll(Provider.executeQuery(qryString, qryParams))
             }
             else {
