@@ -134,8 +134,7 @@ class CustomMigrationCallbacks {
 	 */
 	void onStartMigration(Database database, Liquibase liquibase, String changelogName) {
 
-		_localChangelogMigration_2024_06()
-		_localChangelogMigration_2024_06_storage()
+		boolean isStorage = (database.connection.getURL() == ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.url', String))
 
 		List allIds = liquibase.getDatabaseChangeLog().getChangeSets().collect { ChangeSet it -> it.filePath + '::' + it.id + '::' + it.author }
 		List ranIds = database.getRanChangeSetList().collect { RanChangeSet it -> it.changeLog + '::' + it.id + '::' + it.author }
@@ -145,7 +144,7 @@ class CustomMigrationCallbacks {
 			Map dataSource = ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT, Map) as Map
 			String fileName = 'laser-backup'
 
-			if (database.connection.getURL() == ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.url', String)) {
+			if (isStorage) {
 				dataSource = ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE, Map) as Map
 				fileName = 'laser-storage-backup'
 			}
@@ -187,6 +186,12 @@ class CustomMigrationCallbacks {
 
 			println '-        done ..'
 			println '--------------------------------------------------------------------------------'
+		}
+
+		if (isStorage) {
+			_localChangelogMigration_2024_06_storage()
+		} else {
+			_localChangelogMigration_2024_06()
 		}
 	}
 
