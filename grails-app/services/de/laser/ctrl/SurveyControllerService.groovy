@@ -394,8 +394,6 @@ class SurveyControllerService {
                                                                                                    status: RDStore.COST_ITEM_DELETED,
                                                                                                    roleTypes : [RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_CONS],
                                                                                                    instanceOfSub: result.surveyConfig.subscription]).sort {it.costItemElement.getI10n('value')}.groupBy { it.costItemElement }
-                println(queryCostItemSub)
-                println(result.costItemsByCostItemElementOfSubs)
             }
 
             if (params.selectedCostItemElementID) {
