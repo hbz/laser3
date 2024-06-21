@@ -41,7 +41,7 @@
                 <label for="search-title">${message(code: 'default.search.text')}
                     <span data-position="right center" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.subscription')}">
-                        <i class="question circle icon"></i>
+                        <i class="grey question circle icon"></i>
                     </span>
                 </label>
 
@@ -56,7 +56,7 @@
                 <label for="identifier">${message(code: 'default.search.identifier')}
                     <span data-position="right center" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.subscription.identifier')}">
-                        <i class="question circle icon"></i>
+                        <i class="grey question circle icon"></i>
                     </span>
                 </label>
 

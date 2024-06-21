@@ -98,7 +98,7 @@ class DetailsExportManager {
             if (options.hideEmptyResults) {
                 ici.each { i -> /* println 'Export CSV ignored: ' + cols[i]; */ cols.removeAt(i) }
             }
-            rows.add( cols.join( BaseDetailsExport.CSV_FIELD_SEPARATOR ) )
+            rows.add( buildRowAsCSV( cols ).join( BaseDetailsExport.CSV_FIELD_SEPARATOR ) )
 
             csv.each { row ->
                 if (options.hideEmptyResults) {

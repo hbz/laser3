@@ -65,13 +65,16 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
     SortedSet electronicDeliveryDelays
 
     static mappedBy = [
-            contacts: 'vendor',
             addresses: 'vendor',
             packages: 'vendor',
             altnames: 'vendor',
             propertySet: 'owner',
+            links: 'vendor',
+            prsLinks: 'vendor',
             ids: 'vendor',
             documents: 'vendor',
+            ingoingCombos: 'to',
+            outgoingCombos: 'from',
             supportedLibrarySystems: 'vendor',
             electronicBillings: 'vendor',
             invoiceDispatchs: 'vendor',
@@ -79,13 +82,16 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
     ]
 
     static hasMany = [
-            contacts: Contact,
             addresses: Address,
             packages: PackageVendor,
             altnames: AlternativeName,
             propertySet: VendorProperty,
+            links: VendorRole,
+            prsLinks: PersonRole,
             ids: Identifier,
             documents: DocContext,
+            ingoingCombos: VendorLink,
+            outgoingCombos: VendorLink,
             supportedLibrarySystems: LibrarySystem,
             electronicBillings: ElectronicBilling,
             invoiceDispatchs: InvoiceDispatch,
@@ -263,13 +269,6 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
                 altName.vendor = v
                 altName.org = null
                 altName.save()
-            }
-        }
-        agency.contacts.each { Contact c ->
-            if(!v.contacts?.find { Contact cOld -> cOld.content == c.content }) {
-                c.vendor = v
-                c.org = null
-                c.save()
             }
         }
         agency.addresses.each { Address a ->

@@ -38,7 +38,7 @@
 
         <div class="field">
             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'surveyconfig.subSurveyUseForTransfer.label.info3')}">
-            <label>${message(code: 'surveyconfig.subSurveyUseForTransfer.label.info')} <i class="question circle icon"></i></label>
+            <label>${message(code: 'surveyconfig.subSurveyUseForTransfer.label.info')} <i class="grey question circle icon"></i></label>
             </span>
             <div class="field disabled">
                 <input type="checkbox" name="subSurveyUseForTransfer">
