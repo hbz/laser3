@@ -1736,32 +1736,6 @@ class AjaxController {
     }
 
     /**
-     * Resolves the given oid and returns the object if found
-     * @param oid the oid key to resolve
-     * @return the object matching to the given oid, null otherwise
-     */
-    @Secured(['ROLE_USER'])
-  def resolveOID2(String oid) {
-    String[] oid_components = oid.split(':')
-    def result
-
-    Class dc = CodeUtils.getDomainClass(oid_components[0])
-    if (dc) {
-      if (oid_components[1] == '__new__') {
-        result = dc.refdataCreate(oid_components)
-        // log.debug("Result of create ${oid} is ${result?.id}");
-      }
-      else {
-        result = dc.get(oid_components[1])
-      }
-    }
-    else {
-      log.error("resolve OID failed to identify a domain class. Input was ${oid_components}");
-    }
-    result
-  }
-
-    /**
      * Revokes the given affiliation from the given user to the given institution.
      * Expected is a structure userId:orgId:roleId
      * @return redirects to the referer
@@ -1799,7 +1773,7 @@ class AjaxController {
         log.debug("editableSetValue ${params}")
 
         def result = null
-        def target_object = resolveOID2(params.pk)
+        def target_object = genericOIDService.resolveOID(params.pk)
 
         try {
             if (target_object) {
