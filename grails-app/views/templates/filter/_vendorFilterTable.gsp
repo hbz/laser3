@@ -204,7 +204,7 @@
                 </g:if>
                 <g:if test="${tmplConfigItem == 'addSurveyVendorResult'}">
                     <td class="right aligned">
-                        <g:if test="${editable && (!SurveyVendorResult.findByVendorAndSurveyConfig(vendor, surveyConfig))}">
+                        <g:if test="${editable && (!SurveyVendorResult.findByVendorAndSurveyConfigAndParticipant(vendor, surveyConfig, participant))}">
                             <g:link type="button" class="ui button" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                     params="${parame+ [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'addSurveyVendor', vendorId: vendor.id]}"><g:message
                                     code="surveyVendors.linkVendor"/></g:link>
@@ -213,7 +213,7 @@
                 </g:if>
                 <g:if test="${tmplConfigItem == 'removeSurveyVendorResult'}">
                     <td class="right aligned">
-                        <g:if test="${editable && (SurveyVendorResult.findByVendorAndSurveyConfig(vendor, surveyConfig))}">
+                        <g:if test="${editable && (SurveyVendorResult.findByVendorAndSurveyConfigAndParticipant(vendor, surveyConfig, participant))}">
                             <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                     params="${parame+ [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'removeSurveyVendor', vendorId: vendor.id]}"><g:message
                                     code="surveyVendors.unlinkVendor"/></g:link>
@@ -224,7 +224,7 @@
 
                 <g:if test="${tmplConfigItem == 'surveyVendorsComments'}">
                     <g:set var="surveyVendorResult"
-                           value="${SurveyVendorResult.findByParticipantAndSurveyConfigAndVendor(participant, surveyConfig, pkg)}"/>
+                           value="${SurveyVendorResult.findByParticipantAndSurveyConfigAndVendor(participant, surveyConfig, vendor)}"/>
                     <g:if test="${surveyVendorResult}">
                         <td>
                             <ui:xEditable owner="${surveyVendorResult}" type="textarea" field="comment"/>

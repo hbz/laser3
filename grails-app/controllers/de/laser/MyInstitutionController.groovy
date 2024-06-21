@@ -2596,7 +2596,6 @@ class MyInstitutionController  {
         }
 
         params.viewTab = params.viewTab ?: 'overview'
-        params.subTab = params.subTab ?: 'allPackages'
 
         result = surveyService.participantResultGenerics(result, result.institution, params)
 
@@ -2654,9 +2653,13 @@ class MyInstitutionController  {
         List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, surveyConfig)
         result.minimalInput = false
 
-        surveyResults.each{ SurveyResult surre ->
-            if(surre.getValue() != null)
-                result.minimalInput = true
+        if(surveyConfig.type != SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+            surveyResults.each { SurveyResult surre ->
+                if (surre.getValue() != null)
+                    result.minimalInput = true
+            }
+        }else {
+            result.minimalInput = true
         }
 
         if(result.minimalInput) {

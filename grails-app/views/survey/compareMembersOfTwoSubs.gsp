@@ -170,6 +170,7 @@
                                             </g:if>
 
 
+
                                             <g:if test="${SurveyOrg.findByOrgAndSurveyConfig(participant, surveyConfig)}">
                                                 <br>
                                                 <br>
@@ -245,6 +246,30 @@
                                                 <g:link controller="subscription" action="show"
                                                         id="${participantSub.id}"
                                                         class="ui button icon"><i class="icon clipboard"></i></g:link>
+                                            </g:if>
+
+                                            <g:set var="multiYearResultProperties"
+                                                   value="${surveyService.getMultiYearResultProperties(surveyConfig, participant)}"/>
+                                            <g:if test="${surveyConfig.subSurveyUseForTransfer && multiYearResultProperties.size() > 0}">
+                                                <br>
+                                                <br>
+
+                                                <div class="ui icon"
+                                                     data-tooltip="${message(code: 'surveyProperty.label') + ': ' + multiYearResultProperties.collect { it.getI10n('name') }.join(', ') + ' = ' + message(code: 'refdata.Yes')}">
+                                                    <i class="bordered colored info icon"></i>
+                                                </div>
+                                            </g:if>
+
+
+
+                                            <g:if test="${SurveyOrg.findByOrgAndSurveyConfig(participant, surveyConfig)}">
+                                                <br>
+                                                <br>
+
+                                                <div class="ui icon"
+                                                     data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
+                                                    <i class="bordered colored chart pie icon"></i>
+                                                </div>
                                             </g:if>
                                         </td>
                                     </tr>
