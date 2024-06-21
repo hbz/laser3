@@ -2074,7 +2074,7 @@ class SurveyControllerService {
             }
 
             result.parentSubscription = result.surveyConfig.subscription
-            result.targetParentSub = Subscription.get(params.targetSubscriptionId)
+            result.targetSubscription = Subscription.get(params.targetSubscriptionId)
 
             List<String> excludes = PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key }
             //excludes << 'freezeHolding'
@@ -2083,7 +2083,7 @@ class SurveyControllerService {
             excludes.add(PendingChangeConfiguration.TITLE_DELETED)
             excludes.add(PendingChangeConfiguration.TITLE_DELETED + PendingChangeConfiguration.NOTIFICATION_SUFFIX)
             excludes.addAll(PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key + PendingChangeConfiguration.NOTIFICATION_SUFFIX })
-            Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name, result.targetParentSub.id, excludes)
+            Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name, result.targetSubscription.id, excludes)
 
             result.newSubs = []
             Integer countNewSubs = 0
@@ -2092,14 +2092,14 @@ class SurveyControllerService {
             Date endDate = params.endDate ? sdf.parse(params.endDate) : null
             params.list('selectedOrgs').each { orgId ->
                 Org org = Org.get(orgId)
-                if (org && result.targetParentSub) {
+                if (org && result.targetSubscription) {
                     log.debug("Generating seperate slaved instances for members")
                     Subscription oldSubofParticipant = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
                             [parentSub  : result.parentSubscription,
                              participant: org
                             ])[0]
 
-                    Subscription memberSub = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.targetParentSub, org, startDate, endDate, false, result.targetParentSub.status, inheritedAttributes, null, true, null, null)
+                    Subscription memberSub = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.targetSubscription, org, startDate, endDate, false, result.targetSubscription.status, inheritedAttributes, null, true, null, null)
 
                     if(memberSub) {
                         result.newSubs << memberSub
@@ -2109,7 +2109,7 @@ class SurveyControllerService {
             }
             result.countNewSubs = countNewSubs
             if (result.newSubs?.size() > 0) {
-                result.targetParentSub.syncAllShares(result.newSubs)
+                result.targetSubscription.syncAllShares(result.newSubs)
             }
             Object[] args = [countNewSubs, result.newSubs?.size() ?: 0]
             result.message = messageSource.getMessage('surveyInfo.transfer.info', args, result.locale) as String
@@ -4505,8 +4505,8 @@ class SurveyControllerService {
 
                     if (selectedMultiYearCount in [1, 2] && participantPropertyTwo && participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
                         use(TimeCategory) {
-                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 2.year) : null
+                            newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
+                            newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 2.year) : null
                         }
                         Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection)
                         if(subscription){
@@ -4515,8 +4515,8 @@ class SurveyControllerService {
                         }
                     } else if (selectedMultiYearCount in [1, 2, 3] && participantPropertyThree && participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
                         use(TimeCategory) {
-                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 3.year) : null
+                            newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
+                            newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 3.year) : null
                         }
                         Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection)
                         if(subscription){
@@ -4525,8 +4525,8 @@ class SurveyControllerService {
                         }
                     } else if (selectedMultiYearCount in [1, 2, 3, 4] && participantPropertyFour && participantPropertyFour.refValue?.id == RDStore.YN_YES.id) {
                         use(TimeCategory) {
-                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 4.year) : null
+                            newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
+                            newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 4.year) : null
                         }
                         Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection)
                         if(subscription){
@@ -4536,8 +4536,8 @@ class SurveyControllerService {
 
                     } else if (selectedMultiYearCount in [1, 2, 3, 4, 5] && participantPropertyFive && participantPropertyFive.refValue?.id == RDStore.YN_YES.id) {
                         use(TimeCategory) {
-                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 5.year) : null
+                            newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
+                            newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 5.year) : null
                         }
                         Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProviderAgency, providersSelection, agenciesSelection)
                         if(subscription){

@@ -555,7 +555,7 @@
                                 <td class="x">
                                     <g:if test="${editableAll}">
                                         <g:link class="ui icon positive button la-popup-tooltip la-delay"
-                                                data-content="${message(code: 'survey.toggleSurveySub.add.label', args: [SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNotNull(s).size(), SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNull(s).size()])}"
+                                                data-content="${message(code: 'survey.toggleSurveySub.add.label', args: [SurveyConfig.countBySubscriptionAndSubSurveyUseForTransfer(s, true), SurveyConfig.countBySubscriptionAndSubSurveyUseForTransfer(s, false)])}"
                                                 controller="survey" action="copySurvey"
                                                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubs: [s.id], workFlow: '2']">
                                             <g:message code="createSubscriptionSurvey.selectButton"/>
