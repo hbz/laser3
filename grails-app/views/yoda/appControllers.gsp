@@ -228,7 +228,7 @@
                     </div>
                 </div>
                 <g:if test="${c.value.methods.others}">
-                    <div class="ui segment">
+                    <div class="ui segment" style="background-color:#eee;">
                         <div class="ui vertically divided grid">
                             <g:each in="${c.value.methods.others}" var="method">
                                 <div class="row">

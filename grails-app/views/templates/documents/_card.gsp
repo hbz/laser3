@@ -71,6 +71,7 @@
                 <div class="ui small feed content">
                     <div class="ui grid summary">
                         <div class="eight wide column la-column-right-lessPadding">
+                            <ui:documentShareConfigIcon docctx="${docctx}"/>
                             <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <g:if test="${supportedMimeType}">

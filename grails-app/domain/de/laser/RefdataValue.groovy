@@ -155,13 +155,6 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
         result
     }
 
-    // called from AjaxController.resolveOID2()
-    @Deprecated
-    static def refdataCreate(value) {
-        // return new RefdataValue(value:value);
-        return null;
-    }
-
     /**
      * Performs a fuzzy search with the given key string
      * @param value the (sub-)string of the reference key to be searched

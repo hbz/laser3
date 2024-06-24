@@ -137,7 +137,7 @@
                                 print '<i class="circle yellow icon"></i>'
                                 break
                             default:
-                                print'<i class="question circle icon"></i>'
+                                print'<i class="grey question circle icon"></i>'
                                 break
                         }
                     %>
@@ -236,7 +236,7 @@
                                     print '<i class="circle yellow icon"></i>'
                                     break
                                 default:
-                                    print'<i class="question circle icon"></i>'
+                                    print'<i class="grey question circle icon"></i>'
                                     break
                             }
                         %>

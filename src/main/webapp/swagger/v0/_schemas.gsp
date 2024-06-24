@@ -485,11 +485,6 @@
           description: Timestamp when the organisation has ceased to be active.
           format: <% print ApiToolkit.DATE_TIME_PATTERN %>
           example: "2021-06-30T11:36:44"
-        sector:
-          type: string
-          description: Sector of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_SECTOR}".
-          enum: <% printRefdataEnum(RDConstants.ORG_SECTOR, 12) %>
-          example: Higher Education
         subjectGroup:
           type: array
           description: A set of subject groups which are aimed by the given organisation. The values map to the RefdataCategory ${RDConstants.SUBJECT_GROUP}.

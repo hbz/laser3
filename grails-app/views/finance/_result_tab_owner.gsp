@@ -84,7 +84,7 @@
                             break
                         default:
                             dataTooltip = message(code:'financials.costItemConfiguration.notSet')
-                            icon = '<i class="question circle icon"></i>'
+                            icon = '<i class="grey question circle icon"></i>'
                             break
                     }
                 %>

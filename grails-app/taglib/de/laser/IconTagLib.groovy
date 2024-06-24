@@ -291,6 +291,30 @@ class IconTagLib {
         }
     }
 
+    def documentShareConfigIcon = { attrs, body ->
+        if (attrs.docctx) {
+            DocContext docctx = attrs.docctx as DocContext
+
+            if (docctx.shareConf && !(docctx.sharedFrom && docctx.isShared)) {
+                String markup = ''
+
+                switch(docctx.shareConf) {
+                    case RDStore.SHARE_CONF_UPLOADER_ORG:
+                        markup = '<span class="ui icon la-popup-tooltip la-delay" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_UPLOADER_ORG.getI10n('value') + '" style="margin-left:1em"> <i class="ui icon eye slash blue"></i></span>'
+                        break
+                    case RDStore.SHARE_CONF_UPLOADER_AND_TARGET:
+                        markup = '<span class="ui icon la-popup-tooltip la-delay" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_UPLOADER_AND_TARGET.getI10n('value') + '" style="margin-left:1em"> <i class="ui icon eye slash red"></i></span>'
+                        break
+                    case RDStore.SHARE_CONF_ALL:
+                        markup = '<span class="ui icon la-popup-tooltip la-delay" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_ALL.getI10n('value') + '" style="margin-left:1em"> <i class="ui icon eye blue"></i></span>'
+                        break
+                }
+
+                out << markup
+            }
+        }
+    }
+
     def multiYearIcon = { attrs, body ->
         String tt = (attrs.isConsortial && attrs.isConsortial == 'true') ? message(code: 'subscription.isMultiYear.consortial.label') : message(code: 'subscription.isMultiYear.label')
 //        String color = attrs.color ? ' ' + attrs.color : ''

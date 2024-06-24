@@ -88,8 +88,7 @@
                         default:
                             if(docctx.org) {
                                 //fallback: documents are visible if share configuration is missing or obsolete
-                                if(docctx.shareConf) println docctx.shareConf
-                                else visible = true
+                                visible = inOwnerOrg
                             }
                             else if(inOwnerOrg || docctx.sharedFrom) {
                                 //other owner objects than orgs - in particular licenses and subscriptions: visibility is set if the owner org visits the owner object or sharing is activated
@@ -120,6 +119,7 @@
                             </td>
                         </g:if>
                         <td>
+                            <ui:documentShareConfigIcon docctx="${docctx}"/>
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <strong>
                                 <g:if test="${docctx.isDocAFile() && visible && supportedMimeType}">

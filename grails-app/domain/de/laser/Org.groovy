@@ -59,9 +59,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     Date lastUpdated
     Date lastUpdatedCascading
 
-    @RefdataInfo(cat = RDConstants.ORG_SECTOR)
-    RefdataValue sector
-
     @RefdataInfo(cat = RDConstants.ORG_STATUS)
     RefdataValue status
 
@@ -104,7 +101,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         incomingCombos:     'toOrg',
         links:              'org',
         prsLinks:           'org',
-        contacts:           'org',
         addresses:          'org',
         propertySet:        'owner',
         altnames:           'org',
@@ -120,7 +116,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         incomingCombos:     Combo,
         links:              OrgRole,
         prsLinks:           PersonRole,
-        contacts:           Contact,
         addresses:          Address,
         propertySet:        OrgProperty,
         altnames:           AlternativeName,
@@ -154,7 +149,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         eInvoice            column:'org_e_invoice'
         eInvoicePortal      column:'org_e_invoice_portal_fk', lazy: false
         gokbId              column:'org_gokb_id', type:'text'
-            sector          column:'org_sector_rv_fk', lazy: false
             status          column:'org_status_rv_fk'
     retirementDate          column:'org_retirement_date'
            country          column:'org_country_rv_fk'
@@ -201,7 +195,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
       retirementDate(nullable:true)
              comment(nullable:true, blank:true, maxSize:2048)
              ipRange(nullable:true, blank:true, maxSize:1024)
-              sector(nullable:true)
            shortcode(nullable:true, blank:true, maxSize:128)
                scope(nullable:true, blank:true, maxSize:128)
           categoryId(nullable:true, blank:true, maxSize:128)
@@ -533,16 +526,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Creates a new organisation record with the given name
-     * @param value the name of the new organisation
-     * @return the new organisation instance
-     */
-    // called from AjaxController.resolveOID2()
-  static Org refdataCreate(String value) {
-    return new Org(name:value)
-  }
-
-    /**
      * Gets the display string for this organisation; the following cascade is being checked. If one field is not set, the following is being returned:
      * <ol>
      *     <li>sortname</li>
@@ -646,26 +629,14 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @param functionType the function type of the contacts to be requested
      * @return a {@link List} of {@link Person}s matching to the function type
      */
-    List<Person> getContactPersonsByFunctionType(boolean onlyPublic, RefdataValue functionType = null, boolean exWekb = false) {
-        Map<String, Object> queryParams = [org: this]
-        String functionTypeFilter = ''
-        if(functionType) {
-            functionTypeFilter = 'and pr.functionType = :functionType'
-            queryParams.functionType = functionType
-        }
+    List<Person> getContactPersonsByFunctionType(boolean onlyPublic, RefdataValue functionType) {
+        Map<String, Object> queryParams = [org: this, functionType: functionType]
+        String functionTypeFilter = 'and pr.functionType = :functionType'
         if (onlyPublic) {
-            if(exWekb) {
-                Person.executeQuery(
-                        'select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org '+functionTypeFilter+' and p.tenant = :org',
-                        queryParams
-                )
-            }
-            else {
-                Person.executeQuery(
-                        'select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org '+functionTypeFilter,
-                        queryParams
-                )
-            }
+            Person.executeQuery(
+                    'select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org '+functionTypeFilter,
+                    queryParams
+            )
         }
         else {
             queryParams.ctx = BeanStore.getContextService().getOrg()

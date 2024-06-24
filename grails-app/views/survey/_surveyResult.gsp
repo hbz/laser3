@@ -7,7 +7,7 @@
         <span class="la-long-tooltip la-popup-tooltip la-delay"
               data-position="right center"
               data-content="${surResult.comment}">
-            <i class="question circle icon"></i>
+            <i class="grey question circle icon"></i>
         </span>
     </g:if>
 </g:if>
@@ -42,7 +42,7 @@
         <span class="la-long-tooltip la-popup-tooltip la-delay"
               data-position="right center"
               data-content="${surResult.comment}">
-            <i class="question circle icon"></i>
+            <i class="grey question circle icon"></i>
         </span>
     </g:if>
 

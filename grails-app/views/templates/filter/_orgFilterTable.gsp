@@ -90,9 +90,6 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">
                 <th>${message(code: 'default.type.label')}</th>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('sector')}">
-                <th>${message(code: 'org.sector.label')}</th>
-            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('region')}">
                 <th>${message(code: 'org.region.label')}</th>
             </g:if>
@@ -136,7 +133,7 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubCostItem')}">
                 <th>
-                    ${message(code: 'exportClickMe.subscription.costItems')}
+                    ${message(code: 'exportClickMe.subscription.costItems')}: ${selectedCostItemElementID ? RefdataValue.get(selectedCostItemElementID).getI10n('value') : ''}
                 </th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
@@ -144,7 +141,7 @@
                     ${message(code: 'surveyCostItems.label')}:
 
                     <g:set var="costItemElements"
-                           value="${costItemsByCostItemElement.collect { RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT)) }}"/>
+                           value="${costItemsByCostItemElement ? costItemsByCostItemElement.collect { RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT))} : [RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE]}"/>
 
                     <g:if test="${costItemElements}">
                         <g:if test="${actionName == 'surveyCostItems'}">
@@ -181,8 +178,8 @@
                                    class="ui dropdown"
                                    id="selectedCostItemElementID"
                                    noSelection="${['': message(code: 'default.select.choose.label')]}"/>--}%
-                            ${de.laser.RefdataValue.get(selectedCostItemElementID)?.getI10n('value')}
                     </g:if>
+                    ${selectedCostItemElementID ? RefdataValue.get(selectedCostItemElementID).getI10n('value') : ''}
                 </th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemPackage') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
@@ -653,9 +650,6 @@
                         ${type.getI10n("value")}
                     </g:each>
                 </td>
-            </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('sector')}">
-                <td>${org.sector?.getI10n('value')}</td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('region')}">
                 <td>${org.region?.getI10n('value')}</td>
