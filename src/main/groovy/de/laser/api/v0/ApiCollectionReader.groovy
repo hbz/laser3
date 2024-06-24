@@ -6,14 +6,19 @@ import de.laser.DeweyDecimalClassification
 import de.laser.DocContext
 import de.laser.Identifier
 import de.laser.IdentifierNamespace
+import de.laser.InvoicingVendor
 import de.laser.IssueEntitlement
 import de.laser.Language
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.PersonRole
+import de.laser.Platform
+import de.laser.Provider
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
 import de.laser.TitleInstancePackagePlatform
+import de.laser.Vendor
+import de.laser.VendorRole
 import de.laser.base.AbstractCoverage
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
@@ -30,6 +35,8 @@ import groovy.json.JsonSlurper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.util.logging.Slf4j
+
+import java.sql.Array
 
 /**
  * This class delivers given lists as maps of stubs or full objects
@@ -353,7 +360,7 @@ class ApiCollectionReader {
         int limit = 50000, ieCount = sql.rows("select count(*) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg", ieParams)[0]["count"]
         List<GroovyRowResult> ieRows = []
         for(int i = 0; i < ieCount; i += limit) {
-            ieRows.addAll(sql.rows("select ie_id, ie_guid, ie_access_start_date, ie_access_end_date, ie_last_updated, (select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk) as tipp_medium, ie_perpetual_access_by_sub_fk, " +
+            ieRows.addAll(sql.rows("select ie_id, ie_guid, ie_access_start_date, ie_access_end_date, ie_last_updated, (select rdv_value from refdata_value where rdv_id = ie_status_rv_fk) as ie_status, (select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk) as tipp_medium, ie_perpetual_access_by_sub_fk, " +
                     "tipp_guid, tipp_name, tipp_host_platform_url, tipp_gokb_id, tipp_pkg_fk, tipp_date_first_in_print, tipp_date_first_online, tipp_first_author, tipp_first_editor, " +
                     "tipp_publisher_name, tipp_imprint, tipp_volume, tipp_edition_number, tipp_last_updated, tipp_series_name, tipp_subject_reference, (select rdv_value from refdata_value where rdv_id = tipp_access_type_rv_fk) as tipp_access_type, (select rdv_value from refdata_value where rdv_id = tipp_open_access_rv_fk) as tipp_open_access, " +
                     "tipp_last_updated, tipp_id, (select rdv_value from refdata_value where rdv_id = tipp_status_rv_fk) as tipp_status, " +
@@ -364,11 +371,14 @@ class ApiCollectionReader {
         }
         JsonSlurper slurper = new JsonSlurper()
         log.debug("now fetching additional params ...")
-        List<GroovyRowResult> priceItemRows = sql.rows("select pi_tipp_fk, json_agg(json_build_object('listCurrency', (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk), 'listPrice', pi_list_price, 'localCurrency', (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk), 'localPrice', pi_local_price)) as price_items from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId group by pi_tipp_fk", subParams),
-        coverageRows = sql.rows("select tc_tipp_fk, json_agg(json_build_object('startDate', coalesce(to_char(tc_start_date,'"+ApiToolkit.DATE_TIME_PATTERN_SQL+"'),''), 'startIssue', tc_start_issue, 'startVolume', tc_start_volume, 'endDate', coalesce(to_char(tc_end_date,'"+ApiToolkit.DATE_TIME_PATTERN_SQL+"'),''), 'endIssue', tc_end_issue, 'endVolume', tc_end_volume, 'coverageDepth', tc_coverage_depth, 'coverageNote', tc_coverage_note, 'embargo', tc_embargo, 'lastUpdated', tc_last_updated)) as coverages from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId group by tc_tipp_fk, tc_start_date, tc_start_volume, tc_start_issue order by tc_start_date, tc_start_volume, tc_start_issue", subParams),
-        idRows = sql.rows("select id_tipp_fk, json_agg(json_build_object('namespace', idns_ns, 'value', id_value)) as identifiers from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where id_value != '' and id_value != 'Unknown' and ie_subscription_fk = :sub and tipp_pkg_fk = :pkg group by id_tipp_fk", ieParams),
-        ddcRows = sql.rows("select ddc_tipp_fk, json_agg(json_build_object('value', rdv_value, 'value_de', rdv_value_de, 'value_en', rdv_value_en)) as ddcs from dewey_decimal_classification join refdata_value on ddc_rv_fk = rdv_id join issue_entitlement on ie_tipp_fk = ddc_tipp_fk where ie_subscription_fk = :subId group by ddc_tipp_fk", subParams),
-        langRows = sql.rows("select lang_tipp_fk, json_agg(json_build_object('value', rdv_value, 'value_de', rdv_value_de, 'value_en', rdv_value_en)) as languages from language join refdata_value on lang_rv_fk = rdv_id join issue_entitlement on lang_tipp_fk = ie_tipp_fk where ie_subscription_fk = :subId group by lang_tipp_fk", subParams),
+        List<GroovyRowResult> priceItemRows = [], idRows = [], ddcRows = [], langRows = []
+        for(int i = 0; i < ieCount; i += limit) {
+            priceItemRows.addAll(sql.rows("select pi_tipp_fk, json_agg(json_build_object('listCurrency', (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk), 'listPrice', pi_list_price, 'localCurrency', (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk), 'localPrice', pi_local_price)) as price_items from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId group by pi_tipp_fk limit :limit offset :offset", subParams+[limit: limit, offset: i]))
+            idRows.addAll(sql.rows("select id_tipp_fk, json_agg(json_build_object('namespace', idns_ns, 'value', id_value)) as identifiers from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where id_value != '' and id_value != 'Unknown' and ie_subscription_fk = :sub and tipp_pkg_fk = :pkg group by id_tipp_fk limit :limit offset :offset", ieParams+[limit: limit, offset: i]))
+            ddcRows.addAll(sql.rows("select ddc_tipp_fk, json_agg(json_build_object('value', rdv_value, 'value_de', rdv_value_de, 'value_en', rdv_value_en)) as ddcs from dewey_decimal_classification join refdata_value on ddc_rv_fk = rdv_id join issue_entitlement on ie_tipp_fk = ddc_tipp_fk where ie_subscription_fk = :subId group by ddc_tipp_fk limit :limit offset :offset", subParams+[limit: limit, offset: i]))
+            langRows.addAll(sql.rows("select lang_tipp_fk, json_agg(json_build_object('value', rdv_value, 'value_de', rdv_value_de, 'value_en', rdv_value_en)) as languages from language join refdata_value on lang_rv_fk = rdv_id join issue_entitlement on lang_tipp_fk = ie_tipp_fk where ie_subscription_fk = :subId group by lang_tipp_fk limit :limit offset :offset", subParams+[limit: limit, offset: i]))
+        }
+        List<GroovyRowResult> coverageRows = sql.rows("select tc_tipp_fk, json_agg(json_build_object('startDate', coalesce(to_char(tc_start_date,'"+ApiToolkit.DATE_TIME_PATTERN_SQL+"'),''), 'startIssue', tc_start_issue, 'startVolume', tc_start_volume, 'endDate', coalesce(to_char(tc_end_date,'"+ApiToolkit.DATE_TIME_PATTERN_SQL+"'),''), 'endIssue', tc_end_issue, 'endVolume', tc_end_volume, 'coverageDepth', tc_coverage_depth, 'coverageNote', tc_coverage_note, 'embargo', tc_embargo, 'lastUpdated', tc_last_updated)) as coverages from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId group by tc_tipp_fk, tc_start_date, tc_start_volume, tc_start_issue order by tc_start_date, tc_start_volume, tc_start_issue", subParams),
         altNameRows = sql.rows("select altname_name, altname_tipp_fk from alternative_name join title_instance_package_platform on altname_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId", pkgParams),
         //platformsOfSubscription = sql.rows('select plat_id, plat_gokb_id, plat_name, plat_guid, plat_primary_url, (select rdv_value from refdata_value where rdv_id = plat_status_rv_fk) as plat_status from platform join title_instance_package_platform on tipp_plat_fk = plat_id join issue_entitlement on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId', subParams),
         packageOfSubscription = sql.rows("select pkg_guid, pkg_gokb_id, pkg_name, (select rdv_value from refdata_value where rdv_id = pkg_status_rv_fk) as pkg_status from package where pkg_id = :pkgId", pkgParams),
@@ -396,7 +406,7 @@ class ApiCollectionReader {
             ie.lastUpdated = row['ie_last_updated'] ? ApiToolkit.formatInternalDate(row['ie_last_updated']) : null
             //RefdataValues - both removed as of API version 2.0
             //ie.medium = row['ie_medium']
-            //ie.status = row['tipp_status']
+            ie.status = row['ie_status']
             ie.perpetualAccessBySub = ApiStubReader.requestSubscriptionStub(Subscription.get(row['ie_perpetual_access_by_sub_fk']), context, false)
             ie.coverages = coverageMap.containsKey(row['tipp_id']) ? coverageMap.get(row['tipp_id']) : []
             ie.priceItems = priceItemMap.containsKey(row['tipp_id']) ? priceItemMap.get(row['tipp_id']) : []
@@ -425,7 +435,7 @@ class ApiCollectionReader {
                 }
             }
             //println "processing finished"
-            result << ie
+            result << ApiToolkit.cleanUp(ie, true, true)
         }
 
         return ApiToolkit.cleanUp(result, true, true)
@@ -487,6 +497,42 @@ class ApiCollectionReader {
     }
 
     /**
+     * Collects the information on the other ends of the outgoing provider relations list and returns the stub map
+     * of information about the objects linked
+     * @param list a {@link List} of {@link Provider}s to process
+     * @return a {@link Collection} of map entries reflecting the information about the outgoing relations
+     */
+    static Collection<Object> getProviderCollection(Collection<Provider> list) {
+        Collection<Object> result = []
+
+        list.each { Provider p ->
+            Map<String, Object> tmp = [:]
+            tmp.provider = ApiUnsecuredMapReader.getProviderStubMap(p)
+            result << ApiToolkit.cleanUp(tmp, true, false)
+        }
+
+        result
+    }
+
+    /**
+     * Collects the information on the other ends of the outgoing vendor relations list and returns the stub map
+     * of information about the objects linked
+     * @param list a {@link List} of {@link Vendor}s to process
+     * @return a {@link Collection} of map entries reflecting the information about the outgoing relations
+     */
+    static Collection<Object> getVendorCollection(Collection<Vendor> list) {
+        Collection<Object> result = []
+
+        list.each { Vendor v ->
+            Map<String, Object> tmp = [:]
+            tmp.vendor = ApiUnsecuredMapReader.getVendorStubMap(v)
+            result << ApiToolkit.cleanUp(tmp, true, false)
+        }
+
+        result
+    }
+
+    /**
      * Builds a collection of map entries reflecting the given {@link Collection} of {@link OrgAccessPoint}s
      * @param list a {@link Collection} of {@link OrgAccessPoint}s to process
      * @return a {@link Collection} of entries reflecting the access point records
@@ -497,6 +543,22 @@ class ApiCollectionReader {
             result << ApiUnsecuredMapReader.getOrgAccessPointStubMap(it)
         }
         result
+    }
+
+    /**
+     * Delivers a package stub map without titles
+     * @param list the {@link Collection} of {@link de.laser.Package}s which should be returned
+     * @return a {@link Collection<Object>} reflecting the packages
+     */
+    static Collection<Object> getPackageCollection(Collection<de.laser.Package> list) {
+        Collection<Object> result = []
+
+        list.each { pkg ->
+            Map<String, Object> pkgMap = ApiUnsecuredMapReader.getPackageStubMap(pkg) // de.laser.Package
+            result << pkgMap
+        }
+
+        return ApiToolkit.cleanUp(result, true, false)
     }
 
     /**
@@ -516,6 +578,22 @@ class ApiCollectionReader {
             //IGNORE_ALL -> IGNORE_SUBSCRIPTION_AND_PACKAGE (bottleneck one)
             pkg.issueEntitlements = getIssueEntitlementCollectionWithSQL(subPkg, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, context, sql)
             //}
+        }
+
+        return ApiToolkit.cleanUp(result, true, false)
+    }
+
+    /**
+     * Delivers a package stub map without titles
+     * @param list the {@link Collection} of {@link Platform}s which should be returned
+     * @return a {@link Collection<Object>} reflecting the packages
+     */
+    static Collection<Object> getPlatformCollection(Collection<Platform> list) {
+        Collection<Object> result = []
+
+        list.each { plat ->
+            Map<String, Object> platformMap = ApiUnsecuredMapReader.getPlatformStubMap(plat) // de.laser.Platform
+            result << platformMap
         }
 
         return ApiToolkit.cleanUp(result, true, false)

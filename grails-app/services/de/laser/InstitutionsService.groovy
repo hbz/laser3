@@ -150,16 +150,13 @@ class InstitutionsService {
                 }
             }
 
-            RefdataValue licensee_role = RDStore.OR_LICENSEE
-            RefdataValue lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
-
             log.debug("adding org link to new license")
 
             if (contextService.getOrg().isCustomerType_Consortium()) {
-                new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role).save()
+                new OrgRole(lic: licenseInstance, org: org, roleType: RDStore.OR_LICENSING_CONSORTIUM).save()
             }
             else {
-                new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role).save()
+                new OrgRole(lic: licenseInstance, org: org, roleType: RDStore.OR_LICENSEE).save()
             }
             OrgRole.findAllByLicAndRoleTypeAndIsShared(base,RDStore.OR_LICENSOR,true).each { OrgRole licRole ->
                 new OrgRole(lic: licenseInstance, org: licRole.org, roleType: RDStore.OR_LICENSOR, isShared: true).save()
