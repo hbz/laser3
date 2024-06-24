@@ -1876,7 +1876,7 @@
         gokbId:
           type: string
           description: The identifier of the provider in the we:kb knowledge base. Naming gokbId is legacy.
-          example: "67e3622a-a51c-4382-87dc-c13410fe53b5"
+          example: 67e3622a-a51c-4382-87dc-c13410fe53b5
         name:
           type: string
           description: Name of the provider.
@@ -1884,7 +1884,7 @@
         sortname:
           type: string
           description: Sort name of the provider for easier retrieval in lists.
-          example: "Eiserfranckh"
+          example: Eiserfranckh
         identifiers: # mapping attr ids
           type: array
           description: Further set of identifiers of the provider.
@@ -2043,12 +2043,15 @@
         gokbId:
           type: string
           description: The identifier of the vendor in the we:kb knowledge base. Naming gokbId is legacy.
+          example: 97a9ba82-de2b-4011-8cdc-e285f8c4c600
         name:
           type: string
           description: Name of the vendor.
+          example: "Zentrale Vergabestelle"
         sortname:
           type: string
           description: Sort name of the vendor for easier retrieval in lists.
+          example: ZVS
         identifiers: # mapping attr ids
           type: array
           description: Further set of identifiers of the vendor.
@@ -2359,4 +2362,4 @@
           items:
             type: string
           enum: <% printRefdataEnum(RDConstants.ORG_TYPE, 12) %>
-          example: ["Provider", "Agency"]
+          example: ["Institution"]
