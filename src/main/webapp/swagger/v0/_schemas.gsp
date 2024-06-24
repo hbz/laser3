@@ -610,7 +610,7 @@
 
     Package:
       allOf:
-      - $ref: "#components/schemas/PackageStub"
+      - $ref: "#/components/schemas/PackageStub"
       - type: object
         properties:
           altnames:
