@@ -501,7 +501,8 @@ class VendorService {
         if(contextOrg.isCustomerType_Consortium())
             instanceFilter = 'and s.instanceOf = null'
         */
-        Platform.executeQuery('select pkg.nominalPlatform from PackageVendor pv join pv.pkg pkg, SubscriptionPackage sp join sp.subscription s, OrgRole oo where pv.vendor = :vendor and pv.pkg = sp.pkg and s.status = :current and oo.org = :contextOrg ', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, contextOrg: contextOrg])
+        //select distinct because implicit toSet() does not prevent the loading of 17 million rows ...
+        Platform.executeQuery('select distinct(pkg.nominalPlatform) from PackageVendor pv join pv.pkg pkg, SubscriptionPackage sp join sp.subscription s, OrgRole oo where pv.vendor = :vendor and pv.pkg = sp.pkg and s.status = :current and oo.org = :contextOrg', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, contextOrg: contextOrg])
     }
 
     Map<String, Object> getResultGenerics(GrailsParameterMap params) {
