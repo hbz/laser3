@@ -865,18 +865,21 @@ class ExportClickMeService {
                     label: 'Transfer',
                     message: 'subscription.details.subTransfer.label',
                     fields: [
-                            'subscription.offerRequested'                : [field: 'offerRequested', label: 'Offer Requested', message: 'subscription.offerRequested.label'],
-                            'subscription.offerRequestedDate'            : [field: 'offerRequestedDate', label: 'Offer Requested Date', message: 'subscription.offerRequestedDate.label'],
-                            'subscription.offerAccepted'                 : [field: 'offerAccepted', label: 'Offer Accepted', message: 'subscription.offerAccepted.label'],
-                            'subscription.offerNote'                     : [field: 'offerNote', label: 'Offer Note', message: 'subscription.offerNote.label'],
-                            'subscription.priceIncreaseInfo'             : [field: 'priceIncreaseInfo', label: 'Price Increase Info', message: 'subscription.priceIncreaseInfo.label'],
-                            'subscription.renewalSent'                   : [field: 'renewalSent', label: 'Renewal Sent', message: 'subscription.renewalSent.label'],
-                            'subscription.renewalSentDate'               : [field: 'renewalSentDate', label: 'Renewal Sent Date', message: 'subscription.renewalSentDate.label'],
-                            'subscription.participantTransferWithSurvey' : [field: 'participantTransferWithSurvey', label: 'Participant Transfe With Survey', message: 'subscription.participantTransferWithSurvey.label'],
-                            'subscription.discountScale'                 : [field: 'discountScale', label: 'Discount Scale', message: 'subscription.discountScale.label'],
-                            'subscription.survey'                        : [field: null, label: 'Survey', message: 'survey.label'],
-                            'subscription.survey.evaluation'             : [field: null, label: 'Evaluation', message: 'subscription.survey.evaluation.label'],
-                            'subscription.survey.cancellation'           : [field: null, label: 'Cancellation', message: 'subscription.survey.cancellation.label']
+                            'subscription.offerRequested'                : [field: 'offerRequested', label: 'Offer Requested', message: 'subscription.offerRequested.label', defaultChecked: 'true' ],
+                            'subscription.offerRequestedDate'            : [field: 'offerRequestedDate', label: 'Offer Requested Date', message: 'subscription.offerRequestedDate.label', defaultChecked: 'true' ],
+                            'subscription.offerNote'                     : [field: 'offerNote', label: 'Offer Note', message: 'subscription.offerNote.label', defaultChecked: 'true' ],
+                            'subscription.offerAccepted'                 : [field: 'offerAccepted', label: 'Offer Accepted', message: 'subscription.offerAccepted.label', defaultChecked: 'true' ],
+                            'subscription.priceIncreaseInfo'             : [field: 'priceIncreaseInfo', label: 'Price Increase Info', message: 'subscription.priceIncreaseInfo.label', defaultChecked: 'true' ],
+                            'subscription.survey'                        : [field: null, label: 'Survey', message: 'survey.label', defaultChecked: 'true' ],
+                            'subscription.survey.evaluation'             : [field: null, label: 'Evaluation', message: 'subscription.survey.evaluation.label', defaultChecked: 'true' ],
+                            'subscription.survey.cancellation'           : [field: null, label: 'Cancellation', message: 'subscription.survey.cancellation.label', defaultChecked: 'true' ],
+                            'subscription.discountScale'                 : [field: 'discountScale', label: 'Discount Scale', message: 'subscription.discountScale.label', defaultChecked: 'true' ],
+                            'subscription.reminderSent'                  : [field: 'reminderSent', label: 'Reminder Sent', message: 'subscription.reminderSent.label', defaultChecked: 'true' ],
+                            'subscription.reminderSentDate'              : [field: 'reminderSentDate', label: 'Reminder Sent Date', message: 'subscription.reminderSentDate.label', defaultChecked: 'true' ],
+                            'subscription.renewalSent'                   : [field: 'renewalSent', label: 'Renewal Sent', message: 'subscription.renewalSent.label', defaultChecked: 'true' ],
+                            'subscription.renewalSentDate'               : [field: 'renewalSentDate', label: 'Renewal Sent Date', message: 'subscription.renewalSentDate.label', defaultChecked: 'true' ],
+                            'subscription.renewalChanges'               : [field: null, label: 'Renewal Changes', message: 'default.change.label', defaultChecked: 'true' ],
+                            'subscription.participantTransferWithSurvey' : [field: 'participantTransferWithSurvey', label: 'Participant Transfe With Survey', message: 'subscription.participantTransferWithSurvey.label', defaultChecked: 'true' ],
                     ]
             ],
     ]
@@ -5562,6 +5565,15 @@ class ExportClickMeService {
                     }
 
                     row.add(createTableCell(format, surveyConfig ? countOrgsWithTermination : ' ', style))
+                }
+                else if (fieldKey == 'subscription.renewalChanges') {
+                    SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)
+                    int countModificationToCostInformationAfterRenewalDoc = surveyConfig ? surveyService.countModificationToCostInformationAfterRenewalDoc(subscription) : 0
+                    String style = ''
+                    if(surveyConfig) {
+                        style = countModificationToCostInformationAfterRenewalDoc == 0 ? 'positive' : 'negative'
+                    }
+                    row.add(createTableCell(format, surveyConfig ? countModificationToCostInformationAfterRenewalDoc  : ' ', style))
                 }
                 else if ((fieldKey == 'participantSubCostItem' || fieldKey == 'subCostItem')) {
                     if(costItemSums) {
