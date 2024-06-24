@@ -317,7 +317,27 @@
                 <g:each in="${personInstance.contacts?.toSorted()}" var="contact" status="i">
                     <div class="three fields contactField" id="contactFields${i}">
                         <div class="field one wide la-contactIconField">
-                            <i class="icon large envelope outline la-js-contactIcon"></i>
+                            <g:if test="${contact.contentType.id == RDStore.CCT_EMAIL.id}">
+                                <i class="icon large envelope outline la-js-contactIcon"></i>
+                            </g:if>
+                            <g:elseif test="${contact.contentType.id == RDStore.CCT_FAX.id}">
+                                <i class="icon large tty la-js-contactIcon"></i>
+                            </g:elseif>
+                            <g:elseif test="${contact.contentType.id == RDStore.CCT_MOBILE.id}">
+                                <i class="icon large mobile alternate la-js-contactIcon"></i>
+                            </g:elseif>
+                            <g:elseif test="${contact.contentType.id == RDStore.CCT_PHONE.id}">
+                                <i class="icon large phone la-js-contactIcon"></i>
+                            </g:elseif>
+                            <g:elseif test="${contact.contentType.id == RDStore.CCT_URL.id}">
+                                <i class="icon large globe la-js-contactIcon"></i>
+                            </g:elseif>
+                            <g:else>
+                                <i class="icon large envelope outline la-js-contactIcon"></i>
+                            </g:else>
+
+
+
                         </div>
                         <div class="field wide four">
                             <input type="text" name="contact${contact.id}" readonly value="${contact.contentType.getI10n('value')}"/>
@@ -333,7 +353,12 @@
                         </div>
 
                         <div class="field seven wide">
-                            <g:textField class="la-js-contactContent" data-validate="contactContent" name="content${contact.id}" value="${contact.content}"/>
+                            <g:if test="${contact.contentType.id == RDStore.CCT_EMAIL.id}">
+                                <g:textField class="la-js-contactContent" data-validate="email" name="content${contact.id}" value="${contact.content}"/>
+                            </g:if>
+                            <g:else>
+                                <g:textField class="la-js-contactContent" data-validate="contactContent" name="content${contact.id}" value="${contact.content}"/>
+                            </g:else>
                         </div>
                         <div class="field one wide">
                             <button type="button"  class="ui icon negative button la-modern-button removeContactElement">
@@ -349,6 +374,7 @@
                         <div class="field one wide la-contactIconField">
                             <i class="icon large envelope outline la-js-contactIcon"></i>
                         </div>
+
                         <div class="field wide four">
                             <ui:select class="ui dropdown contentType" name="contentType.id"
                                        from="${[RDStore.CCT_EMAIL, RDStore.CCT_FAX, RDStore.CCT_MOBILE, RDStore.CCT_PHONE, RDStore.CCT_URL]}"
@@ -370,7 +396,7 @@
 
 
                         <div class="field eight wide">
-                            <g:textField class="la-js-contactContent" data-validate="contactContent" id="content" name="content" value="${contactInstance?.content}"/>
+                            <g:textField class="la-js-contactContent" data-validate="email" id="content" name="content" value="${contactInstance?.content}"/>
                         </div>
                     </div>
                 </div>
@@ -382,7 +408,7 @@
 
 </g:form>
 
-<g:if test="${personInstance && !contactPersonForProviderAgencyPublic}">
+    <g:if test="${personInstance && !contactPersonForProviderAgencyPublic}">
     <div class="ui grid">
         <div class="sixteen wide column">
             <div class="la-inline-lists">
@@ -410,12 +436,30 @@
 </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    $.fn.form.settings.rules.functionOrPosition = function() {
-        return $('#functionType').dropdown('get value').length > 0
-    };
-    $.fn.form.settings.rules.isMinimalOneContactFilled = function() {
 
+    $("#la-js-buttonFunction").on("click", function () {
+        $("#la-js-nameOrFunction").text("Funktionsbezeichnung");
+        $(this).parent('.buttons').find('#la-js-buttonSurname').removeClass('active');
+        $(this).addClass('active');
+    });
+    $("#la-js-buttonSurname").on("click", function () {
+        $("#la-js-nameOrFunction").text("Nachname");
+         $(this).parent('.buttons').find('#la-js-buttonFunction').removeClass('active');
+        $(this).addClass('active');
+    });
+
+
+    $.fn.form.settings.rules.isMinimalOneContactFilled = function() {
+        if ( $(".la-js-contactContent").val() ) {
+            return  true
+        }
+        else {
+            return false
+        }
+    };
+    $.fn.form.settings.rules.emailRegex = function() {
         if($(this).parents('.contactField').find('.contentType select').val() == ${RDStore.CCT_EMAIL.id}){
+            console.log("EMail")
             let pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
             if ( pattern.test($(this).val())) {
                 return true
@@ -424,25 +468,10 @@
                 return false
             }
         }
-
-        if ( $(".la-js-contactContent").val() ) {
-
-            return  true
-        }
-        else {
-            return false
-        }
-    };
-%{--
-    $.fn.form.settings.rules.emailRegex = function() {
-        if ( $(".la-js-contactContent").val() ) {
-
-        }
         else {
             return true
         }
     };
---}%
 
 
     JSPC.app.formValidation = function () {
@@ -469,6 +498,8 @@
                   type: 'empty',
                   prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
                         }
+
+
                       ]
                     },
         </g:if>
@@ -483,7 +514,6 @@
                           ]
                         },
         </g:if>
-
 
                 last_name: {
                     identifier: 'last_name',
@@ -510,10 +540,15 @@
                             type: 'isMinimalOneContactFilled',
                             prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
                         }
-%{--                        {
-                            type: 'emailRegex',
-                            prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
-                        }--}%
+                    ]
+                },
+                email: {
+                    identifier: 'email',
+                    rules: [
+                        {
+                            type   : 'email',
+                            prompt: '<g:message code="contact.create.email.error" />'
+                        }
                     ]
                 }
             }
@@ -592,6 +627,7 @@
                     JSPC.app.checkIfMoreThanFourContactElements();
                     JSPC.app.changeIconRegardingDropdown();
                     JSPC.app.removeContactElement();
+                    JSPC.app.dataValidateProperty(lastRowIcon);
                 } else {
                     $('.la-js-addContactElement').addClass( 'disabled');
                 }
@@ -609,16 +645,31 @@
     JSPC.app.deleteIconClass = function (icon) {
         icon.removeAttr("class");
     }
+%{--  Change data-validate property when contact dropdown is changed          --}%
+    JSPC.app.dataValidateProperty = function(elem) {
+      let contactField = elem.parents('.contactField').find('.la-js-contactContent');
+      if ( elem.parents('.contactField').find('.contentType select').val() == ${RDStore.CCT_EMAIL.id} ){
+        contactField.attr('data-validate','email');
+      }
+      else {
+        contactField.attr('data-validate','contactContent');
+      }
+    }
+
 
 %{--  Change icon when contact dropdown is changed          --}%
     JSPC.app.changeIconRegardingDropdown = function() {
+        $('.dropdown').dropdown();
         $(".dropdown.contentType select").on("change", function () {
 
+
+          JSPC.app.dataValidateProperty($(this))
           let icon = $(this).parents('.contactField').find('.la-js-contactIcon');
           let value = $(this).val();
 
           JSPC.app.deleteIconClass(icon);
-          JSPC.app.changeIcon(value, icon)
+          JSPC.app.changeIcon(value, icon);
+
         });
     }
 
@@ -645,9 +696,7 @@
           icon.addClass("icon large la-js-contactIcon globe");
           break;
       }
-
     }
-
 
     $('#cust_prop_add_value_private').submit(function(e) {
         e.preventDefault();
@@ -656,7 +705,11 @@
     });
 
     tooltip.init("#${modalID ?: 'personModal'}");
+
+    JSPC.app.changeIconRegardingDropdown();
+
     JSPC.app.formValidation();
+
 %{--    Deal with accordion in case already any input--}%
     $(".accordion").accordion();
 
@@ -665,47 +718,6 @@
      JSPC.app.removeContactElement();
 
 
-
-    %{--$('#person_form').submit(function(e) {
-        alert(JSPC.app.contactElementCount);
-        e.preventDefault();
---}%%{--        JSPC.app.addressElementCount = $(".addressField").length;--}%%{--
-        JSPC.app.contactElementCount = $(".contactField").length;
-        if($.fn.form.settings.rules.functionOrPosition() && $('#last_name').val().length > 0) {
---}%%{--            let addressElements = null, contactElements = null;--}%%{--
-            if(JSPC.app.contactElementCount == 1) {
-                contactElements = [$('#'+$.escapeSelector('contactLang.id')), $('#content')];
-            }
---}%%{--            if(JSPC.app.addressElementCount == 1) {
-                addressElements = [$('#type'), $('#name'), $('#additionFirst'), $('#additionSecond'), $('#street_1'), $('#street_2'), $('#zipcode'), $('#city'), $('#pob'), $('#pobZipcode'), $('#pobCity'), $('#country'), $('#region')];
-            }--}%%{--
-    alert(JSPC.app.areElementsFilledOut(contactElements));
-            if(JSPC.app.contactElementCount == 0 || !JSPC.app.areElementsFilledOut(contactElements)) {
-                if(confirm("test")) {
-                    $('#person_form').unbind('submit').submit();
-                }
-            }
-            else $('#person_form').unbind('submit').submit();
-        }
-        else if($('#functionType').length === 0 && $('#positionType').length === 0) {
-            $('#person_form').unbind('submit').submit();
-        }
-    });
-
-
-    JSPC.app.areElementsFilledOut = function (elems) {
-
-        let filledOut = false;
-        if(elems !== null) {
-            for(let i = 0; i < elems.length; i++) {
-                filledOut = typeof(elems[i] === 'undefined') || (elems[i].val() !== null && elems[i].val() !== "null" && elems[i].val().length > 0)
-                if(filledOut)
-                    break;
-            }
-        }
-        else filledOut = true;
-        return filledOut;
-    };--}%
 
     </laser:script>
 
