@@ -182,7 +182,7 @@
                     <g:if test="${linkInstanceType == Links.class.name && !link}">
                         <div class="row">
                             <div class="four wide column">
-                                <g:message code="provider.label"/>
+                                <g:message code="default.linking.provider.label"/>
                             </div>
                             <div class="twelve wide column">
                                 <div class="ui search selection dropdown la-full-width" id="providerFilter">

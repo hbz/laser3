@@ -7,9 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-5781    20.06.2024  rc-3.4  3.4         David   Feature     AjaxController: addToCollection und resolveOID2 entfernen
+5771    24.06.2024  rc-3.4  3.4         Andreas Feature     Anbieter-Filter erläutert
 
 5776    21.06.2024  rc-3.4  3.4         Andreas Feature     fehlende Relationen nachgereicht
+
+5781    20.06.2024  rc-3.4  3.4         David   Feature     AjaxController: addToCollection und resolveOID2 entfernen
 
 5777    20.06.2024  rc-3.4  3.4         David   Feature     Org.sector entfernen
 

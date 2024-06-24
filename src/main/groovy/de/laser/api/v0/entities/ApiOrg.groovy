@@ -105,7 +105,6 @@ class ApiOrg {
         org = GrailsHibernateUtil.unwrapIfProxy(org)
 
         result.globalUID           = org.globalUID
-        result.gokbId              = org.gokbId
         result.name                = org.name
         result.altNames            = ApiCollectionReader.getAlternativeNameCollection(org.altnames)
         result.sortname            = org.sortname

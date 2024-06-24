@@ -464,8 +464,8 @@ class ApiUnsecuredMapReader {
         // References
         Map<String, Object> queryParams = [provider:provider]
 
-        result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :provider and a.isPublic = true', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.Address w/o tenant
-        result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :provider and a.isPublic = false and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.Address w/ tenant
+        result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :provider and a.tenant = null', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.Address w/o tenant
+        result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :provider and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.Address w/ tenant
         result.identifiers  = ApiCollectionReader.getIdentifierCollection(provider.ids) // de.laser.Identifier
         result.packages     = ApiCollectionReader.getPackageCollection(provider.packages)
         result.platforms    = ApiCollectionReader.getPlatformCollection(provider.platforms)
@@ -517,8 +517,8 @@ class ApiUnsecuredMapReader {
         // References
         Map<String, Object> queryParams = [provider:vendor]
 
-        result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :vendor and a.isPublic = true', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.Address w/o tenant
-        result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :vendor and a.isPublic = false and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.Address w/ tenant
+        result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :vendor and a.tenant = null', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.Address w/o tenant
+        result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :vendor and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.Address w/ tenant
         result.identifiers  = ApiCollectionReader.getIdentifierCollection(vendor.ids) // de.laser.Identifier
         result.packages     = ApiCollectionReader.getPackageCollection(vendor.packages)
         result.persons      = ApiCollectionReader.getPrsLinkCollection(

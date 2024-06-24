@@ -1,41 +1,47 @@
 package de.laser.api.v0.entities
 
-import de.laser.*
-import de.laser.api.v0.*
+
+import de.laser.Identifier
+import de.laser.IdentifierNamespace
+import de.laser.Org
+import de.laser.Platform
+import de.laser.Vendor
+import de.laser.api.v0.ApiBox
+import de.laser.api.v0.ApiUnsecuredMapReader
 import de.laser.storage.Constants
 import de.laser.storage.RDStore
 import de.laser.traces.DeletedObject
 import grails.converters.JSON
 
 /**
- * An API representation of an {@link Provider}
+ * An API representation of an {@link Vendor}
  */
-class ApiProvider {
+class ApiVendor {
 
     /**
-     * Locates the given {@link Provider} and returns the object (or null if not found) and the request status for further processing
+     * Locates the given {@link Vendor} and returns the object (or null if not found) and the request status for further processing
      * @param the field to look for the identifier, one of {id, globalUID, gokbId, ns:identifier}
      * @param the identifier value
-     * @return {@link ApiBox}(obj: Provider | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
+     * @return {@link ApiBox}(obj: Vendor | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
      * @see ApiBox#validatePrecondition_1()
      */
-    static ApiBox findProviderBy(String query, String value) {
+    static ApiBox findVendorBy(String query, String value) {
         ApiBox result = ApiBox.get()
 
         switch(query) {
             case 'ezbId':
-                result.obj = Provider.executeQuery('select id.provider from Identifier id where id.value = :id and id.ns.ns = :ezb', [id: value, ezb: IdentifierNamespace.EZB_ORG_ID])
+                result.obj = Vendor.executeQuery('select id.vendor from Identifier id where id.value = :id and id.ns.ns = :ezb', [id: value, ezb: IdentifierNamespace.EZB_ORG_ID])
                 break
             case 'id':
-                result.obj = Provider.findAllById(Long.parseLong(value))
+                result.obj = Vendor.findAllById(Long.parseLong(value))
                 if(!result.obj) {
                     DeletedObject.withTransaction {
-                        result.obj = DeletedObject.findAllByOldDatabaseIDAndOldObjectType(Long.parseLong(value), Provider.class.name)
+                        result.obj = DeletedObject.findAllByOldDatabaseIDAndOldObjectType(Long.parseLong(value), Vendor.class.name)
                     }
                 }
                 break
             case 'globalUID':
-                result.obj = Provider.findAllByGlobalUID(value)
+                result.obj = Vendor.findAllByGlobalUID(value)
                 if(!result.obj) {
                     DeletedObject.withTransaction {
                         result.obj = DeletedObject.findAllByOldGlobalUID(value)
@@ -43,7 +49,7 @@ class ApiProvider {
                 }
                 break
             case 'gokbId':
-                result.obj = Provider.findAllByGokbId(value)
+                result.obj = Vendor.findAllByGokbId(value)
                 if(!result.obj) {
                     DeletedObject.withTransaction {
                         result.obj = DeletedObject.findAllByOldGokbID(value)
@@ -51,7 +57,7 @@ class ApiProvider {
                 }
                 break
             case 'ns:identifier':
-                result.obj = Identifier.lookupObjectsByIdentifierString(new Provider(), value)
+                result.obj = Identifier.lookupObjectsByIdentifierString(new Vendor(), value)
                 break
             default:
                 result.status = Constants.HTTP_BAD_REQUEST
@@ -60,22 +66,22 @@ class ApiProvider {
         }
         result.validatePrecondition_1()
 
-        if (result.obj instanceof Provider) {
+        if (result.obj instanceof Vendor) {
             result.validateDeletedStatus_2('status', RDStore.PROVIDER_STATUS_DELETED)
         }
         result
     }
 
     /**
-     * Retrieves a list of providers recorded in the app
+     * Retrieves a list of vendors recorded in the app
      * @return JSON
      */
-    static JSON getProviderList() {
+    static JSON getVendorList() {
         Collection<Object> result = []
 
-        List<Provider> providers = Provider.executeQuery('select p from Provider p')
-        providers.each { Provider p ->
-            result << ApiUnsecuredMapReader.getProviderStubMap(p)
+        List<Vendor> vendors = Vendor.executeQuery('select v from Vendor v')
+        vendors.each { Vendor v ->
+            result << ApiUnsecuredMapReader.getVendorStubMap(v)
         }
 
         return result ? new JSON(result) : null
@@ -83,14 +89,14 @@ class ApiProvider {
 
     /**
      * Retrieves details of the given provider for the requesting institution
-     * @param provider the {@link Provider} whose details should be retrieved
+     * @param vendor the {@link Vendor} whose details should be retrieved
      * @param context the institution ({@link Org})
      * @return JSON
      */
-    static getProvider(Provider provider, Org context) {
+    static getVendor(Vendor vendor, Org context) {
         Map<String, Object> result = [:]
 
-        result = ApiUnsecuredMapReader.getProviderMap(provider, context)
+        result = ApiUnsecuredMapReader.getVendorMap(vendor, context)
 
         return result ? new JSON(result) : null
     }

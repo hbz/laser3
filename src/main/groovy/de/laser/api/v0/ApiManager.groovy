@@ -7,7 +7,9 @@ import de.laser.License
 import de.laser.Org
 import de.laser.Package
 import de.laser.Platform
+import de.laser.Provider
 import de.laser.Subscription
+import de.laser.Vendor
 import de.laser.api.v0.special.ApiEZB
 import de.laser.exceptions.NativeSqlException
 import de.laser.finance.CostItem
@@ -301,12 +303,16 @@ class ApiManager {
         }
         else if (checkValidRequest('provider')) {
 
-            ApiBox tmp = ApiProvider.findPlatformBy(query, value)
+            ApiBox tmp = ApiProvider.findProviderBy(query, value)
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiProvider.getOrganisation((Platform) tmp.obj, contextOrg)
+                result = ApiProvider.getProvider((Provider) tmp.obj, contextOrg)
             }
+        }
+        else if (checkValidRequest('providerList')) {
+
+            result = ApiProvider.getProviderList()
         }
         else if (checkValidRequest('refdataList')) {
 
@@ -363,6 +369,19 @@ class ApiManager {
             if (tmp.checkFailureCodes_3()) {
                 result = ApiSubscription.getSubscriptionList((Org) tmp.obj, contextOrg)
             }
+        }
+        else if (checkValidRequest('vendor')) {
+
+            ApiBox tmp = ApiVendor.findVendorBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
+
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiVendor.getVendor((Vendor) tmp.obj, contextOrg)
+            }
+        }
+        else if (checkValidRequest('vendorList')) {
+
+            result = ApiVendor.getVendorList()
         }
         else {
             result = Constants.HTTP_NOT_IMPLEMENTED
