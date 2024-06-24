@@ -170,6 +170,7 @@ class ApiSubscription {
 		result.lastUpdated          	= ApiToolkit.formatInternalDate(sub._getCalculatedLastUpdated())
 		result.manualCancellationDate 	= ApiToolkit.formatInternalDate(sub.manualCancellationDate)
 		result.name                 	= sub.name
+		result.altnames         		= ApiCollectionReader.getAlternativeNameCollection(sub.altnames)
 		result.startDate            	= ApiToolkit.formatInternalDate(sub.startDate)
 		result.calculatedType       	= sub._getCalculatedType()
 
@@ -225,6 +226,8 @@ class ApiSubscription {
 		allOrgRoles.addAll(sub.orgRelations)
 
 		result.organisations = ApiCollectionReader.getOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.OrgRole
+		result.providers	 = ApiCollectionReader.getProviderCollection(sub.getProviders())
+		result.vendors		 = ApiCollectionReader.getVendorCollection(sub.getVendors())
 
 		// TODO refactoring with issueEntitlementService
 		result.packages = ApiCollectionReader.getPackageWithIssueEntitlementsCollection(sub.packages, context, sql) // de.laser.SubscriptionPackage

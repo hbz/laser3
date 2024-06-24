@@ -1169,6 +1169,8 @@ class AjaxHtmlController {
         }
     }
 
+    // ----- workflows -----
+
     /**
      * Call to render the flyout containing the steps of a given workflow
      * @return the template containing the data for the flyout
@@ -1280,6 +1282,8 @@ class AjaxHtmlController {
 
         render template: '/templates/workflow/modal', model: result
     }
+
+    // ----- titles -----
 
     /**
      * Retrieves detailed title information to a given entitlement and opens a modal showing those details

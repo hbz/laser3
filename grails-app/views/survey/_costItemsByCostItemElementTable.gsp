@@ -7,7 +7,7 @@
 
 <div class="ui segment">
     <h3>
-        <g:message code="costItem.label"/> in <g:message code="survey.label"/>
+        ${header}
     </h3>
     <table class="ui sortable celled la-js-responsive-table la-table table">
         <thead>
@@ -21,7 +21,7 @@
         </tr>
         </thead>
         <tbody>
-        <g:each in="${costItemsByCostItemElement}" var="ctByCostItemElement" status="i">
+        <g:each in="${costItemsByCTE}" var="ctByCostItemElement" status="i">
             <g:set var="costItemElement"
                    value="${RefdataValue.findByValueAndOwner(ctByCostItemElement.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT))}"/>
             <g:set var="sumCostInBillingCurrencyAfterTaxByElement" value="${0}"/>

@@ -151,10 +151,10 @@ class ReportingLocalService {
                     result.tmpl      = TMPL_PATH_DETAILS + cfg.getAt('detailsTemplate')
                 }
             }
-            else if (params.query == 'timeline-annualMember-subscription') {
+            else if (params.query in ['timeline-annualMember-subscription', 'timeline-referenceYearMember-subscription']) {
                 result.labels = SubscriptionReport.getTimelineQueryLabelsForAnnual(params)
 
-                result.list = Subscription.executeQuery( 'select sub from Subscription sub where sub.id in (:idList) order by sub.name, sub.startDate, sub.endDate', [idList: idList])
+                result.list = Subscription.executeQuery( 'select sub from Subscription sub where sub.id in (:idList) order by sub.name, sub.startDate, sub.referenceYear, sub.endDate', [idList: idList])
                 result.tmpl = TMPL_PATH_DETAILS + cfg.getAt('detailsTemplate')
             }
             else {

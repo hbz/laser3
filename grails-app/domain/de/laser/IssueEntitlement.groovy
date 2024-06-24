@@ -35,10 +35,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     Date accessStartDate
     Date accessEndDate
 
-    //@Deprecated
-    //String name
-    //@Deprecated
-    //String sortname
     String notes
 
     Subscription perpetualAccessBySub
@@ -46,18 +42,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     //merged as the difference between an IssueEntitlement and a TIPP is mainly former's attachment to a subscription, otherwise, they are functionally identical, even dependent upon each other. So why keep different refdata categories?
     @RefdataInfo(cat = RDConstants.TIPP_STATUS)
     RefdataValue status
-
-    //@Deprecated
-    //@RefdataInfo(cat = RDConstants.TIPP_ACCESS_TYPE)
-    //RefdataValue accessType
-
-    //@Deprecated
-    //@RefdataInfo(cat = RDConstants.LICENSE_OA_TYPE)
-    //RefdataValue openAccess
-
-    //@Deprecated
-    //@RefdataInfo(cat = RDConstants.TITLE_MEDIUM)
-    //RefdataValue medium // legacy; was distinguished back then; I see no reason why I should still do so. Is legacy.
 
     Date dateCreated
     Date lastUpdated
@@ -91,16 +75,11 @@ class IssueEntitlement extends AbstractBase implements Comparable {
                 id column:'ie_id'
          globalUID column:'ie_guid'
            version column:'ie_version'
-            //name column:'ie_name', type: 'text'
-        //sortname column:'ie_sortname', type: 'text'
              notes column:'ie_notes', type: 'text'
             status column:'ie_status_rv_fk', index: 'ie_status_idx, ie_sub_tipp_status_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
-      //accessType column:'ie_access_type_rv_fk', index: 'ie_access_type_idx'
-      //openAccess column:'ie_open_access_rv_fk', index: 'ie_open_access_idx'
       subscription column:'ie_subscription_fk', index: 'ie_sub_idx, ie_sub_tipp_idx, ie_sub_tipp_status_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
               tipp column:'ie_tipp_fk',         index: 'ie_tipp_idx, ie_sub_tipp_idx, ie_sub_tipp_status_idx, ie_tipp_status_accept_status_idx'
         perpetualAccessBySub column:'ie_perpetual_access_by_sub_fk', index: 'ie_perpetual_access_by_sub_idx'
-          //medium column:'ie_medium_rv_fk', index: 'ie_medium_idx'
    accessStartDate column:'ie_access_start_date'
      accessEndDate column:'ie_access_end_date'
          coverages sort: 'startDate', order: 'asc'
@@ -112,13 +91,9 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
     static constraints = {
         globalUID      (nullable: true, blank: false, unique:true, maxSize:255)
-      //name           (nullable:true)
-      //sortname       (nullable:true)
+
         notes          (nullable:true)
         status         (nullable:true)
-      //accessType     (nullable:true)
-      //openAccess     (nullable:true)
-      //medium         (nullable:true)
         accessStartDate(nullable:true)
         accessEndDate  (nullable:true)
 
