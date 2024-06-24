@@ -428,6 +428,35 @@ class SubscriptionReport {
                     }
                     result.data = newData
                 }
+                else if (params.query == 'timeline-referenceYearMember-subscription') { // TODO
+                    List<Long> subIdLists = []
+
+                    if (timeline) {
+                        subIdLists = Subscription.executeQuery(
+                                'select distinct s.id from Subscription s join s.orgRelations oo where s.instanceOf in (:timeline) and oo.roleType in :subscriberRoleTypes',
+                                [timeline: timeline, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
+                        )
+                    }
+
+                    BaseQuery.handleGenericAnnualXQuery(params.query, 'Subscription', subIdLists, result) // TODO
+                    boolean isCurrentSet = false
+
+                    List newData = []
+                    result.data.each { d ->
+                        boolean isCurrent = (sub.startDate && sub.endDate) ? DateUtils.getYearAsInteger(sub.startDate) <= d[0] && DateUtils.getYearAsInteger(sub.endDate) >= d[0] : false
+                        if (isCurrent) {
+                            timelineIsCurrentId = Long.valueOf(d[0] as String)
+                            isCurrentSet = true
+                        }
+                        newData.add([
+                                d[0], d[1], d[2], isCurrent
+                        ])
+                    }
+                    if (!isCurrentSet) {
+                        timelineIsCurrentId = Long.valueOf(Year.now().toString()) // fallback - year as id
+                    }
+                    result.data = newData
+                }
 
                 // keep all data for correct processing and only then limit
 

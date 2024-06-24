@@ -59,7 +59,6 @@ class AjaxController {
     DashboardDueDatesService dashboardDueDatesService
     IdentifierService identifierService
     FilterService filterService
-    PendingChangeService pendingChangeService
     PropertyService propertyService
     SubscriptionControllerService subscriptionControllerService
     SubscriptionService subscriptionService
