@@ -14,6 +14,12 @@
 %{--            <g:if test="${query == 'org-country'}">--}%
 %{--                <th>${message(code:'org.region.label')}</th>--}%
 %{--            </g:if>--}%
+            <g:if test="${! query.endsWith('-libraryType')}">
+                <th>${message(code:'org.libraryType.label')}</th>
+            </g:if>
+            <g:if test="${! query.endsWith('-libraryNetwork')}">
+                <th>${message(code:'org.libraryNetwork.label')}</th>
+            </g:if>
             <g:if test="${query == 'org-x-property'}">
                 <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
@@ -40,6 +46,12 @@
 %{--                            ${org.region?.getI10n('value')}--}%
 %{--                        </td>--}%
 %{--                    </g:if>--}%
+                    <g:if test="${! query.endsWith('-libraryType')}">
+                        <td>${org.libraryType?.getI10n('value')}</td>
+                    </g:if>
+                    <g:if test="${! query.endsWith('-libraryNetwork')}">
+                        <td>${org.libraryNetwork?.getI10n('value')}</td>
+                    </g:if>
                     <g:if test="${query == 'org-x-property'}">
                         <td>
                             <uiReporting:objectProperties owner="${org}" tenant="${contextService.getOrg()}" propDefId="${id}" />
