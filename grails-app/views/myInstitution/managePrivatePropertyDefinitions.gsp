@@ -34,7 +34,7 @@
                 %>
                 <div class="${active} title">
                     <i class="dropdown icon"></i>
-                    <g:message code="propertyDefinition.${entry.key}.label" />
+                    <g:message code="propertyDefinition.${entry.key}.label" /> (${entry.value.size()})
                 </div>
                 <div class="${active} content">
                     <g:form class="ui form" action="managePrivatePropertyDefinitions" method="post">
