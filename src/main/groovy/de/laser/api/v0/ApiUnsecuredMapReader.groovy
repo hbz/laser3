@@ -515,12 +515,12 @@ class ApiUnsecuredMapReader {
         result.status         = vendor.status?.value
 
         // References
-        Map<String, Object> queryParams = [provider:vendor]
+        Map<String, Object> queryParams = [vendor:vendor]
 
-        result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :vendor and a.tenant = null', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.Address w/o tenant
-        result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :vendor and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.Address w/ tenant
+        result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.vendor = :vendor and a.tenant = null', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.Address w/o tenant
+        result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.vendor = :vendor and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.Address w/ tenant
         result.identifiers  = ApiCollectionReader.getIdentifierCollection(vendor.ids) // de.laser.Identifier
-        result.packages     = ApiCollectionReader.getPackageCollection(vendor.packages)
+        result.packages     = ApiCollectionReader.getPackageCollection(vendor.packages.pkg)
         result.persons      = ApiCollectionReader.getPrsLinkCollection(
                 vendor.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
         ) // de.laser.PersonRole
