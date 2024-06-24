@@ -274,14 +274,12 @@
 
     get:
       tags:
-        - Objects
+        - Lists
       summary: Retrieving a list of all providers
       description: >
         Retrieving a list of all providers
 
       parameters:
-        - $ref: "#/components/parameters/q"
-        - $ref: "#/components/parameters/v"
         - $ref: "#/components/parameters/authorization"
 
       responses:
@@ -526,7 +524,7 @@
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Provider"
+                $ref: "#/components/schemas/Vendor"
         400:
           $ref: "#/components/responses/badRequest"
         401:
@@ -544,14 +542,12 @@
 
     get:
       tags:
-        - Objects
+        - Lists
       summary: Retrieving a list of all vendors
       description: >
         Retrieving a list of all vendors
 
       parameters:
-        - $ref: "#/components/parameters/q"
-        - $ref: "#/components/parameters/v"
         - $ref: "#/components/parameters/authorization"
 
       responses:
