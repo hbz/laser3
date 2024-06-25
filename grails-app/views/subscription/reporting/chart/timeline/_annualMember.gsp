@@ -1,3 +1,4 @@
+<%@ page import="de.laser.reporting.report.myInstitution.base.BaseQuery" %>
 <g:if test="${data}">
 JSPC.app.reporting.current.chart.option = {
     dataset: {
@@ -54,7 +55,15 @@ JSPC.app.reporting.current.chart.option = {
             },
             itemStyle: {
                 color: function(params) {
-                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('blue', (params.data[3] == true))
+                    if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_DATA_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_STARTDATE_LABEL)}'], params.data[1])) {
+                            return JSPC.app.reporting.helper.series._color.redInactive
+                    }
+                    else if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_ENDDATE_LABEL)}'], params.data[1])) {
+                        return JSPC.app.reporting.helper.series._color.ice
+                    }
+                    else {
+                        return JSPC.app.reporting.helper.series.bar.itemStyle.color('blue', (params.data[3] == true))
+                    }
                 }
             }
         }
