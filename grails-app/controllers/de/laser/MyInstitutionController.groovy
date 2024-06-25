@@ -955,7 +955,6 @@ class MyInstitutionController  {
         }
         result.curatoryGroupTypes = [
                 [value: 'Provider', name: message(code: 'package.curatoryGroup.provider')],
-                [value: 'Vendor', name: message(code: 'package.curatoryGroup.vendor')],
                 [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
         ]
         if(params.containsKey('nameContains')) {
