@@ -165,7 +165,7 @@
                     <h2 class="ui icon inverted header">
                         <i class="address card outline icon"></i>
                         <div class="content">
-                            Nachname
+                            <g:message code='contact.surname' />
                         </div>
                     </h2>
                 </div>
@@ -174,7 +174,7 @@
                     <h2 class="ui icon inverted header">
                         <i class="wrench icon"></i>
                         <div class="content">
-                            Funktionsbezeichnung
+                            <g:message code='contact.functionName' />
                         </div>
                     </h2>
                 </div>
@@ -303,11 +303,11 @@
                 </label>
                 %{-- Buttons for selection of kind of contact START --}%
                 <div class="ui wrapping spaced buttons">
-                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_EMAIL.id}"><i class="icon  envelope outline"></i>E-Mail hinzufügen</a>
-                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_FAX.id}"><i class="tty circle icon"></i>Fax hinzufügen</a>
-                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_MOBILE.id}"><i class="mobile alternate circle icon"></i>Mobil hinzufügen</a>
-                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_PHONE.id}"><i class="phone circle icon"></i>Telefon hinzufügen</a>
-                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_URL.id}"><i class="globe circle icon"></i>Url hinzufügen</a>
+                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_EMAIL.id}"><i class="icon  envelope outline"></i><g:message code="contact.addEmail"/></a>
+                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_FAX.id}"><i class="tty circle icon"></i><g:message code="contact.addTty"/></a>
+                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_MOBILE.id}"><i class="mobile alternate circle icon"></i><g:message code="contact.addMobil"/></a>
+                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_PHONE.id}"><i class="phone circle icon"></i><g:message code="contact.addPhone"/></a>
+                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_URL.id}"><i class="globe circle icon"></i><g:message code="contact.addUrl"/></a>
                 </div>
                 %{-- Buttons for selection of kind of contact END --}%
             </div>
@@ -437,13 +437,16 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
+%{--    --}%
+    //$('.ui.form').form('remove fields', ['contactContent']);
+
     $("#la-js-buttonFunction").on("click", function () {
-        $("#la-js-nameOrFunction").text("Funktionsbezeichnung");
+        $("#la-js-nameOrFunction").text("${message(code:'contact.functionName')}");
         $(this).parent('.buttons').find('#la-js-buttonSurname').removeClass('active');
         $(this).addClass('active');
     });
     $("#la-js-buttonSurname").on("click", function () {
-        $("#la-js-nameOrFunction").text("Nachname");
+        $("#la-js-nameOrFunction").text("${message(code:'contact.surname')}");
          $(this).parent('.buttons').find('#la-js-buttonFunction').removeClass('active');
         $(this).addClass('active');
     });
@@ -535,7 +538,7 @@
                     identifier: 'email',
                     rules: [
                         {
-                            type   : 'email',
+                            type   : 'emailRegex',
                             prompt: '<g:message code="contact.create.email.error" />'
                         }
                     ]
@@ -639,9 +642,11 @@
       let contactField = elem.parents('.contactField').find('.la-js-contactContent');
       if ( elem.parents('.contactField').find('.contentType select').val() == ${RDStore.CCT_EMAIL.id} ){
         contactField.attr('data-validate','email');
+        //$('.ui.form').form('remove fields', ['contactContent']);
       }
       else {
         contactField.attr('data-validate','contactContent');
+        //$('.ui.form').form('remove fields', ['email']);
       }
     }
 
@@ -698,6 +703,7 @@
     JSPC.app.changeIconRegardingDropdown();
 
     JSPC.app.formValidation();
+    //$('.ui.form').form('remove fields', ['contactContent']);
 
 %{--    Deal with accordion in case already any input--}%
     $(".accordion").accordion();
