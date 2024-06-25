@@ -24,7 +24,7 @@
         <g:each in="${propDefGroups}" var="typeEntry">
             <div class="title ${params.ownerType == typeEntry.key ? 'active' : ''}">
                 <i class="dropdown icon"></i>
-                <g:message code="propertyDefinition.${typeEntry.key}.label"/>
+                <g:message code="propertyDefinition.${typeEntry.key}.label"/> (${typeEntry.value.size()})
             </div>
             <div class="content ${params.ownerType == typeEntry.key ? 'active' : ''}">
                 <table class="ui celled sortable table la-js-responsive-table la-table compact">

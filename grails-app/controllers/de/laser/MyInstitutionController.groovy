@@ -3094,6 +3094,9 @@ class MyInstitutionController  {
                 if(p.roleLinks.org[0]) {
                     oid = genericOIDService.getOID(p.roleLinks.org[0])
                 }
+                else if(p.roleLinks.provider[0]) {
+                    oid = genericOIDService.getOID(p.roleLinks.provider[0])
+                }
                 else if(p.roleLinks.vendor[0]) {
                     oid = genericOIDService.getOID(p.roleLinks.vendor[0])
                 }
