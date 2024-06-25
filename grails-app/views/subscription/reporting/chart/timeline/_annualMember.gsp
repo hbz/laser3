@@ -4,7 +4,7 @@ JSPC.app.reporting.current.chart.option = {
     dataset: {
         dimensions: ['id', 'name', 'value', 'isCurrent'],
         source: [
-            <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}, ${it[3]}]," } %>
+            <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}, ${it[3]}]," } %>%{-- TODO: 0 == null : ${it[0] ? it[0] : 0} --}%
         ]
     },
     grid:  {
@@ -32,7 +32,6 @@ JSPC.app.reporting.current.chart.option = {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
         formatter (params) {
-            let index = JSPC.app.reporting.current.chart.option.dataset.dimensions.length - 1
             let str = params[0].data[1]
             for (let i=0; i<params.length; i++) {
                 str += JSPC.app.reporting.helper.tooltip.getEntry(params[i].marker, params[i].seriesName, params[i].data[ 2 ])
