@@ -60,7 +60,7 @@
                     </td>
                     <g:if test="${query == 'timeline-annualMember-subscription'}">
                         <td>
-                            ${sub.referenceYear ?: ''}
+                            ${sub.referenceYear}
                         </td>
                     </g:if>
                     <td>

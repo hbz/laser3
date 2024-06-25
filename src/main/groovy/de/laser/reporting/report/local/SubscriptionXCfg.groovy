@@ -155,12 +155,12 @@ class SubscriptionXCfg {
                                             chartTemplate   : 'timeline/1axis3values',
                                             chartLabels     : [ 'package.1', 'package.2', 'package.3' ]
                                     ],
-                                    'timeline-referenceYearMember-subscription' : [
+                                    'timeline-annualMember-subscription' : [
                                             detailsTemplate : 'timeline/subscription',
                                             chartTemplate   : 'timeline/annualMember',
                                             chartLabels     : [ 'annualMember-subscription' ]
                                     ],
-                                    'timeline-annualMember-subscription' : [
+                                    'timeline-referenceYearMember-subscription' : [
                                             detailsTemplate : 'timeline/subscription',
                                             chartTemplate   : 'timeline/annualMember',
                                             chartLabels     : [ 'annualMember-subscription' ]
