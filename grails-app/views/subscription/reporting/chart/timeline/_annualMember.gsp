@@ -55,7 +55,7 @@ JSPC.app.reporting.current.chart.option = {
             itemStyle: {
                 color: function(params) {
                     if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_DATA_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_STARTDATE_LABEL)}'], params.data[1])) {
-                            return JSPC.app.reporting.helper.series._color.redInactive
+                        return JSPC.app.reporting.helper.series._color.redInactive
                     }
                     else if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_ENDDATE_LABEL)}'], params.data[1])) {
                         return JSPC.app.reporting.helper.series._color.ice
