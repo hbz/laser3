@@ -187,14 +187,26 @@
         <p>
             ${text['timeline-annualMember-subscription'][lang][1]}
         </p>
+%{--        <p>--}%
+%{--            <g:if test="${lang == 'de'}">--}%
+%{--                Start- und Enddatum <strong>dieser Lizenz</strong> werden bei der Abfrage nicht beachtet, <br />--}%
+%{--            </g:if>--}%
+%{--            <g:if test="${lang == 'en'}">--}%
+%{--                Start and end dates <strong>from this subscription</strong> are ignored when querying, <br />--}%
+%{--            </g:if>--}%
+%{--            ${text['timeline-annualMember-subscription'][lang][3]}--}%
+%{--        </p>--}%
         <p>
             <g:if test="${lang == 'de'}">
-                Start- und Enddatum <strong>in dieser Lizenz</strong> werden bei der Abfrage nicht beachtet; <br />
+                Einrichtungslizenzen ohne Enddatum werden <strong>zusätzlich</strong> in der Gruppe <i class="icon circle teal"></i><strong>* ohne Ablauf</strong> gelistet. <br />
+                Einrichtungslizenzen ohne Startdatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* ohne Startdatum</strong> gelistet. <br />
+                Einrichtungslizenzen ohne Angabe von Start- und Enddatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> gelistet. <br />
             </g:if>
             <g:if test="${lang == 'en'}">
-                Start and end dates <strong>in this subscription</strong> are ignored when querying; <br />
+                Participant subscriptions without an end date are <strong>additionally</strong> listed in the group <i class="icon circle teal"></i><strong>* no End date</strong>. <br />
+                Participant subscriptions without a start date will be <strong>exclusive</strong> listed in the group <i class="icon circle pink"></i><strong>* no Start date</strong>. <br />
+                Participant subscriptions without a start and end date will be <strong>exclusive</strong> listed in the group <i class="icon circle pink"></i><strong>* no Information</strong>. <br />
             </g:if>
-            ${text['timeline-annualMember-subscription'][lang][3]}
         </p>
     </div>
 
