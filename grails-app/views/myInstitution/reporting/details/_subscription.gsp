@@ -31,6 +31,9 @@
             <g:elseif test="${query == 'subscription-x-memberProvider'}">
                 <th>${message(code:'provider.label')}</th>
             </g:elseif>
+            <g:if test="${! (query in ['subscription-x-referenceYear', 'subscription-x-memberReferenceYear'])}">
+                <th>${message(code:'subscription.referenceYear.label')}</th>
+            </g:if>
             <th>${message(code:'subscription.startDate.label')}</th>
             <th>${message(code:'subscription.endDate.label')}</th>
         </tr>
@@ -110,6 +113,11 @@
                         </td>
                     </g:elseif>
 
+                    <g:if test="${! (query in ['subscription-x-referenceYear', 'subscription-x-memberReferenceYear'])}">
+                        <td>
+                            ${sub.referenceYear}
+                        </td>
+                    </g:if>
                     <td>
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.startDate}" />
                     </td>

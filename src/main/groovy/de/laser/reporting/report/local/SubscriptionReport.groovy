@@ -438,7 +438,7 @@ class SubscriptionReport {
                         )
                     }
 
-                    SubscriptionReport.handleReferenceYearQuery(params.query,  subIdLists, result)
+                    BaseQuery.handleSubscriptionReferenceYearXQuery(params.query,  subIdLists, result)
                     boolean isCurrentSet = false
 
                     List newData = []
@@ -753,38 +753,6 @@ class SubscriptionReport {
                 idList,
                 result
         )
-    }
-
-    static void handleReferenceYearQuery(String query, List<Long> idList, Map<String, Object> result) {
-
-        List<Year> all = Subscription.executeQuery( 'select distinct s.referenceYear from Subscription s where s.referenceYear != null and s.id in (:idList)', [idList: idList] )
-        List<Integer> dd = [
-                all.min() ? all.min().getValue() : null,
-                all.max() ? all.max().getValue() : null
-        ]
-        dd[1] = dd[1] ? Math.min( dd[1], Year.now().value + 5 ) : Year.now().value
-        List<Integer> years = ( (dd[0] ?: Year.now().value)..(dd[1]) ).toList()
-
-        years.sort().each { y ->
-            println ' ' + y + '  ' + y.getClass()
-
-            String hql = 'select s.id from Subscription s where s.id in (:idList) and s.referenceYear = :year'
-
-            List<Long> annualList = Subscription.executeQuery( hql, [idList: idList, year: Year.of(y)] )
-            if (annualList) {
-                result.data.add( [y, y, annualList.size()] )
-                result.dataDetails.add( [
-                        query: query,
-                        id: y,
-                        label: y,
-                        idList: annualList
-                ] )
-            }
-        }
-
-        List<Long> noDataList = Subscription.executeQuery( 'select s.id from Subscription s where s.id in (:idList) and s.referenceYear is null', [idList: idList] )
-
-        BaseQuery.handleGenericNonMatchingData1Value_TMP(query, BaseQuery.NO_DATA_LABEL, noDataList, result)
     }
 
     static List<Subscription> getTimeline(Subscription sub) {
