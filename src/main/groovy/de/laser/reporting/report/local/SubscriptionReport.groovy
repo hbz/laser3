@@ -112,6 +112,19 @@ class SubscriptionReport {
                 meta = [ getMessage( 'timeline'), getMessage( 'timeline.' + params.query ), "${params.id}" ]
             }
         }
+
+        if (meta && params.query in ['timeline-annualMember-subscription', 'timeline-referenceYearMember-subscription']) { // TODO
+            MessageSource ms = BeanStore.getMessageSource()
+            if (params.int('id') == BaseQuery.FAKE_DATA_ID_1) {
+                meta[2] = ms.getMessage('reporting.chart.result.noData.label', null, LocaleUtils.getCurrentLocale())
+            }
+            else if (params.int('id') == BaseQuery.FAKE_DATA_ID_2) {
+                meta[2] = ms.getMessage('reporting.chart.result.noEndDate.label', null, LocaleUtils.getCurrentLocale())
+            }
+            else if (params.int('id') == BaseQuery.FAKE_DATA_ID_3) {
+                meta[2] = ms.getMessage('reporting.chart.result.noStartDate.label', null, LocaleUtils.getCurrentLocale())
+            }
+        }
         meta
     }
 
