@@ -33,6 +33,7 @@ class BaseQuery {
     static String NO_VENDOR_LABEL            = 'noVendor.label'
     static String NO_STARTDATE_LABEL         = 'noStartDate.label'
     static String NO_ENDDATE_LABEL           = 'noEndDate.label'
+    static String NO_REFERENCEYEAR_LABEL     = 'noReferenceYear.label'
 
     static List<String> REFDATA_QUERY = ['select ref.id, ref.value_de, count(*) ', ' group by ref.id, ref.value_de order by ref.value_de' ]
 
