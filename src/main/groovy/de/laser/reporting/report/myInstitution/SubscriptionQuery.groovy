@@ -85,6 +85,10 @@ class SubscriptionQuery extends BaseQuery {
 
                 handleGenericAnnualXQuery(params.query, 'Subscription', idList, result)
             }
+            else if (params.query in ['subscription-x-referenceYear']) {
+
+                handleSubscriptionReferenceYearXQuery(params.query, idList, result)
+            }
 //            else if (params.query in ['subscription-x-memberProvider']) {
 //
 //                List<Long> memberSubIdList = BaseFilter.getCachedFilterIdList('memberSubscription', params) ?: []
@@ -369,6 +373,12 @@ class SubscriptionQuery extends BaseQuery {
                 List<Long> memberSubscriptionIdList = BaseFilter.getCachedFilterIdList('memberSubscription', params) // filter is set
 
                 handleGenericAnnualXQuery(params.query, 'Subscription', memberSubscriptionIdList, result)
+            }
+            else if (params.query in ['subscription-x-memberReferenceYear']) {
+
+                List<Long> memberSubscriptionIdList = BaseFilter.getCachedFilterIdList('memberSubscription', params) // filter is set
+
+                handleSubscriptionReferenceYearXQuery(params.query, memberSubscriptionIdList, result)
             }
             else if (params.query in ['subscription-x-member']) {
 

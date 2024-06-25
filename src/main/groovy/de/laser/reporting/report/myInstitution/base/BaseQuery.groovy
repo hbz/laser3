@@ -3,6 +3,7 @@ package de.laser.reporting.report.myInstitution.base
 import de.laser.IdentifierNamespace
 import de.laser.Org
 import de.laser.RefdataValue
+import de.laser.Subscription
 import de.laser.auth.Role
 import de.laser.utils.LocaleUtils
 import de.laser.storage.BeanStore
@@ -33,6 +34,7 @@ class BaseQuery {
     static String NO_VENDOR_LABEL            = 'noVendor.label'
     static String NO_STARTDATE_LABEL         = 'noStartDate.label'
     static String NO_ENDDATE_LABEL           = 'noEndDate.label'
+    static String NO_REFERENCEYEAR_LABEL     = 'noReferenceYear.label'
 
     static List<String> REFDATA_QUERY = ['select ref.id, ref.value_de, count(*) ', ' group by ref.id, ref.value_de order by ref.value_de' ]
 
@@ -510,6 +512,38 @@ class BaseQuery {
         }
 
         List<Long> noDataList = Org.executeQuery( 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate is null and dc.endDate is null', [idList: idList] )
+
+        handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
+    }
+
+    static void handleSubscriptionReferenceYearXQuery(String query, List<Long> idList, Map<String, Object> result) {
+
+        List<Year> all = Subscription.executeQuery( 'select distinct s.referenceYear from Subscription s where s.referenceYear != null and s.id in (:idList)', [idList: idList] )
+        List<Integer> dd = [
+                all.min() ? all.min().getValue() : null,
+                all.max() ? all.max().getValue() : null
+        ]
+        dd[1] = dd[1] ? Math.min( dd[1], Year.now().value + 5 ) : Year.now().value
+        List<Integer> years = ( (dd[0] ?: Year.now().value)..(dd[1]) ).toList()
+
+        years.sort().each { y ->
+            println ' ' + y + '  ' + y.getClass()
+
+            String hql = 'select s.id from Subscription s where s.id in (:idList) and s.referenceYear = :year'
+
+            List<Long> annualList = Subscription.executeQuery( hql, [idList: idList, year: Year.of(y)] )
+            if (annualList) {
+                result.data.add( [y, y, annualList.size()] )
+                result.dataDetails.add( [
+                        query: query,
+                        id: y,
+                        label: y,
+                        idList: annualList
+                ] )
+            }
+        }
+
+        List<Long> noDataList = Subscription.executeQuery( 'select s.id from Subscription s where s.id in (:idList) and s.referenceYear is null', [idList: idList] )
 
         handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
     }

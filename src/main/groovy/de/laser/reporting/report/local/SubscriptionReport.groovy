@@ -428,7 +428,7 @@ class SubscriptionReport {
                     }
                     result.data = newData
                 }
-                else if (params.query == 'timeline-referenceYearMember-subscription') { // TODO
+                else if (params.query == 'timeline-referenceYearMember-subscription') {
                     List<Long> subIdLists = []
 
                     if (timeline) {
@@ -438,12 +438,12 @@ class SubscriptionReport {
                         )
                     }
 
-                    BaseQuery.handleGenericAnnualXQuery(params.query, 'Subscription', subIdLists, result) // TODO
+                    BaseQuery.handleSubscriptionReferenceYearXQuery(params.query,  subIdLists, result)
                     boolean isCurrentSet = false
 
                     List newData = []
                     result.data.each { d ->
-                        boolean isCurrent = (sub.startDate && sub.endDate) ? DateUtils.getYearAsInteger(sub.startDate) <= d[0] && DateUtils.getYearAsInteger(sub.endDate) >= d[0] : false
+                        boolean isCurrent = sub.referenceYear ? Integer.valueOf(sub.referenceYear.toString()) == d[0] : false
                         if (isCurrent) {
                             timelineIsCurrentId = Long.valueOf(d[0] as String)
                             isCurrentSet = true
@@ -460,8 +460,27 @@ class SubscriptionReport {
 
                 // keep all data for correct processing and only then limit
 
+                List specIdx = []
+                result.data.eachWithIndex { List entry, int idx ->
+                    if (entry[0] == null || entry[0] < 0) {
+                        specIdx << entry[0]
+                    }
+                }
+                List specData = []
+                List specDataDetails = []
+                specIdx.each { idx ->
+                    def x = result.data.find{ it[0] == idx }
+                    def y = result.dataDetails.find{ it.id == idx }
+                    if (x && y) {
+                        specData << x
+                        specDataDetails << y
+                        result.data.remove(x)
+                        result.dataDetails.remove(y)
+                    }
+                }
+
                 int timelineFromIdx = 0
-                result.data.eachWithIndex{ List entry, int idx ->
+                result.data.eachWithIndex { List entry, int idx ->
                     if (entry[0] == timelineIsCurrentId) { timelineFromIdx = idx }
                 }
                 int timelineToIdx = (timelineFromIdx + NUMBER_OF_TIMELINE_ELEMENTS)
@@ -475,6 +494,8 @@ class SubscriptionReport {
                     result.dataDetails = (result.dataDetails as List).subList(timelineFromIdx, timelineToIdx)
                 }
 
+                result.data.addAll(specData)
+                result.dataDetails.addAll(specDataDetails)
             }
 
             else if (prefix == 'tipp') {
@@ -683,7 +704,7 @@ class SubscriptionReport {
         result
     }
 
-    static void processSimpleMemberRefdataQuery(String query, String refdata, List idList, Map<String, Object> result) {
+    static void processSimpleMemberRefdataQuery(String query, String refdata, List<Long> idList, Map<String, Object> result) {
 
         List<String> PROPERTY_QUERY = [
                 'select p.id, p.value_de, count(*) ',
@@ -700,7 +721,7 @@ class SubscriptionReport {
         )
     }
 
-    static void processSimpleTippQuery(String query, String property, List idList, Map<String, Object> result) {
+    static void processSimpleTippQuery(String query, String property, List<Long> idList, Map<String, Object> result) {
 
         List<String> PROPERTY_QUERY = [
                 'select tipp.' + property + ', tipp.' + property + ', count(*) ',
@@ -717,7 +738,7 @@ class SubscriptionReport {
         )
     }
 
-    static void processSimpleTippRefdataQuery(String query, String refdata, List idList, Map<String, Object> result) {
+    static void processSimpleTippRefdataQuery(String query, String refdata, List<Long> idList, Map<String, Object> result) {
 
         List<String> PROPERTY_QUERY = [
                 'select p.id, p.value_de, count(*) ',
