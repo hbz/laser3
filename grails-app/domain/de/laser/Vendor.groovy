@@ -17,6 +17,7 @@ import de.laser.properties.VendorProperty
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyConfigVendor
 import de.laser.survey.SurveyResult
 import de.laser.workflow.WfChecklist
 import groovy.util.logging.Slf4j
@@ -78,7 +79,8 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             supportedLibrarySystems: 'vendor',
             electronicBillings: 'vendor',
             invoiceDispatchs: 'vendor',
-            electronicDeliveryDelays: 'vendor'
+            electronicDeliveryDelays: 'vendor',
+            surveys: 'vendor'
     ]
 
     static hasMany = [
@@ -95,7 +97,8 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
             supportedLibrarySystems: LibrarySystem,
             electronicBillings: ElectronicBilling,
             invoiceDispatchs: InvoiceDispatch,
-            electronicDeliveryDelays: ElectronicDeliveryDelayNotification
+            electronicDeliveryDelays: ElectronicDeliveryDelayNotification,
+            surveys: SurveyConfigVendor
     ]
 
     static mapping = {
