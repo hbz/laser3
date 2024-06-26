@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.PersonRole; de.laser.ProviderRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.helper.Params; de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.PersonRole; de.laser.ProviderRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
 
 <laser:htmlStart message="menu.public.gasco_monitor">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
@@ -150,7 +150,7 @@
 
                         <g:each in="${sub.packages}" var="subPkg" status="j">
                             <div class="la-flexbox">
-                                <i class="icon gift la-list-icon"></i>
+                                <i class="${Icons.PACKAGE} icon la-list-icon"></i>
                                 <g:link controller="public" action="gascoDetailsIssueEntitlements" id="${subPkg.id}">${subPkg.pkg}</g:link>
                             </div>
                         </g:each>

@@ -149,7 +149,7 @@
         <tr>
             <td>
                 <strong>
-                    <i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code: 'provider.label')}"></i>:
+                    <i class="${Icons.PROVIDER} la-list-icon la-popup-tooltip la-delay icon" data-content="${message(code: 'provider.label')}"></i>:
                 </strong>
             </td>
             <g:each in="${objects}" var="object">
@@ -168,7 +168,7 @@
         <tr>
             <td>
                 <strong>
-                    <i class="la-list-icon la-popup-tooltip la-delay shipping fast icon" data-content="${message(code:'vendor.label')}"></i>:
+                    <i class="${Icons.VENDOR} la-list-icon la-popup-tooltip la-delay icon" data-content="${message(code:'vendor.label')}"></i>:
                 </strong>
             </td>
             <g:each in="${objects}" var="object">
@@ -210,7 +210,7 @@
                                         <i class="address card icon"></i>
                                     </span>
                                     ${resp}
-                                    (<strong><i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code: 'provider.label')}"></i>:</strong>
+                                    (<strong><i class="${Icons.PROVIDER} la-list-icon la-popup-tooltip la-delay icon" data-content="${message(code: 'provider.label')}"></i>:</strong>
                                         <g:link controller="provider" action="show" target="_blank" id="${provider.id}">${fieldValue(bean: provider, field: "name")}
                                         </g:link>)
                                     <br />
@@ -225,7 +225,7 @@
                                         <i class="address card outline icon"></i>
                                     </span>
                                     ${resp}
-                                    (<strong><i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code: 'provider.label')}"></i>:</strong>
+                                    (<strong><i class="${Icons.PROVIDER} la-list-icon la-popup-tooltip la-delay icon" data-content="${message(code: 'provider.label')}"></i>:</strong>
                                     <g:link controller="provider" action="show" target="_blank" id="${provider.id}">${fieldValue(bean: provider, field: "name")}
                                     </g:link>)
                                     <br />
@@ -246,7 +246,7 @@
                                     <i class="address card icon"></i>
                                 </span>
                                 ${resp}
-                                (<strong><i class="la-list-icon la-popup-tooltip la-delay shipping fast icon" data-content="${message(code:'vendor.label')}"></i>:</strong>
+                                (<strong><i class="${Icons.VENDOR} la-list-icon la-popup-tooltip la-delay icon" data-content="${message(code:'vendor.label')}"></i>:</strong>
                                 <g:link controller="vendor" action="show" target="_blank" id="${vendor.id}">${fieldValue(bean: vendor, field: "name")}
                                 </g:link>)
                                 <br />
@@ -261,7 +261,7 @@
                                     <i class="address card outline icon"></i>
                                 </span>
                                 ${resp}
-                                (<strong><i class="la-list-icon la-popup-tooltip la-delay shipping fast icon" data-content="${message(code:'vendor.label')}"></i>:</strong>
+                                (<strong><i class="${Icons.VENDOR} la-list-icon la-popup-tooltip la-delay icon" data-content="${message(code:'vendor.label')}"></i>:</strong>
                                 <g:link controller="vendor" action="show" target="_blank" id="${vendor.id}">${fieldValue(bean: vendor, field: "name")}
                                 </g:link>)
                                 <br />

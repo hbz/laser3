@@ -365,7 +365,7 @@
                                 </div>
                             </div>
                             <div class="content">
-                                <p class="ui header">%{--<i class="icon cloud"></i>--}% <g:message code="org.platforms.label" /></p>
+                                <p class="ui header">%{--<i class="${Icons.PLATFORM} icon"></i>--}% <g:message code="org.platforms.label" /></p>
 
                                 <div class="ui divided middle aligned selection list la-flex-list">
                                     <g:each in="${platforms}" var="platform">
@@ -379,7 +379,7 @@
                                     </g:each>
                                 </div>
 
-                                <p class="ui header">%{--<i class="icon gift"></i>--}% <g:message code="package.plural" /></p>
+                                <p class="ui header">%{--<i class="${Icons.PACKAGE} icon"></i>--}% <g:message code="package.plural" /></p>
 
                                 <div class="ui divided middle aligned selection list la-flex-list">
                                     <g:each in="${packages}" var="pkg">

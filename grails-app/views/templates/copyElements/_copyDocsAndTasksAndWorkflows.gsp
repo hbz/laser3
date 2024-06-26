@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.Person; de.laser.Doc; de.laser.Subscription; de.laser.FormService" %>
+<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.Person; de.laser.Doc; de.laser.Subscription; de.laser.FormService" %>
 <laser:serviceInjection />
 
 
@@ -286,7 +286,7 @@
                 %{--TASKS:--}%
                 <tr data-element="copyObject.takeTasks">
                     <td data-element="source">
-                        <div class="la-min-height"><strong><i class="calendar check outline icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong></div>
+                        <div class="la-min-height"><strong><i class="${Icons.TASK} icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong></div>
                         <g:each in="${sourceTasks}" var="tsk">
                             <div data-id="${tsk?.id}" class="la-element la-min-height">
                                 <label>
@@ -317,7 +317,7 @@
                     </g:if>
                     <g:if test="${!copyObject && targetObject}">
                                 <td data-element="target">
-                                    <div class="la-min-height"><strong><i class="calendar check outline icon"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong></div>
+                                    <div class="la-min-height"><strong><i class="${Icons.TASK} icon"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong></div>
                                     <g:each in="${targetTasks}" var="tsk">
                                         <div data-id="${tsk?.id}" class="la-element la-min-height">
                                         <strong>${tsk?.title}</strong> (${message(code: 'task.endDate.label')}

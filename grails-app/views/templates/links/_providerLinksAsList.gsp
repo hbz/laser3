@@ -1,4 +1,4 @@
-<%@ page import="de.laser.workflow.WfChecklist; de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.helper.Icons; de.laser.workflow.WfChecklist; de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <laser:serviceInjection />
 <g:set var="wekbAPI" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 <table class="ui compact table">
@@ -8,7 +8,7 @@
             <tr>
                 <td>
                     <span class="la-flexbox la-minor-object">
-                        <i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code:'provider.label')}"></i>
+                        <i class="${Icons.PROVIDER} la-list-icon la-popup-tooltip la-delay icon" data-content="${message(code:'provider.label')}"></i>
                         <g:link controller="provider" action="show" id="${role.provider.id}">
                             ${role.provider.name}
                         </g:link>

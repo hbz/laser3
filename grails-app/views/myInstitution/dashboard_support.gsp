@@ -124,18 +124,18 @@
         </a>
 
         <a class="${us_dashboard_tab.value == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
-            <i class="flag icon large"></i>
+            <i class="${Icons.ANNOUNCEMENT} icon large"></i>
             ${systemAnnouncements.size()} ${message(code:'announcement.plural')}
         </a>
 
         <a class="${us_dashboard_tab.value == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
-            <i class="calendar check outline icon large"></i>
+            <i class="${Icons.TASK} icon large"></i>
             ${tasksCount} ${message(code:'myinst.dash.task.label')}
         </a>
 
         <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
             <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
-                <i class="tasks icon large"></i>
+                <i class="${Icons.WORKFLOW} icon large"></i>
                 ${allChecklistsCount} ${message(code:'workflow.plural')}
             </a>
         </g:if>
