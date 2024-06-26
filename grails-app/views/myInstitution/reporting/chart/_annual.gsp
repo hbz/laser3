@@ -16,9 +16,7 @@
         tooltip: {
             trigger: 'item',
             formatter (params) {
-                var str = JSPC.app.reporting.current.chart.option.title.text
-                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
-                return str
+                return '${labels.tooltip}' + JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
            }
         },
 %{--        legend: {--}%
@@ -80,9 +78,7 @@
         tooltip: {
             trigger: 'item',
             formatter (params) {
-                var str = JSPC.app.reporting.current.chart.option.title.text
-                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
-                return str
+                return '${labels.tooltip}' + JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
            }
         },
         grid:  {
