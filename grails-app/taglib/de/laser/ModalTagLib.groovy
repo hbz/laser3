@@ -35,7 +35,7 @@ class ModalTagLib {
     }
     //<ui:modalContact id="myModalDialog" text="${text}" message="local.string" hideSubmitButton="true" modalSize="large/small/tiny/mini" >
     // CONTENT
-    // </ui:modal>
+    // </ui:modalContact>
 
     def modalAddress = { attrs, body ->
 
