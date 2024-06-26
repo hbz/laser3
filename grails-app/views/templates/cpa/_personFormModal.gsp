@@ -216,7 +216,7 @@
             <div class="ui accordion la-namedetails field">
                 <div class="title">
                     <i class="icon dropdown"></i>
-                    Namensdetails
+                    <g:message code="contact.nameDetails"/>
                 </div>
                 <div class="content field">
                     <div class="three fields">
@@ -353,12 +353,7 @@
                         </div>
 
                         <div class="field seven wide">
-                            <g:if test="${contact.contentType.id == RDStore.CCT_EMAIL.id}">
-                                <g:textField class="la-js-contactContent" data-validate="email" name="content${contact.id}" value="${contact.content}"/>
-                            </g:if>
-                            <g:else>
                                 <g:textField class="la-js-contactContent" data-validate="contactContent" name="content${contact.id}" value="${contact.content}"/>
-                            </g:else>
                         </div>
                         <div class="field one wide">
                             <button type="button"  class="ui icon negative button la-modern-button removeContactElement">
@@ -396,7 +391,7 @@
 
 
                         <div class="field eight wide">
-                            <g:textField class="la-js-contactContent" data-validate="email" id="content" name="content" value="${contactInstance?.content}"/>
+                            <g:textField class="la-js-contactContent" data-validate="contactContent"  id="content" name="content" value="${contactInstance?.content}"/>
                         </div>
                     </div>
                 </div>
@@ -437,8 +432,6 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
-%{--    --}%
-    $('.ui.form').form('remove fields', ['contactContent']);
 
     $("#la-js-buttonFunction").on("click", function () {
         $("#la-js-nameOrFunction").text("${message(code:'contact.functionName')}");
@@ -453,9 +446,19 @@
 
 
     $.fn.form.settings.rules.isMinimalOneContactFilled = function() {
-        return $(".la-js-contactContent").val() ?  true : false ;
+        if ($(".la-js-contactContent").val().length > 0) {
+            if ($(this).parents('.contactField').find('.contentType select').val() == ${RDStore.CCT_EMAIL.id}){
+                let pattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+                return pattern.test($(this).val()) ? true : false ;
+            }
+            else {
+             return true ;
+            }
+        }
+        else {
+            return false;
+        }
     };
-
 
     JSPC.app.formValidation = function () {
         $('#person_form').form({
@@ -480,11 +483,9 @@
                 {
                   type: 'empty',
                   prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
-                        }
-
-
-                      ]
-                    },
+                }
+              ]
+            },
         </g:if>
         <g:if test="${venList}">
             personRoleVendor: {
@@ -493,9 +494,9 @@
                 {
                   type: 'empty',
                   prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
-                            }
-                          ]
-                        },
+                }
+              ]
+            },
         </g:if>
 
                 last_name: {
@@ -520,17 +521,8 @@
                     identifier: 'contactContent',
                     rules: [
                         {
-                            type: 'isMinimalOneContactFilled',
-                            prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
-                        }
-                    ]
-                },
-                email: {
-                    identifier: 'email',
-                    rules: [
-                        {
-                            type   : 'email',
-                            prompt: '<g:message code="contact.create.email.error" />'
+                           type: 'isMinimalOneContactFilled',
+                           prompt : '<g:message code="contact.contactFieldValidation"/>'
                         }
                     ]
                 }
@@ -569,8 +561,7 @@
             JSPC.app.checkIfMoreThanFourContactElements();
             if (JSPC.app.contactElementCount != 1) {
                 $(this).parents('.contactField').remove();
-            }
-            else {
+               JSPC.app.formValidation();
             }
         });
     }
@@ -610,7 +601,6 @@
                     JSPC.app.checkIfMoreThanFourContactElements();
                     JSPC.app.changeIconRegardingDropdown();
                     JSPC.app.removeContactElement();
-                    JSPC.app.dataValidateProperty(lastRowIcon);
                 } else {
                     $('.la-js-addContactElement').addClass( 'disabled');
                 }
@@ -628,18 +618,6 @@
     JSPC.app.deleteIconClass = function (icon) {
         icon.removeAttr("class");
     }
-%{--  Change data-validate property when contact dropdown is changed          --}%
-    JSPC.app.dataValidateProperty = function(elem) {
-      let contactField = elem.parents('.contactField').find('.la-js-contactContent');
-      if ( elem.parents('.contactField').find('.contentType select').val() == ${RDStore.CCT_EMAIL.id} ){
-        contactField.attr('data-validate','email');
-        $('.ui.form').form('remove fields', ['contactContent']);
-      }
-      else {
-        contactField.attr('data-validate','contactContent');
-        //$('.ui.form').form('remove fields', ['email']);
-      }
-    }
 
 
 %{--  Change icon when contact dropdown is changed          --}%
@@ -647,8 +625,6 @@
         $('.dropdown').dropdown();
         $(".dropdown.contentType select").on("change", function () {
 
-
-          JSPC.app.dataValidateProperty($(this))
           let icon = $(this).parents('.contactField').find('.la-js-contactIcon');
           let value = $(this).val();
 
@@ -693,8 +669,6 @@
 
     JSPC.app.changeIconRegardingDropdown();
 
-    JSPC.app.formValidation();
-    $('.ui.form').form('remove fields', ['contactContent']);
 
 %{--    Deal with accordion in case already any input--}%
     $(".accordion").accordion();
@@ -703,6 +677,7 @@
 
      JSPC.app.removeContactElement();
 
+    JSPC.app.formValidation();
 
 
     </laser:script>
