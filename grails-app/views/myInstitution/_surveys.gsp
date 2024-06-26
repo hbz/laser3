@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.OrgRole" %>
+<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.OrgRole" %>
 <laser:serviceInjection/>
 <h3 class="ui header"><g:message code="surveys.active"/></h3>
 
@@ -56,7 +56,7 @@
                                             <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                                     params="[surveyConfigID: surveyConfig.id]"
                                                     class="ui icon blue button la-modern-button">
-                                                <i class="icon chart pie"></i>
+                                                <i class="${Icons.SURVEY} icon"></i>
                                             </g:link>
                                     </span>
                             </span>

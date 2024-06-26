@@ -6,7 +6,7 @@ class Icons {
 
     public static String ANNOUNCEMENT       = 'flag'
 
-    public static String DOCUMENT           = 'file alternate' // todo: 'file outline'
+    public static String DOCUMENT           = 'file alternate' // todo: duplicate - tipp.coverage
 
     public static String LICENSE            = 'balance scale'
 
@@ -18,11 +18,11 @@ class Icons {
 
     public static String PLATFORM           = 'cloud'
 
-    public static String PROVIDER           = 'handshake'
+    public static String PROVIDER           = 'handshake'   // todo: duplicate > org.legalInformation > Icons.ORG_LEGAL_INFORMATION
 
     public static String REPORTING          = 'chartline'
 
-    public static String SUBSCRIPTION       = 'clipboard' // todo: 'clipboard outline'
+    public static String SUBSCRIPTION       = 'clipboard' // todo: variant - 'clipboard outline'
 
     public static String SURVEY             = 'chart pie'
 
@@ -33,4 +33,7 @@ class Icons {
     public static String WORKFLOW           = 'tasks'
 
     // others ..
+
+    public static String ORG_LEGAL_INFORMATION      = 'hands helping'
+
 }

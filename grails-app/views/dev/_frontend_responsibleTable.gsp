@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.Icons" %>
 <h2 class="ui dividing header">Tabellen<a class="anchor" id="icons"></a></h2>
 <h4 class="ui header">Responsive Tabellen</h4>
 
@@ -74,7 +75,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="icon balance scale la-list-icon" aria-hidden="true"></i>
+                <i class="${Icons.LICENSE} icon la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -85,7 +86,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="icon gift la-list-icon" aria-hidden="true"></i>
+                <i class="${Icons.PACKAGE} icon la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -152,7 +153,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="icon balance scale la-list-icon" aria-hidden="true"></i>
+                <i class="${Icons.LICENSE} icon la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -163,7 +164,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="icon gift la-list-icon" aria-hidden="true"></i>
+                <i class="${Icons.PACKAGE} icon la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -230,7 +231,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="icon balance scale la-list-icon" aria-hidden="true"></i>
+                <i class="${Icons.LICENSE} icon la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -241,7 +242,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="icon gift la-list-icon" aria-hidden="true"></i>
+                <i class="${Icons.PACKAGE} icon la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -308,7 +309,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="icon balance scale la-list-icon" aria-hidden="true"></i>
+                <i class="${Icons.LICENSE} icon la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -319,7 +320,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="icon gift la-list-icon" aria-hidden="true"></i>
+                <i class="${Icons.PACKAGE} icon la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -386,7 +387,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="icon balance scale la-list-icon" aria-hidden="true"></i>
+                <i class="${Icons.LICENSE} icon la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -397,7 +398,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="icon gift la-list-icon" aria-hidden="true"></i>
+                <i class="${Icons.PACKAGE} icon la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -572,7 +573,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="icon balance scale la-list-icon" aria-hidden="true"></i>
+                <i class="${Icons.LICENSE} icon la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -583,7 +584,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="icon gift la-list-icon" aria-hidden="true"></i>
+                <i class="${Icons.PACKAGE} icon la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -650,7 +651,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="icon balance scale la-list-icon" aria-hidden="true"></i>
+                <i class="${Icons.LICENSE} icon la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -661,7 +662,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="icon gift la-list-icon" aria-hidden="true"></i>
+                <i class="${Icons.PACKAGE} icon la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -728,7 +729,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="icon balance scale la-list-icon" aria-hidden="true"></i>
+                <i class="${Icons.LICENSE} icon la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -739,7 +740,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="icon gift la-list-icon" aria-hidden="true"></i>
+                <i class="${Icons.PACKAGE} icon la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -806,7 +807,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="icon balance scale la-list-icon" aria-hidden="true"></i>
+                <i class="${Icons.LICENSE} icon la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -817,7 +818,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="icon gift la-list-icon" aria-hidden="true"></i>
+                <i class="${Icons.PACKAGE} icon la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -884,7 +885,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="icon balance scale la-list-icon" aria-hidden="true"></i>
+                <i class="${Icons.LICENSE} icon la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -895,7 +896,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="icon gift la-list-icon" aria-hidden="true"></i>
+                <i class="${Icons.PACKAGE} icon la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>

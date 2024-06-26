@@ -1,5 +1,5 @@
 <!-- template: meta/subscriptionTransferInfo -->
-<%@ page import="de.laser.ExportClickMeService; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.ExportClickMeService; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
 
 <laser:serviceInjection />
 
@@ -19,7 +19,7 @@
 
                 <th scope="col" rowspan="3" class="center aligned">
                     <span class="la-popup-tooltip la-delay" data-content="${message(code: 'survey.label')}" data-position="top center">
-                        <i class="chart pie large icon"></i>
+                        <i class="${Icons.SURVEY} large icon"></i>
                     </span>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned">

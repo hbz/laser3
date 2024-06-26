@@ -1,4 +1,4 @@
-<%@ page import="de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.titles.TitleHistoryEventParticipant" %>
+<%@ page import="de.laser.helper.Icons; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.titles.TitleHistoryEventParticipant" %>
 
 <laser:htmlStart text="${message(code:"tipp.show.label", args:[tipp.name, tipp.pkg.name, tipp.platform.name])}" />
 
@@ -207,7 +207,7 @@
 
         <div class="content">
             <div class="item">
-                <i class="grey icon cloud la-popup-tooltip la-delay"
+                <i class="${Icons.PLATFORM} grey icon la-popup-tooltip la-delay"
                    data-content="${message(code: 'platform.label')}"></i>
                 <g:if test="${tipp.platform.name}">
                     <g:link controller="platform" action="show" id="${tipp.platform.id}">
