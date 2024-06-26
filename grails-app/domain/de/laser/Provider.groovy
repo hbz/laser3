@@ -9,6 +9,7 @@ import de.laser.interfaces.MarkerSupport
 import de.laser.properties.OrgProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.ProviderProperty
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyInfo
@@ -195,6 +196,17 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
     @Override
     String toString() {
         name
+    }
+
+    /**
+     * Gets the property definition groups defined by the given institution for the organisation to be viewed
+     * @param contextOrg the institution whose property definition groups should be loaded
+     * @return a {@link Map} of property definition groups, ordered by sorted, global, local and orphaned property definitions
+     * @see de.laser.properties.PropertyDefinition
+     * @see de.laser.properties.PropertyDefinitionGroup
+     */
+    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
+        BeanStore.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
     }
 
     static Provider convertFromOrg(Org provider) {

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
 
 <laser:htmlStart message="search.advancedSearch" serviceInjection="true"/>
 
@@ -724,7 +724,7 @@
                                     <g:set var="docContext" value="${DocContext.get(object.dbId)}"/>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
-                                        <i class="circular icon inverted grey file alternate outline"></i>
+                                        <i class="${Icons.DOCUMENT} icon circular inverted grey"></i>
                                     </span>
 
 

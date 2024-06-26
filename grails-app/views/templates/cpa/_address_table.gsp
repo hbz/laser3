@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyOrg;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyOrg;" %>
 <laser:serviceInjection/>
 <table class="ui table la-js-responsive-table la-table">
     <colgroup>
@@ -44,17 +44,17 @@
             <g:if test="${tmplShowOrgName}">
                 <td>
                     <g:if test="${address.org}">
-                        <i class="icon university la-list-icon"></i>
+                        <i class="${Icons.ORG} icon la-list-icon"></i>
                         <g:link controller="organisation" action="addressbook"
                                 id="${address.org.id}">${address.org.name} (${address.org.sortname})</g:link>
                     </g:if>
                     <g:if test="${address.provider}">
-                        <i class="icon handshake la-list-icon"></i>
+                        <i class="${Icons.PROVIDER} icon la-list-icon"></i>
                         <g:link controller="provider" action="addressbook"
                                 id="${address.provider.id}">${address.provider.name} (${address.provider.sortname})</g:link>
                     </g:if>
                     <g:if test="${address.vendor}">
-                        <i class="icon shipping fast la-list-icon"></i>
+                        <i class="${Icons.VENDOR} icon la-list-icon"></i>
                         <g:link controller="vendor" action="addressbook"
                                 id="${address.vendor.id}">${address.vendor.name} (${address.vendor.sortname})</g:link>
                     </g:if>

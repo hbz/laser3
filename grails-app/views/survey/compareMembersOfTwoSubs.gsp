@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.PropertyStore; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.Org;de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.helper.Icons; de.laser.storage.PropertyStore; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.Org;de.laser.survey.SurveyOrg" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyInfo.transferMembers')})" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -154,7 +154,7 @@
                                             <g:if test="${participantSub}">
                                                 <g:link controller="subscription" action="show"
                                                         id="${participantSub.id}"
-                                                        class="ui button icon"><i class="icon clipboard"></i></g:link>
+                                                        class="ui button icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
                                             </g:if>
 
                                             <g:set var="multiYearResultProperties"
@@ -245,7 +245,7 @@
                                             <g:if test="${participantSub}">
                                                 <g:link controller="subscription" action="show"
                                                         id="${participantSub.id}"
-                                                        class="ui button icon"><i class="icon clipboard"></i></g:link>
+                                                        class="ui button icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
                                             </g:if>
 
                                             <g:set var="multiYearResultProperties"

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.helper.Icons; de.laser.remote.ApiSource" %>
 <laser:serviceInjection />
 
 <g:if test="${tmplView == 'info' && wekbNews.counts.all > 0}">
@@ -29,7 +29,7 @@
                         <div class="content">
                             <div class="header">
                                 <a href="#" class="wekb-flyout-trigger" data-preset="provider,all">${message(code: 'provider.label')}%{--: ${wekbNews.provider.count}--}%</a>
-                                <div class="right floated meta"><i class="icon university"></i></div>
+                                <div class="right floated meta"><i class="${Icons.PROVIDER} icon"></i></div>
                             </div>
                         </div>
                         <div class="content">
@@ -49,7 +49,7 @@
                         <div class="content">
                             <div class="header">
                                 <a href="#" class="wekb-flyout-trigger" data-preset="vendor,all">${message(code: 'vendor.plural')}%{--: ${wekbNews.vendor.count}--}%</a>
-                                <div class="right floated meta"><i class="shipping fast icon"></i></div>
+                                <div class="right floated meta"><i class="${Icons.VENDOR} icon"></i></div>
                             </div>
                         </div>
                         <div class="content">
@@ -69,7 +69,7 @@
                         <div class="content">
                             <div class="header">
                                 <a href="#" class="wekb-flyout-trigger" data-preset="platform,all">${message(code: 'platform.plural')}%{--: ${wekbNews.platform.count}--}%</a>
-                                <div class="right floated meta"><i class="icon cloud"></i></div>
+                                <div class="right floated meta"><i class="${Icons.PLATFORM} icon"></i></div>
                             </div>
                         </div>
                         <div class="content">
@@ -89,7 +89,7 @@
                         <div class="content">
                             <div class="header">
                                 <a href="#" class="wekb-flyout-trigger" data-preset="package,all">${message(code: 'package.plural')}%{--: ${wekbNews.package.count}--}%</a>
-                                <div class="right floated meta"><i class="icon gift"></i></div>
+                                <div class="right floated meta"><i class="${Icons.PACKAGE} icon"></i></div>
                             </div>
                         </div>
                         <div class="content">
@@ -211,10 +211,10 @@
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
 
         tmplConfig = [
-                ['provider', wekbNews.provider,   'provider.label',         'handshake',        'menu.my.providers'],
-                ['vendor',   wekbNews.vendor,     'vendor.plural',          'shipping fast',    'menu.my.vendors'],
-                ['platform', wekbNews.platform,   'platform.plural',        'cloud',            'menu.my.platforms'],
-                ['package',  wekbNews.package,    'package.plural',         'gift',             'menu.my.packages']
+                ['provider', wekbNews.provider,   'provider.label',     "${Icons.PROVIDER}",    'menu.my.providers'],
+                ['vendor',   wekbNews.vendor,     'vendor.plural',      "${Icons.VENDOR}",      'menu.my.vendors'],
+                ['platform', wekbNews.platform,   'platform.plural',    "${Icons.PLATFORM}",    'menu.my.platforms'],
+                ['package',  wekbNews.package,    'package.plural',     "${Icons.PACKAGE}",     'menu.my.packages']
         ]
     %>
 

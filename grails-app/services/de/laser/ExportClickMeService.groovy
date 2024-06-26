@@ -56,7 +56,6 @@ class ExportClickMeService {
     ExportService exportService
     FilterService filterService
     FinanceService financeService
-    GokbService gokbService
     SubscriptionsQueryService subscriptionsQueryService
     SurveyService surveyService
     SubscriptionService subscriptionService
@@ -335,8 +334,8 @@ class ExportClickMeService {
                     fields: [
                             'provider.sortname'          : [field: 'sub.providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
                             'provider.name'              : [field: 'sub.providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
-                            'provider.altnames'          : [field: 'sub.providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
-                            'provider.url'               : [field: 'sub.providers.url', label: 'Url', message: 'exportClickMe.provider.url']
+                            'provider.altnames'          : [field: 'sub.providers.altnames.name', label: 'Alternative Name', message: 'exportClickMe.provider.altnames'],
+                            'provider.url'               : [field: 'sub.providers.homepage', label: 'Homepage', message: 'exportClickMe.provider.url']
                     ]
             ],
 
@@ -346,7 +345,8 @@ class ExportClickMeService {
                     fields: [
                             'vendor.sortname'          : [field: 'sub.vendors.sortname', label: 'Sortname', message: 'exportClickMe.vendor.sortname'],
                             'vendor.name'              : [field: 'sub.vendors.name', label: 'Name', message: 'exportClickMe.vendor.name', defaultChecked: 'true' ],
-                            'vendor.url'               : [field: 'sub.vendors.homepage', label: 'Url', message: 'exportClickMe.vendor.url'],
+                            'vendor.altnames'          : [field: 'sub.vendors.altnames.name', label: 'Alternative Name', message: 'exportClickMe.vendor.altnames'],
+                            'vendor.url'               : [field: 'sub.vendors.homepage', label: 'Homepage', message: 'exportClickMe.vendor.url'],
                     ]
             ],
 
@@ -418,7 +418,7 @@ class ExportClickMeService {
                             'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
                             'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
                             'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
-                            'provider.url'               : [field: 'providers.url', label: 'Url', message: 'exportClickMe.provider.url']
+                            'provider.url'               : [field: 'providers.homepage', label: 'Url', message: 'exportClickMe.provider.url']
                     ]
             ],
 
@@ -429,7 +429,7 @@ class ExportClickMeService {
                             'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.vendor.sortname'],
                             'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.vendor.name', defaultChecked: 'true' ],
                             'vendor.altnames'          : [field: 'vendors.altnames.name', label: 'Alt Name', message: 'exportClickMe.vendor.altnames'],
-                            'vendor.url'               : [field: 'vendors.url', label: 'Url', message: 'exportClickMe.vendor.url'],
+                            'vendor.url'               : [field: 'vendors.homepage', label: 'Url', message: 'exportClickMe.vendor.url'],
                     ]
             ],
 
@@ -698,7 +698,7 @@ class ExportClickMeService {
                             'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
                             'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
                             'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
-                            'provider.url'               : [field: 'providers.url', label: 'Url', message: 'exportClickMe.provider.url']
+                            'provider.url'               : [field: 'providers.homepage', label: 'Url', message: 'exportClickMe.provider.url']
                     ]
             ],
 
@@ -708,7 +708,7 @@ class ExportClickMeService {
                     fields: [
                             'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.vendor.sortname'],
                             'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.vendor.name', defaultChecked: 'true' ],
-                            'vendor.url'               : [field: 'vendors.url', label: 'Url', message: 'exportClickMe.vendor.url'],
+                            'vendor.url'               : [field: 'vendors.homepage', label: 'Url', message: 'exportClickMe.vendor.url'],
                     ]
             ],
 
@@ -865,18 +865,21 @@ class ExportClickMeService {
                     label: 'Transfer',
                     message: 'subscription.details.subTransfer.label',
                     fields: [
-                            'subscription.offerRequested'                : [field: 'offerRequested', label: 'Offer Requested', message: 'subscription.offerRequested.label'],
-                            'subscription.offerRequestedDate'            : [field: 'offerRequestedDate', label: 'Offer Requested Date', message: 'subscription.offerRequestedDate.label'],
-                            'subscription.offerAccepted'                 : [field: 'offerAccepted', label: 'Offer Accepted', message: 'subscription.offerAccepted.label'],
-                            'subscription.offerNote'                     : [field: 'offerNote', label: 'Offer Note', message: 'subscription.offerNote.label'],
-                            'subscription.priceIncreaseInfo'             : [field: 'priceIncreaseInfo', label: 'Price Increase Info', message: 'subscription.priceIncreaseInfo.label'],
-                            'subscription.renewalSent'                   : [field: 'renewalSent', label: 'Renewal Sent', message: 'subscription.renewalSent.label'],
-                            'subscription.renewalSentDate'               : [field: 'renewalSentDate', label: 'Renewal Sent Date', message: 'subscription.renewalSentDate.label'],
-                            'subscription.participantTransferWithSurvey' : [field: 'participantTransferWithSurvey', label: 'Participant Transfe With Survey', message: 'subscription.participantTransferWithSurvey.label'],
-                            'subscription.discountScale'                 : [field: 'discountScale', label: 'Discount Scale', message: 'subscription.discountScale.label'],
-                            'subscription.survey'                        : [field: null, label: 'Survey', message: 'survey.label'],
-                            'subscription.survey.evaluation'             : [field: null, label: 'Evaluation', message: 'subscription.survey.evaluation.label'],
-                            'subscription.survey.cancellation'           : [field: null, label: 'Cancellation', message: 'subscription.survey.cancellation.label']
+                            'subscription.offerRequested'                : [field: 'offerRequested', label: 'Offer Requested', message: 'subscription.offerRequested.label', defaultChecked: 'true' ],
+                            'subscription.offerRequestedDate'            : [field: 'offerRequestedDate', label: 'Offer Requested Date', message: 'subscription.offerRequestedDate.label', defaultChecked: 'true' ],
+                            'subscription.offerNote'                     : [field: 'offerNote', label: 'Offer Note', message: 'subscription.offerNote.label', defaultChecked: 'true' ],
+                            'subscription.offerAccepted'                 : [field: 'offerAccepted', label: 'Offer Accepted', message: 'subscription.offerAccepted.label', defaultChecked: 'true' ],
+                            'subscription.priceIncreaseInfo'             : [field: 'priceIncreaseInfo', label: 'Price Increase Info', message: 'subscription.priceIncreaseInfo.label', defaultChecked: 'true' ],
+                            'subscription.survey'                        : [field: null, label: 'Survey', message: 'survey.label', defaultChecked: 'true' ],
+                            'subscription.survey.evaluation'             : [field: null, label: 'Evaluation', message: 'subscription.survey.evaluation.label', defaultChecked: 'true' ],
+                            'subscription.survey.cancellation'           : [field: null, label: 'Cancellation', message: 'subscription.survey.cancellation.label', defaultChecked: 'true' ],
+                            'subscription.discountScale'                 : [field: 'discountScale', label: 'Discount Scale', message: 'subscription.discountScale.label', defaultChecked: 'true' ],
+                            'subscription.reminderSent'                  : [field: 'reminderSent', label: 'Reminder Sent', message: 'subscription.reminderSent.label', defaultChecked: 'true' ],
+                            'subscription.reminderSentDate'              : [field: 'reminderSentDate', label: 'Reminder Sent Date', message: 'subscription.reminderSentDate.label', defaultChecked: 'true' ],
+                            'subscription.renewalSent'                   : [field: 'renewalSent', label: 'Renewal Sent', message: 'subscription.renewalSent.label', defaultChecked: 'true' ],
+                            'subscription.renewalSentDate'               : [field: 'renewalSentDate', label: 'Renewal Sent Date', message: 'subscription.renewalSentDate.label', defaultChecked: 'true' ],
+                            'subscription.renewalChanges'               : [field: null, label: 'Renewal Changes', message: 'default.change.label', defaultChecked: 'true' ],
+                            'subscription.participantTransferWithSurvey' : [field: 'participantTransferWithSurvey', label: 'Participant Transfe With Survey', message: 'subscription.participantTransferWithSurvey.label', defaultChecked: 'true' ],
                     ]
             ],
     ]
@@ -930,7 +933,7 @@ class ExportClickMeService {
                             'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
                             'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
                             'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
-                            'provider.url'               : [field: 'providers.url', label: 'Url', message: 'exportClickMe.provider.url']
+                            'provider.url'               : [field: 'providers.homepage', label: 'Url', message: 'exportClickMe.provider.url']
                     ]
             ],
 
@@ -940,7 +943,7 @@ class ExportClickMeService {
                     fields: [
                             'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.vendor.sortname'],
                             'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.vendor.name', defaultChecked: 'true' ],
-                            'vendor.url'               : [field: 'vendors.url', label: 'Url', message: 'exportClickMe.vendor.url']
+                            'vendor.url'               : [field: 'vendors.homepage', label: 'Url', message: 'exportClickMe.vendor.url']
                     ]
             ],
 
@@ -5562,6 +5565,15 @@ class ExportClickMeService {
                     }
 
                     row.add(createTableCell(format, surveyConfig ? countOrgsWithTermination : ' ', style))
+                }
+                else if (fieldKey == 'subscription.renewalChanges') {
+                    SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)
+                    int countModificationToCostInformationAfterRenewalDoc = surveyConfig ? surveyService.countModificationToCostInformationAfterRenewalDoc(subscription) : 0
+                    String style = ''
+                    if(surveyConfig) {
+                        style = countModificationToCostInformationAfterRenewalDoc == 0 ? 'positive' : 'negative'
+                    }
+                    row.add(createTableCell(format, surveyConfig ? countModificationToCostInformationAfterRenewalDoc  : ' ', style))
                 }
                 else if ((fieldKey == 'participantSubCostItem' || fieldKey == 'subCostItem')) {
                     if(costItemSums) {

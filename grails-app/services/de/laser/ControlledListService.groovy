@@ -1419,11 +1419,11 @@ class ControlledListService {
         if(params.forFinanceView) {
             List<Long> subIDs = Subscription.executeQuery('select s.id from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org: institution, orgRoles: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA]])
             if(subIDs) {
-                Map filter = [subscriptions:subIDs]
+                qryParams.subscriptions = subIDs
                 if(providerNameFilter)
                     providerNameFilter = "and ${providerNameFilter}"
                 String qryString = "select new map(concat('${Provider.class.name}:',p.id) as value, p.name as name) from ProviderRole pvr join pvr.provider p where pvr.subscription.id in (:subscriptions) ${providerNameFilter} order by p.sortname asc"
-                results.addAll(Provider.executeQuery(qryString,filter))
+                results.addAll(Provider.executeQuery(qryString, qryParams))
             }
         }
         else if(params.tableView) {
@@ -1471,11 +1471,11 @@ class ControlledListService {
         if(params.forFinanceView) {
             List<Long> subIDs = Subscription.executeQuery('select s.id from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org: institution, orgRoles: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA]])
             if(subIDs) {
-                Map filter = [subscriptions:subIDs]
+                qryParams.subscriptions = subIDs
                 if(vendorNameFilter)
                     vendorNameFilter = "and ${vendorNameFilter}"
                 String qryString = "select new map(concat('${Vendor.class.name}:',v.id) as value, v.name as name) from VendorRole vr join vr.vendor v where vr.subscription.id in (:subscriptions) ${vendorNameFilter} order by v.sortname asc"
-                results.addAll(Vendor.executeQuery(qryString,filter))
+                results.addAll(Vendor.executeQuery(qryString, qryParams))
             }
         }
         else if(params.tableView) {

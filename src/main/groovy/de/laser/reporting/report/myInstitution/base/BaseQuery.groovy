@@ -3,6 +3,7 @@ package de.laser.reporting.report.myInstitution.base
 import de.laser.IdentifierNamespace
 import de.laser.Org
 import de.laser.RefdataValue
+import de.laser.Subscription
 import de.laser.auth.Role
 import de.laser.utils.LocaleUtils
 import de.laser.storage.BeanStore
@@ -33,14 +34,14 @@ class BaseQuery {
     static String NO_VENDOR_LABEL            = 'noVendor.label'
     static String NO_STARTDATE_LABEL         = 'noStartDate.label'
     static String NO_ENDDATE_LABEL           = 'noEndDate.label'
+    static String NO_REFERENCEYEAR_LABEL     = 'noReferenceYear.label'
 
     static List<String> REFDATA_QUERY = ['select ref.id, ref.value_de, count(*) ', ' group by ref.id, ref.value_de order by ref.value_de' ]
 
-    static def NO_DATA_ID           = null
     static int NO_COUNTERPART_ID    = 0 // dyn.neg.values for unmapped es refdata
-    static int FAKE_DATA_ID_1       = -1
-    static int FAKE_DATA_ID_2       = -2
-    static int FAKE_DATA_ID_3       = -3
+    static int FAKE_DATA_ID_1       = -999900001
+    static int FAKE_DATA_ID_2       = -999900002
+    static int FAKE_DATA_ID_3       = -999900003
 
     static String SQM_MASK      = "\\\\\'"
 
@@ -285,11 +286,11 @@ class BaseQuery {
     static void handleGenericNonMatchingData1Value_TMP(String query, String label, List<Long> noDataList, Map<String, Object> result) {
 
         if (noDataList) {
-            result.data.add([NO_DATA_ID, getChartLabel(label), noDataList.size()])
+            result.data.add([FAKE_DATA_ID_1, getChartLabel(label), noDataList.size()])
 
             result.dataDetails.add([
                     query : query,
-                    id    : NO_DATA_ID,
+                    id    : FAKE_DATA_ID_1,
                     label : getChartLabel(label),
                     idList: noDataList,
             ])
@@ -306,11 +307,11 @@ class BaseQuery {
     static void handleGenericNonMatchingData2Values_TMP(String query, String label, List<Long> noDataIdList, Map<String, Object> result) {
 
         if (noDataIdList) {
-            result.data.add([NO_DATA_ID, getChartLabel(label), noDataIdList.size()])
+            result.data.add([FAKE_DATA_ID_1, getChartLabel(label), noDataIdList.size()])
 
             result.dataDetails.add([
                     query : query,
-                    id    : NO_DATA_ID,
+                    id    : FAKE_DATA_ID_1,
                     label : getChartLabel(label),
                     idList: noDataIdList,
                     value1: 0,
@@ -487,11 +488,11 @@ class BaseQuery {
 
         List<Long> sp1DataList = Org.executeQuery( 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate != null and dc.endDate is null', [idList: idList] )
         if (sp1DataList) {
-            result.data.add([FAKE_DATA_ID_1, getChartLabel(NO_ENDDATE_LABEL), sp1DataList.size()])
+            result.data.add([FAKE_DATA_ID_2, getChartLabel(NO_ENDDATE_LABEL), sp1DataList.size()])
 
             result.dataDetails.add([
                     query : query,
-                    id    : FAKE_DATA_ID_1,
+                    id    : FAKE_DATA_ID_2,
                     label : getChartLabel(NO_ENDDATE_LABEL),
                     idList: sp1DataList
             ])
@@ -499,17 +500,47 @@ class BaseQuery {
 
         List<Long> sp2DataList = Org.executeQuery( 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate is null and dc.endDate != null', [idList: idList] )
         if (sp2DataList) {
-            result.data.add([FAKE_DATA_ID_2, getChartLabel(NO_STARTDATE_LABEL), sp2DataList.size()])
+            result.data.add([FAKE_DATA_ID_3, getChartLabel(NO_STARTDATE_LABEL), sp2DataList.size()])
 
             result.dataDetails.add([
                     query : query,
-                    id    : FAKE_DATA_ID_2,
+                    id    : FAKE_DATA_ID_3,
                     label : getChartLabel(NO_STARTDATE_LABEL),
                     idList: sp2DataList
             ])
         }
 
         List<Long> noDataList = Org.executeQuery( 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate is null and dc.endDate is null', [idList: idList] )
+
+        handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
+    }
+
+    static void handleSubscriptionReferenceYearXQuery(String query, List<Long> idList, Map<String, Object> result) {
+
+        List<Year> all = Subscription.executeQuery( 'select distinct s.referenceYear from Subscription s where s.referenceYear != null and s.id in (:idList)', [idList: idList] )
+        List<Integer> dd = [
+                all.min() ? all.min().getValue() : null,
+                all.max() ? all.max().getValue() : null
+        ]
+        dd[1] = dd[1] ? Math.min( dd[1], Year.now().value + 5 ) : Year.now().value
+        List<Integer> years = ( (dd[0] ?: Year.now().value)..(dd[1]) ).toList()
+
+        years.sort().each { y ->
+            String hql = 'select s.id from Subscription s where s.id in (:idList) and s.referenceYear = :year'
+
+            List<Long> annualList = Subscription.executeQuery( hql, [idList: idList, year: Year.of(y)] )
+            if (annualList) {
+                result.data.add( [y, y, annualList.size()] )
+                result.dataDetails.add( [
+                        query: query,
+                        id: y,
+                        label: y,
+                        idList: annualList
+                ] )
+            }
+        }
+
+        List<Long> noDataList = Subscription.executeQuery( 'select s.id from Subscription s where s.id in (:idList) and s.referenceYear is null', [idList: idList] )
 
         handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
     }

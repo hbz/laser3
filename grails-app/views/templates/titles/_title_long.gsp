@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 <div class="la-icon-list">
 <ui:listIcon type="${tipp.titleType}"/>
@@ -293,7 +293,7 @@
 
 
     <div class="item">
-        <i class="grey handshake icon la-popup-tooltip la-delay"
+        <i class="${Icons.PROVIDER} grey icon la-popup-tooltip la-delay"
            data-content="${message(code: 'tipp.provider')}"></i>
 
         <div class="content">
@@ -347,8 +347,7 @@
     <g:if test="${showPlattform}">
         <g:if test="${tipp.platform.name}">
             <div class="item">
-                <i class="grey icon cloud la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.platform')}"></i>
+                <i class="${Icons.PLATFORM} grey icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.platform')}"></i>
 
                 <div class="content">
                     <g:if test="${tipp.platform.name}">

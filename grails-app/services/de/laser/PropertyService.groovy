@@ -483,10 +483,12 @@ class PropertyService {
         boolean isLic = obj.class.name == License.class.name
         boolean isOrg = obj.class.name == Org.class.name
         boolean isPlt = obj.class.name == Platform.class.name
+        boolean isPrv = obj.class.name == Provider.class.name
         boolean isSub = obj.class.name == Subscription.class.name
         boolean isSur = obj.class.name == SurveyConfig.class.name
+        boolean isVen = obj.class.name == Vendor.class.name
 
-        if ( ! (isLic || isOrg || isPlt || isSub || isSur)) {
+        if ( ! (isLic || isOrg || isPrv || isPlt || isSub || isSur || isVen )) {
             log.warn('unsupported call of getCalculatedPropDefGroups(): ' + obj.class)
             return [:]
         }
@@ -501,7 +503,7 @@ class PropertyService {
         // ALL type depending groups without checking tenants or bindings
         List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :ownerType order by pdg.order asc', [ownerType: obj.class.name])
 
-        if (isOrg || isPlt || isSur) {
+        if (isOrg || isPrv || isPlt || isSur || isVen) {
             groups.each{ PropertyDefinitionGroup it ->
 
                 PropertyDefinitionGroupBinding binding

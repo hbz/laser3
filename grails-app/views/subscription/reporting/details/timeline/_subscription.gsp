@@ -25,7 +25,9 @@
             <th scope="col"></th>
             <th scope="col">${message(code:'consortium.subscriber')}</th>
             <th scope="col">${message(code:'default.status.label')}</th>
-%{--            <th scope="col">${message(code:'subscription.referenceYear.label.shy')}</th>--}%
+            <g:if test="${query == 'timeline-annualMember-subscription'}">
+                <th scope="col">${message(code:'subscription.referenceYear.label.shy')}</th>
+            </g:if>
             <th scope="col">${message(code:'subscription.startDate.label')}</th>
             <th scope="col">${message(code:'subscription.endDate.label')}</th>
         </tr>
@@ -56,9 +58,11 @@
                     <td>
                         ${sub.status.getI10n('value')}
                     </td>
-%{--                    <td>--}%
-%{--                        ${sub.referenceYear ?: ''}--}%
-%{--                    </td>--}%
+                    <g:if test="${query == 'timeline-annualMember-subscription'}">
+                        <td>
+                            ${sub.referenceYear}
+                        </td>
+                    </g:if>
                     <td>
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.startDate}" />
                     </td>

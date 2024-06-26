@@ -955,7 +955,6 @@ class MyInstitutionController  {
         }
         result.curatoryGroupTypes = [
                 [value: 'Provider', name: message(code: 'package.curatoryGroup.provider')],
-                [value: 'Vendor', name: message(code: 'package.curatoryGroup.vendor')],
                 [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
         ]
         if(params.containsKey('nameContains')) {
@@ -980,7 +979,7 @@ class MyInstitutionController  {
         }
 
         if(params.containsKey('qp_invoicingVendors')) {
-            queryArgs << "exists (select iv from p.invoicingVendors iv where iv.vendor in (:vendors))"
+            queryArgs << "exists (select iv from p.invoicingVendors iv where iv.vendor.id in (:vendors))"
             queryParams.put('vendors', Params.getLongList(params, 'qp_invoicingVendors'))
         }
 
@@ -1312,7 +1311,7 @@ class MyInstitutionController  {
 
         Map<String, Object> selectedFields = [:]
 
-        if(params.identifier?.startsWith('vendor:') && result.institution.isCustomerType_Consortium())
+        if((params.identifier?.startsWith('vendor:') || params.q) && result.institution.isCustomerType_Consortium())
             result.vendorNotice = true
 
         if(params.fileformat) {
@@ -3093,6 +3092,9 @@ class MyInstitutionController  {
                 String oid
                 if(p.roleLinks.org[0]) {
                     oid = genericOIDService.getOID(p.roleLinks.org[0])
+                }
+                else if(p.roleLinks.provider[0]) {
+                    oid = genericOIDService.getOID(p.roleLinks.provider[0])
                 }
                 else if(p.roleLinks.vendor[0]) {
                     oid = genericOIDService.getOID(p.roleLinks.vendor[0])

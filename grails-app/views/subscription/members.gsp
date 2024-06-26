@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ExportClickMeService; de.laser.CustomerTypeService; de.laser.storage.BeanStore; de.laser.finance.CostItem; de.laser.Links; de.laser.Person; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Subscription" %>
+<%@ page import="de.laser.helper.Icons; de.laser.ExportClickMeService; de.laser.CustomerTypeService; de.laser.storage.BeanStore; de.laser.finance.CostItem; de.laser.Links; de.laser.Person; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Subscription" %>
 
 <laser:htmlStart text="${BeanStore.getContextService().getOrg().isCustomerType_Consortium() ? message(code:'subscription.details.consortiaMembers.label') : ''}" serviceInjection="true" />
 
@@ -136,14 +136,14 @@
                 <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()}">
                     <th class="center aligned la-no-uppercase">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="${message(code: 'subscription.linktoLicense')}">
-                            <i class="balance scale icon"></i>
+                            <i class="${Icons.LICENSE} icon"></i>
                         </span>
                     </th>
                 </g:if>
                 <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                     <th class="center aligned la-no-uppercase">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="${message(code: 'subscription.packages.label')}">
-                            <i class="gift icon"></i>
+                            <i class="${Icons.PACKAGE} icon"></i>
                         </span>
                     </th>
                 </g:if>
