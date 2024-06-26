@@ -724,7 +724,7 @@
                                     <g:set var="docContext" value="${DocContext.get(object.dbId)}"/>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
-                                        <i class="${Icons.DOCUMENT} icon inverted grey"></i>
+                                        <i class="${Icons.DOCUMENT} icon circular inverted grey"></i>
                                     </span>
 
 
