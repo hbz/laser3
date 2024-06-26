@@ -71,7 +71,7 @@
                                       optionValue="value"
                                       value="${filterPresets?.filterSubStatus?.id}"
                                       noSelection="${['' : message(code:'default.select.all.label')]}"
-                            onchange="JSPC.app.setupDropdowns()"
+                            onchange="JSPC.app.updateSubscriptionDropdown()"
                         />
                     </div>
                 </g:if>
@@ -293,34 +293,23 @@
     $("#filterSubStatus, #filterCIStatus").dropdown({
         "clearable": true
     });
+    JSPC.app.links = {
+        "filterSubProviders": "${createLink([controller:"ajaxJson", action:"lookupProviders"])}?query={query}&forFinanceView=true",
+        "filterSubVendors": "${createLink([controller:"ajaxJson", action:"lookupVendors"])}?query={query}&forFinanceView=true",
+        "filterCISub": "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?query={query}",
+        "filterCIPkg": "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?query={query}",
+        "filterCIInvoiceNumber": "${createLink([controller:"ajaxJson", action:"lookupInvoiceNumbers"])}?query={query}",
+        "filterCIOrderNumber": "${createLink([controller:"ajaxJson", action:"lookupOrderNumbers"])}?query={query}",
+        "filterCIReference": "${createLink([controller:"ajaxJson", action:"lookupReferences"])}?query={query}"
+    };
     JSPC.app.setupDropdowns = function () {
-        if($("#filterSubStatus").length > 0) {
-            var subStatus = $("#filterSubStatus").val();
-            if(subStatus.length === 0) {
-                subStatus = "FETCH_ALL";
-            }
-        }
-        else {
-            subStatus = "FETCH_ALL";
-        }
-        let fixedSubscriptionString = "";
-        <g:if test="${fixedSubscription}">
-            fixedSubscriptionString = "&ctx=${fixedSubscription.class.name}:${fixedSubscription.id}"
-        </g:if>
-        const links = {
-            "filterSubProviders": "${createLink([controller:"ajaxJson", action:"lookupProviders"])}?query={query}&forFinanceView=true",
-            "filterSubVendors": "${createLink([controller:"ajaxJson", action:"lookupVendors"])}?query={query}&forFinanceView=true",
-            "filterCISub": "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?status="+subStatus+"&query={query}",
-            "filterCIPkg": "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?status="+subStatus+fixedSubscriptionString+"&query={query}",
-            "filterCIInvoiceNumber": "${createLink([controller:"ajaxJson", action:"lookupInvoiceNumbers"])}?query={query}",
-            "filterCIOrderNumber": "${createLink([controller:"ajaxJson", action:"lookupOrderNumbers"])}?query={query}",
-            "filterCIReference": "${createLink([controller:"ajaxJson", action:"lookupReferences"])}?query={query}"
-        };
         $(".newFilter").each(function(k,v){
             let values = []
+            let minCharacters = 0;
             switch($(this).attr("id")) {
                 case 'filterCISub':
                     values = [<g:each in="${filterPresets?.filterCISub}" var="ciSub" status="i">'${genericOIDService.getOID(ciSub)}'<g:if test="${i < filterPresets.filterCISub.size()-1}">,</g:if></g:each>];
+                    minCharacters = 1; //due to high amount of data
                     break;
                 case 'filterCISPkg':
                     values = [<g:each in="${filterPresets?.filterCISPkg}" var="ciSPkg" status="i">'${genericOIDService.getOID(ciSPkg)}'<g:if test="${i < filterPresets.filterCISPkg.size()-1}">,</g:if></g:each>];
@@ -343,23 +332,59 @@
             }
             $(this).dropdown({
                 apiSettings: {
-                    url: links[$(this).attr("id")],
+                    url: JSPC.app.links[$(this).attr("id")],
                     cache: false
                 },
                 clearable: true,
-                minCharacters: 0,
+                minCharacters: minCharacters,
                 message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)},
                 onChange: function (value, text, $selectedItem) {
                     value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
+                    if($.inArray($(this).attr("id"), ["filterSubProviders", "filterSubVendors"]) > -1) {
+                        JSPC.app.updateSubscriptionDropdown();
+                    }
                 }
             });
             $(this).dropdown('queryRemote', '', () => {
                 $(this).dropdown('set selected', values);
+                //if($.inArray($(this).attr("id"), ["filterSubProviders", "filterSubVendors"]) > -1) {
+                    //JSPC.app.updateSubscriptionDropdown();
+                //}
             });
         });
         $(".newFilter").keypress(function(e){
             if(e.keyCode == 8)
                 console.log("backspace event!");
+        });
+    }
+    JSPC.app.updateSubscriptionDropdown = function () {
+        if($("#filterSubStatus").length > 0) {
+            var subStatus = $("#filterSubStatus").val();
+            if(subStatus.length === 0) {
+                subStatus = "FETCH_ALL";
+            }
+        }
+        else {
+            subStatus = "FETCH_ALL";
+        }
+        let fixedSubscriptionString = "";
+        <g:if test="${fixedSubscription}">
+            fixedSubscriptionString = "${fixedSubscription.class.name}:${fixedSubscription.id}"
+        </g:if>
+        console.log($("#filterSubProviders").dropdown("get values"));
+        console.log($("#filterSubVendors").dropdown("get values"));
+        $("#filterCISub").dropdown({
+            minCharacters: 1,
+            apiSettings: {
+                url: JSPC.app.links["filterCISub"],
+                data: {
+                    providerFilter: $("#filterSubProviders").dropdown("get values"),
+                    vendorFilter: $("#filterSubVendors").dropdown("get values"),
+                    ctx: fixedSubscriptionString,
+                    status: subStatus
+                },
+                cache: false
+            }
         });
     }
 

@@ -170,9 +170,18 @@ class ControlledListService {
             queryString += " and exists (select pvr from ProviderRole pvr where pvr.subscription = s and pvr.provider = :filterProvider) "
             filter.filterProvider = genericOIDService.resolveOID(params.providerFilter)
         }
+        //weird naming ... Fomantic UI API does it so
+        else if(params.'providerFilter[]') {
+            queryString += " and exists (select pvr from ProviderRole pvr where pvr.subscription = s and pvr.provider in (:filterProvider)) "
+            filter.filterProvider = params.list('providerFilter[]').collect { String key -> genericOIDService.resolveOID(key) }
+        }
         if(params.vendorFilter) {
             queryString += " and exists (select vr from VendorRole vr where vr.subscription = s and vr.vendor = :filterVendor) "
             filter.filterVendor = genericOIDService.resolveOID(params.providerVendor)
+        }
+        else if(params.'vendorFilter[]') {
+            queryString += " and exists (select vr from VendorRole vr where vr.subscription = s and vr.vendor in (:filterVendor)) "
+            filter.filterVendor = params.list('vendorFilter[]').collect { String key -> genericOIDService.resolveOID(key) }
         }
         Set<String> refdataFields = ['form','resource','kind']
         refdataFields.each { String refdataField ->
