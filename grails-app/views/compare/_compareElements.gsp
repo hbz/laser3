@@ -80,15 +80,14 @@
         <g:if test="${objects[0] instanceof License}">
             <tr>
                 <td>
-                    <strong><i class="clipboard icon"></i>${message(code: 'subscription.label')}:</strong>
+                    <strong><i class="${Icons.SUBSCRIPTION} icon"></i>${message(code: 'subscription.label')}:</strong>
                 </td>
                 <g:each in="${objects}" var="object">
                     <td>
                         <article class="la-readmore">
                         <g:each in="${object.getSubscriptions()?.sort{it.name}}" var="subscription">
                             <g:if test="${contextOrg.id in subscription.orgRelations?.org.id}">
-                            <strong><i
-                                    class="clipboard icon"></i>&nbsp;${subscription.kind?.getI10n("value")}:
+                            <strong><i class="${Icons.SUBSCRIPTION} icon"></i>&nbsp;${subscription.kind?.getI10n("value")}:
                             </strong>
                             <g:link controller="subscription" action="show" target="_blank" id="${subscription.id}">
                                 ${subscription.dropdownNamingConvention()}

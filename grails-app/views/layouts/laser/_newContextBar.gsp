@@ -200,7 +200,7 @@
                                                         <i class="icon arrow ${linkPrio == 1 ? 'right' : 'left'} la-list-icon"></i>
                                                     </g:if>
                                                     <g:else>
-                                                        <i class="icon clipboard la-list-icon"></i>
+                                                        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
                                                     </g:else>
                                                     ${linkType}
                                                 </span>
@@ -260,7 +260,7 @@
                                                     (<g:formatDate formatName="default.date.format.notime" date="${linkTarget.startDate}"/> - <g:formatDate formatName="default.date.format.notime" date="${linkTarget.endDate}"/>)
                                                 </span>
                                                 <span class="description">
-                                                    <i class="icon clipboard la-list-icon"></i>
+                                                    <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
                                                     ${linkType}
                                                 </span>
                                             </g:link>

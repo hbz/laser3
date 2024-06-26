@@ -391,7 +391,7 @@
                                     </g:each>
                                 </div>
 
-                                <p class="ui header">%{--<i class="icon clipboard"></i>--}% <g:message code="subscription.plural" /></p>
+                                <p class="ui header">%{--<i class="${Icons.SUBSCRIPTION} icon"></i>--}% <g:message code="subscription.plural" /></p>
 
                                 <div class="ui divided middle aligned selection list la-flex-list">
                                     <div class="ui item">

@@ -193,7 +193,7 @@
                 <tr data-type="linktoSubscription">
                     <td>
                         <div>
-                            <strong><i class="clipboard icon"></i>${message(code: 'subscription.linktoSubscription')}:</strong>
+                            <strong><i class="${Icons.SUBSCRIPTION} icon"></i>${message(code: 'subscription.linktoSubscription')}:</strong>
                             <g:if test="${sourceObject.instanceOf}">
                                 <g:link controller="subscription" action="show" target="_blank" id="${sourceObject.instanceOf.id}">${sourceObject.instanceOf}</g:link>
                             </g:if>
@@ -219,7 +219,7 @@
                 <tr data-type="linktoLicense">
                     <td>
                         <div>
-                            <strong><i class="clipboard icon"></i>${message(code: 'license.linktoLicense')}:</strong>
+                            <strong><i class="${Icons.LICENSE} icon"></i>${message(code: 'license.linktoLicense')}:</strong>
                             <g:if test="${sourceObject.instanceOf}">
                                 <g:link controller="license" action="show" target="_blank" id="${sourceObject.instanceOf.id}">${sourceObject.instanceOf}</g:link>
                             </g:if>

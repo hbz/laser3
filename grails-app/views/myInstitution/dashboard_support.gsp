@@ -13,7 +13,7 @@
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
-                            <i class="clipboard icon la-list-icon"></i>
+                            <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
                             <div class="content">
                                 <g:link controller="myInstitution" action="currentSubscriptions">${message(code:'menu.my.subscriptions')}</g:link>
                             </div>
