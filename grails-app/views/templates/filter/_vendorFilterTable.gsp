@@ -138,7 +138,14 @@
                             <ul class="la-simpleList">
                                 <g:each in="${currentSubscriptions.get(vendor.id)}" var="sub">
                                     <g:if test="${!sub.instanceOf || (sub.instanceOf && !(sub.instanceOf in currentSubscriptions.get(vendor.id)))}">
-                                        <li><g:link controller="subscription" action="show" id="${sub.id}">${sub}</g:link></li>
+                                        <li>
+                                            <g:link controller="subscription" action="show" id="${sub.id}">
+                                                ${sub}
+                                                <g:if test="${sub.instanceOf}">
+                                                    <br>(${sub.getSubscriberRespConsortia()})
+                                                </g:if>
+                                            </g:link>
+                                        </li>
                                     </g:if>
                                 </g:each>
                             </ul>

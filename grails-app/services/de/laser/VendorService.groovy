@@ -8,6 +8,8 @@ import de.laser.properties.VendorProperty
 import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyConfigVendor
+import de.laser.survey.SurveyVendorResult
 import de.laser.traces.DeletedObject
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -281,14 +283,15 @@ class VendorService {
 
         // gathering references
         List ids            = new ArrayList(vendor.ids)
-        List vendorLinks    = VendorRole.findAllByVendor(vendor)
+        List vendorLinks    = new ArrayList(vendor.links)
 
         List addresses      = new ArrayList(vendor.addresses)
 
-        List prsLinks       = VendorRole.findAllByVendor(vendor)
+        List prsLinks       = new ArrayList(vendor.prsLinks)
         List docContexts    = new ArrayList(vendor.documents)
         List tasks          = Task.findAllByVendor(vendor)
-        List packages       = PackageVendor.findAllByVendor(vendor)
+        List packages       = new ArrayList(vendor.packages)
+        List surveys        = new ArrayList(vendor.surveys)
         List electronicBillings = new ArrayList(vendor.electronicBillings)
         List invoiceDispatchs = new ArrayList(vendor.invoiceDispatchs)
         List supportedLibrarySystems = new ArrayList(vendor.supportedLibrarySystems)
@@ -311,6 +314,7 @@ class VendorService {
         result.info << ['Aufgaben', tasks]
         result.info << ['Dokumente', docContexts]
         result.info << ['Packages', packages]
+        result.info << ['Umfragen', surveys]
 
         result.info << ['Allgemeine Merkmale', customProperties]
         result.info << ['Private Merkmale', privateProperties]
@@ -461,11 +465,20 @@ class VendorService {
                     Set<ElectronicBilling> targetElectronicBillings = replacement.electronicBillings
                     vendor.electronicBillings.clear()
                     electronicBillings.each { ElectronicBilling eb ->
-                        if(!targetInvoiceDispatchs.find { ElectronicBilling ebT -> ebT.invoicingFormat == eb.invoicingFormat }) {
+                        if(!targetElectronicBillings.find { ElectronicBilling ebT -> ebT.invoicingFormat == eb.invoicingFormat }) {
                             eb.vendor = replacement
                             eb.save()
                         }
                         else eb.delete()
+                    }
+                    Set<SurveyConfigVendor> targetSurveyConfigs = replacement.surveys
+                    vendor.surveys.clear()
+                    surveys.each { SurveyConfigVendor scv ->
+                        if(!targetSurveyConfigs.find { SurveyConfigVendor scvT -> scvT.surveyConfig == scv.surveyConfig }) {
+                            scv.vendor = replacement
+                            scv.save()
+                        }
+                        else scv.delete()
                     }
 
                     vendor.delete()
@@ -501,8 +514,8 @@ class VendorService {
         if(contextOrg.isCustomerType_Consortium())
             instanceFilter = 'and s.instanceOf = null'
         */
-        //select distinct because implicit toSet() does not prevent the loading of 17 million rows ...
-        Platform.executeQuery('select distinct(pkg.nominalPlatform) from PackageVendor pv join pv.pkg pkg, SubscriptionPackage sp join sp.subscription s, OrgRole oo where pv.vendor = :vendor and pv.pkg = sp.pkg and s.status = :current and oo.org = :contextOrg', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, contextOrg: contextOrg])
+        Set<Package> subscribedPackages = Package.executeQuery('select pkg from SubscriptionPackage sp join sp.pkg pkg, OrgRole oo join oo.sub s where sp.subscription = oo.sub and s.status = :current and oo.org = :contextOrg and pkg in (select pv.pkg from PackageVendor pv where pv.vendor = :vendor)', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, contextOrg: contextOrg])
+        subscribedPackages.nominalPlatform
     }
 
     Map<String, Object> getResultGenerics(GrailsParameterMap params) {
