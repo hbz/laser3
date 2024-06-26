@@ -106,7 +106,7 @@
             <tr>
                 <td>
                     <strong><i
-                            class="university icon"></i>&nbsp;${RDStore.OR_LICENSOR.getI10n('value')}/${RDStore.OR_LICENSING_CONSORTIUM.getI10n('value')}/${RDStore.OR_SUBSCRIPTION_CONSORTIA}:
+                            class="university icon"></i>&nbsp;${RDStore.OR_LICENSOR.getI10n('value')}/${RDStore.OR_LICENSING_CONSORTIUM.getI10n('value')}/${RDStore.OR_SUBSCRIPTION_CONSORTIA.getI10n('value')}}:
                     </strong>
                 </td>
                 <g:each in="${objects}" var="object">
@@ -149,7 +149,7 @@
         <tr>
             <td>
                 <strong>
-                    <i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code: 'provider.label')}"></i>:
+                    <i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code: 'provider.label')}"></i>${message(code: 'provider.label')} :
                 </strong>
             </td>
             <g:each in="${objects}" var="object">
@@ -168,7 +168,7 @@
         <tr>
             <td>
                 <strong>
-                    <i class="la-list-icon la-popup-tooltip la-delay shipping fast icon" data-content="${message(code:'vendor.label')}"></i>:
+                    <i class="la-list-icon la-popup-tooltip la-delay shipping fast icon" data-content="${message(code:'vendor.label')}"></i> ${message(code:'vendor.label')}:
                 </strong>
             </td>
             <g:each in="${objects}" var="object">
