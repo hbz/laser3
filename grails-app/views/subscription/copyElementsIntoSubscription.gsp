@@ -82,7 +82,7 @@
                     <div class="description">
                         <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
                         <i class="${Icons.TASK} icon"></i>          ${message(code: 'menu.institutions.tasks')} <br />
-                        <i class="file outline icon"></i>           ${message(code: 'default.documents.label')} <br />
+                        <i class="${Icons.DOCUMENT} icon"></i>      ${message(code: 'default.documents.label')} <br />
                         <i class="${Icons.WORKFLOW} icon"></i>      ${message(code: 'workflow.plural')}
                     </div>
                 </div>
@@ -165,7 +165,7 @@
                     <div class="description">
                         <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
                         <i class="${Icons.TASK} icon"></i>          ${message(code: 'menu.institutions.tasks')} <br />
-                        <i class="file outline icon"></i>           ${message(code: 'default.documents.label')} <br />
+                        <i class="${Icons.DOCUMENT} icon"></i>      ${message(code: 'default.documents.label')} <br />
                         <i class="${Icons.WORKFLOW} icon"></i>      ${message(code: 'workflow.plural')}
                     </div>
                 </div>

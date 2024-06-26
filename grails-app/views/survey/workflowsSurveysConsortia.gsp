@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.survey.SurveyOrg; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.helper.Icons; de.laser.helper.Params; de.laser.survey.SurveyOrg; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 <laser:htmlStart message="currentSurveys.label" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -233,7 +233,7 @@
 
                 <th rowspan="2" scope="col">
                     <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfigDocs.label')}" data-position="top center">
-                        <i class="file alternate large icon"></i>
+                        <i class="${Icons.DOCUMENT} large icon"></i>
                     </a>
                 </th>
 

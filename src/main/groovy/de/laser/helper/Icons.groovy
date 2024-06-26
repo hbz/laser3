@@ -6,7 +6,7 @@ class Icons {
 
     public static String ANNOUNCEMENT       = 'flag'
 
-    public static String DOCUMENT           = 'file alternate' // todo: 'file outline'
+    public static String DOCUMENT           = 'file alternate' // todo: 'file alternate' > tipp.coverage
 
     public static String LICENSE            = 'balance scale'
 
