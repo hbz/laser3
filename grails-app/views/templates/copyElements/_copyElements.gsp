@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.Subscription; de.laser.License; de.laser.PersonRole; de.laser.Person; de.laser.SubscriptionController; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.RefdataValue; de.laser.FormService;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.License; de.laser.PersonRole; de.laser.Person; de.laser.SubscriptionController; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.RefdataValue; de.laser.FormService;" %>
 <laser:serviceInjection/>
 
 <g:set var="copyElementsService" bean="copyElementsService"/>
@@ -245,11 +245,11 @@
                 <tr data-type="license" data-element="copyObject.takeLicenses">
                     <td data-element="source">
                         <div>
-                            <strong><i class="balance scale icon"></i>${message(code: 'license.label')}:</strong>
+                            <strong><i class="${Icons.LICENSE} icon"></i>${message(code: 'license.label')}:</strong>
                             <g:each in="${sourceLicenses}" var="license">
                                 <g:link controller="license" action="show" target="_blank" id="${license.id}">
                                     <div data-oid="${genericOIDService.getOID(license)}" class="la-multi-sources">
-                                        <strong><i class="balance scale icon"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:</strong>
+                                        <strong><i class="${Icons.LICENSE} icon"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:</strong>
                                         ${license.reference}
                                         <br />
                                     </div>
@@ -272,10 +272,10 @@
                     <g:if test="${!copyObject}">
                         <td data-element="target">
                             <div>
-                                <strong><i class="balance scale icon"></i>${message(code: 'license.label')}:</strong>
+                                <strong><i class="${Icons.LICENSE} icon"></i>${message(code: 'license.label')}:</strong>
                                 <g:each in="${targetLicenses}" var="license">
                                     <div data-oid="${genericOIDService.getOID(license)}">
-                                        <strong><i class="balance scale icon"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:</strong>
+                                        <strong><i class="${Icons.LICENSE} icon"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:</strong>
                                         <g:link controller="license" action="show" target="_blank" id="${license.id}">
                                             ${license.reference}
                                         </g:link>

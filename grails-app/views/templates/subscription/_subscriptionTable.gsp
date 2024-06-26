@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.finance.CostItem; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.License;de.laser.Links" %>
+<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.finance.CostItem; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.License;de.laser.Links" %>
 <laser:serviceInjection />
 
 <g:form action="compareSubscriptions" controller="compare" method="post">
@@ -119,7 +119,7 @@
                                     <g:if test="${s == row.destinationSubscription}">
                                         <g:set var="license" value="${row.sourceLicense}"/>
                                         <div class="la-flexbox la-minor-object">
-                                            <i class="icon balance scale la-list-icon"></i>
+                                            <i class="${Icons.LICENSE} icon la-list-icon"></i>
                                             <g:link controller="license" action="show" id="${license.id}">
                                                 ${license.reference}
                                             </g:link><br />

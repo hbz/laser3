@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.interfaces.CalculatedType; de.laser.Person; de.laser.License" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Subscription; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.interfaces.CalculatedType; de.laser.Person; de.laser.License" %>
 <laser:serviceInjection/>
 
 <ui:greySegment>
@@ -55,15 +55,15 @@
         <g:if test="${objects[0] instanceof Subscription}">
             <tr>
                 <td>
-                    <strong><i class="balance scale icon"></i>${message(code: 'license.label')}:</strong>
+                    <strong><i class="${Icons.LICENSE} icon"></i>${message(code: 'license.label')}:</strong>
                 </td>
                 <g:each in="${objects}" var="object">
                     <td>
                         <article class="la-readmore">
                         <g:each in="${object.getLicenses()?.sort{it.reference}}" var="license">
                             <g:if test="${contextOrg.id in license.orgRelations?.org.id}">
-                            <strong><i
-                                    class="balance scale icon"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:
+                            <strong>
+                                <i class="${Icons.LICENSE} icon"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:
                             </strong>
                             <g:link controller="license" action="show" target="_blank" id="${license.id}">
                                 ${license.dropdownNamingConvention()}

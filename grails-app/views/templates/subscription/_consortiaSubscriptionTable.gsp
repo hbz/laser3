@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.Org; de.laser.OrgRole; de.laser.FormService; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Links;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Subscription; de.laser.Org; de.laser.OrgRole; de.laser.FormService; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Links;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
 <g:if test="${params.member}">
@@ -135,7 +135,7 @@
                     </div>
                     <g:each in="${linkedLicenses.get(subCons)}" var="linkedLicense">
                         <div class="la-flexbox la-minor-object">
-                            <i class="icon balance scale la-list-icon"></i>
+                            <i class="${Icons.LICENSE} icon la-list-icon"></i>
                             <g:link controller="license" action="show" id="${linkedLicense.id}">${linkedLicense.reference}</g:link><br />
                         </div>
                     </g:each>
