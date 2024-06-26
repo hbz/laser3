@@ -144,7 +144,7 @@
                                 <br />
                                 ${inTargetOrg ? docctx.owner?.owner?.sortname :  docctx.targetOrg?.sortname}
                             </td>
-                        <%--
+                        %{--
                             <td>
                                 <g:if test="${docctx.org}">
                                     <g:link controller="organisation" action="show" params="[id:docctx.org.id]"><i class="university icon small"></i> ${docctx.org.name}</g:link>
@@ -159,7 +159,7 @@
                                     <g:link controller="package" action="show" params="[id:docctx.pkg.id]"><i class="gift icon small"></i> ${docctx.pkg.name}</g:link>
                                 </g:elseif>
                             </td>
-                        --%>
+                        --}%
                         </g:if>
                         <td class="center aligned x">
                             <g:if test="${docctx.isDocAFile()}">

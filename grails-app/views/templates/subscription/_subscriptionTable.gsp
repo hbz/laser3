@@ -56,7 +56,7 @@
                         <g:if test="${params.orgRole in ['Subscription Consortia']}">
                             <th scope="col" rowspan="2" class="center aligned">
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
-                                    <i class="university large icon"></i>
+                                    <i class="${Icons.ORG} large icon"></i>
                                 </span>
                             </th>
                             <th scope="col" rowspan="2" class="center aligned">

@@ -276,25 +276,25 @@
                                     <div class="item">
                                         <span class="la-popup-tooltip la-delay" data-content="${message(code: 'task.' + tskObj.controller)}" data-position="left center" data-variation="tiny">
                                             <g:if test="${tskObj.controller == 'organisation'}">
-                                                <i class="university icon"></i>
+                                                <i class="${Icons.ORG} icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller == 'provider'}">
-                                                <i class="handshake icon"></i>
+                                                <i class="${Icons.PROVIDER} icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller == 'vendor'}">
-                                                <i class="shipping fast icon"></i>
+                                                <i class="${Icons.VENDOR} icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('subscription')}">
                                                 <i class="clipboard outline icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('package')}">
-                                                <i class="gift icon"></i>
+                                                <i class="${Icons.PACKAGE} icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('license')}">
-                                                <i class="book icon"></i>
+                                                <i class="${Icons.LICENSE} icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('survey')}">
-                                                <i class="chart pie icon"></i>
+                                                <i class="${Icons.SURVEY} icon"></i>
                                             </g:if>
                                         </span>
                                         <g:if test="${tskObj.controller.contains('survey')}">
@@ -307,7 +307,7 @@
                                 </g:each>
                             </g:if>
                             <g:else>
-                                <i class="calendar check outline icon"></i> ${message(code: 'task.general')}
+                                <i class="${Icons.TASK} icon"></i> ${message(code: 'task.general')}
                             </g:else>
                         </div>
                     </div>

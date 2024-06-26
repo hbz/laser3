@@ -6,7 +6,7 @@ class Icons {
 
     public static String ANNOUNCEMENT       = 'flag'
 
-    public static String DOCUMENT           = 'file alternate'
+    public static String DOCUMENT           = 'file alternate' // todo: 'file outline'
 
     public static String LICENSE            = 'balance scale'
 
@@ -22,7 +22,7 @@ class Icons {
 
     public static String REPORTING          = 'chartline'
 
-    public static String SUBSCRIPTION       = 'clipboard'
+    public static String SUBSCRIPTION       = 'clipboard' // todo: 'clipboard outline'
 
     public static String SURVEY             = 'chart pie'
 

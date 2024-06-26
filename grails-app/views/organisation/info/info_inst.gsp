@@ -158,7 +158,7 @@
                                         <td>
                                             <g:if test="${orgCons}">
                                                 <div class="la-flexbox la-minor-object">
-                                                    <i class="icon university la-list-icon"></i>
+                                                    <i class="${Icons.ORG} icon la-list-icon"></i>
                                                     <g:link controller="org" action="show" id="${orgCons.id}" target="_blank">${orgCons.name}</g:link>
                                                 </div>
                                             </g:if>
@@ -221,7 +221,7 @@
                                         <td>
                                             <g:if test="${orgCons}">
                                                 <div class="la-flexbox la-minor-object">
-                                                    <i class="icon university la-list-icon"></i>
+                                                    <i class="${Icons.ORG} icon la-list-icon"></i>
                                                     <g:link controller="org" action="show" id="${orgCons.id}" target="_blank">${orgCons.name}</g:link>
                                                 </div>
                                             </g:if>
@@ -272,7 +272,7 @@
                                         <td>
                                             <g:if test="${orgCons}">
                                                 <div class="la-flexbox la-minor-object">
-                                                    <i class="icon university la-list-icon"></i>
+                                                    <i class="${Icons.ORG} icon la-list-icon"></i>
                                                     <g:link controller="org" action="show" id="${orgCons.id}" target="_blank">${orgCons.name}</g:link>
                                                 </div>
                                             </g:if>
@@ -357,7 +357,7 @@
                                     <td colspan="5">
                                         <g:if test="${orgCons}">
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="icon university la-list-icon"></i>
+                                                <i class="${Icons.ORG} icon la-list-icon"></i>
                                                 <g:link controller="org" action="show" id="${orgCons.id}" target="_blank">${orgCons.name}</g:link>
                                             </div>
                                         </g:if>
@@ -383,7 +383,7 @@
                                     <tr data-id="${surveyInfo.id}" data-ctype="survey-subsciption" class="hidden sub">
                                         <td style="padding-left:2rem;">
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="icon clipboard la-list-icon"></i>
+                                                <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                                             </div>
                                         </td>

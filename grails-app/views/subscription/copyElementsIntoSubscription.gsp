@@ -97,7 +97,7 @@
                             </g:link>
                         </div>
                         <div class="description">
-                            <i class="university icon"></i> ${message(code: 'consortium.subscriber')}
+                            <i class="${Icons.ORG} icon"></i> ${message(code: 'consortium.subscriber')}
                         </div>
                     </div>
                 </div>
@@ -178,7 +178,7 @@
                             ${message(code: 'consortium.subscriber')}
                         </div>
                         <div class="description">
-                            <i class="university icon"></i> ${message(code: 'consortium.subscriber')}
+                            <i class="${Icons.ORG} icon"></i> ${message(code: 'consortium.subscriber')}
                         </div>
                     </div>
                 </ui:complexSubNavItem>
