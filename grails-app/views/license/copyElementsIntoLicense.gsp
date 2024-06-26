@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService" %>
 
 <laser:htmlStart message="copyElementsIntoObject.license" serviceInjection="true"/>
 
@@ -33,7 +33,7 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
                 <i class="cloud icon"></i>                      ${message(code: 'default.url.label')} <br />
                 <i class="clipboard list icon"></i>             ${message(code: 'license.licenseCategory.label')}
                 <i class="shipping fast icon"></i>              ${message(code: 'license.isPublicForApi.label')}
-                <i class="university icon"></i>                 ${message(code: 'subscription.organisations.label')} <br />
+                <i class="${Icons.ORG} icon"></i>               ${message(code: 'subscription.organisations.label')} <br />
                 <i class="barcode icon"></i>                    ${message(code: 'default.identifiers.label')}
             </div>
         </div>
@@ -49,9 +49,9 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
             </div>
             <div class="description">
                 <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
-                <i class="calendar check outline icon"></i> ${message(code: 'menu.institutions.tasks')} <br />
+                <i class="${Icons.TASK} icon"></i>          ${message(code: 'menu.institutions.tasks')} <br />
                 <i class="file outline icon"></i>           ${message(code: 'default.documents.label')} <br />
-                <i class="tasks icon"></i>                  ${message(code: 'workflow.plural')}
+                <i class="${Icons.WORKFLOW} icon"></i>      ${message(code: 'workflow.plural')}
             </div>
         </div>
     </ui:complexSubNavItem>
@@ -65,7 +65,7 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
                     ${message(code: 'consortium.subscriber')}
                 </div>
                 <div class="description">
-                    <i class="university icon"></i> ${message(code: 'consortium.subscriber')}
+                    <i class="${Icons.ORG} icon"></i> ${message(code: 'consortium.subscriber')}
                 </div>
             </div>
         </ui:complexSubNavItem>
