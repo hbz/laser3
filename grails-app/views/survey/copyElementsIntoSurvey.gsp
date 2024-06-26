@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.CopyElementsService;de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue; de.laser.CopyElementsService;de.laser.storage.RDStore;" %>
 
 <laser:htmlStart message="copyElementsIntoObject.survey" serviceInjection="true"/>
 
@@ -51,7 +51,7 @@
                             ${message(code: 'consortium.subscriber')}
                         </div>
                         <div class="description">
-                            <i class="university icon"></i> ${message(code: 'consortium.subscriber')}
+                            <i class="${Icons.ORG} icon"></i> ${message(code: 'consortium.subscriber')}
                         </div>
                     </div>
             </ui:complexSubNavItem>
