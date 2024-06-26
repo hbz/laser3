@@ -52,6 +52,10 @@
         </div>
         <ui:paginate total="${vendorListTotal}" params="${params}" max="${max}" offset="${offset}" />
 
+<ui:debugInfo>
+    <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+</ui:debugInfo>
+
 <g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd />

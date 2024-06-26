@@ -56,7 +56,6 @@ class ExportClickMeService {
     ExportService exportService
     FilterService filterService
     FinanceService financeService
-    GokbService gokbService
     SubscriptionsQueryService subscriptionsQueryService
     SurveyService surveyService
     SubscriptionService subscriptionService
@@ -335,8 +334,8 @@ class ExportClickMeService {
                     fields: [
                             'provider.sortname'          : [field: 'sub.providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
                             'provider.name'              : [field: 'sub.providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
-                            'provider.altnames'          : [field: 'sub.providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
-                            'provider.url'               : [field: 'sub.providers.url', label: 'Url', message: 'exportClickMe.provider.url']
+                            'provider.altnames'          : [field: 'sub.providers.altnames.name', label: 'Alternative Name', message: 'exportClickMe.provider.altnames'],
+                            'provider.url'               : [field: 'sub.providers.homepage', label: 'Homepage', message: 'exportClickMe.provider.url']
                     ]
             ],
 
@@ -346,7 +345,8 @@ class ExportClickMeService {
                     fields: [
                             'vendor.sortname'          : [field: 'sub.vendors.sortname', label: 'Sortname', message: 'exportClickMe.vendor.sortname'],
                             'vendor.name'              : [field: 'sub.vendors.name', label: 'Name', message: 'exportClickMe.vendor.name', defaultChecked: 'true' ],
-                            'vendor.url'               : [field: 'sub.vendors.homepage', label: 'Url', message: 'exportClickMe.vendor.url'],
+                            'vendor.altnames'          : [field: 'sub.vendors.altnames.name', label: 'Alternative Name', message: 'exportClickMe.vendor.altnames'],
+                            'vendor.url'               : [field: 'sub.vendors.homepage', label: 'Homepage', message: 'exportClickMe.vendor.url'],
                     ]
             ],
 
@@ -418,7 +418,7 @@ class ExportClickMeService {
                             'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
                             'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
                             'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
-                            'provider.url'               : [field: 'providers.url', label: 'Url', message: 'exportClickMe.provider.url']
+                            'provider.url'               : [field: 'providers.homepage', label: 'Url', message: 'exportClickMe.provider.url']
                     ]
             ],
 
@@ -429,7 +429,7 @@ class ExportClickMeService {
                             'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.vendor.sortname'],
                             'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.vendor.name', defaultChecked: 'true' ],
                             'vendor.altnames'          : [field: 'vendors.altnames.name', label: 'Alt Name', message: 'exportClickMe.vendor.altnames'],
-                            'vendor.url'               : [field: 'vendors.url', label: 'Url', message: 'exportClickMe.vendor.url'],
+                            'vendor.url'               : [field: 'vendors.homepage', label: 'Url', message: 'exportClickMe.vendor.url'],
                     ]
             ],
 
@@ -698,7 +698,7 @@ class ExportClickMeService {
                             'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
                             'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
                             'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
-                            'provider.url'               : [field: 'providers.url', label: 'Url', message: 'exportClickMe.provider.url']
+                            'provider.url'               : [field: 'providers.homepage', label: 'Url', message: 'exportClickMe.provider.url']
                     ]
             ],
 
@@ -708,7 +708,7 @@ class ExportClickMeService {
                     fields: [
                             'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.vendor.sortname'],
                             'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.vendor.name', defaultChecked: 'true' ],
-                            'vendor.url'               : [field: 'vendors.url', label: 'Url', message: 'exportClickMe.vendor.url'],
+                            'vendor.url'               : [field: 'vendors.homepage', label: 'Url', message: 'exportClickMe.vendor.url'],
                     ]
             ],
 
@@ -933,7 +933,7 @@ class ExportClickMeService {
                             'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
                             'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
                             'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
-                            'provider.url'               : [field: 'providers.url', label: 'Url', message: 'exportClickMe.provider.url']
+                            'provider.url'               : [field: 'providers.homepage', label: 'Url', message: 'exportClickMe.provider.url']
                     ]
             ],
 
@@ -943,7 +943,7 @@ class ExportClickMeService {
                     fields: [
                             'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.vendor.sortname'],
                             'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.vendor.name', defaultChecked: 'true' ],
-                            'vendor.url'               : [field: 'vendors.url', label: 'Url', message: 'exportClickMe.vendor.url']
+                            'vendor.url'               : [field: 'vendors.homepage', label: 'Url', message: 'exportClickMe.vendor.url']
                     ]
             ],
 
