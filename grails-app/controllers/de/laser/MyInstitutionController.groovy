@@ -979,7 +979,7 @@ class MyInstitutionController  {
         }
 
         if(params.containsKey('qp_invoicingVendors')) {
-            queryArgs << "exists (select iv from p.invoicingVendors iv where iv.vendor in (:vendors))"
+            queryArgs << "exists (select iv from p.invoicingVendors iv where iv.vendor.id in (:vendors))"
             queryParams.put('vendors', Params.getLongList(params, 'qp_invoicingVendors'))
         }
 
