@@ -18,7 +18,7 @@ class Icons {
 
     public static String PLATFORM           = 'cloud'
 
-    public static String PROVIDER           = 'handshake'   // todo: duplicate - org.legalInformation
+    public static String PROVIDER           = 'handshake'   // todo: duplicate > org.legalInformation > Icons.ORG_LEGAL_INFORMATION
 
     public static String REPORTING          = 'chartline'
 
@@ -33,4 +33,7 @@ class Icons {
     public static String WORKFLOW           = 'tasks'
 
     // others ..
+
+    public static String ORG_LEGAL_INFORMATION      = 'hands helping'
+
 }
