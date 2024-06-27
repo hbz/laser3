@@ -1168,8 +1168,12 @@ class MyInstitutionController  {
             if(params.subPerpetualAccess == RDStore.YN_NO)
                 query += ' and s.hasPerpetualAccess = false '
         }
-        else query += ')' //opened in line 1100 or 1105
+        else if(params.containsKey('subStatus') || !params.containsKey('filterSet')) query += ')' //opened in line 1100 or 1105
         Set<String> queryArgs = []
+        if(params.containsKey('nameContains')) {
+            queryArgs << "(genfunc_filter_matcher(v.name, :name) = true or genfunc_filter_matcher(v.sortname, :name) = true)"
+            queryParams.put('name', params.nameContains)
+        }
         if(params.containsKey('qp_supportedLibrarySystems')) {
             queryArgs << "exists (select ls from v.supportedLibrarySystems ls where ls.librarySystem in (:librarySystems))"
             queryParams.put('librarySystems', Params.getRefdataList(params, 'qp_supportedLibrarySystems'))
