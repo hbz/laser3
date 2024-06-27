@@ -251,6 +251,9 @@ class ProviderController {
                 licenseConsortiumFilter = 'and l.instanceOf = null'
             }
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, provider)
+            Set<Package> allPackages = provider.packages
+            result.allPackages = allPackages
+            result.allPlatforms = allPackages.findAll { Package pkg -> pkg.nominalPlatform != null}.nominalPlatform.toSet()
             result.packages = Package.executeQuery('select pkg from SubscriptionPackage sp join sp.pkg pkg, OrgRole oo join oo.sub s where pkg.provider = :provider and s = sp.subscription and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Package>
             result.platforms = Platform.executeQuery('select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg, OrgRole oo join oo.sub s where pkg.provider = :provider and oo.sub = sp.subscription and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Platform>
             result.currentSubscriptionsCount = ProviderRole.executeQuery('select count(*) from ProviderRole pvr join pvr.subscription s join s.orgRelations oo where pvr.provider = :provider and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])[0]
