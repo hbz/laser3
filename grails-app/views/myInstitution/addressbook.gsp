@@ -187,7 +187,7 @@
             showContacts  : true,
             showAddresses : true,
             showOptions : true,
-            tmplConfigShow: ['lineNumber', 'organisation', 'function', 'position', 'name', 'showContacts', 'showAddresses']
+            tmplConfigShow: ['lineNumber', 'organisation', 'function', 'position', 'name', 'showContacts']
     ]}"/>
 
     <ui:paginate action="addressbook" controller="myInstitution" params="${params+[tab: 'contacts']}"

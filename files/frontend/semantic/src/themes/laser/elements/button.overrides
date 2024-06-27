@@ -224,8 +224,11 @@ a i.circular.la-gokb:hover {
 .la-margin-top-05em {
     margin-top: .5em!important;
 }
-.la-margin-bottom-1em {
-    margin-bottom: 1em!important;
+.la-margin-top-05em {
+    margin-top: .5em!important;
+}
+.ui.button.la-margin-top-1-7em {
+    margin-top: 1.7em!important;
 }
 /*------------------------------------
          Buttons for debug infos
