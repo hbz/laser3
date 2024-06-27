@@ -955,7 +955,6 @@ class MyInstitutionController  {
         }
         result.curatoryGroupTypes = [
                 [value: 'Provider', name: message(code: 'package.curatoryGroup.provider')],
-                [value: 'Vendor', name: message(code: 'package.curatoryGroup.vendor')],
                 [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
         ]
         if(params.containsKey('nameContains')) {
@@ -980,7 +979,7 @@ class MyInstitutionController  {
         }
 
         if(params.containsKey('qp_invoicingVendors')) {
-            queryArgs << "exists (select iv from p.invoicingVendors iv where iv.vendor in (:vendors))"
+            queryArgs << "exists (select iv from p.invoicingVendors iv where iv.vendor.id in (:vendors))"
             queryParams.put('vendors', Params.getLongList(params, 'qp_invoicingVendors'))
         }
 
@@ -1169,8 +1168,12 @@ class MyInstitutionController  {
             if(params.subPerpetualAccess == RDStore.YN_NO)
                 query += ' and s.hasPerpetualAccess = false '
         }
-        else query += ')' //opened in line 1100 or 1105
+        else if(params.containsKey('subStatus') || !params.containsKey('filterSet')) query += ')' //opened in line 1100 or 1105
         Set<String> queryArgs = []
+        if(params.containsKey('nameContains')) {
+            queryArgs << "(genfunc_filter_matcher(v.name, :name) = true or genfunc_filter_matcher(v.sortname, :name) = true)"
+            queryParams.put('name', params.nameContains)
+        }
         if(params.containsKey('qp_supportedLibrarySystems')) {
             queryArgs << "exists (select ls from v.supportedLibrarySystems ls where ls.librarySystem in (:librarySystems))"
             queryParams.put('librarySystems', Params.getRefdataList(params, 'qp_supportedLibrarySystems'))
@@ -1312,7 +1315,7 @@ class MyInstitutionController  {
 
         Map<String, Object> selectedFields = [:]
 
-        if(params.identifier?.startsWith('vendor:') && result.institution.isCustomerType_Consortium())
+        if((params.identifier?.startsWith('vendor:') || params.q) && result.institution.isCustomerType_Consortium())
             result.vendorNotice = true
 
         if(params.fileformat) {

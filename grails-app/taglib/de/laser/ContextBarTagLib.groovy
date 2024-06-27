@@ -3,6 +3,7 @@ package de.laser
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.convenience.Marker
+import de.laser.helper.Icons
 import de.laser.interfaces.MarkerSupport
 
 class ContextBarTagLib {
@@ -217,7 +218,7 @@ class ContextBarTagLib {
 
                 out <<      '<a class="ui icon label la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
                 out <<          'data-content="' + tt + '" data-position="top right">'
-                out <<              '<i class="icon purple bookmark' + (isMarked ? '' : ' outline') + '"></i>'
+                out <<              '<i class="' + Icons.MARKER + ' icon purple' + (isMarked ? '' : ' outline') + '"></i>'
                 out <<      '</a>'
 
                 if (! attrs.ajax) {
@@ -233,7 +234,7 @@ class ContextBarTagLib {
 
                 out <<      '<div class="ui icon button purple ' + (isMarked ? 'active' : ' inactive ') + ' la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
                 out <<          'data-content="' + tt + '" data-position="top right">'
-                out <<              '<i class="icon ' + (isMarked ? 'bookmark' : ' la-bookmark slash' ) + '"></i>'
+                out <<              '<i class="' + (isMarked ? Icons.MARKER : 'la-bookmark slash' ) + ' icon"></i>'
                 out <<      '</div>'
 
                 if (! attrs.ajax) {

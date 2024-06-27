@@ -1060,10 +1060,10 @@ class SurveyControllerService {
                                         }
                                     }
                                     if (colMap.description != null) {
-                                        costItem.costDescription = (cols[colMap.description] != '') ? cols[colMap.description] : null
+                                        costItem.costDescription = (cols[colMap.description].trim() != '') ? cols[colMap.description].trim() : null
                                     }
                                     if (colMap.title != null) {
-                                        costItem.costTitle = (cols[colMap.title] != '') ? cols[colMap.title] : null
+                                        costItem.costTitle = (cols[colMap.title].trim() != '') ? cols[colMap.title].trim() : null
                                     }
                                     if (colMap.invoiceTotal != null && cols[colMap.invoiceTotal] != null) {
                                         try {

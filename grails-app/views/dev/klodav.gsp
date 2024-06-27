@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:htmlStart text="Playground" serviceInjection="true" />
 
 <br />
@@ -34,32 +34,32 @@
     <p class="ui header">Icons #2</p>
     <div class="ui list">
         <div class="item">
-            <i class="icon large handshake"></i>
-            <div class="content"> Anbieter (handshake)</div>
+            <i class="icon large ${Icons.PROVIDER}"></i>
+            <div class="content"> Anbieter (${Icons.PROVIDER})</div>
         </div>
         <div class="item">
             <i class="icon large boxes"></i>
             <div class="content"> Lieferanten (boxes)</div>
         </div>
         <div class="item">
-            <i class="icon large university"></i>
-            <div class="content"> Einrichtungen (university)</div>
+            <i class="icon large ${Icons.ORG}"></i>
+            <div class="content"> Einrichtungen (${Icons.ORG})</div>
         </div>
         <div class="item">
-            <i class="icon large cloud"></i>
-            <div class="content"> Plattformen (cloud)</div>
+            <i class="icon large ${Icons.PLATFORM}"></i>
+            <div class="content"> Plattformen (${Icons.PLATFORM})</div>
         </div>
         <div class="item">
-            <i class="icon large clipboard"></i>
-            <div class="content"> Lizenzen (clipboard)</div>
+            <i class="icon large ${Icons.SUBSCRIPTION}"></i>
+            <div class="content"> Lizenzen (${Icons.SUBSCRIPTION})</div>
         </div>
         <div class="item">
-            <i class="icon large balance scale"></i>
-            <div class="content"> Verträge (balance scale)</div>
+            <i class="icon large ${Icons.LICENSE}"></i>
+            <div class="content"> Verträge (${Icons.LICENSE})</div>
         </div>
         <div class="item">
-            <i class="icon large gift"></i>
-            <div class="content"> Pakete (gift)</div>
+            <i class="icon large ${Icons.PACKAGE}"></i>
+            <div class="content"> Pakete (${Icons.PACKAGE})</div>
         </div>
     </div>
 </div>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyPackageResult; de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyPackageResult; de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
 <laser:serviceInjection/>
 
 <g:if test="${showOpenParticipantsAgainButtons}">
@@ -597,7 +597,7 @@
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
                             class="ui button blue icon la-modern-button la-popup-tooltip la-delay"
                             data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                        <i class="chart pie icon"></i>
+                        <i class="${Icons.SURVEY} icon"></i>
                     </g:link>
 
                     <g:if test="${surveyConfig.subscription}">
@@ -605,7 +605,7 @@
                             <g:if test="${participantSub}">
                                 <br/>
                                 <g:link controller="subscription" action="show" id="${participantSub.id}"
-                                        class="ui button orange icon"><i class="icon clipboard"></i></g:link>
+                                        class="ui button orange icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
                             </g:if>
                     </g:if>
                 </td>
@@ -1181,7 +1181,7 @@
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
                             class="ui button blue icon la-modern-button la-popup-tooltip la-delay"
                             data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                        <i class="chart pie icon"></i>
+                        <i class="${Icons.SURVEY} icon"></i>
                     </g:link>
 
                     <g:if test="${surveyConfig.subscription}">
@@ -1189,7 +1189,7 @@
                         <g:if test="${participantSub}">
                             <br/>
                             <g:link controller="subscription" action="show" id="${participantSub.id}"
-                                    class="ui button orange icon"><i class="icon clipboard"></i></g:link>
+                                    class="ui button orange icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
                         </g:if>
                     </g:if>
                 </td>

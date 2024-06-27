@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CopyElementsService;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.CopyElementsService;" %>
 <laser:htmlStart message="myinst.copyLicense" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -33,7 +33,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                 <i class="cloud icon"></i>                      ${message(code: 'default.url.label')} <br />
                 <i class="clipboard list icon"></i>             ${message(code: 'license.licenseCategory.label')} <br />
                 <i class="shipping fast icon"></i>              ${message(code: 'license.isPublicForApi.label')} <br />
-                <i class="university icon"></i>                 ${message(code: 'subscription.organisations.label')} <br />
+                <i class="${Icons.ORG} icon"></i>               ${message(code: 'subscription.organisations.label')} <br />
                 <i class="barcode icon"></i>                    ${message(code: 'default.identifiers.label')} <br />
                 <i class="exchange icon"></i>                   ${message(code: 'license.linkedObjects')}
             </div>
@@ -47,9 +47,9 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
             </div>
             <div class="description">
                 <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
-                <i class="calendar check outline icon"></i> ${message(code: 'menu.institutions.tasks')} <br />
-                <i class="file outline icon"></i>           ${message(code: 'default.documents.label')} <br />
-                <i class="tasks icon"></i>                  ${message(code: 'workflow.plural')}
+                <i class="${Icons.TASK} icon"></i>          ${message(code: 'menu.institutions.tasks')} <br />
+                <i class="${Icons.DOCUMENT} icon"></i>      ${message(code: 'default.documents.label')} <br />
+                <i class="${Icons.WORKFLOW} icon"></i>      ${message(code: 'workflow.plural')}
             </div>
         </div>
     </div>

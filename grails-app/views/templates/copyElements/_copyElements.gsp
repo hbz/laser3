@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.Subscription; de.laser.License; de.laser.PersonRole; de.laser.Person; de.laser.SubscriptionController; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.RefdataValue; de.laser.FormService;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.License; de.laser.PersonRole; de.laser.Person; de.laser.SubscriptionController; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.RefdataValue; de.laser.FormService;" %>
 <laser:serviceInjection/>
 
 <g:set var="copyElementsService" bean="copyElementsService"/>
@@ -193,7 +193,7 @@
                 <tr data-type="linktoSubscription">
                     <td>
                         <div>
-                            <strong><i class="clipboard icon"></i>${message(code: 'subscription.linktoSubscription')}:</strong>
+                            <strong><i class="${Icons.SUBSCRIPTION} icon"></i>${message(code: 'subscription.linktoSubscription')}:</strong>
                             <g:if test="${sourceObject.instanceOf}">
                                 <g:link controller="subscription" action="show" target="_blank" id="${sourceObject.instanceOf.id}">${sourceObject.instanceOf}</g:link>
                             </g:if>
@@ -219,7 +219,7 @@
                 <tr data-type="linktoLicense">
                     <td>
                         <div>
-                            <strong><i class="clipboard icon"></i>${message(code: 'license.linktoLicense')}:</strong>
+                            <strong><i class="${Icons.LICENSE} icon"></i>${message(code: 'license.linktoLicense')}:</strong>
                             <g:if test="${sourceObject.instanceOf}">
                                 <g:link controller="license" action="show" target="_blank" id="${sourceObject.instanceOf.id}">${sourceObject.instanceOf}</g:link>
                             </g:if>
@@ -245,11 +245,11 @@
                 <tr data-type="license" data-element="copyObject.takeLicenses">
                     <td data-element="source">
                         <div>
-                            <strong><i class="balance scale icon"></i>${message(code: 'license.label')}:</strong>
+                            <strong><i class="${Icons.LICENSE} icon"></i>${message(code: 'license.label')}:</strong>
                             <g:each in="${sourceLicenses}" var="license">
                                 <g:link controller="license" action="show" target="_blank" id="${license.id}">
                                     <div data-oid="${genericOIDService.getOID(license)}" class="la-multi-sources">
-                                        <strong><i class="balance scale icon"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:</strong>
+                                        <strong><i class="${Icons.LICENSE} icon"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:</strong>
                                         ${license.reference}
                                         <br />
                                     </div>
@@ -272,10 +272,10 @@
                     <g:if test="${!copyObject}">
                         <td data-element="target">
                             <div>
-                                <strong><i class="balance scale icon"></i>${message(code: 'license.label')}:</strong>
+                                <strong><i class="${Icons.LICENSE} icon"></i>${message(code: 'license.label')}:</strong>
                                 <g:each in="${targetLicenses}" var="license">
                                     <div data-oid="${genericOIDService.getOID(license)}">
-                                        <strong><i class="balance scale icon"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:</strong>
+                                        <strong><i class="${Icons.LICENSE} icon"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:</strong>
                                         <g:link controller="license" action="show" target="_blank" id="${license.id}">
                                             ${license.reference}
                                         </g:link>
@@ -299,13 +299,13 @@
                     <td data-element="source">
                         <div>
                 <g:if test="${!source_visibleProviders}">
-                    <strong><i class="handshake icon"></i>&nbsp;${message(code: "provider.label")}:
+                    <strong><i class="${Icons.PROVIDER} icon"></i>&nbsp;${message(code: "provider.label")}:
                     </strong>
                 </g:if>
                 <g:each in="${source_visibleProviders}" var="source_role">
                     <g:if test="${source_role.provider}">
                         <div data-oid="${genericOIDService.getOID(source_role)}" class="la-multi-sources">
-                            <strong><i class="handshake icon"></i>&nbsp:</strong>
+                            <strong><i class="${Icons.PROVIDER} icon"></i>&nbsp:</strong>
                             <g:link controller="provider" action="show" target="_blank" id="${source_role.provider.id}">
                                 ${source_role.provider.name}
                             </g:link>
@@ -345,13 +345,13 @@
                     <td data-element="target">
                         <div>
                             <g:if test="${!target_visibleProviders}">
-                                <strong><i class="handshake icon"></i>&nbsp;${message(code: "provider.label")}:
+                                <strong><i class="${Icons.PROVIDER} icon"></i>&nbsp;${message(code: "provider.label")}:
                                 </strong>
                             </g:if>
                             <g:each in="${target_visibleProviders}" var="target_role">
                                 <g:if test="${target_role.provider}">
                                     <div data-oid="${genericOIDService.getOID(target_role)}">
-                                        <strong><i class="handshake icon"></i></strong>
+                                        <strong><i class="${Icons.PROVIDER} icon"></i></strong>
                                         <g:link controller="provider" action="show" target="_blank"
                                                 id="${target_role.provider.id}">
                                             ${target_role.provider.name}
@@ -398,12 +398,12 @@
                     <td data-element="source">
                         <div>
                 <g:if test="${!source_visibleVendors}">
-                    <strong><i class="shipping fast icon"></i>&nbsp;${message(code: "vendor.plural")}:
+                    <strong><i class="${Icons.VENDOR} icon"></i>&nbsp;${message(code: "vendor.plural")}:
                     </strong>
                 </g:if>
                 <g:each in="${source_visibleVendors}" var="source_role">
                         <div data-oid="${genericOIDService.getOID(source_role)}" class="la-multi-sources">
-                            <strong><i class="shipping fast icon"></i>&nbsp;</strong>
+                            <strong><i class="${Icons.VENDOR} icon"></i>&nbsp;</strong>
                             <g:link controller="vendor" action="show" target="_blank" id="${source_role.vendor.id}">
                                 ${source_role.vendor.name}
                             </g:link>
@@ -438,12 +438,12 @@
                     <td data-element="target">
                         <div>
                             <g:if test="${!target_visibleVendors}">
-                                <strong><i class="shipping fast icon"></i>&nbsp;${message(code: "vendor.plural")}:
+                                <strong><i class="${Icons.VENDOR} icon"></i>&nbsp;${message(code: "vendor.plural")}:
                                 </strong>
                             </g:if>
                             <g:each in="${target_visibleVendors}" var="target_role">
                                     <div data-oid="${genericOIDService.getOID(target_role)}">
-                                        <strong><i class="shipping fast icon"></i></strong>
+                                        <strong><i class="${Icons.VENDOR} icon"></i></strong>
                                         <g:link controller="vendor" action="show" target="_blank"
                                                 id="${target_role.vendor.id}">
                                             ${target_role.vendor.name}
@@ -506,8 +506,7 @@
                                                     <i class="address card icon"></i>
                                                 </span>
                                                 ${resp}
-                                                (<strong><i
-                                                    class="handshake icon"></i>&nbsp;${source_role.roleType.getI10n("value")}:
+                                                (<strong><i class="${Icons.PROVIDER} icon"></i>&nbsp;${source_role.roleType.getI10n("value")}:
                                             </strong>
                                                 <g:link controller="provider" action="show" target="_blank"
                                                         id="${source_role.provider.id}">${source_role.provider.name}</g:link>)
@@ -526,8 +525,7 @@
                                                     <i class="address card outline icon"></i>
                                                 </span>
                                                 ${resp}
-                                                (<strong><i
-                                                    class="university icon"></i>&nbsp;${source_role.roleType.getI10n("value")}:
+                                                (<strong><i class="${Icons.ORG} icon"></i>&nbsp;${source_role.roleType.getI10n("value")}:
                                             </strong>
                                                 <g:link controller="provider" action="show" target="_blank"
                                                         id="${source_role.provider.id}">${source_role.provider.name}</g:link>)
@@ -599,8 +597,7 @@
                                                         <i class="address card icon"></i>
                                                     </span>
                                                     ${resp}
-                                                    (<strong><i
-                                                        class="handshake icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
+                                                    (<strong><i class="${Icons.PROVIDER} icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
                                                 </strong>
                                                     <g:link controller="provider" action="show" target="_blank"
                                                             id="${target_role.provider.id}">${target_role.provider.name}</g:link>)
@@ -620,8 +617,7 @@
                                                         <i class="address card outline icon"></i>
                                                     </span>
                                                     ${resp}
-                                                    (<strong><i
-                                                        class="university icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
+                                                    (<strong><i class="${Icons.ORG} icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
                                                 </strong>
                                                     <g:link controller="provider" action="show" target="_blank"
                                                             id="${target_role.provider.id}">${target_role.provider.name}</g:link>)
