@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.Package;de.laser.Platform" %>
+<%@ page import="de.laser.helper.Icons; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.Vendor;de.laser.Package;de.laser.Platform;de.laser.Provider;de.laser.TitleInstancePackagePlatform" %>
 
 <laser:htmlStart message="menu.my.markers" serviceInjection="true"/>
 
@@ -8,6 +8,8 @@
 
 <ui:h1HeaderWithIcon message="menu.my.markers" type="Marker" floated="true" />
 
+<g:set var="markerTypeList" value="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA') ? [Marker.TYPE.WEKB_CHANGES, Marker.TYPE.TIPP_CHANGES, Marker.TYPE.UNKOWN] : [Marker.TYPE.WEKB_CHANGES]}" />
+
 <ui:filter simple="true">
     <form id="markerFilterForm" class="ui form">
         <div class="two fields">
@@ -16,8 +18,8 @@
                 <g:select class="ui dropdown la-not-clearable" name="filterMarkerType"
                            required="required"
                            noSelection="${['' : message(code:'default.select.choose.label')]}"
-                           from="${[Marker.TYPE.WEKB_CHANGES]}"
-                           value="${filterMarkerType}"
+                           from="${markerTypeList}"
+                           value="${markerType.value}"
                            optionValue="${{message(code: 'marker.' + it.value)}}"
                            optionKey="${{it.value}}" />
 
@@ -40,20 +42,29 @@
             <thead>
                 <tr>
                     <th class="one wide">${message(code:'sidewide.number')}</th>
-                    <th class="nine wide">
+                    <th class="ten wide">
                         <g:if test="${objCat.value.first() instanceof Org}">
-                            ${message(code:'default.provider.label')} / ${message(code:'default.agency.label')}
+                            <i class="${Icons.ORG} icon grey la-list-icon"></i> ???
                         </g:if>
                         <g:elseif test="${objCat.value.first() instanceof Package}">
-                            ${message(code:'package.label')}
+                            <i class="${Icons.PACKAGE} icon grey la-list-icon"></i> ${message(code:'package.label')}
                         </g:elseif>
                         <g:elseif test="${objCat.value.first() instanceof Platform}">
-                            ${message(code:'platform.label')}
+                            <i class="${Icons.PLATFORM} icon grey la-list-icon"></i> ${message(code:'platform.label')}
+                        </g:elseif>
+                        <g:if test="${objCat.value.first() instanceof Provider}">
+                            <i class="${Icons.PROVIDER} icon grey la-list-icon"></i> ${message(code:'provider.label')}
+                        </g:if>
+                        <g:elseif test="${objCat.value.first() instanceof Vendor}">
+                            <i class="${Icons.VENDOR} icon grey la-list-icon"></i> ${message(code:'vendor')}
+                        </g:elseif>
+                        <g:elseif test="${objCat.value.first() instanceof TitleInstancePackagePlatform}">
+                            <i class="icon grey book la-list-icon"></i> ${message(code:'title')}
                         </g:elseif>
                     </th>
                     <th class="three wide"></th>
                     <th class="one wide center aligned"><ui:myXIcon /></th>
-                    <th class="two wide">${message(code:'default.actions.label')}</th>
+                    <th class="one wide">${message(code:'default.actions.label')}</th>
                 </tr>
             </thead>
             <tbody>
@@ -66,50 +77,87 @@
                                 <g:link controller="org" action="show" id="${obj.id}" target="_blank">${obj.name}</g:link>
                             </td>
                             <td>
-                                <i class="icon grey university"></i>
                                 <g:each in="${obj.orgType}" var="ot">
                                     ${ot.getI10n('value')}
                                 </g:each>
                             </td>
                             <td class="center aligned">
-                                <g:if test="${obj.id in myXMap.currentProviderIdList}">
-                                    <ui:myXIcon tooltip="${message(code: 'menu.my.providers')}" color="yellow"/>
+                                <g:if test="${obj.id in myXMap.currentOrgIdList}">
+                                    <ui:myXIcon tooltip="???" color="yellow"/>
                                 </g:if>
                             </td>
                             <td>
-                                <ui:cbItemMarkerAction org="${obj}" simple="true"/>
+                                <ui:cbItemMarkerAction org="${obj}" type="${markerType}" simple="true"/>
                             </td>
                         </g:if>
                         <g:elseif test="${obj instanceof Package}">
                             <td>
                                 <g:link controller="package" action="show" id="${obj.id}" target="_blank">${obj.name}</g:link>
                             </td>
-                            <td>
-                                <i class="icon grey gift"></i> ${message(code:'package.label')}
-                            </td>
+                            <td></td>
                             <td class="center aligned">
                                 <g:if test="${obj.id in myXMap.currentPackageIdList}">
                                     <ui:myXIcon tooltip="${message(code: 'menu.my.packages')}" color="yellow"/>
                                 </g:if>
                             </td>
                             <td>
-                                <ui:cbItemMarkerAction package="${obj}" simple="true"/>
+                                <ui:cbItemMarkerAction package="${obj}" type="${markerType}" simple="true"/>
                             </td>
                         </g:elseif>
                         <g:elseif test="${obj instanceof Platform}">
                             <td>
                                 <g:link controller="platform" action="show" id="${obj.id}" target="_blank">${obj.name}</g:link>
                             </td>
-                            <td>
-                                <i class="icon grey cloud"></i> ${message(code:'platform.label')}
-                            </td>
+                            <td></td>
                             <td class="center aligned">
                                 <g:if test="${obj.id in myXMap.currentPlatformIdList}">
                                     <ui:myXIcon tooltip="${message(code: 'menu.my.platforms')}" color="yellow"/>
                                 </g:if>
                             </td>
                             <td>
-                                <ui:cbItemMarkerAction platform="${obj}" simple="true"/>
+                                <ui:cbItemMarkerAction platform="${obj}" type="${markerType}" simple="true"/>
+                            </td>
+                        </g:elseif>
+                        <g:if test="${obj instanceof Provider}">
+                            <td>
+                                <g:link controller="provider" action="show" id="${obj.id}" target="_blank">${obj.name}</g:link>
+                            </td>
+                            <td></td>
+                            <td class="center aligned">
+                                <g:if test="${obj.id in myXMap.currentProviderIdList}">
+                                    <ui:myXIcon tooltip="${message(code: 'menu.my.providers')}" color="yellow"/>
+                                </g:if>
+                            </td>
+                            <td>
+                                <ui:cbItemMarkerAction provider="${obj}" type="${markerType}" simple="true"/>
+                            </td>
+                        </g:if>
+                        <g:elseif test="${obj instanceof Vendor}">
+                            <td>
+                                <g:link controller="vendor" action="show" id="${obj.id}" target="_blank">${obj.name}</g:link>
+                            </td>
+                            <td></td>
+                            <td class="center aligned">
+                                <g:if test="${obj.id in myXMap.currentVendorIdList}">
+                                    <ui:myXIcon tooltip="${message(code: 'menu.my.vendors')}" color="yellow"/>
+                                </g:if>
+                            </td>
+                            <td>
+                                <ui:cbItemMarkerAction vendor="${obj}" type="${markerType}" simple="true"/>
+                            </td>
+                        </g:elseif>
+                        <g:elseif test="${obj instanceof TitleInstancePackagePlatform}">
+                            <td>
+                                <g:link controller="tipp" action="show" id="${obj.id}" target="_blank">${obj.name}</g:link>
+                            </td>
+                            <td></td>
+                            <td class="center aligned">
+                                <g:if test="${obj.id in myXMap.currentTippIdList}">
+                                    <ui:myXIcon tooltip="${message(code: 'menu.my.titles')}" color="yellow"/>
+                                </g:if>
+                            </td>
+                            <td>
+                                <ui:cbItemMarkerAction tipp="${obj}" type="${markerType}" simple="true"/>
                             </td>
                         </g:elseif>
                     </tr>

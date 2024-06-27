@@ -2,9 +2,15 @@ package de.laser.properties
 
 import de.laser.CacheService
 import de.laser.GenericOIDService
+import de.laser.License
 import de.laser.Org
+import de.laser.Person
+import de.laser.Platform
+import de.laser.Subscription
 import de.laser.cache.EhcacheWrapper
 import de.laser.storage.BeanStore
+import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyResult
 import de.laser.utils.LocaleUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -23,6 +29,8 @@ class PropertyDefinitionGroup {
     String description
     Org    tenant
     String ownerType // PropertyDefinition.[LIC_PROP, SUB_PROP, ORG_PROP]
+    // if manual ordering is wanted; non-primitive type because of initial null values which must be set by grailsChange
+    Integer order
 
     boolean isVisible = false // default value: will be overwritten by existing bindings
 
@@ -44,6 +52,7 @@ class PropertyDefinitionGroup {
         name        column: 'pdg_name'
         description column: 'pdg_description',  type: 'text'
         tenant      column: 'pdg_tenant_fk',    index: 'pdg_tenant_idx'
+        order       column: 'pdg_order'
         ownerType   column: 'pdg_owner_type'
         isVisible   column: 'pdg_is_visible'
         lastUpdated     column: 'pdg_last_updated'
@@ -81,12 +90,17 @@ class PropertyDefinitionGroup {
     List getCurrentProperties(def currentObject) {
         List result = []
         List<Long> givenIds = getPropertyDefinitions().collect{ it.id }
-
+        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Class propertyClass = getOwnerClass(currentObject)
+        String query = "select prop from ${propertyClass.simpleName} prop join prop.type pd where pd.id in (:propIds) and prop.owner = :owner order by pd.${localizedName}"
+        result.addAll(propertyClass.executeQuery(query, [owner: currentObject, propIds: givenIds]))
+        /*
         currentObject?.propertySet?.each{ cp ->
             if (cp.type.id in givenIds) {
                 result << GrailsHibernateUtil.unwrapIfProxy(cp)
             }
         }
+        */
         result
     }
 
@@ -99,12 +113,17 @@ class PropertyDefinitionGroup {
     List getCurrentPropertiesOfTenant(def currentObject, Org tenant) {
         List result = []
         List<Long> givenIds = getPropertyDefinitions().collect{ it.id }
-
+        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Class propertyClass = getOwnerClass(currentObject)
+        String query = "select prop from ${propertyClass.simpleName} prop join prop.type pd where pd.id in (:propIds) and prop.owner = :owner and prop.tenant = :tenant order by pd.${localizedName}"
+        result.addAll(propertyClass.executeQuery(query, [owner: currentObject, propIds: givenIds, tenant: tenant]))
+        /*
         currentObject?.propertySet?.each{ cp ->
             if (cp.type.id in givenIds && cp.tenant.id == tenant.id) {
                 result << GrailsHibernateUtil.unwrapIfProxy(cp)
             }
         }
+        */
         result
     }
 
@@ -122,8 +141,12 @@ class PropertyDefinitionGroup {
 
         result.addAll(global)
         result.addAll(context)
-
-        result
+        result.sort { PropertyDefinitionGroup pdgA, PropertyDefinitionGroup pdgB ->
+            int cmp = pdgA.order <=> pdgB.order
+            if(!cmp)
+                cmp = pdgA.name <=> pdgB.name
+            cmp
+        }
     }
 
     /**
@@ -168,6 +191,26 @@ class PropertyDefinitionGroup {
         }
 
         result
+    }
+
+    Class getOwnerClass(currentObject) {
+        def unproxy = GrailsHibernateUtil.unwrapIfProxy(currentObject)
+        switch(unproxy.class.name) {
+            case License.class.name:
+                return LicenseProperty.class
+            case Org.class.name:
+                return OrgProperty.class
+            case Person.class.name:
+                return PersonProperty.class
+            case Platform.class.name:
+                return PlatformProperty.class
+            case Subscription.class.name:
+                return SubscriptionProperty.class
+            case SurveyConfig.class.name:
+                return SurveyResult.class
+            default:
+                return null
+        }
     }
 }
 

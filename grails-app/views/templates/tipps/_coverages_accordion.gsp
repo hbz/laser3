@@ -1,5 +1,5 @@
 %{-- BOOK  --}%
-<g:if test="${(tipp.titleType == 'Book')}">
+<g:if test="${(tipp.titleType == 'monograph')}">
     %{-- IE  --}%
     <g:if test="${ie}">
         <div class="ui list la-label-list">
@@ -67,7 +67,7 @@
 </g:if>
 
 %{-- JOURNAL  --}%
-<g:elseif test="${tipp.titleType == "Journal"}">
+<g:elseif test="${tipp.titleType == "serial"}">
     <div class="ui stackable grid"></div>
 
     %{-- IE  --}%

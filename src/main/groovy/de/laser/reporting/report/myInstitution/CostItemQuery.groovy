@@ -7,8 +7,6 @@ import grails.web.servlet.mvc.GrailsParameterMap
 
 class CostItemQuery extends BaseQuery {
 
-    static List<String> PROPERTY_QUERY = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
-
     static Map<String, Object> query(GrailsParameterMap params) {
 
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
@@ -33,8 +31,8 @@ class CostItemQuery extends BaseQuery {
 
         handleGenericRefdataQuery(
                 query,
-                PROPERTY_QUERY[0] + 'from CostItem ci join ci.' + refdata + ' p where ci.id in (:idList)' + PROPERTY_QUERY[1],
-                'select ci.id from CostItem ci join ci.' + refdata + ' p where ci.id in (:idList) and p.id = :d order by ci.costTitle',
+                REFDATA_QUERY[0] + 'from CostItem ci join ci.' + refdata + ' ref where ci.id in (:idList)' + REFDATA_QUERY[1],
+                'select ci.id from CostItem ci join ci.' + refdata + ' ref where ci.id in (:idList) and ref.id = :d order by ci.costTitle',
                 'select distinct ci.id from CostItem ci where ci.id in (:idList) and ci.'+ refdata + ' is null',
                 idList,
                 result

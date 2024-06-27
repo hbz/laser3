@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IssueEntitlementGroup; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.helper.Icons; de.laser.IssueEntitlementGroup; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <div class="sixteen wide column">
     <g:set var="counter" value="${offset + 1}"/>
     <g:set var="sumlistPriceEuro" value="${0}"/>
@@ -117,25 +117,25 @@
 
                                 </div>
 
-                                <div class="ui icon blue button la-modern-button "><i
+                                <div class="ui icon blue button la-modern-button"><i
                                         class="ui angle double down icon"></i>
                                 </div>
                                 <g:if test="${(params.tab == 'allTipps') && editable && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
-                                    <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
+                                    <g:link class="ui icon negative button la-modern-button la-popup-tooltip la-delay"
                                             action="processRemoveIssueEntitlementsSurvey"
                                             params="${[id: subscriberSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
-                                        <i class="shopping basket icon"></i>
+                                        <i class="la-basket-shopping slash icon"></i>
                                     </g:link>
                                 </g:if>
 
 
                                 <g:if test="${(params.tab == 'allTipps') && editable && !ieInNewSub && allowedToSelect}">
-                                    <g:link class="ui icon negative button la-modern-button la-popup-tooltip la-delay"
+                                    <g:link class="ui icon button la-modern-button la-popup-tooltip la-delay"
                                             action="processAddIssueEntitlementsSurvey"
                                             params="${[id: subscriberSub.id, singleTitle: tipp.id, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
-                                        <i class="la-basket-shopping slash icon"></i>
+                                        <i class="shopping basket icon"></i>
                                     </g:link>
                                 </g:if>
                             </div>
@@ -203,7 +203,7 @@
                                     </g:if>
                                     <g:if test="${covStmt.coverageDepth}">
                                         <div class="item">
-                                            <i class="grey icon file alternate right la-popup-tooltip la-delay"
+                                            <i class="grey icon ${Icons.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
                                                data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                                             <div class="content">

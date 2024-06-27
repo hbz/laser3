@@ -7,7 +7,7 @@
               <div class="field">
                   <label for="keyword-search"><g:message code="default.search.text"/>
                         <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.license')}">
-                          <i class="question circle icon"></i>
+                          <i class="grey question circle icon"></i>
                         </span>
                   </label>
                   <input type="text" id="keyword-search" name="keyword-search" placeholder="${message(code:'default.search.ph')}" value="${params['keyword-search']?:''}" />
@@ -40,11 +40,22 @@
               </div>
             <g:if test="${'providerAgency' in licenseFilterTable}">
               <div class="field">
-                  <label for="licensor"><g:message code="default.ProviderAgency.singular"/></label>
+                  <label for="licensor"><g:message code="provider.label"/></label>
                   <select id="licensor" name="licensor" multiple="" class="ui search selection fluid dropdown">
                       <option value=""><g:message code="default.select.choose.label"/></option>
                       <g:each in="${orgs.licensors}" var="licensor">
                           <option <%=Params.getLongList(params, 'licensor').contains(licensor.id) ? 'selected="selected"' : ''%> value="${licensor.id}">${licensor.name}</option>
+                      </g:each>
+                  </select>
+              </div>
+            </g:if>
+            <g:if test="${'vendor' in licenseFilterTable}">
+              <div class="field">
+                  <label for="vendor"><g:message code="vendor.label"/></label>
+                  <select id="vendor" name="vendor" multiple="" class="ui search selection fluid dropdown">
+                      <option value=""><g:message code="default.select.choose.label"/></option>
+                      <g:each in="${vendors}" var="vendor">
+                          <option <%=Params.getLongList(params, 'vendor').contains(vendor.id) ? 'selected="selected"' : ''%> value="${vendor.id}">${vendor.name}</option>
                       </g:each>
                   </select>
               </div>

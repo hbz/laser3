@@ -9,6 +9,7 @@ import java.time.Year
 /**
  * Abstract class for central properties of every revision of COUNTER reports.
  */
+@Deprecated
 abstract class AbstractReport implements Comparable<AbstractReport> {
 
     Long id

@@ -28,6 +28,7 @@ import java.util.concurrent.ExecutorService
 //@Transactional
 class YodaService {
 
+    BatchUpdateService batchUpdateService
     ContextService contextService
     DeletionService deletionService
     GlobalSourceSyncService globalSourceSyncService
@@ -334,7 +335,7 @@ class YodaService {
                 subIds.each { Long subId ->
                     log.debug("now processing package ${subId}:${pkgId}")
                     if(entire)
-                        packageService.bulkAddHolding(sql, subId, pkgId, perpetualAccess)
+                        batchUpdateService.bulkAddHolding(sql, subId, pkgId, perpetualAccess)
                     log.debug("${sql.executeUpdate('update issue_entitlement set ie_status_rv_fk = tipp_status_rv_fk from title_instance_package_platform where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk != tipp_status_rv_fk and ie_status_rv_fk != :removed', [subId: subId, removed: RDStore.TIPP_STATUS_REMOVED.id])} rows updated")
                 }
             }
@@ -349,13 +350,13 @@ class YodaService {
         String componentType
         Set objects = []
         switch(className) {
-            case GlobalSourceSyncService.ORG_TYPE_PROVIDER: rectype = GlobalSourceSyncService.RECTYPE_ORG
+            case Org.class.name: rectype = GlobalSourceSyncService.RECTYPE_PROVIDER
                 componentType = 'Org'
                 objects.addAll(Org.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.ORG_STATUS_REMOVED))
                 break
-            case GlobalSourceSyncService.ORG_TYPE_VENDOR: rectype = GlobalSourceSyncService.RECTYPE_VENDOR
+            case Vendor.class.name: rectype = GlobalSourceSyncService.RECTYPE_VENDOR
                 componentType = 'Vendor'
-                objects.addAll(Org.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.ORG_STATUS_REMOVED))
+                objects.addAll(Vendor.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.VENDOR_STATUS_REMOVED))
                 break
             case Platform.class.name: rectype = GlobalSourceSyncService.RECTYPE_PLATFORM
                 componentType = 'Platform'

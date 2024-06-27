@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.storage.RDStore" %>
 
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
     <g:set var="title" value="${message(code: 'menu.my.insts')}"/>
@@ -13,7 +13,7 @@
 <ui:controlButtons>
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+            <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.INSTITUTIONS]"/>
         </ui:exportDropdownItem>
         <%--
         <g:if test="${filterSet}">
@@ -73,7 +73,6 @@
     </ui:filter>
 <div class="la-clear-before">
     <g:if test="${members}">
-        <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution', contactSwitch: true]" />
         <g:form action="manageMembers" controller="myInstitution" method="post" class="ui form la-clear-before" data-confirm-id="manageMembers_form">
             <g:if test="${params.filterSet}">
                 <g:hiddenField name="filterSet" value="true"/>
@@ -108,5 +107,7 @@
     <ui:debugInfo>
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </ui:debugInfo>
+
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd />

@@ -30,7 +30,7 @@
                 </g:each>
             </ui:menuDropdownItems>
 
-            <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+            <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
                 <ui:menuDropdownItems actionName="surveyCostItems" message="surveyCostItems.label">
                     <g:each in="${surveyInfo.surveyConfigs.sort { it.getConfigNameShort() }}" var="surveyConfig">
                         <ui:menuDropdownItem controller="survey" action="surveyCostItems"
@@ -101,10 +101,28 @@
                            params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${participantsCount}"
                            message="surveyParticipants.label"/>
 
-            <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+            <g:if test="${surveyConfig.packageSurvey}">
+                <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyPackages"
+                               params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${surveyPackagesCount}"  class="${(actionName in ['surveyPackages', 'linkSurveyPackage'] ? 'active' : '')}"
+                               message="surveyPackages.label"/>
+             </g:if>
+
+            <g:if test="${surveyConfig.vendorSurvey}">
+                <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyVendors"
+                               params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${surveyVendorsCount}" class="${(actionName in ['surveyVendors', 'linkSurveyVendor'] ? 'active' : '')}"
+                               message="surveyVendors.label"/>
+            </g:if>
+
+            <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
                 <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyCostItems"
                                params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${surveyCostItemsCount}"
                                message="surveyCostItems.label"/>
+            </g:if>
+
+            <g:if test="${surveyConfig.packageSurvey}">
+                <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyCostItemsPackages"
+                               params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${surveyCostItemsPackagesCount}"
+                               message="surveyCostItemsPackages.label"/>
             </g:if>
 
             <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyEvaluation"
@@ -112,13 +130,27 @@
                            message="surveyResult.label"
                            class="${(actionName in evalutionsViews) ? "active" : ""}"/>
 
+            <g:if test="${surveyConfig.packageSurvey}">
+                <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyPackagesEvaluation"
+                               params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${evaluationCount}"
+                               message="surveyPackagesEvaluation.label"
+                               />
+            </g:if>
+
+            <g:if test="${surveyConfig.vendorSurvey}">
+                <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyVendorsEvaluation"
+                               params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${evaluationCount}"
+                               message="surveyVendorsEvaluation.label"
+                />
+            </g:if>
+
             <g:if test="${surveyConfig.subSurveyUseForTransfer}">
                 <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="renewalEvaluation"
                                   params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                                   message="surveyInfo.evaluation"/>
 
                 <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="compareMembersOfTwoSubs"
-                                  class="${actionName in ['copyProperties', 'copySurveyCostItems'] ? 'active' : ''}"
+                                  class="${actionName in ['copyProperties', 'copySurveyCostItems', 'copySurveyPackages', 'copySurveyCostItemPackage', 'copySurveyVendors'] ? 'active' : ''}"
                                   params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                                   message="surveyInfo.renewal"/>
             </g:if>

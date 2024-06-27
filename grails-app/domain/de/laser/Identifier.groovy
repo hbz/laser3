@@ -3,7 +3,6 @@ package de.laser
 import de.laser.helper.FactoryResult
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
-
 import grails.plugins.orm.auditable.Auditable
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
@@ -38,8 +37,10 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
             lic:    License,
             org:    Org,
             pkg:    Package,
+            provider: Provider,
             sub:    Subscription,
-            tipp:   TitleInstancePackagePlatform
+            tipp:   TitleInstancePackagePlatform,
+            vendor: Vendor
     ]
 
 	static constraints = {
@@ -54,8 +55,10 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 	  	lic         (nullable:true)
 	  	org         (nullable:true)
 	  	pkg         (nullable:true)
+        provider    (nullable:true)
 	  	sub         (nullable:true)
 	  	tipp        (nullable:true)
+        vendor      (nullable:true)
         instanceOf  (nullable: true)
 
         lastUpdated (nullable: true)
@@ -72,8 +75,10 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         lic   column:'id_lic_fk', index: 'id_lic_idx'
         org   column:'id_org_fk', index: 'id_org_idx'
         pkg   column:'id_pkg_fk', index: 'id_pkg_idx'
+        provider column:'id_provider_fk', index: 'id_provider_idx'
         sub   column:'id_sub_fk', index: 'id_sub_idx'
         tipp  column:'id_tipp_fk', index: 'id_tipp_idx'
+        vendor column:'id_vendor_fk', index: 'id_vendor_idx'
         instanceOf column: 'id_instance_of_fk', index: 'id_instanceof_idx'
 
         dateCreated column: 'id_date_created'
@@ -199,7 +204,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         }
 
         if (! ident) {
-			if (ns.isUnique && Identifier.executeQuery("select count(ident) from Identifier ident where ident.value != '"+IdentifierNamespace.UNKNOWN+"' and ident.ns = :ns and ident." + attr + " = :ref", [ns: ns, ref: reference])[0] > 0) {
+			if (ns.isUnique && Identifier.executeQuery("select count(*) from Identifier ident where ident.value != '"+IdentifierNamespace.UNKNOWN+"' and ident.ns = :ns and ident." + attr + " = :ref", [ns: ns, ref: reference])[0] > 0) {
                 log.debug("NO IDENTIFIER CREATED: multiple occurrences found for unique namespace ( ${value}, ${ns} )")
                 Identifier identifierInDB = Identifier.executeQuery("select ident from Identifier ident where ident.value != '"+IdentifierNamespace.UNKNOWN+"' and ident.ns = :ns and ident." + attr + " = :ref", [ns: ns, ref: reference])[0]
                 factoryResult.status += FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_SEVERAL_EXIST_IN_REFERENCE_OBJ
@@ -241,17 +246,21 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
      * <ul>
      *     <li>{@link License}</li>
      *     <li>{@link Org}</li>
+     *     <li>{@link Provider}</li>
      *     <li>{@link Package}</li>
      *     <li>{@link Subscription}</li>
      *     <li>{@link TitleInstancePackagePlatform}</li>
+     *     <li>{@link Vendor}</li>
      * </ul>
      */
     void setReference(def owner) {
         lic  = owner instanceof License ? owner : lic
         org  = owner instanceof Org ? owner : org
+        provider  = owner instanceof Provider ? owner : provider
         pkg  = owner instanceof Package ? owner : pkg
         sub  = owner instanceof Subscription ? owner : sub
         tipp = owner instanceof TitleInstancePackagePlatform ? owner : tipp
+        vendor  = owner instanceof Vendor ? owner : vendor
     }
 
     /**
@@ -262,7 +271,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         int refCount = 0
         def ref
 
-        List<String> fks = ['lic', 'org', 'pkg', 'sub', 'tipp']
+        List<String> fks = ['lic', 'org', 'provider', 'pkg', 'sub', 'tipp', 'vendor']
         fks.each { fk ->
             if (this."${fk}") {
                 refCount++
@@ -287,9 +296,11 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 
         name = object instanceof License ?  'lic' : name
         name = object instanceof Org ?      'org' : name
+        name = object instanceof Provider ? 'provider' : name
         name = object instanceof Package ?  'pkg' : name
         name = object instanceof Subscription ?                 'sub' :  name
         name = object instanceof TitleInstancePackagePlatform ? 'tipp' : name
+        name = object instanceof Vendor ? 'vendor' : name
 
         name
     }
@@ -361,7 +372,6 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 
     /**
      * Triggers before the database update of the identifier; prefixes WIB IDs and ISILs if they start by a number
-     * @return
      */
     def beforeUpdate() {
         log.debug("beforeUpdate")

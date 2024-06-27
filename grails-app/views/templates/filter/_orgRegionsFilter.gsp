@@ -6,7 +6,7 @@
     <label for="filterCountry">${message(code: 'org.country.label')}</label>
     <select id="filterCountry" name="country" multiple="" class="ui search selection fluid dropdown">
         <option value="">${message(code: 'default.select.choose.label')}</option>
-        <g:each in="${RefdataCategory.getAllRefdataValues([RDConstants.COUNTRY])}" var="rdv">
+        <g:each in="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.COUNTRY)}" var="rdv">
             <option <%=Params.getLongList(params, 'country').contains(rdv.id) ? 'selected="selected"' : ''%>
                     value="${rdv.id}">${rdv.getI10n("value")}</option>
         </g:each>

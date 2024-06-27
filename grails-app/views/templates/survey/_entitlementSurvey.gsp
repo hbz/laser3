@@ -30,7 +30,7 @@
     <a class="item" data-tab="currentTitles"><g:message code="renewEntitlementsWithSurvey.currentTitles"/>
         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
               data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitles.mouseover')}">
-            <i class="question circle icon"></i>
+            <i class="grey question circle icon"></i>
         </span>
     </a>
 

@@ -114,8 +114,8 @@ class AuditService {
                         String clsName = obj."${cp}".getClass().getName()
 
                         log.debug("trigger inheritance: " + obj + " : " + clsName)
-                        // CustomProperty or Identifier
-                        if ((obj instanceof AbstractPropertyWithCalculatedLastUpdated && !obj.type.tenant && obj.isPublic == true) || obj instanceof Identifier) {
+                        // CustomProperty, AlternativeName or Identifier
+                        if ((obj instanceof AbstractPropertyWithCalculatedLastUpdated && !obj.type.tenant && obj.isPublic == true) || obj instanceof AlternativeName || obj instanceof Identifier) {
                             if (getAuditConfig(obj)) {
                                 Set depending = (new GroovyClassLoader()).loadClass(obj.class.name).findAllByInstanceOf(obj)
                                 depending.each { dependingObj ->

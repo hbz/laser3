@@ -1,4 +1,4 @@
-<%@ page import="java.time.Year; de.laser.finance.CostItem; de.laser.RefdataValue; de.laser.survey.SurveyInfo; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Provider; java.time.Year; de.laser.finance.CostItem; de.laser.RefdataValue; de.laser.survey.SurveyInfo; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
 <laser:htmlStart message="menu.institutions.org.info" serviceInjection="true">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
@@ -23,35 +23,117 @@
 
 <ui:messages data="${flash}"/>
 
+    <div class="ui grid" style="margin-top:1em">
+        <div class="four wide column">
             <laser:render template="info/partial" model="${[context: 'consAtInst']}"/>
 
-            <h2 class="ui header"><span style="color:#fff;background-color:red;padding:0.5em 1em;margin:3em 0">DEMO</span></h2>
-            <g:set var="areStatsAvailableCache" value="[:]" />
-
-            <div id="stats_subscription" class="stats-content">
-                <div class="chartWrapper" id="cw-subscription"></div>
-
-                <div class="ui form segment">
-
-                <div class="ui secondary la-tab-with-js menu">
-                    <div class="item black">${message(code: 'subscription.periodOfValidity.label')}:</div>
+            <div class="stats_subscription stats-menu">
+                <div class="ui tiny header">${message(code: 'subscription.periodOfValidity.label')}</div>
+                <div class="ui secondary wrapping menu">
                     <g:each in="${subscriptionTimelineMap.keySet()}" var="year">
                         <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
-%{--                        <a href="#" class="item ${year == Year.now().toString() ? 'active' : ''}" data-tab="year-${year}"> ${year} </a>--}%
                     </g:each>
+%{--                    <a href="#" class="item" data-tab="year-*"> Alle </a>--}%
                 </div>
 
-                <div class="ui secondary la-tab-with-js menu">
-                    <div class="item black">${message(code: 'subscription.status.label')}:</div>
+%{--                <div class="ui tiny header">${message(code: 'subscription.referenceYear.label')}</div>--}%
+%{--                <div class="ui secondary wrapping menu">--}%
+%{--                    <g:each in="${surveyTimelineMap.keySet()}" var="year">--}%
+%{--                        <a href="#" class="item" data-tab="referenceYear-${year}"> ${year} </a>--}%
+%{--                    </g:each>--}%
+%{--                </div>--}%
+
+                <div class="ui tiny header">${message(code: 'subscription.status.label')}</div>
+                <div class="ui secondary wrapping menu la-tab-with-js">
                     <g:each in="${subscriptionMap}" var="subStatusId,subList">
                         <g:set var="subStatus" value="${RefdataValue.get(subStatusId)}" />
                         <a href="#" class="item ${subStatus == RDStore.SUBSCRIPTION_CURRENT ? 'active' : ''}" data-tab="subscription-${subStatus.id}">
-                            ${subStatus.getI10n('value')} <span class="ui blue circular label">${subList.size()}</span>
+                            ${subStatus.getI10n('value')} <span class="ui blue circular tiny label">${subList.size()}</span>
+                        </a>
+                    </g:each>
+                </div>
+            </div>
+
+            <div class="stats_license stats-menu">
+                <div class="ui tiny header">${message(code: 'subscription.periodOfValidity.label')}</div>
+                <div class="ui secondary wrapping menu">
+                    <g:each in="${licenseTimelineMap.keySet()}" var="year">
+                        <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
+                    </g:each>
+%{--                    <a href="#" class="item" data-tab="year-*"> Alle </a>--}%
+                </div>
+
+                <div class="ui tiny header">${message(code: 'license.status.label')}</div>
+                <div class="ui secondary wrapping menu la-tab-with-js">
+                    <g:each in="${licenseMap}" var="licStatus,licList">
+                        <g:set var="licStatusRdv" value="${RefdataValue.get(licStatus)}" />
+                        <a href="#" class="item ${licStatusRdv == RDStore.LICENSE_CURRENT ? 'active' : ''}" data-tab="license-${licStatusRdv.id}">
+                            ${licStatusRdv.getI10n('value')} <span class="ui blue circular tiny label">${licList.size()}</span>
+                        </a>
+                    </g:each>
+                </div>
+            </div>
+
+            <div class="stats_provider stats-menu">
+                <div class="ui tiny header">${message(code: 'subscription.periodOfValidity.label')}</div>
+                <div class="ui secondary wrapping menu">
+                    <g:each in="${providerTimelineMap.keySet()}" var="year">
+                        <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
+                    </g:each>
+%{--                    <a href="#" class="item" data-tab="year-*"> Alle </a>--}%
+                </div>
+
+%{--                <div class="ui tiny header">${message(code: 'subscription.referenceYear.label')}</div>--}%
+%{--                <div class="ui secondary wrapping menu">--}%
+%{--                    <g:each in="${surveyTimelineMap.keySet()}" var="year">--}%
+%{--                        <a href="#" class="item" data-tab="referenceYear-${year}"> ${year} </a>--}%
+%{--                    </g:each>--}%
+%{--                </div>--}%
+
+                <div class="ui tiny header">${message(code: 'provider.label')}</div>
+                <div class="ui secondary wrapping menu la-tab-with-js">
+                    <g:each in="${providerMap}" var="prov,subList" status="i">
+                        <g:set var="provider" value="${Provider.get(prov)}" />
+                        <a href="#" class="item ${i == 0 ? 'active' : ''}" data-tab="provider-${provider.id}">
+                            ${provider.sortname ?: provider.name} <span class="ui blue circular tiny label">${subList.size()}</span>
+                        </a>
+                    </g:each>
+                </div>
+            </div>
+
+            <div class="stats_survey stats-menu">
+                <div class="ui tiny header">${message(code: 'subscription.periodOfValidity.label')}</div>
+                <div class="ui secondary wrapping menu">
+                    <g:each in="${surveyTimelineMap.keySet()}" var="year">
+                        <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
+                    </g:each>
+%{--                    <a href="#" class="item" data-tab="year-*"> Alle </a>--}%
+                </div>
+
+                <div class="ui tiny header">${message(code: 'default.status.label')}</div>
+                <div class="ui secondary wrapping menu la-tab-with-js">
+                    <g:each in="${surveyMap}" var="surveyStatus,surveyData">
+                        <a href="#" class="item ${surveyStatus == 'open' ? 'active' : ''}" data-tab="survey-${surveyStatus}">
+                            <uiSurvey:virtualState status="${surveyStatus}" />
+                            <span class="ui blue circular tiny label">${surveyData.size()}</span>
                         </a>
                     </g:each>
                 </div>
 
+                <div>
+                    <span class="ui checkbox">
+                        <label for="survey-toggle-subscriptions">Lizenzen anzeigen</label>
+                        <input type="checkbox" id="survey-toggle-subscriptions">
+                    </span>
                 </div>
+            </div>
+        </div>
+        <div class="twelve wide column">
+
+            <g:set var="areStatsAvailableCache" value="[:]" />
+
+            <div class="stats_subscription stats-content">
+                <div class="chartWrapper" id="cw-subscription"></div>
 
                 <g:each in="${subscriptionMap}" var="subStatusId,subList">
                     <g:set var="subStatus" value="${RefdataValue.get(subStatusId)}" />
@@ -76,11 +158,17 @@
                             <tbody>
                                 <g:each in="${subList}" var="subId">
                                     <g:set var="sub" value="${Subscription.get(subId)}" />
-                                    <tr data-id="${subId}">
+                                    <tr data-id="${subId}" data-referenceYear="${sub.referenceYear}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
                                                 <i class="icon clipboard la-list-icon"></i>
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
+
+                                                <g:if test="${OrgRole.findBySubAndOrgAndRoleType(sub, orgInstance, RDStore.OR_SUBSCRIBER_CONS_HIDDEN)}">
+                                                    <span class="ui icon la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hiddenForSubscriber')}" style="margin-left:1em">
+                                                        <i class="ui icon eye slash orange"></i>
+                                                    </span>
+                                                </g:if>
                                             </div>
                                         </td>
                                         <g:if test="${subStatus == RDStore.SUBSCRIPTION_CURRENT}">
@@ -110,30 +198,8 @@
                 </g:each>
             </div>
 
-            <div id="stats_license" class="stats-content">
+            <div class="stats_license stats-content">
                 <div class="chartWrapper" id="cw-license"></div>
-
-                <div class="ui form segment">
-
-                <div class="ui secondary la-tab-with-js menu">
-                    <div class="item black">${message(code: 'subscription.periodOfValidity.label')}:</div>
-                    <g:each in="${licenseTimelineMap.keySet()}" var="year">
-                        <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
-%{--                        <a href="#" class="item ${year == Year.now().toString() ? 'active' : ''}" data-tab="year-${year}"> ${year} </a>--}%
-                    </g:each>
-                </div>
-
-                <div class="ui secondary la-tab-with-js menu">
-                    <div class="item black">${message(code: 'license.status.label')}:</div>
-                    <g:each in="${licenseMap}" var="licStatus,licList">
-                        <g:set var="licStatusRdv" value="${RefdataValue.get(licStatus)}" />
-                        <a href="#" class="item ${licStatusRdv == RDStore.LICENSE_CURRENT ? 'active' : ''}" data-tab="license-${licStatusRdv.id}">
-                            ${licStatusRdv.getI10n('value')} <span class="ui blue circular label">${licList.size()}</span>
-                        </a>
-                    </g:each>
-                </div>
-
-                </div>
 
                 <g:each in="${licenseMap}" var="licStatus,licList">
                     <g:set var="licStatusRdv" value="${RefdataValue.get(licStatus)}" />
@@ -154,7 +220,7 @@
                                     <tr data-id="${licId}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="icon balance scale la-list-icon"></i>
+                                                <i class="${Icons.LICENSE} icon la-list-icon"></i>
                                                 <g:link controller="license" action="show" id="${lic.id}" target="_blank">${lic.reference}</g:link>
                                             </div>
                                         </td>
@@ -170,34 +236,12 @@
                 </g:each>
             </div>
 
-            <div id="stats_provider" class="stats-content">
+            <div class="stats_provider stats-content">
                 <div class="chartWrapper" id="cw-provider"></div>
 
-                <div class="ui form segment">
-
-                <div class="ui secondary la-tab-with-js menu">
-                    <div class="item black">${message(code: 'subscription.periodOfValidity.label')}:</div>
-                    <g:each in="${providerTimelineMap.keySet()}" var="year">
-                        <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
-%{--                                            <a href="#" class="item ${year == Year.now().toString() ? 'active' : ''}" data-tab="year-${year}"> ${year} </a>--}%
-                    </g:each>
-                </div>
-
-                <div class="ui secondary la-tab-with-js wrapping menu">
-                    <div class="item black">${message(code: 'default.provider.label')}:</div>
-                    <g:each in="${providerMap}" var="prov,subList">
-                        <g:set var="provider" value="${Org.get(prov)}" />
-                        <a href="#" class="item" data-tab="provider-${provider.id}">
-                            ${provider.name} <span class="ui blue circular label">${subList.size()}</span>
-                        </a>
-                    </g:each>
-                </div>
-
-                </div>
-
-                <g:each in="${providerMap}" var="prov,subList">
-                    <g:set var="provider" value="${Org.get(prov)}" />
-                    <div class="ui tab segment" data-tab="provider-${provider.id}">
+                <g:each in="${providerMap}" var="prov,subList" status="i">
+                    <g:set var="provider" value="${Provider.get(prov)}" />
+                    <div class="ui tab segment ${i == 0 ? 'active' : ''}" data-tab="provider-${provider.id}">
 
                         <table class="ui table very compact">
                             <thead>
@@ -214,7 +258,7 @@
                             <tbody>
                                 <g:each in="${subList}" var="subId">
                                     <g:set var="sub" value="${Subscription.get(subId)}" />
-                                    <tr data-id="${subId}">
+                                    <tr data-id="${subId}" data-referenceYear="${sub.referenceYear}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
                                                 <i class="icon clipboard la-list-icon"></i>
@@ -251,36 +295,8 @@
                 </g:each>
             </div>
 
-            <div id="stats_survey" class="stats-content">
+            <div class="stats_survey stats-content">
                 <div class="chartWrapper" id="cw-survey"></div>
-
-                <div class="ui form segment">
-
-                <div class="ui secondary la-tab-with-js menu">
-                    <div class="item black">${message(code: 'subscription.periodOfValidity.label')}:</div>
-                    <g:each in="${surveyTimelineMap.keySet()}" var="year">
-                        <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
-                    %{--                        <a href="#" class="item ${year == Year.now().toString() ? 'active' : ''}" data-tab="year-${year}"> ${year} </a>--}%
-                    </g:each>
-                </div>
-
-                <div class="ui secondary la-tab-with-js menu">
-                    <div class="item black">${message(code: 'default.status.label')}:</div>
-                    <g:each in="${surveyMap}" var="surveyStatus,surveyData">
-                        <a href="#" class="item ${surveyStatus == 'open' ? 'active' : ''}" data-tab="survey-${surveyStatus}">
-                            <uiSurvey:virtualState status="${surveyStatus}" />
-                            <span class="ui blue circular label">${surveyData.size()}</span>
-                        </a>
-                    </g:each>
-                </div>
-                <div>
-                    <span class="ui checkbox">
-                        <label for="survey-toggle-subscriptions">Lizenzen anzeigen</label>
-                        <input type="checkbox" id="survey-toggle-subscriptions">
-                    </span>
-                </div>
-
-                </div>
 
                 <g:each in="${surveyMap}" var="surveyStatus,surveyData">
                     <div class="ui tab segment ${surveyStatus == 'open' ? 'active' : ''}" data-tab="survey-${surveyStatus}">
@@ -373,7 +389,7 @@
                 </g:each>
             </div>
 
-    <div id="stats_cost" class="stats-content">
+    <div class="stats_cost stats-content">
 
         <div class="ui segment">
             <table class="ui table la-table celled very compact sortable">
@@ -402,7 +418,7 @@
                     <tbody>
                         <g:each in="${costs.costItems}" var="ci" status="jj">
                             <%
-                                String icon         = '<i class="question circle icon"></i>'
+                                String icon         = '<i class="grey question circle icon"></i>'
                                 String dataTooltip  = message(code:'financials.costItemConfiguration.notSet')
 
                                 switch (ci.costItemElementConfiguration) {
@@ -541,15 +557,14 @@
         </div>
     </div>
 
+        </div>
+    </div><!-- .grid -->
+
     <laser:script file="${this.getGroovyPageFileName()}">
 
         JSPC.app.info.chart_config = {
             subscription: {
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: { type: 'shadow' },
-                    formatter: JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
-                },
+                tooltip: JSPC.app.info.chart_config_helper.tooltip,
                 series: [
                     <g:each in="${subscriptionTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
                         {
@@ -557,10 +572,11 @@
                             type    : 'bar',
                             stack   : 'total',
     %{--                        emphasis: { focus: 'series' },--}%
+                            animation : false,
                             data    : [${subscriptionTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${subscriptionTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
                             color   : <%
-                                String color = 'JSPC.colors.hex.pink'
+                                String color = 'JSPC.colors.hex.grey'
                                 switch (RefdataValue.get(status)) {
                                     case RDStore.SUBSCRIPTION_CURRENT:      color = 'JSPC.colors.hex.green'; break;
                                     case RDStore.SUBSCRIPTION_EXPIRED:      color = 'JSPC.colors.hex.blue'; break;
@@ -580,6 +596,7 @@
                             lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
 %{--                            areaStyle: {},--}%
     %{--                        emphasis: { focus: 'series' },--}%
+                            animation : false,
                             data    : [<%
                                         List<Long> subsPerYear = subscriptionTimelineMap.values().collect{ it.values().flatten() }
                                         print subsPerYear.collect {
@@ -595,14 +612,10 @@
                 },
                 yAxis:  { type: 'value' },
                 legend: { bottom: 0 },
-                grid:   { left: '5%', right: '5%', top: '5%', bottom: '20%' },
+                grid:   JSPC.app.info.chart_config_helper.grid,
             },
             license: {
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: { type: 'shadow' },
-                    formatter: JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
-                },
+                tooltip: JSPC.app.info.chart_config_helper.tooltip,
                 series: [
                     <g:each in="${licenseTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
                         {
@@ -610,10 +623,11 @@
                             type    : 'bar',
                             stack   : 'total',
     %{--                        emphasis: { focus: 'series' },--}%
+                            animation : false,
                             data    : [${licenseTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${licenseTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
                             color   : <%
-                                color = 'JSPC.colors.hex.pink'
+                                color = 'JSPC.colors.hex.grey'
                                 switch (RefdataValue.get(status)) {
                                     case RDStore.LICENSE_CURRENT:      color = 'JSPC.colors.hex.green'; break;
                                     case RDStore.LICENSE_EXPIRED:      color = 'JSPC.colors.hex.blue'; break;
@@ -631,6 +645,7 @@
                             lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
 %{--                            areaStyle: {},--}%
     %{--                        emphasis: { focus: 'series' },--}%
+                            animation : false,
                             data    : [<%
                                         List<Long> licsPerYear = licenseTimelineMap.values().collect{ it.values().flatten() }
                                         print licsPerYear.collect {
@@ -646,23 +661,20 @@
                 },
                 yAxis:  { type: 'value' },
                 legend: { bottom: 0 },
-                grid:   { left: '5%', right: '5%', top: '5%', bottom: '20%' },
+                grid:   JSPC.app.info.chart_config_helper.grid,
             },
             provider: {
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: { type: 'shadow' },
-                    formatter: JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
-                },
+                tooltip: JSPC.app.info.chart_config_helper.tooltip,
                 series: [
-                <g:each in="${providerTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ Org.get(it).sortname ?: Org.get(it).name }}" var="provider">
+                <g:each in="${providerTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ Provider.get(it).sortname ?: Provider.get(it).name }}" var="provider">
                     {
-                        name    : '<% print Org.get(provider).name %>',
+                        name    : '<% print Provider.get(provider).name %>',
                         type    : 'bar',
                         stack   : 'total',
 %{--                        areaStyle : {},--}%
 %{--                        smooth  : true,--}%
                 %{--                        emphasis: { focus: 'series' },--}%
+                        animation : false,
                         data    : [${providerTimelineMap.values().collect{ it[provider] ? it[provider].size() : 0 }.join(', ')}],
                         raw     : [${providerTimelineMap.values().collect{ it[provider] ?: [] }.join(', ')}]
                     },
@@ -677,14 +689,10 @@
                     bottom: 0,
                     type: 'scroll'
                 },
-                grid:   { left: '5%', right: '5%', top: '5%', bottom: '20%' },
+                grid:   JSPC.app.info.chart_config_helper.grid,
             },
             survey: {
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: { type: 'shadow' },
-                    formatter: JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
-                },
+                tooltip: JSPC.app.info.chart_config_helper.tooltip,
                 series: [
                     <g:each in="${surveyTimelineMap.values().collect{ it.keySet() }.flatten().unique()}" var="status"> %{-- sort --}%
                         {
@@ -692,15 +700,16 @@
                             type    : 'bar',
                             stack   : 'total',
                     %{--                        emphasis: { focus: 'series' },--}%
+                            animation : false,
                             data    : [${surveyTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${surveyTimelineMap.values().collect{ it[status] ? it[status].collect{ it[0].id } : [] }.join(', ')}],
                             color   : <%
-                                color = 'JSPC.colors.hex.pink'
+                                color = 'JSPC.colors.hex.grey'
                                 switch (status) {
-                                    case 'open':        color = 'JSPC.colors.hex.orange'; break;
-                                    case 'finish':      color = 'JSPC.colors.hex.green'; break;
+                                    case 'open':        color = 'JSPC.colors.hex.green'; break;
+                                    case 'finish':      color = 'JSPC.colors.hex.blue'; break;
                                     case 'termination': color = 'JSPC.colors.hex.red'; break;
-                                    case 'notFinish':   color = 'JSPC.colors.hex.blue'; break;
+                                    case 'notFinish':   color = 'JSPC.colors.hex.yellow'; break;
                                 }
                                 println color
                             %>
@@ -716,6 +725,7 @@
                             lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
 %{--                            areaStyle: {},--}%
 %{--                emphasis: { focus: 'series' },--}%
+                            animation : false,
                             data    : ${surveyTypeTimeline.collect{ it.findAll{ it2 -> it2 == type }.size() }},
                             color   : "<%
                                 color = 'JSPC.colors.hex.grey'
@@ -736,7 +746,7 @@
                 },
                 yAxis:  { type: 'value' },
                 legend: { bottom: 0 },
-                grid:   { left: '5%', right: '5%', top: '5%', bottom: '20%' },
+                grid:   JSPC.app.info.chart_config_helper.grid,
             },
         };
 
@@ -753,7 +763,7 @@
         JSPC.app.info.charts.survey.setOption (JSPC.app.info.chart_config.survey);
 
         $( ['subscription', 'license', 'provider', 'survey'] ).each( function(i) {
-            let statsId     = '#stats_' + this
+            let statsId     = '.stats_' + this
             let chart       = JSPC.app.info.charts[this]
             let chartConfig = JSPC.app.info.chart_config[this]
 
@@ -762,7 +772,7 @@
 %{--            console.log( chartConfig )--}%
 
             chart.on ('click', function (params) {
-                let t = statsId.replace('#stats_', '')
+                let t = statsId.replace('.stats_', '')
                 let y = params.dataIndex
                 let s = params.seriesIndex
 
@@ -770,20 +780,18 @@
 
                 $(statsId + ' tr[data-id]').hide()
 
-
                 $.each( $(statsId + ' .menu .item[data-tab^=' + t + ']'), function(i, e) {
-                    let yList = chartConfig.series[i].raw[y]
-                    if (yList.length < 1) {
-                        $(e).find('.blue.circular.label').addClass('disabled').text( yList.length )
-                    } else {
-                        $(e).find('.blue.circular.label').removeClass('disabled').text( yList.length )
-                    }
+                    if (chartConfig.series[i]) {
+                        let yList = chartConfig.series[i].raw[y]
+                        JSPC.app.info.setCounter($(e), yList.length)
 
-                    yList.forEach((f) => {
-                        $(statsId + ' tr[data-id=' + f + ']').show()
-                    })
+                        yList.forEach((f) => {
+                            $(statsId + ' tr[data-id=' + f + ']').show()
+                        })
+                    }
                 })
                 // chart.dispatchAction({ type: 'select', dataIndex: y })
+                // chart.dispatchAction({ type: 'highlight', seriesIndex: s, dataIndex: y })
                 $($(statsId + ' .menu .item[data-tab^=' + t + ']')[s]).trigger('click')
 
                 $(statsId + ' .menu .item[data-tab^=year-]').removeClass('active')
@@ -793,24 +801,38 @@
         });
 
         $( ['subscription', 'license', 'provider', 'survey'] ).each( function(i) {
-            let statsId = '#stats_' + this
+            let statsId = '.stats_' + this
             let chart   = JSPC.app.info.charts[this]
-
 %{--            console.log( statsId + ' ' + chart )--}%
 
             let $years = $(statsId + ' .menu .item[data-tab^=year-]')
             $years.on ('click', function() {
-                console.log(this)
+%{--                console.log(this)--}%
                 $years.removeClass('active')
                 $(this).addClass('active')
 
                 let y = $(this).attr('data-tab')
-                $years.each( function(i, e) {
-                    if ($(e).attr('data-tab') == y) {
-                        chart.trigger('click', {type: 'click', name: y.replace('year-', ''), dataIndex: i})
-                    }
-                })
+                if (y == 'year-*') {
+%{--                    $(statsId + ' tr[data-id]').show()--}%
+
+%{--                    $.each( $(statsId + ' .menu .item[data-tab^=' + statsId.replace('.stats_', '') + ']'), function(i, e) {--}%
+%{--                        let $tab = $(statsId + '.stats-content .tab[data-tab=' + $(e).attr('data-tab') + '])')  // survey problem--}%
+%{--                        JSPC.app.info.setCounter($(e), $tab.find('tr[data-id]').length)--}%
+
+%{--                        console.log($(e).attr('data-tab'))--}%
+%{--                        console.log($tab)--}%
+%{--                    })--}%
+                }
+                else {
+                    $years.each( function(i, e) {
+                        if ($(e).attr('data-tab') == y) {
+                            chart.trigger('click', {type: 'click', name: y.replace('year-', ''), dataIndex: i})
+                        }
+                    })
+                }
             });
+
+            $(statsId + ' .menu .item[data-tab=year-${Year.now()}]').trigger('click'); // init
         });
 
         $('#survey-toggle-subscriptions').on('change', function() {

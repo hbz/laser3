@@ -28,8 +28,7 @@
         tooltip: {
             trigger: 'item',
             formatter (params) {
-                var str = JSPC.app.reporting.current.chart.option.title.text
-                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
+                let str = '${labels.tooltip}' + JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
                 return '<div style="max-width:800px;word-break:break-word;white-space:pre-wrap;">' + str + '</div>' /* erms-4787 */
            }
         },
@@ -39,10 +38,10 @@
             z: 1,
             formatter: function (value) {
                 if (JSPC.app.reporting.current.myCountsToggle) {
-                    var row = JSPC.app.reporting.current.chart.option.dataset.source.filter(row => row[1] === value)
+                    let row = JSPC.app.reporting.current.chart.option.dataset.source.filter(row => row[1] === value)
                     if (row) { value = value + ': ' + row[0][2] }
                 }
-                var v = value.replace(/\s\(ID:[0-9]*\)/,'')
+                let v = value.replace(/\s\(ID:[0-9]*\)/,'')
                 if (v.length > 80) { v = v.substring(0, 55) + '[..]' + v.substring(v.length - 20) }  /* erms-4787 */
                 return v
             }
@@ -108,8 +107,7 @@
         tooltip: {
             trigger: 'item',
             formatter (params) {
-                var str = JSPC.app.reporting.current.chart.option.title.text
-                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
+                let str = '${labels.tooltip}' + JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
                 return '<div style="max-width:800px;word-break:break-word;white-space:pre-wrap;">' + str + '</div>' /* erms-4787 */
            }
         },

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.finance.CostItem; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.License;de.laser.Links" %>
+<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.finance.CostItem; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.License;de.laser.Links" %>
 <laser:serviceInjection />
 
 <g:form action="compareSubscriptions" controller="compare" method="post">
@@ -22,8 +22,19 @@
                         <g:else>
                             <g:set var="subscriptionHeader" value="${message(code: 'subscription')}"/>
                         </g:else>
+                        <th class="center aligned"  rowspan="2" scope="col">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                  data-content="${message(code: 'default.previous.label')}">
+                                <i class="arrow left icon"></i>
+                            </span>
+                        </th>
                         <g:sortableColumn params="${params}" property="s.name" title="${subscriptionHeader}" rowspan="2" scope="col" />
-
+                        <th class="center aligned" rowspan="2" scope="col">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                  data-content="${message(code: 'default.next.label')}">
+                                <i class="arrow right icon"></i>
+                            </span>
+                        </th>
                         <g:if test="${'showPackages' in tableConfig}">
                             <th rowspan="2" scope="col">
                                 ${message(code: 'license.details.linked_pkg')}
@@ -36,13 +47,16 @@
                             <th rowspan="2">${message(code:'org.institution.label')}</th>
                         </g:elseif>
                         <g:if test="${'showProviders' in tableConfig}">
-                            <g:sortableColumn scope="col" params="${params}" property="providerAgency" title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}" rowspan="2" />
+                            <g:sortableColumn scope="col" params="${params}" property="provider" title="${message(code: 'provider.label')}" rowspan="2" />
+                        </g:if>
+                        <g:if test="${'showVendors' in tableConfig}">
+                            <g:sortableColumn scope="col" params="${params}" property="vendor" title="${message(code: 'vendor.label')}" rowspan="2" />
                         </g:if>
                         <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label.shy')}"/>
                         <g:if test="${params.orgRole in ['Subscription Consortia']}">
                             <th scope="col" rowspan="2" class="center aligned">
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
-                                    <i class="university large icon"></i>
+                                    <i class="${Icons.ORG} large icon"></i>
                                 </span>
                             </th>
                             <th scope="col" rowspan="2" class="center aligned">
@@ -73,6 +87,16 @@
                         <td class="center aligned">
                             ${ (params.int('offset') ?: 0)  + i + 1 }
                         </td>
+                        <%
+                            LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(s,false)
+                            Long navPrevSub = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
+                            Long navNextSub = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
+                        %>
+                        <td class="center aligned">
+                            <g:if test="${navPrevSub}">
+                                <g:link controller="subscription" action="show" id="${navPrevSub}"><i class="arrow left icon"></i></g:link>
+                            </g:if>
+                        </td>
                         <th scope="row" class="la-th-column">
                             <g:link controller="subscription" class="la-main-object" action="show" id="${s.id}">
                                 <g:if test="${s.name}">
@@ -86,7 +110,7 @@
                                 </g:else>
                                 <g:if test="${s.instanceOf}">
                                     <g:if test="${s.consortia && s.consortia == institution}">
-                                        ( ${s.subscriber?.name} )
+                                        ( ${s.getSubscriberRespConsortia()?.name} )
                                     </g:if>
                                 </g:if>
                             </g:link>
@@ -95,11 +119,8 @@
                                     <g:if test="${s == row.destinationSubscription}">
                                         <g:set var="license" value="${row.sourceLicense}"/>
                                         <div class="la-flexbox la-minor-object">
-                                            <i class="icon balance scale la-list-icon"></i>
+                                            <i class="${Icons.LICENSE} icon la-list-icon"></i>
                                             <g:link controller="license" action="show" id="${license.id}">
-                                                <g:if test="${license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}">
-                                                    <i class="icon users la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'license.member')}"></i>
-                                                </g:if>
                                                 ${license.reference}
                                             </g:link><br />
                                         </div>
@@ -107,15 +128,20 @@
                                 </g:each>
                             </g:if>
                         </th>
+                        <td class="center aligned">
+                            <g:if test="${navNextSub}">
+                                <g:link controller="subscription" action="show" id="${navNextSub}"><i class="arrow right icon"></i></g:link>
+                            </g:if>
+                        </td>
                         <g:if test="${'showPackages' in tableConfig}">
                         <td>
                         <!-- packages -->
                             <g:each in="${s.packages}" var="sp" status="ind">
                                 <g:if test="${ind < 10}">
                                     <div class="la-flexbox">
-                                        <i class="icon gift la-list-icon"></i>
+                                        <i class="${Icons.PACKAGE} icon la-list-icon"></i>
                                         <g:link controller="subscription" action="index" id="${s.id}" params="[pkgfilter: sp.pkg.id]"
-                                                title="${sp.pkg.contentProvider?.name}">
+                                                title="${sp.pkg.provider?.name}">
                                             ${sp.pkg.name}
                                         </g:link>
                                     </div>
@@ -147,29 +173,32 @@
                             </td>
                         </g:if>
                         <g:if test="${'showProviders' in tableConfig}">
-                        <td>
-                            <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
-                            <g:each in="${s.providers}" var="org">
-                                <g:link controller="organisation" action="show" id="${org.id}">${fieldValue(bean: org, field: "name")}
-                                    <g:if test="${org.sortname}">
-                                        <br /> (${fieldValue(bean: org, field: "sortname")})
-                                    </g:if>
-                                </g:link><br />
-                            </g:each>
-                            <g:each in="${s.agencies}" var="org">
-                                <g:link controller="organisation" action="show" id="${org.id}">
-                                    ${fieldValue(bean: org, field: "name")}
-                                    <g:if test="${org.sortname}">
-                                        <br /> (${fieldValue(bean: org, field: "sortname")})
-                                    </g:if> (${message(code: 'default.agency.label')})
-                                </g:link><br />
-                            </g:each>
-                        </td>
+                            <td>
+                                <g:each in="${s.providers}" var="provider">
+                                    <g:link controller="provider" action="show" id="${provider.id}">${fieldValue(bean: provider, field: "name")}
+                                        <g:if test="${provider.sortname}">
+                                            <br /> (${fieldValue(bean: provider, field: "sortname")})
+                                        </g:if>
+                                    </g:link><br />
+                                </g:each>
+                            </td>
+                        </g:if>
+                        <g:if test="${'showVendors' in tableConfig}">
+                            <td>
+                                <g:each in="${s.vendors}" var="vendor">
+                                    <g:link controller="vendor" action="show" id="${vendor.id}">
+                                        ${fieldValue(bean: vendor, field: "name")}
+                                        <g:if test="${vendor.sortname}">
+                                            <br /> (${fieldValue(bean: vendor, field: "sortname")})
+                                        </g:if>
+                                    </g:link><br />
+                                </g:each>
+                            </td>
                         </g:if>
                         <%--
                             <td>
                                 <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                                   <g:each in="${s.getDerivedSubscribers()}" var="subscriber">
+                                   <g:each in="${s.getDerivedNonHiddenSubscribers()}" var="subscriber">
                                         <g:link controller="organisation" action="show" id="${subscriber.id}">${subscriber.name}</g:link> <br />
                                    </g:each>
                                 </g:if>
@@ -180,15 +209,22 @@
                             <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label.shy')}:"><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></span>
                         </td>
                         <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                            <g:set var="childSubIds" value="${Subscription.executeQuery('select s.id from Subscription s where s.instanceOf = :parent',[parent:s])}"/>
+                            <%
+                                Subscription targetSub
+                                if(params.identifier?.startsWith('vendor:') || params.q) {
+                                    targetSub = s.instanceOf
+                                }
+                                else targetSub = s
+                            %>
+                            <g:set var="childSubIds" value="${Subscription.executeQuery('select s.id from Subscription s where s.instanceOf = :parent',[parent:targetSub])}"/>
                             <td>
                                 <g:if test="${childSubIds.size() > 0}">
-                                    <g:link controller="subscription" action="members" params="${[id:s.id]}">
+                                    <g:link controller="subscription" action="members" params="${[id:targetSub.id]}">
                                         <div class="ui blue circular label">${childSubIds.size()}</div>
                                     </g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link controller="subscription" action="addMembers" params="${[id:s.id]}">
+                                    <g:link controller="subscription" action="addMembers" params="${[id:targetSub.id]}">
                                         <div class="ui blue circular label">
                                             ${childSubIds.size()}
                                         </div>
@@ -196,10 +232,10 @@
                                 </g:else>
                             </td>
                             <td>
-                                <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
+                                <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:targetSub.id]}">
                                     <g:if test="${institution.isCustomerType_Consortium()}">
                                         <div class="ui blue circular label">
-                                            ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
+                                            ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(*) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
                                         </div>
                                     </g:if>
                                 </g:link>
@@ -272,21 +308,7 @@
                                         </g:link>--}%
                                     </g:if>
                                 </g:if>
-                                <%--<g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasPlatformWithUsageSupplierId()}">
-                                    <ui:statsLink class="ui icon button la-modern-button"
-                                                     base="${ConfigMapper.getStatsApiUrl()}"
-                                                     module="statistics"
-                                                     controller="default"
-                                                     action="select"
-                                                     target="_blank"
-                                                     params="[mode:usageMode,
-                                                              packages:s.getCommaSeperatedPackagesIsilList(),
-                                                              institutions:statsWibid
-                                                     ]"
-                                                     title="Springe zu Statistik im Nationalen Statistikserver"> <!-- TODO message -->
-                                        <i class="chart bar outline icon"></i>
-                                    </ui:statsLink>
-                                </g:if>--%>
+
                             </g:if>
                             <g:if test="${'showLinking' in tableConfig}">
                                 <%

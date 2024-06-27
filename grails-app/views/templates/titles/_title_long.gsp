@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 <div class="la-icon-list">
 <ui:listIcon type="${tipp.titleType}"/>
@@ -115,7 +115,7 @@
         </div>
     </g:if>
 
-    <g:if test="${(tipp.titleType == 'Book') && (tipp.volume || showEmptyFields)}">
+    <g:if test="${(tipp.titleType == 'monograph') && (tipp.volume || showEmptyFields)}">
         <div class="item">
             <i class="grey icon la-books la-popup-tooltip la-delay"
                data-content="${message(code: 'tipp.volume')}"></i>
@@ -126,7 +126,7 @@
         </div>
     </g:if>
 
-    <g:if test="${(tipp.titleType == 'Book') && (tipp.firstAuthor || showEmptyFields)}">
+    <g:if test="${(tipp.titleType == 'monograph') && (tipp.firstAuthor || showEmptyFields)}">
         <div class="item">
             <i class="grey icon user circle la-popup-tooltip la-delay"
                data-content="${message(code: 'tipp.firstAuthor')}"></i>
@@ -137,7 +137,7 @@
         </div>
     </g:if>
 
-    <g:if test="${(tipp.titleType == 'Book') && (tipp.firstEditor || showEmptyFields)}">
+    <g:if test="${(tipp.titleType == 'monograph') && (tipp.firstEditor || showEmptyFields)}">
         <div class="item">
             <i class="grey icon industry circle la-popup-tooltip la-delay"
                data-content="${message(code: 'tipp.firstEditor')}"></i>
@@ -148,7 +148,7 @@
         </div>
     </g:if>
 
-    <g:if test="${(tipp.titleType == 'Book') && (tipp.editionStatement || showEmptyFields)}">
+    <g:if test="${(tipp.titleType == 'monograph') && (tipp.editionStatement || showEmptyFields)}">
         <div class="item">
             <i class="grey icon copy la-popup-tooltip la-delay"
                data-content="${message(code: 'title.editionStatement.label')}"></i>
@@ -159,7 +159,7 @@
         </div>
     </g:if>
 
-    <g:if test="${(tipp.titleType == 'Book') && (tipp.editionNumber || showEmptyFields)}">
+    <g:if test="${(tipp.titleType == 'monograph') && (tipp.editionNumber || showEmptyFields)}">
         <div class="item">
             <i class="grey icon copy la-popup-tooltip la-delay"
                data-content="${message(code: 'tipp.editionNumber.tooltip')}"></i>
@@ -170,7 +170,7 @@
         </div>
     </g:if>
 
-    <g:if test="${(tipp.titleType == 'Book') && (tipp.summaryOfContent || showEmptyFields)}">
+    <g:if test="${(tipp.titleType == 'monograph') && (tipp.summaryOfContent || showEmptyFields)}">
         <div class="item">
             <i class="grey icon desktop la-popup-tooltip la-delay"
                data-content="${message(code: 'title.summaryOfContent.label')}"></i>
@@ -291,37 +291,31 @@
         </div>
     </g:if>
 
-    <g:set var="providers" value="${tipp.getPublishers()}"/>
-    <g:if test="${(providers || showEmptyFields)}">
-        <div class="item">
-            <i class="grey university icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.provider')}"></i>
 
-            <div class="content">
-                ${showCompact ? '' : message(code: 'tipp.provider') + ':'}
-                <g:if test="${providers}">
-                    <div class="ui list">
-                        <g:each in="${providers}" var="provider">
+    <div class="item">
+        <i class="${Icons.PROVIDER} grey icon la-popup-tooltip la-delay"
+           data-content="${message(code: 'tipp.provider')}"></i>
 
-                            <g:link controller="organisation" action="show" target="_blank"
-                                    id="${provider.id}">${provider.name}</g:link>
+        <div class="content">
+            ${showCompact ? '' : message(code: 'tipp.provider') + ':'}
+            <g:if test="${tipp.pkg.provider}">
 
-                        %{--<g:each in="${apisources}" var="gokbAPI">
-                            <g:if test="${provider.gokbId}">
-                                <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                                   data-content="${message(code: 'wekb')}"
-                                   href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/orgContent/?id=' + provider.gokbId : '#'}"
-                                   target="_blank"><i class="la-gokb  icon"></i>
-                                </a>
-                            </g:if>
-                        </g:each>--}%
+                <g:link controller="provider" action="show" target="_blank"
+                        id="${tipp.pkg.provider.id}">${tipp.pkg.provider.name}</g:link>
 
-                        </g:each>
-                    </div>
-                </g:if>
-            </div>
+                <g:each in="${apisources}" var="gokbAPI">
+                    <g:if test="${tipp.pkg.provider.gokbId}">
+                        <a role="button" class="ui icon tiny blue button la-popup-tooltip la-delay"
+                           data-content="${message(code: 'wekb')}"
+                           href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/tippContent/?id=' + tipp.gokbId : '#'}"
+                           target="_blank"><i class="la-gokb  icon"></i>
+                        </a>
+                    </g:if>
+                </g:each>
+
+            </g:if>
         </div>
-    </g:if>
+    </div>
 
 %{--<g:if test="${ie && (ie.availabilityStatus || showEmptyFields)}">
     <g:if test="${ie.availabilityStatus?.value == 'Expected'}">
@@ -353,8 +347,7 @@
     <g:if test="${showPlattform}">
         <g:if test="${tipp.platform.name}">
             <div class="item">
-                <i class="grey icon cloud la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.platform')}"></i>
+                <i class="${Icons.PLATFORM} grey icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.platform')}"></i>
 
                 <div class="content">
                     <g:if test="${tipp.platform.name}">
@@ -373,7 +366,7 @@
 
     <div class="la-title">${message(code: 'default.details.label')}</div>
     <g:if test="${controllerName != 'tipp' && tipp.id}">
-        <g:link class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+        <g:link class="ui icon tiny blue button la-popup-tooltip la-delay"
                 data-content="${message(code: 'laser')}"
                 target="_blank"
                 controller="tipp" action="show"
@@ -384,7 +377,7 @@
 
     <g:each in="${apisources}" var="gokbAPI">
         <g:if test="${tipp.gokbId}">
-            <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+            <a role="button" class="ui icon tiny blue button la-popup-tooltip la-delay"
                data-content="${message(code: 'wekb')}"
                href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/tippContent/?id=' + tipp.gokbId : '#'}"
                target="_blank"><i class="la-gokb  icon"></i>

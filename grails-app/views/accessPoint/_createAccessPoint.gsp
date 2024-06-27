@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 
     <ui:form controller="accessPoint" action="processCreate" id="${orgInstance.id}">
-        <g:hiddenField name="accessMethod" value="${genericOIDService.getOID(accessMethod)}" />
+        <g:hiddenField name="accessMethod" value="${accessMethod.id}" />
 
         <g:if test="${accessMethod == RDStore.ACCESS_POINT_TYPE_IP}">
             <laser:render template="name" model="${[nameOptions: availableOptions.collectEntries(),
@@ -15,7 +15,7 @@
                 <label>URL
                     <span class="la-long-tooltip la-popup-tooltip la-delay"
                           data-content="${message(code: "accessPoint.url.help")}">
-                        <i class="question circle icon la-popup"></i></span> <g:message code="messageRequiredField" />
+                        <i class="grey question circle icon la-popup"></i></span> <g:message code="messageRequiredField" />
                 </label>
                 <g:textField name="url" value="${url}" />
             </div>
@@ -25,7 +25,7 @@
                 <label>${message(code: 'accessPoint.oa.name.label')}
                     <span class="la-long-tooltip la-popup-tooltip la-delay"
                           data-content="${message(code:'accessPoint.oa.help')}">
-                        <i class="question circle icon la-popup"></i></span>  <g:message code="messageRequiredField" />
+                        <i class="grey question circle icon la-popup"></i></span>  <g:message code="messageRequiredField" />
                 </label>
                 <g:field type="text" name="name" value="" />
             </div>
@@ -42,7 +42,7 @@
                 <label>${message(code: 'accessPoint.shibboleth.name.label')}
                     <span class="la-long-tooltip la-popup-tooltip la-delay"
                           data-content="${message(code:'accessPoint.shibboleth.help')}">
-                        <i class="question circle icon la-popup"></i></span> <g:message code="messageRequiredField" />
+                        <i class="grey question circle icon la-popup"></i></span> <g:message code="messageRequiredField" />
                 </label>
                 <g:field type="text" name="name" value="" />
             </div>

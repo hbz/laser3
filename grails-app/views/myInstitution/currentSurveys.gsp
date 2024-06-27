@@ -7,7 +7,7 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
-    <ui:exportDropdown>
+  %{--  <ui:exportDropdown>
         <ui:exportDropdownItem>
             <g:link class="item" controller="myInstitution" action="currentSurveys"
                     params="${params + [exportXLSX: true]}">${message(code: 'survey.exportSurveys')}</g:link>
@@ -16,10 +16,10 @@
             <g:link class="item" controller="myInstitution" action="currentSurveys"
                     params="${params + [exportXLSX: true, surveyCostItems: true]}">${message(code: 'survey.exportSurveyCostItems')}</g:link>
         </ui:exportDropdownItem>
-    </ui:exportDropdown>
+    </ui:exportDropdown>--}%
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon text="${institution.name} - ${message(code: 'currentSurveys.label')}" type="survey" total="${countSurveys.values().sum { it }}" floated="true" />
+<ui:h1HeaderWithIcon message="currentSurveys.label" type="survey" total="${countSurveys.values().sum { it }}" floated="true" />
 
 <ui:messages data="${flash}"/>
 
@@ -101,20 +101,22 @@
 
         </div>
 
-        <div class="three fields">
+        <div class="two fields">
 
             <laser:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true, label:message(code: 'subscription.property.search')]"/>
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
                 <ui:select class="ui dropdown" name="type"
-                              from="${RefdataCategory.getAllRefdataValues(de.laser.storage.RDConstants.SURVEY_TYPE)}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.type}"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                           from="${RefdataCategory.getAllRefdataValues(de.laser.storage.RDConstants.SURVEY_TYPE)}"
+                           optionKey="id"
+                           optionValue="value"
+                           value="${params.type}"
+                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
+        </div>
 
+        <div class="one fields">
             <div class="field">
                 <label>${message(code: 'surveyInfo.options')}</label>
 
@@ -142,6 +144,33 @@
                             <label for="checkSubSurveyUseForTransfer">${message(code: 'surveyconfig.subSurveyUseForTransfer.label')}</label>
                             <input id="checkSubSurveyUseForTransfer" name="checkSubSurveyUseForTransfer" type="checkbox"
                                    <g:if test="${params.checkSubSurveyUseForTransfer}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkPackageSurvey">${message(code: 'surveyconfig.packageSurvey.label')}</label>
+                            <input id="checkPackageSurvey" name="checkPackageSurvey" type="checkbox"
+                                   <g:if test="${params.checkPackageSurvey}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkVendorSurvey">${message(code: 'surveyconfig.vendorSurvey.label')}</label>
+                            <input id="checkVendorSurvey" name="checkVendorSurvey" type="checkbox"
+                                   <g:if test="${params.checkVendorSurvey}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkInvoicingInformation">${message(code: 'surveyconfig.invoicingInformation.label')}</label>
+                            <input id="checkInvoicingInformation" name="checkInvoicingInformation" type="checkbox"
+                                   <g:if test="${params.checkInvoicingInformation}">checked=""</g:if>
                                    tabindex="0">
                         </div>
                     </div>
@@ -297,13 +326,5 @@
         </g:each>
     </table>
 </ui:greySegment>
-
-
-%{--<g:if test="${countSurveys."${params.tab}"}">
-    <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
-                    next="${message(code: 'default.paginate.next')}"
-                    prev="${message(code: 'default.paginate.prev')}" max="${max}"
-                    total="${countSurveys."${params.tab}"}"/>
-</g:if>--}%
 
 <laser:htmlEnd />

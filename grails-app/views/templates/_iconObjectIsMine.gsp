@@ -1,6 +1,6 @@
 <%@ page import="de.laser.utils.AppUtils; de.laser.interfaces.CalculatedType;" %>
 <laser:serviceInjection />
-<g:if test="${isMyPlatform || isMyPkg || isMyOrg}">
+<g:if test="${isMyPlatform || isMyPkg || isMyOrg || isMyVendor}">
 
 <span class="la-additionalIcon">
   <g:if test="${isMyPlatform}">
@@ -12,16 +12,12 @@
   <g:if test="${isMyOrg}">
     <i class="icon circular star la-objectIsMine la-popup-tooltip la-delay" data-content="${message(code: 'license.relationship.org')}" data-position="left center" data-variation="tiny" ></i>
   </g:if>
+  <g:if test="${isMyProvider}">
+    <i class="icon circular star la-objectIsMine la-popup-tooltip la-delay" data-content="${message(code: 'license.relationship.provider')}" data-position="left center" data-variation="tiny" ></i>
+  </g:if>
+  <g:if test="${isMyVendor}">
+    <i class="icon circular star la-objectIsMine la-popup-tooltip la-delay" data-content="${message(code: 'license.relationship.vendor')}" data-position="left center" data-variation="tiny" ></i>
+  </g:if>
 </span>
-
-%{--<laser:script file="${this.getGroovyPageFileName()}">--}%
-%{--  $(document).ready(function() {--}%
-%{--    $('.la-objectIsMine').visibility({--}%
-%{--      type   : 'fixed',--}%
-%{--      offset : 55,--}%
-%{--      zIndex: 101--}%
-%{--    })--}%
-%{--  })--}%
-%{--</laser:script>--}%
 
 </g:if>

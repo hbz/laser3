@@ -29,62 +29,11 @@ class ControlledListService {
     MessageSource messageSource
 
     /**
-     * Retrieves a list of providers and agencies
-     * @param params eventual request params
-     * @return a map containing a sorted list of providers, an empty one if no providers match the filter
-     */
-    Map getProvidersAgencies(Map params) {
-        LinkedHashMap result = [results:[]]
-        Set<RefdataValue> providerAgency = []
-        Org org = contextService.getOrg()
-        if(params.orgType) {
-            providerAgency << RefdataValue.get(params.orgType)
-        }
-        else providerAgency.addAll([RDStore.OT_PROVIDER,RDStore.OT_AGENCY,RDStore.OT_LICENSOR])
-        if(params.forFinanceView) {
-            //PLEASE! Do not assign providers or agencies to administrative subscriptions! That will screw up this query ...
-            List<Long> subIDs = Subscription.executeQuery('select s.id from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org:org,orgRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA]])
-            if(subIDs) {
-                Map filter = [providerAgency: [RDStore.OR_PROVIDER,RDStore.OR_AGENCY],subscriptions:subIDs]
-                String filterString = " "
-                if (params.query && params.query.length() > 0) {
-                    filterString += " and genfunc_filter_matcher(oo.org.name, :query) = true "
-                    filter.put('query', params.query)
-                }
-                List providers = Org.executeQuery("select distinct concat('"+Org.class.name+":',oo.org.id), oo.org.sortname from OrgRole oo where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency)"+filterString+"order by oo.org.sortname asc",filter)
-                providers.each { p ->
-                    result.results.add([name:p[1],value:p[0]])
-                }
-            }
-        }
-        else {
-            String queryString = 'select o from Org o join o.orgType ot where ot in (:providerTypes) and o.status = :current'
-            LinkedHashMap filter = [providerTypes:providerAgency, current: RDStore.ORG_STATUS_CURRENT]
-            if (params.query && params.query.length() > 0) {
-                queryString += " and (genfunc_filter_matcher(o.name, :query) = true or genfunc_filter_matcher(o.sortname, :query) = true or exists (select alt from o.altnames alt where genfunc_filter_matcher(alt.name, :query) = true)) "
-                filter.put('query', params.query)
-            }
-            Set<Org> providers = Org.executeQuery(queryString+" order by o.sortname asc",filter)
-            providers.each { Org p ->
-                if(params.tableView)
-                    result.results.add(p)
-                else {
-                    String nameString = p.name
-                    if(p.gokbId)
-                        nameString += ' (we:kb)'
-                    result.results.add([name:nameString,value:genericOIDService.getOID(p)])
-                }
-            }
-        }
-        result
-    }
-
-    /**
      * Retrieves a list of organisations
      * @param params eventual request params
      * @return a map containing a sorted list of organisations, an empty one if no organisations match the filter
      */
-    Map getOrgs(Map params) {
+    Map getOrgs(GrailsParameterMap params) {
         LinkedHashMap result = [results:[]]
         Org org = genericOIDService.resolveOID(params.ctx)
         String queryString = 'select o from Org o where o.status != :deleted and o != :context'
@@ -105,7 +54,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of subscriptions, an empty one if no subscriptions match the filter
      */
-    Map getSubscriptions(Map params) {
+    Map getSubscriptions(GrailsParameterMap params) {
         Org org = contextService.getOrg()
         LinkedHashMap result = [results:[]]
         String queryString = 'select distinct s, org.sortname from Subscription s join s.orgRelations orgRoles join orgRoles.org org left join s.propertySet sp where org = :org and orgRoles.roleType in ( :orgRoles )'
@@ -128,7 +77,10 @@ class ControlledListService {
                 queryString += " and s.instanceOf = null "
                 break
             case CalculatedType.TYPE_PARTICIPATION:
-                queryString += " and s.instanceOf != null "
+                Org subscriber = ctx.getSubscriberRespConsortia()
+                queryString += " and s.instanceOf != null and exists (select os from OrgRole os where os.sub = s and os.roleType in (:subscriberCons) and os.org = :subscriber) "
+                filter.subscriberCons = [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
+                filter.subscriber = subscriber
                 break
         }
         if(params.restrictLevel) {
@@ -214,6 +166,23 @@ class ControlledListService {
                 filter.values = filterPropVal
             }
         }
+        if(params.providerFilter) {
+            queryString += " and exists (select pvr from ProviderRole pvr where pvr.subscription = s and pvr.provider = :filterProvider) "
+            filter.filterProvider = genericOIDService.resolveOID(params.providerFilter)
+        }
+        //weird naming ... Fomantic UI API does it so
+        else if(params.'providerFilter[]') {
+            queryString += " and exists (select pvr from ProviderRole pvr where pvr.subscription = s and pvr.provider in (:filterProvider)) "
+            filter.filterProvider = params.list('providerFilter[]').collect { String key -> genericOIDService.resolveOID(key) }
+        }
+        if(params.vendorFilter) {
+            queryString += " and exists (select vr from VendorRole vr where vr.subscription = s and vr.vendor = :filterVendor) "
+            filter.filterVendor = genericOIDService.resolveOID(params.providerVendor)
+        }
+        else if(params.'vendorFilter[]') {
+            queryString += " and exists (select vr from VendorRole vr where vr.subscription = s and vr.vendor in (:filterVendor)) "
+            filter.filterVendor = params.list('vendorFilter[]').collect { String key -> genericOIDService.resolveOID(key) }
+        }
         Set<String> refdataFields = ['form','resource','kind']
         refdataFields.each { String refdataField ->
             if(params[refdataField]) {
@@ -262,7 +231,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a list of issue entitlements, an empty one if no issue entitlements match the filter
      */
-    Map getIssueEntitlements(Map params) {
+    Map getIssueEntitlements(GrailsParameterMap params) {
         Org org = contextService.getOrg()
         LinkedHashMap issueEntitlements = [results:[]]
         //build up set of subscriptions which are owned by the current institution or instances of such - or filter for a given subscription
@@ -305,7 +274,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a list of issue entitlement groups, an empty one if no issue entitlement group match the filter
      */
-    Map getTitleGroups(Map params) {
+    Map getTitleGroups(GrailsParameterMap params) {
         Org org = contextService.getOrg()
         LinkedHashMap issueEntitlementGroup = [results:[]]
         //build up set of subscriptions which are owned by the current institution or instances of such - or filter for a given subscription
@@ -335,7 +304,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing licenses, an empty one if no licenses match the filter
      */
-    Map getLicenses(Map params) {
+    Map getLicenses(GrailsParameterMap params) {
         Org org = contextService.getOrg()
         LinkedHashMap licenses = [results:[]]
         List<License> result = []
@@ -362,6 +331,11 @@ class ControlledListService {
                 licFilter += " and l.instanceOf != null "
                 break
         }
+        if(params.providerFilter) {
+            licFilter += " and exists (select ol from OrgRole ol where ol.lic = l and ol.roleType = :providerRoleType and ol.org = :filterProvider) "
+            filterParams.providerRoleType = RDStore.OR_LICENSOR
+            filterParams.filterProvider = genericOIDService.resolveOID(params.providerFilter)
+        }
         result = License.executeQuery('select l from License as l join l.orgRelations ol where ol.org = :org and ol.roleType in (:orgRoles)'+licFilter+" order by l.reference asc",filterParams)
         if(result.size() > 0) {
             SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -378,7 +352,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of issue entitlements, an empty one if no issue entitlements match the filter
      */
-    Map getSubscriptionPackages(Map params) {
+    Map getSubscriptionPackages(GrailsParameterMap params) {
         Org org = contextService.getOrg()
         LinkedHashMap result = [results:[]]
         String queryString = 'select distinct s, orgRoles.org.sortname from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles )'
@@ -424,7 +398,7 @@ class ControlledListService {
         subscriptions.each { row ->
             Subscription s = (Subscription) row[0]
             s.packages.each { sp ->
-                result.results.add([name:"${sp.pkg.name}/${s.dropdownNamingConvention(org)}",value:genericOIDService.getOID(sp)])
+                result.results.add([name:"${sp.pkg.name}/${s.dropdownNamingConvention(org)}",value:genericOIDService.getOID(sp.pkg)])
             }
         }
         result
@@ -435,7 +409,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of budget codes, an empty one if no budget codes match the filter
      */
-    Map getBudgetCodes(Map params) {
+    Map getBudgetCodes(GrailsParameterMap params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
         String queryString = 'select bc from BudgetCode bc where bc.owner = :owner'
@@ -457,7 +431,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of invoice numbers, an empty one if no invoice numbers match the filter
      */
-    Map getInvoiceNumbers(Map params) {
+    Map getInvoiceNumbers(GrailsParameterMap params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
         String queryString = 'select distinct(i.invoiceNumber) from Invoice i where i.owner = :owner'
@@ -479,7 +453,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of invoice numbers, an empty one if no invoice numbers match the filter
      */
-    Map getOrderNumbers(Map params) {
+    Map getOrderNumbers(GrailsParameterMap params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
         String queryString = 'select distinct(ord.orderNumber) from Order ord where ord.owner = :owner'
@@ -502,7 +476,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of references, an empty one if no references match the filter
      */
-    Map getReferences(Map params) {
+    Map getReferences(GrailsParameterMap params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
         String queryString = 'select distinct(ci.reference) from CostItem ci where ci.owner = :owner and ci.reference != null'
@@ -521,7 +495,7 @@ class ControlledListService {
 
     /**
      * Moved from {@link de.laser.ctrl.OrganisationControllerService#getResultGenericsAndCheckAccess(de.laser.OrganisationController, grails.web.servlet.mvc.GrailsParameterMap)}
-     * Retrieves a list of organisations, too, just like {@link #getOrgs(java.util.Map)} does, but used is the context institution, the list is moreover not
+     * Retrieves a list of organisations, too, just like {@link #getOrgs(grails.web.servlet.mvc.GrailsParameterMap)} does, but used is the context institution, the list is moreover not
      * filterable and retrieved are the instititutions linked by combo to the given institution or providers and agencies
      * @return a map containing a sorted list of organisations, an empty one if no results are being obtained
      * @see Combo
@@ -530,7 +504,7 @@ class ControlledListService {
         Org org = contextService.getOrg()
         List<Map<String,Object>> result = []
         //to translate in hql: select org_name from org left join combo on org_id = combo_from_org_fk where combo_to_org_fk = 1 or org_sector_rv_fk = 82 order by org_sortname asc, org_name asc;
-        List orgs = Org.executeQuery("select new map(o.id as id,o.name as name,o.sortname as sortname) from Combo c right join c.fromOrg o where (o.status = null or o.status != :deleted) and (c.toOrg = :contextOrg or o.sector = :publisher) order by o.sortname asc, o.name asc",[contextOrg:org, deleted:RDStore.O_STATUS_DELETED, publisher: RDStore.O_SECTOR_PUBLISHER])
+        List orgs = Org.executeQuery("select new map(o.id as id,o.name as name,o.sortname as sortname) from Combo c right join c.fromOrg o where (o.status = null or o.status != :deleted) and (c.toOrg = :contextOrg) order by o.sortname asc, o.name asc",[contextOrg:org, deleted:RDStore.O_STATUS_DELETED])
         orgs.each { row ->
             if(row.id != org.id) {
                 String text = row.sortname ? "${row.sortname} (${row.name})" : "${row.name}"
@@ -546,7 +520,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of objects, sorted by their name; an empty list if no objects match the filter
      */
-    Map getElements(Map params) {
+    Map getElements(GrailsParameterMap params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -593,12 +567,6 @@ class ControlledListService {
                 dateString += ")"
                 */
                 result.results.add([name:"(${messageSource.getMessage('default.subscription.label',null, locale)}) ${subscription.dropdownNamingConvention()}",value:genericOIDService.getOID(it[0])])
-            }
-        }
-        if(params.package == "true") {
-            List allPackages = DocContext.executeQuery('select distinct dc.pkg,dc.pkg.name from DocContext dc where dc.owner.owner = :ctxOrg and dc.pkg != null and genfunc_filter_matcher(dc.pkg.name,:query) = true order by dc.pkg.name asc', [ctxOrg: org, query: params.query])
-            allPackages.each { DocContext it ->
-                result.results.add([name: "(${messageSource.getMessage('spotlight.package', null, locale)}) ${it[1]}", value: genericOIDService.getOID(it[0])])
             }
         }
         result
@@ -1422,6 +1390,11 @@ class ControlledListService {
         }
     }
 
+    /**
+     * Retrieves a list of platforms matching the given request parameters
+     * @param params the request parameter map
+     * @return a map containing platforms, an empty one if no platforms match the filter
+     */
     Map getPlatforms(GrailsParameterMap params) {
         Org institution = contextService.getOrg()
         String consortiumFilter = "", platNameFilter = ""
@@ -1436,17 +1409,104 @@ class ControlledListService {
         [results: Platform.executeQuery(qryString, qryParams)]
     }
 
+    /**
+     * Retrieves a list of provider organisations matching the given request parameters
+     * @param params the request parameter map
+     * @return a map containing providers, an empty one if no providers match the filter
+     */
     Map getProviders(GrailsParameterMap params) {
         Org institution = contextService.getOrg()
-        String consortiumFilter = "", orgNameFilter = ""
-        Map qryParams = [context: institution]
+        String consortiumFilter = "", providerNameFilter = ""
+        Set results = []
+        Map qryParams = [:]
         if(institution.isCustomerType_Consortium())
             consortiumFilter = "and sub.instanceOf is null"
         if (params.query) {
-            orgNameFilter = " and (genfunc_filter_matcher(org.name, :query) = true or genfunc_filter_matcher(org.sortname, :query) = true) "
+            providerNameFilter = " (genfunc_filter_matcher(p.name, :query) = true or genfunc_filter_matcher(p.sortname, :query) = true or exists (select alt from p.altnames alt where genfunc_filter_matcher(alt.name, :query) = true)) "
             qryParams.query = params.query
         }
-        String qryString = "select new map(concat('${Org.class.name}:',org.id) as value,org.name as name) from SubscriptionPackage sp join sp.pkg pkg join pkg.orgs oo join oo.org org where sp.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${orgNameFilter} group by org.id order by org.sortname asc"
-        [results: Org.executeQuery(qryString, qryParams)]
+        if(params.forFinanceView) {
+            List<Long> subIDs = Subscription.executeQuery('select s.id from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org: institution, orgRoles: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA]])
+            if(subIDs) {
+                qryParams.subscriptions = subIDs
+                if(providerNameFilter)
+                    providerNameFilter = "and ${providerNameFilter}"
+                String qryString = "select new map(concat('${Provider.class.name}:',p.id) as value, p.name as name) from ProviderRole pvr join pvr.provider p where pvr.subscription.id in (:subscriptions) ${providerNameFilter} order by p.sortname asc"
+                results.addAll(Provider.executeQuery(qryString, qryParams))
+            }
+        }
+        else if(params.tableView) {
+            String qryString = "select p from Provider p where ${providerNameFilter} order by p.sortname asc"
+            results.addAll(Provider.executeQuery(qryString, qryParams))
+        }
+        else {
+            if(params.displayWekbFlag) {
+                if(providerNameFilter)
+                    providerNameFilter = "where ${providerNameFilter}"
+                String qryString = "select new map(concat('${Provider.class.name}:',p.id) as value,case when p.gokbId != null then concat(p.name,' (we:kb)') else p.name end as name) from Provider p ${providerNameFilter} order by p.sortname asc"
+                results.addAll(Provider.executeQuery(qryString, qryParams))
+            }
+            else {
+                qryParams.context = institution
+                String qryString1 = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name,p.sortname as sortname) from SubscriptionPackage sp join sp.pkg pkg join pkg.provider p where sp.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) and ${providerNameFilter} group by p.id order by p.sortname asc",
+                qryString2 = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name,p.sortname as sortname) from Provider p where p.createdBy = :context and ${providerNameFilter} order by p.sortname"
+                results.addAll(Provider.executeQuery(qryString1, qryParams))
+                results.addAll(Provider.executeQuery(qryString2, qryParams))
+                results.sort { Map row -> row.sortname }
+            }
+        }
+        [results: results]
+    }
+
+    /**
+     * Retrieves a list of {@link Vendor}s matching the given request parameters
+     * @param params the request parameter map
+     * @return a map containing vendors, an empty one if no providers match the filter
+     */
+    Map getVendors(GrailsParameterMap params) {
+        Org institution = contextService.getOrg()
+        String consortiumFilter = "", vendorNameFilter = ""
+        Map qryParams = [:]
+        Set results = []
+        /*
+        we must consider child instances as well this time ...
+        if(institution.isCustomerType_Consortium())
+            consortiumFilter = "and sub.instanceOf is null"
+        */
+        if (params.query) {
+            vendorNameFilter = "(genfunc_filter_matcher(vendor.name, :query) = true or genfunc_filter_matcher(vendor.sortname, :query) = true) "
+            qryParams.query = params.query
+        }
+        if(params.forFinanceView) {
+            List<Long> subIDs = Subscription.executeQuery('select s.id from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org: institution, orgRoles: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA]])
+            if(subIDs) {
+                qryParams.subscriptions = subIDs
+                if(vendorNameFilter)
+                    vendorNameFilter = "and ${vendorNameFilter}"
+                String qryString = "select new map(concat('${Vendor.class.name}:',v.id) as value, v.name as name) from VendorRole vr join vr.vendor v where vr.subscription.id in (:subscriptions) ${vendorNameFilter} order by v.sortname asc"
+                results.addAll(Vendor.executeQuery(qryString, qryParams))
+            }
+        }
+        else if(params.tableView) {
+            String qryString = "select vendor from Vendor vendor where ${vendorNameFilter} order by vendor.sortname asc"
+            results.addAll(Vendor.executeQuery(qryString, qryParams))
+        }
+        else {
+            if(params.displayWekbFlag) {
+                if(vendorNameFilter)
+                    vendorNameFilter = "where ${vendorNameFilter}"
+                String qryString = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,case when vendor.gokbId != null then concat(vendor.name,' (we:kb)') else vendor.name end as name) from Vendor vendor ${vendorNameFilter} order by vendor.sortname asc"
+                results.addAll(Vendor.executeQuery(qryString, qryParams))
+            }
+            else {
+                qryParams.context = institution
+                String qryString1 = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,vendor.name as name,vendor.sortname as sortname) from PackageVendor pv join pv.vendor vendor, SubscriptionPackage sp join sp.pkg pkg where sp.pkg = pv.pkg and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) and ${vendorNameFilter} group by vendor.id order by vendor.sortname asc",
+                qryString2 = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,vendor.name as name,vendor.sortname as sortname) from Vendor vendor where vendor.createdBy = :context and ${vendorNameFilter} order by vendor.sortname asc"
+                results.addAll(Vendor.executeQuery(qryString1, qryParams))
+                results.addAll(Vendor.executeQuery(qryString2, qryParams))
+                results.sort { Map row -> row.sortname }
+            }
+        }
+        [results: results]
     }
 }

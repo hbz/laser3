@@ -14,10 +14,10 @@
 </ui:debugInfo>
 
 <ui:breadcrumbs>
-    <g:if test="${issueEntitlementInstance.subscription.subscriber}">
+    <g:if test="${issueEntitlementInstance.subscription.getSubscriberRespConsortia()}">
         <ui:crumb controller="myInstitution" action="currentSubscriptions"
-                     params="${[shortcode: issueEntitlementInstance.subscription.subscriber.shortcode]}"
-                     text="${issueEntitlementInstance.subscription.subscriber.name} - ${message(code: 'subscription.plural')}"/>
+                     params="${[shortcode: issueEntitlementInstance.subscription.getSubscriberRespConsortia().shortcode]}"
+                     text="${issueEntitlementInstance.subscription.getSubscriberRespConsortia().name} - ${message(code: 'subscription.plural')}"/>
     </g:if>
     <ui:crumb controller="subscription" action="index" id="${issueEntitlementInstance.subscription.id}"
                  text="${issueEntitlementInstance.subscription.name}"/>
@@ -105,10 +105,10 @@
 
 
 
-            <g:if test="${issueEntitlementInstance.tipp.titleType == 'Book'}">
+            <g:if test="${issueEntitlementInstance.tipp.titleType == 'monograph'}">
                 <div class="la-title">${message(code: 'tipp.print')} & ${message(code: 'tipp.online')}</div>
             </g:if>
-            <g:elseif test="${issueEntitlementInstance.tipp.titleType == "Journal"}">
+            <g:elseif test="${issueEntitlementInstance.tipp.titleType == "serial"}">
                 <div class="la-title">${message(code: 'tipp.coverage')}</div>
             </g:elseif>
             <g:else>
@@ -170,23 +170,10 @@
                                     <div class="ui card">
                                         <div class="content">
                                             <div class="la-card-column">
-                                                <g:message code="tipp.price.listPrice"/>:
-                                                <ui:xEditable field="listPrice"
-                                                                 owner="${priceItem}"/> <ui:xEditableRefData
-                                                        field="listCurrency" owner="${priceItem}" config="Currency"/>
-
-                                                <br/>
                                                 <g:message code="tipp.price.localPrice"/>: <ui:xEditable
                                                         field="localPrice"
                                                         owner="${priceItem}"/> <ui:xEditableRefData
                                                         field="localCurrency" owner="${priceItem}" config="Currency"/>
-                                                <%--<br/>
-                                                (<g:message code="tipp.price.startDate"/> <ui:xEditable field="startDate"
-                                                                                                          type="date"
-                                                                                                          owner="${priceItem}"/>-
-                                                <g:message code="tipp.price.endDate"/> <ui:xEditable field="endDate"
-                                                                                                       type="date"
-                                                                                                       owner="${priceItem}"/>)--%>
                                             </div>
                                         </div>
                                     </div>

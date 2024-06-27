@@ -17,6 +17,7 @@ import de.laser.system.SystemProfiler
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleHistoryEventParticipant
 import de.laser.traces.DeletedObject
+import de.laser.convenience.Marker
 import groovy.util.logging.Slf4j
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.client.RequestOptions
@@ -270,7 +271,7 @@ class DeletionService {
         List privateProps   = new ArrayList(sub.propertySet.findAll { it.type.tenant != null })
         List customProps    = new ArrayList(sub.propertySet.findAll { it.type.tenant == null })
 
-        List surveys        = sub.instanceOf ? SurveyOrg.findAllByOrgAndSurveyConfig(sub.getSubscriber(), SurveyConfig.findAllBySubscription(sub.instanceOf)) : SurveyConfig.findAllBySubscription(sub)
+        List surveys        = sub.instanceOf ? SurveyOrg.findAllByOrgAndSurveyConfig(sub.getSubscriberRespConsortia(), SurveyConfig.findAllBySubscription(sub.instanceOf)) : SurveyConfig.findAllBySubscription(sub)
 
         SurveyInfo surveyInfo
         // collecting informations
@@ -450,6 +451,7 @@ class DeletionService {
                         tmp.costItemStatus = RDStore.COST_ITEM_DELETED
                         tmp.sub = null
                         tmp.subPkg = null
+                        tmp.pkg = null
                         tmp.issueEntitlement = null
                         tmp.save()
                     }
@@ -538,8 +540,9 @@ class DeletionService {
         List orgSettings   = OrgSetting.findAllWhere(org: org)
         List userSettings  = UserSetting.findAllWhere(orgValue: org)
 
+        List altnames       = new ArrayList(org.altnames)
         List addresses      = new ArrayList(org.addresses)
-        List contacts       = new ArrayList(org.contacts)
+        //List contacts       = new ArrayList(org.contacts)
         List prsLinks       = new ArrayList(org.prsLinks)
         List persons        = Person.findAllByTenant(org)
         List affils         = User.findAllByFormalOrg(org)
@@ -565,6 +568,7 @@ class DeletionService {
         List pendingChanges     = PendingChange.findAllByOwner(org)
         List tasks              = Task.findAllByOrg(org)
         List tasksResp          = Task.findAllByResponsibleOrg(org)
+        List markers            = Marker.findAllByOrg(org)
         List systemProfilers    = SystemProfiler.findAllByContext(org)
 
         List facts              = Fact.findAllByInst(org)
@@ -591,8 +595,9 @@ class DeletionService {
         result.info << ['Einstellungen', orgSettings]
         result.info << ['Nutzereinstellungen', userSettings, FLAG_BLOCKER]
 
+        result.info << ['Alternativnamen', altnames]
         result.info << ['Adressen', addresses]
-        result.info << ['Kontaktdaten', contacts]
+        //result.info << ['Kontaktdaten', contacts]
         result.info << ['Personen', prsLinks, FLAG_BLOCKER]
         result.info << ['Personen (tenant)', persons, FLAG_BLOCKER]
         result.info << ['Nutzerzugehörigkeiten', affils, FLAG_BLOCKER]
@@ -619,6 +624,7 @@ class DeletionService {
         result.info << ['Anstehende Änderungen', pendingChanges, FLAG_BLOCKER]
         result.info << ['Aufgaben (owner)', tasks, FLAG_BLOCKER]
         result.info << ['Aufgaben (responsibility)', tasksResp, FLAG_BLOCKER]
+        result.info << ['Marker', markers]
         result.info << ['SystemProfilers', systemProfilers]
 
         result.info << ['Facts', facts, FLAG_BLOCKER]
@@ -687,20 +693,27 @@ class DeletionService {
                     }
                     orgSettings.each { tmp -> tmp.delete() }
 
+                    // alternative names
+                    org.altnames.clear()
+                    altnames.each{ tmp -> tmp.delete() }
+
                     // addresses
                     org.addresses.clear()
                     addresses.each{ tmp -> tmp.delete() }
 
                     // contacts
+                    /*
                     org.contacts.clear()
                     contacts.each{ tmp -> tmp.delete() }
+                    */
 
                     // private properties
-                    //org.privateProperties.clear()
-                    //privateProperties.each { tmp -> tmp.delete() }
+                    org.propertySet.clear()
+                    privateProperties.each { tmp ->
+                        tmp.delete()
+                    }
 
                     // custom properties
-                    org.propertySet.clear()
                     customProperties.each { tmp -> // incomprehensible fix // ??
                         tmp.owner = null
                         tmp.save()
@@ -886,7 +899,7 @@ class DeletionService {
                     OrgRole.findAllByPkg(pkg).each { tmp -> tmp.delete() }
                     //deleting (empty) subscription packages
                     SubscriptionPackage.findAllByPkg(pkg).each { tmp ->
-                        CostItem.executeUpdate("delete from CostItem ci where ci.subPkg = :sp",[sp:tmp])
+                        CostItem.executeUpdate("delete from CostItem ci where ci.pkg = :sp",[sp:tmp])
                         tmp.delete()
                     }
                     //deleting empty-running trackers
@@ -938,7 +951,7 @@ class DeletionService {
 
     /**
      * Use this method with VERY MUCH CARE!
-     * Deletes a {@link Collection} of {@link TitleInstancePackagePlatform} objects WITH their depending objects ({@link TIPPCoverage} and {@link Identifier})
+     * Deletes a {@link Collection} of {@link TitleInstancePackagePlatform} objects WITH their depending objects
      * @param tipp the {@link Collection} of {@link TitleInstancePackagePlatform} to delete
      * @return the success flag
      */
@@ -1016,7 +1029,7 @@ class DeletionService {
                 Order order = ci.order
                 Invoice invoice = ci.invoice
                 if(ci.sub && ci.isVisibleForSubscriber) {
-                    accessibleOrgs << ci.sub.getSubscriber().globalUID
+                    accessibleOrgs << ci.sub.getSubscriberRespConsortia().globalUID
                 }
                 ci.order = null
                 ci.invoice = null

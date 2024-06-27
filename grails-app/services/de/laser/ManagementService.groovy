@@ -254,7 +254,7 @@ class ManagementService {
                         subscriptions.each { Subscription subscription ->
                             if (subscription.isEditableBy(result.user)) {
                                 if (newLicense && subscriptionService.setOrgLicRole(subscription, newLicense, params.processOption == 'unlinkLicense'))
-                                    changeAccepted << "${subscription.name} (${messageSource.getMessage('subscription.linkInstance.label', null, locale)} ${subscription.getSubscriber().sortname})"
+                                    changeAccepted << "${subscription.name} (${messageSource.getMessage('subscription.linkInstance.label', null, locale)} ${subscription.getSubscriberRespConsortia().sortname})"
                             }
                         }
                         if (changeAccepted) {
@@ -291,7 +291,7 @@ class ManagementService {
                 result.validPackages = Package.executeQuery('select sp from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: result.subscription])
                 result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
                 if(result.filteredSubscriptions)
-                    result.childWithCostItems = CostItem.executeQuery('select ci.subPkg from CostItem ci where ci.subPkg.subscription in (:filteredSubChildren) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution, deleted:RDStore.COST_ITEM_DELETED, filteredSubChildren:result.filteredSubscriptions.collect { row -> row.sub }])
+                    result.childWithCostItems = CostItem.executeQuery('select ci.pkg from CostItem ci where ci.pkg is not null and ci.sub in (:filteredSubChildren) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution, deleted:RDStore.COST_ITEM_DELETED, filteredSubChildren:result.filteredSubscriptions.collect { row -> row.sub }])
             }
 
             if(controller instanceof MyInstitutionController) {
@@ -303,25 +303,7 @@ class ManagementService {
 
                 result.filteredSubscriptions = result.subscriptions
                 if(result.filteredSubscriptions)
-                    result.childWithCostItems = CostItem.executeQuery('select ci.subPkg from CostItem ci where ci.subPkg.subscription in (:filteredSubscriptions) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution, deleted:RDStore.COST_ITEM_DELETED, filteredSubscriptions:result.filteredSubscriptions])
-            }
-
-            [result:result,status:STATUS_OK]
-        }
-    }
-
-    Map<String,Object> permanentTitles(def controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
-        if(!result)
-            [result:null,status:STATUS_ERROR]
-        else {
-            if(controller instanceof SubscriptionController) {
-                result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
-              }
-
-            if(controller instanceof MyInstitutionController) {
-                result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
-                result.filteredSubscriptions = result.subscriptions
+                    result.childWithCostItems = CostItem.executeQuery('select ci.pkg from CostItem ci where ci.pkg is not null and ci.sub in (:filteredSubscriptions) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution, deleted:RDStore.COST_ITEM_DELETED, filteredSubscriptions:result.filteredSubscriptions])
             }
 
             [result:result,status:STATUS_OK]
@@ -397,12 +379,12 @@ class ManagementService {
                             }
                             else if(params.processOption =~ /^unlink/) {
                                 if(sp) {
-                                    if (!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp and ci.costItemStatus != :deleted and ci.owner = :context', [sp: sp, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
+                                    if (!CostItem.executeQuery('select ci from CostItem ci where ci.pkg = :pkg and ci.sub = :sub and ci.costItemStatus != :deleted and ci.owner = :context', [sub: selectedSub, pkg: pkg, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
                                         packageService.unlinkFromSubscription(pkg, selectedSub, result.institution, params.processOption == 'unlinkwithIE')
                                     }
                                     /*
                                     else {
-                                        Object[] args = [pkg.name, selectedSub.getSubscriber().name]
+                                        Object[] args = [pkg.name, selectedSub.getSubscriberRespConsortia().name]
                                         result.error << messageSource.getMessage('subscriptionsManagement.unlinkInfo.costsExisting', args, locale)
                                     }
                                     */
@@ -470,10 +452,10 @@ class ManagementService {
                                 if (params.processOption == 'unlinkwithIE' || params.processOption == 'unlinkwithoutIE') {
                                     if (subscription.packages && (pkg_to_link.id in subscription.packages.pkg.id)) {
                                         SubscriptionPackage subPkg = SubscriptionPackage.findBySubscriptionAndPkg(subscription, pkg_to_link)
-                                        if (!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp and ci.costItemStatus != :deleted and ci.owner = :context', [sp: subPkg, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
+                                        if (!CostItem.executeQuery('select ci from CostItem ci where ci.pkg = :pkg and ci.sub = :sub and ci.costItemStatus != :deleted and ci.owner = :context', [sub: subPkg.sub, pkg: subPkg.pkg, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
                                             packageService.unlinkFromSubscription(pkg_to_link, subscription, result.institution, params.processOption == 'unlinkwithIE')
                                         } else {
-                                            Object[] args = [subPkg.pkg.name, subPkg.subscription.getSubscriber().name]
+                                            Object[] args = [subPkg.pkg.name, subPkg.subscription.getSubscriberRespConsortia().name]
                                             result.error << messageSource.getMessage('subscriptionsManagement.unlinkInfo.costsExisting', args, locale)
                                         }
                                     }
@@ -505,6 +487,30 @@ class ManagementService {
     }
 
     /**
+     * Loads the {@link PermanentTitle} records for the given subscription or the entire institution
+     * @param controller the controller instance
+     * @param params the request parameter map
+     * @return a {@link Map} containing the view data
+     */
+    Map<String,Object> permanentTitles(def controller, GrailsParameterMap params) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else {
+            if(controller instanceof SubscriptionController) {
+                result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
+            }
+
+            if(controller instanceof MyInstitutionController) {
+                result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
+                result.filteredSubscriptions = result.subscriptions
+            }
+
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    /**
      * Loads the public and private properties defined for each subscription member
      * @param controller the controller instance
      * @param params the request parameter map
@@ -522,17 +528,22 @@ class ManagementService {
             params.remove('propertiesFilterPropDef')
 
             if(controller instanceof SubscriptionController) {
-                Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent and oo.roleType = :roleType order by oo.org.sortname asc", [parent: result.subscription, roleType: RDStore.OR_SUBSCRIBER_CONS])
+
+                Set<Subscription> validSubChildren = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)?.sub
+                //Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent and oo.roleType = :roleType order by oo.org.sortname asc", [parent: result.subscription, roleType: RDStore.OR_SUBSCRIBER_CONS])
                 if (validSubChildren) {
-                    Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :ctx and sp.instanceOf = null", [subscriptionSet: validSubChildren, ctx: result.institution])
+                    String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+                    String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :ctx and sp.instanceOf = null order by sp.type.${localizedName}"
+                    Set<PropertyDefinition> propList = new TreeSet<PropertyDefinition>()
+                    propList.addAll(PropertyDefinition.executeQuery(query, [subscriptionSet: validSubChildren, ctx: result.institution]))
                     propList.addAll(result.subscription.propertySet.type)
                     result.propList = propList
                     result.filteredSubscriptions = validSubChildren
                     List<Subscription> childSubs = result.subscription.getNonDeletedDerivedSubscriptions()
                     if (childSubs) {
-                        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
-                        String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
-                        Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet: childSubs, context: result.institution])
+                        String childQuery = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
+                        Set<PropertyDefinition> memberProperties = new TreeSet<PropertyDefinition>()
+                        memberProperties.addAll(PropertyDefinition.executeQuery(childQuery, [subscriptionSet: childSubs, context: result.institution]))
                         result.memberProperties = memberProperties
                     }
                 }
@@ -572,7 +583,7 @@ class ManagementService {
                 int deletedProperties = 0
                 Object[] args
                     if(params.processOption == 'changeCreateProperty') {
-                        if(params.filterPropValue) {
+                        //if(params.filterPropValue) {
                             Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
                             subscriptions.each { Subscription subscription ->
                                 if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.isCustomerType_Inst_Pro())) {
@@ -611,9 +622,10 @@ class ManagementService {
 
                             args = [newProperties, changeProperties]
                             flash.message = messageSource.getMessage('subscriptionsManagement.successful.property', args, locale)
-                        }else{
+                        //}
+                        /*else{
                                 flash.error = messageSource.getMessage('subscriptionsManagement.noPropertyValue', null, locale)
-                        }
+                        }*/
 
                     }else if(params.processOption == 'deleteAllProperties' || params.processOption == 'deleteProperty'){
                         Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
@@ -698,9 +710,6 @@ class ManagementService {
             if(params.tab == 'providerAgency') {
                 result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_SUB_EDITOR
                 result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.institution)
-                if(result.subscription) {
-                    result.visibleOrgRelations = OrgRole.executeQuery("select oo from OrgRole oo join oo.org org where oo.sub = :parent and oo.roleType in (:roleTypes) order by org.name asc", [parent: result.subscription, roleTypes: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
-                }
             }
             [result:result,status:STATUS_OK]
         }

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.Org" %>
+<%@ page import="de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.Org" %>
 <laser:htmlStart text="${surveyInfo.type.getI10n('value')}" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -7,12 +7,12 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
-    <ui:exportDropdown>
+   %{-- <ui:exportDropdown>
         <ui:exportDropdownItem>
             <g:link class="item" controller="myInstitution" action="surveyInfos"
                     params="${params + [exportXLSX: true, surveyConfigID: surveyConfig.id]}">${message(code: 'survey.exportSurvey')}</g:link>
         </ui:exportDropdownItem>
-    </ui:exportDropdown>
+    </ui:exportDropdown>--}%
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon text="${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}" type="Survey">
@@ -21,7 +21,7 @@
 
 <ui:messages data="${flash}"/>
 
-<br />
+<br/>
 <g:if test="${surveyConfig.isResultsSetFinishByOrg(institution)}">
     <div class="ui icon positive message">
         <i class="info icon"></i>
@@ -51,7 +51,8 @@
                 <tbody>
                 <tr>
                     <td>
-                        <p><strong><g:link controller="organisation" action="show" id="${choosenOrg.id}">${choosenOrg.name} (${choosenOrg.sortname})</g:link></strong></p>
+                        <p><strong><g:link controller="organisation" action="show"
+                                           id="${choosenOrg.id}">${choosenOrg.name} (${choosenOrg.sortname})</g:link></strong></p>
 
                         ${choosenOrg.libraryType?.getI10n('value')}
                     </td>
@@ -61,7 +62,7 @@
                             <g:set var="editable" value="${false}" scope="request"/>
                             <g:each in="${choosenOrgCPAs}" var="gcp">
                                 <laser:render template="/templates/cpa/person_details"
-                                          model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
+                                              model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
                             </g:each>
                             <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
                         </g:if>
@@ -87,58 +88,13 @@
     </ui:greySegment>
 </g:if>
 
-<br />
+<br/>
 
-<div class="ui stackable grid">
-    <div class="sixteen wide column">
+<laser:render template="/templates/survey/participantView"/>
 
-        <div class="la-inline-lists">
-            <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
-
-                <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
-                                                                                  costItemSums        : costItemSums,
-                                                                                  subscription        : subscription,
-                                                                                  visibleOrgRelations : visibleOrgRelations,
-                                                                                  surveyResults       : surveyResults]"/>
-
-            </g:if>
-
-            <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
-
-                <laser:render template="/templates/survey/generalSurvey" model="[surveyConfig : surveyConfig,
-                                                                             surveyResults: surveyResults]"/>
-            </g:if>
-
-            <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
-
-                <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
-                                                                                  costItemSums        : costItemSums,
-                                                                                  subscription        : subscription,
-                                                                                  visibleOrgRelations : visibleOrgRelations,
-                                                                                  surveyResults       : surveyResults]"/>
-
-                <laser:render template="/templates/survey/entitlementSurvey"/>
-            </g:if>
-
-        </div>
-    </div>
-</div>
-
-<br />
+<br/>
 
 <g:if test="${editable}">
-    <g:if test="${!minimalInput}">
-        <span class="la-delay la-popup-tooltip" data-content="${message(code: 'surveyResult.finish.inputNecessary')}">
-            <g:link class="ui button green disabled"
-                controller="myInstitution"
-                action="surveyInfoFinish"
-                id="${surveyInfo.id}"
-                params="[surveyConfigID: surveyConfig.id]">
-                <g:message code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finish.info2'}"/>
-            </g:link>
-        </span>
-    </g:if>
-    <g:else>
         <g:link class="ui button green js-open-confirm-modal"
                 data-confirm-messageUrl="${g.createLink(controller: 'ajaxHtml', action: 'getSurveyFinishMessage', params: [id: surveyInfo.id, surveyConfigID: surveyConfig.id])}"
                 data-confirm-term-how="concludeBinding"
@@ -150,8 +106,7 @@
                 params="[surveyConfigID: surveyConfig.id]">
             <g:message code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finish.info2'}"/>
         </g:link>
-    </g:else>
 </g:if>
-<br />
-<br />
-<laser:htmlEnd />
+<br/>
+<br/>
+<laser:htmlEnd/>

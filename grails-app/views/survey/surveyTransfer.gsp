@@ -12,6 +12,7 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
+    <laser:render template="exports"/>
     <laser:render template="actions"/>
 </ui:controlButtons>
 
@@ -19,7 +20,7 @@
 
 <uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="${actionName}"/>
 
-<g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_TITLE_SELECTION]}">
+<g:if test="${surveyConfig.subscription}">
     <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
@@ -31,7 +32,7 @@
 
 <br />
 <h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
+    <g:if test="${surveyConfig.subscription}">
         <i class="icon clipboard outline la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
             ${surveyConfig.getConfigNameShort()}
@@ -47,10 +48,55 @@
 <g:if test="${(surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED, RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
     <ui:greySegment>
 
-        <laser:render template="evaluationParticipantsView" model="[showCheckbox: true,
-                                                                showTransferFields: true,
-                                                                processAction: 'processTransferParticipants',
-                                                                tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner']]"/>
+        <div class="ui top attached stackable tabular la-tab-with-js menu">
+
+            <g:link class="item ${params.tab == 'participantsViewAllFinish' ? 'active' : ''}"
+                    controller="survey" action="surveyEvaluation"
+                    params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllFinish']">
+                ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
+                <span class="ui floating blue circular label">${participantsFinishTotal}</span>
+            </g:link>
+
+            <g:link class="item ${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}"
+                    controller="survey" action="surveyEvaluation"
+                    params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllNotFinish']">
+                ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
+                <span class="ui floating blue circular label">${participantsNotFinishTotal}</span>
+            </g:link>
+
+            <g:link class="item ${params.tab == 'participantsView' ? 'active' : ''}"
+                    controller="survey" action="surveyEvaluation"
+                    params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsView']">
+                ${message(code: 'surveyEvaluation.participantsView')}
+                <span class="ui floating blue circular label">${participantsTotal}</span>
+            </g:link>
+
+        </div>
+        <div class="ui bottom attached tab segment active">
+
+            <g:if test="${surveyConfig.pickAndChoose}">
+                <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'finishedDate', 'surveyTitlesCount', 'surveyProperties', 'commentOnlyForOwner']}"/>
+            </g:if>
+            <g:elseif test="${surveyConfig.packageSurvey && surveyConfig.vendorSurvey}">
+                <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'surveyPackages', 'surveyCostItemsPackages', 'surveyVendors', 'commentOnlyForOwner']}"/>
+            </g:elseif>
+            <g:elseif test="${surveyConfig.packageSurvey}">
+                <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'surveyPackages', 'surveyCostItemsPackages', 'commentOnlyForOwner']}"/>
+            </g:elseif>
+            <g:elseif test="${surveyConfig.vendorSurvey}">
+                <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'surveyVendors', 'commentOnlyForOwner']}"/>
+            </g:elseif>
+            <g:else>
+                <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'commentOnlyForOwner']}"/>
+            </g:else>
+
+
+            <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess: true,
+                                                                        showCheckboxForParticipantsHasNoAccess: true,
+                                                                        showTransferFields: true,
+                                                                        processAction: 'processTransferParticipants',
+                                                                        tmplConfigShow   : tmplConfigShowList]"/>
+        </div>
 
     </ui:greySegment>
 </g:if>

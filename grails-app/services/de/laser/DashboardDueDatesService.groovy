@@ -43,9 +43,6 @@ class DashboardDueDatesService {
     String replyTo
     boolean update_running = false
 
-    // TODO: refactoring; change event DBDD_SERVICE_START_2
-
-
     /**
      * Initialises the service with configuration parameters
      */
@@ -79,7 +76,7 @@ class DashboardDueDatesService {
             try {
                 update_running = true;
                 log.debug("Start DashboardDueDatesService takeCareOfDueDates")
-                SystemEvent.createEvent('DBDD_SERVICE_START_1')
+//                SystemEvent.createEvent('DBDD_SERVICE_START_1')
 
                 if (isUpdateDashboardTableInDatabase) {
                     flash = _updateDashboardTableInDatabase(flash)
@@ -88,7 +85,7 @@ class DashboardDueDatesService {
                     flash = _sendEmailsForDueDatesOfAllUsers(flash)
                 }
                 log.debug("Finished DashboardDueDatesService takeCareOfDueDates")
-                SystemEvent.createEvent('DBDD_SERVICE_COMPLETE_1')
+//                SystemEvent.createEvent('DBDD_SERVICE_COMPLETE_1')
 
             } catch (Throwable t) {
                 String tMsg = t.message
@@ -146,7 +143,7 @@ class DashboardDueDatesService {
             }
         }
 
-        sysEvent.changeTo('DBDD_SERVICE_START_2', [count: dashboarEntriesToInsert.size()])
+        sysEvent.changeTo('DBDD_SERVICE_COMPLETE_2', [count: dashboarEntriesToInsert.size()])
 
         DashboardDueDate.withTransaction { session ->
             try {
@@ -177,8 +174,9 @@ class DashboardDueDatesService {
      * @return the message collector container with the processing output
      */
     private _sendEmailsForDueDatesOfAllUsers(def flash) {
-        SystemEvent.createEvent('DBDD_SERVICE_START_3')
+        SystemEvent sysEvent = SystemEvent.createEvent('DBDD_SERVICE_START_3')
 
+        int userCount = 0
         try {
             List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
             users.each { user ->
@@ -187,6 +185,7 @@ class DashboardDueDatesService {
                     if (user.formalOrg) {
                         List<DashboardDueDate> dashboardEntries = getDashboardDueDates(user, user.formalOrg, false, false)
                         _sendEmail(user, user.formalOrg, dashboardEntries)
+                        userCount++
                     }
                 }
             }
@@ -196,6 +195,8 @@ class DashboardDueDatesService {
             e.printStackTrace()
             flash.error += messageSource.getMessage('menu.admin.sendEmailsForDueDates.error', null, locale)
         }
+        sysEvent.changeTo('DBDD_SERVICE_COMPLETE_3', [count: userCount])
+
         flash
     }
 
@@ -357,6 +358,14 @@ class DashboardDueDatesService {
         liste
     }
 
+    /**
+     * Counts the {@link DashboardDueDate}s the responsible user has set, matching the given hidden and done flag
+     * @param user the user whose due dates should be counted
+     * @param org the institution responsible for the due date
+     * @param isHidden are the due dates to be counted hidden?
+     * @param isDone are the due dates to be counted completed?
+     * @return the count of the due dates matching the flags
+     */
     int countDashboardDueDates(User user, Org org, isHidden, isDone){
         return DashboardDueDate.executeQuery(
                 """select count(*) from DashboardDueDate as das join das.dueDateObject ddo 

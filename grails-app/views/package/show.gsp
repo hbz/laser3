@@ -1,6 +1,13 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.config.ConfigMapper; de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat; de.laser.PersonRole; de.laser.Contact" %>
 <laser:htmlStart message="package.details" serviceInjection="true"/>
 
+<ui:debugInfo>
+    <div style="padding: 1em 0;">
+        <p>packageInstance.dateCreated: ${packageInstance.dateCreated}</p>
+        <p>packageInstance.lastUpdated: ${packageInstance.lastUpdated}</p>
+    </div>
+</ui:debugInfo>
+
 <g:set var="locale" value="${RequestContextUtils.getLocale(request)}"/>
 
 <ui:modeSwitch controller="package" action="show" params="${params}"/>
@@ -28,8 +35,6 @@ making obsolete package/actions
     <g:else>${packageInstance.name}</g:else>
     <laser:render template="/templates/iconObjectIsMine" model="${[isMyPkg: isMyPkg]}"/>
 </ui:h1HeaderWithIcon>
-
-%{--<ui:cbItemMarkerAction package="${packageInstance}"/>--}%
 
 <laser:render template="nav"/>
 
@@ -202,7 +207,7 @@ making obsolete package/actions
                                     <div class="ui fluid segment title">
                                         <ui:wekbIconLink type="source" gokbId="${packageInstanceRecord.source.uuid}"/>
                                         ${packageInstanceRecord.source.name}
-                                        <div class="ui icon blue button la-modern-button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
+                                        <div class="ui icon blue button la-modern-button ${buttonColor} la-popup-tooltip la-delay"
                                              data-content="${message(code: 'platform.details')}">
                                             <i class="ui angle double down icon"></i>
                                         </div>
@@ -258,7 +263,7 @@ making obsolete package/actions
                                                     <ui:wekbIconLink type="platform" gokbId="${platformInstanceRecord.uuid}"/>
                                                 </div>
                                                 <div class="right aligned column">
-                                                    <div class="ui icon blue button la-modern-button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
+                                                    <div class="ui icon blue button la-modern-button ${buttonColor} la-popup-tooltip la-delay"
                                                          data-content="${message(code: 'platform.details')}">
                                                         <i class="ui angle double down icon"></i>
                                                     </div>
@@ -274,8 +279,12 @@ making obsolete package/actions
                                         <dl>
                                             <dt>${message(code: 'platform.provider')}</dt>
                                             <dd>
-                                                <g:if test="${platformInstanceRecord.org}">
-                                                    <g:link controller="organisation" action="show" id="${platformInstanceRecord.org.id}">${platformInstanceRecord.org.name}</g:link>
+                                                <g:if test="${platformInstanceRecord.provider}">
+                                                    <g:link controller="provider" action="show" id="${platformInstanceRecord.provider.id}">${platformInstanceRecord.provider.name}</g:link>
+                                                    <g:if test="${platformInstanceRecord.provider.homepage}">
+                                                        <ui:linkWithIcon href="${platformInstanceRecord.provider.homepage.startsWith('http') ? platformInstanceRecord.provider.homepage : 'http://' + platformInstanceRecord.provider.homepage}"/>
+                                                    </g:if>
+                                                    <ui:wekbIconLink type="provider" gokbId="${platformInstanceRecord.provider.gokbId}"/>
                                                 </g:if>
                                             </dd>
                                         </dl>
@@ -492,12 +501,22 @@ making obsolete package/actions
                 <div id="container-provider">
                     <div class="ui card">
                         <div class="content">
-                            <h2 class="ui header">${message(code: 'default.ProviderAgency.label')}</h2>
-                            <laser:render template="/templates/links/orgLinksAsList"
-                                          model="${[roleLinks    : visibleOrgs,
+                            <h2 class="ui header">${message(code: 'provider.label')}</h2>
+                            <laser:render template="/templates/links/providerLinksAsList"
+                                          model="${[providerRoles: [packageInstance],
                                                     roleObject   : packageInstance,
                                                     roleRespValue: 'Specific package editor',
-                                                    editmode     : editable,
+                                                    showPersons  : true
+                                          ]}"/>
+                        </div>
+                    </div>
+                    <div class="ui card">
+                        <div class="content">
+                            <h2 class="ui header">${message(code: 'vendor.label')}</h2>
+                            <laser:render template="/templates/links/vendorLinksAsList"
+                                          model="${[vendorRoles: packageInstance.vendors,
+                                                    roleObject   : packageInstance,
+                                                    roleRespValue: 'Specific package editor',
                                                     showPersons  : true
                                           ]}"/>
                         </div>
@@ -566,10 +585,6 @@ making obsolete package/actions
                 </div>
             </div>
         </aside>
-
-    %{-- <aside class="four wide column la-sidekick">
-         <laser:render template="/templates/sidebar/aside" model="${[ownobj:packageInstance, owntp:'pkg']}" />
-     </aside><!-- .four -->--}%
 
     </div><!-- .grid -->
 </g:if>

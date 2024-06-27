@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.helper.Params
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 
@@ -83,15 +83,10 @@ class LicenseService {
                 )
             )))"""
 
-            if (params.status) {
-                if(params.status instanceof List){
-                    base_qry += " and l.status.id in (:status) "
-                    qry_params.put('status', params.status.collect { Long.valueOf(it) })
-                }else {
-                    base_qry += " and l.status.id = :status "
-                    qry_params.put('status', (params.status as Long))
-                }
-            }
+        if (params.status) {
+            base_qry += " and l.status.id in (:status) "
+            qry_params.put('status', Params.getLongList(params, 'status'))
+        }
 
         return [base_qry, qry_params]
     }
@@ -108,13 +103,8 @@ class LicenseService {
             )"""
 
         if (params.status) {
-            if(params.status instanceof List){
-                base_qry += " and l.status.id in (:status) "
-                qry_params.put('status', params.status.collect { Long.valueOf(it) })
-            }else {
-                base_qry += " and l.status.id = :status "
-                qry_params.put('status', (params.status as Long))
-            }
+            base_qry += " and l.status.id in (:status) "
+            qry_params.put('status', Params.getLongList(params, 'status'))
         }
 
         return [ base_qry, qry_params ]
@@ -132,13 +122,8 @@ class LicenseService {
             )"""
 
         if (params.status) {
-            if(params.status instanceof List){
-                base_qry += " and l.status.id in (:status) "
-                qry_params.put('status', params.status.collect { Long.valueOf(it) })
-            }else {
-                base_qry += " and l.status.id = :status "
-                qry_params.put('status', (params.status as Long))
-            }
+            base_qry += " and l.status.id in (:status) "
+            qry_params.put('status', Params.getLongList(params, 'status'))
         }
 
         return [ base_qry, qry_params ]
@@ -157,6 +142,28 @@ class LicenseService {
             }
         }
         visibleOrgRelations.sort { it.org?.name?.toLowerCase() }
+    }
+
+    /**
+     * Retrieves all visible vendor links for the given license
+     * @param license the license to retrieve the relations from
+     * @return a sorted set of visible relations
+     */
+    SortedSet<ProviderRole> getVisibleProviders(License license) {
+        SortedSet<ProviderRole> visibleProviderRelations = new TreeSet<ProviderRole>()
+        visibleProviderRelations.addAll(ProviderRole.executeQuery('select pr from ProviderRole pr join pr.provider p where pr.license = :license order by p.sortname', [license: license]))
+        visibleProviderRelations
+    }
+
+    /**
+     * Retrieves all visible vendor links for the given license
+     * @param license the license to retrieve the relations from
+     * @return a sorted set of visible relations
+     */
+    SortedSet<VendorRole> getVisibleVendors(License license) {
+        SortedSet<VendorRole> visibleVendorRelations = new TreeSet<VendorRole>()
+        visibleVendorRelations.addAll(VendorRole.executeQuery('select vr from VendorRole vr join vr.vendor v where vr.license = :license order by v.sortname', [license: license]))
+        visibleVendorRelations
     }
 
 }

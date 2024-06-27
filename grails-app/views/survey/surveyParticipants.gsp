@@ -11,6 +11,7 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
+    <laser:render template="exports"/>
     <laser:render template="actions"/>
 </ui:controlButtons>
 
@@ -18,7 +19,7 @@
 
 <uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="${actionName}"/>
 
-<g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_TITLE_SELECTION]}">
+<g:if test="${surveyConfig.subscription}">
     <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
@@ -31,7 +32,7 @@
 <br />
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
+    <g:if test="${surveyConfig.subscription}">
         <i class="icon clipboard outline la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
             ${surveyConfig.getConfigNameShort()}
@@ -50,7 +51,7 @@
         <div class="sixteen wide stretched column">
             <div class="ui top attached stackable tabular la-tab-with-js menu">
 
-                <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
+                <g:if test="${surveyConfig.subscription}">
                     <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
                             controller="survey" action="surveyParticipants"
                             id="${surveyConfig.surveyInfo.id}"

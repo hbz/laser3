@@ -1,10 +1,21 @@
 <!-- _copyEmailAddresses.gsp -->
-<%@ page import="de.laser.PersonRole; de.laser.Contact; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.PersonRole; de.laser.Contact; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Provider; de.laser.Vendor" %>
 <laser:serviceInjection />
 
 <g:set var="modalID" value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
-
-<ui:modal id="${modalID}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true" contentClass="scrolling">
+<%
+    String instanceLabel
+    if(instanceType == Vendor.class.name) {
+        instanceLabel = message(code: 'vendor.plural')
+    }
+    else if(instanceType == Provider.class.name) {
+        instanceLabel = message(code: 'provider.plural.accusative')
+    }
+    else {
+        instanceLabel = message(code: 'org.institution.plural')
+    }
+%>
+<ui:modal id="${modalID}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0, instanceLabel])}" hideSubmitButton="true" contentClass="scrolling">
     <g:set var="rdvAllPersonFunctions" value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}" scope="request"/>
     <g:set var="rdvAllPersonPositions" value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}" scope="request"/>
     <div class="ui form la-filter segment la-clear-before">
@@ -48,10 +59,10 @@
         <%--<div class="field">
             <g:textArea id="emailAddressesTextArea" name="emailAddresses" readonly="false" rows="5" cols="1" class="myTargetsNeu" style="width: 100%;" />
         </div>--%>
-        <button class="ui icon button right floated" onclick="JSPC.app.copyToClipboard()">
+        <button class="ui icon button right floated test" onclick="JSPC.app.copyToClipboard()">
             ${message(code:'menu.institutions.copy_emailaddresses_to_clipboard')}
         </button>
-        <button class="ui icon button right floated" onclick="JSPC.app.copyToEmailProgram()">
+        <button class="ui icon button right floated test" onclick="JSPC.app.copyToEmailProgram()">
             ${message(code:'menu.institutions.copy_emailaddresses_to_emailclient')}
         </button>
     </div>
@@ -75,12 +86,17 @@
     </table>
 
     <laser:script file="${this.getGroovyPageFileName()}">
-        JSPC.app.jsonOrgIdListDefault = <%=groovy.json.JsonOutput.toJson((Set) orgList.collect { it.id })%>;
+
+
+
+
+     JSPC.app.jsonOrgIdListDefault = <%=groovy.json.JsonOutput.toJson((Set) orgList.collect { it.id })%>;
         JSPC.app.jsonOrgIdList = null
 
         JSPC.app.copyToEmailProgram = function () {
             let emailAdresses = $(".address:visible").map((i, el) => el.innerText.trim()).get().join('; ');
             window.location.href = "mailto:" + emailAdresses;
+            $('#copyEmailaddresses_ajaxModal') ? $('#copyEmailaddresses_ajaxModal').modal('hide') : false;
         }
 
         JSPC.app.copyToClipboard = function () {
@@ -90,6 +106,7 @@
             textArea.select();
             document.execCommand("copy");
             textArea.remove();
+            $('#copyEmailaddresses_ajaxModal') ? $('#copyEmailaddresses_ajaxModal').modal('hide') : false;
         }
 
         JSPC.app.updateTextArea = function () {
@@ -97,15 +114,25 @@
             var isPublic = $("#publicContacts").is(":checked");
             $(".address").text("");
             var selectedRoleTypIds = $("#prsFunctionMultiSelect").val().concat( $("#prsPositionMultiSelect").val() );
-
+            <g:if test="${instanceType == Vendor.class.name}">
+                let instanceIdList = '&vendorIdList=' + JSPC.app.jsonOrgIdList;
+            </g:if>
+            <g:elseif test="${instanceType == Provider.class.name}">
+                let instanceIdList = '&providerIdList=' + JSPC.app.jsonOrgIdList;
+            </g:elseif>
+            <g:else>
+                let instanceIdList = '&orgIdList=' + JSPC.app.jsonOrgIdList;
+            </g:else>
             $.ajax({
                 url: '<g:createLink controller="ajaxJson" action="getEmailAddresses"/>'
-                + '?isPrivate=' + isPrivate + '&isPublic=' + isPublic + '&selectedRoleTypIds=' + selectedRoleTypIds + '&orgIdList=' + JSPC.app.jsonOrgIdList,
+                + '?isPrivate=' + isPrivate + '&isPublic=' + isPublic + '&selectedRoleTypIds=' + selectedRoleTypIds + instanceIdList,
                 success: function (data) {
                     //$("#emailAddressesTextArea").val(data.join('; '));
                     $.each(data, function (i, e) {
                         $("#"+i+" span.address").text(e.join('; '));
+                        $("#"+i).show();
                     });
+                    $("span.address:empty").parents("tr").hide();
                 }
             });
         }

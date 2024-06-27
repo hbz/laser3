@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.auth.Role
+import de.laser.helper.Icons
 import de.laser.storage.RDStore
 
 class IconTagLib {
@@ -38,10 +39,11 @@ class IconTagLib {
                 icon = 'bordered la-object-database'
                 break
             case 'ebook':
+            case 'monograph':
                 icon = 'bordered la-object-ebook'
                 break
             case 'file':
-                icon = 'bordered inverted blue file alternate la-object-extended'
+                icon = Icons.DOCUMENT + ' bordered inverted blue la-object-extended'
                 break
             case 'finance':
                 icon = 'bordered inverted teal euro sign la-object-extended'
@@ -50,34 +52,38 @@ class IconTagLib {
                 icon = 'question circle bordered inverted grey la-object-extended'
                 break
             case 'journal':
+            case 'serial':
                 icon = 'bordered la-object-journal'
                 break
             case 'gasco':
                 icon = 'bordered inverted grey layer group la-object-extended'
                 break
             case 'marker':
-                icon = 'bordered inverted purple bookmark la-object-extended'
+                icon = Icons.MARKER + ' bordered inverted purple la-object-extended'
+                break
+            case 'package':
+                icon = 'bordered la-package la-object-extended'
                 break
             case 'search':
                 icon = 'search'
                 break
             case 'reporting':
-                icon = 'bordered inverted teal chartline icon la-object-extended'
+                icon = Icons.REPORTING + ' bordered inverted teal la-object-extended'
                 break
             case 'subscription':
-                icon = 'bordered inverted orange clipboard la-object-extended'
+                icon = Icons.SUBSCRIPTION + ' bordered inverted orange la-object-extended'
                 break
             case 'survey':
-                icon = 'bordered inverted pink chart pie la-object-extended'
+                icon = Icons.SURVEY + ' bordered inverted pink la-object-extended'
                 break
             case 'task':
-                icon = 'bordered inverted green calendar check outline la-object-extended'
+                icon = Icons.TASK + ' bordered inverted green la-object-extended'
                 break
             case 'user':
                 icon = 'user bordered inverted grey la-object-extended'
                 break
             case 'workflow':
-                icon = 'bordered inverted brown tasks la-object-extended'
+                icon = Icons.WORKFLOW + ' bordered inverted brown la-object-extended'
                 break
             case 'yoda':
                 icon = 'la-object star of life'
@@ -167,23 +173,26 @@ class IconTagLib {
         String dc = message(code: 'default.title.label')
         String icon = 'question'
 
-        switch (attrs.type) {
-            case [ 'Journal' ]:
-                dc = message(code: 'spotlight.journaltitle')
-                icon = 'newspaper outline'
-                break
-            case [ 'Database' ]:
-                dc = message(code: 'spotlight.databasetitle')
-                icon = 'database'
-                break
-            case [ 'Book', 'EBook' ]:
-                dc = message(code: 'spotlight.ebooktitle')
-                icon = 'tablet alternate'
-                break
-            case 'Other':
-                dc = message(code: 'spotlight.othertitle')
-                icon = 'film'
-                break
+        if (attrs.type) {
+
+            switch (attrs.type.toLowerCase()) {
+                case ['journal', 'serial']:
+                    dc = attrs.type
+                    icon = 'newspaper outline'
+                    break
+                case ['database']:
+                    dc = attrs.type
+                    icon = 'database'
+                    break
+                case ['book', 'ebook', 'monograph']:
+                    dc = attrs.type
+                    icon = 'tablet alternate'
+                    break
+                case 'other':
+                    dc = attrs.type
+                    icon = 'film'
+                    break
+            }
         }
         if (hideSurroundingMarkup) {
             out << '<div class="la-inline-flexbox la-popup-tooltip la-delay"'
@@ -283,6 +292,30 @@ class IconTagLib {
         }
     }
 
+    def documentShareConfigIcon = { attrs, body ->
+        if (attrs.docctx) {
+            DocContext docctx = attrs.docctx as DocContext
+
+            if (docctx.shareConf && !(docctx.sharedFrom && docctx.isShared)) {
+                String markup = ''
+
+                switch(docctx.shareConf) {
+                    case RDStore.SHARE_CONF_UPLOADER_ORG:
+                        markup = '<span class="ui icon la-popup-tooltip la-delay" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_UPLOADER_ORG.getI10n('value') + '" style="margin-left:1em"> <i class="ui icon eye slash blue"></i></span>'
+                        break
+                    case RDStore.SHARE_CONF_UPLOADER_AND_TARGET:
+                        markup = '<span class="ui icon la-popup-tooltip la-delay" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_UPLOADER_AND_TARGET.getI10n('value') + '" style="margin-left:1em"> <i class="ui icon eye slash red"></i></span>'
+                        break
+                    case RDStore.SHARE_CONF_ALL:
+                        markup = '<span class="ui icon la-popup-tooltip la-delay" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_ALL.getI10n('value') + '" style="margin-left:1em"> <i class="ui icon eye blue"></i></span>'
+                        break
+                }
+
+                out << markup
+            }
+        }
+    }
+
     def multiYearIcon = { attrs, body ->
         String tt = (attrs.isConsortial && attrs.isConsortial == 'true') ? message(code: 'subscription.isMultiYear.consortial.label') : message(code: 'subscription.isMultiYear.label')
 //        String color = attrs.color ? ' ' + attrs.color : ''
@@ -294,13 +327,11 @@ class IconTagLib {
         out << '</span>'
     }
 
-    // <ui:myIcon type="wekbchanges" color="optional" />
-
     def markerIcon = { attrs, body ->
         String tooltip = attrs.type ? message(code: 'marker.' + attrs.type ) : message(code: 'marker.label')
 
         out << '<span class="la-popup-tooltip la-delay" data-content="' + tooltip + '">'
-        out << '<i class="icon ' + (attrs.color ? attrs.color + ' ' : '') + 'bookmark"></i>'
+        out << '<i class="' + Icons.MARKER + ' icon ' + (attrs.color ? attrs.color + ' ' : '') + '"></i>'
         out << '</span>'
     }
 
@@ -325,5 +356,20 @@ class IconTagLib {
         out << ' data-position="bottom center" data-content="' + tt +'">'
         out << '<i class="chart bar icon' + color + '"></i>'
         out << '</span>'
+    }
+
+    def booleanIcon = { attrs, body ->
+        String icon = 'question circle yellow'
+
+        if (attrs.value === true) {
+            icon = 'check circle green'
+        }
+        else if(attrs.value === false) {
+            icon = 'minus circle red'
+        }
+        else if (attrs.value === null) {
+            'minus circle orange'
+        }
+        out << '<i class="icon ' + icon + '"></i>'
     }
 }

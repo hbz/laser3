@@ -7,7 +7,8 @@
         <table class="ui compact la-js-responsive-table la-table-inCard table">
             <thead>
                 <tr>
-                    <th class="la-js-dont-hide-this-card">Merkmalsgruppe</th>
+                    <th>#</th>
+                    <th>Merkmalsgruppe</th>
                     <th></th>
                     <th>Voreinstellung</th>
                     <th>Für dieses Objekt überschreiben</th>
@@ -18,8 +19,9 @@
                 </tr>
             </thead>
             <tbody>
-                <g:each in="${availPropDefGroups}" var="propDefGroup">
+                <g:each in="${availPropDefGroups}" var="propDefGroup" status="defaultOrder">
                     <tr>
+                        <td>${propDefGroup.order ?: defaultOrder}</td>
                         <td>
                             <strong>${propDefGroup.name}</strong>
 
@@ -60,7 +62,7 @@
                                 </g:if>
                             </td>
                         </g:if>
-                        <td class="x la-js-editmode-container">
+                        <td class="x">
                             <g:if test="${editable}">
                                 <g:if test="${! binding}">
                                     <g:if test="${propDefGroup.isVisible}">
@@ -115,7 +117,7 @@
             </tbody>
         </table>
 
-        <ui:msg class="info" text="Damit die Einstellungen wirksam werden, muss die Seite ggfs. neu geladen werden." noClose="true"/>
+        <ui:msg class="info" text="Damit die Einstellungen wirksam werden, muss die Seite ggf. neu geladen werden." noClose="true"/>
     </div><!-- #propDefGroupBindingConfig -->
 
 <laser:script file="${this.getGroovyPageFileName()}">

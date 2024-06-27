@@ -38,7 +38,7 @@ class ProfileController {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
         result.editable = true
-        result.availableOrgs  = Org.executeQuery('from Org o where o.sector = :sector order by o.sortname', [sector: RDStore.O_SECTOR_HIGHER_EDU])
+        result.availableOrgs  = Org.executeQuery('from Org o order by o.sortname')
         result.availableOrgRoles = Role.findAllByRoleType('user')
 
         result
@@ -49,6 +49,13 @@ class ProfileController {
      */
     @Secured(['ROLE_USER'])
     def help() {
+        Map<String, Object> result = [:]
+        result.user = contextService.getUser()
+        result
+    }
+
+    @Secured(['ROLE_USER'])
+    def importManuel() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
         result
@@ -120,9 +127,9 @@ class ProfileController {
          // TODO : isLastAdminForOrg
 
         if (params.process) {
-            User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
+            User userReplacement = User.get(params.userReplacement)
 
-            result.delResult = deletionService.deleteUser(result.user, userReplacement, false)
+            result.delResult = deletionService.deleteUser(result.user as User, userReplacement, false)
 
             if (result.delResult.status == DeletionService.RESULT_SUCCESS) {
                 redirect controller: 'logout', action: 'index'
@@ -130,7 +137,7 @@ class ProfileController {
             }
         }
         else {
-            result.delResult = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
+            result.delResult = deletionService.deleteUser(result.user as User, null, DeletionService.DRY_RUN)
         }
 
         result.substituteList = result.user.formalOrg ? User.executeQuery(

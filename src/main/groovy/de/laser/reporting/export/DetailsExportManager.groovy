@@ -4,8 +4,12 @@ import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.Org
 import de.laser.Platform
+import de.laser.Provider
 import de.laser.Subscription
+import de.laser.Vendor
 import de.laser.finance.CostItem
+import de.laser.reporting.export.myInstitution.ProviderExport
+import de.laser.reporting.export.myInstitution.VendorExport
 import de.laser.storage.BeanStore
 import de.laser.utils.DateUtils
 import de.laser.reporting.export.base.BaseDetailsExport
@@ -94,7 +98,7 @@ class DetailsExportManager {
             if (options.hideEmptyResults) {
                 ici.each { i -> /* println 'Export CSV ignored: ' + cols[i]; */ cols.removeAt(i) }
             }
-            rows.add( cols.join( BaseDetailsExport.CSV_FIELD_SEPARATOR ) )
+            rows.add( buildRowAsCSV( cols ).join( BaseDetailsExport.CSV_FIELD_SEPARATOR ) )
 
             csv.each { row ->
                 if (options.hideEmptyResults) {
@@ -363,8 +367,14 @@ class DetailsExportManager {
         else if (export.KEY == PlatformExport.KEY) {
             result = Platform.executeQuery('select p from Platform p where p.id in (:idList) order by p.name', [idList: idList])
         }
+        else if (export.KEY == ProviderExport.KEY) {
+            result = Provider.executeQuery('select p from Provider p where p.id in (:idList) order by p.name', [idList: idList])
+        }
         else if (export.KEY == SubscriptionExport.KEY) {
             result = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
+        }
+        else if (export.KEY == VendorExport.KEY) {
+            result = Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.name', [idList: idList])
         }
 
         result

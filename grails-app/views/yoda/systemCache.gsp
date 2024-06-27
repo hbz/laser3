@@ -51,22 +51,6 @@
         <g:set var="cacheStats" value="${cache.getStatistics()}" />
 
         <h3 class="ui icon header">
-%{--            <g:if test="${cacheName == CacheService.TTL_300_CACHE}">--}%
-%{--                <i class="grey stopwatch icon bordered inverted la-object-extended"></i>--}%
-%{--            </g:if>--}%
-%{--            <g:elseif test="${cacheName == CacheService.TTL_1800_CACHE}">--}%
-%{--                <i class="grey clock outline icon bordered inverted la-object-extended"></i>--}%
-%{--            </g:elseif>--}%
-%{--            <g:elseif test="${cacheName == CacheService.TTL_3600_CACHE}">--}%
-%{--                <i class="grey clock outline icon bordered inverted la-object-extended"></i>--}%
-%{--            </g:elseif>--}%
-%{--            <g:elseif test="${cacheName == CacheService.SHARED_USER_CACHE}">--}%
-%{--                <i class="purple user icon bordered inverted la-object-extended"></i>--}%
-%{--            </g:elseif>--}%
-%{--            <g:elseif test="${cacheName == CacheService.SHARED_ORG_CACHE}">--}%
-%{--                <i class="purple university icon bordered inverted la-object-extended"></i>--}%
-%{--            </g:elseif>--}%
-
             ${cacheName}
 
             <span class="ui label">

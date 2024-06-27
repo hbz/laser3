@@ -59,7 +59,7 @@
                         <div class="ui fluid segment  title">
                             <div class="ui stackable equal width grid">
                                 <div class="sixteen wide right aligned  column">
-                                    <div class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                    <div class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                          data-content="${message(code: 'mail.sendMail.additional')}">
                                         <i class="ui angle double down icon"></i>
                                     </div>

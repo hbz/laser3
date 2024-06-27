@@ -40,7 +40,7 @@
                 <div class="la-inline-lists">
 
                     <g:if test="${params.tab != 'general'}">
-                    <div class="ui la-dl-no-table la-js-hideable">
+                    <div class="ui la-dl-no-table">
                         <div class="content">
 
                             <table class="ui la-js-responsive-table la-table table">
@@ -97,17 +97,17 @@
                                             ${message(code:"org.setting.${os.key}", default: "${os.key}")}
                                             <g:if test="${OrgSetting.KEYS.NATSTAT_SERVER_ACCESS == os.key}">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.NATSTAT_SERVER_ACCESS.tooltip')}">
-                                                    <i class="question circle icon"></i>
+                                                    <i class="grey question circle icon"></i>
                                                 </span>
                                             </g:if>
                                             <g:elseif test="${OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.OAMONITOR_SERVER_ACCESS.tooltip')}">
-                                                    <i class="question circle icon"></i>
+                                                    <i class="grey question circle icon"></i>
                                                 </span>
                                             </g:elseif>
                                             <g:elseif test="${OrgSetting.KEYS.EZB_SERVER_ACCESS == os.key}">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.EZB.tooltip')}">
-                                                    <i class="question circle icon"></i>
+                                                    <i class="grey question circle icon"></i>
                                                 </span>
                                             </g:elseif>
                                         </td>
@@ -143,17 +143,20 @@
                                                                             data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_YES.id}"
                                                                             config="${os.key.rdc}" />
                                                 </g:elseif>
-                                                <g:elseif test="${os.key.type == RefdataValue}">
-                                                    <ui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
-                                                </g:elseif>
-                                                <g:elseif test="${os.key.type == Role}">
-                                                    ${os.getValue()?.getI10n('authority')} (Editierfunktion deaktiviert) <%-- TODO --%>
-                                                </g:elseif>
                                                 <g:elseif test="${OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY == os.key}">
                                                     <ui:xEditable owner="${os}" field="strValue" validation="email"/>
                                                 </g:elseif>
                                                 <g:elseif test="${OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT == os.key}">
                                                     <ui:xEditable owner="${os}" field="strValue" validation="email"/>
+                                                </g:elseif>
+                                                <g:elseif test="${OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY == os.key}">
+                                                    <ui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
+                                                </g:elseif>
+                                                <g:elseif test="${os.key.type == RefdataValue}">
+                                                    <ui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
+                                                </g:elseif>
+                                                <g:elseif test="${os.key.type == Role}">
+                                                    ${os.getValue()?.getI10n('authority')} (Editierfunktion deaktiviert) <%-- TODO --%>
                                                 </g:elseif>
                                                 <g:else>
                                                     <ui:xEditable owner="${os}" field="strValue" />
@@ -193,7 +196,7 @@
                     <g:if test="${params.tab == 'general'}">
                         <ui:flagDeprecated />
 
-                        <div class="ui card la-dl-no-table la-js-hideable">
+                        <div class="ui card la-dl-no-table">
                             <div class="content">
                                 <h2 class="ui header">
                                     ${message(code:'org.confProperties')}

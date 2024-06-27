@@ -64,14 +64,17 @@ class TaskController  {
 				if (params.linkto == "license" && params.license && params.license != 'null') {
 					taskInstance.license = License.get(params.license) ?: null
 				}
-				else if (params.linkto == "pkg" && params.pkg && params.pkg != 'null') {
-					taskInstance.pkg = Package.get(params.pkg) ?: null
-				}
 				else if (params.linkto == "subscription" && params.subscription && params.subscription != 'null') {
 					taskInstance.subscription = Subscription.get(params.subscription) ?: null
 				}
 				else if (params.linkto == "org" && params.org && params.org != 'null') {
 					taskInstance.org = Org.get(params.org) ?: null
+				}
+				else if (params.linkto == "provider" && params.provider && params.provider != 'null') {
+					taskInstance.provider = Provider.get(params.provider) ?: null
+				}
+				else if (params.linkto == "vendor" && params.vendor && params.vendor != 'null') {
+					taskInstance.vendor = Vendor.get(params.vendor) ?: null
 				}
 				else if (params.linkto == "surveyConfig" && params.surveyConfig && params.surveyConfig != 'null') {
 					taskInstance.surveyConfig = SurveyConfig.get(params.surveyConfig) ?: null

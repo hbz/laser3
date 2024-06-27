@@ -24,7 +24,7 @@
             </label>
             %{--<ui:select class="ui dropdown multiple" id="type" name="type.id"--}%
             <ui:select class="ui dropdown search selection" id="type" name="type"
-                          from="${Address.getAllRefdataValues()}"
+                          from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.ADDRESS_TYPE)}"
                           optionKey="id"
                           optionValue="value"
                           multiple=""
@@ -125,7 +125,7 @@
                         <g:message code="address.country.label" />
                     </label>
                     <ui:select class="ui dropdown" id="country" name="country"
-                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.COUNTRY)}"
+                                  from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.COUNTRY)}"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${addressInstance?.country?.id}"

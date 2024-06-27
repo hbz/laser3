@@ -2,6 +2,7 @@ package de.laser.reporting.report.myInstitution
 
 import de.laser.ContextService
 import de.laser.Org
+import de.laser.OrgSetting
 import de.laser.auth.Role
 import de.laser.storage.BeanStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
@@ -10,14 +11,9 @@ import grails.web.servlet.mvc.GrailsParameterMap
 
 class OrganisationQuery extends BaseQuery {
 
-    static List<String> PROPERTY_QUERY = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
-
     static Map<String, Object> query(GrailsParameterMap params) {
 
         ContextService contextService = BeanStore.getContextService()
-
-        //println 'OrganisationQuery.query()'
-        //println params
 
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 
@@ -46,8 +42,8 @@ class OrganisationQuery extends BaseQuery {
 
             handleGenericRefdataQuery(
                     params.query,
-                    PROPERTY_QUERY[0] + 'from Org o join o.orgType p where o.id in (:idList)' + PROPERTY_QUERY[1],
-                    'select o.id from Org o join o.orgType p where o.id in (:idList) and p.id = :d order by o.name',
+                    REFDATA_QUERY[0] + 'from Org o join o.orgType ref where o.id in (:idList)' + REFDATA_QUERY[1],
+                    'select o.id from Org o join o.orgType ref where o.id in (:idList) and ref.id = :d order by o.name',
                     'select distinct o.id from Org o where o.id in (:idList) and not exists (select ot from o.orgType ot)',
                     idList,
                     result
@@ -80,12 +76,38 @@ class OrganisationQuery extends BaseQuery {
                     result
             )
         }
+        else if (suffix in ['apiLevel']) {
+
+            result.data = OrgSetting.executeQuery(
+                    'select oss.strValue, oss.strValue, count(*) from OrgSetting oss join oss.org o where o.id in (:idList) and oss.key = \'API_LEVEL\' group by oss.strValue order by oss.strValue',
+                    [idList: idList]
+            )
+            result.data.each { d ->
+                d[0] = Math.abs(d[0].hashCode())
+
+                result.dataDetails.add([
+                        query : params.query,
+                        id    : d[0],
+                        label : d[1],
+                        idList: Org.executeQuery(
+                                'select o.id from Org o, OrgSetting oss where oss.org = o and o.id in (:idList) and oss.strValue = :d order by o.name',
+                                [idList: idList, d: d[1]]
+                        )
+                ])
+            }
+            handleGenericNonMatchingData(
+                    params.query,
+                    'select distinct o.id from Org o where o.id in (:idList) and not exists (select oss from OrgSetting oss where oss.org = o and oss.key = \'API_LEVEL\')',
+                    idList,
+                    result
+            )
+        }
         else if ( suffix in ['subjectGroup']) {
 
             handleGenericRefdataQuery(
                     params.query,
-                    PROPERTY_QUERY[0] + 'from Org o join o.subjectGroup rt join rt.subjectGroup p where o.id in (:idList)' + PROPERTY_QUERY[1],
-                    'select o.id from Org o join o.subjectGroup rt join rt.subjectGroup p where o.id in (:idList) and p.id = :d order by o.name',
+                    REFDATA_QUERY[0] + 'from Org o join o.subjectGroup rt join rt.subjectGroup ref where o.id in (:idList)' + REFDATA_QUERY[1],
+                    'select o.id from Org o join o.subjectGroup rt join rt.subjectGroup ref where o.id in (:idList) and ref.id = :d order by o.name',
                     'select distinct o.id from Org o where o.id in (:idList) and not exists (select osg from OrgSubjectGroup osg where osg.org = o)',
                     idList,
                     result
@@ -124,8 +146,8 @@ class OrganisationQuery extends BaseQuery {
 
         handleGenericRefdataQuery(
                 query,
-                PROPERTY_QUERY[0] + 'from Org o join o.' + refdata + ' p where o.id in (:idList)' + PROPERTY_QUERY[1],
-                'select o.id from Org o join o.' + refdata + ' p where o.id in (:idList) and p.id = :d order by o.name',
+                REFDATA_QUERY[0] + 'from Org o join o.' + refdata + ' ref where o.id in (:idList)' + REFDATA_QUERY[1],
+                'select o.id from Org o join o.' + refdata + ' ref where o.id in (:idList) and ref.id = :d order by o.name',
                 'select distinct o.id from Org o where o.id in (:idList) and o.' + refdata + ' is null',
                 idList,
                 result

@@ -5,6 +5,7 @@ import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.helper.Params
 import de.laser.storage.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.GenericHelper
@@ -50,8 +51,8 @@ class ReportingTagLib {
             out << uiReporting.filterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field)
         }
         else if (field.type == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-            if (field.customImplRdv) {
-                out << uiReporting.filterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field, customImplRdv: field.customImplRdv)
+            if (field.customImpl) {
+                out << uiReporting.filterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field, customImpl: field.customImpl)
             } else {
                 out << uiReporting.filterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field)
             }
@@ -138,12 +139,12 @@ class ReportingTagLib {
     }
 
     def filterCustomImpl = { attrs, body ->
-        //println '<uiReporting:filterCustomImpl>   ' + attrs.key + ' ' + attrs.refdata + ' ' + attrs.customImplRdv
+        //println '<uiReporting:filterCustomImpl>   ' + attrs.key + ' ' + attrs.refdata + ' ' + attrs.customImpl
 
         // TODO
         Map<String, Object> customRdv
-        if (attrs.customImplRdv) {
-            customRdv = BaseConfig.getCustomImplRefdata(attrs.customImplRdv, attrs.config.meta.class)
+        if (attrs.customImpl) {
+            customRdv = BaseConfig.getCustomImplRefdata(attrs.customImpl, attrs.config.meta.class)
         } else {
             customRdv = BaseConfig.getCustomImplRefdata(attrs.refdata, attrs.config.meta.class)
         }
@@ -172,7 +173,7 @@ class ReportingTagLib {
         ]
         if ( GenericHelper.isFieldMultiple(attrs.config, attrs.refdata) ) {
             map.put('multiple', true)
-            map.put('value', params.list(filterName).collect { Long.parseLong(it) })
+            map.put('value', Params.getLongList(params, filterName))
         }
         else {
             map.put('value', params.int(filterName))
@@ -231,7 +232,7 @@ class ReportingTagLib {
             out << '</td>'
         }
         else {
-            out << '### ' + attrs.field + ' ###'
+            out << '### unkown field: ' + attrs.field + ' ###'
         }
     }
 

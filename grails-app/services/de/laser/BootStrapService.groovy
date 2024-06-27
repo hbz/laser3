@@ -125,7 +125,7 @@ class BootStrapService {
         }
 
         log.debug(".__                                .________ ")
-        log.debug("|  |   _____    ______ ___________  \\_____  \\ ~ Grails_6")
+        log.debug("|  |   _____    ______ ___________  \\_____  \\ ~ Grails_" + AppUtils.getMeta('info.app.grailsVersion'))
         log.debug("|  |   \\__  \\  /  ___// __ \\_  __ \\   _(__  < ")
         log.debug("|  |___ / __ \\_\\___ \\\\  ___/|  | \\/  /       \\ ")
         log.debug("|_____ (____  /____  >\\___  >__|    /______  / ")
@@ -228,7 +228,7 @@ class BootStrapService {
         Role orgInstProRole         = updateRole(CustomerTypeService.ORG_INST_PRO,          'org', [en: 'LAS:eR (Pro)', de: 'LAS:eR (Pro)'])
         Role orgConsortiumRole      = updateRole(CustomerTypeService.ORG_CONSORTIUM_BASIC,  'org', [en: 'Consortium Manager (Basic)', de: 'Konsortialmanager (Basic)'])
         Role orgConsortiumProRole   = updateRole(CustomerTypeService.ORG_CONSORTIUM_PRO,    'org', [en: 'Consortium Manager (Pro)',   de: 'Konsortialmanager (Pro)'])
-        Role orgSupportRole         = updateRole(CustomerTypeService.ORG_SUPPORT,           'org', [en: 'Interne Verwaltung (HBZ)', de: 'Interne Verwaltung (HBZ)'])
+        Role orgSupportRole         = updateRole(CustomerTypeService.ORG_SUPPORT,           'org', [en: 'Verwaltung', de: 'Verwaltung'])
 
         updateRolePerms(fakeRole,                ['FAKE'])
         updateRolePerms(orgInstRole,             [CustomerTypeService.ORG_INST_BASIC])

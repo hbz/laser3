@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.PersonRole; de.laser.OrgRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.helper.Params; de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.PersonRole; de.laser.ProviderRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
 
 <laser:htmlStart message="menu.public.gasco_monitor">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
@@ -75,7 +75,7 @@
             </div>
         </div>
         <div class="five wide column">
-            <img class="ui fluid image" alt="Logo GASCO" src="${resource(dir: 'images', file: 'gasco/logo-small.jpg')}"/>
+            <img class="ui fluid image" alt="Logo GASCO" src="${resource(dir: 'images', file: 'gasco-logo.jpg')}"/>
         </div>
     </div>
     <laser:script file="${this.getGroovyPageFileName()}">
@@ -150,14 +150,14 @@
 
                         <g:each in="${sub.packages}" var="subPkg" status="j">
                             <div class="la-flexbox">
-                                <i class="icon gift la-list-icon"></i>
+                                <i class="${Icons.PACKAGE} icon la-list-icon"></i>
                                 <g:link controller="public" action="gascoDetailsIssueEntitlements" id="${subPkg.id}">${subPkg.pkg}</g:link>
                             </div>
                         </g:each>
                     </td>
                     <td>
-                        <g:each in="${OrgRole.findAllBySubAndRoleType(sub, RDStore.OR_PROVIDER)}" var="role">
-                            ${role.org?.name}<br />
+                        <g:each in="${ProviderRole.findAllBySubscription(sub)}" var="role">
+                            ${role.provider.name}<br />
                         </g:each>
                     </td>
                     <td>

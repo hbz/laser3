@@ -30,6 +30,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     public static final String DBPEDIA     = "dbpedia"
     public static final String DBS_ID      = "DBS-ID"
     public static final String DBIS_ORG_ID = "dbis_org_id"
+    public static final String DEAL_ID     = "deal_id"
     public static final String EZB_ORG_ID  = "ezb_org_id"
     public static final String GND_ORG_NR  = "gnd_org_nr"
     public static final String ISIL        = "ISIL"
@@ -53,6 +54,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     public static final String EISSN      = 'eissn'
     public static final String EISBN      = 'eisbn'
     public static final String ISBN       = 'isbn'
+    public static final String TITLE_ID   = 'title_id'
 
     //package identifier namespaces
     public static final String PKG_ID        = 'Anbieter_Produkt_ID'
@@ -77,6 +79,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
             ROR_ID,
             DBS_ID,
             DBIS_ORG_ID,
+            DEAL_ID,
             VAT,
             WIKIDATA_ID,
             LEIT_ID,

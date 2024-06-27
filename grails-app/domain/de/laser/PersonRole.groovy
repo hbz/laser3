@@ -62,7 +62,9 @@ class PersonRole implements Comparable<PersonRole>{
     
     static belongsTo = [
         prs:        Person,
-        org:        Org
+        org:        Org,
+        provider:   Provider,
+        vendor:     Vendor,
     ]
 
     static transients = ['reference'] // mark read-only accessor methods
@@ -73,12 +75,14 @@ class PersonRole implements Comparable<PersonRole>{
         positionType            column:'pr_position_type_rv_fk'
         functionType            column:'pr_function_type_rv_fk'
         responsibilityType      column:'pr_responsibility_type_rv_fk'
-        prs         column:'pr_prs_fk',     index: 'pr_prs_org_idx'
+        prs         column:'pr_prs_fk',     index: 'pr_prs_org_idx, pr_prs_ven_idx, pr_prs_prov_idx'
         lic         column:'pr_lic_fk'
         org         column:'pr_org_fk',     index: 'pr_prs_org_idx'
         pkg         column:'pr_pkg_fk'
+        provider    column:'pr_provider_fk',  index: 'pr_prs_prov_idx'
         sub         column:'pr_sub_fk'
         tipp        column:'pr_tipp_fk'
+        vendor      column:'pr_vendor_fk',  index: 'pr_prs_ven_idx'
         start_date  column:'pr_startdate'
         end_date    column:'pr_enddate'
         
@@ -93,22 +97,26 @@ class PersonRole implements Comparable<PersonRole>{
         lic         (nullable:true)
         org         (nullable:true)
         pkg         (nullable:true)
+        provider    (nullable:true)
         sub         (nullable:true)
         tipp        (nullable:true)
+        vendor      (nullable:true)
         start_date  (nullable:true)
         end_date    (nullable:true)
         lastUpdated (nullable: true)
     }
 
     /**
-     * Generic setter method; indicating the reference objects which may be attached to the {@link Person} to be linked except {@link Org} which is a direct relation
+     * Generic setter method; indicating the reference objects which may be attached to the {@link Person} to be linked
      */
     void setReference(def owner) {
-        org     = owner instanceof Org ? owner : org
-        lic     = owner instanceof License ? owner : lic
-        pkg     = owner instanceof Package ? owner : pkg
-        sub     = owner instanceof Subscription ? owner : sub
-        tipp    = owner instanceof TitleInstancePackagePlatform ? owner : tipp
+        org      = owner instanceof Org ? owner : org
+        lic      = owner instanceof License ? owner : lic
+        pkg      = owner instanceof Package ? owner : pkg
+        provider = owner instanceof Provider ? owner : provider
+        sub      = owner instanceof Subscription ? owner : sub
+        tipp     = owner instanceof TitleInstancePackagePlatform ? owner : tipp
+        vendor   = owner instanceof Vendor ? owner : vendor
     }
 
     /**
@@ -163,7 +171,7 @@ class PersonRole implements Comparable<PersonRole>{
     }
 
     /**
-     * Comprator method between two person role links; compared are the function types; if they are equal, the person last, then first names are being compared with each other
+     * Comparator method between two person role links; compared are the function types; if they are equal, the person last, then first names are being compared with each other
      * @param that the object to compare with
      * @return the comparison result (-1, 0 or 1)
      */

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.remote.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.Platform; de.laser.IssueEntitlementGroup" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Subscription; de.laser.remote.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.Platform; de.laser.IssueEntitlementGroup" %>
 
 <laser:htmlStart message="subscription.details.addEntitlements.label" serviceInjection="true" />
 
@@ -35,7 +35,7 @@
         </div>
     </g:if>
 
-<laser:render template="KBARTSelectionUploadFormModal"/>
+<%-- <laser:render template="KBARTSelectionUploadFormModal"/> --%>
 
 <ui:modal id="linkToIssueEntitlementGroup" message="subscription.details.addEntitlements.add_selectedToIssueEntitlementGroup"
           refreshModal="true"
@@ -313,7 +313,7 @@
                                         </g:if>
                                         <g:if test="${covStmt.coverageDepth}">
                                             <div class="item">
-                                                <i class="grey icon file alternate right la-popup-tooltip la-delay"
+                                                <i class="grey icon ${Icons.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                                                 <div class="content">
@@ -354,7 +354,7 @@
                                        data-content="${message(code: 'tipp.tooltip.myArea')}"></i>
 
                                     <div class="ui la-segment-with-icon">
-                                        <g:if test="${(tipp.titleType == 'Journal')}">
+                                        <g:if test="${(tipp.titleType == 'serial')}">
                                             <g:set var="coverageStatements"
                                                    value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.coverages : [:]}"/>
                                             <div class="ui stackable grid"></div>
@@ -436,9 +436,6 @@
 </g:form>
 
 </div>
-
-
-<laser:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']" />
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
@@ -545,5 +542,7 @@
     JSPC.app.loadFilter();
     --%>
 </laser:script>
+
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd />

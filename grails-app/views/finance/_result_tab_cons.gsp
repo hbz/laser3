@@ -128,7 +128,7 @@
         <g:else>
             <g:each in="${data.costItems}" var="ci" status="jj">
                 <%
-                    String icon = '<i class="question circle icon"></i>'
+                    String icon = '<i class="grey question circle icon"></i>'
                     String dataTooltip = message(code:'financials.costItemConfiguration.notSet')
 
                     switch (ci.costItemElementConfiguration) {
@@ -223,11 +223,13 @@
                         <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="" />
                     </td>
                     <td>
-                        <g:formatNumber number="${ci.costInLocalCurrency ?: 0.0}" type="currency" currencySymbol="EUR" />
-                        <br />
-                        <span class="la-secondHeaderRow" data-label="${message(code:'costItem.costInLocalCurrencyAfterTax.label')}:">
-                            <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="EUR" />
-                        </span>
+                        <g:if test="${ci.currencyRate > 0}">
+                            <g:formatNumber number="${ci.costInLocalCurrency ?: 0.0}" type="currency" currencySymbol="EUR" />
+                            <br />
+                            <span class="la-secondHeaderRow" data-label="${message(code:'costItem.costInLocalCurrencyAfterTax.label')}:">
+                                <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="EUR" />
+                            </span>
+                        </g:if>
                     </td>
                     <td>
                         <ui:xEditable owner="${ci}" type="date" field="startDate" overwriteEditable="${editable}" validation="datesCheck"/>

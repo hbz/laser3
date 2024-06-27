@@ -38,3 +38,6 @@
   background-color: #997a88;
   color: @white;
 }
+.ui.accordion.la-namedetails:not(.styled) .title~.content {
+    padding: 0;
+}

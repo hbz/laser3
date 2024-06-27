@@ -87,7 +87,9 @@ c3po = {
                     remoteValues : 'values', // mapping: grouping for api results
                     name         : 'text',   // mapping: displayed dropdown text
                     value        : 'id',     // mapping: actual dropdown value
-                    text         : 'text'    // mapping: displayed text when selected
+                    text         : 'text',   // mapping: displayed text when selected
+                    icon         : 'icon',    //mapping: displayed icon
+
                 },
                 placeholder : JSPC.dict.get('select2.placeholder', JSPC.config.language),
                 message : {

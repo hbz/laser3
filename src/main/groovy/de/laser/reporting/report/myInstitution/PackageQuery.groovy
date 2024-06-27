@@ -5,8 +5,10 @@ import de.laser.Language
 import de.laser.Org
 import de.laser.Platform
 import de.laser.Package
+import de.laser.Provider
 import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.Vendor
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.reporting.report.ElasticSearchHelper
@@ -16,8 +18,6 @@ import de.laser.reporting.report.myInstitution.base.BaseQuery
 import grails.web.servlet.mvc.GrailsParameterMap
 
 class PackageQuery extends BaseQuery {
-
-    static List<String> PROPERTY_QUERY = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
 
     static Map<String, Object> query(GrailsParameterMap params) {
 
@@ -165,8 +165,8 @@ class PackageQuery extends BaseQuery {
             }
             else if (params.query in ['package-x-provider']) {
 
-                result.data = idList ? Org.executeQuery(
-                        'select o.id, o.name, count(*) from Org o join o.links orgLink where o.id in (:providerIdList) and orgLink.pkg.id in (:idList) group by o.id order by o.name',
+                result.data = idList ? Provider.executeQuery(
+                        'select p.id, p.name, count(*) from Package pkg join pkg.provider p where p.id in (:providerIdList) and pkg.id in (:idList) group by p.id order by p.name',
                         [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
                 ) : []
 
@@ -176,26 +176,17 @@ class PackageQuery extends BaseQuery {
                             id    : d[0],
                             label : d[1],
                             idList: Package.executeQuery(
-                                    'select pkg.id from Package pkg join pkg.orgs ro join ro.org o where ro.roleType in (:prov) and pkg.id in (:idList) and o.id = :d order by pkg.name',
-                                    [idList: idList, prov: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER], d: d[0]]
-                            ),
-                            value2: Package.executeQuery(
-                                    'select pkg.id from Package pkg join pkg.orgs ro join ro.org o where ro.roleType = :prov and pkg.id in (:idList) and o.id = :d order by pkg.name',
-                                    [idList: idList, prov: RDStore.OR_CONTENT_PROVIDER, d: d[0]]
-                            ).size(),
-                            value1: Package.executeQuery(
-                                    'select pkg.id from Package pkg join pkg.orgs ro join ro.org o where ro.roleType = :prov and pkg.id in (:idList) and o.id = :d order by pkg.name',
-                                    [idList: idList, prov: RDStore.OR_PROVIDER, d: d[0]] // !!!!
-                            ).size()
+                                    'select pkg.id from Package pkg join pkg.provider p where pkg.id in (:idList) and p.id = :d order by pkg.name',
+                                    [idList: idList, d: d[0]]
+                            )
                     ])
                 }
 
                 List<Long> noDataList = Package.executeQuery(
-                        'select pkg.id from Package pkg where pkg.id in (:idList) and not exists (select ro from OrgRole ro where ro.roleType in (:prov) and ro.pkg.id = pkg.id) order by pkg.name',
-                        [idList: idList, prov: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER]]
+                        'select pkg.id from Package pkg where pkg.id in (:idList) and pkg.provider is null order by pkg.name', [idList: idList]
                 )
 
-                handleGenericNonMatchingData2Values_TMP(params.query, BaseQuery.NO_PROVIDER_LABEL, noDataList, result)
+                handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_PROVIDER_LABEL, noDataList, result)
             }
             else if (params.query in ['package-x-platform']) {
 
@@ -203,27 +194,32 @@ class PackageQuery extends BaseQuery {
             }
             else if (params.query in ['package-x-platformProvider']) {
 
-                result.data = idList ? Org.executeQuery(
-                                'select o.id, o.name, count(*) from Package pkg join pkg.nominalPlatform plt join plt.org o ' +
-                                'where plt.id in (:platformIdList) and pkg.id in (:idList) and o.id in (:providerIdList) group by o.id order by o.name',
+                // TODO
+                result.data = idList ? Provider.executeQuery(
+                        'select pro.id, pro.name, count(*) from Package pkg join pkg.nominalPlatform plt join plt.provider pro ' +
+                        'where plt.id in (:platformIdList) and pro.id in (:providerIdList) and pkg.id in (:idList) group by pro.id order by pro.name',
                         [platformIdList: BaseFilter.getCachedFilterIdList('platform', params), providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
                 ) : []
+//                result.data = idList ? Provider.executeQuery(
+//                        'select pro.id, pro.name, count(*) from Package pkg join pkg.nominalPlatform plt join plt.provider pro ' +
+//                        'where plt.id in (:platformIdList) and pkg.id in (:idList) group by pro.id order by pro.name',
+//                        [platformIdList: BaseFilter.getCachedFilterIdList('platform', params), idList: idList]
+//                ) : []
 
-                result.data.eachWithIndex { d, i ->
-                    List<Long> pkgIdList = Package.executeQuery(
-                            'select pkg.id from Package pkg join pkg.nominalPlatform plt join plt.org o where pkg.id in (:idList) and o.id = :d order by pkg.name',
-                            [idList: idList, d: d[0]]
-                    )
+                result.data.each { d ->
                     result.dataDetails.add([
                             query : params.query,
                             id    : d[0],
                             label : d[1],
-                            idList: pkgIdList
+                            idList: Package.executeQuery(
+                                    'select pkg.id from Package pkg join pkg.nominalPlatform plt join plt.provider pro where pkg.id in (:idList) and pro.id = :d order by pkg.name',
+                                    [idList: idList, d: d[0]]
+                            )
                     ])
                 }
 
                 List<Long> noDataList = idList ? Package.executeQuery(
-                        'select distinct pkg.id from Package pkg where pkg.id in (:idList) and (pkg.nominalPlatform is null or pkg.nominalPlatform.org is null)', [idList: idList]
+                        'select distinct pkg.id from Package pkg where pkg.id in (:idList) and (pkg.nominalPlatform is null or pkg.nominalPlatform.provider is null)', [idList: idList]
                 ) : []
                 handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_PLATFORM_PROVIDER_LABEL, noDataList, result)
             }
@@ -420,7 +416,31 @@ class PackageQuery extends BaseQuery {
                 handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_DATA_LABEL, noDataList, result)
                 _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
             }
+            else if (params.query in ['package-x-vendor']) {
 
+                result.data = idList ? Vendor.executeQuery(
+                        'select ven.id, ven.name, count(*) from PackageVendor pv join pv.vendor ven where ven.id in (:vendorIdList) and pv.pkg.id in (:idList) group by ven.id order by ven.name',
+                        [vendorIdList: BaseFilter.getCachedFilterIdList('vendor', params), idList: idList]
+                ) : []
+
+                result.data.eachWithIndex { d, i ->
+                    List<Long> pkgIdList = Package.executeQuery(
+                            'select pkg.id from PackageVendor pv join pv.pkg pkg where pkg.id in (:idList) and pv.vendor.id = :d order by pkg.name',
+                            [idList: idList, d: d[0]]
+                    )
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: pkgIdList
+                    ])
+                }
+
+                List<Long> noDataList = idList ? Package.executeQuery(
+                        'select distinct pkg.id from Package pkg where pkg.id in (:idList) and not exists (select pv from PackageVendor pv where pv.pkg.id = pkg.id)', [idList: idList]
+                ) : []
+                handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_VENDOR_LABEL, noDataList, result)
+            }
         }
         result
     }
@@ -429,8 +449,8 @@ class PackageQuery extends BaseQuery {
 
         handleGenericRefdataQuery(
                 query,
-                PROPERTY_QUERY[0] + 'from Package pkg join pkg.' + refdata + ' p where pkg.id in (:idList)' + PROPERTY_QUERY[1],
-                'select pkg.id from Package pkg join pkg.' + refdata + ' p where pkg.id in (:idList) and p.id = :d order by pkg.name',
+                REFDATA_QUERY[0] + 'from Package pkg join pkg.' + refdata + ' ref where pkg.id in (:idList)' + REFDATA_QUERY[1],
+                'select pkg.id from Package pkg join pkg.' + refdata + ' ref where pkg.id in (:idList) and ref.id = :d order by pkg.name',
                 'select distinct pkg.id from Package pkg where pkg.id in (:idList) and pkg.'+ refdata + ' is null',
                 idList,
                 result
@@ -450,7 +470,7 @@ class PackageQuery extends BaseQuery {
             struct.get(key).add( Long.parseLong(it.key) )
         }
         struct.eachWithIndex { it, idx ->
-            List d = [BaseQuery.NO_DATA_ID, getChartLabel(BaseQuery.NO_DATA_LABEL), it.value.size()]
+            List d = [BaseQuery.FAKE_DATA_ID_1, getChartLabel(BaseQuery.NO_DATA_LABEL), it.value.size()]
             if (it.key) {
                 RefdataValue rdv = RefdataValue.getByValueAndCategory(it.key, rdCategory)
                 if (rdv) {

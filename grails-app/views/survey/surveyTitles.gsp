@@ -4,6 +4,7 @@
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
 <ui:controlButtons>
+    <laser:render template="exports"/>
     <laser:render template="actions"/>
 </ui:controlButtons>
 
@@ -11,7 +12,7 @@
 
 <uiSurvey:status object="${surveyInfo}"/>
 
-<g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_TITLE_SELECTION]}">
+<g:if test="${surveyConfig.subscription}">
     <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
@@ -97,15 +98,14 @@
                         <ui:sortingDropdown noSelection="${message(code:'default.select.choose.label')}" from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
                     </div>
                      <div class="field la-field-noLabel">
-                        <button class="ui button la-js-closeAll-showMore right floated ">${message(code: "accordion.button.closeAll")}</button>
+                        <button class="ui button la-js-closeAll-showMore right floated">${message(code: "accordion.button.closeAll")}</button>
                     </div>
                 </div>
             </div>
             <div class="ui grid">
                 <div class="row">
                     <div class="column">
-                        <laser:render template="/templates/tipps/table_accordion"
-                                      model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
+                        <laser:render template="/templates/tipps/table_accordion" model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
                     </div>
                 </div>
             </div>
@@ -123,8 +123,8 @@
         <g:each in="${subscription.packages.sort { it.pkg.name.toLowerCase() }}" var="subPkg">
             <div class="item">
                 ${subPkg.pkg.name}
-                <g:if test="${subPkg.pkg.contentProvider}">
-                    (${subPkg.pkg.contentProvider.name})
+                <g:if test="${subPkg.pkg.provider}">
+                    (${subPkg.pkg.provider.name})
                 </g:if>:
                 <g:link controller="package" action="show" id="${subPkg.pkg.id}"><g:message
                         code="subscription.details.details.package.label"/></g:link>

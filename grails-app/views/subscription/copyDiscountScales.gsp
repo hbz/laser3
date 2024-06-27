@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Doc; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.survey.SurveyConfig" %>
+<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Doc; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.survey.SurveyConfig" %>
 <laser:htmlStart message="subscription.details.copyDiscountScales.label" />
 
 <laser:serviceInjection/>
@@ -36,7 +36,7 @@
                     <span data-position="right center" data-variation="tiny"
                           class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.subscription')}">
-                        <i class="question circle icon"></i>
+                        <i class="grey question circle icon"></i>
                     </span>
                 </label>
 
@@ -168,7 +168,7 @@
                         </th>
 
                         <g:sortableColumn params="${params}" property="orgRole§provider"
-                                          title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}"
+                                          title="${message(code: 'provider.label')} / ${message(code: 'vendor.label')}"
                                           rowspan="2"/>
 
                         <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.startDate"
@@ -179,7 +179,7 @@
                             <a href="#" class="la-popup-tooltip la-delay"
                                data-content="${message(code: 'subscription.numberOfLicenses.label')}"
                                data-position="top center">
-                                <i class="university large icon"></i>
+                                <i class="${Icons.ORG} large icon"></i>
                             </a>
                         </th>
                         <th scope="col" rowspan="2">
@@ -219,7 +219,7 @@
                                         </g:else>
                                         <g:if test="${s.instanceOf}">
                                             <g:if test="${s.consortia && s.consortia == institution}">
-                                                ( ${s.subscriber.name} )
+                                                ( ${s.getSubscriberRespConsortia().name} )
                                             </g:if>
                                         </g:if>
                                     </g:link>
@@ -227,7 +227,7 @@
                                         <g:if test="${s == row.destinationSubscription}">
                                             <g:set var="license" value="${row.sourceLicense}"/>
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="icon balance scale la-list-icon"></i>
+                                                <i class="${Icons.LICENSE} icon la-list-icon"></i>
                                                 <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br />
                                             </div>
                                         </g:if>
@@ -238,10 +238,10 @@
                                     <g:each in="${s.packages.sort { it.pkg.name }}" var="sp" status="ind">
                                         <g:if test="${ind < 10}">
                                             <div class="la-flexbox">
-                                                <i class="icon gift la-list-icon"></i>
+                                                <i class="${Icons.PACKAGE} icon la-list-icon"></i>
                                                 <g:link controller="subscription" action="index" id="${s.id}"
                                                         params="[pkgfilter: sp.pkg.id]"
-                                                        title="${sp.pkg.contentProvider?.name}">
+                                                        title="${sp.pkg.provider?.name}">
                                                     ${sp.pkg.name}
                                                 </g:link>
                                             </div>
@@ -257,9 +257,9 @@
                                         <g:link controller="organisation" action="show"
                                                 id="${org.id}">${org.name}</g:link><br />
                                     </g:each>
-                                    <g:each in="${s.agencies}" var="org">
-                                        <g:link controller="organisation" action="show"
-                                                id="${org.id}">${org.name} (${message(code: 'default.agency.label')})</g:link><br />
+                                    <g:each in="${s.vendors}" var="vendor">
+                                        <g:link controller="vendor" action="show"
+                                                id="${vendor.id}">${vendor.name} (${message(code: 'vendor.label')})</g:link><br />
                                     </g:each>
                                 </td>
                                 <td>
@@ -275,7 +275,7 @@
                                 <td>
                                     <g:link mapping="subfinance" controller="finance" action="index"
                                             params="${[sub: s.id]}">
-                                        ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
+                                        ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(*) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
                                     </g:link>
                                 </td>
                                 <td>

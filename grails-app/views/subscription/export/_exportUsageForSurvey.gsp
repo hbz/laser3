@@ -15,8 +15,8 @@
     String dummy
     subscribedPlatforms.each { Platform platformInstance ->
         Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
-        if (queryResult.warning) {
-            List records = queryResult.warning.result
+        if (queryResult) {
+            List records = queryResult.result
             if(records[0]) {
                 if(records[0].counterR5SushiApiSupported == 'Yes') {
                     revision = AbstractReport.COUNTER_5
@@ -94,6 +94,13 @@
                 </div>
             </div>
         </g:form>
+        <div class="ui teal progress" id="localLoadingIndicator" hidden>
+            <div class="bar">
+                <div class="progress"></div>
+            </div>
+            <div class="label"></div>
+        </div>
+        <div id="reportWrapper"></div>
     </g:if>
     <g:elseif test="${dummyCIs}">
         <g:message code="default.usage.renewal.dummy.header"/>
@@ -121,12 +128,8 @@
     <g:else>
         <strong><g:message code="default.stats.error.noReportAvailable"/></strong>
     </g:else>
-    <div class="localLoadingIndicator" hidden="hidden">
-        <div class="ui inline medium text loader active">Aktualisiere Daten ..</div>
-    </div>
-    <div id="reportWrapper"></div>
 </ui:modal>
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $("#reportType").on('change', function() {
         <g:applyCodec encodeAs="none">
             let platforms = ${platformsJSON};
@@ -148,7 +151,7 @@
         });
     });
     $("#generateReport").on('click', function() {
-        $('.localLoadingIndicator').show();
+        $('#localLoadingIndicator').progress();
         let fd = new FormData($('#individuallyExportModal').find('form')[0]);
         $.ajax({
             url: "<g:createLink action="renewEntitlementsWithSurvey"/>",
@@ -158,10 +161,29 @@
             contentType: false
         }).done(function(response){
             $("#reportWrapper").html(response);
-            $('.localLoadingIndicator').hide();
         }).fail(function(resp, status){
             $("#reportWrapper").text('Es ist zu einem Fehler beim Abruf gekommen');
-            $('.localLoadingIndicator').hide();
-        });;
+        });
+        checkProgress();
     });
+
+    function checkProgress() {
+        let percentage = 0;
+        setTimeout(function() {
+            $.ajax({
+                url: "<g:createLink controller="ajaxJson" action="checkProgress" params="[cachePath: '/subscription/renewEntitlementsWithSurvey/generateRenewalExport']"/>"
+            }).done(function(response){
+                percentage = response.percent;
+                $('#localLoadingIndicator div.label').text(response.label);
+                if(percentage !== null)
+                    $('#localLoadingIndicator').progress('set percent', percentage);
+                if($('#localLoadingIndicator').progress('is complete'))
+                    $('#localLoadingIndicator').hide();
+                else
+                    checkProgress();
+            }).fail(function(resp, status){
+                //TODO
+            });
+        }, 500);
+    }
 </laser:script>

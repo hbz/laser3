@@ -2,17 +2,14 @@ package de.laser
 
 import de.laser.annotations.DebugInfo
 import de.laser.config.ConfigDefaults
-import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.utils.AppUtils
 import de.laser.helper.DatabaseInfo
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
-import de.laser.cache.EhcacheWrapper
 import de.laser.utils.SwissKnife
 import de.laser.remote.FTControl
 import de.laser.auth.Role
-import de.laser.auth.User
 import de.laser.properties.PropertyDefinition
 import de.laser.api.v0.ApiToolkit
 
@@ -43,7 +40,6 @@ import java.time.LocalDate
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController  {
 
-    CacheService cacheService
     ContextService contextService
     DataConsistencyService dataConsistencyService
     DataloadService dataloadService
@@ -51,13 +47,15 @@ class AdminController  {
     FilterService filterService
     GenericOIDService genericOIDService
     GlobalSourceSyncService globalSourceSyncService
+    GokbService gokbService
     MailService mailService
-    OrganisationService organisationService
+    PackageService packageService
     PropertyService propertyService
+    ProviderService providerService
     RefdataService refdataService
     SessionFactory sessionFactory
     StatsSyncService statsSyncService
-    GokbService gokbService
+    VendorService vendorService
 
     /**
      * Empty call, loads empty admin dashboard
@@ -453,6 +451,15 @@ class AdminController  {
         result
     }
 
+    /**
+     * Runs a check through all {@link Identifier}s whose namespaces have a validation regex defined and checks whether the values match the defined validation patterns
+     * @return a {@link Map} containing for each concerned {@link IdentifierNamespace} the
+     * <ul>
+     *     <li>total count of identifiers</li>
+     *     <li>count of valid identifiers</li>
+     *     <li>count of invalid identifiers</li>
+     * </ul>
+     */
     @Secured(['ROLE_ADMIN'])
     def identifierValidation() {
         Map<String, Object> result = [
@@ -676,9 +683,9 @@ class AdminController  {
         Map<String, Object> result = [:]
         SwissKnife.setPaginationParams(result, params, contextService.getUser())
 
-        if (params.cmd == 'changeApiLevel') {
-            Org target = (Org) genericOIDService.resolveOID(params.target)
+        Org target = params.target ? Org.get(params.long('target')) : null
 
+        if (params.cmd == 'changeApiLevel') {
             if (ApiToolkit.getAllApiLevels().contains(params.apiLevel)) {
                 ApiToolkit.setApiLevel(target, params.apiLevel)
             }
@@ -689,7 +696,6 @@ class AdminController  {
             target.save()
         }
         else if (params.cmd == 'deleteCustomerType') {
-            Org target = (Org) genericOIDService.resolveOID(params.target)
             def oss = OrgSetting.get(target, OrgSetting.KEYS.CUSTOMER_TYPE)
             if (oss != OrgSetting.SETTING_NOT_FOUND) {
                 oss.delete()
@@ -700,7 +706,6 @@ class AdminController  {
             ApiToolkit.removeApiLevel(target)
         }
         else if (params.cmd == 'changeCustomerType') {
-            Org target = (Org) genericOIDService.resolveOID(params.target)
             Role customerType = Role.get(params.customerType)
 
             def osObj = OrgSetting.get(target, OrgSetting.KEYS.CUSTOMER_TYPE)
@@ -726,8 +731,7 @@ class AdminController  {
             }
         }
         else if (params.cmd == 'changeGascoEntry') {
-            Org target = (Org) genericOIDService.resolveOID(params.target)
-            RefdataValue option = (RefdataValue) genericOIDService.resolveOID(params.gascoEntry)
+            RefdataValue option = RefdataValue.get(params.long('gascoEntry'))
 
             if (target && option) {
                 def oss = OrgSetting.get(target, OrgSetting.KEYS.GASCO_ENTRY)
@@ -743,8 +747,6 @@ class AdminController  {
             target.save()
         }
         else if (params.cmd == 'changeLegalInformation') {
-            Org target = (Org) genericOIDService.resolveOID(params.target)
-
             if (target) {
                 target.createdBy = Org.get(params.createdBy)
                 target.legallyObligedBy = Org.get(params.legallyObligedBy)
@@ -753,8 +755,8 @@ class AdminController  {
             target.save()
         }
 
-        Map<String, Object> fsq = filterService.getOrgQuery(params)
-        List<Org> orgList = Org.executeQuery(fsq.query, fsq.queryParams)
+        FilterService.Result fsr = filterService.getOrgQuery(params)
+        List<Org> orgList = Org.executeQuery(fsr.query, fsr.queryParams)
         result.orgList = orgList.drop(result.offset).take(result.max)
         result.orgListTotal = orgList.size()
 
@@ -765,14 +767,27 @@ class AdminController  {
     }
 
     /**
-     * Call to view a list of organisations which may be merged. Currently only providers and agencies are being supported
+     * Call to view a list of providers which may be merged
      * because of possible conflicts with the user data registered to institutions
      */
     @Secured(['ROLE_ADMIN'])
-    def mergeOrganisations() {
+    def mergeProviders() {
         Map<String, Object> result = [:]
         if(params.containsKey('source') && params.containsKey('target')) {
-            result = organisationService.mergeOrganisations(genericOIDService.resolveOID(params.source), genericOIDService.resolveOID(params.target), false)
+            result = providerService.mergeProviders(genericOIDService.resolveOID(params.source), genericOIDService.resolveOID(params.target), false)
+        }
+        result
+    }
+
+    /**
+     * Call to view a list of providers which may be merged
+     * because of possible conflicts with the user data registered to institutions
+     */
+    @Secured(['ROLE_ADMIN'])
+    def mergeVendors() {
+        Map<String, Object> result = [:]
+        if(params.containsKey('source') && params.containsKey('target')) {
+            result = vendorService.mergeVendors(genericOIDService.resolveOID(params.source), genericOIDService.resolveOID(params.target), false)
         }
         result
     }
@@ -884,14 +899,14 @@ SELECT * FROM (
      *     <li>replace a property definition by another</li>
      * </ul>
      * @return a list of property definitions with commands
-     * @see de.laser.ajax.AjaxController#addCustomPropertyType()
      */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def managePropertyDefinitions() {
 
         if (params.cmd){
-            PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
+            PropertyDefinition pd = PropertyDefinition.get(params.long('pd'))
+
             switch(params.cmd) {
                 case 'toggleMandatory':
                     if(pd) {
@@ -926,8 +941,25 @@ SELECT * FROM (
                         String newName = pdTo.tenant ? "${pdTo.getI10n("name")} (priv.)" : pdTo.getI10n("name")
                         if (pdFrom && pdTo) {
                             try {
-                                int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo, params.overwrite == 'on', true)
-                                flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName]) as String
+                                Map<String, Integer> counts = propertyService.replacePropertyDefinitions(pdFrom, pdTo, params.overwrite == 'on', true)
+                                if(counts.success == 0 && counts.failures == 0) {
+                                    String instanceType
+                                    switch(pdFrom.descr) {
+                                        case PropertyDefinition.LIC_PROP: instanceType = message(code: 'menu.institutions.replace_prop.licenses')
+                                            break
+                                        case PropertyDefinition.PRS_PROP: instanceType = message(code: 'menu.institutions.replace_prop.persons')
+                                            break
+                                        case PropertyDefinition.SUB_PROP: instanceType = message(code: 'menu.institutions.replace_prop.subscriptions')
+                                            break
+                                        case PropertyDefinition.SVY_PROP: instanceType = message(code: 'menu.institutions.replace_prop.surveys')
+                                            break
+                                        default: instanceType = message(code: 'menu.institutions.replace_prop.default')
+                                            break
+                                    }
+                                    flash.message = message(code: 'menu.institutions.replace_prop.noChanges', args: [instanceType]) as String
+                                }
+                                else
+                                    flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [counts.success, counts.failures, oldName, newName]) as String
                             }
                             catch (Exception e) {
                                 e.printStackTrace()
@@ -1023,25 +1055,13 @@ SELECT * FROM (
                 else if (rdvTo && rdvTo.owner == rdvFrom.owner) {
                     check = true
                 }
-//                else if (! rdvTo && params.xcgRdvGlobalTo) {
-//
-//                    List<String> pParts = params.xcgRdvGlobalTo.split(':')
-//                    if (pParts.size() == 2) {
-//                        RefdataCategory rdvToCat = RefdataCategory.getByDesc(pParts[0].trim())
-//                        RefdataValue rdvToRdv = RefdataValue.getByValueAndCategory(pParts[1].trim(), pParts[0].trim())
-//
-//                        if (rdvToRdv && rdvToRdv.owner == rdvToCat ) {
-//                            rdvTo = rdvToRdv
-//                            check = true
-//                        }
-//                    }
-//                }
-
                 if (check) {
                     try {
                         int count = refdataService.replaceRefdataValues(rdvFrom, rdvTo)
-
-                        flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo} ersetzt."
+                        if(count == 0)
+                            flash.message = "Es mussten keine Referenzwerte ausgetauscht werden."
+                        else
+                            flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo} ersetzt."
                     }
                     catch (Exception e) {
                         log.error( e.toString() )
@@ -1226,6 +1246,11 @@ SELECT * FROM (
         redirect(action: 'listMailTemplates')
     }
 
+    /**
+     * Loads every {@link Subscription} where {@link PermanentTitle} records are supposed to be by definition but have not been generated
+     * @see Subscription#hasPerpetualAccess
+     * @see IssueEntitlement
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def missingPermantTitlesInSubs() {
@@ -1252,79 +1277,18 @@ SELECT * FROM (
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def packageLaserVsWekb() {
-
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        if (!apiSource) {
-            redirect controller: 'package', action: 'list'
-            return
-        }
-        Map<String, Object> result = [
-                flagContentGokb : true // gokbService.executeQuery
-        ]
+        Map<String, Object> result = [:]
         result.user = contextService.getUser()
         SwissKnife.setPaginationParams(result, params, result.user)
-
-        result.editUrl = apiSource.editUrl
-
-        Map<String, Object> queryParams = [componentType: "Package"]
-        if (params.q) {
-            result.filterSet = true
-            queryParams.name = params.q
-            queryParams.ids = ["Anbieter_Produkt_ID,${params.q}", "isil,${params.q}"]
-        }
-
-        if(params.status) {
-            result.filterSet = true
-        }
-        else if(!params.status) {
-            params.status = ['Current', 'Expected', 'Retired', 'Deleted']
-        }
-        queryParams.status = params.status
-
-        if (params.provider) {
-            result.filterSet = true
-            queryParams.provider = params.provider
-        }
-
-        if (params.curatoryGroup) {
-            result.filterSet = true
-            queryParams.curatoryGroupExact = params.curatoryGroup
-        }
-
-        if (params.ddc) {
-            result.filterSet = true
-            Set<String> selDDC = []
-            params.list("ddc").each { String key ->
-                selDDC << RefdataValue.get(key).value
-            }
-            queryParams.ddc = selDDC
-        }
-
-        //you rarely encounter it; ^ is the XOR operator in Java - if both options are set, we mean all curatory group types
-        if (params.containsKey('curatoryGroupProvider') ^ params.containsKey('curatoryGroupOther')) {
-            result.filterSet = true
-            if(params.curatoryGroupProvider)
-                queryParams.curatoryGroupType = "Provider"
-            else if(params.curatoryGroupOther)
-                queryParams.curatoryGroupType = "Other" //setting to this includes also missing ones, this is already implemented in we:kb
-        }
-
-        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
-        if(!params.sort)
-            params.sort = 'name'
-        if(queryCuratoryGroups.code == 404) {
-            result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
-        }
-        else {
-            if (queryCuratoryGroups.warning) {
-                List recordsCuratoryGroups = queryCuratoryGroups.warning.result
-                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
-            }
-            result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
-
-            result.putAll(gokbService.doQuery(result, params.clone(), queryParams))
-        }
-
+        result.filterConfig = [['q', 'pkgStatus'],
+                               ['provider', 'ddc', 'curatoryGroup'],
+                               ['curatoryGroupType', 'automaticUpdates']]
+        result.tableConfig = ['lineNumber', 'name', 'status', 'counts', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay']
+        if(SpringSecurityUtils.ifAnyGranted('ROLE_YODA'))
+            result.tableConfig << 'yodaActions'
+        result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
+        result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
+        result.putAll(packageService.getWekbPackages(params.clone()))
         result
     }
 }

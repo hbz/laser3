@@ -9,7 +9,7 @@
             <laser:render template="actions" />
         </ui:controlButtons>
 
-        <ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
+        <ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleProviders="${providerRoles}">
             <laser:render template="iconSubscriptionIsChild"/>
             <ui:xEditable owner="${subscription}" field="name" />
         </ui:h1HeaderWithIcon>
@@ -38,7 +38,7 @@
 
         <laser:script file="${this.getGroovyPageFileName()}">
             $('*[id^=query-chooser-1]').on ('change', function (e) {
-                var value = $(e.target).dropdown('get value');
+                let value = $(e.target).dropdown('get value');
                 if (value) {
                     $('#chart-chooser').removeAttr('disabled').parent().removeClass('disabled');
 
@@ -55,7 +55,7 @@
             })
 
             $('*[id^=query-chooser-2]').on ('change', function (e) {
-                var value = $(e.target).dropdown('get value');
+                let value = $(e.target).dropdown('get value');
                 if (value) {
                     $('#chart-chooser').attr('disabled', 'disabled').parent().addClass('disabled')
                     $('#chart-chooser').dropdown('set selected', 'bar');
@@ -139,10 +139,12 @@
 
                             JSPC.app.reporting.current.chart.echart = echart;
 
-                            $('#query-export-button').removeAttr('disabled');
-                            if (JSPC.app.reporting.current.request.query.indexOf('timeline-') == 0) {
+                            let escQuery = JSPC.app.reporting.current.request.query.replaceAll('*', '\\*')
+                            let $dhs = $('#queryHelpModal .help-section[data-help-section=' + escQuery + ']');
+                            if ($dhs.length) {
                                 $('#query-help-button').removeAttr('disabled');
                             }
+                            $('#query-export-button').removeAttr('disabled');
                         }
                     })
                     .fail (function (data) {

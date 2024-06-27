@@ -2,6 +2,9 @@ package de.laser.reporting.report.local
 
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
+/**
+ * Container class for the report configurations holding for each subscription type
+ */
 class SubscriptionXCfg {
 
     static Map<String, Object> CONFIG = [
@@ -153,6 +156,11 @@ class SubscriptionXCfg {
                                             chartLabels     : [ 'package.1', 'package.2', 'package.3' ]
                                     ],
                                     'timeline-annualMember-subscription' : [
+                                            detailsTemplate : 'timeline/subscription',
+                                            chartTemplate   : 'timeline/annualMember',
+                                            chartLabels     : [ 'annualMember-subscription' ]
+                                    ],
+                                    'timeline-referenceYearMember-subscription' : [
                                             detailsTemplate : 'timeline/subscription',
                                             chartTemplate   : 'timeline/annualMember',
                                             chartLabels     : [ 'annualMember-subscription' ]

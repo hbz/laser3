@@ -54,43 +54,25 @@ class MailSendService {
      * @return a {@link Map} containing the details of the mail to be sent
      */
     Map mailSendConfigBySurvey(SurveyInfo surveyInfo, boolean reminderMail) {
-        Map<String, Object> result = [:]
-        String ownerFromMail
-        if(OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
-            ownerFromMail = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
-        }
-
-        result.mailReplyTo = ownerFromMail ?: ''
-        result.mailFrom = fromMail
-        result.mailSubject = ""
-        result.mailText = ""
-
-        Locale language = new Locale("de")
-
-        result.mailSubject = subjectSystemPraefix
-        if(reminderMail) {
-            Object[] args
-            result.mailSubject = result.mailSubject + ' ' + messageSource.getMessage('email.subject.surveysReminder', args, language)
-        }
-
-        result.mailSubject = result.mailSubject + ' ' + surveyInfo.name + ' ('+surveyInfo.type.getI10n('value', language)+')'
-        result.mailSubject = escapeService.replaceUmlaute(result.mailSubject)
-
-        result.mailText = surveyService.surveyMailTextAsString(surveyInfo, reminderMail)
-
-
+        Map<String, Object> result =  mailSendConfigBySurveys([surveyInfo], reminderMail)
         result
     }
 
+    /**
+     * Identical to {@link #mailSendConfigBySurvey(de.laser.survey.SurveyInfo, boolean)}, but expecting a list whose first element is being processed
+     * @param surveys the survey and its members to be notified
+     * @param reminderMail is the mail a reminder mail?
+     * @return a {@link Map} containing the details of the mail to be sent
+     */
     Map mailSendConfigBySurveys(List<SurveyInfo> surveys, boolean reminderMail) {
         Map<String, Object> result = [:]
 
-        String ownerFromMail
+        String ownerReplyTo
         if(OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
-            ownerFromMail = OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
+            ownerReplyTo = OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
         }
 
-        result.replyTo = ownerFromMail ?: ''
+        result.replyTo = ownerReplyTo ?: ''
         result.mailFrom = fromMail
         result.mailSubject = ""
         result.mailText = ""
@@ -126,9 +108,9 @@ class MailSendService {
 
         FlashScope flash = getCurrentFlashScope()
 
-        String ownerFromMail
+        String ownerReplyTo
         if(OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
-            ownerFromMail = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
+            ownerReplyTo = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
         }
 
         result.mailFrom = fromMail
@@ -143,8 +125,8 @@ class MailSendService {
             result.surveyConfig = surveyInfo.surveyConfigs[0]
             String replyToMail
 
-            if(ownerFromMail){
-                replyToMail = ownerFromMail
+            if(ownerReplyTo){
+                replyToMail = ownerReplyTo
             }else {
                 List generalContactsEMails = []
 
@@ -271,14 +253,23 @@ class MailSendService {
         result
     }
 
+    /**
+     * Identical to {@link #mailSendProcessBySurvey(de.laser.survey.SurveyInfo, boolean, grails.web.servlet.mvc.GrailsParameterMap)} but expecting a list whose first element is being processed
+     * @param surveys the survey whose participants should be notified
+     * @param reminderMail is this a reminder mail?
+     * @param parameterMap the request parameter map, containing also the mail header and body which are being submitted via form
+     * @return a ${link Map} containing the details of and about the mail to be send
+     * @see #mailSendConfigBySurveys(java.util.List, boolean)
+     * @see SurveyInfo
+     */
     Map mailSendProcessBySurveys(List<SurveyInfo> surveys, boolean reminderMail, Org org, GrailsParameterMap parameterMap) {
         Map<String, Object> result = [:]
 
         FlashScope flash = getCurrentFlashScope()
 
-        String ownerFromMail
+        String ownerReplyTo
         if(OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
-            ownerFromMail = OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
+            ownerReplyTo = OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
         }
 
         result.mailFrom = fromMail
@@ -288,8 +279,8 @@ class MailSendService {
 
         if (result.editable) {
             String replyToMail
-            if(ownerFromMail){
-                replyToMail = ownerFromMail
+            if(ownerReplyTo){
+                replyToMail = ownerReplyTo
             }else{
                 List generalContactsEMails = []
 
@@ -390,15 +381,15 @@ class MailSendService {
                             ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
                         }
 
-                        String ownerFromMail
+                        String ownerReplyTo
                         if(OrgSetting.get(survey.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
-                            ownerFromMail = OrgSetting.get(survey.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
+                            ownerReplyTo = OrgSetting.get(survey.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
                         }
 
                         String mailFrom = fromMail
 
-                        if(ownerFromMail){
-                            replyToMail = ownerFromMail
+                        if(ownerReplyTo){
+                            replyToMail = ownerReplyTo
                         }else {
 
                             List generalContactsEMails = []
@@ -517,7 +508,7 @@ class MailSendService {
 
                             List surveyResults = []
 
-                            surveyInfo.surveyConfigs[0].getSortedSurveyProperties().each { PropertyDefinition propertyDefinition ->
+                            surveyInfo.surveyConfigs[0].getSortedProperties().each { PropertyDefinition propertyDefinition ->
                                 surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
                             }
 
@@ -566,7 +557,7 @@ class MailSendService {
         if (surveyInfo.owner) {
             List surveyResults = []
 
-            surveyInfo.surveyConfigs[0].getSortedSurveyProperties().each { PropertyDefinition propertyDefinition ->
+            surveyInfo.surveyConfigs[0].getSortedProperties().each { PropertyDefinition propertyDefinition ->
                 surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
             }
 

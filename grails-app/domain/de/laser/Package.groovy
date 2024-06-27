@@ -5,7 +5,6 @@ import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.convenience.Marker
 import de.laser.interfaces.MarkerSupport
-import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
@@ -53,6 +52,7 @@ class Package extends AbstractBaseWithCalculatedLastUpdated implements MarkerSup
     boolean isPublic = false
 
     Platform nominalPlatform
+    Provider provider
     Date startDate
     Date endDate
     Set pendingChanges
@@ -67,9 +67,8 @@ class Package extends AbstractBaseWithCalculatedLastUpdated implements MarkerSup
     Date lastUpdatedCascading
 
 static hasMany = [  tipps:     TitleInstancePackagePlatform,
-                    orgs:      OrgRole,
+                    vendors:   PackageVendor,
                     prsLinks:  PersonRole,
-                    documents: DocContext,
                     subscriptions:  SubscriptionPackage,
                     pendingChanges: PendingChange,
                     ids: Identifier,
@@ -78,9 +77,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     altnames: AlternativeName]
 
   static mappedBy = [tipps:     'pkg',
-                     orgs:      'pkg',
                      prsLinks:  'pkg',
-                     documents: 'pkg',
                      subscriptions: 'pkg',
                      pendingChanges: 'pkg',
                      ids:       'pkg',
@@ -103,6 +100,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                breakable column:'pkg_breakable_rv_fk'
               consistent column:'pkg_consistent_rv_fk'
          nominalPlatform column:'pkg_nominal_platform_fk'
+                provider column:'pkg_provider_fk' //was orgRole with pkg != null
                startDate column:'pkg_start_date',   index:'pkg_dates_idx'
                  endDate column:'pkg_end_date',     index:'pkg_dates_idx'
                 isPublic column:'pkg_is_public'
@@ -116,9 +114,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                  lastUpdated column: 'pkg_last_updated'
         lastUpdatedCascading column: 'pkg_last_updated_cascading'
 
-            orgs            batchSize: 10
             prsLinks        batchSize: 10
-            documents       batchSize: 10
             subscriptions   batchSize: 10
             ids             sort: 'ns', batchSize: 10
             ddcs            batchSize: 10
@@ -130,6 +126,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                contentType (nullable:true)
              packageStatus (nullable:true)
            nominalPlatform (nullable:true)
+                  provider (nullable:true) //because of initial migration holes
                  breakable (nullable:true)
                 consistent (nullable:true)
                  startDate (nullable:true)
@@ -155,31 +152,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     def afterUpdate() {
         super.afterUpdateHandler()
     }
-
-    /**
-     * Gets the content provider of this package
-     * @return the {@link Org} linked to this package by {@link OrgRole} of type Content Provider or Provider
-     */
-  @Transient
-  Org getContentProvider() {
-    Org result = orgs.find { OrgRole or ->
-      or.roleType in [RDStore.OR_CONTENT_PROVIDER, RDStore.OR_PROVIDER]
-    }?.org
-    result
-  }
-
-    /**
-     * Gets the agencies / vendors of this package
-     * @return the {@link Set} of {@link Org}s linked to this package by {@link OrgRole} of type Agency
-     */
-  @Transient
-  Set<Org> getAgencies() {
-    Set<Org> result = []
-    result.addAll(orgs.findAll { OrgRole or ->
-      or.roleType == RDStore.OR_AGENCY
-    }.org)
-    result
-  }
 
     /**
      * Outputs this package's name and core data for labelling
@@ -365,5 +337,10 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         withTransaction {
             Marker.findByPkgAndUserAndType(this, user, type).delete(flush:true)
         }
+    }
+
+    String getPackageSize(){
+
+        return '(<span data-tooltip="Titel im Paket"><i class="ui icon book"></i></span>' + executeQuery('select count(*) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current',[ctx:this,current:RDStore.TIPP_STATUS_CURRENT])[0] + ')'
     }
 }

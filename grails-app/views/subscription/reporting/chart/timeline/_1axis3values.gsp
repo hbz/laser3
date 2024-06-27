@@ -31,9 +31,9 @@ JSPC.app.reporting.current.chart.option = {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
         formatter (params) {
-            // var index = JSPC.app.reporting.current.chart.option.dataset.dimensions.length - 1
-            var str = params[0].data[5]
-            for (var i=0; i<params.length; i++) {
+            // let index = JSPC.app.reporting.current.chart.option.dataset.dimensions.length - 1
+            let str = params[0].data[5]
+            for (let i=0; i<params.length; i++) {
                 str += JSPC.app.reporting.helper.tooltip.getEntry(params[i].marker, params[i].seriesName, params[i].data[ 4 - params[i].seriesIndex ])
             }
             return str

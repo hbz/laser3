@@ -1,14 +1,16 @@
 <%@ page import="de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.AuditConfig" %>
 <laser:serviceInjection/>
+    <%
+        SortedSet<PropertyDefinition> allProperties = new TreeSet<PropertyDefinition>()
+        allProperties.addAll(PropertyDefinition.findAllByTenantIsNullAndDescr(PropertyDefinition.SUB_PROP) + PropertyDefinition.findAllByTenantAndDescr(contextOrg, PropertyDefinition.SUB_PROP))
+    %>
 
-    <g:set var="allProperties"
-           value="${PropertyDefinition.findAllByTenantIsNullAndDescr(PropertyDefinition.SUB_PROP) + PropertyDefinition.findAllByTenantAndDescr(contextOrg, PropertyDefinition.SUB_PROP)}"/>
 
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
             <div class="ui two column very relaxed grid">
                 <div class="column">
-                        <g:form action="${actionName}" method="post" class="ui form" id="${params.id}" params="[tab: params.tab]">
+                        <g:form action="${actionName}" method="post" class="ui form" id="${params.id}" params="[tab: params.tab, showMembersSubWithMultiYear: params.showMembersSubWithMultiYear]">
                             <div class="fields" style="margin-bottom: 0">
 
                                 <laser:render template="/templates/properties/genericFilter"
@@ -23,7 +25,7 @@
                 </div>
                 <div class="column">
                         <g:form action="${actionName}" method="post" class="ui form" id="${params.id}"
-                                params="[tab: params.tab]">
+                                params="[tab: params.tab, showMembersSubWithMultiYear: params.showMembersSubWithMultiYear]">
                             <div class="fields" style="margin-bottom: 0">
                                 <laser:render template="/templates/properties/genericFilter"
                                           model="[propList: allProperties, hideFilterProp: true, newfilterPropDefName: 'propertiesFilterPropDef',label:message(code: 'subscriptionsManagement.allProperties')]"/>
@@ -124,7 +126,7 @@
                                               data-content="Anzahl der allg. Merkmale in der Lizenz"
                                               data-position="top right">
                                             <ui:totalNumber
-                                                    total="${SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty where owner = :sub AND ((tenant = :contextOrg OR tenant is null) OR (tenant != :contextOrg AND isPublic = true)) AND type.tenant is null', [contextOrg: contextOrg, sub: subscription])[0] }"/>
+                                                    total="${subscriptionService.countCustomSubscriptionPropertiesOfSub(contextOrg, subscription)}"/>
                                         </span>
                                     </div>
 
@@ -210,7 +212,7 @@
                                               data-content="Anzahl der priv. Merkmale in der Lizenz"
                                               data-position="top right">
                                             <ui:totalNumber
-                                                    total="${SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg)', [contextOrg: contextOrg, sub: subscription])[0] }"/>
+                                                    total="${subscriptionService.countPrivateSubscriptionPropertiesOfSub(contextOrg, subscription)}"/>
                                         </span>
                                     </div>
 
@@ -417,7 +419,7 @@
                 </thead>
                 <tbody>
                 <g:each in="${filteredSubscriptions}" status="i" var="sub">
-                    <g:set var="subscr" value="${sub.getSubscriber()}"/>
+                    <g:set var="subscr" value="${sub.getSubscriberRespConsortia()}"/>
                     <tr>
                         <g:if test="${editable}">
                             <td>
@@ -480,7 +482,7 @@
                                                   data-content="Anzahl der allg. Merkmale in der Lizenz"
                                                   data-position="top right">
                                                 <ui:totalNumber
-                                                        total="${SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty where owner = :sub AND (tenant = :contextOrg OR tenant is null OR (tenant != :contextOrg AND isPublic = true)) AND type.tenant is null', [contextOrg: contextOrg, sub: sub])[0] }"/>
+                                                        total="${subscriptionService.countCustomSubscriptionPropertiesOfSub(contextOrg, sub)}"/>
                                             </span>
                                         </div>
 
@@ -552,7 +554,7 @@
                                                   data-content="Anzahl der priv. Merkmale in der Lizenz"
                                                   data-position="top right">
                                                 <ui:totalNumber
-                                                        total="${SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg)', [contextOrg: contextOrg, sub: sub])[0] }"/>
+                                                        total="${subscriptionService.countPrivateSubscriptionPropertiesOfSub(contextOrg, sub)}"/>
                                             </span>
                                         </div>
 

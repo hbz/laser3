@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.helper.Icons; de.laser.helper.Params; de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart message="currentSurveys.label" serviceInjection="true" />
 
@@ -7,7 +7,7 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
-    <ui:exportDropdown>
+%{--    <ui:exportDropdown>
         <ui:exportDropdownItem>
             <g:link class="item" controller="survey" action="currentSurveysConsortia"
                     params="${params + [exportXLSX: true]}">${message(code: 'survey.exportSurveys')}</g:link>
@@ -16,7 +16,7 @@
             <g:link class="item" controller="survey" action="currentSurveysConsortia"
                     params="${params + [exportXLSX: true, surveyCostItems: true]}">${message(code: 'survey.exportSurveyCostItems')}</g:link>
         </ui:exportDropdownItem>
-    </ui:exportDropdown>
+    </ui:exportDropdown>--}%
     <laser:render template="actions"/>
 </ui:controlButtons>
 
@@ -154,6 +154,33 @@
                                    tabindex="0">
                         </div>
                     </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkPackageSurvey">${message(code: 'surveyconfig.packageSurvey.label')}</label>
+                            <input id="checkPackageSurvey" name="checkPackageSurvey" type="checkbox"
+                                   <g:if test="${params.checkPackageSurvey}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkVendorSurvey">${message(code: 'surveyconfig.vendorSurvey.label')}</label>
+                            <input id="checkVendorSurvey" name="checkVendorSurvey" type="checkbox"
+                                   <g:if test="${params.checkVendorSurvey}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkInvoicingInformation">${message(code: 'surveyconfig.invoicingInformation.label')}</label>
+                            <input id="checkInvoicingInformation" name="checkInvoicingInformation" type="checkbox"
+                                   <g:if test="${params.checkInvoicingInformation}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -196,7 +223,7 @@
 
             <th rowspan="2" scope="col">
                 <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfigDocs.label')}" data-position="top center">
-                    <i class="file alternate large icon"></i>
+                    <i class="${Icons.DOCUMENT} large icon"></i>
                 </a>
             </th>
 
@@ -320,7 +347,7 @@
 
 
                 <td class="center aligned">
-                    <g:if test="${surveyConfig && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION && !surveyConfig.pickAndChoose && surveyInfo.type in [RDStore.SURVEY_TYPE_RENEWAL, RDStore.SURVEY_TYPE_SUBSCRIPTION]}">
+                    <g:if test="${surveyConfig && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
                         <g:link controller="survey" action="surveyCostItems" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]" class="ui icon">
                             <div class="ui circular ${surveyConfig.costItemsFinish ? "green" : ""} label">
@@ -365,6 +392,15 @@
                             aria-label="${message(code: 'ariaLabel.change.universal')}">
                         <i class="pencil icon"></i>
                     </g:link>
+
+                    <g:if test="${editable}">
+                        <g:link controller="survey" action="copySurvey" id="${surveyInfo.id}"
+                                params="[surveyConfigID: surveyConfig.id, q: surveyConfig?.subscription?.providers ? surveyConfig.subscription.providers[0].name : '']"
+                                class="ui icon blue button la-modern-button">
+                            <i class="icon copy"></i>
+                            </div>
+                        </g:link>
+                    </g:if>
                 </td>
 
 

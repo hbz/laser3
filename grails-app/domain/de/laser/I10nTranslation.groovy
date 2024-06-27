@@ -52,7 +52,7 @@ class I10nTranslation {
     // -- getter and setter --
 
     /**
-     *
+     * Gets the translated object for the given object's given field
      * @param reference the reference object to look for
      * @param referenceField the field to which internationalisation should be retrieved
      * @return the internationalisation object for the given object's field

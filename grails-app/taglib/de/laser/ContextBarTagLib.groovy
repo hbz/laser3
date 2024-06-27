@@ -3,6 +3,7 @@ package de.laser
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.convenience.Marker
+import de.laser.helper.Icons
 import de.laser.interfaces.MarkerSupport
 
 class ContextBarTagLib {
@@ -165,44 +166,59 @@ class ContextBarTagLib {
 
     def cbItemMarkerAction = { attrs, body ->
 
-        MarkerSupport obj   = (attrs.org ?: attrs.package ?: attrs.platform) as MarkerSupport
-        boolean isMarked    = obj.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)
-        String tt           = '?'
-        String tt_list      = message(code: 'marker.WEKB_CHANGES')
+        MarkerSupport obj   = (attrs.org ?: attrs.package ?: attrs.platform ?: attrs.provider ?: attrs.vendor ?: attrs.tipp) as MarkerSupport
+        Marker.TYPE mType   = attrs.type ? Marker.TYPE.get(attrs.type as String) : Marker.TYPE.UNKOWN // TODO
+        boolean isMarked    = obj.isMarked(contextService.getUser(), mType)
+        String tt           = ''
+        String tt_list      = message(code: 'marker.' + mType.value)
 
         if (attrs.org) {
-            tt = isMarked ? 'Der Anbieter/Lieferant ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um den Anbieter/Lieferant auf die ' + tt_list + ' zu setzen.'
+            tt = isMarked ? 'Das Objekt' : 'das Objekt'
         }
         else if (attrs.package) {
-            tt = isMarked ? 'Das Paket ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um das Paket auf die ' + tt_list + ' zu setzen.'
+            tt = isMarked ? 'Das Paket' : 'das Paket'
         }
         else if (attrs.platform) {
-            tt = isMarked ? 'Der Plattform ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um die Plattform auf die ' + tt_list + ' zu setzen.'
+            tt = isMarked ? 'Die Plattform' : 'die Plattform'
+        }
+        else if (attrs.provider) {
+            tt = isMarked ? 'Der Anbieter' : 'den Anbieter'
+        }
+        else if (attrs.vendor) {
+            tt = isMarked ? 'Der Lieferant' : 'den Lieferanten'
+        }
+        else if (attrs.tipp) {
+            tt = isMarked ? 'Der Titel' : 'den Titel'
+        }
+
+        if (tt) {
+            tt = isMarked   ? tt + ' ist auf der Beobachtungsliste (' + tt_list + '). Anklicken, um zu entfernen.'
+                            : 'Anklicken, um ' + tt + ' auf die Beobachtungsliste (' + tt_list + ') zu setzen.'
+        }
+        else {
+            tt = '???'
         }
 
         if (obj) {
             Map<String, Object> jsMap = [
                     controller:     'ajax',
                     action:         'toggleMarker',
-                    data:           '{oid:\'' + genericOIDService.getOID(obj) + '\', type:\'' + Marker.TYPE.WEKB_CHANGES + '\'}',
+                    data:           '{oid:\'' + genericOIDService.getOID(obj) + '\', type:\'' + mType + '\'}',
                     update:         '#marker-' + obj.id,
                     successFunc:    'tooltip.init(\'#marker-' + obj.id + '\')'
             ]
 
             if (attrs.simple) {
-                jsMap.data = '{oid:\'' + genericOIDService.getOID(obj) + '\', type:\'' + Marker.TYPE.WEKB_CHANGES + '\', simple: true}'
+                jsMap.data = '{oid:\'' + genericOIDService.getOID(obj) + '\', type:\'' + mType + '\', simple: true}'
                 String onClick = ui.remoteJsToggler(jsMap)
 
                 if (! attrs.ajax) {
-                    out << '<span id="marker-' + obj.id + '" style="margin-left:1em;">'
+                    out << '<span id="marker-' + obj.id + '">'
                 }
 
                 out <<      '<a class="ui icon label la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
                 out <<          'data-content="' + tt + '" data-position="top right">'
-                out <<              '<i class="icon purple bookmark' + (isMarked ? '' : ' outline') + '"></i>'
+                out <<              '<i class="' + Icons.MARKER + ' icon purple' + (isMarked ? '' : ' outline') + '"></i>'
                 out <<      '</a>'
 
                 if (! attrs.ajax) {
@@ -218,7 +234,7 @@ class ContextBarTagLib {
 
                 out <<      '<div class="ui icon button purple ' + (isMarked ? 'active' : ' inactive ') + ' la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
                 out <<          'data-content="' + tt + '" data-position="top right">'
-                out <<              '<i class="icon ' + (isMarked ? 'bookmark' : ' la-bookmark slash' ) + '"></i>'
+                out <<              '<i class="' + (isMarked ? Icons.MARKER : 'la-bookmark slash' ) + ' icon"></i>'
                 out <<      '</div>'
 
                 if (! attrs.ajax) {

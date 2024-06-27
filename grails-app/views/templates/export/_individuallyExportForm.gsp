@@ -21,7 +21,7 @@
             <g:each in="${totalFields}" var="fields" status="i">
                 <g:if test="${fields.value.fields.size() > 0}">
                     <a class="${("tab-${i}" == "tab-0") ? 'active' : ''}  item"
-                       data-tab="tab-${i}">${fields.value.message ? message(code: fields.value.message) : fields.value.label}</a>
+                       data-tab="tab-${i}">${fields.value.message ? message(code: fields.value.message) : fields.value.label} (<div id="numberOfChecked-tab-${i}"></div>)</a>
                 </g:if>
                 <g:else>
                     <a class="disabled item"
@@ -309,8 +309,12 @@
                         <input type=checkbox id="exportOnlyContactPersonForInstitution" name="exportOnlyContactPersonForInstitution" value="true" checked="checked"/>
                     </div>
                     <div class="ui checkbox">
-                        <label for="exportOnlyContactPersonForProviderAgency"><g:message code="person.contactPersonForProviderAgency.label"/></label>
-                        <input type="checkbox" id="exportOnlyContactPersonForProviderAgency" name="exportOnlyContactPersonForProviderAgency" value="true" checked="checked"/>
+                        <label for="exportOnlyContactPersonForProvider"><g:message code="person.contactPersonForProvider.label"/></label>
+                        <input type="checkbox" id="exportOnlyContactPersonForProvider" name="exportOnlyContactPersonForProvider" value="true" checked="checked"/>
+                    </div>
+                    <div class="ui checkbox">
+                        <label for="exportOnlyContactPersonForVendor"><g:message code="person.contactPersonForVendor.label"/></label>
+                        <input type="checkbox" id="exportOnlyContactPersonForVendor" name="exportOnlyContactPersonForVendor" value="true" checked="checked"/>
                     </div>
                 </div>
             </div>
@@ -329,12 +333,12 @@
                 <label>${message(code: 'default.export.cfg.csv')}
                     <g:if test="${accessPointNotice}">
                         <span data-tooltip="${message(code: 'exportClickMe.exportCSV.noAccessPoints')}">
-                            <i class="question circle icon"></i>
+                            <i class="grey question circle icon"></i>
                         </span>
                     </g:if>
                     <g:if test="${currentTabNotice}">
                         <span data-tooltip="${message(code: 'exportClickMe.exportCSV.currentTabOnly')}">
-                            <i class="question circle icon"></i>
+                            <i class="grey question circle icon"></i>
                         </span>
                     </g:if>
                 </label>
@@ -363,6 +367,7 @@
             </div>
 
             <div class="wide two field">
+                <label></label>
                 <g:set var="format" value="${overrideFormat ?: [xlsx: 'XLSX', csv: 'CSV', pdf: 'PDF']}"/>
                 <g:select name="fileformat" id="fileformat-query" class="ui selection dropdown la-not-clearable"
                           optionKey="key" optionValue="value"
@@ -371,6 +376,7 @@
             </div>
 
             <div class="wide two field">
+                <label></label>
                 <button class="ui button positive right floated export" value="exportClickMeExcel">Export</button>
                 <%-- disused
                 <br>
@@ -387,6 +393,36 @@
             </div>
 
         </div><!-- .fields -->
+
+        <g:if test="${showClickMeConfigSave}">
+            <g:if test="${enableClickMeConfigSave}">
+                <div class="fields">
+            </g:if>
+            <g:else>
+                <div class="fields disabled la-popup-tooltip la-delay" data-position="left center" data-content="${message(code:'tooltip.onlyFullMembership')}">
+            </g:else>
+                <div class="wide four field">
+                    <label for="clickMeConfigName">Export <g:message code="default.config.label"/> <g:message code="default.name.label"/></label>
+                    <input name="clickMeConfigName" id="clickMeConfigName" value=""/>
+                </div>
+
+                <div class="wide six field">
+                    <label for="clickMeConfigNote"><g:message code="default.note.label"/></label>
+                    <input name="clickMeConfigNote" id="clickMeConfigNote" value=""/>
+                </div>
+
+                <div class="wide five field">
+                    <label></label>
+                    <button class="ui button positive export" value="saveClickMeConfig" name="saveClickMeConfig">Export <g:message code="default.config.label"/> <g:message
+                            code="default.button.save"/> </button>
+                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: 'clickMeConfig.save.info')}">
+                        <i class="grey question circle icon la-popup"></i>
+                    </span>
+                </div>
+
+
+            </div><!-- .fields -->
+        </g:if>
     </div><!-- .form -->
 
 <laser:script file="${this.getGroovyPageFileName()}">
@@ -395,4 +431,14 @@
         $('#${modalID} *[id^=fileformat-query-]').addClass('hidden')
         $('#${modalID} *[id^=fileformat-query-' + $('#${modalID} select[name=fileformat]').val() + ']').removeClass('hidden')
     }).trigger('change');
+
+    $('#${modalID} input[type="checkbox"]').on( 'change', function() {
+    <%
+        totalFields.eachWithIndex { def fields, int i ->
+            String tmp = '$("#numberOfChecked-tab-'+i+'").html($'+"('[data-tab=tab-" + i + "]" + ' input[type="checkbox"]' + "').filter(':checked').length);"
+            println raw(tmp)
+        }
+    %>
+    }).trigger('change');
+
 </laser:script>

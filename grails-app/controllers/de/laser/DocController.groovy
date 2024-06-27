@@ -1,18 +1,15 @@
 package de.laser
 
-
-import de.laser.auth.User
-
 import de.laser.annotations.DebugInfo
+import de.laser.auth.User
 import de.laser.storage.RDStore
 import de.laser.utils.CodeUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
-import grails.core.GrailsClass
 import org.springframework.dao.DataIntegrityViolationException
 
 /**
- * This controller manages notes for subscriptions, licenses or organisations.
+ * This controller manages notes for subscriptions, licenses or organisations
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class DocController  {
