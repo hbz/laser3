@@ -724,10 +724,10 @@
 %{--                            color   : <%--}%
 %{--                                color = 'JSPC.colors.hex.grey'--}%
 %{--                                switch (status) {--}%
-%{--                                    case 'open':        color = 'JSPC.colors.hex.yellow'; break;--}%
-%{--                                    case 'finish':      color = 'JSPC.colors.hex.green'; break;--}%
+%{--                                    case 'open':        color = 'JSPC.colors.hex.green'; break;--}%
+%{--                                    case 'finish':      color = 'JSPC.colors.hex.blue'; break;--}%
 %{--                                    case 'termination': color = 'JSPC.colors.hex.red'; break;--}%
-%{--                                    case 'notFinish':   color = 'JSPC.colors.hex.blue'; break;--}%
+%{--                                    case 'notFinish':   color = 'JSPC.colors.hex.yellow'; break;--}%
 %{--                                }--}%
 %{--                                println color--}%
 %{--                            %>--}%
