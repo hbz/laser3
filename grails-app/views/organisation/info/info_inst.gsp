@@ -591,7 +591,7 @@
                             data    : [${subscriptionTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${subscriptionTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
                             color   : <%
-                                String color = 'JSPC.colors.hex.pink'
+                                String color = 'JSPC.colors.hex.grey'
                                 switch (RefdataValue.get(status)) {
                                     case RDStore.SUBSCRIPTION_CURRENT:      color = 'JSPC.colors.hex.green'; break;
                                     case RDStore.SUBSCRIPTION_EXPIRED:      color = 'JSPC.colors.hex.blue'; break;
@@ -652,7 +652,7 @@
                             data    : [${licenseTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${licenseTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
                             color   : <%
-                                color = 'JSPC.colors.hex.pink'
+                                color = 'JSPC.colors.hex.grey'
                                 switch (RefdataValue.get(status)) {
                                     case RDStore.LICENSE_CURRENT:      color = 'JSPC.colors.hex.green'; break;
                                     case RDStore.LICENSE_EXPIRED:      color = 'JSPC.colors.hex.blue'; break;
@@ -722,9 +722,9 @@
 %{--                            data    : [${surveyTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],--}%
 %{--                            raw     : [${surveyTimelineMap.values().collect{ it[status] ? it[status].collect{ it[0].id } : [] }.join(', ')}],--}%
 %{--                            color   : <%--}%
-%{--                                color = 'JSPC.colors.hex.pink'--}%
+%{--                                color = 'JSPC.colors.hex.grey'--}%
 %{--                                switch (status) {--}%
-%{--                                    case 'open':        color = 'JSPC.colors.hex.orange'; break;--}%
+%{--                                    case 'open':        color = 'JSPC.colors.hex.yellow'; break;--}%
 %{--                                    case 'finish':      color = 'JSPC.colors.hex.green'; break;--}%
 %{--                                    case 'termination': color = 'JSPC.colors.hex.red'; break;--}%
 %{--                                    case 'notFinish':   color = 'JSPC.colors.hex.blue'; break;--}%
@@ -796,12 +796,14 @@
                 $(statsId + ' tr[data-id]').hide()
 
                 $.each( $(statsId + ' .menu .item[data-tab^=' + t + ']'), function(i, e) {
-                    let yList = chartConfig.series[i].raw[y]
-                    JSPC.app.info.setCounter($(e), yList.length)
+                    if (chartConfig.series[i]) {
+                        let yList = chartConfig.series[i].raw[y]
+                        JSPC.app.info.setCounter($(e), yList.length)
 
-                    yList.forEach((f) => {
-                        $(statsId + ' tr[data-id=' + f + ']').show()
-                    })
+                        yList.forEach((f) => {
+                            $(statsId + ' tr[data-id=' + f + ']').show()
+                        })
+                    }
                 })
                 // chart.dispatchAction({ type: 'select', dataIndex: y })
                 $($(statsId + ' .menu .item[data-tab^=' + t + ']')[s]).trigger('click')
