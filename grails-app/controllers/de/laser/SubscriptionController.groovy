@@ -731,11 +731,11 @@ class SubscriptionController {
             String gng = org.getIdentifierByType('gnd_org_nr')?.value
             String deal = org.getIdentifierByType('deal_id')?.value
 
-            row.add(wibid != IdentifierNamespace.UNKNOWN ? wibid : '')
-            row.add(isil != IdentifierNamespace.UNKNOWN ? isil : '')
-            row.add(ror != IdentifierNamespace.UNKNOWN ? ror : '')
-            row.add(gng != IdentifierNamespace.UNKNOWN ? gng : '')
-            row.add(deal != IdentifierNamespace.UNKNOWN ? deal : '')
+            row.add((wibid != IdentifierNamespace.UNKNOWN && wibid != null) ? wibid : '')
+            row.add((isil != IdentifierNamespace.UNKNOWN && isil != null) ? isil : '')
+            row.add((ror != IdentifierNamespace.UNKNOWN && ror != null) ? ror : '')
+            row.add((gng != IdentifierNamespace.UNKNOWN && gng != null) ? gng : '')
+            row.add((deal != IdentifierNamespace.UNKNOWN && deal != null) ? deal : '')
 
             row.add(org.sortname)
             row.add(org.name)
