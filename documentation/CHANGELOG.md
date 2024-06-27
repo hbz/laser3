@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5783    27.06.2024  rc-3.4  3.4         Andreas Bug         Adresskopiermodal verarbeitete Befehle falsch
+
 5771    24.06.2024  rc-3.4  3.4         Andreas Feature     Anbieter-Filter erläutert
 
 5776    21.06.2024  rc-3.4  3.4         Andreas Feature     fehlende Relationen nachgereicht
