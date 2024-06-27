@@ -209,7 +209,7 @@ class PlatformQuery extends BaseQuery {
             struct.get(key).add( Long.parseLong(it.key) )
         }
         struct.eachWithIndex { it, idx ->
-            List d = [BaseQuery.NO_DATA_ID, getChartLabel(BaseQuery.NO_DATA_LABEL), it.value.size()]
+            List d = [BaseQuery.FAKE_DATA_ID_1, getChartLabel(BaseQuery.NO_DATA_LABEL), it.value.size()]
             if (it.key) {
                 RefdataValue rdv = RefdataValue.getByValueAndCategory(it.key, rdCategory)
                 if (rdv) {

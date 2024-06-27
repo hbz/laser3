@@ -22,7 +22,7 @@
                 ${message(code: 'default.overview.label')}
             </g:link>
 
-            <g:if test="${surveyConfig.subscription && subscription}">
+            <g:if test="${surveyConfig.subscription}">
                         <g:link class="item ${params.viewTab == 'additionalInformation' ? 'active' : ''}"
                                 controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
                                 params="${parame+[viewTab: 'additionalInformation']}">
@@ -200,7 +200,7 @@
             </g:if>
 
 
-            <g:if test="${params.viewTab == 'additionalInformation' && surveyConfig.subscription && subscription}">
+            <g:if test="${params.viewTab == 'additionalInformation' && surveyConfig.subscription}">
                 <div class="la-inline-lists">
                     <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig    : surveyConfig,
                                                                                           subscription    : subscription,

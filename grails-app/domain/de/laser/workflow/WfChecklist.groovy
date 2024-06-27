@@ -1,6 +1,7 @@
 package de.laser.workflow
 
 import de.laser.*
+import de.laser.helper.Icons
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
@@ -105,35 +106,35 @@ class WfChecklist {
             info.target = GrailsHibernateUtil.unwrapIfProxy(license)
             info.targetName = license.reference
             info.targetTitle = ms.getMessage('license.label', null, locale)
-            info.targetIcon = 'balance scale'
+            info.targetIcon = Icons.LICENSE
             info.targetController = 'lic'
         }
         else if (org) {
             info.target = GrailsHibernateUtil.unwrapIfProxy(org)
             info.targetName = org.name
             info.targetTitle = ms.getMessage('org.institution.label', null, locale) + '/' + ms.getMessage('provider.label', null, locale)
-            info.targetIcon = 'university'
+            info.targetIcon = Icons.ORG
             info.targetController = 'org'
         }
         else if (provider) {
             info.target = GrailsHibernateUtil.unwrapIfProxy(provider)
             info.targetName = provider.name
             info.targetTitle = ms.getMessage('provider.label', null, locale)
-            info.targetIcon = 'handshake'
+            info.targetIcon = Icons.PROVIDER
             info.targetController = 'provider'
         }
         else if (subscription) {
             info.target = GrailsHibernateUtil.unwrapIfProxy(subscription)
             info.targetName = subscription.name
             info.targetTitle = ms.getMessage('subscription.label', null, locale)
-            info.targetIcon = 'clipboard'
+            info.targetIcon = Icons.SUBSCRIPTION
             info.targetController = 'subscription'
         }
         else if (vendor) {
             info.target = GrailsHibernateUtil.unwrapIfProxy(vendor)
             info.targetName = vendor.name
             info.targetTitle = ms.getMessage('vendor.label', null, locale)
-            info.targetIcon = 'shipping fast'
+            info.targetIcon = Icons.VENDOR
             info.targetController = 'vendor'
         }
 

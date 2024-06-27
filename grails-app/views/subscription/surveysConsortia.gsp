@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyOrg; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.interfaces.CalculatedType; de.laser.survey.SurveyResult" %>
+<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyOrg; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.interfaces.CalculatedType; de.laser.survey.SurveyResult" %>
 <laser:htmlStart message="subscription.details.surveys.label" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
@@ -40,7 +40,7 @@
             <th>${message(code: 'surveyProperty.plural.label')}</th>
             <th>
                 <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfigDocs.label')}" data-position="top center">
-                <i class="file alternate large icon"></i>
+                <i class="${Icons.DOCUMENT} large icon"></i>
                 </a>
             </th>
             <th>

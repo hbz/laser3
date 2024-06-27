@@ -5,6 +5,7 @@ import de.laser.annotations.DebugInfo
 import de.laser.auth.User
 import de.laser.cache.EhcacheWrapper
 import de.laser.helper.Params
+import de.laser.helper.Profiler
 import de.laser.properties.PropertyDefinition
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -51,9 +52,13 @@ class VendorController {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def list() {
+        Profiler prf = new Profiler()
+        prf.startSimpleBench()
         Map<String, Object> result = vendorService.getResultGenerics(params), queryParams = [:]
         result.flagContentGokb = true // vendorService.getWekbVendorRecords()
+        prf.setBenchmark("get curatory groups")
         Map queryCuratoryGroups = gokbService.executeQuery(result.wekbApi.baseUrl + result.wekbApi.fixToken + '/groups', [:])
+        prf.setBenchmark("get we:kb vendors")
         if(queryCuratoryGroups.code == 404) {
             result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String
         }
@@ -112,7 +117,9 @@ class VendorController {
         }
         else
             vendorQuery += " order by v.sortname "
+        prf.setBenchmark("get total vendors")
         Set<Vendor> vendorsTotal = Vendor.executeQuery(vendorQuery, queryParams)
+        prf.setBenchmark("get subscribed vendors")
         result.currentVendorIdList = Vendor.executeQuery('select vr.vendor.id from VendorRole vr, OrgRole oo join oo.sub s where s = vr.subscription and oo.org = :context and s.status = :current', [current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])
         if (params.isMyX) {
             List<String> xFilter = params.list('isMyX')
@@ -183,8 +190,10 @@ class VendorController {
             }
         }
         else {
+            prf.setBenchmark("end loading")
             result.vendorListTotal = vendorsTotal.size()
             result.vendorList = vendorsTotal.drop(result.offset).take(result.max)
+            result.benchMark = prf.stopBenchmark()
             result
         }
     }

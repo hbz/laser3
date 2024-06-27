@@ -28,8 +28,7 @@
         tooltip: {
             trigger: 'item',
             formatter (params) {
-                let str = JSPC.app.reporting.current.chart.option.title.text
-                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
+                let str = '${labels.tooltip}' + JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
                 return '<div style="max-width:800px;word-break:break-word;white-space:pre-wrap;">' + str + '</div>' /* erms-4787 */
            }
         },
@@ -108,8 +107,7 @@
         tooltip: {
             trigger: 'item',
             formatter (params) {
-                let str = JSPC.app.reporting.current.chart.option.title.text
-                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
+                let str = '${labels.tooltip}' + JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
                 return '<div style="max-width:800px;word-break:break-word;white-space:pre-wrap;">' + str + '</div>' /* erms-4787 */
            }
         },
