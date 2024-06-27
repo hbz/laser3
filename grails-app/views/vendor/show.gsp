@@ -415,6 +415,53 @@
             <div class="ui card">
                 <div class="content">
                     <div class="ui accordion">
+                        <h2 class="ui header"><g:message code="vendor.general.objects.label"/></h2>
+                        <div class="title">
+                            <i class="dropdown icon la-dropdown-accordion"></i>
+                            <div class="ui horizontal relaxed list">
+                                <div class="item">
+                                    <strong><g:message code="package.plural" /></strong>
+                                    &nbsp;<div class="ui blue circular label">${allPackages.size()}</div>
+                                </div>
+                                <div class="item">
+                                    <strong><g:message code="provider.plural" /></strong>
+                                    &nbsp;<div class="ui blue circular label">${providers.size()}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="content">
+                            <p class="ui header"><g:message code="package.plural" /></p>
+
+                            <div class="ui divided middle aligned selection list la-flex-list">
+                                <g:each in="${allPackages}" var="pkg">
+                                    <div class="ui item">
+                                        <div class="content la-space-right">
+                                            <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
+                                        </div>
+                                    </div>
+                                </g:each>
+                            </div>
+
+                            <p class="ui header"><g:message code="provider.plural" /></p>
+
+                            <div class="ui divided middle aligned selection list la-flex-list">
+                                <g:each in="${providers}" var="provider">
+                                    <div class="ui item">
+                                        <div class="content la-space-right">
+                                            <g:link controller="provider" action="show" id="${provider.id}">${provider.name}</g:link>
+                                        </div>
+                                    </div>
+                                </g:each>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui card">
+                <div class="content">
+                    <div class="ui accordion">
+                        <h2 class="ui header"><g:message code="vendor.my.objects.label"/></h2>
                         <div class="title">
                             <i class="dropdown icon la-dropdown-accordion"></i>
                             <div class="ui horizontal relaxed list">

@@ -218,6 +218,9 @@ class VendorController {
                 licenseConsortiumFilter = 'and l.instanceOf = null'
             }
             */
+            Set<Package> allPackages = vendor.packages?.pkg
+            result.allPackages = allPackages
+            result.providers = allPackages.provider
             result.packages = Package.executeQuery('select pkg from PackageVendor pv join pv.pkg pkg, VendorRole vr, OrgRole oo join oo.sub s where pv.vendor = vr.vendor and vr.subscription = s and vr.vendor = :vendor and s.status = :current and oo.org = :context ', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Package>
             result.platforms = Platform.executeQuery('select pkg.nominalPlatform from PackageVendor pv join pv.pkg pkg, VendorRole vr, OrgRole oo join oo.sub s where pkg.provider = :vendor and vr.subscription = s and s.status = :current and oo.org = :context ', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Platform>
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, vendor)
