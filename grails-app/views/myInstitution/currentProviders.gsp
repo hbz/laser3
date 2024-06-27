@@ -27,7 +27,7 @@
             <laser:render template="/templates/filter/providerFilter"
                       model="[
                               propList: propList,
-                              tmplConfigShow: [['name', 'identifier', 'provStatus'], ['inhouseInvoicing', 'electronicBillings', 'invoiceDispatchs', 'invoicingVendors'], ['subStatus', 'subPerpetualAccess'], ['property&value', 'isMyX']],
+                              tmplConfigShow: [['name', 'identifier', 'provStatus'], ['electronicBillings', 'invoiceDispatchs', 'invoicingVendors', 'inhouseInvoicing'], ['property&value'], ['subStatus', 'subPerpetualAccess', 'isMyX']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>

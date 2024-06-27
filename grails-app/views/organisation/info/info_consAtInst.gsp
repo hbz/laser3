@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Provider; java.time.Year; de.laser.finance.CostItem; de.laser.RefdataValue; de.laser.survey.SurveyInfo; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Provider; java.time.Year; de.laser.finance.CostItem; de.laser.RefdataValue; de.laser.survey.SurveyInfo; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
 <laser:htmlStart message="menu.institutions.org.info" serviceInjection="true">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
@@ -220,7 +220,7 @@
                                     <tr data-id="${licId}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="icon balance scale la-list-icon"></i>
+                                                <i class="${Icons.LICENSE} icon la-list-icon"></i>
                                                 <g:link controller="license" action="show" id="${lic.id}" target="_blank">${lic.reference}</g:link>
                                             </div>
                                         </td>
@@ -576,7 +576,7 @@
                             data    : [${subscriptionTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${subscriptionTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
                             color   : <%
-                                String color = 'JSPC.colors.hex.pink'
+                                String color = 'JSPC.colors.hex.grey'
                                 switch (RefdataValue.get(status)) {
                                     case RDStore.SUBSCRIPTION_CURRENT:      color = 'JSPC.colors.hex.green'; break;
                                     case RDStore.SUBSCRIPTION_EXPIRED:      color = 'JSPC.colors.hex.blue'; break;
@@ -627,7 +627,7 @@
                             data    : [${licenseTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${licenseTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
                             color   : <%
-                                color = 'JSPC.colors.hex.pink'
+                                color = 'JSPC.colors.hex.grey'
                                 switch (RefdataValue.get(status)) {
                                     case RDStore.LICENSE_CURRENT:      color = 'JSPC.colors.hex.green'; break;
                                     case RDStore.LICENSE_EXPIRED:      color = 'JSPC.colors.hex.blue'; break;
@@ -704,9 +704,9 @@
                             data    : [${surveyTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${surveyTimelineMap.values().collect{ it[status] ? it[status].collect{ it[0].id } : [] }.join(', ')}],
                             color   : <%
-                                color = 'JSPC.colors.hex.pink'
+                                color = 'JSPC.colors.hex.grey'
                                 switch (status) {
-                                    case 'open':        color = 'JSPC.colors.hex.orange'; break;
+                                    case 'open':        color = 'JSPC.colors.hex.yellow'; break;
                                     case 'finish':      color = 'JSPC.colors.hex.green'; break;
                                     case 'termination': color = 'JSPC.colors.hex.red'; break;
                                     case 'notFinish':   color = 'JSPC.colors.hex.blue'; break;
@@ -781,12 +781,14 @@
                 $(statsId + ' tr[data-id]').hide()
 
                 $.each( $(statsId + ' .menu .item[data-tab^=' + t + ']'), function(i, e) {
-                    let yList = chartConfig.series[i].raw[y]
-                    JSPC.app.info.setCounter($(e), yList.length)
+                    if (chartConfig.series[i]) {
+                        let yList = chartConfig.series[i].raw[y]
+                        JSPC.app.info.setCounter($(e), yList.length)
 
-                    yList.forEach((f) => {
-                        $(statsId + ' tr[data-id=' + f + ']').show()
-                    })
+                        yList.forEach((f) => {
+                            $(statsId + ' tr[data-id=' + f + ']').show()
+                        })
+                    }
                 })
                 // chart.dispatchAction({ type: 'select', dataIndex: y })
                 // chart.dispatchAction({ type: 'highlight', seriesIndex: s, dataIndex: y })

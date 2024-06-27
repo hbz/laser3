@@ -170,9 +170,18 @@ class ControlledListService {
             queryString += " and exists (select pvr from ProviderRole pvr where pvr.subscription = s and pvr.provider = :filterProvider) "
             filter.filterProvider = genericOIDService.resolveOID(params.providerFilter)
         }
+        //weird naming ... Fomantic UI API does it so
+        else if(params.'providerFilter[]') {
+            queryString += " and exists (select pvr from ProviderRole pvr where pvr.subscription = s and pvr.provider in (:filterProvider)) "
+            filter.filterProvider = params.list('providerFilter[]').collect { String key -> genericOIDService.resolveOID(key) }
+        }
         if(params.vendorFilter) {
             queryString += " and exists (select vr from VendorRole vr where vr.subscription = s and vr.vendor = :filterVendor) "
             filter.filterVendor = genericOIDService.resolveOID(params.providerVendor)
+        }
+        else if(params.'vendorFilter[]') {
+            queryString += " and exists (select vr from VendorRole vr where vr.subscription = s and vr.vendor in (:filterVendor)) "
+            filter.filterVendor = params.list('vendorFilter[]').collect { String key -> genericOIDService.resolveOID(key) }
         }
         Set<String> refdataFields = ['form','resource','kind']
         refdataFields.each { String refdataField ->
@@ -1419,11 +1428,11 @@ class ControlledListService {
         if(params.forFinanceView) {
             List<Long> subIDs = Subscription.executeQuery('select s.id from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org: institution, orgRoles: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA]])
             if(subIDs) {
-                Map filter = [subscriptions:subIDs]
+                qryParams.subscriptions = subIDs
                 if(providerNameFilter)
                     providerNameFilter = "and ${providerNameFilter}"
                 String qryString = "select new map(concat('${Provider.class.name}:',p.id) as value, p.name as name) from ProviderRole pvr join pvr.provider p where pvr.subscription.id in (:subscriptions) ${providerNameFilter} order by p.sortname asc"
-                results.addAll(Provider.executeQuery(qryString,filter))
+                results.addAll(Provider.executeQuery(qryString, qryParams))
             }
         }
         else if(params.tableView) {
@@ -1471,11 +1480,11 @@ class ControlledListService {
         if(params.forFinanceView) {
             List<Long> subIDs = Subscription.executeQuery('select s.id from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org: institution, orgRoles: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA]])
             if(subIDs) {
-                Map filter = [subscriptions:subIDs]
+                qryParams.subscriptions = subIDs
                 if(vendorNameFilter)
                     vendorNameFilter = "and ${vendorNameFilter}"
                 String qryString = "select new map(concat('${Vendor.class.name}:',v.id) as value, v.name as name) from VendorRole vr join vr.vendor v where vr.subscription.id in (:subscriptions) ${vendorNameFilter} order by v.sortname asc"
-                results.addAll(Vendor.executeQuery(qryString,filter))
+                results.addAll(Vendor.executeQuery(qryString, qryParams))
             }
         }
         else if(params.tableView) {

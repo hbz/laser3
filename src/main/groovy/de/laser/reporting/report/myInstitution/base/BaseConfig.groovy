@@ -11,6 +11,7 @@ import de.laser.RefdataCategory
 import de.laser.Subscription
 import de.laser.SubscriptionsQueryService
 import de.laser.auth.Role
+import de.laser.helper.Icons
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.config.CostItemXCfg
@@ -589,13 +590,13 @@ class BaseConfig {
         String icon = 'question'
 
              if (objKey == KEY_ISSUEENTITLEMENT){ icon = 'book' }
-        else if (objKey == KEY_LICENSE)         { icon = 'balance scale' }
-        else if (objKey == KEY_ORGANISATION)    { icon = 'university' }
-        else if (objKey == KEY_PACKAGE)         { icon = 'gift' }
-        else if (objKey == KEY_PLATFORM)        { icon = 'cloud' }
-        else if (objKey == KEY_PROVIDER)        { icon = 'handshake' }
-        else if (objKey == KEY_SUBSCRIPTION)    { icon = 'clipboard' }
-        else if (objKey == KEY_VENDOR)          { icon = 'shipping fast' }
+        else if (objKey == KEY_LICENSE)         { icon = Icons.LICENSE }
+        else if (objKey == KEY_ORGANISATION)    { icon = Icons.ORG }
+        else if (objKey == KEY_PACKAGE)         { icon = Icons.PACKAGE }
+        else if (objKey == KEY_PLATFORM)        { icon = Icons.PLATFORM }
+        else if (objKey == KEY_PROVIDER)        { icon = Icons.PROVIDER }
+        else if (objKey == KEY_SUBSCRIPTION)    { icon = Icons.SUBSCRIPTION }
+        else if (objKey == KEY_VENDOR)          { icon = Icons.VENDOR }
 
         icon
     }

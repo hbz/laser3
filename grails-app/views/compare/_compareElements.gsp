@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.interfaces.CalculatedType; de.laser.Person; de.laser.License" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Subscription; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.interfaces.CalculatedType; de.laser.Person; de.laser.License" %>
 <laser:serviceInjection/>
 
 <ui:greySegment>
@@ -55,15 +55,15 @@
         <g:if test="${objects[0] instanceof Subscription}">
             <tr>
                 <td>
-                    <strong><i class="balance scale icon"></i>${message(code: 'license.label')}:</strong>
+                    <strong><i class="${Icons.LICENSE} icon"></i>${message(code: 'license.label')}:</strong>
                 </td>
                 <g:each in="${objects}" var="object">
                     <td>
                         <article class="la-readmore">
                         <g:each in="${object.getLicenses()?.sort{it.reference}}" var="license">
                             <g:if test="${contextOrg.id in license.orgRelations?.org.id}">
-                            <strong><i
-                                    class="balance scale icon"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:
+                            <strong>
+                                <i class="${Icons.LICENSE} icon"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:
                             </strong>
                             <g:link controller="license" action="show" target="_blank" id="${license.id}">
                                 ${license.dropdownNamingConvention()}
@@ -80,15 +80,14 @@
         <g:if test="${objects[0] instanceof License}">
             <tr>
                 <td>
-                    <strong><i class="clipboard icon"></i>${message(code: 'subscription.label')}:</strong>
+                    <strong><i class="${Icons.SUBSCRIPTION} icon"></i>${message(code: 'subscription.label')}:</strong>
                 </td>
                 <g:each in="${objects}" var="object">
                     <td>
                         <article class="la-readmore">
                         <g:each in="${object.getSubscriptions()?.sort{it.name}}" var="subscription">
                             <g:if test="${contextOrg.id in subscription.orgRelations?.org.id}">
-                            <strong><i
-                                    class="clipboard icon"></i>&nbsp;${subscription.kind?.getI10n("value")}:
+                            <strong><i class="${Icons.SUBSCRIPTION} icon"></i>&nbsp;${subscription.kind?.getI10n("value")}:
                             </strong>
                             <g:link controller="subscription" action="show" target="_blank" id="${subscription.id}">
                                 ${subscription.dropdownNamingConvention()}
@@ -106,14 +105,14 @@
             <tr>
                 <td>
                     <strong><i
-                            class="university icon"></i>&nbsp;${RDStore.OR_LICENSOR.getI10n('value')}/${RDStore.OR_LICENSING_CONSORTIUM.getI10n('value')}/${RDStore.OR_SUBSCRIPTION_CONSORTIA}:
+                            class="${Icons.ORG} icon"></i>&nbsp;${RDStore.OR_LICENSOR.getI10n('value')}/${RDStore.OR_LICENSING_CONSORTIUM.getI10n('value')}/${RDStore.OR_SUBSCRIPTION_CONSORTIA.getI10n('value')}}:
                     </strong>
                 </td>
                 <g:each in="${objects}" var="object">
                     <td>
                         <g:each in="${object.orgRelations?.sort{it.org.name}}" var="role">
                             <g:if test="${(role.roleType in [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_SUBSCRIPTION_CONSORTIA]) && role.org.id != contextOrg.id}">
-                                <strong><i class="university icon"></i>&nbsp;${role.roleType.getI10n("value")}:
+                                <strong><i class="${Icons.ORG} icon"></i>&nbsp;${role.roleType.getI10n("value")}:
                                 </strong>
                                 <g:link controller="organisation" action="show" target="_blank"
                                         id="${role.org.id}">
@@ -149,7 +148,7 @@
         <tr>
             <td>
                 <strong>
-                    <i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code: 'provider.label')}"></i>:
+                    <i class="${Icons.PROVIDER} la-list-icon la-popup-tooltip la-delay icon" data-content="${message(code: 'provider.label')}"></i>${message(code: 'provider.label')} :
                 </strong>
             </td>
             <g:each in="${objects}" var="object">
@@ -168,7 +167,7 @@
         <tr>
             <td>
                 <strong>
-                    <i class="la-list-icon la-popup-tooltip la-delay shipping fast icon" data-content="${message(code:'vendor.label')}"></i>:
+                    <i class="${Icons.VENDOR} la-list-icon la-popup-tooltip la-delay icon" data-content="${message(code:'vendor.label')}"></i> ${message(code:'vendor.label')}:
                 </strong>
             </td>
             <g:each in="${objects}" var="object">
@@ -210,7 +209,7 @@
                                         <i class="address card icon"></i>
                                     </span>
                                     ${resp}
-                                    (<strong><i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code: 'provider.label')}"></i>:</strong>
+                                    (<strong><i class="${Icons.PROVIDER} la-list-icon la-popup-tooltip la-delay icon" data-content="${message(code: 'provider.label')}"></i>:</strong>
                                         <g:link controller="provider" action="show" target="_blank" id="${provider.id}">${fieldValue(bean: provider, field: "name")}
                                         </g:link>)
                                     <br />
@@ -225,7 +224,7 @@
                                         <i class="address card outline icon"></i>
                                     </span>
                                     ${resp}
-                                    (<strong><i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code: 'provider.label')}"></i>:</strong>
+                                    (<strong><i class="${Icons.PROVIDER} la-list-icon la-popup-tooltip la-delay icon" data-content="${message(code: 'provider.label')}"></i>:</strong>
                                     <g:link controller="provider" action="show" target="_blank" id="${provider.id}">${fieldValue(bean: provider, field: "name")}
                                     </g:link>)
                                     <br />
@@ -246,7 +245,7 @@
                                     <i class="address card icon"></i>
                                 </span>
                                 ${resp}
-                                (<strong><i class="la-list-icon la-popup-tooltip la-delay shipping fast icon" data-content="${message(code:'vendor.label')}"></i>:</strong>
+                                (<strong><i class="${Icons.VENDOR} la-list-icon la-popup-tooltip la-delay icon" data-content="${message(code:'vendor.label')}"></i>:</strong>
                                 <g:link controller="vendor" action="show" target="_blank" id="${vendor.id}">${fieldValue(bean: vendor, field: "name")}
                                 </g:link>)
                                 <br />
@@ -261,7 +260,7 @@
                                     <i class="address card outline icon"></i>
                                 </span>
                                 ${resp}
-                                (<strong><i class="la-list-icon la-popup-tooltip la-delay shipping fast icon" data-content="${message(code:'vendor.label')}"></i>:</strong>
+                                (<strong><i class="${Icons.VENDOR} la-list-icon la-popup-tooltip la-delay icon" data-content="${message(code:'vendor.label')}"></i>:</strong>
                                 <g:link controller="vendor" action="show" target="_blank" id="${vendor.id}">${fieldValue(bean: vendor, field: "name")}
                                 </g:link>)
                                 <br />
