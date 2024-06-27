@@ -13,7 +13,7 @@
                     </a>
                     <a href="#" class="ui icon label la-popup-tooltip la-delay wekb-flyout-trigger" data-preset="all,marker"
                        data-content="${message(code: 'marker.WEKB_CHANGES')}" data-position="top right">
-                            <i class="icon purple bookmark"></i> ${wekbNews.counts.marker}
+                            <i class="${Icons.MARKER} icon purple"></i> ${wekbNews.counts.marker}
                     </a>
             </div>
         </div>
@@ -38,7 +38,7 @@
                                     <a href="#" class="wekb-flyout-trigger" data-preset="provider,updated">Geändert: ${wekbNews.provider.countUpdated}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="provider,deleted">Gelöscht: ${wekbNews.provider.deleted.size()}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="provider,my"><i class="icon star"></i>${wekbNews.provider.my.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="provider,marker"><i class="icon bookmark"></i>${wekbNews.provider.marker.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="provider,marker"><i class="${Icons.MARKER} icon"></i>${wekbNews.provider.marker.size()}</a> <br/>
                             </div>
                         </div>
                     </div>
@@ -58,7 +58,7 @@
                                     <a href="#" class="wekb-flyout-trigger" data-preset="vendor,updated">Geändert: ${wekbNews.vendor.countUpdated}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="vendor,deleted">Gelöscht: ${wekbNews.vendor.deleted.size()}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="vendor,my"><i class="icon star"></i>${wekbNews.vendor.my.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="vendor,marker"><i class="icon bookmark"></i>${wekbNews.vendor.marker.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="vendor,marker"><i class="${Icons.MARKER} icon"></i>${wekbNews.vendor.marker.size()}</a> <br/>
                             </div>
                         </div>
                     </div>
@@ -78,7 +78,7 @@
                                     <a href="#" class="wekb-flyout-trigger" data-preset="platform,updated">Geändert: ${wekbNews.platform.countUpdated}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="platform,deleted">Gelöscht: ${wekbNews.platform.deleted.size()}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="platform,my"><i class="icon star"></i>${wekbNews.platform.my.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,marker"><i class="icon bookmark"></i>${wekbNews.platform.marker.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,marker"><i class="${Icons.MARKER} icon"></i>${wekbNews.platform.marker.size()}</a> <br/>
                             </div>
                         </div>
                     </div>
@@ -98,7 +98,7 @@
                                     <a href="#" class="wekb-flyout-trigger" data-preset="package,updated">Geändert: ${wekbNews.package.countUpdated}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="package,deleted">Gelöscht: ${wekbNews.package.deleted.size()}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="package,my"><i class="icon star"></i>${wekbNews.package.my.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,marker"><i class="icon bookmark"></i>${wekbNews.package.marker.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,marker"><i class="${Icons.MARKER} icon"></i>${wekbNews.package.marker.size()}</a> <br/>
                             </div>
                         </div>
                     </div>
@@ -242,7 +242,7 @@
                 <span class="ui button" data-filter="updated">Geänderte Objekte: ${wekbNews.counts.updated}</span>
                 <span class="ui button" data-filter="deleted">Gelöschte Objekte: ${wekbNews.counts.deleted}</span>
                 <span class="ui button" data-filter="my"><i class="icon star"></i> ${wekbNews.counts.my}</span>
-                <span class="ui button" data-filter="marker"><i class="icon bookmark"></i> ${wekbNews.counts.marker}</span>
+                <span class="ui button" data-filter="marker"><i class="${Icons.MARKER} icon"></i> ${wekbNews.counts.marker}</span>
                 <span class="ui button la-popup-tooltip la-long-tooltip la-delay" data-filter="all"
                       data-content="Alle anzeigen: Neue Objekte, Geänderte Objekte, Gelöschte Objekte, Meine Objekte, Meine Beobachtungsliste">Alle</span>
             </div>

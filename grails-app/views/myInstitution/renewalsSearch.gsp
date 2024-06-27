@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Subscription" %>
 <laser:htmlStart message="myinst.renewalSearch.label" />
 
     <ui:breadcrumbs>
@@ -104,9 +104,9 @@
                     <tbody>
                     <g:each in="${hits}" var="hit">
                         <tr>
-                            <td><i class="gift icon"></i><g:link controller="package" action="show"
-                                                                 id="${hit.getSource().dbId}"
-                                                                 target="_blank">${hit.getSource().name}</g:link></td>
+                            <td><i class="${Icons.PACKAGE} icon"></i><g:link controller="package" action="show"
+                                                                                             id="${hit.getSource().dbId}"
+                                                                                             target="_blank">${hit.getSource().name}</g:link></td>
                             %{--<td>${hit.getSource().consortiaName}</td>--}%
                             <td>
                                 <button type="submit" class="ui button" name="addBtn"
@@ -167,7 +167,7 @@
                 <g:each in="${basket}" var="itm">
                     <tr>
                     <td><g:if test="${itm.getClass().getName() != Subscription.class.name}">
-                        <i class="gift icon"></i>${itm.name}
+                        <i class="${Icons.PACKAGE} icon"></i>${itm.name}
                     </g:if><g:else>
                         <i class="clipboard outline icon"></i>${itm.name}<hr />
                     </g:else>

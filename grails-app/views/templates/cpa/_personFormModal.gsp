@@ -1,4 +1,4 @@
-<%@ page import="de.laser.properties.PropertyDefinition; de.laser.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.helper.Icons; de.laser.properties.PropertyDefinition; de.laser.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.storage.RDConstants" %>
 <laser:serviceInjection/>
 
 <ui:modalAddress  id="${modalID ?: 'personModal'}" form="person_form"
@@ -105,7 +105,7 @@
                             <label for="personRoleOrg">
                                 <g:message code="contact.belongesTo.label"/>
                             </label>
-                            <i class="icon university la-list-icon"></i>${org?.name}
+                            <i class="${Icons.ORG} icon la-list-icon"></i>${org?.name}
                             <input id="personRoleOrg" name="personRoleOrg" type="hidden" value="${org?.id}"/>
                         </g:else>--}%
 
@@ -127,7 +127,7 @@
                              <label for="functionOrg">
                                  <g:message code="contact.belongesTo.label"/>
                              </label>
-                             <i class="icon university la-list-icon"></i>${org?.name}
+                             <i class="${Icons.ORG} icon la-list-icon"></i>${org?.name}
                              <input id="functionOrg" name="functionOrg" type="hidden" value="${org?.id}"/>
                          </g:else>
                      </div>
@@ -151,7 +151,7 @@
                             <label for="positionOrg">
                                 <g:message code="contact.belongesTo.label"/>
                             </label>
-                            <i class="icon university la-list-icon"></i>${org?.name}
+                            <i class="${Icons.ORG} icon la-list-icon"></i>${org?.name}
                             <input id="positionOrg" name="positionOrg" type="hidden" value="${org?.id}"/>
                         </g:else>
                     </div>
