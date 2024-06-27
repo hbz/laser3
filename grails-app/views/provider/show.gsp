@@ -412,7 +412,7 @@
                                     </div>
                                 </div>
 
-                                <p class="ui header">%{--<i class="icon balance scale"></i>--}% <g:message code="license.plural" /></p>
+                                <p class="ui header">%{--<i class="${Icons.LICENSE} icon"></i>--}% <g:message code="license.plural" /></p>
 
                                 <div class="ui divided middle aligned selection list la-flex-list">
                                     <div class="ui item">

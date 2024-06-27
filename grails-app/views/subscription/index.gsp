@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IssueEntitlementCoverage; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.helper.Icons; de.laser.IssueEntitlementCoverage; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart message="subscription.details.current_ent" serviceInjection="true"/>
 
@@ -571,7 +571,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.coverageDepth}">
                                                                 <div class="item">
-                                                                    <i class="grey icon file alternate right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>
+                                                                    <i class="grey icon ${Icons.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>
                                                                     <div class="content">
                                                                         <div class="header">
                                                                             ${message(code: 'tipp.coverageDepth')}
