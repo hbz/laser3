@@ -1,6 +1,6 @@
 import java.text.SimpleDateFormat
 
-version '3.3.11'
+version '3.4'
 group 'de.laser'
 
 // ---[ build script ]---
@@ -11,12 +11,12 @@ buildscript {
         maven { url 'https://repo.grails.org/grails/core' }
     }
     dependencies {
-        classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion            // 2023
-        classpath 'org.grails.plugins:hibernate5:' + gormVersion                            // 2023
+        classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion            // 2024
+        classpath 'org.grails.plugins:hibernate5:' + gormVersion                            // 2024
         classpath 'org.grails.plugins:database-migration:4.2.1'                             // 2023
         classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:4.3.0'                     // 2023
-        classpath 'com.gorylenko.gradle-git-properties:gradle-git-properties:2.4.1'         // 2022
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.50.0'                      // 2023
+        classpath 'com.gorylenko.gradle-git-properties:gradle-git-properties:2.4.2'         // 2024
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.51.0'                      // 2024
 
         // -- dependency resolving issue
         classpath 'org.quartz-scheduler:quartz:2.3.2'                                       // 2019
@@ -68,15 +68,16 @@ configurations {
 
 dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    developmentOnly 'org.springframework.boot:spring-boot-starter-tomcat'    // implementation
+    developmentOnly 'org.springframework.boot:spring-boot-starter-tomcat'
 
     compileOnly 'io.micronaut:micronaut-inject-groovy'
     console 'org.grails:grails-console'
 
     implementation 'org.springframework.boot:spring-boot-autoconfigure'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-logging'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+//    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
     implementation 'org.grails:grails-core'
     implementation 'org.grails:grails-web-boot'
     implementation 'org.grails:grails-logging'
@@ -90,28 +91,24 @@ dependencies {
     implementation 'org.grails.plugins:async'
     implementation 'org.grails.plugins:scaffolding'
     implementation 'org.grails.plugins:events'
-    implementation 'org.grails.plugins:hibernate5:' + gormVersion   // [fix]
+    implementation 'org.grails.plugins:hibernate5:' + gormVersion
     implementation 'org.grails.plugins:gsp'
 
     implementation 'io.micronaut:micronaut-http-client'
-//    implementation 'org.springframework:spring-websocket'     // tmp deactivated
-//    implementation 'org.springframework:spring-messaging'     // tmp deactivated
-
-    profile 'org.grails.profiles:web'
 
     // --------------------------------------------------
 
-    implementation 'org.elasticsearch:elasticsearch:7.17.14'                                // 2023
-    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.14'  // 2023
+    implementation 'org.elasticsearch:elasticsearch:7.17.22'                                // 2024
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.22'  // 2024
 
-    implementation 'org.grails.plugins:spring-security-core:6.0.2'          // 2023
+    implementation 'org.grails.plugins:spring-security-core:6.1.1'          // 2024
     implementation 'org.grails.plugins:audit-logging:4.0.3'                 // 2021
     implementation 'org.grails.plugins:database-migration:4.2.1', {         // 2023
         exclude module: 'spring-boot-cli'
     }
     implementation 'org.grails.plugins:grails-executor:0.4'                 // 2016 : [deprecated]
     implementation 'org.grails.plugins:mail:3.0.0'                          // 2021
-    implementation 'org.grails.plugins:quartz:2.0.13'                       // 2019
+    implementation 'org.grails.plugins:quartz:3.0.0'                        // 2024
     implementation 'org.grails.plugins:wkhtmltopdf:1.0.0.RC9'               // 2018
 
     implementation 'org.hibernate:hibernate-core:5.6.15.Final'              // 2023
@@ -120,13 +117,13 @@ dependencies {
 //    implementation 'org.hibernate:hibernate-jcache:5.6.15.Final'            //        replacement for hibernate-ehcache:5.6.14.Final
 //    implementation 'org.ehcache:ehcache:3.10.8'                             //        replacement for net.sf.ehcache:ehcache:2.10.9.2
 
-    implementation 'commons-io:commons-io:2.11.0'                           // 2021
-    implementation 'com.github.albfernandez:juniversalchardet:2.4.0'        // 2020
+    implementation 'commons-io:commons-io:2.14.0'                           // 2023
+    implementation 'com.github.albfernandez:juniversalchardet:2.5.0'        // 2024
     implementation 'io.github.gpc:asynchronous-mail:3.1.2'                  // 2023
     implementation 'org.apache.commons:commons-lang3:3.14.0'                // 2023
     implementation 'org.apache.poi:poi-ooxml:3.17'                          // 2017 : [freeze] : 5.x available
     implementation 'org.codehaus.gpars:gpars:1.2.1'                         // 2014
-    implementation 'org.codehaus.janino:janino:3.1.11'                      // 2023 : logback
+    implementation 'org.codehaus.janino:janino:3.1.12'                      // 2024 : logback
     implementation 'org.liquibase:liquibase-core:4.19.0'                    // 2023 : + org.grails.plugins:database-migration // [freeze - not 4.19.1]
     implementation 'org.quartz-scheduler:quartz:2.3.2'                      // 2019
 
@@ -134,7 +131,11 @@ dependencies {
 
     runtimeOnly 'org.apache.tomcat:tomcat-jdbc'
     runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1'                             // 2018 : [?]
-    runtimeOnly 'org.postgresql:postgresql:42.7.0'                          // 2023
+    runtimeOnly 'org.postgresql:postgresql:42.7.3'                          // 2024
+}
+
+java {
+    sourceCompatibility = JavaVersion.toVersion("11")
 }
 
 springBoot {
@@ -161,27 +162,30 @@ gitProperties {
     gitPropertiesDir = new File("${project.rootDir}/")
 }
 
-buildProperties {
-    inputs.property('info.app.build.date', new SimpleDateFormat('dd.MM.yyyy HH:mm').format(new Date()))
-    inputs.property('info.app.build.host', InetAddress.localHost.hostName)
-    inputs.property('info.app.build.javaVersion', System.getProperty('java.version'))
+// ---[ war ]---
 
-    doLast {
-        File grailsBuildInfo = it.outputs.files.files.find { it.name == 'grails.build.info' } as File
-        if (! grailsBuildInfo) return
+tasks.register('war.updateBuildInfo', Task) {
+    group 'laser'
 
+    doFirst {
         Properties properties = new Properties()
-        grailsBuildInfo.withInputStream { properties.load(it) } // read props from file
-        File BuildInfoFile = new File("${project.rootDir}/git.properties")
-        BuildInfoFile.withInputStream { properties.load(it) } // read props from file
+        properties.setProperty('info.app.build.date', new SimpleDateFormat('dd.MM.yyyy HH:mm').format(new Date()))
+        properties.setProperty('info.app.build.host', InetAddress.localHost.hostName)
+        properties.setProperty('info.app.build.javaVersion', System.getProperty('java.version'))
 
-        properties.setProperty('build.time', new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date()))
+        try {
+            File gitProperties = new File("${project.rootDir}/git.properties")
+            gitProperties.withInputStream { properties.load(it) } // read props from file
 
-        grailsBuildInfo.withOutputStream { properties.store(it, null) } // write back to file
+            File grailsBuildInfo = new File("${project.buildDir}/resources/main/META-INF/grails.build.info")
+            grailsBuildInfo.withInputStream { properties.load(it) } // read props from file
+
+            grailsBuildInfo.withOutputStream { properties.store(it, null) } // write back to file
+        }
+        catch (Exception e) {
+        }
     }
 }
-
-// ---[ war ]---
 
 war {
     enabled = true
@@ -193,11 +197,8 @@ war {
             '**/groovy-groovydoc-*.jar'
     )
     dependsOn compileGroovyPages
+    dependsOn 'war.updateBuildInfo'
 }
-
-//java {
-//    sourceCompatibility = JavaVersion.toVersion("11")
-//}
 
 // ---[ plugin: asset pipeline ]---
 
@@ -209,9 +210,11 @@ assets {
             targetLanguage: 'ES5_STRICT'
     ]
     skipNonDigests = true
+    maxThreads = 8
 
     from '/themes'
     excludes = [
+            // images/*
             // javascripts/*
             'libs/**',
             'modules/**',
@@ -222,7 +225,7 @@ assets {
             // vendor/*
             'crypto-js-4.1.1/**',
             'echarts/**',
-            // 'spring-websocket/**', // tmp deactivated
+            'spring-websocket/**', // tmp deactivated
             'swagger-ui/**',
     ]
 }

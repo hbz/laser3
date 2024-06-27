@@ -101,8 +101,7 @@ class UsageController  {
     }
 
     /**
-     * Fetches for the given institution and provider the usage data from the Nationaler Statistikserver
-     * SUSHI server
+     * Fetches for the given institution and provider the usage data from the Nationaler Statistikserver SUSHI server
      */
     @Secured(['ROLE_ADMIN'])
     def fetchSelection()
@@ -162,10 +161,7 @@ class UsageController  {
 
         if (params.supplier != 'null'){
             platform = Platform.get(params.supplier)
-            def cp = platform.propertySet.find(){
-                it.type.name = "NatStat Supplier ID"
-            }
-            supplier = cp.stringValue
+            supplier = platform.natstatSupplierID
         }
         if (params.institution != 'null'){
             instOrg = Org.get(params.institution)

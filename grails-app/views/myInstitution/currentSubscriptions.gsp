@@ -1,4 +1,4 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils;de.laser.CustomerTypeService; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ExportClickMeService; grails.plugin.springsecurity.SpringSecurityUtils;de.laser.CustomerTypeService; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 
 <laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true" />
 
@@ -9,7 +9,7 @@
         <ui:controlButtons>
             <ui:exportDropdown>
                 <ui:exportDropdownItem>
-                    <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+                    <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.SUBSCRIPTIONS]"/>
                 </ui:exportDropdownItem>
                 <%--
                 <g:if test="${filterSet || defaultSet}">
@@ -50,6 +50,10 @@
 
     <ui:messages data="${flash}"/>
 
+    <g:if test="${vendorNotice}">
+        <ui:msg icon="ui info icon" class="info" message="myinst.currentSubscriptions.vendorNotice" noClose="true"/>
+    </g:if>
+
     <laser:render template="${customerTypeService.getSubscriptionFilterTemplatePath()}"/>
 
     <laser:render template="/templates/subscription/subscriptionTable"/>
@@ -58,6 +62,6 @@
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </ui:debugInfo>
 
-    <laser:render template="export/individuallyExportModalSubs" model="[modalID: 'individuallyExportModal']" />
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd />

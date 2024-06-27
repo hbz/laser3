@@ -8,7 +8,7 @@
     if (list) {
         orgSubList = Org.executeQuery(
                     'select org.id, sub.id from OrgRole oo join oo.org org join oo.sub sub where sub in (:list) and oo.roleType in :subscriberRoleTypes ' +
-                    'order by org.sortname, org.name, sub.name, sub.startDate, sub.endDate',
+                    'order by org.sortname, org.name, sub.name, sub.startDate, sub.referenceYear, sub.endDate',
                     [list: list, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
                 )
     }
@@ -24,8 +24,10 @@
             <th scope="col">${message(code:'subscription.label')}</th>
             <th scope="col"></th>
             <th scope="col">${message(code:'consortium.subscriber')}</th>
-            <th scope="col">${message(code:'org.sortname.label')}</th>
             <th scope="col">${message(code:'default.status.label')}</th>
+            <g:if test="${query == 'timeline-annualMember-subscription'}">
+                <th scope="col">${message(code:'subscription.referenceYear.label.shy')}</th>
+            </g:if>
             <th scope="col">${message(code:'subscription.startDate.label')}</th>
             <th scope="col">${message(code:'subscription.endDate.label')}</th>
         </tr>
@@ -51,14 +53,16 @@
                         %>
                     </td>
                     <td>
-                        <g:link controller="organisation" action="show" id="${org.id}" target="_blank">${org.name}</g:link>
-                    </td>
-                    <td>
-                        ${org.sortname}
+                        <g:link controller="organisation" action="show" id="${org.id}" target="_blank">${org.sortname ?: org.name}</g:link>
                     </td>
                     <td>
                         ${sub.status.getI10n('value')}
                     </td>
+                    <g:if test="${query == 'timeline-annualMember-subscription'}">
+                        <td>
+                            ${sub.referenceYear}
+                        </td>
+                    </g:if>
                     <td>
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.startDate}" />
                     </td>

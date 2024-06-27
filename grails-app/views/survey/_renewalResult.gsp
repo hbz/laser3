@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg" %>
 <laser:serviceInjection/>
 
 <table class="ui celled sortable table la-js-responsive-table la-table">
@@ -104,6 +104,10 @@
                     </span>
                 </g:if>
 
+                <g:if test="${participantResult.sub}">
+                    <ui:xEditableAsIcon owner="${participantResult.sub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
+                </g:if>
+
             </td>
             <td>
                 ${participantResult.resultOfParticipation.getResult()}
@@ -111,7 +115,7 @@
                 <g:if test="${participantResult.resultOfParticipation.comment}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                           data-content="${participantResult.resultOfParticipation.comment}">
-                        <i class="question circle icon"></i>
+                        <i class="grey question circle icon"></i>
                     </span>
                 </g:if>
 
@@ -138,7 +142,7 @@
                 <g:if test="${participantResult.participantPropertyTwoComment}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                           data-content="${participantResult.participantPropertyTwoComment}">
-                        <i class="question circle icon"></i>
+                        <i class="grey question circle icon"></i>
                     </span>
                 </g:if>
 
@@ -153,7 +157,7 @@
                 <g:if test="${participantResult.participantPropertyThreeComment}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                           data-content="${participantResult.participantPropertyThreeComment}">
-                        <i class="question circle icon"></i>
+                        <i class="grey question circle icon"></i>
                     </span>
                 </g:if>
             </g:if>
@@ -168,7 +172,7 @@
                 <g:if test="${participantResult.participantPropertyFourComment}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                           data-content="${participantResult.participantPropertyFourComment}">
-                        <i class="question circle icon"></i>
+                        <i class="grey question circle icon"></i>
                     </span>
                 </g:if>
             </g:if>
@@ -183,7 +187,7 @@
                 <g:if test="${participantResult.participantPropertyFiveComment}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                           data-content="${participantResult.participantPropertyFiveComment}">
-                        <i class="question circle icon"></i>
+                        <i class="grey question circle icon"></i>
                     </span>
                 </g:if>
             </g:if>
@@ -199,7 +203,7 @@
                     <g:if test="${participantResultProperty.comment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${participantResultProperty.comment}">
-                            <i class="question circle icon"></i>
+                            <i class="grey question circle icon"></i>
                         </span>
                     </g:if>
 
@@ -218,16 +222,19 @@
 
             <td>
 
-                <g:set var="costItem" value="${participantResult.resultOfParticipation.getCostItem()}"/>
+                <g:set var="costItems" value="${participantResult.resultOfParticipation.getCostItems()}"/>
 
-                <g:if test="${costItem}">
-                    <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}" minFractionDigits="2"
-                                            maxFractionDigits="2" type="number"/></strong>
+                <g:if test="${costItems}">
+                    <g:each in="${costItems}" var="costItem">
+                        <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}" minFractionDigits="2"
+                                                maxFractionDigits="2" type="number"/></strong>
 
-                    (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
-                                     maxFractionDigits="2" type="number"/>)
+                        (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
+                                         maxFractionDigits="2" type="number"/>)
 
-                    ${(costItem.billingCurrency?.getI10n('value')?.split('-'))?.first()}
+                        ${costItem.billingCurrency?.getI10n('value')}
+                        <br>
+                    </g:each>
                 </g:if>
             </td>
             <td class="x">
@@ -242,7 +249,7 @@
                 <g:if test="${participantResult.sub}">
                     <br/>
                     <g:link controller="subscription" action="show" id="${participantResult.sub?.id}"
-                            class="ui button icon"><i class="icon clipboard"></i></g:link>
+                            class="ui button orange icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
                 </g:if>
             </td>
 

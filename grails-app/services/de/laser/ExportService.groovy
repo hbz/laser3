@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractReport
+import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.finance.BudgetCode
@@ -44,6 +45,7 @@ import org.springframework.context.MessageSource
 
 import java.awt.*
 import java.math.RoundingMode
+import java.sql.Connection
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
@@ -131,6 +133,9 @@ class ExportService {
 		XSSFCellStyle csNeutral = wb.createCellStyle()
 		csNeutral.setFillForegroundColor(new XSSFColor(new Color(255,235,156)))
 		csNeutral.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+		XSSFCellStyle csNeutral2 = wb.createCellStyle()
+		csNeutral2.setFillForegroundColor(new XSSFColor(new Color(255,205,156)))
+		csNeutral2.setFillPattern(FillPatternType.SOLID_FOREGROUND)
 		XSSFCellStyle bold = wb.createCellStyle()
 		XSSFFont font = wb.createFont()
 		font.setBold(true)
@@ -158,7 +163,26 @@ class ExportService {
 				headerRow.setHeightInPoints(16.75f)
 				titleRow.eachWithIndex{ colHeader, int i ->
 					Cell cell = headerRow.createCell(i)
-					cell.setCellValue(colHeader)
+
+					if(colHeader instanceof String){
+						cell.setCellValue(colHeader)
+					}
+
+					if(colHeader instanceof Map) {
+						cell.setCellValue(colHeader.field)
+						switch (colHeader.style) {
+							case 'positive': cell.setCellStyle(csPositive)
+								break
+							case 'neutral': cell.setCellStyle(csNeutral)
+								break
+							case 'neutral2': cell.setCellStyle(csNeutral2)
+								break
+							case 'negative': cell.setCellStyle(csNegative)
+								break
+							case 'bold': cell.setCellStyle(bold)
+								break
+						}
+					}
 				}
 				sheet.createFreezePane(0,1)
 				Row row
@@ -186,6 +210,8 @@ class ExportService {
 								break
 							case 'neutral': cell.setCellStyle(csNeutral)
 								break
+							case 'neutral2': cell.setCellStyle(csNeutral2)
+								break
 							case 'negative': cell.setCellStyle(csNegative)
 								break
 							case 'bold': cell.setCellStyle(bold)
@@ -196,10 +222,11 @@ class ExportService {
 				}
 				for(int i = 0;i < titleRow.size(); i++) {
 					try {
+						sheet.trackColumnForAutoSizing(i)
 						sheet.autoSizeColumn(i)
 					}
 					catch (Exception e) {
-						log.error("Null pointer exception in column ${i}")
+						log.error("Exception in column ${i}: ${e}")
 					}
 				}
 			}
@@ -742,6 +769,9 @@ class ExportService {
 	 * @return an Excel worksheet of the usage report, either according to the COUNTER 4 or COUNTER 5 format
 	 */
 	Map<String, Object> generateReport(GrailsParameterMap params, Boolean showPriceDate = false, Boolean showMetricType = false, Boolean showOtherData = false) {
+		EhcacheWrapper userCache = contextService.getUserCache("/subscription/stats")
+		userCache.put('progress', 0)
+		userCache.put('label', 'Bereite Laden vor ...')
 		Profiler prf = new Profiler()
 		prf.setBenchmark('start export')
 		Locale locale = LocaleUtils.getCurrentLocale()
@@ -749,7 +779,8 @@ class ExportService {
 		if(!result)
 			return null
 		Subscription refSub
-		Org customer = result.subscription.getSubscriber()
+		Org customer = result.subscription.getSubscriberRespConsortia()
+		boolean allTitles = false
 		if (params.statsForSurvey == true) {
 			if(params.loadFor == 'allTipps')
 				refSub = result.subscription.instanceOf //look at statistics of the whole set of titles, i.e. of the consortial parent subscription
@@ -759,7 +790,10 @@ class ExportService {
 		else if(subscriptionService.countCurrentIssueEntitlements(result.subscription) > 0){
 			refSub = result.subscription
 		}
-		else refSub = result.subscription.instanceOf
+		else {
+			refSub = result.subscription.instanceOf
+			allTitles = true
+		}
 		prf.setBenchmark('get platforms')
 		Platform platform = Platform.get(params.platform)
 		prf.setBenchmark('get namespaces')
@@ -774,21 +808,15 @@ class ExportService {
 		SXSSFSheet sheet
         Set<String> metricTypes = params.list('metricType')
 		String reportType = params.reportType
-		Map<String, Map<String, TitleInstancePackagePlatform>> titles = [:] //structure: namespace -> value -> tipp
+		Map<String, Object> titles = [:] //structure: namespace -> value -> tipp
 		Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
 		prf.setBenchmark('prepare title identifier map')
         if(reportType in Counter4Report.COUNTER_4_TITLE_REPORTS || reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
-			subscriptionControllerService.fetchTitles(params, refSub, namespaces, 'ids').each { Map titleMap ->
-				//debug only! DO NOT COMMIT!
-				//if(titleMap.tipp.id == 862496) {
-				titlesSorted << titleMap.tipp
-				Map<String, TitleInstancePackagePlatform> innerMap = titles.get(titleMap.namespace)
-				if(!innerMap)
-					innerMap = [:]
-				innerMap.put(titleMap.value, titleMap.tipp)
-				titles.put(titleMap.namespace, innerMap)
-				//}
-			}
+			userCache.put('label', 'Hole Titel ...')
+			titles = subscriptionControllerService.fetchTitles(refSub, allTitles)
+			userCache.put('progress', 10)
+			titlesSorted = TitleInstancePackagePlatform.executeQuery('select ie.tipp from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :refSub and ie.status = :current order by tipp.sortname, tipp.name', [refSub: refSub, current: RDStore.TIPP_STATUS_CURRENT])
+			userCache.put('progress', 20)
         }
 		//reportTypes.each { String reportType ->
 		Set<String> columnHeaders = []
@@ -798,17 +826,23 @@ class ExportService {
 		int rowno = 0
 		//revision 4
 		if(params.revision == AbstractReport.COUNTER_4) {
+			userCache.put('label', 'Hole Daten vom Anbieter ...')
 			prf.setBenchmark('before SUSHI call')
-			Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform]
+			Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform, revision: AbstractReport.COUNTER_4]
 			if(params.metricType) {
 				queryParams.metricTypes = params.list('metricType')
+			}
+			else {
+				metricTypes.addAll(Counter4Report.METRIC_TYPES.valueOf(reportType).metricTypes)
 			}
 			queryParams.startDate = dateRangeParams.startDate
 			queryParams.endDate = dateRangeParams.endDate
 			//the data
 			Map<String, Object> requestResponse = getReports(queryParams)
+			userCache.put('progress', 40)
 			prf.setBenchmark('data fetched from provider')
 			if(requestResponse.containsKey('reports')) {
+				userCache.put('label', 'Erzeuge Tabelle ...')
 				Set<String> availableMetrics = requestResponse.reports.'**'.findAll { node -> node.name() == 'MetricType' }.collect { node -> node.text()}.toSet()
 				workbook = new XSSFWorkbook()
 				POIXMLProperties xmlProps = workbook.getProperties()
@@ -1026,8 +1060,11 @@ class ExportService {
 								}
 								break
 							case Counter4Report.DATABASE_REPORT_1:
+								int i = 0
+								prf.setBenchmark('loop through assembled rows')
 								rowno = 9
 								Map<String, Map<String, Object>> data = prepareDataWithDatabases(requestResponse, reportType)
+								double pointsPerIteration = 20/data.size()
 								data.each { String databaseName, Map<String, Object> databaseMetrics ->
 									databaseMetrics.each { String databaseMetricType, Map<String, Object> metricRow ->
 										columnHeaders.eachWithIndex { String colHeader, int c ->
@@ -1037,12 +1074,15 @@ class ExportService {
 									}
 									row = sheet.createRow(rowno)
 									rowno++
+									i++
+									userCache.put('progress', 80+i*pointsPerIteration)
 								}
 								break
 							case Counter4Report.DATABASE_REPORT_2:
 								rowno = 9
 								Map<String, Object> data = prepareDataWithDatabases(requestResponse, reportType)
-								int totalSum = 0
+								double pointsPerIteration = 20/data.size()
+								int totalSum = 0, i = 0
 								/*
                                 TODO migrate
                                 Counter4Report.withNewSession {
@@ -1096,11 +1136,15 @@ class ExportService {
 									}
 									rowno++
 									row = sheet.createRow(rowno)
+									i++
+									userCache.put('progress', 80+i*pointsPerIteration)
 								}
 								break
 							case Counter4Report.PLATFORM_REPORT_1:
+								int i = 0
 								rowno = 9
 								Map<String, Map<String, Object>> data = prepareDataWithDatabases(requestResponse, reportType)
+								double pointsPerIteration = 20/data.size()
 								data.each { String databaseName, Map<String, Object> databaseMetrics ->
 									databaseMetrics.each { String databaseMetricType, Map<String, Object> metricRow ->
 										columnHeaders.eachWithIndex { String colHeader, int c ->
@@ -1110,6 +1154,8 @@ class ExportService {
 									}
 									row = sheet.createRow(rowno)
 									rowno++
+									i++
+									userCache.put('progress', 80+i*pointsPerIteration)
 								}
 								/*
                                 TODO migrate
@@ -1153,29 +1199,33 @@ class ExportService {
 								*/
 								break
 						}
-						int i = 0
-						prf.setBenchmark('loop through assembled rows')
-						for(TitleInstancePackagePlatform title: titlesSorted) {
-							Instant start = Instant.now().truncatedTo(ChronoUnit.MICROS)
-							Map metricRow = titleRows.get(title.id)
-							if(metricRow) {
-								Map titleRow = metricRow.get(metricType)
-								if(titleRow) {
-									row = sheet.createRow(i+rowno)
-									cell = row.createCell(0)
-									cell.setCellValue(title.name)
-									for(int c = 1; c < columnHeaders.size(); c++) {
-										cell = row.createCell(c)
-										def empty = ""
-										if(columnHeaders[c].matches('\\d{4}-\\d{2}'))
-											empty = 0
-										cell.setCellValue(titleRow.get(columnHeaders[c]) ?: empty)
+						if(titlesSorted) {
+							int i = 0
+							prf.setBenchmark('loop through assembled rows')
+							double pointsPerIteration = 20/titlesSorted.size()
+							for(TitleInstancePackagePlatform title: titlesSorted) {
+								Instant start = Instant.now().truncatedTo(ChronoUnit.MICROS)
+								Map metricRow = titleRows.get(title.id)
+								if(metricRow) {
+									Map titleRow = metricRow.get(metricType)
+									if(titleRow) {
+										row = sheet.createRow(i+rowno)
+										cell = row.createCell(0)
+										cell.setCellValue(title.name)
+										for(int c = 1; c < columnHeaders.size(); c++) {
+											cell = row.createCell(c)
+											def empty = ""
+											if(columnHeaders[c].matches('\\d{4}-\\d{2}'))
+												empty = 0
+											cell.setCellValue(titleRow.get(columnHeaders[c]) ?: empty)
+										}
+										i++
+										userCache.put('progress', 80+i*pointsPerIteration)
 									}
-									i++
 								}
+								Duration diff = Duration.between(start, Instant.now().truncatedTo(ChronoUnit.MICROS))
+								//log.debug("cell row generated in ${diff} micros")
 							}
-							Duration diff = Duration.between(start, Instant.now().truncatedTo(ChronoUnit.MICROS))
-							//log.debug("cell row generated in ${diff} micros")
 						}
 					}
 				}
@@ -1189,16 +1239,25 @@ class ExportService {
 					}
 					log.debug(debugString)
 				}
-				if(wb.getNumberOfSheets() == 0)
+				if(wb.getNumberOfSheets() == 0) {
+					userCache.put('progress', 0)
 					[error: 'noMetricsAvailable']
-				else [result: wb]
+				}
+				else {
+					userCache.put('progress', 100)
+					[result: wb]
+				}
 			}
-			else requestResponse
+			else {
+				userCache.put('progress', 100)
+				requestResponse
+			}
 		}
 		//revision 5
 		else if(params.revision == AbstractReport.COUNTER_5) {
+			userCache.put('label', 'Hole Daten vom Anbieter ...')
 			prf.setBenchmark('before SUSHI call')
-			Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform]
+			Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform, revision: AbstractReport.COUNTER_5]
 			if(params.metricType) {
 				queryParams.metricTypes = params.list('metricType').join('%7C')
 			}
@@ -1225,6 +1284,7 @@ class ExportService {
 				sheet.trackAllColumnsForAutoSizing()
 
 				prf.setBenchmark('data fetched from provider')
+				userCache.put('label', 'Erzeuge Tabelle ...')
 				/*
 				desideratum:
 				if(reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
@@ -1349,6 +1409,7 @@ class ExportService {
 				}
 				rowno = 14
 				Map<String, Object> data = [:]
+				double pointsPerIteration
 				switch(reportType.toLowerCase()) {
 					case [Counter5Report.PLATFORM_MASTER_REPORT, Counter5Report.PLATFORM_USAGE]:
 						data = [:]
@@ -1359,6 +1420,7 @@ class ExportService {
 						else {
 							reportItems.addAll(requestResponse.items)
 						}
+						pointsPerIteration = 20/reportItems.size()
 						for(def reportItem: reportItems) {
 							for(Map performance: reportItem.Performance) {
 								Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
@@ -1390,6 +1452,7 @@ class ExportService {
 											cell.setCellValue(dataTypeRow.getValue().get(columnHeaders[c]) ?: "")
 										}
 										i++
+										userCache.put('progress', 80+i*pointsPerIteration)
 									}
 								}
 							}
@@ -1425,6 +1488,7 @@ class ExportService {
 					case Counter5Report.DATABASE_MASTER_REPORT:
 						data = prepareDataWithDatabases(requestResponse, reportType)
 						int i = 0
+						pointsPerIteration = data.size()
 						for(Map.Entry<String, Object> databaseRow: data) {
 							for(Map.Entry<String, Object> platformRow: databaseRow.getValue()) {
 								for(Map.Entry<String, Object> metricRow: platformRow.getValue()) {
@@ -1435,6 +1499,7 @@ class ExportService {
 											cell.setCellValue(dataTypeRow.getValue().get(columnHeaders[c]) ?: "")
 										}
 										i++
+										userCache.put('progress', 80+i*pointsPerIteration)
 									}
 								}
 							}
@@ -1444,6 +1509,7 @@ class ExportService {
 					case Counter5Report.DATABASE_SEARCH_AND_ITEM_USAGE:
 						data = prepareDataWithDatabases(requestResponse, reportType)
 						int i = 0
+						pointsPerIteration = data.size()
 						for(Map.Entry<String, Object> databaseRow: data) {
 							for(Map.Entry<String, Object> platformRow: databaseRow.getValue()) {
 								for(Map.Entry<String, Object> metricRow: platformRow.getValue()) {
@@ -1453,6 +1519,7 @@ class ExportService {
 										cell.setCellValue(metricRow.getValue().get(columnHeaders[c]) ?: "")
 									}
 									i++
+									userCache.put('progress', 80+i*pointsPerIteration)
 								}
 							}
 						}
@@ -1489,6 +1556,7 @@ class ExportService {
 				}
 				if(reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
 					if(titleRows.size() > 0) {
+						pointsPerIteration = titlesSorted.size()
 						prf.setBenchmark('loop through assembled rows')
 						for(TitleInstancePackagePlatform title: titlesSorted) {
 							Instant start = Instant.now().truncatedTo(ChronoUnit.MICROS)
@@ -1508,6 +1576,7 @@ class ExportService {
 											cell.setCellValue(titleRow.get(columnHeaders[c]) ?: "")
 										}
 										i++
+										userCache.put('progress', 80+i*pointsPerIteration)
 									}
 									rowno += titleYop.size()
 								}
@@ -1572,13 +1641,17 @@ class ExportService {
 	 * @param metricType (for COUNTER 4 exports only) the metric typ which should be exported
 	 * @return a map of titles with the row containing the columns as specified for the given report
 	 */
-	Map<String, Object> prepareDataWithTitles(Map<String, Map<String, TitleInstancePackagePlatform>> titles, IdentifierNamespace propIdNamespace, String reportType, requestResponse, Boolean showPriceDate = false, Boolean showOtherData = false) {
+	Map<String, Object> prepareDataWithTitles(Map<String, Object> titles, IdentifierNamespace propIdNamespace, String reportType, requestResponse, Boolean showPriceDate = false, Boolean showOtherData = false) {
+		EhcacheWrapper userCache = contextService.getUserCache("/subscription/stats")
+		double pointsPerIteration
+		int processed = 0
 		Map<Long, Map<String, Map>> titleRows = [:]
 		Map<String, Object> result = [:]
 		Calendar limit = GregorianCalendar.getInstance()
 		limit.set(2000, 0, 1)
 		if(reportType in Counter5Report.COUNTER_5_REPORTS) {
 			Map<Date, Integer> countsPerMonth = [:]
+			pointsPerIteration = 40/requestResponse.items.size()
 			for(def reportItem: requestResponse.items) {
 				Map<String, String> identifierMap = buildIdentifierMap(reportItem, AbstractReport.COUNTER_5)
 				TitleInstancePackagePlatform tipp = subscriptionControllerService.matchReport(titles, propIdNamespace, identifierMap)
@@ -1700,12 +1773,15 @@ class ExportService {
 						}
 					}
 				}
+				processed++
+				userCache.put('progress', 40+processed*pointsPerIteration)
 			}
 			result.sumRows =  countsPerMonth
 		}
         else if(reportType in Counter4Report.COUNTER_4_REPORTS) {
 			Map<String, Map<Date, Integer>> countsPerMonth = [:], sumsPerYOP = [:]
 			Set<String> metricsAvailable = []
+			pointsPerIteration = 20/requestResponse.reports.size()
 			for (GPathResult reportItem: requestResponse.reports) {
 				Map<String, String> identifierMap = buildIdentifierMap(reportItem, AbstractReport.COUNTER_4)
 				TitleInstancePackagePlatform tipp = subscriptionControllerService.matchReport(titles, propIdNamespace, identifierMap)
@@ -1825,6 +1901,8 @@ class ExportService {
 						}
 					}
 				}
+				processed++
+				userCache.put('progress', 40+processed*pointsPerIteration)
 			}
 			result.metricsAvailable = metricsAvailable
 			result.sumRows = countsPerMonth
@@ -1920,6 +1998,7 @@ class ExportService {
 		//log.debug("iteration time inner loop: ${iterInner}")
 
 		//}
+		userCache.put('progress', 80)
 		result.titleRows = titleRows
 		result
 	}
@@ -1939,10 +2018,14 @@ class ExportService {
 	 	]
 	 */
 	Map<String, Object> prepareDataWithDatabases(Map requestResponse, String reportType) {
+		EhcacheWrapper userCache = contextService.getUserCache("/subscription/stats")
+		double pointsPerIteration
+		int processed = 0
 		Map<String, Object> databaseRows = [:]
 		//mini example: https://connect.liblynx.com/sushi/r5/reports/dr?customer_id=2246867&requestor_id=facd706b-cf11-42f9-8d92-a874e594a218&begin_date=2023-01&end_date=2023-12
 		//take https://laser-dev.hbz-nrw.de/subscription/membersSubscriptionsManagement/59727?tab=customerIdentifiers&isSiteReloaded=false as base for customer identifiers!
 		if(reportType in Counter5Report.COUNTER_5_REPORTS) {
+			pointsPerIteration = 40/requestResponse.items.size()
 			for(def reportItem: requestResponse.items) {
 				String propID = reportItem.Item_ID.find { Map itemId -> itemId.Type == 'Proprietary' }?.Value
 				for(Map performance: reportItem.Performance) {
@@ -1994,9 +2077,12 @@ class ExportService {
 						}
 					}
 				}
+				processed++
+				userCache.put('progress', 40+processed*pointsPerIteration)
 			}
 		}
 		else if(reportType in Counter4Report.COUNTER_4_REPORTS) {
+			pointsPerIteration = 20/requestResponse.reports.size()
 			for (GPathResult reportItem: requestResponse.reports) {
 				String databaseName = reportItem.'ns2:ItemName'.text()
 				for (GPathResult performance: reportItem.'ns2:ItemPerformance') {
@@ -2040,6 +2126,8 @@ class ExportService {
 						databaseRows.put(databaseName, databaseRow)
 					}
 				}
+				processed++
+				userCache.put('progress', 40+processed*pointsPerIteration)
 			}
 			/*
             for(AbstractReport report: reports) {
@@ -2082,6 +2170,7 @@ class ExportService {
             }
 			*/
 		}
+		userCache.put('progress', 80)
 		databaseRows
 	}
 
@@ -2091,7 +2180,7 @@ class ExportService {
 	 * @param platformRecord the we:kb platform record map containing the SUSHI API data
 	 * @return a {@link Map} containing the revision (either counter4 or counter5) and statsUrl wth the URL to call
 	 */
-	Map<String, String> prepareSushiCall(Map platformRecord) {
+	Map<String, String> prepareSushiCall(Map platformRecord, String connectionMethod = 'reports') {
 		String revision = null, statsUrl = null, sushiApiAuthenticationMethod = null
 		if(platformRecord.counterRegistryApiUuid) {
 			String url = "${ConfigMapper.getSushiCounterRegistryUrl()}/${platformRecord.counterRegistryApiUuid}${ConfigMapper.getSushiCounterRegistryDataSuffix()}"
@@ -2104,10 +2193,10 @@ class ExportService {
 							if(sushiConfig.counter_release in ['5', '5.1'])
 								revision = "counter5"
 							statsUrl = sushiConfig.url
-							if (!sushiConfig.url.contains('reports')) {
+							if (!sushiConfig.url.contains(connectionMethod)) {
 								if (sushiConfig.url.endsWith('/'))
-									statsUrl = sushiConfig.url + 'reports'
-								else statsUrl = sushiConfig.url + '/reports'
+									statsUrl = sushiConfig.url + connectionMethod
+								else statsUrl = sushiConfig.url + '/'+connectionMethod
 							}
 							boolean withRequestorId = Boolean.valueOf(sushiConfig.requestor_id_required), withApiKey = Boolean.valueOf(sushiConfig.api_key_required), withIpWhitelisting = Boolean.valueOf(sushiConfig.ip_address_authorization)
 							if(withRequestorId) {
@@ -2171,6 +2260,86 @@ class ExportService {
 		[revision: revision, statsUrl: statsUrl, sushiApiAuthenticationMethod: sushiApiAuthenticationMethod]
 	}
 
+	String buildQueryArguments(Map configMap, Map platformRecord, CustomerIdentifier ci) {
+		String queryArguments = null
+		if(configMap.revision == AbstractReport.COUNTER_5) {
+			String apiKey = platformRecord.centralApiKey ?: ci.requestorKey
+			queryArguments = "?customer_id=${ci.value}"
+			switch(configMap.sushiApiAuthenticationMethod) {
+				case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR:
+					if(ci.requestorKey) {
+						queryArguments += "&requestor_id=${ci.requestorKey}"
+					}
+					break
+				case AbstractReport.API_AUTH_CUSTOMER_API:
+				case AbstractReport.API_AUTH_REQUESTOR_API:
+					if(ci.requestorKey) {
+						queryArguments += "&api_key=${ci.requestorKey}"
+					}
+					break
+				case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR_API:
+					if(ci.requestorKey && platformRecord.centralApiKey) {
+						queryArguments += "&requestor_id=${ci.requestorKey}&api_key=${platformRecord.centralApiKey}"
+					}
+					else if(ci.requestorKey && !platformRecord.centralApiKey) {
+						//the next fancy solution ... this time: Statista!
+						queryArguments += "&requestor_id=${ci.value}&api_key=${ci.requestorKey}"
+					}
+					break
+				case AbstractReport.API_IP_WHITELISTING:
+					break
+				default:
+					if(ci.requestorKey || apiKey) {
+						queryArguments += "&requestor_id=${ci.requestorKey}&api_key=${apiKey}"
+					}
+					break
+			}
+			if(platformRecord.counterR5SushiPlatform)
+				queryArguments += "&platform=${platformRecord.counterR5SushiPlatform}"
+		}
+		else if(configMap.revision == AbstractReport.COUNTER_4) {
+			StreamingMarkupBuilder requestBuilder = new StreamingMarkupBuilder()
+			Date now = new Date()
+			//building up fake request in order to check availability
+			def requestBody = requestBuilder.bind {
+				mkp.xmlDeclaration()
+				mkp.declareNamespace(x: "http://schemas.xmlsoap.org/soap/envelope/")
+				mkp.declareNamespace(cou: "http://www.niso.org/schemas/sushi/counter")
+				mkp.declareNamespace(sus: "http://www.niso.org/schemas/sushi")
+				x.Envelope {
+					x.Header {}
+					x.Body {
+						cou.ReportRequest(Created: DateUtils.getSDF_yyyyMMddTHHmmss().format(now), ID: '?') {
+							sus.Requestor {
+								sus.ID(ci.requestorKey)
+								sus.Name('?')
+								sus.Email('?')
+							}
+							sus.CustomerReference {
+								sus.ID(ci.value)
+								sus.Name('?')
+							}
+							sus.ReportDefinition(Name: 'PR1', Release: 4) {
+								sus.Filters {
+									sus.UsageDateRange {
+										sus.Begin('2021-01-01')
+										//if (currentYearEnd.before(calendarConfig.now))
+										sus.End('2021-01-31')
+										/*else {
+                                            sus.End(calendarConfig.now.format("yyyy-MM-dd"))
+                                        }*/
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			queryArguments = requestBody.toString()
+		}
+		queryArguments
+	}
+
 	/**
 	 * Builds the SUSHI request and fetches the data from the provider's SUSHI API server
 	 * @param configMap the map containing the request parameters
@@ -2182,8 +2351,8 @@ class ExportService {
 		SimpleDateFormat monthFormatter = DateUtils.getSDF_yyyyMM()
 		Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/sushiSources", [:])
 		Map platformRecord
-		if (queryResult.warning) {
-			Map<String, Object> records = queryResult.warning
+		if (queryResult) {
+			Map<String, Object> records = queryResult
 			if(records.counter4ApiSources.containsKey(configMap.platform.gokbId)) {
 				platformRecord = records.counter4ApiSources.get(configMap.platform.gokbId)
 			}
@@ -2233,47 +2402,18 @@ class ExportService {
 						}
 					}
 					//log.debug(requestBody.toString())
-					result.putAll(statsSyncService.fetchXMLData(statsSource.statsUrl, requestBody))
+					result.putAll(statsSyncService.fetchXMLData(statsSource.statsUrl, customerId, requestBody))
 				}
 				else if(statsSource.revision == 'counter5') {
 					String url = statsSource.statsUrl + "/${configMap.reportType}"
-					url += "?customer_id=${customerId.value}"
-					switch(statsSource.sushiApiAuthenticationMethod) {
-						case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR:
-							if(customerId.requestorKey) {
-								url += "&requestor_id=${customerId.requestorKey}"
-							}
-							break
-						case [AbstractReport.API_AUTH_CUSTOMER_API, AbstractReport.API_AUTH_REQUESTOR_API]:
-							if(customerId.requestorKey) {
-								url += "&api_key=${customerId.requestorKey}"
-							}
-							break
-						case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR_API:
-							if(customerId.requestorKey && platformRecord.centralApiKey) {
-								url += "&requestor_id=${customerId.requestorKey}&api_key=${platformRecord.centralApiKey}"
-							}
-							else if(customerId.requestorKey && !platformRecord.centralApiKey) {
-								//the next fancy solution ... this time: Statista!
-								url += "&requestor_id=${customerId.value}&api_key=${customerId.requestorKey}"
-							}
-							break
-						case AbstractReport.API_IP_WHITELISTING:
-							break
-						default:
-							String apiKey = platformRecord.centralApiKey ?: customerId.requestorKey
-							if(customerId.requestorKey || apiKey) {
-								url += "&requestor_id=${customerId.requestorKey}&api_key=${apiKey}"
-							}
-							break
-					}
+					url += buildQueryArguments(configMap, platformRecord, customerId)
 					if(platformRecord.counterR5SushiPlatform)
 						url += "&platform=${platformRecord.counterR5SushiPlatform}"
 					url += configMap.metricTypes ? "&metric_type=${configMap.metricTypes}" : ""
 					url += configMap.accessTypes ? "&access_type=${configMap.accessTypes}" : ""
 					url += configMap.accessMethods ? "&access_method=${configMap.accessMethods}" : ""
 					url += "&begin_date=${monthFormatter.format(configMap.startDate)}&end_date=${monthFormatter.format(configMap.endDate)}"
-					result.putAll(statsSyncService.fetchJSONData(url))
+					result.putAll(statsSyncService.fetchJSONData(url, customerId))
 				}
 			}
 		}
@@ -2347,20 +2487,6 @@ class ExportService {
 		//LinkedHashMap<Subscription,List<Org>> subscribers = [:]
 		//LinkedHashMap<Subscription,Set<Org>> providers = [:]
 		LinkedHashMap<Subscription, BudgetCode> costItemGroups = [:]
-		/*OrgRole.findAllByRoleTypeInList([RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]).each { it ->
-			List<Org> orgs = subscribers.get(it.sub)
-			if(orgs == null)
-				orgs = [it.org]
-			else orgs.add(it.org)
-			subscribers.put(it.sub,orgs)
-		}
-		OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
-			Set<Org> orgs = providers.get(it.sub)
-			if (orgs == null)
-				orgs = [it.org]
-			else orgs.add(it.org)
-			providers.put(it.sub, orgs)
-		}*/
 		XSSFCellStyle csPositive = workbook.createCellStyle()
 		csPositive.setFillForegroundColor(new XSSFColor(new Color(198,239,206)))
 		csPositive.setFillPattern(FillPatternType.SOLID_FOREGROUND)
@@ -2394,8 +2520,10 @@ class ExportService {
 			if(viewMode == "cons")
 				titles.addAll([messageSource.getMessage('org.sortName.label',null,locale),messageSource.getMessage('financials.newCosts.costParticipants',null,locale),messageSource.getMessage('financials.isVisibleForSubscriber',null,locale)])
 			titles.add(messageSource.getMessage( 'financials.newCosts.costTitle',null,locale))
-			if(viewMode == "cons")
-				titles.add(messageSource.getMessage('default.provider.label',null,locale))
+			if(viewMode == "cons") {
+				titles.add(messageSource.getMessage('provider.label', null, locale))
+				titles.add(messageSource.getMessage('vendor.label', null, locale))
+			}
 			titles.addAll([messageSource.getMessage('default.subscription.label',null,locale), messageSource.getMessage('subscription.startDate.label',null,locale), messageSource.getMessage('subscription.endDate.label',null,locale),
 						   messageSource.getMessage('financials.costItemConfiguration',null,locale), messageSource.getMessage('package.label',null,locale), messageSource.getMessage('issueEntitlement.label',null,locale),
 						   messageSource.getMessage('financials.datePaid',null,locale), messageSource.getMessage('financials.dateFrom',null,locale), messageSource.getMessage('financials.dateTo',null,locale), messageSource.getMessage('financials.financialYear',null,locale),
@@ -2457,10 +2585,21 @@ class ExportService {
 						//provider
 						cell = row.createCell(cellnum++)
 						if(ci.sub) {
-							Set<Org> orgRoles = ci.sub.orgRelations.findAll { OrgRole oo -> oo.roleType in [RDStore.OR_PROVIDER,RDStore.OR_AGENCY] }.collect { it.org }
+							Set<Provider> providerRoles = Provider.executeQuery('select pvr.provider from ProviderRole pvr where pvr.subscription = :sub', [sub: ci.sub])
 							String cellValue = ""
-							orgRoles.each { Org or ->
-								cellValue += or.name
+							providerRoles.each { Provider pvr ->
+								cellValue += pvr.name
+							}
+							cell.setCellValue(cellValue)
+						}
+						else cell.setCellValue("")
+						//vendor
+						cell = row.createCell(cellnum++)
+						if(ci.sub) {
+							Set<Vendor> vendorRoles = Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription = :sub', [sub: ci.sub])
+							String cellValue = ""
+							vendorRoles.each { Vendor vr ->
+								cellValue += vr.name
 							}
 							cell.setCellValue(cellValue)
 						}
@@ -2492,7 +2631,7 @@ class ExportService {
 						cell.setCellValue(messageSource.getMessage('financials.costItemConfiguration.notSet',null,locale))
 					//subscription package
 					cell = row.createCell(cellnum++)
-					cell.setCellValue(ci?.subPkg ? ci.subPkg.pkg.name:'')
+					cell.setCellValue(ci?.pkg ? ci.pkg.name:'')
 					//issue entitlement
 					cell = row.createCell(cellnum++)
 					cell.setCellValue(ci?.issueEntitlement ? ci.issueEntitlement.tipp.name:'')
@@ -3220,7 +3359,7 @@ class ExportService {
 						row.add(' ')
 					}
 					//publication_type
-					switch(tipp.titleType) {
+					/*switch(tipp.titleType) {
 						case "Journal": row.add('serial')
 							break
 						case "Book": row.add('monograph')
@@ -3229,10 +3368,11 @@ class ExportService {
 							break
 						default: row.add('other')
 							break
-					}
+					}*/
+					row.add(tipp.titleType)
 					//publisher_name
 					row.add(tipp.publisherName)
-					if(tipp.titleType == 'Book') {
+					if(tipp.titleType == 'monograph') {
 						//date_monograph_published_print (no value unless BookInstance)
 						row.add(tipp.dateFirstInPrint ? formatter.format(tipp.dateFirstInPrint) : ' ')
 						//date_monograph_published_online (no value unless BookInstance)
@@ -3514,15 +3654,286 @@ class ExportService {
 		export
 	}
 
+	Map<String, Object> generateRenewalExport(Map configMap, Set showStatsInMonthRings, Org subscriber) {
+		log.debug("Begin generateRenewalExport")
+		Sql sql = GlobalService.obtainSqlConnection()
+		Locale locale = LocaleUtils.getCurrentLocale()
+		//Map<String, Object> data = getTitleData(configMap, TitleInstancePackagePlatform.class.name, sql, showStatsInMonthRings, subscriber)
+		EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/generateRenewalExport")
+		long start = System.currentTimeMillis()
+		//the query is being assembled here
+		Map<String, String> titleHeaders = getBaseTitleHeaders(TitleInstancePackagePlatform.class.name, true)
+		//the where clauses here
+        Map<String, Object> queryClauseParts = filterService.prepareTitleSQLQuery(configMap, TitleInstancePackagePlatform.class.name, sql)
+        String baseQuery = "select tipp_id, ${titleHeaders.values().join(', ')} from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id ${queryClauseParts.join} where ${queryClauseParts.where}${queryClauseParts.order}"
+		queryClauseParts.subscriber = subscriber
+		userCache.put('label', 'Hole Titel ...')
+        List<GroovyRowResult> rows = sql.rows(baseQuery, queryClauseParts.params)
+		Map<String, Object> export = [titles: titleHeaders.keySet().toList()]
+		export.titles.addAll(showStatsInMonthRings.collect { Date month -> DateUtils.getSDF_yyyyMM().format(month) })
+		export.titles << "Pick"
+		Map<String, Object> identifierInverseMap = subscriptionControllerService.fetchTitles(configMap.refSub, true)
+		List excelRows = []
+		userCache.put('progress', 20)
+		List<GroovyRowResult> platformData = sql.rows("select plat_title_namespace, plat_guid from platform join package on plat_id = pkg_nominal_platform_fk where pkg_id = any(:pkgIds) group by plat_guid, plat_title_namespace", [pkgIds: sql.getDataSource().getConnection().createArrayOf('bigint', configMap.pkgIds as Object[])])
+		List<Object> platforms = []
+		Set<String> propIdNamespaces = []
+		platformData.each { GroovyRowResult row ->
+			platforms << row.plat_guid
+			propIdNamespaces << row.plat_title_namespace
+		}
+		Calendar filterTime = GregorianCalendar.getInstance()
+		filterTime.setTime(showStatsInMonthRings.first())
+		filterTime.set(Calendar.DATE, filterTime.getActualMinimum(Calendar.DAY_OF_MONTH))
+		Date startDate = filterTime.getTime()
+		filterTime.setTime(showStatsInMonthRings.last())
+		filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
+		Date endDate = filterTime.getTime()
+		configMap.customer = subscriber
+		configMap.startDate = startDate
+		configMap.endDate = endDate
+		userCache.put('label', 'Hole Daten vom Anbieter ...')
+		Map<String, Object> requestResponse = getReports(configMap)
+		if(requestResponse.containsKey("error") && requestResponse.error.code == 202) {
+			export.status202 = true
+		}
+		userCache.put('progress', 40)
+		userCache.put('label', 'Erzeuge Tabelle ...')
+		int processed = 0
+		if(rows && !export.status202) {
+			double pointsPerIteration = 20/rows.size()
+			Map<Long, Map> allReports = [:]
+			//implicit COUNTER 4 check
+			Long titleMatch
+			int matched = 0
+			if(requestResponse.containsKey('reports')) {
+				double pointsPerMatch = 20/requestResponse.reports.size()
+				//COUNTER 4 result
+				for (GPathResult reportItem: requestResponse.reports) {
+					titleMatch = null
+					reportItem.'ns2:ItemIdentifier'.each { identifier ->
+						if(!titleMatch) {
+							switch (identifier.'ns2:Type'.text().toLowerCase()) {
+								case 'isbn': titleMatch = identifierInverseMap.onlineIdentifiers.get(identifier.'ns2:Value'.text())
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.onlineIdentifiers.get(identifier.'ns2:Value'.text().replaceAll('-',''))
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.printIdentifiers.get(identifier.'ns2:Value'.text().replaceAll('-',''))
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.printIdentifiers.get(identifier.'ns2:Value'.text())
+									break
+								case 'online_isbn':
+								case 'online_issn': titleMatch = identifierInverseMap.onlineIdentifiers.get(identifier.'ns2:Value'.text())
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.onlineIdentifiers.get(identifier.'ns2:Value'.text().replaceAll('-',''))
+									break
+								case 'print_issn':
+								case 'print_isbn': titleMatch = identifierInverseMap.printIdentifiers.get(identifier.'ns2:Value'.text())
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.printIdentifiers.get(identifier.'ns2:Value'.text().replaceAll('-',''))
+									break
+								case 'doi': titleMatch = identifierInverseMap.doi.get(identifier.'ns2:Value'.text())
+									break
+								case 'proprietary_id': propIdNamespaces.each { String propIdNamespace ->
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.proprietaryIdentifiers.get(identifier.'ns2:Value'.text())
+								}
+									break
+							}
+						}
+					}
+					if(titleMatch) {
+						Map<String, Integer> reports = allReports.containsKey(titleMatch) ? allReports.get(titleMatch) : [:]
+						for(GPathResult performance: reportItem.'ns2:ItemPerformance') {
+							Date reportFrom = DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text())
+							for(GPathResult instance: performance.'ns2:Instance'.findAll { instCand -> instCand.'ns2:MetricType'.text() == configMap.metricTypes }) {
+								reports.put(DateUtils.getSDF_yyyyMM().format(reportFrom), Integer.parseInt(instance.'ns2:Count'.text()))
+							}
+						}
+						allReports.put(titleMatch, reports)
+					}
+					matched++
+					double increment = matched*pointsPerMatch
+					userCache.put('progress', 40+increment)
+				}
+			}
+			else if(requestResponse.containsKey('items')) {
+				double pointsPerMatch = 20/requestResponse.items.size()
+				//COUNTER 5 result
+				for(def reportItem: requestResponse.items) {
+					titleMatch = null
+					reportItem["Item_ID"].each { idData ->
+						if(!titleMatch) {
+							switch(idData.Type.toLowerCase()) {
+								case 'isbn': titleMatch = identifierInverseMap.onlineIdentifiers.get(idData.Value)
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.onlineIdentifiers.get(idData.Value)
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.printIdentifiers.get(idData.Value.replaceAll('-',''))
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.printIdentifiers.get(idData.Value.replaceAll('-',''))
+									break
+								case 'online_issn':
+								case 'online_isbn': titleMatch = identifierInverseMap.onlineIdentifiers.get(idData.Value)
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.onlineIdentifiers.get(idData.Value.replaceAll('-',''))
+									break
+								case 'print_isbn':
+								case 'print_issn': titleMatch = identifierInverseMap.printIdentifiers.get(idData.Value)
+									if(!titleMatch)
+										titleMatch = identifierInverseMap.printIdentifiers.get(idData.Value.replaceAll('-',''))
+									break
+								case 'doi': titleMatch = identifierInverseMap.doi.get(idData.Value)
+									break
+								case 'proprietary_id': titleMatch = identifierInverseMap.proprietaryIdentifiers.get(idData.Value)
+									break
+							}
+						}
+					}
+					if(titleMatch) {
+						Map<String, Integer> reports = allReports.containsKey(titleMatch) ? allReports.get(titleMatch) : [:]
+						for(Map performance: reportItem.Performance) {
+							Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
+							for(Map instance: performance.Instance) {
+								reports.put(DateUtils.getSDF_yyyyMM().format(reportFrom), instance.Count)
+							}
+						}
+						allReports.put(titleMatch, reports)
+					}
+					matched++
+					double increment = matched*pointsPerMatch
+					userCache.put('progress', 40+increment)
+				}
+			}
+			userCache.put('progress', 60)
+			for(GroovyRowResult sqlRow : rows) {
+				List<Map<String, Object>> excelRow = []
+				if(allReports.containsKey(sqlRow.tipp_id))
+					sqlRow.putAll(allReports.get(sqlRow.tipp_id))
+				String style = ''
+				if(sqlRow.get(messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)) == true)
+					style = 'negative'
+				export.titles.each { String col ->
+					def value = ''
+					if(sqlRow.containsKey(col)) {
+						value = sqlRow.get(col)
+						if(!value)
+							value = ''
+					}
+					if(col == messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)) {
+						if(value == true)
+							excelRow << createCell('excel', RDStore.YN_NO.getI10n('value'), style)
+						else excelRow << createCell('excel', RDStore.YN_YES.getI10n('value'), style)
+					}
+					else
+						excelRow << createCell('excel', value, style)
+				}
+				excelRows << excelRow
+				processed++
+				double increment = processed*pointsPerIteration
+				userCache.put('progress', 60+increment)
+			}
+		}
+		userCache.put('progress', 80)
+		export.rows = excelRows
+		log.debug("End generateRenewalExport")
+		export
+        /*
+		List<String> titleHeaders = [
+				messageSource.getMessage('tipp.name',null,locale),
+				'Print Identifier',
+				'Online Identifier',
+				messageSource.getMessage('tipp.startDate',null,locale),
+				messageSource.getMessage('tipp.startVolume',null,locale),
+				messageSource.getMessage('tipp.startIssue',null,locale),
+				messageSource.getMessage('tipp.endDate',null,locale),
+				messageSource.getMessage('tipp.endVolume',null,locale),
+				messageSource.getMessage('tipp.endIssue',null,locale),
+				messageSource.getMessage('tipp.hostPlatformURL',null,locale),
+				messageSource.getMessage('tipp.firstAuthor',null,locale),
+				messageSource.getMessage('tipp.titleId',null,locale),
+				messageSource.getMessage('tipp.embargo',null,locale),
+				messageSource.getMessage('tipp.coverageDepth',null,locale),
+				messageSource.getMessage('tipp.coverageNote',null,locale),
+				messageSource.getMessage('tipp.titleType',null,locale),
+				messageSource.getMessage('tipp.publisher',null,locale),
+				messageSource.getMessage('tipp.dateFirstInPrint',null,locale),
+				messageSource.getMessage('tipp.dateFirstOnline',null,locale),
+				messageSource.getMessage('tipp.volume',null,locale),
+				messageSource.getMessage('tipp.editionNumber',null,locale),
+				messageSource.getMessage('tipp.firstEditor',null,locale),
+				messageSource.getMessage('tipp.parentTitleId',null,locale),
+				messageSource.getMessage('tipp.precedingTitleId',null,locale),
+				messageSource.getMessage('package.label',null,locale),
+				messageSource.getMessage('platform.label',null,locale),
+				messageSource.getMessage('tipp.lastUpdated',null,locale),
+				messageSource.getMessage('tipp.accessStartDate',null,locale),
+				messageSource.getMessage('tipp.accessEndDate',null,locale),
+				messageSource.getMessage('tipp.medium',null,locale),
+				IdentifierNamespace.ZDB,
+				IdentifierNamespace.DOI,
+				IdentifierNamespace.EZB,
+				messageSource.getMessage('tipp.tippWekbId',null,locale),
+				messageSource.getMessage('tipp.pkgWekbId',null,locale),
+				IdentifierNamespace.ISCI,
+				IdentifierNamespace.ISIL_PAKETSIGEL,
+				IdentifierNamespace.EZB_ANCHOR,
+				messageSource.getMessage('tipp.illIndicator',null,locale),
+				messageSource.getMessage('tipp.supersedingPublicationTitleId',null,locale),
+				messageSource.getMessage('tipp.seriesName',null,locale),
+				messageSource.getMessage('tipp.subjectReference',null,locale),
+				messageSource.getMessage('tipp.status',null,locale),
+				messageSource.getMessage('tipp.accessType',null,locale),
+				messageSource.getMessage('tipp.openAccess',null,locale),
+				IdentifierNamespace.ZDB_PPN,
+				messageSource.getMessage('tipp.listprice_eur',null,locale),
+				messageSource.getMessage('tipp.listprice_gbp',null,locale),
+				messageSource.getMessage('tipp.listprice_usd',null,locale),
+				messageSource.getMessage('tipp.localprice_eur',null,locale),
+				messageSource.getMessage('tipp.localprice_gbp',null,locale),
+				messageSource.getMessage('tipp.localprice_usd',null,locale)]
+		//todo reactivate
+		//titleHeaders.addAll(data.coreTitleIdentifierNamespaces.collect { GroovyRowResult row -> row['idns_ns']})
+		//titleHeaders.addAll(data.otherTitleIdentifierNamespaces.collect { GroovyRowResult row -> row['idns_ns']})
+		if(showStatsInMonthRings){
+			titleHeaders.addAll(showStatsInMonthRings.collect { Date month -> DateUtils.getSDF_yyyyMM().format(month) })
+		}
+		titleHeaders << messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)
+		titleHeaders << "Pick"
+		List rows = []
+		Map<String,List> export = [titles:titleHeaders]
+		data.titles.eachWithIndex { GroovyRowResult title, int outer ->
+			if(entitlementInstance == IssueEntitlement.class.name && data.coverageMap.get(title['ie_id'])) {
+				data.coverageMap.get(title['ie_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
+					log.debug "now processing coverage statement ${inner} for record ${outer}"
+					covStmt.putAll(title)
+					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
+				}
+			}
+			else if(entitlementInstance == TitleInstancePackagePlatform.class.name && data.coverageMap.get(title['tipp_id'])) {
+				data.coverageMap.get(title['tipp_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
+					log.debug "now processing coverage statement ${inner} for record ${outer}"
+					covStmt.putAll(title)
+					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
+				}
+			}
+			else {
+				log.debug "now processing record ${outer}"
+				rows.add(buildRow('excel', title, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
+			}
+		}
+		*/
+	}
+
 	/**
 	 * Gets the map of column headers for KBART export with their database query mappings
 	 * @return a map of column headers and SQL query parts
 	 */
-	Map<String, String> getBaseTitleHeaders(String entitlementInstance) {
+	Map<String, String> getBaseTitleHeaders(String entitlementInstance, boolean checkPerpetuallyAccessToTitle = false) {
 		Locale locale = LocaleUtils.getCurrentLocale()
 		Map <String, String> mapping = [publication_title: 'tipp_name as publication_title',
-		 print_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('book','monograph') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISBN).id}) or (lower(tipp_title_type) in ('journal','serial') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISSN).id}))) as print_identifier",
-		 online_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('book','monograph') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.EISBN).id}) or (lower(tipp_title_type) in ('journal','serial') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.EISSN).id}))) as online_identifier",
+		 print_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISBN).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISSN).id}))) as print_identifier",
+		 online_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.EISBN).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.EISSN).id}))) as online_identifier",
 		 date_first_issue_online: '',
 		 num_first_vol_online: '',
 		 num_first_issue_online: '',
@@ -3563,7 +3974,7 @@ class ExportService {
 		 monograph_parent_collection_title: "null as monograph_parent_collection_title",
 		 subject_area: 'tipp_subject_reference as subject_area',
 		 status: '(select rdv_value from refdata_value where rdv_id = tipp_status_rv_fk) as status',
-		 access_type: '(select rdv_value from refdata_value where rdv_id = tipp_access_type_rv_fk) as access_type',
+		 access_type: "(case when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_PAID.id} then 'P' when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_FREE.id} then 'F' else '' end) as access_type",
 		 oa_type: '(select rdv_value from refdata_value where rdv_id = tipp_open_access_rv_fk) as oa_type',
 		 zdb_ppn: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB_PPN).id}) as zdb_ppn",
 		 listprice_eur: "(select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_last_updated desc limit 1) as listprice_eur",
@@ -3572,6 +3983,9 @@ class ExportService {
 		 localprice_eur: '',
 		 localprice_gbp: '',
 		 localprice_usd: '']
+		if(checkPerpetuallyAccessToTitle) {
+			mapping.put(messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale), "(select case when exists(select * from permanent_title join title_instance_package_platform as pt_tipp on pt_tipp_fk = pt_tipp.tipp_id where (pt_tipp_fk = tipp_id or pt_tipp.tipp_host_platform_url = tipp_host_platform_url) and pt_owner_fk = :subscriber) then true else false end) as ${messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)}")
+		}
 		if(entitlementInstance == IssueEntitlement.class.name) {
 			mapping.date_first_issue_online = "to_char(ic_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as date_first_issue_online"
 			mapping.num_first_vol_online = 'ic_start_volume as num_first_vol_online'
@@ -3859,6 +4273,7 @@ class ExportService {
 	 *  coreTitleIdentifierNamespaces: coreTitleIdentifierNamespaces,
 	 *  otherTitleIdentifierNamespaces: otherTitleIdentifierNamespaces]
 	 */
+    @Deprecated
 	Map<String, Object> getTitleData(Map configMap, String entitlementInstance, Sql sql, List showStatsInMonthRings = [], Org subscriber = null) {
 		Map<String, Object> queryData = filterService.prepareTitleSQLQuery(configMap, entitlementInstance, sql)
 		List<GroovyRowResult> titles = sql.rows(queryData.query+queryData.join+' where '+queryData.where+queryData.order, queryData.params),

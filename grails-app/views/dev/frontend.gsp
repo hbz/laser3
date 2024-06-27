@@ -54,7 +54,7 @@
 
 
 %{-- help sidebar --}%
-<laser:render template="/templates/help/subscription_show"/>
+<laser:render template="/templates/flyouts/help/subscription_show"/>
 <section id="example">
 
     %{-- COLORS  --}%
@@ -66,8 +66,6 @@
     %{-- TABLES --}%
     <laser:render template="frontend_responsibleTable" />
     <laser:render template="sparklines" />
-    %{-- DECKSAVER --}%
-    <laser:render template="frontend_decksaver" />
     %{-- TOGGLE BUTTONS  --}%
     <laser:render template="frontend_toggleButtons" />
     %{-- MODALS  --}%

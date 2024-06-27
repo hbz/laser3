@@ -30,7 +30,6 @@ class ShareService {
                 owner:          share.owner ,
                 license:        (target instanceof License) ? target : share.license,
                 subscription:   (target instanceof Subscription) ? target : share.subscription,
-                pkg:            (target instanceof Package) ? target : share.pkg,
                 link:           (target instanceof Links) ? target : share.link,
                 domain:         share.domain,
                 globannounce:   share.globannounce,
@@ -74,9 +73,8 @@ class ShareService {
         String tp =
                 (target instanceof License) ? 'license' :
                         (target instanceof Subscription) ? 'subscription' :
-                                (target instanceof Package) ? 'pkg' :
-                                        (target instanceof Links) ? 'link' :
-                                                null
+                                (target instanceof Links) ? 'link' :
+                                        null
 
         if (tp) {
             DocContext.executeUpdate('delete from DocContext dc where dc.sharedFrom = :sf and ' + tp + ' = :target', [sf: this, target: target])
@@ -123,6 +121,70 @@ class ShareService {
     }
 
     /**
+     * Adds a share flag to the given vendor relation so that the vendor may be accessed from member objects as well
+     * @param share the role to be shared
+     * @param target the share flag
+     * @return true if the setting was successful, false otherwise
+     */
+    boolean addVendorRoleShareForTarget(VendorRole share, ShareSupport target) {
+
+        if (share.sharedFrom) {
+            return false
+        }
+        // todo check existence
+
+        VendorRole clonedShare = new VendorRole(
+                vendor:         share.vendor ,
+                license:        (target instanceof License) ? target : share.license,
+                subscription:   (target instanceof Subscription) ? target : share.subscription,
+                sharedFrom:     share,
+                isShared:       false
+        )
+
+        if (clonedShare.save()) {
+            if (! share.isShared) {
+                share.isShared = true
+                if (share.save()) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    /**
+     * Adds a share flag to the given vendor relation so that the vendor may be accessed from member objects as well
+     * @param share the role to be shared
+     * @param target the share flag
+     * @return true if the setting was successful, false otherwise
+     */
+    boolean addProviderRoleShareForTarget(ProviderRole share, ShareSupport target) {
+
+        if (share.sharedFrom) {
+            return false
+        }
+        // todo check existence
+
+        ProviderRole clonedShare = new ProviderRole(
+                provider:       share.provider ,
+                license:        (target instanceof License) ? target : share.license,
+                subscription:   (target instanceof Subscription) ? target : share.subscription,
+                sharedFrom:     share,
+                isShared:       false
+        )
+
+        if (clonedShare.save()) {
+            if (! share.isShared) {
+                share.isShared = true
+                if (share.save()) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    /**
      * Removes the given share flag
      * @param share unused
      * @param target the share flag to unset
@@ -139,6 +201,44 @@ class ShareService {
 
         if (tp) {
             OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf and ' + tp + ' = :target', [sf: this, target: target])
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Removes the given share flag
+     * @param target the share flag to unset
+     * @return true if the flag could be removed successfully, false otherwise
+     */
+    boolean deleteProviderRoleShareForTarget(ShareSupport target) {
+
+        String tp =
+                (target instanceof License) ? 'lic' :
+                        (target instanceof Subscription) ? 'sub' :
+                                null
+
+        if (tp) {
+            ProviderRole.executeUpdate('delete from ProviderRole pvr where pvr.sharedFrom = :sf and ' + tp + ' = :target', [sf: this, target: target])
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Removes the given share flag
+     * @param target the share flag to unset
+     * @return true if the flag could be removed successfully, false otherwise
+     */
+    boolean deleteVendorRoleShareForTarget(ShareSupport target) {
+
+        String tp =
+                (target instanceof License) ? 'lic' :
+                        (target instanceof Subscription) ? 'sub' :
+                                null
+
+        if (tp) {
+            VendorRole.executeUpdate('delete from VendorRole vr where vr.sharedFrom = :sf and ' + tp + ' = :target', [sf: this, target: target])
             return true
         }
         return false

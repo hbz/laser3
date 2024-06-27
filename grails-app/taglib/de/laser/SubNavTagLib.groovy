@@ -50,13 +50,14 @@ class SubNavTagLib {
         String linkBody  = (text && message) ? text + " - " + message : text + message
         String cssClass    = ((this.pageScope.variables?.actionName == attrs.action && (attrs.tab == params.tab || attrs.tab == params[attrs.subTab])) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
-        String tooltip = attrs.tooltip ?: ""
-
-        if (tooltip != "") {
-            linkBody = '<div class="la-popup-tooltip la-delay" data-content="' + tooltip + '">' + linkBody + '</div>'
+        if (attrs.icon) {
+            linkBody = '<i class="icon ' + attrs.icon + '"></i> ' + linkBody
+        }
+        if (attrs.tooltip) {
+            linkBody = '<div class="la-popup-tooltip la-delay" data-content="' + attrs.tooltip + '">' + linkBody + '</div>'
         }
 
-        if (attrs.counts) {
+        if ((attrs.counts instanceof String && !attrs.counts.isEmpty()) || (attrs.counts instanceof Integer && attrs.counts >= 0) || (attrs.counts instanceof Long && attrs.counts >= 0)) {
             linkBody = linkBody + '<span class="ui floating blue circular label">' + attrs.counts + '</span>'
         }
 
@@ -84,17 +85,18 @@ class SubNavTagLib {
         def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
         String linkBody = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
         String cssClass = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
-        String tooltip = attrs.tooltip ?: ""
+
+        if (attrs.icon) {
+            linkBody = '<i class="icon ' + attrs.icon + '"></i> ' + linkBody
+        }
+        if (attrs.tooltip) {
+            linkBody = '<div data-tooltip="' + attrs.tooltip + '" data-position="bottom center">' + linkBody + '</div>'
+        }
 
         if (!attrs.instRole) {
             attrs.instRole = Role.INST_USER // new default
         }
-
         boolean check = contextService.checkCachedNavPerms(attrs)
-
-        if (tooltip != "") {
-            linkBody = '<div data-tooltip="' + tooltip + '" data-position="bottom center">' + linkBody + '</div>'
-        }
 
         if (check) {
             if (attrs.counts) {
@@ -116,7 +118,8 @@ class SubNavTagLib {
         }
         else {
             if (attrs.instRole && userService.hasAffiliation_or_ROLEADMIN(contextService.getUser(), contextService.getOrg(), attrs.instRole as String)) {
-                out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" data-content="' + message(code:'tooltip.onlyFullMembership') + '" role="tab">' + linkBody + '</div>'
+                out << '<div class="item disabled" '
+                out << 'role="menuitem">' + linkBody + '</div>'
             }
 //            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="tab">' + linkBody + '</div>'
         }

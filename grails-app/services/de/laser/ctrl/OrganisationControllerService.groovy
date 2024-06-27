@@ -25,48 +25,12 @@ class OrganisationControllerService {
     ContextService contextService
     DocstoreService docstoreService
     FormService formService
-    GenericOIDService genericOIDService
     GokbService gokbService
     LinksGenerationService linksGenerationService
     MessageSource messageSource
     TaskService taskService
     WorkflowService workflowService
 
-    //---------------------------------------- linking section -------------------------------------------------
-
-    /**
-     * Links two organisations by combo
-     * @param params the parameter map, containing the link parameters
-     * @return true if the link saving was successful, false otherwise
-     */
-    boolean linkOrgs(GrailsParameterMap params) {
-        log.debug(params.toMapString())
-        Combo c
-        if(params.linkType_new) {
-            c = new Combo()
-            int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
-            c.type = RDStore.COMBO_TYPE_FOLLOWS
-            if(perspectiveIndex == 0) {
-                c.fromOrg = Org.get(params.pair_new)
-                c.toOrg = Org.get(params.context)
-            }
-            else if(perspectiveIndex == 1) {
-                c.fromOrg = Org.get(params.context)
-                c.toOrg = Org.get(params.pair_new)
-            }
-        }
-        c.save()
-    }
-
-    /**
-     * Disjoins the given link between two organisatons
-     * @param params the parameter map containing the combo to unlink
-     * @return true if the deletion was successful, false otherwise
-     */
-    boolean unlinkOrg(GrailsParameterMap params) {
-        int del = Combo.executeUpdate('delete from Combo c where c.id = :id',[id: params.long("combo")])
-        return del > 0
-    }
 
     //--------------------------------------------- member section -------------------------------------------------
 
@@ -83,7 +47,7 @@ class OrganisationControllerService {
         if(formService.validateToken(params)) {
             try {
                 // createdBy will set by Org.beforeInsert()
-                orgInstance = new Org(name: params.institution, sector: RDStore.O_SECTOR_HIGHER_EDU, status: RDStore.O_STATUS_CURRENT)
+                orgInstance = new Org(name: params.institution, status: RDStore.O_STATUS_CURRENT)
                 orgInstance.save()
                 Combo newMember = new Combo(fromOrg:orgInstance,toOrg:result.institution,type: RDStore.COMBO_TYPE_CONSORTIUM)
                 newMember.save()
@@ -176,7 +140,7 @@ class OrganisationControllerService {
     Map<String,Object> deleteCustomerIdentifier(OrganisationController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller,params)
         Locale locale = LocaleUtils.getCurrentLocale()
-        CustomerIdentifier ci = (CustomerIdentifier) genericOIDService.resolveOID(params.deleteCI)
+        CustomerIdentifier ci = CustomerIdentifier.get(params.long('deleteCI'))
         Org owner = ci.owner
         if (ci) {
             ci.delete()
@@ -218,22 +182,8 @@ class OrganisationControllerService {
 
         //if(result.contextCustomerType == 'ORG_CONSORTIUM_BASIC')
 
-        result.availableConfigs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SHARE_CONFIGURATION)
-
         if (params.id) {
             result.orgInstance = Org.get(params.id)
-            if(result.orgInstance.gokbId) {
-                ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-                result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
-                Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: result.orgInstance.gokbId])
-                if (queryResult.error && queryResult.error == 404) {
-                    result.error = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
-                }
-                else if (queryResult.warning) {
-                    List records = queryResult.warning.result
-                    result.orgInstanceRecord = records ? records[0] : [:]
-                }
-            }
             result.editable = controller._checkIsEditable(user, result.orgInstance)
             result.inContextOrg = result.orgInstance.id == org.id
             //this is a flag to check whether the page has been called for a consortia or inner-organisation member
@@ -262,12 +212,6 @@ class OrganisationControllerService {
                     return null
                 }
             }
-            //set isMyOrg-flag for relations context -> provider
-            if(OrgSetting.get(result.orgInstance, OrgSetting.KEYS.CUSTOMER_TYPE) == OrgSetting.SETTING_NOT_FOUND) {
-                int relationCheck = OrgRole.executeQuery('select count(oo) from OrgRole oo join oo.sub sub where oo.org = :context and sub in (select os.sub from OrgRole os where os.roleType in (:providerRoles)) and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true))', [context: result.institution, providerRoles: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY], current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED])[0]
-                result.isMyOrg = relationCheck > 0
-                result.availableConfigs.remove(RDStore.SHARE_CONF_UPLOADER_AND_TARGET)
-            }
         }
         else {
             result.editable = controller._checkIsEditable(user, org)
@@ -278,7 +222,7 @@ class OrganisationControllerService {
         int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.orgInstance).size()
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.orgInstance).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
-
+        result.docsCount        = docstoreService.getDocsCount(result.orgInstance, result.contextOrg)
         result.notesCount       = docstoreService.getNotesCount(result.orgInstance, result.contextOrg)
         result.checklistCount   = workflowService.getWorkflowCount(result.orgInstance, result.contextOrg)
 
@@ -288,7 +232,6 @@ class OrganisationControllerService {
         result.navNextOrg = nav.nextLink
         result.targetCustomerType = result.orgInstance.getCustomerType()
         result.allOrgTypeIds = result.orgInstance.getAllOrgTypeIds()
-        result.isProviderOrAgency = (RDStore.OT_PROVIDER.id in result.allOrgTypeIds) || (RDStore.OT_AGENCY.id in result.allOrgTypeIds)
         result
     }
 }

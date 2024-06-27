@@ -1,9 +1,9 @@
 package de.laser
 
-import de.laser.storage.BeanStore
+
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
-import de.laser.utils.LocaleUtils
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 import java.text.SimpleDateFormat
 
@@ -48,6 +48,11 @@ class PermanentTitle {
         tipp column: 'pt_tipp_fk', index: 'pt_tipp_idx'
     }
 
+    /**
+     * Retrieves the subscription information about the permanent title record for the given context institution
+     * @param contextOrg the current user's institution
+     * @return a concatenated string containing the subscription within which permanent access has been purchased
+     */
     String getPermanentTitleInfo(Org contextOrg){
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         String period = subscription.startDate ? sdf.format(subscription.startDate)  : ''
@@ -57,15 +62,16 @@ class PermanentTitle {
         period = period ? '('+period+')' : ''
 
         String statusString = subscription.status ? subscription.status.getI10n('value') : RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
+        String debugInfo = SpringSecurityUtils.ifAnyGranted('ROLE_YODA') ? " (${subscription.id})" : ""
 
         Org consortia = subscription.getConsortia()
 
         if(consortia && consortia != contextOrg){
-            return subscription.name + ' - ' + statusString + ' ' +period + ' - ' + " (${subscription.getConsortia()?.name})"
+            return subscription.name + ' - ' + statusString + ' ' +period + ' - ' + " (${subscription.getConsortia()?.name})${debugInfo}"
 
         } else {
 
-            return subscription.name + ' - ' + statusString + ' ' +period
+            return subscription.name + ' - ' + statusString + ' ' +period + debugInfo
         }
     }
 }

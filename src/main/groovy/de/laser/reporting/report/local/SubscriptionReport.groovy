@@ -18,7 +18,11 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 
 import java.text.SimpleDateFormat
+import java.time.Year
 
+/**
+ * Report container for the data of a {@link Subscription}
+ */
 class SubscriptionReport {
 
     static String KEY = 'subscription'
@@ -28,6 +32,12 @@ class SubscriptionReport {
 
     static int NUMBER_OF_TIMELINE_ELEMENTS = 4
 
+    /**
+     * Gets the configuration for the current subscription, based on the calculated type
+     * @param sub the {@link Subscription} to be exported
+     * @return the {@link SubscriptionXCfg} holding for the current subscription
+     * @see de.laser.interfaces.CalculatedType
+     */
     static Map<String, Object> getCurrentConfig(Subscription sub) {
 
         String calcType = sub._getCalculatedType()
@@ -48,14 +58,29 @@ class SubscriptionReport {
         }
     }
 
+    /**
+     * Returns the default query configuration for the given subscription
+     * @param sub the {@link Subscription} to be exported
+     * @return the default query configuration
+     */
     static Map<String, Object> getCurrentQueryConfig(Subscription sub) {
         getCurrentConfig( sub ).base.query.default
     }
 
+    /**
+     * Returns the current timeline configuration for the given subscription
+     * @param sub the {@link Subscription} to be exported
+     * @return the current timeline
+     */
     static Map<String, Object> getCurrentTimelineConfig(Subscription sub) {
         getCurrentConfig( sub ).base.timeline
     }
 
+    /**
+     * Returns the timeline labels for the given request map
+     * @param params the request parameter map
+     * @return a list of labels matching the query
+     */
     static List<String> getTimelineQueryLabels(GrailsParameterMap params) {
         List<String> meta = []
 
@@ -72,6 +97,12 @@ class SubscriptionReport {
         }
         meta
     }
+
+    /**
+     * Returns the annual timeline labels for the given request map
+     * @param params the request parameter map
+     * @return a list of labels matching the query
+     */
     static List<String> getTimelineQueryLabelsForAnnual(GrailsParameterMap params) {
         List<String> meta = []
 
@@ -81,9 +112,27 @@ class SubscriptionReport {
                 meta = [ getMessage( 'timeline'), getMessage( 'timeline.' + params.query ), "${params.id}" ]
             }
         }
+
+        if (meta && params.query in ['timeline-annualMember-subscription', 'timeline-referenceYearMember-subscription']) { // TODO
+            MessageSource ms = BeanStore.getMessageSource()
+            if (params.int('id') == BaseQuery.FAKE_DATA_ID_1) {
+                meta[2] = ms.getMessage('reporting.chart.result.noData.label', null, LocaleUtils.getCurrentLocale())
+            }
+            else if (params.int('id') == BaseQuery.FAKE_DATA_ID_2) {
+                meta[2] = ms.getMessage('reporting.chart.result.noEndDate.label', null, LocaleUtils.getCurrentLocale())
+            }
+            else if (params.int('id') == BaseQuery.FAKE_DATA_ID_3) {
+                meta[2] = ms.getMessage('reporting.chart.result.noStartDate.label', null, LocaleUtils.getCurrentLocale())
+            }
+        }
         meta
     }
 
+    /**
+     * Performs the query: retrieves the data requested in the parameter map
+     * @param params the request parameter map
+     * @return a {@link Map} containing the retrieved data
+     */
     static Map<String, Object> query(GrailsParameterMap params) {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
@@ -374,23 +423,77 @@ class SubscriptionReport {
                     }
 
                     BaseQuery.handleGenericAnnualXQuery(params.query, 'Subscription', subIdLists, result)
+                    boolean isCurrentSet = false
+
                     List newData = []
                     result.data.each { d ->
                         boolean isCurrent = (sub.startDate && sub.endDate) ? DateUtils.getYearAsInteger(sub.startDate) <= d[0] && DateUtils.getYearAsInteger(sub.endDate) >= d[0] : false
                         if (isCurrent) {
                             timelineIsCurrentId = Long.valueOf(d[0] as String)
+                            isCurrentSet = true
                         }
                         newData.add([
                             d[0], d[1], d[2], isCurrent
                         ])
+                    }
+                    if (!isCurrentSet) {
+                        timelineIsCurrentId = Long.valueOf(Year.now().toString()) // fallback - year as id
+                    }
+                    result.data = newData
+                }
+                else if (params.query == 'timeline-referenceYearMember-subscription') {
+                    List<Long> subIdLists = []
+
+                    if (timeline) {
+                        subIdLists = Subscription.executeQuery(
+                                'select distinct s.id from Subscription s join s.orgRelations oo where s.instanceOf in (:timeline) and oo.roleType in :subscriberRoleTypes',
+                                [timeline: timeline, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
+                        )
+                    }
+
+                    BaseQuery.handleSubscriptionReferenceYearXQuery(params.query,  subIdLists, result)
+                    boolean isCurrentSet = false
+
+                    List newData = []
+                    result.data.each { d ->
+                        boolean isCurrent = sub.referenceYear ? Integer.valueOf(sub.referenceYear.toString()) == d[0] : false
+                        if (isCurrent) {
+                            timelineIsCurrentId = Long.valueOf(d[0] as String)
+                            isCurrentSet = true
+                        }
+                        newData.add([
+                                d[0], d[1], d[2], isCurrent
+                        ])
+                    }
+                    if (!isCurrentSet) {
+                        timelineIsCurrentId = Long.valueOf(Year.now().toString()) // fallback - year as id
                     }
                     result.data = newData
                 }
 
                 // keep all data for correct processing and only then limit
 
+                List specIdx = []
+                result.data.eachWithIndex { List entry, int idx ->
+                    if (entry[0] == null || entry[0] < 0) {
+                        specIdx << entry[0]
+                    }
+                }
+                List specData = []
+                List specDataDetails = []
+                specIdx.each { idx ->
+                    def x = result.data.find{ it[0] == idx }
+                    def y = result.dataDetails.find{ it.id == idx }
+                    if (x && y) {
+                        specData << x
+                        specDataDetails << y
+                        result.data.remove(x)
+                        result.dataDetails.remove(y)
+                    }
+                }
+
                 int timelineFromIdx = 0
-                result.data.eachWithIndex{ List entry, int idx ->
+                result.data.eachWithIndex { List entry, int idx ->
                     if (entry[0] == timelineIsCurrentId) { timelineFromIdx = idx }
                 }
                 int timelineToIdx = (timelineFromIdx + NUMBER_OF_TIMELINE_ELEMENTS)
@@ -404,6 +507,8 @@ class SubscriptionReport {
                     result.dataDetails = (result.dataDetails as List).subList(timelineFromIdx, timelineToIdx)
                 }
 
+                result.data.addAll(specData)
+                result.dataDetails.addAll(specDataDetails)
             }
 
             else if (prefix == 'tipp') {
@@ -612,7 +717,7 @@ class SubscriptionReport {
         result
     }
 
-    static void processSimpleMemberRefdataQuery(String query, String refdata, List idList, Map<String, Object> result) {
+    static void processSimpleMemberRefdataQuery(String query, String refdata, List<Long> idList, Map<String, Object> result) {
 
         List<String> PROPERTY_QUERY = [
                 'select p.id, p.value_de, count(*) ',
@@ -629,7 +734,7 @@ class SubscriptionReport {
         )
     }
 
-    static void processSimpleTippQuery(String query, String property, List idList, Map<String, Object> result) {
+    static void processSimpleTippQuery(String query, String property, List<Long> idList, Map<String, Object> result) {
 
         List<String> PROPERTY_QUERY = [
                 'select tipp.' + property + ', tipp.' + property + ', count(*) ',
@@ -646,7 +751,7 @@ class SubscriptionReport {
         )
     }
 
-    static void processSimpleTippRefdataQuery(String query, String refdata, List idList, Map<String, Object> result) {
+    static void processSimpleTippRefdataQuery(String query, String refdata, List<Long> idList, Map<String, Object> result) {
 
         List<String> PROPERTY_QUERY = [
                 'select p.id, p.value_de, count(*) ',

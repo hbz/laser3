@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.OrgSetting; de.laser.RefdataCategory; groovy.json.JsonOutput; de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Contact; de.laser.OrgRole; de.laser.RefdataValue" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Org; de.laser.OrgSetting; de.laser.RefdataCategory; groovy.json.JsonOutput; de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Contact; de.laser.OrgRole; de.laser.RefdataValue" %>
 
 <laser:htmlStart message="menu.admin.manageOrganisations" serviceInjection="true"/>
 
@@ -14,8 +14,8 @@
             <laser:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow: [['name', 'identifier', 'type', 'customerType'],
-                                               ['discoverySystemsFrontend', 'discoverySystemsIndex'],
-                                               ['country&region', 'libraryNetwork', 'sector', 'libraryType']],
+                                               ['discoverySystemsFrontend', 'discoverySystemsIndex', 'apiLevel', 'serverAccess'],
+                                               ['country&region', 'libraryNetwork', 'libraryType']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
@@ -38,14 +38,14 @@
                     </span>
                 </th>
                 <th>
-                    ${message(code:'org.specialApiPermission.label')}
-                    <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.specialApiPermission.tooltip')}">
+                    ${message(code:'org.serverAccess.label')}
+                    <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.serverAccess.tooltip')}">
                         <i class="question circle icon popup"></i>
                     </span>
                 </th>
                 <th class="la-no-uppercase">
                     <span class="la-popup-tooltip la-delay" data-position="left center" data-content="${message(code:'org.legalInformation.tooltip')}">
-                        <i class="handshake outline icon"></i>
+                        <i class="${Icons.ORG_LEGAL_INFORMATION} icon"></i>
                     </span>
                 </th>
                 <th>${message(code:'org.hasAccessOrg')}</th>
@@ -97,7 +97,9 @@
 
                             def gascoEntry = OrgSetting.get(org, OrgSetting.KEYS.GASCO_ENTRY)
                             if (gascoEntry != OrgSetting.SETTING_NOT_FOUND && gascoEntry.getValue()?.value == 'Yes') {
+                                println ' <span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + message(code:'org.gascoEntry.label') + '">'
                                 println ' <i class="icon blue layer group"></i>'
+                                println ' </span>'
                                 gascoEntry = gascoEntry.getValue()
                             } else {
                                 gascoEntry = RDStore.YN_NO
@@ -126,7 +128,7 @@
 
                             def accessOA = OrgSetting.get(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS)
                             if (accessOA!= OrgSetting.SETTING_NOT_FOUND && accessOA.getValue()?.value == 'Yes') {
-                                println '<div><i class="ui icon lock open"></i> OAMontior</div>'
+                                println '<div><i class="ui icon lock open"></i> OAMonitor</div>'
                             }
 
                             def accessEZB = OrgSetting.get(org, OrgSetting.KEYS.EZB_SERVER_ACCESS)
@@ -177,7 +179,7 @@
                     <td class="x">
                         <g:if test="${org.isCustomerType_Consortium() || org.isCustomerType_Support()}">
                             <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay"
-                                    data-gascoTarget="${Org.class.name}:${org.id}"
+                                    data-gascoTarget="${org.id}"
                                     data-gascoEntry="${gascoEntry.class.name}:${gascoEntry.id}"
                                     data-orgName="${org.name}"
                                     data-ui="modal"
@@ -187,17 +189,17 @@
 
                         <g:if test="${org.isCustomerType_Inst()}">
                             <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay"
-                                    data-liTarget="${Org.class.name}:${org.id}"
+                                    data-liTarget="${org.id}"
                                     data-createdBy="${org.createdBy?.id}"
                                     data-legallyObligedBy="${org.legallyObligedBy?.id}"
                                     data-orgName="${org.name}"
                                     data-ui="modal"
                                     data-href="#legalInformationModal"
-                                    data-content="Rechtl. Informationen ändern" data-position="top left"><i class="handshake outline icon"></i></button>
+                                    data-content="Rechtl. Informationen ändern" data-position="top left"><i class="${Icons.ORG_LEGAL_INFORMATION} icon"></i></button>
                         </g:if>
 
                         <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay"
-                                data-ctTarget="${Org.class.name}:${org.id}"
+                                data-ctTarget="${org.id}"
                                 data-customerType="${customerType}"
                                 data-orgName="${org.name}"
                                 data-ui="modal"
@@ -205,7 +207,7 @@
                                 data-content="Kundentyp ändern" data-position="top left"><i class="user icon"></i></button>
 
                         <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay"
-                                data-alTarget="${Org.class.name}:${org.id}"
+                                data-alTarget="${org.id}"
                                 data-apiLevel="${apiLevel}"
                                 data-orgName="${org.name}"
                                 data-ui="modal"
@@ -236,7 +238,7 @@
                 <label for="gascoEntry">${message(code:'org.gascoEntry.label')}</label>
                 <ui:select id="gascoEntry" name="gascoEntry"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
-                              optionKey="${{ RefdataValue.class.name + ':' + it.id }}"
+                              optionKey="id"
                               optionValue="value"
                               class="ui dropdown"
                 />

@@ -7,6 +7,9 @@
         <g:if test="${license}">
             <input type="hidden" name="id" value="${license.id}"/>
         </g:if>
+        <g:if test="${packageInstance}">
+            <input type="hidden" name="id" value="${packageInstance.id}"/>
+        </g:if>
         <g:if test="${actionName == 'subscriptionsManagement'}">
             <input type="hidden" name="tab" value="${params.tab}"/>
             <input type="hidden" name="propertiesFilterPropDef" value="${propertiesFilterPropDef}"/>
@@ -17,7 +20,7 @@
             <div class="field">
                 <label for="search-title">${message(code: 'default.search.text')}
                     <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
-                        <i class="question circle icon"></i>
+                        <i class="grey question circle icon"></i>
                     </span>
                 </label>
 
@@ -31,7 +34,7 @@
             <div class="field">
                 <label for="identifier">${message(code: 'default.search.identifier')}
                     <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription.identifier')}">
-                        <i class="question circle icon"></i>
+                        <i class="grey question circle icon"></i>
                     </span>
                 </label>
 

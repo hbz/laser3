@@ -1,10 +1,8 @@
 package de.laser
 
 import de.laser.annotations.RefdataInfo
-import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
-import de.laser.CustomerTypeService
 import de.laser.finance.CostItem
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.Permissions
@@ -141,6 +139,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     SortedSet issueEntitlements
     SortedSet packages
     SortedSet ids
+    SortedSet altnames
 
   static hasMany = [
           ids                 : Identifier,
@@ -148,9 +147,12 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
           issueEntitlements   : IssueEntitlement,
           documents           : DocContext,
           orgRelations        : OrgRole,
+          vendorRelations     : VendorRole,
+          providerRelations   : ProviderRole,
           prsLinks            : PersonRole,
           derivedSubscriptions: Subscription,
           propertySet         : SubscriptionProperty,
+          altnames            : AlternativeName,
           costItems           : CostItem,
           ieGroups            : IssueEntitlementGroup,
           discountScales      : SubscriptionDiscountScale
@@ -162,17 +164,20 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                       issueEntitlements: 'subscription',
                       documents: 'subscription',
                       orgRelations: 'sub',
+                      vendorRelations: 'subscription',
+                      providerRelations: 'subscription',
                       prsLinks: 'sub',
                       derivedSubscriptions: 'instanceOf',
                       costItems: 'sub',
-                      propertySet: 'owner'
+                      propertySet: 'owner',
+                      altnames: 'subscription'
                       ]
 
     static transients = [
             'isSlavedAsString', 'provider', 'multiYearSubscription',
-            'currentMultiYearSubscription', 'currentMultiYearSubscriptionNew', 'renewalDate',
+            'currentMultiYearSubscriptionNew', 'renewalDate',
             'commaSeperatedPackagesIsilList', 'calculatedPropDefGroups', 'allocationTerm',
-            'subscriber', 'providers', 'agencies', 'consortia'
+            'subscriberRespConsortia', 'providers', 'agencies', 'consortia'
     ] // mark read-only accessor methods
 
     static mapping = {
@@ -317,18 +322,12 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     /**
      * Method to check if the correct shareable is being processed.
-     * Is needed to differentiate OrgRoles
      * @param sharedObject the object to be shared
-     * @return true if the object is an {@link OrgRole} and the share toggling was successful, false otherwise
+     * @return true if the object is one of {@link ProviderRole} or {@link VendorRole} and the share toggling was successful, false otherwise
      */
     @Override
     boolean checkSharePreconditions(ShareableTrait sharedObject) {
-        if (sharedObject instanceof OrgRole) {
-            if (showUIShareButton() && sharedObject.roleType.value in ['Provider', 'Agency']) {
-                return true
-            }
-        }
-        false
+        return (sharedObject instanceof ProviderRole || sharedObject instanceof VendorRole) && showUIShareButton()
     }
 
     /**
@@ -369,16 +368,49 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
                 newTargets.each{ sub ->
                     log.debug('adding for: ' + sub)
+                    sharedObject.addShareForTarget_trait(sub)
+                }
+            }
+            else {
+                sharedObject.deleteShare_trait()
+            }
+        }
+        if (sharedObject instanceof VendorRole) {
+            if (sharedObject.isShared) {
+                List<Subscription> newTargets = Subscription.findAllByInstanceOf(this)
+                log.debug('found targets: ' + newTargets)
 
-                    // ERMS-1185
-                    if (sharedObject.roleType in [RDStore.OR_AGENCY, RDStore.OR_PROVIDER]) {
-                        List<OrgRole> existingOrgRoles = OrgRole.findAll{
-                            sub == sub && roleType == sharedObject.roleType && org == sharedObject.org
-                        }
-                        if (existingOrgRoles) {
-                            log.debug('found existing orgRoles, deleting: ' + existingOrgRoles)
-                            existingOrgRoles.each{ OrgRole tmp -> tmp.delete() }
-                        }
+                newTargets.each{ sub ->
+                    log.debug('adding for: ' + sub)
+
+                    List<VendorRole> existingVendorRoles = VendorRole.findAll{
+                        subscription == sub && vendor == sharedObject.vendor
+                    }
+                    if (existingVendorRoles) {
+                        log.debug('found existing vendorRoles, deleting: ' + existingVendorRoles)
+                        existingVendorRoles.each{ VendorRole tmp -> tmp.delete() }
+                    }
+                    sharedObject.addShareForTarget_trait(sub)
+                }
+            }
+            else {
+                sharedObject.deleteShare_trait()
+            }
+        }
+        if (sharedObject instanceof ProviderRole) {
+            if (sharedObject.isShared) {
+                List<Subscription> newTargets = Subscription.findAllByInstanceOf(this)
+                log.debug('found targets: ' + newTargets)
+
+                newTargets.each{ sub ->
+                    log.debug('adding for: ' + sub)
+
+                    List<ProviderRole> existingProviderRoles = ProviderRole.findAll{
+                        subscription == sub && provider == sharedObject.provider
+                    }
+                    if (existingProviderRoles) {
+                        log.debug('found existing vendorRoles, deleting: ' + existingProviderRoles)
+                        existingProviderRoles.each{ ProviderRole tmp -> tmp.delete() }
                     }
                     sharedObject.addShareForTarget_trait(sub)
                 }
@@ -412,6 +444,32 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
         orgRelations.each{ sharedObject ->
             targets.each{ sub ->
+                if (sharedObject.isShared) {
+                    log.debug('adding for: ' + sub)
+                    sharedObject.addShareForTarget_trait(sub)
+                }
+                else {
+                    log.debug('deleting all shares')
+                    sharedObject.deleteShare_trait()
+                }
+            }
+        }
+
+        ProviderRole.findAllBySubscription(this).each { sharedObject ->
+            targets.each { sub ->
+                if (sharedObject.isShared) {
+                    log.debug('adding for: ' + sub)
+                    sharedObject.addShareForTarget_trait(sub)
+                }
+                else {
+                    log.debug('deleting all shares')
+                    sharedObject.deleteShare_trait()
+                }
+            }
+        }
+
+        VendorRole.findAllBySubscription(this).each { sharedObject ->
+            targets.each { sub ->
                 if (sharedObject.isShared) {
                     log.debug('adding for: ' + sub)
                     sharedObject.addShareForTarget_trait(sub)
@@ -457,21 +515,39 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Retrieves all organisation linked as providers to this subscription
-     * @return a {@link List} of {@link Org}s linked as provider
+     * Retrieves all providers linked to this subscription
+     * @return a {@link List} of {@link Provider}s
      */
-    List<Org> getProviders() {
-        Org.executeQuery("select og.org from OrgRole og where og.sub =:sub and og.roleType = :provider",
-            [sub: this, provider: RDStore.OR_PROVIDER])
+    List<Provider> getProviders() {
+        Provider.executeQuery('select pr.provider from ProviderRole pr where pr.subscription =:sub order by pr.provider.sortname ',
+            [sub: this])
     }
 
     /**
-     * Retrieves all organisation linked as agencies to this subscription
-     * @return a {@link List} of {@link Org}s linked as agency
+     * Retrieves all providers linked to this subscription
+     * @return a sorted {@link List} of {@link Provider}s
      */
-    List<Org> getAgencies() {
-        Org.executeQuery("select og.org from OrgRole og where og.sub =:sub and og.roleType = :agency",
-                [sub: this, agency: RDStore.OR_AGENCY])
+    List<Provider> getSortedProviders(String order) {
+        Provider.executeQuery('select pr.provider from ProviderRole pr where pr.subscription =:sub order by pr.provider.sortname '+order,
+            [sub: this])
+    }
+
+    /**
+     * Retrieves all vendors linked to this subscription
+     * @return a {@link List} of linked {@link Vendor}s
+     */
+    List<Vendor> getVendors() {
+        Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription = :sub order by vr.vendor.sortname',
+                [sub: this])
+    }
+
+    /**
+     * Retrieves all vendors linked to this subscription
+     * @return a sorted {@link List} of linked {@link Vendor}s
+     */
+    List<Vendor> getSortedVendors(String order) {
+        Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription = :sub order by vr.vendor.sortname '+order,
+                [sub: this])
     }
 
     /**
@@ -502,7 +578,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      *     <li>else if it is a consortial parent license, the consortium</li>
      * </ul>
      */
-  Org getSubscriber() {
+  Org getSubscriberRespConsortia() {
     Org result
     Org cons
     
@@ -537,13 +613,11 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     /**
      * Gets the content provider of this subscription
      * @return the {@link Org} linked to this subscription as 'Content Provider'; if several orgs are linked that way, the last one is being returned
+     * @deprecated delivers the first result of {@link #getProviders()}; use {@link #getProviders()} instead because of 1:n relation
      */
-    Org getProvider() {
-        Org result
-        orgRelations.each { OrgRole or ->
-            if ( or.roleType == RDStore.OR_CONTENT_PROVIDER )
-                result = or.org
-            }
+    @Deprecated
+    Provider getProvider() {
+        Provider result = getProviders()[0]
         result
     }
 
@@ -560,7 +634,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * Gets all members of this consortial subscription
      * @return a {@link List} of {@link Org}s which are linked to child instances of this subscription by 'Subscriber' or 'Subscriber_Consortial'
      */
-    List<Org> getDerivedSubscribers() {
+    List<Org> getDerivedNonHiddenSubscribers() {
         List<Subscription> subs = Subscription.findAllByInstanceOf(this)
         //OR_SUBSCRIBER is legacy; the org role types are distinct!
         subs.isEmpty() ? [] : OrgRole.findAllBySubInListAndRoleTypeInList(subs, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], [sort: 'org.name']).collect{it.org}
@@ -628,23 +702,9 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return true if the running time is beyond 366 days spanning thus more than one year, false otherwise
      */
     boolean isMultiYearSubscription() {
-        // TODO Moe - date.minusDays()
-        ///return (this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 366))
-
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
         LocalDate startDate = DateUtils.dateToLocalDate(this.startDate)
         return (startDate && endDate && (DAYS.between(startDate, endDate) > 366))
-    }
-
-    @Deprecated
-    boolean isCurrentMultiYearSubscription() {
-        //Date currentDate = new Date()
-        //println(this.endDate.minus(currentDate))
-        //return (this.isMultiYearSubscription() && this.endDate && (this.endDate.minus(currentDate) > 366))
-
-        LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
-        // TODO Moe - date.minusDays()
-        return (this.isMultiYearSubscription() && endDate && (DAYS.between(LocalDate.now(), endDate) > 366))
     }
 
     /**
@@ -652,12 +712,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return true if we are within the given multi-year range, false otherwise
      */
     boolean isCurrentMultiYearSubscriptionNew() {
-        //Date currentDate = new Date()
-        //println(this.endDate.minus(currentDate))
-        //return (this.isMultiYear && this.endDate && (this.endDate.minus(currentDate) > 366))
-
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
-        // TODO Moe - date.minusDays()
         return (this.isMultiYear && endDate && (DAYS.between(LocalDate.now(), endDate) > 366))
     }
 
@@ -666,20 +721,14 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return true if we are within the given multi-year range, false otherwise
      */
     boolean isCurrentMultiYearSubscriptionToParentSub() {
-        //return (this.isMultiYear && this.endDate && this.instanceOf && (this.endDate.minus(this.instanceOf.startDate) > 366))
-
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
-        // TODO Moe - date.minusDays()
         return (this.isMultiYear && endDate && this.instanceOf && DAYS.between(DateUtils.dateToLocalDate(this.instanceOf.startDate), endDate) > 366)
     }
 
     @Deprecated
     boolean islateCommer() {
-        //return (this.endDate && (this.endDate.minus(this.startDate) > 366 && this.endDate.minus(this.startDate) < 728))
-
-        LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
+         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
         LocalDate startDate = DateUtils.dateToLocalDate(this.startDate)
-        // TODO Moe - date.minusDays()
         return (endDate && (DAYS.between(startDate, endDate) > 366 && DAYS.between(startDate, endDate) < 728))
     }
 
@@ -688,8 +737,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return true if this subscription is a local subscription and the running time is between 364 and 366 days (to include leap years as well)
      */
     boolean isAllowToAutomaticRenewAnnually() {
-        //return (this.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 363) && (this.endDate.minus(this.startDate) < 367))
-
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
         LocalDate startDate = DateUtils.dateToLocalDate(this.startDate)
         //return (this.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && startDate && endDate && (DAYS.between(startDate, endDate) > 363) && (DAYS.between(startDate, endDate) < 367))
@@ -779,18 +826,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
       name ? "${name}" : "Subscription ${id}"
   }
 
-  /**
-   * JSON definition of the subscription object
-   * see http://manbuildswebsite.com/2010/02/15/rendering-json-in-grails-part-3-customise-your-json-with-object-marshallers/
-   * Also http://jwicz.wordpress.com/2011/07/11/grails-custom-xml-marshaller/
-   */
-  static {
-    grails.converters.JSON.registerObjectMarshaller(User) {
-      // you can filter here the key-value pairs to output:
-      return it?.properties.findAll {k,v -> k != 'passwd'}
-    }
-  }
-
     /**
      * Returns the renewal date of this subscription
      * @return the manual renewal date
@@ -811,11 +846,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
       String hqlString = "select sub from Subscription sub where lower(sub.name) like :name "
         Map<String, Object> hqlParams = [name: ((params.q ? params.q.toLowerCase() : '' ) + "%")]
-      SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd()
-      RefdataValue cons_role        = RDStore.OR_SUBSCRIPTION_CONSORTIA
-      RefdataValue subscr_role      = RDStore.OR_SUBSCRIBER
-      RefdataValue subscr_cons_role = RDStore.OR_SUBSCRIBER_CONS
-        List<RefdataValue> viableRoles = [cons_role, subscr_role, subscr_cons_role]
+        SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd()
+        List<RefdataValue> viableRoles = [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]
     
     hqlParams.put('viableRoles', viableRoles)
 
@@ -852,17 +884,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     result
   }
 
-    @Deprecated
-  def setInstitution(Org inst) {
-      log.debug("Set institution ${inst}")
-
-      OrgRole or = new OrgRole(org:inst, roleType:RDStore.OR_SUBSCRIBER, sub:this)
-      if (this.orgRelations == null) {
-        this.orgRelations = []
-      }
-     this.orgRelations.add(or)
-  }
-
     /**
      * Retrieves a list ISILs of packages linked to this subscription.
      * Called from issueEntitlement/show and subscription/show, is part of the Nationaler Statistikserver statistics component
@@ -879,27 +900,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
           }
       }
       result.join(',')
-  }
-
-    /**
-     * Checks if there is a platform linked to this subscription which contains a Nationaler Statistikserver supplier ID
-     * Is part of the Nationaler Statistikserver statistics component
-     * @return true if there is a platform with a NatStat supplier ID linked to this subscription, false otherwise
-     */
-  boolean hasPlatformWithUsageSupplierId() {
-      boolean hasUsageSupplier = false
-      packages.each { it ->
-          String hql="select count(distinct sp) from SubscriptionPackage sp "+
-              "join sp.subscription.orgRelations as or "+
-              "join sp.pkg.tipps as tipps "+
-              "where sp.id=:sp_id "
-              "and exists (select 1 from CustomProperties as cp where cp.owner = tipps.platform.id and cp.type.name = 'NatStat Supplier ID')"
-          List queryResult = OrgRole.executeQuery(hql, ['sp_id':it.id])
-          if (queryResult[0] > 0){
-              hasUsageSupplier = true
-          }
-      }
-      return hasUsageSupplier
   }
 
     /**
@@ -978,7 +978,7 @@ select distinct oap from OrgAccessPoint oap
      * @param org the member {@link Org} whose subscription should be retrieved
      * @return the member subscription of the subscriber
      */
-    Subscription getDerivedSubscriptionBySubscribers(Org org) {
+    Subscription getDerivedSubscriptionForNonHiddenSubscriber(Org org) {
         Subscription result
 
         Subscription.findAllByInstanceOf(this).each { s ->
@@ -1018,7 +1018,7 @@ select distinct oap from OrgAccessPoint oap
     Collection<OrgAccessPoint> getOrgAccessPointsOfSubscriber() {
         Collection<OrgAccessPoint> result = []
 
-        result = this.getSubscriber()?.accessPoints
+        result = this.getSubscriberRespConsortia()?.accessPoints
 
         result
     }
@@ -1031,7 +1031,7 @@ select distinct oap from OrgAccessPoint oap
     boolean isOrgInSurveyRenewal() {
         boolean isOrgInSurveyRenewal = false
        if(this.instanceOf && this.type && this.type.id == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id){
-            Org participant = this.getSubscriber()
+            Org participant = this.getSubscriberRespConsortia()
 
            if(participant){
                int countSurveyOrgs = SurveyOrg.executeQuery('select count(surveyOrg.id) FROM SurveyOrg surveyOrg LEFT JOIN surveyOrg.surveyConfig surConfig LEFT JOIN surConfig.surveyInfo surInfo ' +

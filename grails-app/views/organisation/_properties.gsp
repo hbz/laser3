@@ -16,7 +16,7 @@
 
 </ui:modal>
 
-<div class="ui card la-dl-no-table la-js-hideable">
+<div class="ui card la-dl-no-table">
 
 <%-- grouped custom properties --%>
 
@@ -69,7 +69,7 @@
 
 <%-- orphaned properties --%>
 
-    <%--<div class="ui card la-dl-no-table la-js-hideable">--%>
+    <%--<div class="ui card la-dl-no-table">--%>
     <div class="content">
         <h2 class="ui header">
             <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">

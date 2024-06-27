@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.utils.SqlDateUtils; de.laser.survey.SurveyInfo; de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; de.laser.*; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.helper.Icons; de.laser.utils.LocaleUtils; de.laser.utils.SqlDateUtils; de.laser.survey.SurveyInfo; de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; de.laser.*; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
 <table class="ui celled table la-js-responsive-table la-table">
     <thead>
@@ -41,11 +41,11 @@
                             <g:link controller="subscription" action="show" id="${obj.id}">${obj.name}</g:link>
                         </g:if>
                         <g:elseif test="${obj instanceof License}">
-                            <i class="icon balance scale la-list-icon"></i>
+                            <i class="${Icons.LICENSE} icon la-list-icon"></i>
                             <g:link controller="license" action="show" id="${obj.id}">${obj.name}</g:link>
                         </g:elseif>
                         <g:elseif test="${obj instanceof SurveyInfo}">
-                            <i class="icon chart pie la-list-icon"></i>
+                            <i class="${Icons.SURVEY} icon la-list-icon"></i>
                             <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                                 <g:link controller="survey" action="show" params="[surveyConfigID: obj.surveyConfigs[0].id]"
                                         id="${obj.id}">${obj.surveyConfigs[0].getSurveyName()}
@@ -58,25 +58,39 @@
                         </g:elseif>
                         <g:elseif test="${obj instanceof Task}">
                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Aufgabe">
-                                <i class="calendar check outline icon la-list-icon"></i>
+                                <i class="${Icons.TASK} icon la-list-icon"></i>
                             </span>
-                            <a href="#" class="header" onclick="JSPC.app.editTask(${obj?.id});">${obj?.title}</a>
+                            <g:if test="${obj.subscription}">
+                                <g:link controller="subscription" action="show" id="${obj.subscription.id}">${obj.title}</g:link>
+                            </g:if>
+                            <g:elseif test="${obj.license}">
+                                <g:link controller="license" action="show" id="${obj.license.id}">${obj.title}</g:link>
+                            </g:elseif>
+                            <g:elseif test="${obj.org}">
+                                <g:link controller="organisation" action="show" id="${obj.org.id}">${obj.title}</g:link>
+                            </g:elseif>
+                            <g:elseif test="${obj.vendor}">
+                                <g:link controller="vendor" action="show" id="${obj.vendor.id}">${obj.title}</g:link>
+                            </g:elseif>
+                            <g:elseif test="${obj.provider}">
+                                <g:link controller="provider" action="show" id="${obj.provider.id}">${obj.title}</g:link>
+                            </g:elseif>
                         </g:elseif>
                         <g:elseif test="${obj instanceof AbstractPropertyWithCalculatedLastUpdated}">
                             <g:if test="${obj.owner instanceof Person}">
                                 <i class="icon address book la-list-icon"></i>
-                                <${obj.owner.first_name}&nbsp;${obj.owner.last_name}
+                                ${obj.owner.first_name}&nbsp;${obj.owner.last_name}
                             </g:if>
                             <g:elseif test="${obj.owner instanceof Subscription}">
                                 <i class="icon clipboard outline la-list-icon"></i>
                                 <g:link controller="subscription" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
                             </g:elseif>
                             <g:elseif test="${obj.owner instanceof License}">
-                                <i class="icon balance scale la-list-icon"></i>
+                                <i class="${Icons.LICENSE} icon la-list-icon"></i>
                                 <g:link controller="license" action="show" id="${obj.owner?.id}">${obj.owner?.reference}</g:link>
                             </g:elseif>
                             <g:elseif test="${obj.owner instanceof Org}">
-                                <i class="icon university la-list-icon"></i>
+                                <i class="${Icons.ORG} icon la-list-icon"></i>
                                 <g:link controller="organisation" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
                             </g:elseif>
                             <g:else>
@@ -120,7 +134,7 @@
                                           role="button"
                                           ariaLabel="Termin wieder auf Ihrem Dashboard anzeigen lassen"
                         >
-                            <i class="icon bell slash la-js-editmode-icon"></i>
+                            <i class="icon bell slash"></i>
                         </ui:remoteLink>
                     </g:if>
                     <g:else>
@@ -135,7 +149,7 @@
                                           role="button"
                                           ariaLabel="Termin nicht auf Ihrem Dashboard anzeigen lassen"
                         >
-                            <i class="icon bell la-js-editmode-icon"></i>
+                            <i class="icon bell"></i>
                         </ui:remoteLink>
                     </g:else>
                 </td>
@@ -154,7 +168,7 @@
                                       role="button"
                                       ariaLabel="fälligen Termin auf NICHT erledigt sezten"
                     >
-                        <i class="icon check la-js-editmode-icon"></i>
+                        <i class="icon check"></i>
                     </ui:remoteLink>
                 </g:if>
                 <g:else>
@@ -169,7 +183,7 @@
                                       role="button"
                                       ariaLabel="${message(code:'ariaLabel.check.universal')}"
                     >
-                        <i class="icon check la-js-editmode-icon"></i>
+                        <i class="icon check"></i>
                     </ui:remoteLink>
                 </g:else>
                 </td>

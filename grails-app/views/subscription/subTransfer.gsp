@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Doc; de.laser.DocContext; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.storage.RDStore; de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.Doc; de.laser.DocContext; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.storage.RDStore; de.laser.survey.SurveyOrg" %>
 <laser:htmlStart message="subscription.details.subTransfer.label" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
@@ -7,7 +7,7 @@
     <laser:render template="actions"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}">
+<ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleProviders="${providerRoles}">
     <laser:render template="iconSubscriptionIsChild"/>
     <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
@@ -72,6 +72,26 @@
                             <dt class="control-label">${message(code: 'subscription.renewalSentDate.label')}</dt>
                             <dd><ui:xEditable owner="${subscription}" field="renewalSentDate" type="date"
                                               validation="datesCheck"/></dd>
+                        </dl>
+
+                        <dl>
+                            <dt class="control-label">Renewal ${message(code: 'default.change.label')}</dt>
+                            <dd>
+                                <g:set var="surveyUseForTransfer" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)}"/>
+                                <g:set var="countModificationToCostInformationAfterRenewalDoc" value="${surveyUseForTransfer ? surveyService.countModificationToCostInformationAfterRenewalDoc(subscription) : 0}"/>
+
+                                    <g:if test="${countModificationToCostInformationAfterRenewalDoc > 0}">
+                                        <g:link class="ui label triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
+                                                params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyUseForTransfer.surveyInfo.id, surveyConfigID: surveyUseForTransfer.id]">
+                                            <i class="download icon"></i> ${countModificationToCostInformationAfterRenewalDoc}
+                                        </g:link>
+                                    </g:if>
+                                    <g:else>
+                                        <g:if test="${surveyUseForTransfer}">
+                                            ${countModificationToCostInformationAfterRenewalDoc}
+                                        </g:if>
+                                    </g:else>
+                            </dd>
                         </dl>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.participantTransferWithSurvey.label')}</dt>
@@ -183,7 +203,7 @@
     <aside class="five wide column la-sidekick">
         <div class="ui one cards">
             <div id="container-documents">
-                <ui:card message="subscription.offerNote.label" class="documents la-js-hideable ${css_class}"
+                <ui:card message="subscription.offerNote.label" class="documents ${css_class}"
                          href="#modalCreateDocument" editable="${editable || editable2}">
                     <%
                         Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType and owner.owner = :owner', [subscription: subscription, docType: RDStore.DOC_TYPE_OFFER, owner: contextOrg])
@@ -191,7 +211,7 @@
                     %>
                     <g:each in="${documentSet}" var="docctx">
                         <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
-                            <div class="ui small feed content la-js-dont-hide-this-card">
+                            <div class="ui small feed content">
                                 <div class="ui grid summary">
                                     <div class="eight wide column la-column-right-lessPadding">
                                         <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
@@ -216,14 +236,14 @@
                                         <g:if test="${!(editable)}">
                                         <%-- 1 --%>
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                    class="ui icon blue button la-modern-button la-js-dont-hide-button"
+                                                    class="ui icon blue button la-modern-button"
                                                     target="_blank"><i class="download icon"></i></g:link>
                                         </g:if>
                                         <g:else>
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                             <%-- 1 --%>
                                                 <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                        class="ui icon blue button la-modern-button la-js-dont-hide-button"
+                                                        class="ui icon blue button la-modern-button"
                                                         target="_blank"><i class="download icon"></i></g:link>
 
                                             <%-- 2 --%>
@@ -263,7 +283,7 @@
                     </g:each>
                 </ui:card>
 
-                <ui:card message="subscription.renewalFile.label" class="documents la-js-hideable ${css_class}"
+                <ui:card message="subscription.renewalFile.label" class="documents ${css_class}"
                          href="#modalCreateDocument" editable="${editable || editable2}">
                     <%
                         Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType and owner.owner = :owner', [subscription: subscription, docType: RDStore.DOC_TYPE_RENEWAL, owner: contextOrg])
@@ -271,7 +291,7 @@
                     %>
                     <g:each in="${documentSet2}" var="docctx">
                         <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
-                            <div class="ui small feed content la-js-dont-hide-this-card">
+                            <div class="ui small feed content">
                                 <div class="ui grid summary">
                                     <div class="eight wide column la-column-right-lessPadding">
                                         <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
@@ -294,14 +314,14 @@
                                         <g:if test="${!(editable)}">
                                         <%-- 1 --%>
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                    class="ui icon blue button la-modern-button la-js-dont-hide-button"
+                                                    class="ui icon blue button la-modern-button"
                                                     target="_blank"><i class="download icon"></i></g:link>
                                         </g:if>
                                         <g:else>
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                             <%-- 1 --%>
                                                 <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                        class="ui icon blue button la-modern-button la-js-dont-hide-button"
+                                                        class="ui icon blue button la-modern-button"
                                                         target="_blank"><i class="download icon"></i></g:link>
 
                                             <%-- 2 --%>
@@ -351,5 +371,5 @@
 
 <div id="magicArea"></div>
 
-
+<g:render template="/clickMe/export/js"/>
 <laser:htmlEnd/>

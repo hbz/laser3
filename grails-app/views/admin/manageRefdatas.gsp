@@ -70,7 +70,7 @@
                                 </td>
                             </tr>
 
-                            <g:each in="${RefdataCategory.getAllRefdataValues(rdc.desc)}" var="rdv">
+                            <g:each in="${RefdataCategory.getAllRefdataValuesWithOrder(rdc.desc)}" var="rdv">
                                 <tr>
                                     <td>
                                         <g:if test="${rdv.isHardData}">
@@ -148,17 +148,6 @@
                     <label for="xcgRdvTo">Werte derselben Kategorie</label>
                     <select id="xcgRdvTo"></select>
                 </div>
-
-%{--                <p>oder</p>--}%
-
-%{--                <div class="field">--}%
-%{--                    <label for="xcgRdvGlobalTo">Kategorieübergreifend</label>--}%
-%{--                    <div class="ui right labeled input">--}%
-%{--                        <input id="xcgRdvGlobalTo" name="xcgRdvGlobalTo" value="RefdataCategory_KEY:RefdataValue_KEY" />--}%
-%{--                        <div class="ui red label">WARNUNG</div>--}%
-%{--                    </div>--}%
-%{--                </div>--}%
-
             </g:form>
 
             <laser:script file="${this.getGroovyPageFileName()}">

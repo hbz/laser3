@@ -136,6 +136,52 @@ body[class*="platform"] .ui.icon.header .icon.la-object:before {
   content: "\f0c2";
 }
 
+body[class*="Vendor"],
+body[class*="vendor"]
+{
+  .ui.icon.header .icon.la-object {
+    display: inline-block;
+    background-color: @vendor;
+    border-color: @vendor;
+    &:before {
+      content: "\f48b";
+    }
+  }
+  .la-objectIsMine {
+    box-shadow: 0 0 0 0.1em @vendor inset!important;
+    color: @vendor;
+  }
+}
+
+
+body[class*="Vendor"] .ui.icon.header .icon.la-object:before,
+body[class*="vendor"] .ui.icon.header .icon.la-object:before {
+  content: "\f48b";
+}
+
+body[class*="Provider"],
+body[class*="provider"]
+{
+  .ui.icon.header .icon.la-object {
+    display: inline-block;
+    background-color: @provider;
+    border-color: @provider;
+    &:before {
+      content: "\f2b5";
+    }
+  }
+  .la-objectIsMine {
+    box-shadow: 0 0 0 0.1em @vendor inset!important;
+    color: @provider;
+  }
+}
+
+
+body[class*="Provider"] .ui.icon.header .icon.la-object:before,
+body[class*="provider"] .ui.icon.header .icon.la-object:before {
+  content: "\f2b5";
+}
+
 
 .ui.icon.header .icon.la-object-journal {
   display: inline-block;

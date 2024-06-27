@@ -25,7 +25,7 @@
                 <label for="filter">${message(code: 'default.search.text')}
                     <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.tipp')}">
-                        <i class="question circle icon"></i>
+                        <i class="grey question circle icon"></i>
                     </span>
                 </label>
                 <input name="filter" id="filter" value="${params.filter}"/>
@@ -34,7 +34,7 @@
                 <label for="identifier">${message(code: 'default.search.identifier')}
                     <span data-position="right center" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.identifier')}">
-                        <i class="question circle icon"></i>
+                        <i class="grey question circle icon"></i>
                     </span>
                 </label>
                 <input name="identifier" id="identifier" value="${params.identifier}"/>
@@ -46,7 +46,7 @@
                     <select class="ui dropdown" name="pkgfilter" id="pkgfilter">
                         <option value="">${message(code: 'default.all')}</option>
                         <g:each in="${subscription.packages}" var="sp">
-                            <option value="${sp.pkg.id}" ${sp.pkg.id.toString() == params.pkgfilter ? 'selected=true' : ''}>${sp.pkg.name}</option>
+                            <option value="${sp.pkg.id}" ${sp.pkg.id == params.long('pkgfilter') ? 'selected=true' : ''}>${sp.pkg.name}</option>
                         </g:each>
                     </select>
                 </div>
@@ -169,7 +169,7 @@
                 <label for="title_types">${message(code: 'default.search.titleTyp')}
                     <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.titleTyp')}">
-                        <i class="question circle icon"></i>
+                        <i class="grey question circle icon"></i>
                     </span>
                 </label>
                 <div class="ui search selection fluid multiple dropdown" id="title_types">
@@ -318,8 +318,7 @@
             <div class="field la-field-right-aligned">
                 <g:link controller="${controllerName}" action="${action}" id="${params.id}" params="[surveyConfigID: params.surveyConfigID, tab: params.tab, tabStat: params.tabStat]"
                    class="ui reset secondary button">${message(code: 'default.button.reset.label')}</g:link>
-                <input type="submit" class="ui primary button"
-                       value="${message(code: 'default.button.filter.label')}"/>
+                <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}"/>
             </div>
     </g:form>
 </ui:filter>

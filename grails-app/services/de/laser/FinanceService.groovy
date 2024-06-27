@@ -101,11 +101,11 @@ class FinanceService {
                         break
                 }
             }
-            SubscriptionPackage pkg
+            Package pkg
             if (params.newPackage?.contains("${SubscriptionPackage.class.name}:")) {
                 try {
                     if (params.newPackage.split(":")[1] != 'null') {
-                        pkg = (SubscriptionPackage) genericOIDService.resolveOID(params.newPackage)
+                        pkg = (Package) genericOIDService.resolveOID(params.newPackage)
                     }
                 } catch (Exception e) {
                     log.error("Non-valid sub-package sent ${params.newPackage}",e)
@@ -138,12 +138,13 @@ class FinanceService {
                 }
                 else {
                     newCostItem = new CostItem()
-                    if(params.mode == 'copy' && sub?._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && sub?.getSubscriber() == result.institution)
+                    if(params.mode == 'copy' && sub?._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && sub?.getSubscriberRespConsortia() == result.institution)
                         newCostItem.copyBase = CostItem.get(params.long('costItemId'))
                 }
                 newCostItem.owner = (Org) result.institution
                 newCostItem.sub = sub
-                newCostItem.subPkg = SubscriptionPackage.findBySubscriptionAndPkg(sub,pkg?.pkg) ?: null
+                //newCostItem.subPkg = SubscriptionPackage.findBySubscriptionAndPkg(sub,pkg?.pkg) ?: null
+                newCostItem.pkg = pkg && SubscriptionPackage.findBySubscriptionAndPkg(sub,pkg) ? pkg : null
                 newCostItem.issueEntitlement = IssueEntitlement.findBySubscriptionAndTipp(sub,ie?.tipp) ?: null
                 newCostItem.issueEntitlementGroup = issueEntitlementGroup ?: null
                 newCostItem.order = configMap.order
@@ -306,7 +307,7 @@ class FinanceService {
                             ci.save()
                         }
                         else {
-                            memberFailures << ci.sub.getSubscriber().sortname
+                            memberFailures << ci.sub.getSubscriberRespConsortia().sortname
                         }
                     }
                 }
@@ -797,13 +798,6 @@ class FinanceService {
                         result.cons.ids = consortialCostRows.id
                         //result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElementConfiguration ciec where ci.id in (:ids) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder+', ciec.value desc',[ids:consortialCostRows],[max:configMap.max, offset:configMap.offsets.consOffset]).toSet()
                         result.cons.costItems = consortialCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
-                        //very ugly ... any ways to achieve this more elegantly are greatly appreciated!!
-                        /*if(configMap.sortConfig.consSort == 'oo.org.sortname') {
-                            result.cons.costItems = result.cons.costItems.sort{ ciA, ciB ->
-                                ciA.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]}?.org?.sortname?.toLowerCase() <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]}?.org?.sortname?.toLowerCase() ?:
-                                        ciA.sub?.orgRelations?.find { oo -> oo.roleType in [RDStore.OR_AGENCY,RDStore.OR_PROVIDER]}?.org?.name?.toLowerCase() <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_AGENCY,RDStore.OR_PROVIDER]}?.org?.name?.toLowerCase() ?:
-                                        ciA.sub?.name?.toLowerCase() <=> ciB.sub?.name?.toLowerCase() }
-                        }*/
                         result.cons.sums = calculateResults(consortialCostItems.id)
                     }
                     break
@@ -812,7 +806,7 @@ class FinanceService {
                     prf.setBenchmark("execute subscr query")
                     Set<CostItem> consortialMemberSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci '+
                         'join ci.sub sub ' +
-                        'left join ci.subPkg subPkg ' +
+                        'left join ci.pkg pkg ' +
                         'join sub.instanceOf subC ' +
                         'join subC.orgRelations roleC ' +
                         'join sub.orgRelations oo ' +
@@ -877,8 +871,8 @@ class FinanceService {
             }
             //providers
             if(params.filterSubProviders) {
-                subFilterQuery += " and sub in (select oo.sub from OrgRole as oo where oo.org in (:filterSubProviders)) "
-                List<Org> filterSubProviders = []
+                subFilterQuery += " and sub in (select pvr.subscription from ProviderRole as pvr where pvr.provider in (:filterSubProviders)) "
+                List<Provider> filterSubProviders = []
                 String[] subProviders
                 if(params.filterSubProviders.contains(","))
                     subProviders = params.filterSubProviders.split(',')
@@ -887,6 +881,19 @@ class FinanceService {
                     filterSubProviders.add(genericOIDService.resolveOID(subProvider))
                 }
                 queryParams.filterSubProviders = filterSubProviders
+            }
+            //vendors
+            if(params.filterSubVendors) {
+                subFilterQuery += " and sub in (select vr.subscription from VendorRole as vr where vr.vendor in (:filterSubVendors)) "
+                List<Vendor> filterSubVendors = []
+                String[] subVendors
+                if(params.filterSubVendors.contains(","))
+                    subVendors = params.filterSubVendors.split(',')
+                else subVendors = [params.filterSubVendors]
+                subVendors.each { String subVendor ->
+                    filterSubVendors.add(genericOIDService.resolveOID(subVendor))
+                }
+                queryParams.filterSubVendors = filterSubVendors
             }
             //subscription status
             //we have to distinct between not existent and present but zero length
@@ -925,6 +932,16 @@ class FinanceService {
                     filterSubPackages.add((SubscriptionPackage) genericOIDService.resolveOID(subPkg))
                 }
                 queryParams.filterCISPkg = filterSubPackages
+            }
+
+            if(params.filterCIPkg) {
+                costItemFilterQuery += " and ci.pkg in (:filterCIPkg) "
+                List<Package> filterPackages = []
+                String[] packages = params.list('filterCIPkg')
+                packages.each { String pkg ->
+                    filterPackages.add((Package) genericOIDService.resolveOID(pkg))
+                }
+                queryParams.filterCIPkg = filterPackages
             }
             //budget code
             if(params.filterCIBudgetCode) {
@@ -1202,7 +1219,7 @@ class FinanceService {
                     break
                 case ["lizenz", "subscription"]: colMap.sub = c
                     break
-                case ["paket", "package"]: colMap.subPkg = c
+                case ["paket", "package"]: colMap.pkg = c
                     break
                 case ["einzeltitel", "single title"]: colMap.ie = c
                     break
@@ -1276,32 +1293,33 @@ class FinanceService {
             }) -> to package
             */
             SubscriptionPackage subPkg
-            if(colMap.subPkg != null) {
-                String subPkgIdentifier = cols[colMap.subPkg]
-                if(subPkgIdentifier) {
+            Package pkg
+            if(colMap.pkg != null) {
+                String pkgIdentifier = cols[colMap.pkg]
+                if(pkgIdentifier) {
                     if(subscription == null)
                         mappingErrorBag.packageWithoutSubscription = true
                     else {
                         //List<Package> pkgMatches = Package.executeQuery("select distinct idOcc.pkg from IdentifierOccurrence idOcc join idOcc.identifier id where cast(idOcc.pkg.id as string) = :idCandidate or idOcc.pkg.globalUID = :idCandidate or (id.value = :idCandidate and id.ns = :isil)",[idCandidate:subPkgIdentifier,isil:namespaces.isil])
                         List<Package> pkgMatches = []
-                        if(subPkgIdentifier.isLong())
-                            pkgMatches.add(Package.get(subPkgIdentifier))
+                        if(pkgIdentifier.isLong())
+                            pkgMatches.add(Package.get(pkgIdentifier))
                         if(!pkgMatches) {
-                            pkgMatches.addAll(Package.findAllByGlobalUID(subPkgIdentifier))
+                            pkgMatches.addAll(Package.findAllByGlobalUID(pkgIdentifier))
                             if(!pkgMatches) {
                                 pkgMatches = Package.executeQuery("select distinct ident.pkg from Identifier ident where (ident.ns = :isil and ident.value = :idCandidate)")
                                 if(!pkgMatches)
-                                    mappingErrorBag.noValidPackage = subPkgIdentifier
+                                    mappingErrorBag.noValidPackage = pkgIdentifier
                             }
                         }
                         if(pkgMatches.size() > 1)
-                            mappingErrorBag.multipleSubPkgError = pkgMatches.collect { pkg -> pkg.name }
+                            mappingErrorBag.multipleSubPkgError = pkgMatches.collect {Package pk -> pk.name }
                         else if(pkgMatches.size() == 1) {
                             subPkg = SubscriptionPackage.findBySubscriptionAndPkg(subscription,pkgMatches[0])
                             if(subPkg)
-                                costItem.subPkg = subPkg
+                                costItem.pkg = pkgMatches[0]
                             else if(!subPkg)
-                                mappingErrorBag.packageNotInSubscription = subPkgIdentifier
+                                mappingErrorBag.packageNotInSubscription = pkgIdentifier
                         }
                     }
                 }
@@ -1309,7 +1327,7 @@ class FinanceService {
             /*
             issueEntitlement(nullable: true, blank: false, validator: { val, obj ->
                 if (obj.issueEntitlement) {
-                    if (!obj.subPkg || (obj.issueEntitlement.tipp.pkg.gokbId != obj.subPkg.pkg.gokbId)) return ['issueEntitlementNotInPackage']
+                    if (!obj.pkg || (obj.issueEntitlement.tipp.pkg.gokbId != obj.pkg.gokbId)) return ['issueEntitlementNotInPackage']
                 }
             }) -> to issue entitlement
             */
@@ -1317,7 +1335,7 @@ class FinanceService {
             if(colMap.ie != null && cols[colMap.ie] != null) {
                 String ieIdentifier = cols[colMap.ie].trim()
                 if(ieIdentifier) {
-                    if(subscription == null || subPkg == null)
+                    if(subscription == null || pkg == null)
                         mappingErrorBag.entitlementWithoutPackageOrSubscription = true
                     else {
                         List<IssueEntitlement> ieMatches = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :subscription and ie.tipp in (select tipp from Identifier id join id.tipp tipp where ((id.value = :value and id.ns in (:namespaces)) or tipp.hostPlatformURL = :value) and tipp.status != :removed) and ie.status != :removed',[subscription:subscription,value:ieIdentifier, namespaces: namespaces.values(),removed:RDStore.TIPP_STATUS_REMOVED])
@@ -1637,7 +1655,7 @@ class FinanceService {
                 //a single cast did not work because of financialYear type mismatch
                 CostItem costItem = new CostItem(owner: contextOrg)
                 costItem.sub = Subscription.get(ci.sub.id) ?: null
-                costItem.subPkg = SubscriptionPackage.get(ci.subPkg?.id) ?: null
+                costItem.pkg = Package.get(ci.pkg?.id) ?: null
                 costItem.issueEntitlement = IssueEntitlement.get(ci.issueEntitlement?.id) ?: null
                 costItem.order = Order.get(ci.order?.id) ?: null
                 costItem.invoice = Invoice.get(ci.invoice?.id) ?: null

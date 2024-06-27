@@ -88,6 +88,9 @@
                 <g:if test="${controllerName == "subscription"}">
                     <th>${message(code: 'default.sortname.label')}</th>
                     <th>${message(code: 'subscriptionDetails.members.members')}</th>
+                    <g:if test="${params.showMembersSubWithMultiYear}">
+                        <th>${message(code: 'subscription.referenceYear.label.shy')}</th>
+                    </g:if>
                 </g:if>
                 <g:if test="${controllerName == "myInstitution"}">
                     <th>${message(code: 'default.subscription.label')}</th>
@@ -99,7 +102,7 @@
             <tbody>
             <g:each in="${filteredSubscriptions}" status="i" var="zeile">
                 <g:set var="sub" value="${zeile instanceof Subscription ? zeile : zeile.sub}"/>
-                <g:set var="subscr" value="${zeile instanceof Subscription ? zeile.getSubscriber() : zeile.orgs}"/>
+                <g:set var="subscr" value="${zeile instanceof Subscription ? zeile.getSubscriberRespConsortia() : zeile.orgs}"/>
                 <tr>
                     <g:if test="${editable}">
                         <td>
@@ -129,6 +132,9 @@
 
                             <ui:customerTypeProIcon org="${subscr}" />
                         </td>
+                        <g:if test="${params.showMembersSubWithMultiYear}">
+                            <td>${sub.referenceYear}</td>
+                        </g:if>
                     </g:if>
                     <g:elseif test="${controllerName == "myInstitution"}">
                         <td>

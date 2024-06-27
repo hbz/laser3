@@ -3,9 +3,12 @@ package de.laser.jobs
 import de.laser.StatsSyncService
 import de.laser.config.ConfigMapper
 import de.laser.base.AbstractJob
+import de.laser.system.SystemEvent
 import groovy.util.logging.Slf4j
 
-@Deprecated
+/**
+ * Triggers at 04:00 A.M. every night and cleans up cached export files
+ */
 @Slf4j
 class StatsSyncJob extends AbstractJob {
 
@@ -34,10 +37,13 @@ class StatsSyncJob extends AbstractJob {
     }
 
     def execute() {
-        if (! start('STATS_SYNC_JOB_START')) {
+        if (! start()) {
             return false
         }
         try {
+            SystemEvent sysEvent = SystemEvent.createEvent('STATS_SYNC_JOB_START')
+            long start_time = System.currentTimeMillis()
+
             //statsSyncService.doFetch(true) changed as of ERMS-4834
             String usagePath = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
             File folder = new File(usagePath)
@@ -48,10 +54,14 @@ class StatsSyncJob extends AbstractJob {
                     oldReport.delete()
                 }
             }
+
+            double elapsed = ((System.currentTimeMillis() - start_time) / 1000).round(2)
+            sysEvent.changeTo('STATS_SYNC_JOB_COMPLETE', [s: elapsed])
         }
         catch (Exception e) {
-            log.error( e.toString() )
+            log.error e.getMessage()
         }
-        stop('STATS_SYNC_JOB_COMPLETE')
+
+        stop()
     }
 }

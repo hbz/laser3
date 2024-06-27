@@ -374,7 +374,7 @@ class FactService {
    */
   private Map<String,List> _getUsageRanges(supplier_id, Org org, Subscription subscription) {
     String customer = org.getIdentifierByType('wibid')?.value
-    String supplierId = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyStore.PLA_NATSTAT_SID)
+    String supplierId = Platform.get(supplier_id)?.natstatSupplierID
     List factTypes = StatsTripleCursor.findAllByCustomerIdAndSupplierId(customer, supplierId).factType.unique()
 
     String titleRangesHql = "select stc from StatsTripleCursor as stc where " +
@@ -465,7 +465,7 @@ class FactService {
    * @param metric the metric type
    * @return the total usage for the given subscription
    */
-  def totalUsageForSub(sub, factType, metric) {
+  def totalUsageForSub(Subscription sub, factType, metric) {
     Fact.executeQuery(TOTAL_USAGE_FOR_SUB_IN_PERIOD, [
         start: sub.startDate,
         // end  : sub.endDate ?: new Date().parse('yyyy', '9999'), // TODO Fix that hack
@@ -474,7 +474,7 @@ class FactService {
         factType : factType,
         status : 'Deleted',
         metric : metric,
-        inst : sub.subscriber]
+        inst : sub.getSubscriberRespConsortia()]
     )[0]
   }
 
@@ -499,8 +499,7 @@ class FactService {
    */
   List<Platform> platformsWithNatstatId()
   {
-    String hql = "select platform from Platform as platform" +
-        " where exists (select 1 from platform.propertySet as pcp where pcp.owner = platform.id and pcp.type.name = 'NatStat Supplier ID') order by platform.name"
+    String hql = "select platform from Platform as platform where platform.natstatSupplierID != null order by platform.name"
     return Platform.executeQuery(hql)
   }
 

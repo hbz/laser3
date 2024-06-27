@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
 
 <laser:htmlStart message="menu.my.currentSubscriptionsTransfer" serviceInjection="true"/>
 
@@ -9,7 +9,7 @@
 <ui:controlButtons>
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+            <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.SUBSCRIPTIONS_TRANSFER]"/>
         </ui:exportDropdownItem>
     </ui:exportDropdown>
 </ui:controlButtons>
@@ -40,7 +40,7 @@
                 <label for="search-title">${message(code: 'default.search.text')}
                     <span data-position="right center" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.subscription')}">
-                        <i class="question circle icon"></i>
+                        <i class="grey question circle icon"></i>
                     </span>
                 </label>
 
@@ -53,7 +53,7 @@
                 <label for="identifier">${message(code: 'default.search.identifier')}
                     <span data-position="right center" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.subscription.identifier')}">
-                        <i class="question circle icon"></i>
+                        <i class="grey question circle icon"></i>
                     </span>
                 </label>
 
@@ -264,7 +264,7 @@
                         ${message(code: 'sidewide.number')}
                     </th>--}%
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="providerAgency"
-                                      title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}"/>
+                                      title="${message(code: 'provider.label')} / ${message(code: 'vendor.label')}"/>
 
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="name"
                                       title="${message(code: 'subscription')}"/>
@@ -286,7 +286,7 @@
 
                     <th scope="col" rowspan="3" class="center aligned">
                         <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'survey.label')}" data-position="top center">
-                            <i class="chart pie large icon"></i>
+                            <i class="${Icons.SURVEY} large icon"></i>
                         </a>
                     </th>
 
@@ -382,12 +382,12 @@
                                 </g:link>
                                 <br/>
                             </g:each>
-                            <g:each in="${s.agencies}" var="org">
-                                <g:link controller="organisation" action="show" id="${org.id}">
-                                    ${fieldValue(bean: org, field: "name")}
-                                    <g:if test="${org.sortname}">
-                                        <br/> (${fieldValue(bean: org, field: "sortname")})
-                                    </g:if> (${message(code: 'default.agency.label')})
+                            <g:each in="${s.vendors}" var="vendor">
+                                <g:link controller="vendor" action="show" id="${vendor.id}">
+                                    ${fieldValue(bean: vendor, field: "name")}
+                                    <g:if test="${vendor.sortname}">
+                                        <br/> (${fieldValue(bean: vendor, field: "sortname")})
+                                    </g:if> (${message(code: 'vendor.label')})
                                 </g:link>
                                 <br/>
                             </g:each>
@@ -453,14 +453,14 @@
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                            class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                            class="ui icon blue tiny button la-modern-button"
                                                             target="_blank"><i class="download small icon"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                                class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                                class="ui icon blue tiny button la-modern-button"
                                                                 target="_blank"><i class="download small icon"></i></g:link>
 
                                                     <%-- 2 --%>
@@ -621,7 +621,7 @@
                             %>
                             <g:each in="${documentSet2}" var="docctx">
                                 <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
-                                    <div class="ui small feed content la-js-dont-hide-this-card">
+                                    <div class="ui small feed content">
                                         <div class="ui grid summary">
                                             <div class="eleven wide column la-column-right-lessPadding">
                                                 <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
@@ -643,14 +643,14 @@
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                            class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                            class="ui icon blue tiny button la-modern-button"
                                                             target="_blank"><i class="download small icon"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                                class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                                class="ui icon blue tiny button la-modern-button"
                                                                 target="_blank"><i class="download small icon"></i></g:link>
 
                                                     <%-- 2 --%>
@@ -711,6 +711,6 @@
     <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}" max="${max}" total="${num_sub_rows}"/>
 </g:if>
 
-<laser:render template="export/individuallyExportModalSubsTransfer" model="[modalID: 'individuallyExportModal']"/>
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd/>

@@ -4,7 +4,7 @@
         <div class="menu ui top attached tabular la-tab-with-js">
             <a class="active item" data-tab="package-filter-tab-1">${message(code:'package.plural')}</a>
 %{--            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).provider}">--}%
-%{--                <a class="item" data-tab="package-filter-tab-2">${message(code:'default.provider.label')}</a>--}%
+%{--                <a class="item" data-tab="package-filter-tab-2">${message(code:'provider.label')}</a>--}%
 %{--            </g:if>--}%
 %{--            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).platform}">--}%
 %{--                <a class="item" data-tab="package-filter-tab-3">${message(code:'platform.label')}</a>--}%
@@ -46,19 +46,24 @@
         <div class="ui bottom attached tab segment" data-tab="package-filter-tab-help">
             <div class="field">
                 <div style="text-align:center; padding:2em 0">
-                    <asset:image src="help/reporting.packages.png" absolute="true" style="width:96%" />
+                    <img class="ui fluid image" alt="${message(code:'reporting.ui.global.help')}" src="${resource(dir: 'help', file: 'reporting/global.packages.png')}"/>
                 </div>
             </div>
         </div><!-- .tab -->
 
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).provider}" />
         <g:if test="${config}">
-            <input type="hidden" name="filter:provider_source" value="filter-restricting-provider" />
+            <input type="hidden" name="filter:provider_source" value="filter-subset-provider" />
+        </g:if>
+
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).vendor}" />
+        <g:if test="${config}">
+            <input type="hidden" name="filter:vendor_source" value="filter-subset-vendor" />
         </g:if>
 
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).platform}" />
         <g:if test="${config}">
-            <input type="hidden" name="filter:platform_source" value="filter-restricting-platform" />
+            <input type="hidden" name="filter:platform_source" value="filter-subset-platform" />
         </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">

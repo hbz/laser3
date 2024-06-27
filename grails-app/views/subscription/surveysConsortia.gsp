@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyOrg; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.interfaces.CalculatedType; de.laser.survey.SurveyResult" %>
+<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyOrg; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.interfaces.CalculatedType; de.laser.survey.SurveyResult" %>
 <laser:htmlStart message="subscription.details.surveys.label" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
@@ -7,7 +7,7 @@
     <laser:render template="actions"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleProviders="${providerRoles}">
     <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
 <ui:totalNumber class="la-numberHeader" total="${surveys.size()}"/>
@@ -40,7 +40,7 @@
             <th>${message(code: 'surveyProperty.plural.label')}</th>
             <th>
                 <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfigDocs.label')}" data-position="top center">
-                <i class="file alternate large icon"></i>
+                <i class="${Icons.DOCUMENT} large icon"></i>
                 </a>
             </th>
             <th>
@@ -129,7 +129,7 @@
 
 
                 <td class="center aligned">
-                    <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+                    <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
                         <g:link controller="survey" action="surveyCostItems" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]" class="ui icon">
                             <div class="ui circular ${surveyConfig.costItemsFinish ? "green" : ""} label">
@@ -168,6 +168,13 @@
                             <i aria-hidden="true" class="write icon"></i>
                         </g:link>
                     </span>
+
+
+                    <g:link controller="survey" action="copySurvey" id="${surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig.id, q: surveyConfig?.subscription?.providers ? surveyConfig.subscription.providers[0].name : '']"
+                            class="ui icon button blue la-modern-button">
+                        <i aria-hidden="true" class="copy icon"></i>
+                    </g:link>
                 </td>
             </tr>
 

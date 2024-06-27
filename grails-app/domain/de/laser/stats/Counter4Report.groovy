@@ -94,9 +94,9 @@ class Counter4Report extends AbstractReport {
         JR3 (['ft_ps', 'ft_pdf', 'ft_html', 'ft_epub', 'ft_total', 'toc', 'abstract', 'reference', 'data_set', 'audio', 'video', 'image', 'podcast', 'multimedia', 'record_view', 'result_click', 'turnaway', 'no_license'] as LinkedHashSet<String>),
         JR4 (['search_reg', 'search_fed', 'turnaway', 'no_license'] as LinkedHashSet<String>),
         JR5 (['ft_ps', 'ft_pdf', 'ft_html', 'ft_total', 'toc', 'abstract', 'reference', 'data_set', 'audio', 'video', 'image', 'podcast', 'multimedia', 'record_view', 'result_click', 'turnaway', 'no_license'] as LinkedHashSet<String>),
-        DB1 (['search_reg', 'search_fed', 'turnaway', 'no_license', 'ft_html', 'ft_total'] as LinkedHashSet<String>), //ft_html and ft_total are non-standard convenience metrics for VDE
-        DB2 (['search_reg', 'search_fed', 'turnaway', 'no_license', 'ft_html', 'ft_total'] as LinkedHashSet<String>), //ft_html and ft_total are non-standard convenience metrics for VDE
-        PR1 (['search_reg', 'search_fed', 'turnaway', 'no_license', 'ft_html', 'ft_total'] as LinkedHashSet<String>), //ft_html and ft_total are non-standard convenience metrics for VDE
+        DB1 (['ft_html', 'ft_total', 'search_reg', 'search_fed', 'turnaway', 'no_license'] as LinkedHashSet<String>), //ft_html and ft_total are non-standard convenience metrics for VDE
+        DB2 (['ft_html', 'ft_total', 'search_reg', 'search_fed', 'turnaway', 'no_license'] as LinkedHashSet<String>), //ft_html and ft_total are non-standard convenience metrics for VDE
+        PR1 (['ft_html', 'ft_total', 'search_reg', 'search_fed', 'turnaway', 'no_license'] as LinkedHashSet<String>), //ft_html and ft_total are non-standard convenience metrics for VDE
         BR1 (['ft_ps', 'ft_pdf', 'ft_html', 'ft_total', 'toc', 'abstract', 'reference', 'data_set', 'audio', 'video', 'image', 'podcast', 'multimedia', 'record_view', 'result_click', 'turnaway', 'no_license'] as LinkedHashSet<String>),
         BR2 (['ft_ps', 'ft_pdf', 'ft_html', 'ft_total', 'sectioned_html', 'toc', 'abstract', 'reference', 'data_set', 'audio', 'video', 'image', 'podcast', 'multimedia', 'record_view', 'result_click', 'turnaway', 'no_license'] as LinkedHashSet<String>),
         BR3 (['ft_ps', 'ft_pdf', 'ft_html', 'ft_total', 'toc', 'abstract', 'reference', 'data_set', 'audio', 'video', 'image', 'podcast', 'multimedia', 'record_view', 'result_click', 'turnaway', 'no_license'] as LinkedHashSet<String>),

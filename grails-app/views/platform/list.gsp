@@ -32,7 +32,7 @@
 							<th>${message(code:'sidewide.number')}</th>
 							<g:sortableColumn property="sortname" title="${message(code: 'default.name.label')}" />
 							<th>${message(code:'default.url.label')}</th> <%-- needs we:kb rework to make the property sortable --%>
-						<g:sortableColumn property="providerName" title="${message(code:'default.provider.label')}" />
+						<g:sortableColumn property="providerName" title="${message(code:'provider.label')}" />
 							<th class="center aligned">
 								<ui:myXIcon tooltip="${message(code: 'menu.my.platforms')}" />
 							</th>
@@ -45,8 +45,6 @@
 						<tbody>
 						<g:each in="${records}" var="record" status="jj">
 							<tr>
-								<g:set var="pkg" value="${Package.findByGokbId(record.uuid)}"/>
-								<g:set var="org" value="${Org.findByGokbId(record.providerUuid)}"/>
 								<g:set var="platformInstance" value="${Platform.findByGokbId(record.uuid)}"/>
 								<td>
 									${ (params.int('offset') ?: 0)  + jj + 1 }
@@ -74,11 +72,11 @@
 									</g:if>
 								</td>
 								<td>
-									<g:if test="${platformInstance && platformInstance.org}">
-										<g:if test="${platformInstance.org.gokbId != null && RDStore.OT_PROVIDER.id in platformInstance.org.getAllOrgTypeIds()}">
-											<ui:wekbIconLink type="org" gokbId="${platformInstance.org.gokbId}" />
+									<g:if test="${platformInstance && platformInstance.provider}">
+										<g:if test="${platformInstance.provider.gokbId}">
+											<ui:wekbIconLink type="provider" gokbId="${platformInstance.provider.gokbId}" />
 										</g:if>
-										<g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
+										<g:link controller="provider" action="show" id="${platformInstance.provider.id}">${platformInstance.provider.name}</g:link>
 									</g:if>
 									<g:elseif test="${record.providerUuid}">
 										${record.providerName}
@@ -96,7 +94,7 @@
 								</td>
 								<td class="center aligned">
 									<g:if test="${platformInstance && platformInstance.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
-										<ui:markerIcon type="WEKB_CHANGES" color="purple" />
+										<ui:cbItemMarkerAction platform="${platformInstance}" type="${Marker.TYPE.WEKB_CHANGES}" simple="true"/>
 									</g:if>
 								</td>
 								<td>

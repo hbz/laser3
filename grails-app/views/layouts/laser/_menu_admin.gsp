@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.Icons" %>
 <laser:serviceInjection />
 
 <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
@@ -22,7 +23,7 @@
         </div>
 
         <ui:link addItemAttributes="true" controller="admin" action="systemMessages"><i class="icon exclamation circle"></i>${message(code: 'menu.admin.systemMessage')}</ui:link>
-        <ui:link addItemAttributes="true" controller="admin" action="systemAnnouncements"><i class="icon flag"></i>${message(code:'menu.admin.announcements')}</ui:link>
+        <ui:link addItemAttributes="true" controller="admin" action="systemAnnouncements"><i class="${Icons.ANNOUNCEMENT} icon"></i>${message(code:'menu.admin.announcements')}</ui:link>
 
         <div class="divider"></div>
 
@@ -33,7 +34,8 @@
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="organisation" action="index">${message(code:'menu.admin.allOrganisations')}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="manageOrganisations">${message(code:'menu.admin.manageOrganisations')}</ui:link>
-                <ui:link addItemAttributes="true" controller="admin" action="mergeOrganisations">${message(code:'menu.admin.mergeOrganisations')}</ui:link>
+                <ui:link addItemAttributes="true" controller="admin" action="mergeProviders">${message(code:'menu.admin.mergeProviders')}</ui:link>
+                <ui:link addItemAttributes="true" controller="admin" action="mergeVendors">${message(code:'menu.admin.mergeVendors')}</ui:link>
             </div>
         </div>
 

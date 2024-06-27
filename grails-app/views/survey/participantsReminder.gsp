@@ -13,6 +13,7 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
+    <laser:render template="exports"/>
     <laser:render template="actions"/>
 </ui:controlButtons>
 
@@ -20,7 +21,7 @@
 
 <uiSurvey:status object="${surveyInfo}"/>
 
-<g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_TITLE_SELECTION]}">
+<g:if test="${surveyConfig.subscription}">
     <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
@@ -33,7 +34,7 @@
 <br />
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
+    <g:if test="${surveyConfig.subscription}">
         <i class="icon clipboard outline la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
             ${surveyConfig.getConfigNameShort()}
@@ -52,12 +53,19 @@
     <div class="sixteen wide stretched column">
 
         <ui:greySegment>
+            <g:if test="${surveyConfig.pickAndChoose}">
+                <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'finishedDate', 'surveyTitlesCount', 'surveyProperties', 'commentOnlyForOwner', 'reminderMailDate']}"/>
+            </g:if>
+            <g:else>
+                <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'commentOnlyForOwner', 'reminderMailDate']}"/>
+            </g:else>
 
-                <laser:render template="evaluationParticipantsView" model="[showCheckbox: true,
+                <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess: true,
+                                                                            showCheckboxForParticipantsHasNoAccess: false,
                                                                         showOpenParticipantsAgainButtons: true,
                                                                         processAction: 'createOwnMail',
                                                                         processController: 'mail',
-                                                                        tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner', 'reminderMailDate']]"/>
+                                                                        tmplConfigShow   : tmplConfigShowList]"/>
 
         </ui:greySegment>
 

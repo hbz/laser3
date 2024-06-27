@@ -45,7 +45,7 @@ class IssueEntitlementController {
       result.issueEntitlementInstance = IssueEntitlement.get(params.id)
       result.sub = result.issueEntitlementInstance.subscription
 
-      if(result.sub.getSubscriber().id == contextService.getOrg().id || (result.sub.getConsortia() && result.sub.getConsortia().id == contextService.getOrg().id)){
+      if(result.sub.getSubscriberRespConsortia().id == contextService.getOrg().id || (result.sub.getConsortia() && result.sub.getConsortia().id == contextService.getOrg().id)){
           result.isMySub = true
       }
 
@@ -56,16 +56,15 @@ class IssueEntitlementController {
       result.editable = result.issueEntitlementInstance.subscription.isEditableBy(result.user)
 
       // Get usage statistics
-      def title_id = result.issueEntitlementInstance.tipp.id
-      def org = result.issueEntitlementInstance.subscription.getSubscriber() // TODO
-      def supplier =  result.issueEntitlementInstance.tipp.platform
-      def supplier_id = supplier?.id
+      Long title_id = result.issueEntitlementInstance.tipp.id
+      Org org = result.issueEntitlementInstance.subscription.getSubscriberRespConsortia() // TODO
+      Platform supplier =  result.issueEntitlementInstance.tipp.platform
+      Long supplier_id = supplier?.id
 
       if (title_id != null &&
            org != null &&
            supplier_id != null && ConfigMapper.getShowStatsInfo()) {
-          PlatformProperty platform = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyStore.PLA_NATSTAT_SID)
-          result.natStatSupplierId = platform?.stringValue ?: null
+          result.natStatSupplierId = supplier.natstatSupplierID
           def fsresult = factService.generateUsageData(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
           def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
           result.institutional_usage_identifier = OrgSetting.get(org, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
@@ -112,16 +111,13 @@ class IssueEntitlementController {
         base_qry += " order by lower(tipp.name) asc"
       }*/
 
-      // log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
-      // result.tippList = TitleInstancePackagePlatform.executeQuery("select tipp "+base_qry, qry_params, [max:result.max, offset:result.offset]);
-      // DMs report that this list is limited to 10
       //result.tippList = TitleInstancePackagePlatform.executeQuery("select tipp "+base_qry, qry_params, [max:300, offset:0]);
       //result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id "+base_qry, qry_params ).size()
 
         result.contextOrg = contextService.getOrg()
         result.participantPerpetualAccessToTitle = []
 
-        result.participantPerpetualAccessToTitle = surveyService.listParticipantPerpetualAccessToTitle(result.issueEntitlementInstance.subscription.getSubscriber(), result.issueEntitlementInstance.tipp)
+        result.participantPerpetualAccessToTitle = surveyService.listParticipantPerpetualAccessToTitle(result.issueEntitlementInstance.subscription.getSubscriberRespConsortia(), result.issueEntitlementInstance.tipp)
 
       result
     }

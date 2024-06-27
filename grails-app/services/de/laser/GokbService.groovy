@@ -31,15 +31,15 @@ class GokbService {
         Set records = []
 
         Map queryResult = executeQuery(apiSource.baseUrl + apiSource.fixToken + '/searchApi', queryParams)
-        if (queryResult.warning && queryResult.warning.result) {
-            records.addAll(queryResult.warning.result)
-            result.recordsCount = queryResult.warning.result_count_total
+        if (queryResult && queryResult.result) {
+            records.addAll(queryResult.result)
+            result.recordsCount = queryResult.result_count_total
             result.records = records
         }
         else {
             if(queryResult) {
-                if(queryResult.warning.code == "error")
-                    result.error = messageSource.getMessage('wekb.error.500', [queryResult.warning.message] as Object[], LocaleUtils.getCurrentLocale())
+                if(queryResult.code == "error")
+                    result.error = messageSource.getMessage('wekb.error.500', [queryResult.message] as Object[], LocaleUtils.getCurrentLocale())
             }
             else result.error = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
             result.recordsCount = 0
@@ -59,7 +59,12 @@ class GokbService {
         String order = params.order ?: "asc"
         String max = params.max ?: ctrlResult.max
         String offset = (params.offset != null) ? params.offset : ctrlResult.offset
-        [sort: sort, order: order, max: max, offset: offset]
+        Map<String, String> result = [sort: sort, order: order]
+        if(max)
+            result.max = max
+        if(offset)
+            result.offset = offset
+        result
     }
 
     /**
@@ -67,7 +72,7 @@ class GokbService {
      * the index directly but an API endpoint takes the query and generates more complex ElasticSearch
      * queries in order to limit external index access
      * @param url the query string to pass to the we:kb ElasticSearch API
-     * @return the result map (access either as result.warning or result.info), reflecting the ElasticSearch response
+     * @return the result map, reflecting the ElasticSearch response
      */
     Map executeQuery(String baseUrl, Map queryParams){
         Map result = [:]
@@ -81,9 +86,9 @@ class GokbService {
 
             Closure success = { resp, json ->
                 log.debug ("server response: ${resp.getStatus().getReason()}, server: ${resp.getHeaders().get('Server')}, content length: ${resp.getHeaders().get('Content-Length')}")
-
+                result = json
 //                if (resp.getStatus().getCode() < 400) {
-                    result = ['warning': json]      // warning <-> info ?
+//                    result = ['warning': json]      // warning <-> info ?
 //                } else {
 //                    result = ['info': json]         // ???
 //                }

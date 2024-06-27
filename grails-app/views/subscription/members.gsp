@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.storage.BeanStore; de.laser.finance.CostItem; de.laser.Links; de.laser.Person; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Subscription" %>
+<%@ page import="de.laser.helper.Icons; de.laser.ExportClickMeService; de.laser.CustomerTypeService; de.laser.storage.BeanStore; de.laser.finance.CostItem; de.laser.Links; de.laser.Person; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Subscription" %>
 
 <laser:htmlStart text="${BeanStore.getContextService().getOrg().isCustomerType_Consortium() ? message(code:'subscription.details.consortiaMembers.label') : ''}" serviceInjection="true" />
 
@@ -20,7 +20,7 @@
                 </g:else>
             </ui:exportDropdownItem>--%>
             <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.SUBSCRIPTIONS_MEMBERS]"/>
             </ui:exportDropdownItem>
             <%--
             <ui:exportDropdownItem>
@@ -87,7 +87,7 @@
         <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
+    <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleProviders="${providerRoles}">
         <ui:xEditable owner="${subscription}" field="name" />
     </ui:h1HeaderWithIcon>
     <ui:totalNumber class="la-numberHeader" total="${filteredSubChilds.size() ?: 0}"/>
@@ -136,14 +136,14 @@
                 <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()}">
                     <th class="center aligned la-no-uppercase">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="${message(code: 'subscription.linktoLicense')}">
-                            <i class="balance scale icon"></i>
+                            <i class="${Icons.LICENSE} icon"></i>
                         </span>
                     </th>
                 </g:if>
                 <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                     <th class="center aligned la-no-uppercase">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="${message(code: 'subscription.packages.label')}">
-                            <i class="gift icon"></i>
+                            <i class="${Icons.PACKAGE} icon"></i>
                         </span>
                     </th>
                 </g:if>
@@ -322,7 +322,6 @@
         </tbody>
         </table>
                 <laser:render template="/templates/copyEmailaddresses" model="[orgList: filteredSubChilds?.collect {it.orgs}?:[]]"/>
-                <laser:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
             </g:if>
             <g:else>
                 <g:if test="${filterSet}">
@@ -342,6 +341,8 @@
             }
         });
     </laser:script>
+
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd />
 

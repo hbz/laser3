@@ -1,15 +1,9 @@
-<%@ page import="de.laser.RefdataValue; de.laser.UserSetting; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowService; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.RefdataValue; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowService; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <g:if test="${clist}">
     <%
         boolean checkedEditable = workflowService.hasUserPerm_edit()
-
-        if (referer) {
-            if (referer.contains('license/show') || referer.contains('lic/show') || referer.contains('subscription/show') || referer.contains('sub/show')) {
-                checkedEditable = checkedEditable && (contextService.getUser().getSetting(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES).getValue() == RDStore.YN_YES)
-            }
-        }
     %>
 
     <g:set var="clistInfo" value="${clist.getInfo()}" />

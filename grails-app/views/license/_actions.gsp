@@ -50,9 +50,6 @@
                 <div class="divider"></div>
                 <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate outline icon"></i> ${message(code:'deletion.license')}</g:link>
             </g:if>
-%{--            <g:else>--}%
-%{--                <a class="item disabled" href="#"><i class="trash alternate outline icon"></i> ${message(code:'deletion.license')}</a>--}%
-%{--            </g:else>--}%
         </g:if>
 
         <g:if test="${editable && actionName == 'linkedSubs'}">
@@ -68,5 +65,5 @@
 </g:if>
 
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
-    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: license, owntp: 'license']]}" />
+    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: license, owntp: 'license', inContextOrg: inContextOrg]]}" />
 </g:if>

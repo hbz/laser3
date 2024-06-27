@@ -84,7 +84,7 @@
                             break
                         default:
                             dataTooltip = message(code:'financials.costItemConfiguration.notSet')
-                            icon = '<i class="question circle icon"></i>'
+                            icon = '<i class="grey question circle icon"></i>'
                             break
                     }
                 %>
@@ -120,18 +120,20 @@
                         </g:elseif>
                     </td>
                     <td>
-                        <g:formatNumber number="${ci.costInLocalCurrency}" type="currency" currencyCode="EUR" />
-                        <br />
-                        <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="EUR" />
-                        <g:if test="${ci.taxKey && ci.taxKey.display}">
-                            (${ci.taxKey.taxRate ?: 0}%)
+                        <g:if test="${ci.currencyRate}">
+                            <g:formatNumber number="${ci.costInLocalCurrency}" type="currency" currencyCode="EUR" />
+                            <br />
+                            <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="EUR" />
+                            <g:if test="${ci.taxKey && ci.taxKey.display}">
+                                (${ci.taxKey.taxRate ?: 0}%)
+                            </g:if>
+                            <g:elseif test="${ci.taxKey in [CostItem.TAX_TYPES.TAX_CONTAINED_7,CostItem.TAX_TYPES.TAX_CONTAINED_19]}">
+                                ${ci.taxKey.taxType.getI10n("value")}
+                            </g:elseif>
+                            <g:elseif test="${ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
+                                (${RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")})
+                            </g:elseif>
                         </g:if>
-                        <g:elseif test="${ci.taxKey in [CostItem.TAX_TYPES.TAX_CONTAINED_7,CostItem.TAX_TYPES.TAX_CONTAINED_19]}">
-                            ${ci.taxKey.taxType.getI10n("value")}
-                        </g:elseif>
-                        <g:elseif test="${ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
-                            (${RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")})
-                        </g:elseif>
                     </td>
                     <td>
                         <ui:xEditableRefData config="${de.laser.storage.RDConstants.COST_ITEM_STATUS}" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemStatus" />

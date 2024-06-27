@@ -1,7 +1,8 @@
 <%@ page import="de.laser.storage.RDConstants" %>
 <laser:serviceInjection />
 
-<g:set var="userIsInstEditorOrRoleAdmin" value="${userService.hasAffiliation_or_ROLEADMIN(user, contextService.getOrg(), 'INST_EDITOR')}" />
+<g:set var="institution" value="${contextService.getOrg()}"/>
+<g:set var="userIsInstEditorOrRoleAdmin" value="${userService.hasAffiliation_or_ROLEADMIN(user, institution, 'INST_EDITOR')}" />
 
 <div class="ui grid la-clear-before">
     <div class="sixteen wide column">
@@ -43,16 +44,13 @@
                             <g:if test="${taskInstance.org}">
                                 <br /> <g:link controller="organisation" action="show" id="${taskInstance.org.id}">${fieldValue(bean: taskInstance, field: "org")}</g:link> <br />
                             </g:if>
-                            <g:if test="${taskInstance.pkg}">
-                                <br /> <g:link controller="package" action="show" id="${taskInstance.pkg.id}">${fieldValue(bean: taskInstance, field: "pkg")}</g:link> <br />
-                            </g:if>
                             <g:if test="${taskInstance.subscription}">
                                 <br /> <g:link controller="subscription" action="show" id="${taskInstance.subscription.id}">${fieldValue(bean: taskInstance, field: "subscription")}</g:link>
                             </g:if>
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${taskInstance.responsibleOrg?.id == contextService.getOrg().id || taskInstance.responsibleUser?.id == contextService.getUser().id}">
+                        <g:if test="${taskInstance.responsibleOrg?.id == institution.id || taskInstance.responsibleUser?.id == user.id}">
                             <i class="icon hand point right sc_grey"></i>
                         </g:if>
                         <g:if test="${taskInstance.responsibleOrg}"> ${taskInstance.responsibleOrg.name} <br /> </g:if>
@@ -62,7 +60,7 @@
                         <ui:xEditableRefData config="${RDConstants.TASK_STATUS}" owner="${taskInstance}" field="status" overwriteEditable="${overwriteEditable}" />
                     </td>
                     <td>
-                        <g:if test="${taskInstance.creator?.id == contextService.getUser().id}">
+                        <g:if test="${taskInstance.creator?.id == user.id}">
                             <i class="icon hand point right sc_grey"></i>
                         </g:if>
                         ${taskInstance.creator.display}

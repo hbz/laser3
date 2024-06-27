@@ -5,6 +5,7 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.ctrl.UserControllerService
 import de.laser.annotations.DebugInfo
+import de.laser.helper.Profiler
 import de.laser.utils.PasswordUtils
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
@@ -56,7 +57,7 @@ class UserController {
         Map<String, Object> result = userControllerService.getResultGenerics(params)
 
             if (params.process && result.editable) {
-                User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
+                User userReplacement = User.get(params.userReplacement)
 
                 result.delResult = deletionService.deleteUser(result.user as User, userReplacement, false)
             }
@@ -77,19 +78,33 @@ class UserController {
      */
     @Secured(['ROLE_ADMIN'])
     def list() {
+        Profiler prf = new Profiler()
         Map<String, Object> result = userControllerService.getResultGenerics(params)
-        Map filterParams = params
-
-        result.users = userService.getUserSet(filterParams)
-        result.total = result.users.size()
+        prf.setBenchmark('init')
+        Map filterParams = params.clone()
+        filterParams.max = result.max
+        filterParams.offset = result.offset
+        Map userData = userService.getUserMap(filterParams)
+        prf.setBenchmark('after users')
+        result.total = userData.count
+        result.users = userData.data
 
         result.titleMessage = message(code:'user.show_all.label') as String
-        Set<Org> availableComboOrgs = Org.executeQuery(
-                'select c.fromOrg from Combo c where c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name asc',
-                [ctxOrg: contextService.getOrg(), type: RDStore.COMBO_TYPE_CONSORTIUM]
-        )
-        availableComboOrgs.add(contextService.getOrg())
-        result.filterConfig = [filterableRoles:Role.findAllByRoleTypeInList(['user']), orgField: true, availableComboOrgs: availableComboOrgs]
+        Set availableComboOrgs = [[oid: genericOIDService.getOID(result.orgInstance), name: result.orgInstance.sortname]]
+        String query = "select new map(concat('${Org.class.name}:',c.fromOrg.id) as oid,c.fromOrg.sortname as name) from Combo c where c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.sortname asc"
+        availableComboOrgs.addAll(Org.executeQuery(query, [ctxOrg: result.orgInstance, type: RDStore.COMBO_TYPE_CONSORTIUM]))
+        prf.setBenchmark('after combo orgs')
+        result.filterConfig = [
+                filterableRoles: Role.findAllByRoleTypeInList(['user']),
+                filterableStatus: [
+                    locked:   "${message(code:'user.accountLocked.label')}",
+                    expired:  "${message(code:'user.accountExpired.label')}",
+                    disabled: "${message(code:'user.accountDisabled.label')}",
+                    enabled:  "${message(code:'user.accountEnabled.label')}"
+                ],
+                orgField: true,
+                availableComboOrgs: availableComboOrgs
+        ]
 
         result.tmplConfig = [
                 editable:result.editable,
@@ -97,10 +112,10 @@ class UserController {
                 editLink: 'edit',
                 deleteLink: 'delete',
                 users: result.users,
-                showAllAffiliations: true,
-                modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')
+                showUserStatus: true,
+                showAllAffiliations: true
         ]
-
+        result.benchMark = prf.stopBenchmark()
         render view: '/user/global/list', model: result
     }
 
@@ -247,7 +262,7 @@ class UserController {
             return
         }
 
-        result.availableOrgs = Org.executeQuery('from Org o where o.sector = :sector order by o.name', [sector: RDStore.O_SECTOR_HIGHER_EDU])
+        result.availableOrgs = Org.executeQuery('from Org o order by o.name')
 
         render view: '/user/global/create', model: result
     }

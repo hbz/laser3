@@ -5,6 +5,9 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+/**
+ * Container class for frequently used properties
+ */
 @CompileStatic
 @Slf4j
 class PropertyStore {
@@ -26,9 +29,8 @@ class PropertyStore {
 
     public final static PropertyDefinition PLA_IPV4    = getPropertyDefinition('IPv4: Supported', PropertyDefinition.PLA_PROP)
     public final static PropertyDefinition PLA_IPV6    = getPropertyDefinition('IPv6: Supported', PropertyDefinition.PLA_PROP)
-    */
+
     public final static PropertyDefinition PLA_NATSTAT_SID     = getPropertyDefinition('NatStat Supplier ID', PropertyDefinition.PLA_PROP)
-    /*
     public final static PropertyDefinition PLA_PROXY           = getPropertyDefinition('Proxy: Supported', PropertyDefinition.PLA_PROP)
 
     public final static PropertyDefinition PLA_SHIBBOLETH      = getPropertyDefinition('Shibboleth: Supported', PropertyDefinition.PLA_PROP)
@@ -44,6 +46,12 @@ class PropertyStore {
 
     // --
 
+    /**
+     * Preloads the given property definition by name and object type (description)
+     * @param name the name of the property definition
+     * @param descr the owner object type
+     * @return the {@link PropertyDefinition} matching the given name and object type
+     */
     static PropertyDefinition getPropertyDefinition(String name, String descr) {
         PropertyDefinition result = PropertyDefinition.getByNameAndDescr(name, descr)
 
@@ -64,7 +72,11 @@ class PropertyStore {
     public final static PropertyDefinition SURVEY_PROPERTY_SUBSCRIPTION_FORM    = getSurveyProperty('Subscription Form')
     public final static PropertyDefinition SURVEY_PROPERTY_PUBLISHING_COMPONENT    = getSurveyProperty('Publishing Component')
 
-
+    /**
+     * Preloads the given survey property definition by name and object type (description)
+     * @param name the name of the property definition
+     * @return the {@link PropertyDefinition} matching the given name and object type
+     */
     static PropertyDefinition getSurveyProperty(String name) {
         PropertyDefinition result = PropertyDefinition.getByNameAndDescrAndTenant(name, PropertyDefinition.SVY_PROP, null)
 

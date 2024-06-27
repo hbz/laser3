@@ -11,7 +11,6 @@
     <div class="ui equal width grid">
         <div class="row">
             <div class="column">
-                %{--<h3 class="ui header">${message(code:'menu.yoda.system')}</h3>--}%
                 <div class="ui divided relaxed list">
                     <div class="item">
                         <g:link controller="admin" action="systemEvents" target="_blank">${message(code:'menu.admin.systemEvents')}</g:link>
@@ -22,7 +21,6 @@
                 </div>
             </div>
             <div class="column">
-                %{--<h3 class="ui header">${message(code:'menu.yoda.others')}</h3>--}%
                 <div class="ui divided relaxed list">
                     <div class="item">
                         <g:link controller="admin" action="systemMessages" target="_blank">${message(code: 'menu.admin.systemMessage')}</g:link>
@@ -33,7 +31,6 @@
                 </div>
             </div>
             <div class="column">
-                %{--<h3 class="ui header">${message(code:'menu.yoda.database')}</h3>--}%
                 <div class="ui divided relaxed list">
                     <div class="item">
                         <g:link controller="admin" action="databaseInfo" target="_blank">${message(code: "menu.admin.databaseInfo")}</g:link>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.storage.RDStore" %>
 <laser:htmlStart message="menu.my.consortia" serviceInjection="true"/>
 
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
@@ -10,7 +10,7 @@
 <ui:controlButtons>
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+            <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.CONSORTIAS]"/>
         </ui:exportDropdownItem>
         <g:if test="${filterSet}">
             <%--
@@ -67,7 +67,6 @@
     </ui:filter>
 <div class="la-clear-before">
     <g:if test="${consortia}">
-        <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'consortium', contactSwitch: true]" />
 
             <laser:render template="/templates/filter/orgFilterTable"
                       model="[orgList: consortia,
@@ -91,5 +90,8 @@
     <ui:debugInfo>
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </ui:debugInfo>
+
+<g:render template="/clickMe/export/js"/>
+
 
 <laser:htmlEnd />

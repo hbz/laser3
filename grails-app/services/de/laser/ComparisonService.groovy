@@ -8,6 +8,9 @@ import de.laser.properties.PropertyDefinitionGroupBinding
 import grails.gorm.transactions.Transactional
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+/**
+ * This service contains generic object comparison methods
+ */
 @Transactional
 class ComparisonService {
 

@@ -137,9 +137,10 @@ aside.ui.accordion .title:not(.ui) {
         }
     }
     .la-hero {
-        padding-top: 7rem !important;
+        padding-top: 2.5rem !important;
         .button {
-            background-color: #f1ebe5;
+            border: 2px solid @white!important;
+            line-height: 1.5;
         }
     }
     .masthead h1.ui.header{
@@ -411,6 +412,9 @@ i.icon.la-list-icon{
 
 .la-minor-object a{
     font-weight: normal;
+}
+.la-major-object{
+    font-weight: bold;
 }
 // clearing afecting the elements before the element with class 'la-clear-before'
 .la-clear-before {

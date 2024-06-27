@@ -233,7 +233,7 @@ class ApiController {
                 respStruct = ""
                 status = HttpStatus.NOT_FOUND.value()
             }
-            else {
+            else if(!respStruct) {
                 respStruct = result
                 switch(result) {
                     case Constants.HTTP_FORBIDDEN: HttpStatus.FORBIDDEN.value()

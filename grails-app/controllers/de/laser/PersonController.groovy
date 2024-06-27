@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.annotations.DebugInfo
+import de.laser.helper.Params
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import grails.converters.JSON
@@ -76,8 +77,16 @@ class PersonController  {
                             // processing dynamic form data
                             //addPersonRoles(personInstance)
                             Org personRoleOrg
+                            Provider personRoleProvider
+                            Vendor personRoleVendor
                             if (params.personRoleOrg) {
                                 personRoleOrg = Org.get(params.personRoleOrg)
+                            }
+                            else if (params.personRoleProvider) {
+                                personRoleProvider = Provider.get(params.personRoleProvider)
+                            }
+                            else if (params.personRoleVendor) {
+                                personRoleVendor = Vendor.get(params.personRoleVendor)
                             }
                             else {
                                 personRoleOrg = contextOrg
@@ -87,9 +96,15 @@ class PersonController  {
                                 params.list('functionType').each {
                                     PersonRole personRole
                                     RefdataValue functionType = RefdataValue.get(it)
-                                    personRole = new PersonRole(prs: personInstance, functionType: functionType, org: personRoleOrg)
+                                    personRole = new PersonRole(prs: personInstance, functionType: functionType)
+                                    if(personRoleOrg)
+                                        personRole.org = personRoleOrg
+                                    else if(personRoleProvider)
+                                        personRole.provider = personRoleProvider
+                                    else if(personRoleVendor)
+                                        personRole.vendor = personRoleVendor
 
-                                    if (PersonRole.findWhere(prs: personInstance, org: personRoleOrg, functionType: functionType)) {
+                                    if (PersonRole.findWhere(prs: personInstance, org: personRoleOrg, vendor: personRoleVendor, provider: personRoleProvider, functionType: functionType)) {
                                         log.debug("ignore adding PersonRole because of existing duplicate")
                                     }
                                     else if (personRole) {
@@ -107,9 +122,15 @@ class PersonController  {
                                 params.list('positionType').each {
                                     PersonRole personRole
                                     RefdataValue positionType = RefdataValue.get(it)
-                                    personRole = new PersonRole(prs: personInstance, positionType: positionType, org: personRoleOrg)
+                                    personRole = new PersonRole(prs: personInstance, positionType: positionType)
+                                    if(personRoleOrg)
+                                        personRole.org = personRoleOrg
+                                    else if(personRoleProvider)
+                                        personRole.provider = personRoleProvider
+                                    else if(personRoleVendor)
+                                        personRole.vendor = personRoleVendor
 
-                                    if (PersonRole.findWhere(prs: personInstance, org: personRoleOrg, positionType: positionType)) {
+                                    if (PersonRole.findWhere(prs: personInstance, org: personRoleOrg, vendor: personRoleVendor, provider: personRoleProvider, positionType: positionType)) {
                                         log.debug("ignore adding PersonRole because of existing duplicate")
                                     }
                                     else if (personRole) {
@@ -215,7 +236,7 @@ class PersonController  {
         }.findAll()
         List<PersonRole> fcba = PersonRole.where {
             prs == personInstance &&
-            functionType == RDStore.PRS_FUNC_FC_BILLING_ADDRESS
+            functionType == RDStore.PRS_FUNC_INVOICING_CONTACT
         }.findAll()
         
 
@@ -281,8 +302,16 @@ class PersonController  {
             }
 
             Org personRoleOrg
+            Provider personRoleProvider
+            Vendor personRoleVendor
             if (params.personRoleOrg) {
                 personRoleOrg = Org.get(params.personRoleOrg)
+            }
+            else if (params.personRoleProvider) {
+                personRoleProvider = Provider.get(params.personRoleProvider)
+            }
+            else if (params.personRoleVendor) {
+                personRoleVendor = Vendor.get(params.personRoleVendor)
             }
             else {
                 personRoleOrg = contextOrg
@@ -290,14 +319,18 @@ class PersonController  {
 
             if (params.functionType) {
                 params.list('functionType').each {
-                    PersonRole personRole
                     RefdataValue functionType = RefdataValue.get(it)
-                    personRole = new PersonRole(prs: personInstance, functionType: functionType, org: personRoleOrg)
+                    Map<String, Object> configMap = [prs: personInstance, functionType: functionType]
+                    if(personRoleOrg)
+                        configMap.org = personRoleOrg
+                    else if(personRoleProvider)
+                        configMap.provider = personRoleProvider
+                    else if(personRoleVendor)
+                        configMap.vendor = personRoleVendor
+                    PersonRole personRole = PersonRole.findWhere(configMap)
 
-                    if (PersonRole.findWhere(prs: personInstance, org: personRoleOrg, functionType: functionType)) {
-                        log.debug("ignore adding PersonRole because of existing duplicate")
-                    }
-                    else if (personRole) {
+                    if (!personRole) {
+                        personRole = new PersonRole(configMap)
                         if (personRole.save()) {
                             log.debug("adding PersonRole ${personRole}")
                         }
@@ -305,27 +338,64 @@ class PersonController  {
                             log.error("problem saving new PersonRole ${personRole}")
                         }
                     }
+                    else {
+                        log.debug("ignore adding PersonRole because of existing duplicate")
+                    }
                 }
 
             }
 
-            personInstance.getPersonRoleByOrg(personRoleOrg).each { psr ->
-                if (psr.functionType && !(psr.functionType.id.toString() in params.list('functionType'))) {
-                    personInstance.removeFromRoleLinks(psr)
-                    psr.delete()
+            if(personRoleOrg) {
+                personInstance.getPersonRoleByOrg(personRoleOrg).each { psr ->
+                    if (psr.functionType && !(psr.functionType.id in Params.getLongList(params, 'functionType'))) {
+                        personInstance.removeFromRoleLinks(psr)
+                        psr.delete()
+                    }
+                    else if (psr.positionType && !(psr.positionType.id in Params.getLongList(params, 'positionType'))) {
+                        personInstance.removeFromRoleLinks(psr)
+                        psr.delete()
+                    }
+                }
+            }
+            else if(personRoleProvider) {
+                personInstance.getPersonRoleByProvider(personRoleProvider).each { psr ->
+                    if (psr.functionType && !(psr.functionType.id in Params.getLongList(params, 'functionType'))) {
+                        personInstance.removeFromRoleLinks(psr)
+                        psr.delete()
+                    }
+                    else if (psr.positionType && !(psr.positionType.id in Params.getLongList(params, 'positionType'))) {
+                        personInstance.removeFromRoleLinks(psr)
+                        psr.delete()
+                    }
+                }
+            }
+            else if(personRoleVendor) {
+                personInstance.getPersonRoleByVendor(personRoleVendor).each { psr ->
+                    if (psr.functionType && !(psr.functionType.id in Params.getLongList(params, 'functionType'))) {
+                        personInstance.removeFromRoleLinks(psr)
+                        psr.delete()
+                    }
+                    else if (psr.positionType && !(psr.positionType.id in Params.getLongList(params, 'positionType'))) {
+                        personInstance.removeFromRoleLinks(psr)
+                        psr.delete()
+                    }
                 }
             }
 
             if (params.positionType) {
                 params.list('positionType').each {
-                    PersonRole personRole
                     RefdataValue positionType = RefdataValue.get(it)
-                    personRole = new PersonRole(prs: personInstance, positionType: positionType, org: personRoleOrg)
+                    Map<String, Object> configMap = [prs: personInstance, positionType: positionType]
+                    if(personRoleOrg)
+                        configMap.org = personRoleOrg
+                    else if(personRoleProvider)
+                        configMap.provider = personRoleProvider
+                    else if(personRoleVendor)
+                        configMap.vendor = personRoleVendor
+                    PersonRole personRole = PersonRole.findWhere(configMap)
 
-                    if (PersonRole.findWhere(prs: personInstance, org: personRoleOrg, positionType: positionType)) {
-                        log.debug("ignore adding PersonRole because of existing duplicate")
-                    }
-                    else if (personRole) {
+                    if (!personRole) {
+                        personRole = new PersonRole(configMap)
                         if (personRole.save()) {
                             log.debug("adding PersonRole ${personRole}")
                         }
@@ -333,33 +403,37 @@ class PersonController  {
                             log.error("problem saving new PersonRole ${personRole}")
                         }
                     }
+                    else {
+                        log.debug("ignore adding PersonRole because of existing duplicate")
+                    }
                 }
 
             }
 
-            personInstance.getPersonRoleByOrg(personRoleOrg).each { psr ->
-                if (psr.positionType && !(psr.positionType.id.toString() in params.list('positionType'))) {
-                    personInstance.removeFromRoleLinks(psr)
-                    psr.delete()
-                }
-            }
-
+            Set<Long> toDelete = []
             personInstance.contacts.each { contact ->
-                if (params."content${contact.id}") {
-                    contact.content = params."content${contact.id}"
-                    contact.save()
+                if (!params.containsKey('contact'+contact.id)) {
+                    toDelete << contact.id
                 }
-                if (params."contactLang${contact.id}") {
-                    contact.language = RefdataValue.get(params."contactLang${contact.id}")
-                    contact.save()
+                else {
+                    if (params."content${contact.id}") {
+                        contact.content = params."content${contact.id}"
+                        contact.save()
+                    }
+                    if (params."contactLang${contact.id}") {
+                        contact.language = RefdataValue.get(params."contactLang${contact.id}")
+                        contact.save()
+                    }
                 }
             }
+
+            Contact.executeUpdate('delete from Contact c where c.id in (:ids)', [ids: toDelete])
 
             if (params.content) {
                 params.list('content').eachWithIndex { content, i ->
                     if (content) {
                         RefdataValue rdvCT = RefdataValue.get(params.list('contentType.id')[i])
-                        RefdataValue contactLang = params['contactLang.id'][i] ? RefdataValue.get(params['contactLang.id'][i]) : null
+                        RefdataValue contactLang = params.list('contactLang.id')[i] ? RefdataValue.get(params.list('contactLang.id')[i]) : null
                         if (RDStore.CCT_EMAIL == rdvCT) {
                             if (!formService.validateEmailAddress(content)) {
                                 flash.error = message(code: 'contact.create.email.error') as String

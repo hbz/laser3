@@ -33,7 +33,7 @@
     </g:if>
 </g:if>
 
-<div class="ui card la-dl-no-table la-js-hideable">
+<div class="ui card la-dl-no-table">
 
 <%-- grouped custom properties --%>
 
@@ -100,7 +100,7 @@
 
 <%-- orphaned properties --%>
 
-    <%--<div class="ui card la-dl-no-table la-js-hideable">--%>
+    <%--<div class="ui card la-dl-no-table">--%>
     <div class="content">
         <h5 class="ui header">
             <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">
@@ -130,7 +130,7 @@
 
 <%-- private properties --%>
 
-<div class="ui card la-dl-no-table la-js-hideable">
+<div class="ui card la-dl-no-table">
     <div class="content">
         <h2 class="ui header">${message(code:'license.properties.private')} ${contextOrg.name}</h2>
         <g:set var="propertyWrapper" value="private-property-wrapper-${contextOrg.id}" />

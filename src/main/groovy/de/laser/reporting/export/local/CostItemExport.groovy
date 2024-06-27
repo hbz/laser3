@@ -178,7 +178,7 @@ class CostItemExport extends BaseDetailsExport {
 //                    content.add( subscrOr.collect{ it.org.name + ( it.org.sortname ? ' (' + it.org.sortname +')' : '')}.join( CSV_VALUE_SEPARATOR ) )
 //                }
                 else if (key == '@-cost-package') {
-                    de.laser.Package pkg = ci.subPkg?.pkg
+                    de.laser.Package pkg = ci.pkg
                     if (pkg) {
                         content.add(pkg.toString())
                     } else {

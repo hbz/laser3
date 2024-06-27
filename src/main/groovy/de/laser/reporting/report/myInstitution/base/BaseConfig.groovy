@@ -4,14 +4,14 @@ import de.laser.ContextService
 import de.laser.License
 import de.laser.Org
 import de.laser.Package
+import de.laser.PackageVendor
 import de.laser.Platform
+import de.laser.Provider
 import de.laser.RefdataCategory
 import de.laser.Subscription
 import de.laser.SubscriptionsQueryService
 import de.laser.auth.Role
-import de.laser.storage.BeanStore
-import de.laser.storage.RDConstants
-import de.laser.storage.RDStore
+import de.laser.helper.Icons
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.config.CostItemXCfg
@@ -22,8 +22,13 @@ import de.laser.reporting.report.myInstitution.config.OrganisationConsCfg
 import de.laser.reporting.report.myInstitution.config.OrganisationInstCfg
 import de.laser.reporting.report.myInstitution.config.PackageXCfg
 import de.laser.reporting.report.myInstitution.config.PlatformXCfg
+import de.laser.reporting.report.myInstitution.config.ProviderXCfg
 import de.laser.reporting.report.myInstitution.config.SubscriptionConsCfg
 import de.laser.reporting.report.myInstitution.config.SubscriptionInstCfg
+import de.laser.reporting.report.myInstitution.config.VendorXCfg
+import de.laser.storage.BeanStore
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
@@ -31,6 +36,11 @@ import org.springframework.context.MessageSource
 
 import java.time.Year
 
+/**
+ * This class contains general methods for retrieving configuration parameters.
+ * It is moreover the base class for the detailed object configuration, containing parameters for data sources and display.
+ * The subclasses are not annotated in detail!
+ */
 @Slf4j
 class BaseConfig {
 
@@ -43,7 +53,9 @@ class BaseConfig {
     static String KEY_ORGANISATION              = 'organisation'
     static String KEY_PACKAGE                   = 'package'
     static String KEY_PLATFORM                  = 'platform'
+    static String KEY_PROVIDER                  = 'provider'
     static String KEY_SUBSCRIPTION              = 'subscription'
+    static String KEY_VENDOR                    = 'vendor'
 
     static String FILTER_PREFIX                 = 'filter:'
     static String FILTER_SOURCE_POSTFIX         = '_source'
@@ -70,13 +82,18 @@ class BaseConfig {
     static String CI_GENERIC_STARTDATE_LIMIT    = 'startDateLimit'
     static String CI_GENERIC_SUBJECT_GROUP      = 'subjectGroup'
 
+    static String CI_GENERIC_INVOICING_FORMAT     = 'electronicBillings'
+    static String CI_GENERIC_INVOICING_DISPATCH   = 'invoiceDispatchs'
+
     static String CI_GENERIC_IE_STATUS                  = 'issueEntitlement$status'     // IE
-    static String CI_GENERIC_PACKAGE_OR_PROVIDER        = 'package$orgRole$provider'    // IE, PKG
+//    static String CI_GENERIC_PACKAGE_OR_PROVIDER        = 'package$orgRole$provider'    // IE, PKG
     static String CI_GENERIC_PACKAGE_PLATFORM           = 'package$platform'            // IE, PKG
-    static String CI_GENERIC_PACKAGE_STATUS             = 'package$packageStatus'       // IE, PKG, PLT
+    static String CI_GENERIC_PACKAGE_PACKAGESTATUS      = 'package$packageStatus'       // IE, PKG, PLT
+    static String CI_GENERIC_PACKAGE_PROVIDER           = 'package$provider'            // PKG
+    static String CI_GENERIC_PACKAGE_VENDOR             = 'package$vendor'              // PKG
     static String CI_GENERIC_PLATFORM_SERVICEPROVIDER   = 'platform$serviceProvider'    // PLT
     static String CI_GENERIC_PLATFORM_SOFTWAREPROVIDER  = 'platform$softwareProvider'   // PLT
-    static String CI_GENERIC_PLATFORM_ORG               = 'platform$org'                // PLT
+    static String CI_GENERIC_PLATFORM_PROVIDER          = 'platform$provider'           // PLT
     static String CI_GENERIC_SUBSCRIPTION_STATUS        = 'subscription$status'         // PKG, PLT, IE
 
     static String CI_CTX_PROPERTY_KEY           = 'propertyKey'
@@ -85,13 +102,49 @@ class BaseConfig {
     static String CI_CTX_IE_SUBSCRIPTION        = 'issueEntitlement$subscription'       // IE
 
     static List<String> FILTER = [
-            KEY_ORGANISATION, KEY_SUBSCRIPTION, KEY_LICENSE, KEY_PACKAGE, KEY_PLATFORM //, KEY_ISSUEENTITLEMENT // 'costItem'
+            KEY_SUBSCRIPTION,
+            KEY_LICENSE,
+            KEY_PROVIDER,
+            KEY_VENDOR,
+            KEY_PLATFORM,
+            KEY_PACKAGE,
+            KEY_ORGANISATION,
+            // KEY_ISSUEENTITLEMENT,
+            // 'costItem'
     ]
 
     static List<String> CHARTS = [
-            CHART_BAR, CHART_PIE
+            CHART_BAR,
+            CHART_PIE
     ]
 
+    static Map<String, Object> GENERIC_PROVIDER_QUERY_DEFAULT = [
+        provider : [
+            'provider-paperInvoice' :                       [ 'generic.provider.paperInvoice' ],
+            'provider-managementOfCredits' :                [ 'generic.provider.managementOfCredits' ],
+            'provider-processingOfCompensationPayments' :   [ 'generic.provider.processingOfCompensationPayments' ],
+            'provider-individualInvoiceDesign' :            [ 'generic.provider.individualInvoiceDesign' ],
+            'provider-status' :                             [ 'generic.provider.status' ],
+            'provider-*' :                                  [ 'generic.all' ]
+        ]
+    ]
+
+    static Map<String, Object> GENERIC_VENDOR_QUERY_DEFAULT = [
+        vendor : [
+            'vendor-paperInvoice' :                         [ 'generic.vendor.paperInvoice' ],
+            'vendor-managementOfCredits' :                  [ 'generic.vendor.managementOfCredits' ],
+            'vendor-processingOfCompensationPayments' :     [ 'generic.vendor.processingOfCompensationPayments' ],
+            'vendor-individualInvoiceDesign' :              [ 'generic.vendor.individualInvoiceDesign' ],
+            'vendor-status' :                               [ 'generic.vendor.status' ],
+            'vendor-*' :                                    [ 'generic.all' ],
+        ]
+    ]
+
+    /**
+     * Determines the configuration class for the given object type key
+     * @param key the object type key
+     * @return the appropriate configuration {@link Class}
+     */
     static Class getCurrentConfigClass(String key) {
 
         if (key == KEY_COSTITEM) { CostItemXCfg }
@@ -106,31 +159,49 @@ class BaseConfig {
         }
         else if (key == KEY_PACKAGE) { PackageXCfg }
         else if (key == KEY_PLATFORM) { PlatformXCfg }
+        else if (key == KEY_PROVIDER) { ProviderXCfg }
         else if (key == KEY_SUBSCRIPTION) {
             if (BaseDetailsExport.ctxConsortium()) { SubscriptionConsCfg }
             else if (BaseDetailsExport.ctxInst()) { SubscriptionInstCfg }
         }
+        else if (key == KEY_VENDOR) { VendorXCfg }
     }
 
+    /**
+     * Gets for the given object type the configuration details
+     * @param key the object type to which the configuration table should be retrieved
+     * @return the configuration details map
+     */
     static Map<String, Map> getCurrentConfigDetailsTable(String key) {
         Class config = getCurrentConfigClass(key)
 
-        if (config && config.getDeclaredFields().collect { it.getName() }.contains('CMB_ES_DT_CONFIG')) {
-            config.CMB_ES_DT_CONFIG.subMap( config.CMB_ES_DT_CONFIG.findResults { it.value.containsKey('dtc') ? it.key : null } )
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('CONFIG_DTC_ES')) {
+            config.CONFIG_DTC_ES.subMap( config.CONFIG_DTC_ES.findResults { it.value.containsKey('dtc') ? it.key : null } )
         } else {
             [:]
         }
     }
+
+    /**
+     * Gets for the given object type the configuration about the data to be retrieved from an ElasticSearch index
+     * @param key the object type for which the configuration should be retrieved
+     * @return the ElasticSeach data configuration map
+     */
     static Map<String, Map> getCurrentConfigElasticsearchData(String key) {
         Class config = getCurrentConfigClass(key)
 
-        if (config && config.getDeclaredFields().collect { it.getName() }.contains('CMB_ES_DT_CONFIG')) {
-            config.CMB_ES_DT_CONFIG.subMap( config.CMB_ES_DT_CONFIG.findResults { it.value.containsKey('es') ? it.key : null } )
+        if (config && config.getDeclaredFields().collect { it.getName() }.contains('CONFIG_DTC_ES')) {
+            config.CONFIG_DTC_ES.subMap( config.CONFIG_DTC_ES.findResults { it.value.containsKey('es') ? it.key : null } )
         } else {
             [:]
         }
     }
 
+    /**
+     * Gets the complete configuration for the given object
+     * @param key the object type key
+     * @return the entire config map for the given object
+     */
     static Map<String, Object> getCurrentConfig(String key) {
         Class config = getCurrentConfigClass(key)
 
@@ -141,11 +212,16 @@ class BaseConfig {
         }
     }
 
+    /**
+     * Gets the current object configuration from the given filter key
+     * @param filter the filter key for which the configuration should be retrieved
+     * @return the matching object configuration map
+     */
     static Map<String, Object> getCurrentConfigByFilter(String filter) {
         Map<String, Object> cfg = [:]
         // println '|--- BaseConfig.getCurrentConfigByFilterAndPrefix( ' + filter + ' )'
 
-        if (filter in [ KEY_COSTITEM, KEY_ISSUEENTITLEMENT, KEY_LICENSE, KEY_ORGANISATION, KEY_PACKAGE, KEY_PLATFORM, KEY_SUBSCRIPTION ]) {
+        if (filter in [ KEY_COSTITEM, KEY_ISSUEENTITLEMENT, KEY_LICENSE, KEY_ORGANISATION, KEY_PACKAGE, KEY_PLATFORM, KEY_PROVIDER, KEY_SUBSCRIPTION, KEY_VENDOR ]) {
             cfg = getCurrentConfig( filter )
         }
         else if (filter in ['org']) {
@@ -157,38 +233,21 @@ class BaseConfig {
         cfg
     }
 
-//    static Map<String, Object> getCurrentConfigByPrefix(String prefix) {
-//        Map<String, Object> cfg = [:]
-//
-//        if (prefix in [ KEY_COSTITEM ]) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_COSTITEM )
-//        }
-//        else if (prefix in [ KEY_ISSUEENTITLEMENT ]) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_ISSUEENTITLEMENT )
-//        }
-//        else if (prefix in [ KEY_LICENSE, 'licensor' ]) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_LICENSE )
-//        }
-//        else if (prefix in ['org']) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_ORGANISATION )
-//        }
-//        else if (prefix in [ KEY_PACKAGE ]) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_PACKAGE )
-//        }
-//        else if (prefix in [ KEY_PLATFORM]) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_PLATFORM )
-//        }
-//        else if (prefix in [ KEY_SUBSCRIPTION, 'memberSubscription', 'member', 'consortium', 'provider', 'agency' ]) {
-//            cfg = getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION )
-//        }
-//
-//        cfg
-//    }
-
+    /**
+     * Substitution call for {@link #getCustomImplRefdata(java.lang.String, java.lang.Class)}, without configuration class
+     * @param key the object type key for which the reference data should be retrieved
+     * @return the reference data map containing the labels for the chart
+     */
     static Map<String, Object> getCustomImplRefdata(String key) {
         getCustomImplRefdata(key, null)
     }
 
+    /**
+     * Retrieves the reference data values in order to display the requested attribute on a chart
+     * @param key the object type key for which the reference data should be retrieved
+     * @param cfgClass the configuration class (= requested object type); determining the property definition type whose property definitions may be retrieved
+     * @return the reference data map containing the labels for the chart
+     */
     static Map<String, Object> getCustomImplRefdata(String key, Class cfgClass) {
 
         ContextService contextService = BeanStore.getContextService()
@@ -286,17 +345,17 @@ class BaseConfig {
                         ]}
             ]
         }
-        else if (key == CI_GENERIC_PACKAGE_OR_PROVIDER) {
-            return [
-                    label: messageSource.getMessage('default.provider.label', null, locale),
-                    from: Org.executeQuery('select distinct(org) from Org org join org.orgType ot where ot in (:otList)',
-                            [ otList: [RDStore.OT_PROVIDER] ]).collect{[
-                            id: it.id,
-                            value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
-                            value_en: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
-                    ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
-            ]
-        }
+//        else if (key == CI_GENERIC_PACKAGE_OR_PROVIDER) {
+//            return [
+//                    label: messageSource.getMessage('provider.label', null, locale),
+//                    from: Org.executeQuery('select distinct(org) from Org org join org.orgType ot where ot in (:otList)',
+//                            [ otList: [RDStore.OT_PROVIDER] ]).collect{[
+//                            id: it.id,
+//                            value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
+//                            value_en: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
+//                    ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
+//            ]
+//        }
         else if (key == CI_GENERIC_PACKAGE_PLATFORM) {
             return [
                     label: messageSource.getMessage('platform.label', null, locale),
@@ -308,16 +367,37 @@ class BaseConfig {
                     ]}
             ]
         }
-        else if (key == CI_GENERIC_PACKAGE_STATUS) {
+        else if (key == CI_GENERIC_PACKAGE_PACKAGESTATUS) {
             return [
                     label: messageSource.getMessage('reporting.cfg.query.package.package-packageStatus', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS)
             ]
         }
-        else if (key == CI_GENERIC_PLATFORM_ORG) {
+        else if (key == CI_GENERIC_PACKAGE_PROVIDER) {
             return [
-                    label: messageSource.getMessage('platform.provider', null, locale),
-                    from: Org.executeQuery('select distinct(org) from Platform plt join plt.org org').collect{[
+                    label: messageSource.getMessage('reporting.cfg.provider', null, locale),
+                    from: Provider.executeQuery('select distinct pro from Package pkg join pkg.provider pro').collect{[
+                            id: it.id,
+                            value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
+                            value_en: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
+                    ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
+            ]
+        }
+        else if (key == CI_GENERIC_PACKAGE_VENDOR) {
+            return [
+                    label: messageSource.getMessage('vendor', null, locale),
+                    from: PackageVendor.executeQuery('select distinct pv.vendor from PackageVendor pv').collect{[
+                            id: it.id,
+                            value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
+                            value_en: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
+                    ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
+            ]
+        }
+        else if (key == CI_GENERIC_PLATFORM_PROVIDER) {
+            return [
+//                    label: messageSource.getMessage('reporting.cfg.provider', null, locale),
+                    label: messageSource.getMessage('reporting.cfg.platformProvider', null, locale),
+                    from: Provider.executeQuery('select distinct pro from Platform plt join plt.provider pro').collect{[
                             id: it.id,
                             value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
                             value_en: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
@@ -340,6 +420,18 @@ class BaseConfig {
             return [
                     label: messageSource.getMessage('subscription.status.label', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)
+            ]
+        }
+        else if (key == CI_GENERIC_INVOICING_FORMAT) {
+            return [
+                    label: messageSource.getMessage('vendor.invoicing.formats.label', null, locale),
+                    from: RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_FORMAT)
+            ]
+        }
+        else if (key == CI_GENERIC_INVOICING_DISPATCH) {
+            return [
+                    label: messageSource.getMessage('vendor.invoicing.dispatch.label', null, locale),
+                    from: RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_DISPATCH)
             ]
         }
         else if (key == CI_CTX_PROPERTY_KEY) {
@@ -402,6 +494,11 @@ class BaseConfig {
         }
     }
 
+    /**
+     * Gets the reference data labels from the we:kb ElasticSearch API
+     * @param key the attribute key for which the labels should be retrieved
+     * @return a map containing the label and the reference data values for chart display
+     */
     static Map<String, Object> getElasticSearchRefdata(String key) {
 
         // println 'BaseConfig.getElasticSearchRefdata() ' + key
@@ -425,24 +522,52 @@ class BaseConfig {
         }
     }
 
+    /**
+     * Gets the label associated to the given token
+     * @param token the token to which the label should be retrieved
+     * @return the matching label from the message resource bundle
+     */
     static String getLabel(String token) {
         //println 'getConfigLabel(): ' + key
         MessageSource messageSource = BeanStore.getMessageSource()
         messageSource.getMessage(token, null, LocaleUtils.getCurrentLocale())
     }
 
+    /**
+     * Gets the config label for the given token
+     * @param token the token being queried
+     * @return the associated label
+     */
     static String getConfigLabel(def token) {
         getLabel('reporting.cfg.' + token)
     }
 
+    /**
+     * Gets the filter label for the given key
+     * @param key the key being queried
+     * @return the associated label
+     */
     static String getFilterLabel(String key) {
         getLabel('reporting.cfg.filter.' + key)
     }
 
+    /**
+     * Gets the source label for the given key and source
+     * @param key the key being queried
+     * @param source the source from which the request is coming
+     * @return the associated label
+     */
     static String getSourceLabel(String key, String source) {
         getLabel('reporting.cfg.source.' + key + '.' + source)
     }
 
+    /**
+     * Gets the label for the given key, query and value
+     * @param key the field key to be displayed
+     * @param qKey the query key specifying the key
+     * @param qValues the values set among which a generic value may be displayed
+     * @return the associated message key
+     */
     static String getQueryLabel(String key, String qKey, List qValues) {
         if (qValues[0].startsWith('generic')) {
             getLabel('reporting.cfg.' + qValues[0])
@@ -451,7 +576,28 @@ class BaseConfig {
         }
     }
 
+    /**
+     * Gets the distribution label matching to the given key and distribution
+     * @param key the field key to which the distribution should be retrieved
+     * @param dist the distribution value for which the label should be displayed
+     * @return the associated message key
+     */
     static String getDistributionLabel(String key, String dist) {
         getLabel('reporting.cfg.dist.' + key + '.' + dist)
+    }
+
+    static String getIcon(String objKey) {
+        String icon = 'question'
+
+             if (objKey == KEY_ISSUEENTITLEMENT){ icon = 'book' }
+        else if (objKey == KEY_LICENSE)         { icon = Icons.LICENSE }
+        else if (objKey == KEY_ORGANISATION)    { icon = Icons.ORG }
+        else if (objKey == KEY_PACKAGE)         { icon = Icons.PACKAGE }
+        else if (objKey == KEY_PLATFORM)        { icon = Icons.PLATFORM }
+        else if (objKey == KEY_PROVIDER)        { icon = Icons.PROVIDER }
+        else if (objKey == KEY_SUBSCRIPTION)    { icon = Icons.SUBSCRIPTION }
+        else if (objKey == KEY_VENDOR)          { icon = Icons.VENDOR }
+
+        icon
     }
 }

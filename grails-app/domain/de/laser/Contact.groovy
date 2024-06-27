@@ -21,8 +21,7 @@ class Contact implements Comparable<Contact>{
     public static final String PRIMARY = 'primary' //default language key for addressbook exports
 
     String content
-    Person prs            // person related contact; exclusive with org
-    Org    org            // org related contact; exclusive with prs
+    Person prs            // person related contact
 
     Date dateCreated
     Date lastUpdated
@@ -44,7 +43,6 @@ class Contact implements Comparable<Contact>{
         type        column:'ct_type_rv_fk'
         language    column:'ct_language_rv_fk'
         prs         column:'ct_prs_fk', index: 'ct_prs_idx'
-        org         column:'ct_org_fk', index: 'ct_org_idx'
 
         dateCreated column: 'ct_date_created'
         lastUpdated column: 'ct_last_updated'
@@ -54,7 +52,6 @@ class Contact implements Comparable<Contact>{
         content     (nullable:true)
         contentType (nullable:true)
         prs         (nullable:true)
-        org         (nullable:true)
         language    (nullable: true)
         lastUpdated (nullable: true)
     }

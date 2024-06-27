@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.storage.RDConstants; de.laser.utils.DateUtils; de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
 <laser:htmlStart message="subscription.details.compareSubMemberCostItems.label"/>
 
 <laser:serviceInjection/>
@@ -16,7 +16,7 @@
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" type="subscription"
-                     visibleOrgRelations="${visibleOrgRelations}">
+                     visibleProviders="${providerRoles}">
     <laser:render template="/subscription/iconSubscriptionIsChild"/>
 
     ${message(code: 'subscription.details.compareSubMemberCostItems.label')} ${message(code: 'default.for')} ${subscription}
@@ -129,8 +129,7 @@
     <g:set var="oldCostItemAfterTax" value="${0.0}"/>
 
     <g:set var="costItemElements"
-           value="${RefdataValue.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org', [org: institution])}"/>
-
+           value="${costItemsByCostItemElement.collect {RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT))}}"/>
 
 
 
@@ -155,13 +154,13 @@
             <th rowspan="3" class="center aligned la-no-uppercase">
                 <ui:multiYearIcon isConsortial="true"/>
             </th>
-            <th colspan="10" class="center aligned"><ui:select name="selectedCostItemElement"
+            <th colspan="10" class="center aligned"><ui:select name="selectedCostItemElementID"
                                                               from="${costItemElements}"
                                                               optionKey="id"
                                                               optionValue="value"
                                                               value="${selectedCostItemElementID}"
                                                               class="ui dropdown"
-                                                              id="selectedCostItemElement"/>
+                                                              id="selectedCostItemElementID"/>
             </th>
             <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
                 <th class="la-action-info" scope="col" rowspan="3"><g:message code="default.actions.label"/></th>
@@ -254,7 +253,7 @@
                                         minFractionDigits="2"
                                         maxFractionDigits="2" type="number"/>
 
-                        ${(costItemParticipantSub.billingCurrency?.getI10n('value')?.split('-')).first()}
+                        ${costItemParticipantSub.billingCurrency?.getI10n('value')}
                         <g:set var="sumOldCostInBillingCurrency"
                                value="${sumOldCostInBillingCurrency + costItemParticipantSub.costInBillingCurrency ?: 0}"/>
 
@@ -291,7 +290,7 @@
                                 minFractionDigits="2"
                                 maxFractionDigits="2" type="number"/>
 
-                        ${(costItemParticipantSub.billingCurrency?.getI10n('value')?.split('-')).first()}
+                        ${costItemParticipantSub.billingCurrency?.getI10n('value')}
                         <g:set var="sumOldCostInBillingCurrencyAfterTax"
                                value="${sumOldCostInBillingCurrencyAfterTax + costItemParticipantSub.costInBillingCurrencyAfterTax ?: 0}"/>
                         <g:set var="oldCostItemAfterTax"
@@ -337,7 +336,7 @@
                                         minFractionDigits="2"
                                         maxFractionDigits="2" type="number"/>
 
-                        ${(costItemParticipantSub.billingCurrency?.getI10n('value')?.split('-')).first()}
+                        ${costItemParticipantSub.billingCurrency?.getI10n('value')}
                         <g:set var="sumNewCostInBillingCurrency"
                                value="${sumNewCostInBillingCurrency + costItemParticipantSub.costInBillingCurrency ?: 0}"/>
 
@@ -381,7 +380,7 @@
                                 minFractionDigits="2"
                                 maxFractionDigits="2" type="number"/>
 
-                        ${(costItemParticipantSub.billingCurrency?.getI10n('value')?.split('-')).first()}
+                        ${costItemParticipantSub.billingCurrency?.getI10n('value')}
                         <g:set var="sumNewCostInBillingCurrencyAfterTax"
                                value="${sumNewCostInBillingCurrencyAfterTax + costItemParticipantSub.costInBillingCurrencyAfterTax ?: 0}"/>
 
@@ -518,9 +517,9 @@
                     })
                 });
 
-         $('#selectedCostItemElement').on('change', function() {
-            var selectedCostItemElement = $("#selectedCostItemElement").val()
-            var url = "<g:createLink controller="${controllerName}" action="${actionName}" id="${params.id}"/>?selectedCostItemElement="+selectedCostItemElement;
+         $('#selectedCostItemElementID').on('change', function() {
+            var selectedCostItemElementID = $(this).val()
+            var url = "<g:createLink controller="${controllerName}" action="${actionName}" id="${params.id}"/>?selectedCostItemElementID="+selectedCostItemElementID;
             location.href = url;
          });
     </laser:script>

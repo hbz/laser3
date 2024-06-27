@@ -3,7 +3,7 @@ package de.laser
 import de.laser.annotations.Check404
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
-import de.laser.custom.CustomWkhtmltoxService
+import de.laser.helper.Params
 import de.laser.utils.LocaleUtils
 import de.laser.storage.RDConstants
 import de.laser.properties.LicenseProperty
@@ -15,6 +15,7 @@ import de.laser.helper.Profiler
 import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinitionGroup
+import de.laser.utils.PdfUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -33,11 +34,9 @@ class LicenseController {
     ContextService contextService
     CopyElementsService copyElementsService
     CustomerTypeService customerTypeService
-    CustomWkhtmltoxService wkhtmltoxService
     DeletionService deletionService
     DocstoreService docstoreService
     EscapeService escapeService
-    ExecutorWrapperService executorWrapperService
     FilterService filterService
     FormService formService
     GenericOIDService genericOIDService
@@ -163,22 +162,10 @@ class LicenseController {
             result.documents = docstoreService.getDocumentsForExport((Org) result.institution, (License) result.license)
             result.notes = docstoreService.getNotesForExport((Org) result.institution, (License) result.license)
 
-            Map<String, Object> pageStruct = [
-                    width       : 85,
-                    height      : 35,
-                    pageSize    : 'A4',
-                    orientation : 'Portrait'
-            ]
-            result.struct = [pageStruct.width, pageStruct.height, pageStruct.pageSize + ' ' + pageStruct.orientation]
-            byte[] pdf = wkhtmltoxService.makePdf(
-                    view: customerTypeService.getCustomerTypeDependingView('/license/licensePdf'),
-                    model: result,
-                    pageSize: pageStruct.pageSize,
-                    orientation: pageStruct.orientation,
-                    marginLeft: 10,
-                    marginRight: 10,
-                    marginTop: 15,
-                    marginBottom: 15
+            byte[] pdf = PdfUtils.getPdf(
+                    result,
+                    PdfUtils.PORTRAIT_FIXED_A4,
+                    customerTypeService.getCustomerTypeDependingView('/license/licensePdf')
             )
             response.setHeader('Content-disposition', 'attachment; filename="'+ escapeService.escapeString(result.license.dropdownNamingConvention()) +'.pdf"')
             response.setContentType('application/pdf')
@@ -307,7 +294,7 @@ class LicenseController {
                         linkPossible = s._getCalculatedType() == CalculatedType.TYPE_LOCAL
                     }
                     else {
-                        linkPossible = institution.isCustomerType_Consortium()
+                        linkPossible = result.institution.isCustomerType_Consortium()
                     }
                     if(linkPossible)
                         subscriptionService.setOrgLicRole(s,newLicense,unlink)
@@ -362,7 +349,10 @@ class LicenseController {
         result.subscriptionsForFilter = []
 
         if(params.status) {
-            result.subscriptionsForFilter.addAll(Subscription.executeQuery("select l.destinationSubscription from Links l join l.destinationSubscription s where s.status.id = :status and l.sourceLicense = :lic and l.linkType = :linkType" , [status:params.status as Long, lic:result.license, linkType:RDStore.LINKTYPE_LICENSE] ))
+            result.subscriptionsForFilter.addAll(
+                    Subscription.executeQuery("select l.destinationSubscription from Links l join l.destinationSubscription s where s.status.id = :status and l.sourceLicense = :lic and l.linkType = :linkType",
+                    [status:params.long('status'), lic:result.license, linkType:RDStore.LINKTYPE_LICENSE]
+            ))
         }
         else {
             result.subscriptionsForFilter.addAll(Subscription.executeQuery("select l.destinationSubscription from Links l where l.sourceLicense = :lic and l.linkType = :linkType" , [lic:result.license, linkType:RDStore.LINKTYPE_LICENSE] ))
@@ -422,9 +412,6 @@ class LicenseController {
             List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
             Set<Subscription> subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] )
             //HQL does not support sorting on subquery results nor limits
-            if(params.sort == 'providerAgency') {
-                subscriptions = Subscription.executeQuery("select oo.sub from OrgRole oo join oo.org providerAgency where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency) order by providerAgency.name "+params.order, [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
-            }
             if(params.subscription) {
                 result.subscriptions = []
                 List subIds = params.list("subscription")
@@ -481,8 +468,8 @@ class LicenseController {
                 }
             }
             if(params.subscription) {
-                List<String> subFilter = params.list("subscription")
-                subscriptions.removeAll { Subscription s -> !subFilter.contains(s.id.toString()) }
+                List<Long> subFilter = Params.getLongList(params, 'subscription')
+                subscriptions.removeAll { Subscription s -> !subFilter.contains(s.id) }
             }
             filteredMemberLicenses << [license:memberLicense,subs:subscriptions.size()]
             //}
@@ -554,13 +541,18 @@ class LicenseController {
         tmpParams.remove("offset")
         if (contextService.getOrg().isCustomerType_Consortium())
             tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-        Map<String,Object> fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
+
+        FilterService.Result fsr = filterService.getOrgComboQuery(tmpParams, result.institution as Org)
+        if (fsr.isFilterSet) { tmpParams.filterSet = true }
 
         if (tmpParams.filterPropDef) {
-            fsq = propertyService.evalFilterQuery(tmpParams, fsq.query, 'o', fsq.queryParams)
+            Map<String, Object> efq = propertyService.evalFilterQuery(tmpParams, fsr.query, 'o', fsr.queryParams)
+            fsr.query = efq.query
+            fsr.queryParams = efq.queryParams as Map<String, Object>
         }
-        fsq.query = fsq.query.replaceFirst("select o from ", "select o.id from ")
-        Org.executeQuery(fsq.query, fsq.queryParams, tmpParams)
+
+        fsr.query = fsr.query.replaceFirst("select o from ", "select o.id from ")
+        Org.executeQuery(fsr.query, fsr.queryParams, tmpParams)
     }
 
     /**

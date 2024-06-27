@@ -29,7 +29,7 @@
 
     <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyProperty.all.label')}
 
-        <i class="question circle icon la-popup"></i>
+        <i class="grey question circle icon la-popup"></i>
 
         <div class="ui popup">
             <i class="shield alternate icon"></i> = ${message(code: 'subscription.properties.my')}
@@ -98,7 +98,7 @@
                 </td>
                 <td class="x">
                     <g:if test="${property.countUsages() == 0 && property?.tenant?.id == institution?.id}">
-                        <g:link action="deleteSurveyProperty" id="${params.id}" params="[deleteId: property?.id]"
+                        <g:link action="actionsForSurveyProperty" id="${params.id}" params="[deleteId: property?.id, actionForSurveyProperty: 'deleteSurveyProperty']"
                                 class="ui icon negative button js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [property.getI10n('name')])}"
                                 data-confirm-term-how="delete"
@@ -116,7 +116,7 @@
 
 <ui:modal id="createSurveyPropertyModal" message="surveyProperty.create_new.label">
 
-    <g:form class="ui form" action="createSurveyProperty" method="post" params="[surveyInfo: surveyInfo?.id]">
+    <g:form class="ui form" action="actionsForSurveyProperty" method="post" params="[surveyInfo: surveyInfo?.id, actionForSurveyProperty: 'createSurveyProperty']">
 
         <div class="field">
             <label for="pd_name" class="property-label">Name</label>

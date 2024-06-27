@@ -22,7 +22,7 @@
             break
         case 'provider':
             lookupName = "lookupProvidersAgencies"
-            instanceType = message(code:"default.provider.label")
+            instanceType = message(code:"provider.label")
             break
     }
 %>

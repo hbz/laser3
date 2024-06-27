@@ -196,6 +196,9 @@ grails:
                 defaultTargetUrl: '/home/index'
                 logout:
                     afterLogoutUrl: '/'
+#            failureHandler:
+#                ajaxAuthFailUrl: '/login/authfail?ajax=true'
+#                defaultFailureUrl: '/login/authfail?login_error=1'
             logout:
                 postOnly: false
             controllerAnnotations:

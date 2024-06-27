@@ -2,6 +2,7 @@ package de.laser.finance
 
 import de.laser.IssueEntitlement
 import de.laser.IssueEntitlementGroup
+import de.laser.Package
 import de.laser.survey.SurveyOrg
 import de.laser.Org
 import de.laser.RefdataValue
@@ -54,9 +55,13 @@ class CostItem extends AbstractBase
 
     Org owner
     Subscription sub // NOT set if surveyOrg (exclusive)
+
+    @Deprecated
     SubscriptionPackage subPkg // only set if sub
+
     IssueEntitlement issueEntitlement // only set if sub
     SurveyOrg surveyOrg // NOT set if sub (exclusive)
+    Package pkg // only set if sub
     Order order
     Invoice invoice
     IssueEntitlementGroup issueEntitlementGroup // only set if sub
@@ -122,6 +127,7 @@ class CostItem extends AbstractBase
         sub             column: 'ci_sub_fk',        index: 'ci_sub_idx'
         owner           column: 'ci_owner',         index: 'ci_owner_idx'
         subPkg          column: 'ci_sub_pkg_fk'
+        pkg             column: 'ci_pkg_fk'
         issueEntitlement    column: 'ci_e_fk',      index: 'ci_e_idx' //the index is needed for deletion checks of issue entitlements where each foreign key is being checked
         surveyOrg       column: 'ci_surorg_fk'
         order           column: 'ci_ord_fk'
@@ -163,9 +169,18 @@ class CostItem extends AbstractBase
                 if (obj.subPkg.subscription.id != obj.sub.id) return ['subscriptionPackageMismatch']
             }
         })
+        pkg  (nullable: true, validator: { val, obj ->
+            if (!obj.surveyOrg) {
+                SubscriptionPackage subscriptionPackage = SubscriptionPackage.findBySubscriptionAndPkg(obj.sub, obj.pkg)
+                if (subscriptionPackage) {
+                    if (subscriptionPackage.subscription.id != obj.sub.id) return ['subscriptionPackageMismatch']
+                }
+            }
+        })
+
         issueEntitlement(nullable: true, validator: { val, obj ->
             if (obj.issueEntitlement) {
-                if (!obj.subPkg || (obj.issueEntitlement.tipp.pkg.gokbId != obj.subPkg.pkg.gokbId)) return ['issueEntitlementNotInPackage']
+                if (!obj.pkg || (obj.issueEntitlement.tipp.pkg.gokbId != obj.pkg.gokbId)) return ['issueEntitlementNotInPackage']
             }
         })
         surveyOrg       (nullable: true)
@@ -241,8 +256,9 @@ class CostItem extends AbstractBase
     //needs to be def because of GORM magic, looking for a database mapping ...
     def getCostInLocalCurrencyAfterTax() {
         Double result = ( costInLocalCurrency ?: 0.0 ) * ( taxKey ? ((taxKey.taxRate/100) + 1) : 1.0 )
-
-        finalCostRounding ? result.round(0) : result.round(2)
+        if(currencyRate > 0)
+            finalCostRounding ? result.round(0) : result.round(2)
+        else null
     }
 
     /**

@@ -1,6 +1,8 @@
 <%@ page import="de.laser.Platform; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.CustomerTypeService" %>
 <laser:serviceInjection />
 <!-- _properties -->
+%{--
+deactivated as of ERMS-4837
 
 <g:set var="availPropDefGroups" value="${PropertyDefinitionGroup.getAvailableGroups(contextOrg, Platform.class.name)}" />
 
@@ -16,13 +18,13 @@
 
 </ui:modal>
 
-<div class="ui card la-dl-no-table la-js-hideable">
+<div class="ui card la-dl-no-table">
 
     <g:set var="allPropDefGroups" value="${platform.getCalculatedPropDefGroups(contextOrg)}" />
 
 <%-- orphaned properties --%>
 
-    <%--<div class="ui card la-dl-no-table la-js-hideable">--%>
+    <%--<div class="ui card la-dl-no-table">--%>
     <div class="content">
         <h2 class="ui header">
             <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">
@@ -48,6 +50,7 @@
     </laser:script>
 
 </div><!-- .card -->
+--}%
 
 <%-- private properties --%>
 <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()}">

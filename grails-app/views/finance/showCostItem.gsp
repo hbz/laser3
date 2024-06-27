@@ -13,7 +13,7 @@
     ${g.message(code: "financials.editCost")}:
     <g:if test="${costItem.sub}">
         <div class="ui orange label">
-            <strong>${costItem.sub.getSubscriber()}</strong>
+            <strong>${costItem.sub.getSubscriberRespConsortia()}</strong>
         </div>
     </g:if>
     <g:elseif test="${costItem.surveyOrg}">

@@ -23,6 +23,7 @@ class LicenseControllerService {
     ContextService contextService
     DocstoreService docstoreService
     LinksGenerationService linksGenerationService
+    LicenseService licenseService
     TaskService taskService
     WorkflowService workflowService
 
@@ -82,6 +83,7 @@ class LicenseControllerService {
         result.contextCustomerType = result.institution.getCustomerType()
         result.license         = License.get(params.id)
         result.licenseInstance = result.license
+        result.inContextOrg = (result.institution.id in result.license.getAllLicensee().id || (!result.license.instanceOf && result.institution.id == result.license.getLicensingConsortium()?.id))
 
         if(result.license.instanceOf)
             result.auditConfigs = auditService.getAllAuditConfigs(result.license.instanceOf)
@@ -92,9 +94,9 @@ class LicenseControllerService {
         result.navNextLicense = links.nextLink
         // restrict visible for templates/links/orgLinksAsList - done by Andreas Gálffy
         String i10value = LocaleUtils.getLocalizedAttributeName('value')
-        result.visibleOrgRelations = OrgRole.executeQuery(
-                "select oo from OrgRole oo where oo.lic = :license and oo.org != :context and oo.roleType not in (:roleTypes) order by oo.roleType." + i10value + " asc, oo.org.sortname asc, oo.org.name asc",
-                [license:result.license,context:result.institution,roleTypes:[RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]]
+        result.visibleProrivers = OrgRole.executeQuery(
+                "select pr from ProviderRole pr join pr.provider p where pr.license = :license order by p.sortname",
+                [license:result.license]
         )
 
         result.showConsortiaFunctions = showConsortiaFunctions(result.license)
@@ -123,6 +125,9 @@ class LicenseControllerService {
                 return null
             }
         }
+
+        result.visibleProviders = licenseService.getVisibleProviders(result.license)
+        result.visibleVendors = licenseService.getVisibleVendors(result.license)
 
         result
     }

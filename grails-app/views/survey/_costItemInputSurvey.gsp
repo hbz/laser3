@@ -3,7 +3,7 @@
 
 <g:hiddenField name="shortcode" value="${contextService.getOrg().shortcode}"/>
 <g:if test="${setting == 'bulkForAll'}">
-    <g:hiddenField name="surveyConfig" value="${surveyConfig.class.getName()}:${surveyConfig.id}"/>
+    <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
     <g:hiddenField name="surveyOrgs" value="${surveyOrgList.join(",")}"/>
 </g:if>
 <g:else>
@@ -14,6 +14,7 @@
         <g:hiddenField name="surveyOrg" value="${surveyOrg.class.getName()}:${surveyOrg.id}"/>
     </g:if>
 </g:else>
+<g:hiddenField name="selectedPkg" value="${selectedPkg}"/>
 
 <div class="fields la-forms-grid">
     <div class="eight wide field">
@@ -23,6 +24,15 @@
         </div><!-- .field -->
 
     </div>
+
+
+
+    <g:if test="${costItem}">
+        <g:set var="selectedCostItemElementID" value="${costItem.costItemElement?.id}"/>
+    </g:if>
+    <g:else>
+        <g:set var="selectedCostItemElementID" value="${selectedCostItemElementID}"/>
+    </g:else>
 
     <div class="eight wide field">
         <div class="two fields la-fields-no-margin-button">
@@ -135,6 +145,25 @@
     </fieldset> <!-- 1/2 field |  .la-account-currency -->
 
 </div><!-- three fields -->
+<g:if test="${selectedPkg}">
+    <div class="field ">
+        <div class="one fields la-forms-grid">
+            <fieldset class="sixteen wide field">
+                <div class="field">
+                    <label>${message(code: 'package.label')}</label>
+                    <g:if test="${surveyConfig.surveyPackages}">
+                        <g:select name="newPackage" id="newPackage_${idSuffix}" class="ui dropdown search"
+                                  from="${surveyConfig.surveyPackages}"
+                                  optionValue="${{ it.pkg.name }}"
+                                  optionKey="${{ it.pkg.id }}"
+                                  noSelection="${['': message(code: 'default.select.choose.label')]}"
+                                  value="${selectedPackageID}"/>
+                    </g:if>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</g:if>
 
 <div class="field ">
     <div class="two fields la-forms-grid">

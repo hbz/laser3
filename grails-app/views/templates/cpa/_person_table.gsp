@@ -1,5 +1,5 @@
 <%--  model: [persons, restrictToOrg] --%>
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.Org; de.laser.Person; de.laser.PersonRole; de.laser.I10nTranslation;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyOrg; de.laser.utils.LocaleUtils; de.laser.Org; de.laser.Provider; de.laser.Vendor; de.laser.Person; de.laser.PersonRole; de.laser.I10nTranslation;" %>
 
 <g:set var="languageSuffix" value="${LocaleUtils.getCurrentLang()}"/>
 
@@ -27,11 +27,16 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('showContacts') && showContacts}">
                 <col style="width: 277px;">
             </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyInvoicingInformation')}">
+                <col style="width:  118px;">
+            </g:if>
             <%--<g:if test="${tmplConfigItem.equalsIgnoreCase('showAddresses') && showAddresses}">
                 <col style="width: 332px;">
             </g:if>--%>
         </g:each>
-        <col style="width:  82px;">
+        <g:if test="${showOptions}">
+                <col style="width:  82px;">
+        </g:if>
     </colgroup>
     <thead>
     <tr>
@@ -44,7 +49,7 @@
                               title="${message(code: 'person.name.label')}"/>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('organisation')}">
-        <g:sortableColumn params="${params}" property="pr.org.sortname"
+        <g:sortableColumn params="${params}" property="sortname"
                           title="${message(code: 'person.organisation.label')}"/>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('function')}">
@@ -65,11 +70,16 @@
     <g:if test="${tmplConfigItem.equalsIgnoreCase('showContacts') && showContacts}">
             <th>${message(code: 'person.contacts.label')}</th>
     </g:if>
+    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyInvoicingInformation')}">
+        <th>${message(code: 'surveyOrg.person.selected')}</th>
+    </g:if>
     <%--<g:if test="${tmplConfigItem.equalsIgnoreCase('showAddresses') && showAddresses}">
             <th>${message(code: 'person.addresses.label')}</th>
     </g:if>--%>
 </g:each>
-        <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+        <g:if test="${showOptions}">
+            <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+        </g:if>
     </tr>
     </thead>
     <tbody>
@@ -77,16 +87,47 @@
 
     <%-- filter by model.restrictToOrg --%>
         <%
-            Set<PersonRole> pRoles = person.roleLinks.findAll { restrictToOrg ? (it.org == restrictToOrg) : it }?.sort { it.org.sortname }
+            Set<PersonRole> pRoles
+            if(restrictToOrg)
+                pRoles = person.roleLinks.findAll{ it.org == restrictToOrg }
+            else if(restrictToProvider)
+                pRoles = person.roleLinks.findAll{ it.provider == restrictToProvider }
+            else if(restrictToVendor)
+                pRoles = person.roleLinks.findAll{ it.vendor == restrictToVendor }
+            else pRoles = person.roleLinks.findAll()
+            pRoles.sort {
+                if(it.org)
+                    it.org.sortname
+                else if(it.provider)
+                    it.provider.sortname
+                else if(it.vendor)
+                    it.vendor.sortname
+            }
 
-            List<PersonRole> pRolesSorted = []
+            List<PersonRole> pRolesSorted = [], pProvRolesSorted = [], pVenRolesSorted = []
             int countFunctions = 0
 
             pRoles.each { item ->
-                if (item.functionType) {
-                    pRolesSorted.add(countFunctions++, item)
-                } else {
-                    pRolesSorted.push(item)
+                if(item.org) {
+                    if (item.functionType) {
+                        pRolesSorted.add(countFunctions++, item)
+                    } else {
+                        pRolesSorted.push(item)
+                    }
+                }
+                else if(item.provider) {
+                    if (item.functionType) {
+                        pProvRolesSorted.add(countFunctions++, item)
+                    } else {
+                        pProvRolesSorted.push(item)
+                    }
+                }
+                else if(item.vendor) {
+                    if (item.functionType) {
+                        pVenRolesSorted.add(countFunctions++, item)
+                    } else {
+                        pVenRolesSorted.push(item)
+                    }
                 }
             }
         %>
@@ -111,9 +152,29 @@
                         <g:set var="org" value="${Org.get(orgId.key)}"/>
                         <div class="ui item ">
                                 <div class="la-flexbox">
-                                    <i class="icon university la-list-icon"></i>
+                                    <i class="${Icons.ORG} icon la-list-icon"></i>
                                     <g:link controller="organisation" action="addressbook"
                                             id="${org.id}">${org.name} (${org.sortname})</g:link>
+                                </div>
+                        </div>
+                    </g:each>
+                    <g:each in="${pProvRolesSorted.groupBy  {it.provider.id}}" var="providerId">
+                        <g:set var="provider" value="${Provider.get(providerId.key)}"/>
+                        <div class="ui item ">
+                                <div class="la-flexbox">
+                                    <i class="${Icons.PROVIDER} icon la-list-icon"></i>
+                                    <g:link controller="provider" action="addressbook"
+                                            id="${provider.id}">${provider.name} (${provider.sortname})</g:link>
+                                </div>
+                        </div>
+                    </g:each>
+                    <g:each in="${pVenRolesSorted.groupBy  {it.vendor.id}}" var="venId">
+                        <g:set var="vendor" value="${Vendor.get(venId.key)}"/>
+                        <div class="ui item ">
+                                <div class="la-flexbox">
+                                    <i class="${Icons.VENDOR} icon la-list-icon"></i>
+                                    <g:link controller="vendor" action="addressbook"
+                                            id="${vendor.id}">${vendor.name} (${vendor.sortname})</g:link>
                                 </div>
                         </div>
                     </g:each>
@@ -131,6 +192,20 @@
                                     </div>
                                 </g:if>
                         </g:each>
+                        <g:each in="${pProvRolesSorted.sort{it.functionType?.getI10n('value')}}" var="role">
+                                <g:if test="${role.functionType}">
+                                    <div class="ui item ">
+                                        ${role.functionType.getI10n('value')}
+                                    </div>
+                                </g:if>
+                        </g:each>
+                        <g:each in="${pVenRolesSorted.sort{it.functionType?.getI10n('value')}}" var="role">
+                                <g:if test="${role.functionType}">
+                                    <div class="ui item ">
+                                        ${role.functionType.getI10n('value')}
+                                    </div>
+                                </g:if>
+                        </g:each>
                     </div>
                 </td>
             </g:if>
@@ -138,7 +213,14 @@
                 <td>
                     <%-- filter by model.restrictToOrg --%>
                     <div class="ui divided middle aligned list la-flex-list ">
-                        <g:each in="${pRolesSorted.sort{it.positionType?.getI10n('value')}}" var="role">
+                        <g:each in="${pProvRolesSorted.sort{it.positionType?.getI10n('value')}}" var="role">
+                                <g:if test="${role.positionType}">
+                                    <div class="ui item ">
+                                    ${role.positionType.getI10n('value')}
+                                    </div>
+                                </g:if>
+                        </g:each>
+                        <g:each in="${pVenRolesSorted.sort{it.positionType?.getI10n('value')}}" var="role">
                                 <g:if test="${role.positionType}">
                                     <div class="ui item ">
                                     ${role.positionType.getI10n('value')}
@@ -153,6 +235,26 @@
                     <%-- filter by model.restrictToOrg --%>
                     <div class="ui divided middle aligned list la-flex-list ">
                         <g:each in="${pRolesSorted.sort{it.functionType ? it.functionType?.getI10n('value') : it.positionType?.getI10n('value')}}" var="role">
+                            <div class="ui item ">
+                                <g:if test="${role.functionType}">
+                                    ${role.functionType.getI10n('value')}
+                                </g:if>
+                                <g:if test="${role.positionType}">
+                                    (${role.positionType.getI10n('value')})
+                                </g:if>
+                            </div>
+                        </g:each>
+                        <g:each in="${pProvRolesSorted.sort{it.functionType ? it.functionType?.getI10n('value') : it.positionType?.getI10n('value')}}" var="role">
+                            <div class="ui item ">
+                                <g:if test="${role.functionType}">
+                                    ${role.functionType.getI10n('value')}
+                                </g:if>
+                                <g:if test="${role.positionType}">
+                                    (${role.positionType.getI10n('value')})
+                                </g:if>
+                            </div>
+                        </g:each>
+                        <g:each in="${pVenRolesSorted.sort{it.functionType ? it.functionType?.getI10n('value') : it.positionType?.getI10n('value')}}" var="role">
                             <div class="ui item ">
                                 <g:if test="${role.functionType}">
                                     ${role.functionType.getI10n('value')}
@@ -178,6 +280,43 @@
                     </div>
                 </td>
             </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyInvoicingInformation')}">
+                <td>
+                        <g:if test="${editable && controllerName == 'myInstitution'}">
+                            <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndPerson(participant, surveyConfig, person)}">
+                                <g:link controller="myInstitution" action="setSurveyInvoicingInformation"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: false, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation']">
+                                    <i class="check bordered large green icon"></i>
+                                </g:link>
+                            </g:if>
+                            <g:else>
+                                <g:link controller="myInstitution" action="setSurveyInvoicingInformation"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: true, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation']">
+                                    <i class="close bordered large red icon"></i>
+                                </g:link>
+                            </g:else>
+                        </g:if>
+                        <g:elseif test="${editable && controllerName == 'survey'}">
+                            <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndPerson(participant, surveyConfig, person)}">
+                                <g:link controller="survey" action="evaluationParticipant"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: false, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', participant: participant.id]">
+                                    <i class="check bordered large green icon"></i>
+                                </g:link>
+                            </g:if>
+                            <g:else>
+                                <g:link controller="survey" action="evaluationParticipant"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: true, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', participant: participant.id]">
+                                    <i class="close bordered large red icon"></i>
+                                </g:link>
+                            </g:else>
+                        </g:elseif>
+                        <g:else>
+                            <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndPerson(participant, surveyConfig, person)}">
+                                    <i class="check bordered large green icon"></i>
+                            </g:if>
+                        </g:else>
+                </td>
+            </g:if>
             <%--<g:if test="${tmplConfigItem.equalsIgnoreCase('showAddresses') && showAddresses}">
                 <td>
                     <div class="ui divided middle aligned list la-flex-list ">
@@ -192,6 +331,7 @@
                 </td>
             </g:if>--%>
         </g:each>
+        <g:if test="${showOptions}">
             <td class="x">
                 <g:if test="${editable}">
                     <button type="button" onclick="JSPC.app.editPerson(${person.id})" class="ui icon button blue la-modern-button"
@@ -213,6 +353,7 @@
                     </g:form>
                 </g:if>
             </td>
+        </g:if>
         </tr>
     </g:each>
     </tbody>
@@ -221,7 +362,16 @@
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.editPerson = function (id) {
         //addresses deactivated as of ERMS-4492; the argument was showAddresses?:false
-        var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: false, showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
+        <%
+            Map<String, Object> urlParams = [showAddresses: false, showContacts: showContacts?:false]
+            if(restrictToOrg)
+                urlParams.org = restrictToOrg.id
+            else if(restrictToProvider)
+                urlParams.provider = restrictToProvider.id
+            else if(restrictToVendor)
+                urlParams.vendor = restrictToVendor.id
+        %>
+        var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="${urlParams}"/>&id='+id;
         JSPC.app.person_editModal(url)
     }
     JSPC.app.person_editModal = function (url) {

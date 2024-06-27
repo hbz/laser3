@@ -1,5 +1,12 @@
-<%@ page import="de.laser.remote.ApiSource; de.laser.storage.RDConstants; de.laser.Platform; de.laser.RefdataValue; de.laser.utils.DateUtils" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; de.laser.remote.ApiSource; de.laser.storage.RDConstants; de.laser.Platform; de.laser.RefdataValue; de.laser.utils.DateUtils;" %>
 <laser:htmlStart message="platform.details" />
+
+<ui:debugInfo>
+    <div style="padding: 1em 0;">
+        <p>platformInstance.dateCreated: ${platformInstance.dateCreated}</p>
+        <p>platformInstance.lastUpdated: ${platformInstance.lastUpdated}</p>
+    </div>
+</ui:debugInfo>
 
     <g:set var="entityName" value="${message(code: 'platform.label')}"/>
 
@@ -19,8 +26,6 @@
     <laser:render template="/templates/iconObjectIsMine" model="${[isMyPlatform: isMyPlatform]}"/>
 </ui:h1HeaderWithIcon>
 
-%{--<ui:cbItemMarkerAction platform="${platformInstance}"/>--}%
-
 <laser:render template="/templates/meta/identifier" model="${[object: platformInstance, editable: false]}"/>
 
 <ui:messages data="${flash}"/>
@@ -33,11 +38,15 @@
                     <div class="content">
                         <dl>
                             <dt>${message(code: 'platform.name')}</dt>
-                            <dd><ui:xEditable owner="${platformInstance}" field="name"/></dd>
+                            <dd><ui:xEditable owner="${platformInstance}" field="name" overwriteEditable="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}"/></dd>
                         </dl>
                         <dl>
                             <dt>${message(code: 'default.status.label')}</dt>
                             <dd>${platformInstance.status.getI10n("value")}</dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'platform.natstat.supplier')}</dt>
+                            <dd><ui:xEditable owner="${platformInstance}" field="natstatSupplierID" overwriteEditable="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}"/></dd>
                         </dl>
                     </div>
                 </div>
@@ -46,17 +55,17 @@
                         <dl>
                             <dt>${message(code: 'platform.provider')}</dt>
                             <dd>
-                                <g:if test="${platformInstance.org}">
-                                    <g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.name}</g:link>
+                                <g:if test="${platformInstance.provider}">
+                                    <g:link controller="provider" action="show" id="${platformInstance.provider.id}">${platformInstance.provider.name}</g:link>
                                 </g:if>
                             </dd>
                         </dl>
                         <dl>
                             <dt>${message(code: 'platform.primaryURL')}</dt>
                             <dd>
-                                <ui:xEditable owner="${platformInstance}" field="primaryUrl"/>
+                                <ui:xEditable owner="${platformInstance}" field="primaryUrl" overwriteEditable="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}"/>
                                 <g:if test="${platformInstance.primaryUrl}">
-                                    <a role="button" class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                    <a role="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
                                        href="${platformInstance.primaryUrl.startsWith('http') ? platformInstance.primaryUrl : 'http://' + platformInstance.primaryUrl}"
                                        target="_blank"><i class="external alternate icon"></i></a>
@@ -221,7 +230,7 @@
                     <table class="ui three column table">
                         <g:each in="${orgAccessPointList}" var="orgAccessPoint">
                             <tr>
-                                <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code: 'platform.accessPoint')}</th>
+                                <th scope="row" class="control-label">${message(code: 'platform.accessPoint')}</th>
                                 <td>
                                     <g:link controller="accessPoint" action="edit_${orgAccessPoint.oap.accessMethod.value.toLowerCase()}"  id="${orgAccessPoint.oap.id}">
                                         ${orgAccessPoint.oap.name}  (${orgAccessPoint.oap.accessMethod.getI10n('value')})

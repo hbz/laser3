@@ -6,6 +6,9 @@ import org.apache.commons.lang3.RandomStringUtils
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
+/**
+ * Helper class for managing user-password related tasks
+ */
 @CompileStatic
 class PasswordUtils {
 
@@ -26,6 +29,10 @@ class PasswordUtils {
 
     static final Pattern USER_PASSWORD_PATTERN = Pattern.compile(USER_PASSWORD_REGEX)
 
+    /**
+     * Collects all valid characters for a random password
+     * @return an array of chars containing the ranges defined in {@link #USER_PASSWORD_REGEX}
+     */
     static char[] getUserPasswordCharacters() {
         List<String> chars = []
 
@@ -37,6 +44,10 @@ class PasswordUtils {
         chars as char[]
     }
 
+    /**
+     * Creates a randomised initial user password
+     * @return a random sequence of chars serving as initial or reset password
+     */
     static String getRandomUserPassword() {
         String password = 'here we go'
         char[] range = getUserPasswordCharacters()
@@ -47,11 +58,19 @@ class PasswordUtils {
         password
     }
 
+    /**
+     * Checks if the user has submitted a valid new password
+     * @param password the user's input candidate
+     * @return true if the input matches the defined pattern, false otherwise
+     */
     static boolean isUserPasswordValid(final String password) {
         Matcher matcher = USER_PASSWORD_PATTERN.matcher(password)
         return matcher.matches()
     }
 
+    /**
+     * Test suite for password pattern matching
+     */
     static void test() {
 
         Map<String, Boolean> checks = [

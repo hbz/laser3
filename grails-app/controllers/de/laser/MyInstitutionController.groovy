@@ -6,8 +6,10 @@ import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
 import de.laser.convenience.Marker
 import de.laser.ctrl.MyInstitutionControllerService
+import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.UserControllerService
-import de.laser.custom.CustomWkhtmltoxService
+import de.laser.interfaces.CalculatedType
+import de.laser.remote.ApiSource
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.auth.Role
@@ -26,17 +28,20 @@ import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyConfigPackage
 import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyLinks
 import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyPackageResult
 import de.laser.survey.SurveyResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
 import de.laser.workflow.WfChecklist
+import grails.converters.JSON
 import grails.gsp.PageRenderer
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
@@ -81,16 +86,18 @@ class MyInstitutionController  {
     MyInstitutionControllerService myInstitutionControllerService
     OrganisationService organisationService
     OrgTypeService orgTypeService
-    PendingChangeService pendingChangeService
+    PackageService packageService
     PropertyService propertyService
+    ProviderService providerService
     ReportingGlobalService reportingGlobalService
     SubscriptionsQueryService subscriptionsQueryService
+    SubscriptionControllerService subscriptionControllerService
     SubscriptionService subscriptionService
     SurveyService surveyService
     TaskService taskService
     UserControllerService userControllerService
     UserService userService
-    CustomWkhtmltoxService wkhtmltoxService
+    VendorService vendorService
     WorkflowService workflowService
     MailSendService mailSendService
 
@@ -123,7 +130,7 @@ class MyInstitutionController  {
         if (params.init) {
             result.filter = params.filter
             result.xhr = true
-            render template: '/myInstitution/reporting/filter/form', model: result
+            render template: '/myInstitution/reporting/filter/filter_form', model: result
             return
         }
         else if (params.filter) {
@@ -151,7 +158,7 @@ class MyInstitutionController  {
 
             PageRenderer groovyPageRenderer = BeanStore.getGroovyPageRenderer()
             cacheMap.filterCache.result = groovyPageRenderer.render(
-                    template: '/myInstitution/reporting/query/filterResult',
+                    template: '/myInstitution/reporting/query/query_filterResult',
                     model: [ filter: params.filter, filterResult: result.filterResult ]
             ).replaceAll('\\s+', ' ').trim()
 
@@ -180,105 +187,167 @@ class MyInstitutionController  {
         result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PLA_PROP], contextService.getOrg())
+        Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA]]
 
-        String instanceFilter = "", perpetualFilter = ""
+        String instanceFilter = "", subFilter = ""
+        if (! params.status) {
+            if (params.isSiteReloaded != "yes") {
+                params.status = RDStore.SUBSCRIPTION_CURRENT.id
+                result.defaultSet = true
+            }
+            else {
+                params.status = 'FETCH_ALL'
+            }
+        }
         boolean withPerpetualAccess = params.long('hasPerpetualAccess') == RDStore.YN_YES.id
-        if(withPerpetualAccess)
-            perpetualFilter = " or s2.hasPerpetualAccess = true "
+        if(params.status != 'FETCH_ALL') {
+            subFilter += "s2.status.id in (:status)"
+            subscriptionParams.status = Params.getLongList(params, 'status')
+            if(withPerpetualAccess) {
+                if(RDStore.SUBSCRIPTION_CURRENT.id in subscriptionParams.status) {
+                    subscriptionParams.expired = RDStore.SUBSCRIPTION_EXPIRED.id
+                    subFilter += " or (s2.status.id = :expired and s2.hasPerpetualAccess = true) "
+                }
+                else subFilter += " and s2.hasPerpetualAccess = true "
+            }
+            else if(params.long('hasPerpetualAccess') == RDStore.YN_NO.id) {
+                subFilter += " and s2.hasPerpetualAccess = false "
+            }
+        }
 
-        Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current:RDStore.SUBSCRIPTION_CURRENT]
+
         if(result.contextOrg.isCustomerType_Consortium())
             instanceFilter += " and s2.instanceOf = null "
-        String subscriptionQuery = 'select s2 from OrgRole oo join oo.sub s2 where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (s2.status = :current'+perpetualFilter+')'+instanceFilter
+        String subscriptionQuery = 'select s2 from OrgRole oo join oo.sub s2 where oo.org = :contextOrg and oo.roleType in (:roleTypes) and ('+subFilter+')'+instanceFilter
 
         result.subscriptionMap = [:]
         result.platformInstanceList = []
 
         //if (subscriptionQuery) {
-            String qry3 = "select distinct p, s, ${params.sort ?: 'p.normname'} from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg " +
-                    "join pkg.nominalPlatform p left join p.org o " +
-                    "where s in (${subscriptionQuery}) and p.gokbId in (:wekbIds) and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
+        String qry3 = "select distinct p, s, ${params.sort ?: 'p.name'} from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg " +
+                "join pkg.nominalPlatform p left join p.org o " +
+                "where s in (${subscriptionQuery}) and p.gokbId in (:wekbIds) and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
 
-            Map qryParams3 = [
-                    pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED
-            ]
-            qryParams3.putAll(subscriptionParams)
+        Map qryParams3 = [
+                pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED
+        ]
+        qryParams3.putAll(subscriptionParams)
 
-            Map<String, Object> queryParams = [componentType: "Platform"]
+        Map<String, Object> queryParams = [componentType: "Platform"]
 
-            if (params.q?.length() > 0) {
-                result.filterSet = true
-                queryParams.q = params.q
-                qry3 += "and ("
-                qry3 += "   genfunc_filter_matcher(o.name, :query) = true"
-                qry3 += "   or genfunc_filter_matcher(o.sortname, :query) = true"
-                qry3 += ")"
-                qryParams3.put('query', "${params.q}")
+        if (params.q?.length() > 0) {
+            result.filterSet = true
+            queryParams.q = params.q
+            qry3 += "and ("
+            qry3 += "   genfunc_filter_matcher(o.name, :query) = true"
+            qry3 += "   or genfunc_filter_matcher(o.sortname, :query) = true"
+            qry3 += ")"
+            qryParams3.put('query', "${params.q}")
+        }
+
+        if (params.filterPropDef) {
+            result.filterSet = true
+            Map<String, Object> psq = propertyService.evalFilterQuery(params, qry3, 'p', qryParams3)
+            qry3 = psq.query
+            qryParams3.putAll(psq.queryParams)
+        }
+
+        if(params.provider) {
+            result.filterSet = true
+            queryParams.provider = params.provider
+        }
+
+        if(Params.getLongList(params, 'platStatus')) {
+            result.filterSet = true
+            queryParams.status = RefdataValue.findAllByIdInList(Params.getLongList(params, 'platStatus')).value
+        }
+        else if(!params.filterSet) {
+            result.filterSet = true
+            queryParams.status = "Current"
+            params.platStatus = RDStore.PLATFORM_STATUS_CURRENT.id
+        }
+
+        if(params.ipSupport) {
+            result.filterSet = true
+            queryParams.ipAuthentication = Params.getRefdataList(params, 'ipSupport').collect{ it.value }
+        }
+        if(params.shibbolethSupport) {
+            result.filterSet = true
+            queryParams.shibbolethAuthentication = Params.getRefdataList(params, 'shibbolethSupport').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
+        }
+        if(params.counterCertified) {
+            result.filterSet = true
+            queryParams.counterCertified = Params.getRefdataList(params, 'counterCertified').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
+        }
+        if(params.counterSushiSupport) {
+            result.filterSet = true
+            queryParams.counterSushiSupport = params.list('counterSushiSupport') //ask David about proper convention
+        }
+        if (params.curatoryGroup) {
+            result.filterSet = true
+            queryParams.curatoryGroupExact = params.curatoryGroup
+        }
+        if (params.curatoryGroupType) {
+            result.filterSet = true
+            queryParams.curatoryGroupType = params.curatoryGroupType
+        }
+        List wekbIds = []
+        Map<String, Object> wekbParams = params.clone()
+        if(!wekbParams.containsKey('sort'))
+            wekbParams.sort = 'name'
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
+        if(queryCuratoryGroups.code == 404) {
+            result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String
+        }
+        else {
+            if (queryCuratoryGroups) {
+                List recordsCuratoryGroups = queryCuratoryGroups.result
+                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+            }
+            wekbIds.addAll(gokbService.doQuery([max:10000, offset:0], wekbParams, queryParams).records.collect { Map hit -> hit.uuid })
+        }
+        result.curatoryGroupTypes = [
+                [value: 'Provider', name: message(code: 'package.curatoryGroup.provider')],
+                [value: 'Vendor', name: message(code: 'package.curatoryGroup.vendor')],
+                [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
+        ]
+        qryParams3.wekbIds = wekbIds
+
+        qry3 += " group by p, s"
+        if(params.sort)
+            qry3 += " order by ${params.sort} ${params.order}"
+        else qry3 += " order by p.name, s.name, s.startDate desc"
+
+        List platformSubscriptionList = []
+        if(wekbIds)
+            platformSubscriptionList.addAll(Platform.executeQuery(qry3, qryParams3))
+
+        log.debug("found ${platformSubscriptionList.size()} in list ..")
+        /*, [max:result.max, offset:result.offset])) */
+
+        platformSubscriptionList.each { entry ->
+            Platform pl = (Platform) entry[0]
+            Subscription s = (Subscription) entry[1]
+
+            String key = 'platform_' + pl.id
+
+            if (! result.subscriptionMap.containsKey(key)) {
+                result.subscriptionMap.put(key, [])
+                result.platformInstanceList.add(pl)
             }
 
-            if(params.provider) {
-                result.filterSet = true
-                queryParams.provider = params.provider
+            if (s.status.value == RDStore.SUBSCRIPTION_CURRENT.value || (withPerpetualAccess && s.hasPerpetualAccess && result.subscriptionMap.get(key).size() < 5)) {
+                result.subscriptionMap.get(key).add(s)
             }
-
-            if(params.status) {
-                result.filterSet = true
-                queryParams.status = RefdataValue.get(params.status).value
-            }
-            else if(!params.filterSet) {
-                result.filterSet = true
-                queryParams.status = "Current"
-                params.status = RDStore.PLATFORM_STATUS_CURRENT.id
-            }
-
-            if(params.ipSupport) {
-                result.filterSet = true
-                queryParams.ipAuthentication = Params.getRefdataList(params, 'ipSupport').collect{ it.value }
-            }
-            if(params.shibbolethSupport) {
-                result.filterSet = true
-                queryParams.shibbolethAuthentication = Params.getRefdataList(params, 'shibbolethSupport').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
-            }
-            if(params.counterCertified) {
-                result.filterSet = true
-                queryParams.counterCertified = Params.getRefdataList(params, 'counterCertified').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
-            }
-
-            List wekbIds = gokbService.doQuery([max:10000, offset:0], params.clone(), queryParams).records.collect { Map hit -> hit.uuid }
-
-            qryParams3.wekbIds = wekbIds
-
-            qry3 += " group by p, s"
-            if(params.sort)
-                qry3 += " order by ${params.sort} ${params.order}"
-            else qry3 += " order by p.normname asc"
-
-            List platformSubscriptionList = []
-            if(wekbIds)
-                platformSubscriptionList.addAll(Platform.executeQuery(qry3, qryParams3))
-
-            log.debug("found ${platformSubscriptionList.size()} in list ..")
-            /*, [max:result.max, offset:result.offset])) */
-
-            platformSubscriptionList.each { entry ->
-                Platform pl = (Platform) entry[0]
-                Subscription s = (Subscription) entry[1]
-
-                String key = 'platform_' + pl.id
-
-                if (! result.subscriptionMap.containsKey(key)) {
-                    result.subscriptionMap.put(key, [])
-                    result.platformInstanceList.add(pl)
-                }
-
-                if (s.status.value == RDStore.SUBSCRIPTION_CURRENT.value || (withPerpetualAccess && s.hasPerpetualAccess)) {
-                    result.subscriptionMap.get(key).add(s)
-                }
-            }
+        }
         //}
 
+        /*
+        disused; we expect we:kb being the only source as of phone call from May 7th, '24
         if (params.isMyX) {
-            List xFilter = params.list('isMyX')
+            List<String> xFilter = params.list('isMyX')
             Set<Long> f1Result = []
 
             if (xFilter.contains('wekb_exclusive')) {
@@ -293,6 +362,7 @@ class MyInstitutionController  {
             }
             result.platformInstanceList = result.platformInstanceList.findAll { f1Result.contains(it.id) }
         }
+        */
 
         result.platformInstanceTotal = result.platformInstanceList.size()
         result.cachedContent = true
@@ -352,7 +422,8 @@ class MyInstitutionController  {
 
         Set<String> licenseFilterTable = []
         if (! contextService.getOrg().isCustomerType_Support()) {
-            licenseFilterTable << "providerAgency"
+            licenseFilterTable << "provider"
+            licenseFilterTable << "vendor"
         }
 
         if (contextService.getOrg().isCustomerType_Inst_Pro()) {
@@ -405,9 +476,15 @@ class MyInstitutionController  {
         }
 
         if (params.licensor) {
-            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType in (:licAgncy) and o.org.id in (:licensors) ) ) "
+            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType = :licAgncy and o.org.id in (:licensors) ) ) "
             List<Long> licensors = Params.getLongList(params, 'licensor')
-            qry_params += [licAgncy:[RDStore.OR_LICENSOR, RDStore.OR_AGENCY], licensors:licensors]
+            qry_params += [licAgncy:RDStore.OR_LICENSOR, licensors:licensors]
+        }
+
+        if (params.vendor) {
+            base_qry += " and ( exists ( select vr from VendorRole as vr where vr.license = l and vr.vendor.id in (:vendors) ) ) "
+            List<Long> vendors = Params.getLongList(params, 'vendor')
+            qry_params += [vendors: vendors]
         }
 
         if (params.categorisation) {
@@ -421,7 +498,7 @@ class MyInstitutionController  {
                 params.status = RDStore.LICENSE_CURRENT.id
                 result.filterSet = true
             }
-            qry_params.status = params.status as Long
+            qry_params.status = params.long('status')
         }
 
 
@@ -434,6 +511,8 @@ class MyInstitutionController  {
                     " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "+
                     " ) ) " +
                     " or exists ( select li.id from Links li where li.sourceLicense = l and li.linkType = :linkType and genfunc_filter_matcher(li.destinationSubscription.name, :name_filter) = true ) " +
+                    " or exists ( select altname.license from AlternativeName altname where altname.license = l and genfunc_filter_matcher(altname.name, :name_filter) = true ) " +
+                    " or exists ( select li.id from AlternativeName altname, Links li where altname.subscription = li.destinationSubscription and li.sourceLicense = l and li.linkType = :linkType and genfunc_filter_matcher(altname.name, :name_filter) = true ) " +
                     " ) "
             qry_params.name_filter = params['keyword-search']
             qry_params.licRoleTypes = [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]
@@ -451,7 +530,7 @@ class MyInstitutionController  {
                     params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
                     result.filterSet = true
                 }
-                qry_params.subStatus = params.subStatus as Long
+                qry_params.subStatus = params.long('subStatus')
             }
 
             if (params.subKind) {
@@ -507,6 +586,7 @@ class MyInstitutionController  {
         Set<Org> licensors = orgTypeService.getOrgsForTypeLicensor()
         Map<String,Set<Org>> orgs = [consortia:consortia,licensors:licensors]
         result.orgs = orgs
+        result.vendors = Vendor.findAll([sort: 'sortname'])
 
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
@@ -551,7 +631,7 @@ class MyInstitutionController  {
         }
         switch(params.fileformat) {
             case 'xlsx':
-                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportLicenses(totalLicenses, selectedFields, result.institution, ExportClickMeService.FORMAT.XLS)
+                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportLicenses(totalLicenses, selectedFields, ExportClickMeService.FORMAT.XLS)
                 response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb.write(response.outputStream)
@@ -565,28 +645,14 @@ class MyInstitutionController  {
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
                     //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
-                    writer.write((String) exportClickMeService.exportLicenses(totalLicenses, selectedFields, result.institution, ExportClickMeService.FORMAT.CSV))
+                    writer.write((String) exportClickMeService.exportLicenses(totalLicenses, selectedFields, ExportClickMeService.FORMAT.CSV))
                 }
                 out.close()
                 return
             case 'pdf':
-                Map<String, Object> pdfOutput = exportClickMeService.exportLicenses(totalLicenses, selectedFields, result.institution, ExportClickMeService.FORMAT.PDF)
-                Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
-                if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
-                else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
-                else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
-                else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
-                pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
-                byte[] pdf = wkhtmltoxService.makePdf(
-                        view: '/templates/export/_individuallyExportPdf',
-                        model: pdfOutput,
-                        pageSize: pageStruct.pageSize,
-                        orientation: pageStruct.orientation,
-                        marginLeft: 10,
-                        marginRight: 10,
-                        marginTop: 15,
-                        marginBottom: 15
-                )
+                Map<String, Object> pdfOutput = exportClickMeService.exportLicenses(totalLicenses, selectedFields, ExportClickMeService.FORMAT.PDF)
+
+                byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                 response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
                 response.setContentType('application/pdf')
                 response.outputStream.withStream { it << pdf }
@@ -735,13 +801,10 @@ class MyInstitutionController  {
             User user = contextService.getUser()
             Org org = contextService.getOrg()
 
-            Set<RefdataValue> defaultOrgRoleType = []
-            if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support())
-                defaultOrgRoleType << RDStore.OT_CONSORTIUM.id.toString()
-            else defaultOrgRoleType << RDStore.OT_INSTITUTION.id.toString()
+            boolean isConsOrSupport     = contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()
+            List<Long> defaultOrgType   = isConsOrSupport ? [RDStore.OT_CONSORTIUM.id] : [RDStore.OT_INSTITUTION.id]
 
-            params.asOrgType = params.asOrgType ? [params.asOrgType] : defaultOrgRoleType
-
+            params.asOrgType = params.asOrgType ? [params.long('asOrgType')] : defaultOrgType
 
             if (! userService.hasFormalAffiliation(user, org, 'INST_EDITOR')) {
                 flash.error = message(code:'myinst.error.noAdmin', args:[org.name]) as String
@@ -805,7 +868,7 @@ class MyInstitutionController  {
 
                 log.debug("adding org link to new license")
                 OrgRole orgRole
-                if (params.asOrgType && (RDStore.OT_CONSORTIUM.id.toString() in params.asOrgType)) {
+                if (isConsOrSupport) {
                     orgRole = new OrgRole(lic: licenseInstance, org: org, roleType: RDStore.OR_LICENSING_CONSORTIUM)
                 } else {
                     orgRole = new OrgRole(lic: licenseInstance, org: org, roleType: RDStore.OR_LICENSEE)
@@ -831,56 +894,137 @@ class MyInstitutionController  {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def currentProviders() {
-        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params), queryParams = [:]
 		Profiler prf = new Profiler()
 		prf.setBenchmark('init')
 
-        EhcacheWrapper cache = contextService.getOrgCache('MyInstitutionController/currentProviders')
-        List<Long> orgIds = []
-
-        if (cache.get('orgIds')) {
-            orgIds = cache.get('orgIds')
-            log.debug('orgIds from cache')
-        }
-        else {
-            orgIds = (orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( result.institution )).toList()
-            cache.put('orgIds', orgIds)
-        }
-
-        result.orgRoles    = [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
-        result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
+        result.propList    = PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr = :def and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
+                def: PropertyDefinition.PRV_PROP,
+                tenant: result.institution
+        ])
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        params.sort = params.sort ?: " LOWER(o.sortname), LOWER(o.name)"
-        params.subPerpetual = 'on'
+        List<String> queryArgs = []
 
-        GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
-        tmpParams.constraint_orgIds = orgIds
-        def fsq  = filterService.getOrgQuery(tmpParams)
+        String providerQuery = 'select p from ProviderRole pr join pr.provider p, OrgRole oo join oo.sub s where pr.subscription = s and oo.org = :contextOrg'
+        queryParams.contextOrg = result.institution
+
+        if(params.containsKey('subStatus')) {
+            providerQuery += ' and (s.status in (:subStatus) '
+            queryParams.subStatus = Params.getRefdataList(params, 'subStatus')
+        }
+        else {
+            providerQuery += ' and (s.status = :subStatus '
+            queryParams.subStatus = RDStore.SUBSCRIPTION_CURRENT
+        }
+
+        if(params.containsKey('subPerpetualAccess')) {
+            boolean withPerpetualAccess = params.subPerpetualAccess == 'on'
+            if(withPerpetualAccess) {
+                if(queryParams.subStatus?.contains(RDStore.SUBSCRIPTION_CURRENT)) {
+                    providerQuery += ' or (s.status = :expired and s.hasPerpetualAccess = true) '
+                    queryParams.expired = RDStore.SUBSCRIPTION_EXPIRED
+                }
+                else providerQuery += ' and s.hasPerpetualAccess = true '
+            }
+            providerQuery += ')' //opened in line 1100 or 1105
+            if(params.subPerpetualAccess == RDStore.YN_NO)
+                providerQuery += ' and s.hasPerpetualAccess = false '
+        }
+        else providerQuery += ')' //opened in line 1100 or 1105
 
         result.filterSet = params.filterSet ? true : false
         if (params.filterPropDef) {
-            fsq = propertyService.evalFilterQuery(tmpParams, fsq.query, 'o', fsq.queryParams)
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, providerQuery, 'p', queryParams)
+            providerQuery = efq.query
+            queryParams = efq.queryParams as Map<String, Object>
         }
-        List orgListTotal = Org.findAll(fsq.query, fsq.queryParams)
-        result.wekbRecords = organisationService.getWekbOrgRecords(params, result)
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        result.wekbApi = apiSource
+        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
+        if(queryCuratoryGroups.error == 404) {
+            result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
+        }
+        else {
+            if (queryCuratoryGroups) {
+                List recordsCuratoryGroups = queryCuratoryGroups.result
+                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+            }
+            else result.curatoryGroups = []
+        }
+        result.curatoryGroupTypes = [
+                [value: 'Provider', name: message(code: 'package.curatoryGroup.provider')],
+                [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
+        ]
+        if(params.containsKey('nameContains')) {
+            queryArgs << "(genfunc_filter_matcher(p.name, :name) = true or genfunc_filter_matcher(p.sortname, :name) = true)"
+            queryParams.name = params.nameContains
+        }
+        if(params.containsKey('provStatus')) {
+            queryArgs << "p.status in (:status)"
+            queryParams.status = Params.getRefdataList(params, 'provStatus')
+        }
+        else if(!params.containsKey('provStatus') && !params.containsKey('filterSet')) {
+            queryArgs << "p.status.value = :status"
+            queryParams.status = "Current"
+            params.provStatus = RDStore.PROVIDER_STATUS_CURRENT.id
+        }
+
+        if(params.containsKey('inhouseInvoicing')) {
+            boolean inhouseInvoicing = params.inhouseInvoicing == 'on'
+            if(inhouseInvoicing)
+                queryArgs << "p.inhouseInvoicing = true"
+            else queryArgs << "p.inhouseInvoicing = false"
+        }
+
+        if(params.containsKey('qp_invoicingVendors')) {
+            queryArgs << "exists (select iv from p.invoicingVendors iv where iv.vendor.id in (:vendors))"
+            queryParams.put('vendors', Params.getLongList(params, 'qp_invoicingVendors'))
+        }
+
+        if(params.containsKey('qp_electronicBillings')) {
+            queryArgs << "exists (select eb from p.electronicBillings eb where eb.invoicingFormat in (:electronicBillings))"
+            queryParams.put('electronicBillings', Params.getRefdataList(params, 'qp_electronicBillings'))
+        }
+
+        if(params.containsKey('qp_invoiceDispatchs')) {
+            queryArgs << "exists (select idi from p.invoiceDispatchs idi where idi.invoiceDispatch in (:invoiceDispatchs))"
+            queryParams.put('invoiceDispatchs', Params.getRefdataList(params, 'qp_invoiceDispatchs'))
+        }
+
+        if(params.containsKey('curatoryGroup') || params.containsKey('curatoryGroupType')) {
+            queryArgs << "p.gokbId in (:wekbIds)"
+            queryParams.wekbIds = result.wekbRecords.keySet()
+        }
+        if(queryArgs) {
+            providerQuery += ' and '+queryArgs.join(' and ')
+        }
+        if(params.containsKey('sort')) {
+            providerQuery += " order by ${params.sort} ${params.order ?: 'asc'}, p.name ${params.order ?: 'asc'} "
+        }
+        else
+            providerQuery += " order by p.sortname "
+        Set<Provider> providerListTotal = Provider.executeQuery(providerQuery, queryParams)
+
+        result.wekbRecords = providerService.getWekbProviderRecords(params, result)
 
         if (params.isMyX) {
-            List xFilter = params.list('isMyX')
+            List<String> xFilter = params.list('isMyX')
             Set<Long> f1Result = []
 
             if (xFilter.contains('wekb_exclusive')) {
-                f1Result.addAll( orgListTotal.findAll {it.gokbId != null }.collect{ it.id } )
+                f1Result.addAll( providerListTotal.findAll {it.gokbId != null }.collect{ it.id } )
             }
             if (xFilter.contains('wekb_not')) {
-                f1Result.addAll( orgListTotal.findAll { it.gokbId == null }.collect{ it.id }  )
+                f1Result.addAll( providerListTotal.findAll { it.gokbId == null }.collect{ it.id }  )
             }
-            orgListTotal = orgListTotal.findAll { f1Result.contains(it.id) }
+            providerListTotal = providerListTotal.findAll { f1Result.contains(it.id) }
         }
 
-        result.orgListTotal = orgListTotal.size()
-        result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
+        result.providersTotal = providerListTotal.size()
+        result.allProviders = providerListTotal
+        result.providerList = providerListTotal.drop((int) result.offset).take((int) result.max)
 
         String message = message(code: 'export.my.currentProviders') as String
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -892,27 +1036,6 @@ class MyInstitutionController  {
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
 
-        /*if ( params.exportXLS ) {
-            try {
-                SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(orgListTotal, message, true, "xls")
-                // Write the output to a file
-
-                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                wb.write(response.outputStream)
-                response.outputStream.flush()
-                response.outputStream.close()
-                wb.dispose()
-
-                return
-            }
-            catch (Exception e) {
-                log.error("Problem",e);
-                response.sendError(HttpStatus.SC_INTERNAL_SERVER_ERROR)
-                return
-            }
-        }
-        else */
         Map<String, Object> selectedFields = [:]
         Set<String> contactSwitch = []
 
@@ -926,7 +1049,7 @@ class MyInstitutionController  {
             contactSwitch.addAll(params.list("addressSwitch"))
             switch(params.fileformat) {
                 case 'xlsx':
-                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.XLS, contactSwitch)
+                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportProviders(providerListTotal, selectedFields, ExportClickMeService.FORMAT.XLS, contactSwitch)
 
                     response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
                     response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -940,28 +1063,14 @@ class MyInstitutionController  {
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
-                        writer.write((String) exportClickMeService.exportOrgs(orgListTotal,selectedFields, 'provider',ExportClickMeService.FORMAT.CSV,contactSwitch))
+                        writer.write((String) exportClickMeService.exportProviders(providerListTotal,selectedFields,ExportClickMeService.FORMAT.CSV,contactSwitch))
                     }
                     out.close()
                     return
                 case 'pdf':
-                    Map<String, Object> pdfOutput = exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.PDF, contactSwitch)
-                    Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
-                    if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
-                    else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
-                    else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
-                    else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
-                    pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
-                    byte[] pdf = wkhtmltoxService.makePdf(
-                            view: '/templates/export/_individuallyExportPdf',
-                            model: pdfOutput,
-                            pageSize: pageStruct.pageSize,
-                            orientation: pageStruct.orientation,
-                            marginLeft: 10,
-                            marginRight: 10,
-                            marginTop: 15,
-                            marginBottom: 15
-                    )
+                    Map<String, Object> pdfOutput = exportClickMeService.exportProviders(providerListTotal, selectedFields, ExportClickMeService.FORMAT.PDF, contactSwitch)
+
+                    byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                     response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
                     response.setContentType('application/pdf')
                     response.outputStream.withStream { it << pdf }
@@ -969,6 +1078,211 @@ class MyInstitutionController  {
             }
         }
         result
+    }
+
+    /**
+     * Opens a list of all {@link Vendor}s which are linked by {@link VendorRole} to any subscription.
+     * The list results may be filtered with filter parameters
+     * @return a list of matching {@link Vendor} records, as html or as export pipe (Excel / CSV)
+     */
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+    })
+    def currentVendors() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+        Profiler prf = new Profiler()
+        prf.setBenchmark('init')
+
+        /*
+        EhcacheWrapper cache = contextService.getOrgCache('MyInstitutionController/currentProviders')
+        List<Long> orgIds = []
+
+        if (cache.get('orgIds')) {
+            orgIds = cache.get('orgIds')
+            log.debug('orgIds from cache')
+        }
+        else {
+            orgIds = (orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( result.institution )).toList()
+            cache.put('orgIds', orgIds)
+        }
+         */
+
+        //result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
+
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
+        result.filterSet = params.filterSet ? true : false
+        /*
+        if (params.filterPropDef) {
+            Map<String, Object> efq = propertyService.evalFilterQuery(tmpParams, fsr.query, 'o', fsr.queryParams)
+            fsr.query = efq.query
+            fsr.queryParams = efq.queryParams as Map<String, Object>
+        }
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
+        if(queryCuratoryGroups.code == 404) {
+            result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String
+        }
+        else {
+            if (queryCuratoryGroups) {
+                List recordsCuratoryGroups = queryCuratoryGroups.result
+                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+            }
+        }
+        */
+        result.wekbRecords = vendorService.getWekbVendorRecords(params, result)
+        /*
+        result.curatoryGroupTypes = [
+                [value: 'Provider', name: message(code: 'package.curatoryGroup.provider')],
+                [value: 'Vendor', name: message(code: 'package.curatoryGroup.vendor')],
+                [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
+        ]
+        */
+
+        result.flagContentGokb = true // vendorService.getWekbVendorRecords()
+        String query = "select v from VendorRole vr join vr.vendor v, OrgRole oo join oo.sub s where vr.subscription = s and oo.org = :contextOrg"
+
+        Map<String, Object> queryParams = [contextOrg: result.institution]
+
+        if(params.containsKey('subStatus')) {
+            query += ' and (s.status in (:status) '
+            queryParams.status = Params.getRefdataList(params, 'subStatus')
+        }
+        else if(!params.containsKey('filterSet')) {
+            query += ' and (s.status = :status '
+            queryParams.status = RDStore.SUBSCRIPTION_CURRENT
+            params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
+        }
+
+        if(params.containsKey('subPerpetualAccess')) {
+            boolean withPerpetualAccess = params.subPerpetualAccess == RDStore.YN_YES
+            if(withPerpetualAccess) {
+                if(queryParams.status?.contains(RDStore.SUBSCRIPTION_CURRENT)) {
+                    query += ' or (s.status = :expired and s.hasPerpetualAccess = true) '
+                    queryParams.expired = RDStore.SUBSCRIPTION_EXPIRED
+                }
+                else query += ' and s.hasPerpetualAccess = true '
+            }
+            query += ')' //opened in line 1100 or 1105
+            if(params.subPerpetualAccess == RDStore.YN_NO)
+                query += ' and s.hasPerpetualAccess = false '
+        }
+        else if(params.containsKey('subStatus') || !params.containsKey('filterSet')) query += ')' //opened in line 1100 or 1105
+        Set<String> queryArgs = []
+        if(params.containsKey('nameContains')) {
+            queryArgs << "(genfunc_filter_matcher(v.name, :name) = true or genfunc_filter_matcher(v.sortname, :name) = true)"
+            queryParams.put('name', params.nameContains)
+        }
+        if(params.containsKey('qp_supportedLibrarySystems')) {
+            queryArgs << "exists (select ls from v.supportedLibrarySystems ls where ls.librarySystem in (:librarySystems))"
+            queryParams.put('librarySystems', Params.getRefdataList(params, 'qp_supportedLibrarySystems'))
+        }
+
+        if(params.containsKey('qp_electronicBillings')) {
+            queryArgs << "exists (select eb from v.electronicBillings eb where eb.invoicingFormat in (:electronicBillings))"
+            queryParams.put('electronicBillings', Params.getRefdataList(params, 'qp_electronicBillings'))
+        }
+
+        if(params.containsKey('qp_invoiceDispatchs')) {
+            queryArgs << "exists (select idi from v.invoiceDispatchs idi where idi.invoiceDispatch in (:invoiceDispatchs))"
+            queryParams.put('invoiceDispatchs', Params.getRefdataList(params, 'qp_invoiceDispatchs'))
+        }
+
+        if(params.containsKey('curatoryGroup') || params.containsKey('curatoryGroupType')) {
+            queryArgs << "v.gokbId in (:wekbIds)"
+            queryParams.wekbIds = result.wekbRecords.keySet()
+        }
+        if(queryArgs) {
+            query += ' and '+queryArgs.join(' and ')
+        }
+        if(params.containsKey('sort')) {
+            query += " order by ${params.sort} ${params.order ?: 'asc'}, v.name ${params.order ?: 'asc'} "
+        }
+        else
+            query += " order by v.sortname "
+
+        String currentSubQuery = "select vr from VendorRole vr, OrgRole oo join oo.sub s where vr.subscription = s and s.status = :current and oo.org = :contextOrg order by s.name, s.startDate desc"
+        Map<String, Object> currentSubParams = [current: RDStore.SUBSCRIPTION_CURRENT, contextOrg: result.institution]
+        List<VendorRole> vendorRoleRows = VendorRole.executeQuery(currentSubQuery, currentSubParams)
+        result.currentSubscriptions = [:]
+        vendorRoleRows.each { VendorRole vr ->
+            Set<Subscription> currentSubscriptions = result.currentSubscriptions.containsKey(vr.vendor.id) ? result.currentSubscriptions.get(vr.vendor.id) : []
+            currentSubscriptions << vr.subscription
+            result.currentSubscriptions.put(vr.vendor.id, currentSubscriptions)
+        }
+
+        Set<Vendor> vendorsTotal = Vendor.executeQuery(query, queryParams)
+
+        if (params.isMyX) {
+            List<String> xFilter = params.list('isMyX')
+            Set<Long> f1Result = []
+
+            if (xFilter.contains('wekb_exclusive')) {
+                f1Result.addAll( vendorsTotal.findAll {it.gokbId != null }.collect{ it.id } )
+            }
+            if (xFilter.contains('wekb_not')) {
+                f1Result.addAll( vendorsTotal.findAll { it.gokbId == null }.collect{ it.id }  )
+            }
+            vendorsTotal = vendorsTotal.findAll { f1Result.contains(it.id) }
+        }
+        result.vendorListTotal = vendorsTotal.size()
+        result.allVendors = vendorsTotal
+        result.vendorList = vendorsTotal.drop(result.offset).take(result.max)
+
+        String message = message(code: 'export.my.currentVendors') as String
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        String datetoday = sdf.format(new Date())
+        String filename = message+"_${datetoday}"
+
+        //result.cachedContent = true
+
+        List bm = prf.stopBenchmark()
+        result.benchMark = bm
+
+        Map<String, Object> selectedFields = [:]
+        Set<String> contactSwitch = []
+
+        if(params.fileformat) {
+            if (params.filename) {
+                filename = params.filename
+            }
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
+            switch(params.fileformat) {
+                case 'xlsx':
+                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportVendors(vendorsTotal, selectedFields, ExportClickMeService.FORMAT.XLS, contactSwitch)
+
+                    response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                    response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    wb.write(response.outputStream)
+                    response.outputStream.flush()
+                    response.outputStream.close()
+                    wb.dispose()
+                    return
+                case 'csv':
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { writer ->
+                        writer.write((String) exportClickMeService.exportVendors(vendorsTotal,selectedFields, ExportClickMeService.FORMAT.CSV,contactSwitch))
+                    }
+                    out.close()
+                    return
+                case 'pdf':
+                    Map<String, Object> pdfOutput = exportClickMeService.exportVendors(vendorsTotal, selectedFields, ExportClickMeService.FORMAT.PDF, contactSwitch)
+
+                    byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
+                    response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
+                    response.setContentType('application/pdf')
+                    response.outputStream.withStream { it << pdf }
+                    return
+            }
+        }
+        else
+            result
     }
 
     /**
@@ -987,6 +1301,7 @@ class MyInstitutionController  {
         if (! contextService.getOrg().isCustomerType_Support()) {
             result.tableConfig << "showPackages"
             result.tableConfig << "showProviders"
+            result.tableConfig << "showVendors"
         }
 
         result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
@@ -1000,6 +1315,9 @@ class MyInstitutionController  {
 
         Map<String, Object> selectedFields = [:]
 
+        if((params.identifier?.startsWith('vendor:') || params.q) && result.institution.isCustomerType_Consortium())
+            result.vendorNotice = true
+
         if(params.fileformat) {
             if (params.filename) {
                 filename =params.filename
@@ -1009,7 +1327,7 @@ class MyInstitutionController  {
         }
         switch(params.fileformat) {
             case 'xlsx':
-                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.XLS)
+                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, ExportClickMeService.FORMAT.XLS)
                 response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb.write(response.outputStream)
@@ -1018,23 +1336,9 @@ class MyInstitutionController  {
                 wb.dispose()
                 return
             case 'pdf':
-                Map<String, Object> pdfOutput = exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.PDF)
-                Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
-                if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
-                else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
-                else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
-                else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
-                pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
-                byte[] pdf = wkhtmltoxService.makePdf(
-                        view: '/templates/export/_individuallyExportPdf',
-                        model: pdfOutput,
-                        pageSize: pageStruct.pageSize,
-                        orientation: pageStruct.orientation,
-                        marginLeft: 10,
-                        marginRight: 10,
-                        marginTop: 15,
-                        marginBottom: 15
-                )
+                Map<String, Object> pdfOutput = exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, ExportClickMeService.FORMAT.PDF)
+
+                byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                 response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
                 response.setContentType('application/pdf')
                 response.outputStream.withStream { it << pdf }
@@ -1045,7 +1349,7 @@ class MyInstitutionController  {
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
                     //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
-                    writer.write((String) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.CSV))
+                    writer.write((String) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, ExportClickMeService.FORMAT.CSV))
                 }
                 out.close()
                 return
@@ -1085,8 +1389,8 @@ class MyInstitutionController  {
                        g.message(code: 'license.label'),
                        g.message(code: 'subscription.packages.label'),
                        g.message(code: 'consortium.label'),
-                       g.message(code: 'default.provider.label'),
-                       g.message(code: 'default.agency.label'),
+                       g.message(code: 'provider.label'),
+                       g.message(code: 'vendor.label'),
                        g.message(code: 'subscription.startDate.label'),
                        g.message(code: 'subscription.endDate.label'),
                        g.message(code: 'subscription.manualCancellationDate.label'),
@@ -1111,27 +1415,10 @@ class MyInstitutionController  {
         titles.addAll(exportService.loadPropListHeaders(propertyDefinitions))
         Map<Subscription,Set> licenseReferences = [:], subChildMap = [:]
         Map<Long,Integer> costItemCounts = [:]
-        //List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
-        //List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
         //List allIdentifiers = Identifier.findAllBySubIsNotNull()
         List allLicenses = Links.executeQuery("select li from Links li where li.destinationSubscription in (:subscriptions) and li.linkType = :linkType",[subscriptions:subscriptions, linkType:RDStore.LINKTYPE_LICENSE])
         List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and (ci.costItemStatus != :ciDeleted or ci.costItemStatus = null) and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
-        /*allProviders.each { OrgRole provider ->
-            Set subProviders = providers.get(provider.sub)
-            if(!providers.get(provider.sub))
-                subProviders = new TreeSet()
-            String providerName = provider.org.name ? provider.org.name : ' '
-            subProviders.add(providerName)
-            providers.put(provider.sub,subProviders)
-        }
-        allAgencies.each { OrgRole agency ->
-            Set subAgencies = agencies.get(agency.sub)
-            if(!agencies.get(agency.sub))
-                subAgencies = new TreeSet()
-            String agencyName = agency.org.name ? agency.org.name : ' '
-            subAgencies.add(agencyName)
-            agencies.put(agency.sub,subAgencies)
-        }
+        /*
         allIdentifiers.each { Identifier identifier ->
             Set subIdentifiers = identifiers.get(identifier.sub)
             if(!identifiers.get(identifier.sub))
@@ -1175,10 +1462,8 @@ class MyInstitutionController  {
         subscriptions.each { Subscription sub ->
             log.debug("now processing ${sub}")
             List row = []
-            //TreeSet subProviders = sub.orgRelations.findAll { OrgRole oo -> oo.roleType == RDStore.OR_PROVIDER }.collect { OrgRole oo -> oo.org.name }
-            //TreeSet subAgencies = sub.orgRelations.findAll { OrgRole oo -> oo.roleType == RDStore.OR_AGENCY }.collect { OrgRole oo -> oo.org.name }
-            Set subProviders = OrgRole.executeQuery('select org.name from OrgRole oo join oo.org org where oo.sub = :sub and oo.roleType = :provider order by org.name', [sub: sub, provider: RDStore.OR_PROVIDER])
-            Set subAgencies = OrgRole.executeQuery('select org.name from OrgRole oo join oo.org org where oo.sub = :sub and oo.roleType = :agency order by org.name', [sub: sub, agency: RDStore.OR_AGENCY])
+            Set subProviders = ProviderRole.executeQuery('select p.name from ProviderRole pvr join pvr.provider p where pvr.subscription = :sub order by p.name', [sub: sub])
+            Set subAgencies = OrgRole.executeQuery('select v.name from VendorRole vr join vr.vendor v where vr.subscription = :sub order by v.name', [sub: sub])
             TreeSet subIdentifiers = sub.ids.collect { Identifier id -> "(${id.ns.ns}) ${id.value}" }
             switch (format) {
                 case [ "xls", "xlsx" ]:
@@ -1301,14 +1586,10 @@ class MyInstitutionController  {
         if(!(params.tab in ['notes', 'documents', 'properties'])){
             //Important
             if (!contextService.getOrg().isCustomerType_Consortium()) {
-                if(params.subTypes == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString()){
+                if (Params.getLongList(params, 'subTypes').contains(RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id)){
                     flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial') as String
                 }
-                else if(RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString() in params.list('subTypes')){
-                    flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial') as String
-                }
-
-                params.subTypes = [RDStore.SUBSCRIPTION_TYPE_LOCAL.id.toString()]
+                params.subTypes = [RDStore.SUBSCRIPTION_TYPE_LOCAL.id]
             }
         }
 
@@ -1423,7 +1704,7 @@ class MyInstitutionController  {
 		Profiler prf = new Profiler()
 		prf.setBenchmark('init')
 
-        Map ttParams = FilterLogic.resolveParamsForTopAttachedTitleTabs(params, 'IEs')
+        Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'IEs')
         if (ttParams.status) { params.status = ttParams.status }
         if (ttParams.tab)    { params.tab = ttParams.tab }
 
@@ -1472,19 +1753,34 @@ class MyInstitutionController  {
                 filterSub << Long.parseLong(params.filterSub.split(':')[1])
             }
         }
-        List<Org> filterPvd = []
+        List<Provider> filterPvd = []
         if(params.containsKey('filterPvd')) {
             if(params.filterPvd.contains(',')) {
                 params.filterPvd.split(',').each { String oid ->
-                    Org pvd = genericOIDService.resolveOID(oid)
+                    Provider pvd = genericOIDService.resolveOID(oid)
                     if(pvd)
                         filterPvd << pvd
                 }
             }
             else {
-                Org pvd = genericOIDService.resolveOID(params.filterPvd)
+                Provider pvd = genericOIDService.resolveOID(params.filterPvd)
                 if(pvd)
                     filterPvd << pvd
+            }
+        }
+        List<Vendor> filterVen = []
+        if(params.containsKey('filterVen')) {
+            if(params.filterVen.contains(',')) {
+                params.filterVen.split(',').each { String oid ->
+                    Vendor ven = genericOIDService.resolveOID(oid)
+                    if(ven)
+                        filterVen << ven
+                }
+            }
+            else {
+                Vendor ven = genericOIDService.resolveOID(params.filterVen)
+                if(ven)
+                    filterVen << ven
             }
         }
         List<Platform> filterHostPlat = []
@@ -1561,16 +1857,20 @@ class MyInstitutionController  {
 
         if (filterPvd) {
             pkgJoin = "join sub.packages sp join sp.pkg pkg"
-            subscriptionQueryFilter << "pkg in (select op.pkg from OrgRole op where op.org in (:selPvd) and op.roleType in (:provTypes))"
+            subscriptionQueryFilter << "pkg.provider = :selPvd"
             subQryParams.selPvd = filterPvd
-            subQryParams.provTypes = [RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]
+        }
+        if (filterVen) {
+            pkgJoin = "join sub.packages sp join sp.pkg pkg"
+            subscriptionQueryFilter << "pkg in (select pv.pkg from PackageVendor pv where pv.vendor in (:selVen))"
+            subQryParams.selVen = filterVen
         }
         qryParams.subIds = Subscription.executeQuery("select sub.id from Subscription sub join sub.orgRelations oo "+pkgJoin+" where oo.org = :institution and "+subscriptionQueryFilter.join(" and "), subQryParams)
         prf.setBenchmark('before sub IDs')
         List<String> countQueryFilter = queryFilter.clone()
         Map<String, Object> countQueryParams = qryParams.clone()
 
-        if (params.list('status').findAll()) {
+        if (params.status) {
             queryFilter << "ie.status in (:status)"
             qryParams.status = Params.getRefdataList(params, 'status')
         }
@@ -1590,13 +1890,6 @@ class MyInstitutionController  {
         if(countQueryFilter) {
             countQueryString += ' and ' + countQueryFilter.join(' and ')
         }
-
-        /*
-        if (filterPvd) {
-            qryString = " from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join pkg.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.id.join(", ")+") and ie.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (sub.status = :current or sub.hasPerpetualAccess = true)) "
-            qryParams = [cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER], contextOrg: result.institution, roleTypes: orgRoles, current: RDStore.SUBSCRIPTION_CURRENT, removed: RDStore.TIPP_STATUS_REMOVED]
-        }
-        */
 
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256")
         Map<String, Object> cachingKeys = params.clone()
@@ -1695,21 +1988,23 @@ class MyInstitutionController  {
                         Map<String, Object> configMap = params.clone()
                         configMap.defaultSubscriptionFilter = true
                         //configMap.validOn = checkedDate.getTime()
-                        /*
                         if(filterSub)
-                            configMap.subscriptions = filterSub
+                            configMap.subscriptions = Subscription.findAllByIdInList(filterSub)
+                        /*
                         else
                             configMap.subscriptions = SubscriptionPackage.executeQuery('select s.id from Subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes) and s.status = :current'+instanceFilter, [current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]]).toSet()
                         */
-                        FileOutputStream out = new FileOutputStream(f)
                         Map<String,Collection> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
-                        out.withWriter { writer ->
-                            writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
+                        if(tableData.columnData.size() > 0) {
+                            FileOutputStream out = new FileOutputStream(f)
+                            out.withWriter { writer ->
+                                writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
+                            }
+                            out.flush()
+                            out.close()
+                            fileResult = [token: token, filenameDisplay: filename, fileformat: 'kbart']
                         }
-                        out.flush()
-                        out.close()
                     }
-                    fileResult = [token: token, filenameDisplay: filename, fileformat: 'kbart']
                     break
                 case 'xlsx':
                     if(!f.exists()) {
@@ -1782,7 +2077,7 @@ class MyInstitutionController  {
 
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        Map ttParams = FilterLogic.resolveParamsForTopAttachedTitleTabs(params, 'IEs', true)
+        Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'IEs', true)
         if (ttParams.status) { params.status = ttParams.status }
         if (ttParams.tab)    { params.tab = ttParams.tab }
 
@@ -1831,16 +2126,10 @@ class MyInstitutionController  {
     })
     def currentPackages() {
 
-        Map<String, Object> result = [:]
+        Map<String, Object> wekbQryParams = params.clone(), result = [:]
         result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
-        result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
-        result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-        List currentSubIds = []
-        List idsCategory1  = []
-        List idsCategory2  = []
 
         if (! params.status) {
             if (params.isSiteReloaded != "yes") {
@@ -1851,64 +2140,95 @@ class MyInstitutionController  {
                 params.status = 'FETCH_ALL'
             }
         }
+        Map<String, Object> subQryParams = params.clone() //with default status
+        subQryParams.remove('sort')
 
-        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
+        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(subQryParams)
         result.filterSet = tmpQ[2]
-        currentSubIds = Subscription.executeQuery( "select s.id " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
+        List currentSubIds = Subscription.executeQuery( "select s.id " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
 
-        idsCategory1 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
+        List idsCategory1 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
                 org: contextService.getOrg(), roleTypes: [
                 RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS
         ]
         ])
-        idsCategory2 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
+        List idsCategory2 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
                 org: contextService.getOrg(), roleTypes: [
                 RDStore.OR_SUBSCRIPTION_CONSORTIA
         ]
         ])
 
         result.subscriptionMap = [:]
-        result.packageList = []
+        result.records = []
         result.packageListTotal = 0
 
         if(currentSubIds) {
             long start = System.currentTimeMillis()
-            String qry3 = "select distinct pkg, s from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg " +
+            String qry3 = "select distinct pkg.gokbId, s, pkg.name, (select o.name from OrgRole oo join oo.org o where oo.pkg = pkg) as provider, pkg.nominalPlatform.name as nominalPlatform, (select count(*) from TitleInstancePackagePlatform tipp where tipp.pkg = pkg and tipp.status = :current) as tippCount from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg " +
                     "where s.id in (:currentSubIds) "
 
             qry3 += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
 
             Map qryParams3 = [
                     currentSubIds  : currentSubIds,
+                    current: RDStore.TIPP_STATUS_CURRENT,
                     pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED
             ]
 
-            if (params.pkg_q?.length() > 0) {
-                qry3 += " and ("
-                qry3 += "   genfunc_filter_matcher(pkg.name, :query) = true"
-                qry3 += ")"
-                qryParams3.put('query', "${params.pkg_q}")
+            qry3 += " group by pkg, s, provider, pkg.nominalPlatform.name"
+            String sort
+            switch(params.sort) {
+                case [null, 'name']: sort = "pkg.name"
+                    break
+                case "currentTippCount": sort = "tippCount"
+                    break
+                case "nominalPlatform.name": sort = "nominalPlatform"
+                    break
+                case "provider.name": sort = "provider"
+                    break
+                default: sort = params.sort
+                    break
             }
-
-            if (params.ddc && params.list('ddc').size() > 0) {
-                qry3 += " and ((exists (select ddc.id from DeweyDecimalClassification ddc where ddc.ddc.id in (:ddcs) and ddc.tipp.pkg = pkg)) or (exists (select ddc.id from DeweyDecimalClassification ddc where ddc.ddc.id in (:ddcs) and ddc.pkg = pkg)))"
-                qryParams3.put('ddcs', Params.getLongList(params, 'ddc'))
-            }
-
-            qry3 += " group by pkg, s"
-            qry3 += " order by pkg.name " + (params.order ?: 'asc')
-            log.debug("before query: ${System.currentTimeMillis()-start}")
+            qry3 += " order by ${sort} " + (params.order ?: 'asc') + ", pkg.name asc"
             List packageSubscriptionList = Subscription.executeQuery(qry3, qryParams3)
             /*, [max:result.max, offset:result.offset])) */
-            log.debug("after query: ${System.currentTimeMillis()-start}")
+            Set<String> currentPackageUuids = packageSubscriptionList.collect { entry -> entry[0] }
+            wekbQryParams.uuids = currentPackageUuids
+            wekbQryParams.max = currentPackageUuids.size()
+            wekbQryParams.offset = 0
+            Map<String, Object> remote = packageService.getWekbPackages(wekbQryParams)
+            result.curatoryGroupTypes = remote.curatoryGroupTypes
+            result.automaticUpdates = remote.automaticUpdates
+            result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
+            result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
+            Set tmp = []
             packageSubscriptionList.eachWithIndex { entry, int i ->
-                // log.debug("processing entry ${i} at: ${System.currentTimeMillis()-start}")
-                String key = 'package_' + entry[0].id
+                String key = 'package_' + entry[0]
 
                 if (! result.subscriptionMap.containsKey(key)) {
                     result.subscriptionMap.put(key, [])
                 }
-                if (entry[1].status?.value == RDStore.SUBSCRIPTION_CURRENT.value) {
+                boolean display
+
+                if(params.status == "FETCH_ALL") {
+                    if(entry[1].status?.id == RDStore.SUBSCRIPTION_EXPIRED.id) {
+                        display = (entry[1].hasPerpetualAccess || result.subscriptionMap.get(key).size() < 5)
+                    }
+                    else display = true
+                }
+                else if(RDStore.SUBSCRIPTION_CURRENT.id in Params.getLongList(params, "status")) {
+                    if(entry[1].status?.id == RDStore.SUBSCRIPTION_EXPIRED.id) {
+                        display = (entry[1].hasPerpetualAccess || result.subscriptionMap.get(key).size() < 5)
+                    }
+                    else display = entry[1].status?.id == RDStore.SUBSCRIPTION_CURRENT.id
+                }
+                else if(RDStore.SUBSCRIPTION_EXPIRED.id in Params.getLongList(params, "status")) {
+                    display = (entry[1].hasPerpetualAccess || result.subscriptionMap.get(key).size() < 5)
+                }
+                else {
+                    display = entry[1].status?.id == params.long("status")
+                }
+                if (display) {
 
                     if (idsCategory1.contains(entry[1].id)) {
                         result.subscriptionMap.get(key).add(entry[1])
@@ -1917,12 +2237,18 @@ class MyInstitutionController  {
                         result.subscriptionMap.get(key).add(entry[1])
                     }
                 }
+                Map<String, Object> definiteRec = [:], wekbRec = remote.records.find { Map remoteRec -> remoteRec.uuid == entry[0] }
+                if(wekbRec)
+                    definiteRec.putAll(wekbRec)
+                else if(!params.containsKey('curatoryGroup') && !params.containsKey('curatoryGroupType') && !params.containsKey('automaticUpdates')) {
+                    definiteRec.put('uuid', entry[0])
+                }
+                if(definiteRec.size() > 0)
+                    tmp << definiteRec
             }
-            log.debug("after collect: ${System.currentTimeMillis()-start}")
-            List tmp = (packageSubscriptionList.collect { it[0] }).unique()
-            log.debug("after filter: ${System.currentTimeMillis()-start}")
             result.packageListTotal = tmp.size()
-            result.packageList = tmp.drop(result.offset).take(result.max)
+            //there are records among them which are already purged ...
+            result.records = tmp.drop(result.offset).take(result.max)
         }
 
         result
@@ -1984,35 +2310,6 @@ class MyInstitutionController  {
     }
 
     /**
-     * Call for the list of entitlement changes of the last 600 days
-     * @return a list of changes to be accepted or rejected
-     * @see PendingChange
-     */
-    @Deprecated
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
-    })
-    def changes() {
-        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
-        result.acceptedOffset = 0
-        def periodInDays = 600
-        Map<String,Object> pendingChangeConfigMap = [
-                contextOrg: result.institution,
-                consortialView: (result.institution as Org).isCustomerType_Consortium(),
-                periodInDays:periodInDays,
-                max:result.max,
-                offset:result.acceptedOffset
-        ]
-
-        result.putAll(pendingChangeService.getChanges_old(pendingChangeConfigMap))
-
-        result
-    }
-
-    /**
      * Call for the finance import starting page; the mappings are being explained here and an example sheet for submitting data to import
      * @return the finance import entry view
      */
@@ -2050,9 +2347,9 @@ class MyInstitutionController  {
                 if(entry == "subscription") {
                     row[i] = subChild.globalUID
                 }else if(entry == "subscriber.sortname") {
-                    row[i] = subChild.subscriber.sortname
+                    row[i] = subChild.getSubscriberRespConsortia().sortname
                 }else if(entry == "subscriber.name") {
-                    row[i] = subChild.subscriber.name
+                    row[i] = subChild.getSubscriberRespConsortia().name
                 }
                 else row[i] = ""
             }
@@ -2135,8 +2432,8 @@ class MyInstitutionController  {
     })
     def subscriptionImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-        List<String> mappingCols = ["name", "owner", "status", "type", "form", "resource", "provider", "agency", "startDate", "endDate",
-                              "manualCancellationDate", "hasPerpetualAccess", "hasPublishComponent", "isPublicForApi",
+        List<String> mappingCols = ["name", "owner", "status", "type", "form", "resource", "provider", "vendor", "startDate", "endDate",
+                              "manualCancellationDate", "referenceYear", "hasPerpetualAccess", "hasPublishComponent", "isPublicForApi",
                               "customProperties", "privateProperties", "notes"]
         if(result.institution.isCustomerType_Inst_Pro()) {
             mappingCols.add(mappingCols.indexOf("manualCancellationDate"), "isAutomaticRenewAnnually")
@@ -2159,9 +2456,9 @@ class MyInstitutionController  {
             MultipartFile tsvFile = request.getFile("tsvFile") //this makes the transaction closure necessary
             if(tsvFile && tsvFile.size > 0) {
                 String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
-                if(encoding == "UTF-8") {
+                if(encoding in ["UTF-8", "WINDOWS-1252"]) {
                     result.filename = tsvFile.originalFilename
-                    Map subscriptionData = subscriptionService.subscriptionImport(tsvFile)
+                    Map subscriptionData = subscriptionService.subscriptionImport(tsvFile, encoding)
                     if(subscriptionData.globalErrors) {
                         flash.error = "<h3>${message([code:'myinst.subscriptionImport.post.globalErrors.header'])}</h3><p>${subscriptionData.globalErrors.join('</p><p>')}</p>"
                         redirect(action: 'subscriptionImport')
@@ -2195,7 +2492,7 @@ class MyInstitutionController  {
     def currentSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org and surorg.surveyConfig.surveyInfo.startDate != null group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.institution]) ?: []
+        result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org and surorg.surveyConfig.surveyInfo.startDate != null group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate) desc", [org: result.institution]) ?: []
 
         //SwissKnife.setPaginationParams(result, params, (User) result.user)
 
@@ -2222,19 +2519,19 @@ class MyInstitutionController  {
                         group by o order by lower(o.name) """
         )
 
-        Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.getOrg() )
+        Set providerIds = providerService.getCurrentProviderIds( contextService.getOrg() )
 
-        result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds).sort { it?.name }
+        result.providers = providerIds.isEmpty() ? [] : Provider.findAllByIdInList(providerIds).sort { it?.name }
 
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIBER_CONS, 'activeInst': result.institution])
 
         SimpleDateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
 
+        FilterService.Result fsr = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.institution as Org)
+        if (fsr.isFilterSet) { params.filterSet = true }
 
-        def fsq = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.institution)
-
-        result.surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
+        result.surveyResults = SurveyResult.executeQuery(fsr.query, fsr.queryParams, params)
 
         if ( params.exportXLSX ) {
 
@@ -2291,93 +2588,19 @@ class MyInstitutionController  {
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
         result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.long('surveyConfigID')) : result.surveyInfo.surveyConfigs[0]
+        result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, result.surveyConfig)
+        result.ownerId = result.surveyInfo.owner?.id
 
         result.surveyResults = []
-        result.minimalInput = false
 
-        result.surveyConfig.getSortedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
+        result.surveyConfig.getSortedProperties().each{ PropertyDefinition propertyDefinition ->
             SurveyResult surre = SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, result.surveyConfig, propertyDefinition)
-            if(surre.getValue() != null)
-                result.minimalInput = true
             result.surveyResults << surre
         }
 
-        result.ownerId = result.surveyInfo.owner?.id
+        params.viewTab = params.viewTab ?: 'overview'
 
-        if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
-            result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution)
-            result.formalOrg = result.user.formalOrg as Org
-            // restrict visible for templates/links/orgLinksAsList
-            result.costItemSums = [:]
-            result.visibleOrgRelations = []
-            if(result.subscription) {
-                result.subscription.orgRelations.each { OrgRole or ->
-                    if (!(or.org.id == result.contextOrg.id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
-                        result.visibleOrgRelations << or
-                    }
-                }
-                result.visibleOrgRelations.sort { it.org.sortname }
-
-                //costs dataToDisplay
-                result.dataToDisplay = ['subscr']
-                result.offsets = [subscrOffset: 0]
-                result.sortConfig = [subscrSort: 'sub.name', subscrOrder: 'asc']
-
-                result.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
-                //cost items
-                //params.forExport = true
-                LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
-                if (costItems?.subscr) {
-                    result.costItemSums.subscrCosts = costItems.subscr.costItems
-                }
-		        result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
-            }
-
-            if(result.surveyConfig.subSurveyUseForTransfer) {
-                result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
-                result.subscriptionParent = result.surveyConfig.subscription
-                Collection<AbstractPropertyWithCalculatedLastUpdated> props
-                props = result.subscriptionParent.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic))}
-                if(result.successorSubscriptionParent){
-                    props += result.successorSubscriptionParent.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.surveyInfo.owner.id || (it.tenant?.id != result.surveyInfo.owner.id && it.isPublic))}
-                }
-                result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
-            }
-
-            if (result.subscription && result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
-
-                result.previousSubscription = result.subscription._getCalculatedPreviousForSurvey()
-
-                /*result.previousIesListPriceSum = 0
-                if(result.previousSubscription){
-                    result.previousIesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                            'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
-                    [sub: result.previousSubscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
-
-                }*/
-
-                result.sumListPriceSelectedIEsEUR = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_EUR)
-                result.sumListPriceSelectedIEsUSD = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_USD)
-                result.sumListPriceSelectedIEsGBP = surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig, RDStore.CURRENCY_GBP)
-
-
-                /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                         'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
-                         [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
-                result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
-                result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription)
-
-/*                if (result.surveyConfig.pickAndChoosePerpetualAccess) {
-                    result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
-                } else {
-                    result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countCurrentIssueEntitlements(result.previousSubscription) : 0) + subscriptionService.countCurrentIssueEntitlements(result.subscription)
-                }*/
-
-
-                result.subscriber = result.subscription.getSubscriber()
-            }
-
-        }
+        result = surveyService.participantResultGenerics(result, result.institution, params)
 
         if ( params.exportXLSX ) {
             SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
@@ -2426,56 +2649,89 @@ class MyInstitutionController  {
 
         SurveyInfo surveyInfo = SurveyInfo.get(params.id)
         SurveyConfig surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : surveyInfo.surveyConfigs[0]
-        boolean sendMailToSurveyOwner = false
+        boolean sendSurveyFinishMail = false
 
         SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
 
         List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, surveyConfig)
+        result.minimalInput = false
 
-        boolean allResultHaveValue = true
-        List<PropertyDefinition> notProcessedMandatoryProperties = []
-        surveyResults.each { SurveyResult surre ->
-            SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
-            if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm()) {
-                allResultHaveValue = false
-                notProcessedMandatoryProperties << surre.type.getI10n('name')
+        if(surveyConfig.type != SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+            surveyResults.each { SurveyResult surre ->
+                if (surre.getValue() != null)
+                    result.minimalInput = true
             }
+        }else {
+            result.minimalInput = true
         }
 
-        boolean noParticipation = false
-        if(surveyInfo.isMandatory) {
-            if(surveyConfig && surveyConfig.subSurveyUseForTransfer){
-                noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
+        if(result.minimalInput) {
+            boolean allResultHaveValue = true
+            List<PropertyDefinition> notProcessedMandatoryProperties = []
+            surveyResults.each { SurveyResult surre ->
+                SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
+                if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm()) {
+                    allResultHaveValue = false
+                    notProcessedMandatoryProperties << surre.type.getI10n('name')
+                }
             }
-        }
 
-        if(!noParticipation && notProcessedMandatoryProperties.size() > 0){
-            flash.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')]) as String
-        }
-        else if(noParticipation || allResultHaveValue){
-            surveyOrg.finishDate = new Date()
-            if (!surveyOrg.save()) {
-                flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
-            } else {
-                flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess') as String
-                sendMailToSurveyOwner = true
+            boolean noParticipation = false
+            if (surveyInfo.isMandatory) {
+                if (surveyConfig && surveyConfig.subSurveyUseForTransfer) {
+                    noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
+                }
             }
-        }
-        else if(!noParticipation && allResultHaveValue){
-            surveyOrg.finishDate = new Date()
-            if (!surveyOrg.save()) {
-                flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
-            } else {
-                flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess') as String
-                sendMailToSurveyOwner = true
+
+            if (!noParticipation && notProcessedMandatoryProperties.size() > 0) {
+                flash.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')]) as String
+            } else if (noParticipation || allResultHaveValue) {
+                surveyOrg.finishDate = new Date()
+                if (!surveyOrg.save()) {
+                    flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
+                } else {
+                    flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess') as String
+                    sendSurveyFinishMail = true
+                }
+            } else if (!noParticipation && allResultHaveValue) {
+                surveyOrg.finishDate = new Date()
+                if (!surveyOrg.save()) {
+                    flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
+                } else {
+                    flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess') as String
+                    sendSurveyFinishMail = true
+                }
             }
-        }
 
-        if(sendMailToSurveyOwner) {
-            mailSendService.emailToSurveyOwnerbyParticipationFinish(surveyInfo, result.institution)
-            mailSendService.emailToSurveyParticipationByFinish(surveyInfo, result.institution)
-        }
+            if (sendSurveyFinishMail) {
+                boolean sendMailToSurveyOwner = true
 
+                if (!surveyInfo.isMandatory && OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS) != OrgSetting.SETTING_NOT_FOUND && OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY).rdValue == RDStore.YN_YES) {
+                    int countAllResultsIsRefNo = 0
+                    int countAllResultsIsRef = 0
+                    surveyResults.each { SurveyResult surre ->
+                        if (surre.type.isRefdataValueType()) {
+                            countAllResultsIsRef++
+                            if (surre.refValue == RDStore.YN_NO || surre.refValue == null) {
+                                countAllResultsIsRefNo++
+                            }
+                        }
+                    }
+
+                    if (countAllResultsIsRefNo == countAllResultsIsRef) {
+                        sendMailToSurveyOwner = false
+                    }
+
+                }
+
+                if (sendMailToSurveyOwner) {
+                    mailSendService.emailToSurveyOwnerbyParticipationFinish(surveyInfo, result.institution)
+                }
+                mailSendService.emailToSurveyParticipationByFinish(surveyInfo, result.institution)
+            }
+        }else {
+            flash.error = g.message(code: 'surveyResult.finish.inputNecessary')
+        }
 
         redirect(url: request.getHeader('referer'))
     }
@@ -2518,7 +2774,7 @@ class MyInstitutionController  {
                     boolean existsMultiYearTerm = false
                     Subscription sub = surveyConfig.subscription
                     if (sub && !surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
-                        Subscription subChild = sub.getDerivedSubscriptionBySubscribers(org)
+                        Subscription subChild = sub.getDerivedSubscriptionForNonHiddenSubscriber(org)
 
                         if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
                             existsMultiYearTerm = true
@@ -2560,6 +2816,10 @@ class MyInstitutionController  {
 
                                 surveyService.emailsToSurveyUsersOfOrg(surveyInfo, org, false)
                                 //flash.message = message(code: 'surveyLinks.participateToSurvey.success')
+
+                                if(surveyConfig.invoicingInformation){
+                                    surveyService.setDefaultInvoiceInformation(surveyConfig, org)
+                                }
                             }
                         }
                     }
@@ -2590,10 +2850,13 @@ class MyInstitutionController  {
     def users() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        Map filterParams = params
+        Map filterParams = params.clone()
+        filterParams.max = result.max
+        filterParams.offset = result.offset
         filterParams.org = genericOIDService.getOID(result.institution)
-
-        result.users = userService.getUserSet(filterParams)
+        Map userData = userService.getUserMap(filterParams)
+        result.total = userData.count
+        result.users = userData.data
         result.titleMessage = "${result.institution}"
         result.inContextOrg = true
         result.orgInstance = result.institution
@@ -2611,10 +2874,8 @@ class MyInstitutionController  {
                 editLink: 'editUser',
                 deleteLink: 'deleteUser',
                 users: result.users,
-                showAllAffiliations: false,
-                modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')
+                showAllAffiliations: false
         ]
-        result.total = result.users.size()
 
         render view: '/user/global/list', model: result
     }
@@ -2643,7 +2904,7 @@ class MyInstitutionController  {
             }
 
             if (params.process && result.editable) {
-                User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
+                User userReplacement = User.get(params.userReplacement)
 
                 result.delResult = deletionService.deleteUser(result.user as User, userReplacement, false)
             }
@@ -2757,7 +3018,7 @@ class MyInstitutionController  {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-        params.sort = params.sort ?: 'pr.org.sortname'
+        params.sort = params.sort ?: 'sortname'
         params.tab = params.tab ?: 'contacts'
         EhcacheWrapper cache = contextService.getUserCache("/myInstitution/addressbook/")
         switch(params.tab) {
@@ -2779,7 +3040,7 @@ class MyInstitutionController  {
             if (params.filename) {
                 filename = params.filename
             }
-            configMap = [function:[], position: [], type: [], sort: 'pr.org.sortname']
+            configMap = [function:[], position: [], type: [], sort: 'sortname']
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('ief:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('ief:', ''), it.value ) }
             selectedFields.each { String key, value ->
@@ -2808,7 +3069,7 @@ class MyInstitutionController  {
             visibleAddresses.addAll(addressbookService.getVisibleAddresses("addressbook", configMap+[offset: result.addressOffset]))
         }
 
-        Set<String> filterFields = ['org', 'prs', 'filterPropDef', 'filterProp', 'function', 'position', 'showOnlyContactPersonForInstitution', 'showOnlyContactPersonForProviderAgency']
+        Set<String> filterFields = ['org', 'prs', 'filterPropDef', 'filterProp', 'function', 'position', 'showOnlyContactPersonForInstitution', 'showOnlyContactPersonForProvider', 'showOnlyContactPersonForVendor']
         result.filterSet = params.keySet().any { String selField -> selField in filterFields }
 
         result.propList =
@@ -2828,15 +3089,27 @@ class MyInstitutionController  {
                     [persons: visiblePersons, contentType: RDStore.CCT_EMAIL])
         }
         */
-        Map<Org, String> emailAddresses = [:]
+        Map<String, String> emailAddresses = [:]
         visiblePersons.each { Person p ->
             Contact mail = Contact.findByPrsAndContentType(p, RDStore.CCT_EMAIL)
             if(mail) {
-                Set<String> mails = emailAddresses.get(p.roleLinks.org[0])
-                if(!mails)
-                    mails = []
-                mails << mail.content
-                emailAddresses.put(p.roleLinks.org[0], mails)
+                String oid
+                if(p.roleLinks.org[0]) {
+                    oid = genericOIDService.getOID(p.roleLinks.org[0])
+                }
+                else if(p.roleLinks.provider[0]) {
+                    oid = genericOIDService.getOID(p.roleLinks.provider[0])
+                }
+                else if(p.roleLinks.vendor[0]) {
+                    oid = genericOIDService.getOID(p.roleLinks.vendor[0])
+                }
+                if(oid) {
+                    Set<String> mails = emailAddresses.get(oid)
+                    if(!mails)
+                        mails = []
+                    mails << mail.content
+                    emailAddresses.put(oid, mails)
+                }
             }
         }
         result.emailAddresses = emailAddresses
@@ -2856,7 +3129,7 @@ class MyInstitutionController  {
         else */
         if(params.fileformat) {
             switch(params.fileformat) {
-                case 'xlsx': SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportAddresses(visiblePersons, visibleAddresses, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProviderAgency == 'true', null, ExportClickMeService.FORMAT.XLS)
+                case 'xlsx': SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportAddresses(visiblePersons, visibleAddresses, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProvider == 'true', params.exportOnlyContactPersonForVendor == 'true', null, ExportClickMeService.FORMAT.XLS)
                     response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
                     response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     wb.write(response.outputStream)
@@ -2869,28 +3142,14 @@ class MyInstitutionController  {
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { Writer writer ->
-                        writer.write((String) exportClickMeService.exportAddresses(visiblePersons, visibleAddresses, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProviderAgency == 'true', params.tab, ExportClickMeService.FORMAT.CSV))
+                        writer.write((String) exportClickMeService.exportAddresses(visiblePersons, visibleAddresses, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProvider == 'true', params.exportOnlyContactPersonForVendor == 'true', params.tab, ExportClickMeService.FORMAT.CSV))
                     }
                     out.close()
                     return
                 case 'pdf':
-                    Map<String, Object> pdfOutput = exportClickMeService.exportAddresses(visiblePersons, visibleAddresses, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProviderAgency == 'true', null, ExportClickMeService.FORMAT.PDF)
-                    Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
-                    if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
-                    else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
-                    else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
-                    else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
-                    pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
-                    byte[] pdf = wkhtmltoxService.makePdf(
-                            view: '/templates/export/_individuallyExportPdf',
-                            model: pdfOutput,
-                            pageSize: pageStruct.pageSize,
-                            orientation: pageStruct.orientation,
-                            marginLeft: 10,
-                            marginRight: 10,
-                            marginTop: 15,
-                            marginBottom: 15
-                    )
+                    Map<String, Object> pdfOutput = exportClickMeService.exportAddresses(visiblePersons, visibleAddresses, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProvider == 'true', params.exportOnlyContactPersonForVendor == 'true', null, ExportClickMeService.FORMAT.PDF)
+
+                    byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                     response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
                     response.setContentType('application/pdf')
                     response.outputStream.withStream { it << pdf }
@@ -2976,15 +3235,15 @@ class MyInstitutionController  {
             params.order = "asc"
         }
         if ( ! params.ctrlFilterSend) {
-            params.taskStatus = RDStore.TASK_STATUS_OPEN.id as String
+            params.taskStatus = RDStore.TASK_STATUS_OPEN.id
         }
         SimpleDateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
-        Map<String, Object> queryForFilter = filterService.getTaskQuery(params, sdFormat)
+        FilterService.Result fsr = filterService.getTaskQuery(params, sdFormat)
 
         SwissKnife.setPaginationParams(result, params, result.user as User)
 
-        List<Task> taskInstanceList     = taskService.getTasksByResponsibles(result.user as User, result.institution as Org, queryForFilter)
-        List<Task> myTaskInstanceList   = taskService.getTasksByCreator(result.user as User, queryForFilter)
+        List<Task> taskInstanceList     = taskService.getTasksByResponsibles(result.user as User, result.institution as Org, [query: fsr.query, queryParams: fsr.queryParams])
+        List<Task> myTaskInstanceList   = taskService.getTasksByCreator(result.user as User, [query: fsr.query, queryParams: fsr.queryParams])
 
         result.taskCount    = taskInstanceList.size()
         result.myTaskCount  = myTaskInstanceList.size()
@@ -3014,7 +3273,6 @@ class MyInstitutionController  {
             // new: filter preset
             result.comboType = 'Consortium'
             params.orgType = RDStore.OT_INSTITUTION.id
-            params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
 
             if (params.selectedOrgs) {
                 if (formService.validateToken(params)) {
@@ -3038,8 +3296,8 @@ class MyInstitutionController  {
             }
             result.filterSet = params.filterSet ? true : false
 
-            Map<String, Object> fsq = filterService.getOrgQuery(params)
-            List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
+            FilterService.Result fsr = filterService.getOrgQuery(params)
+            List<Org> availableOrgs = Org.executeQuery(fsr.query, fsr.queryParams, params)
             Set<Org> currentMembers = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :current and c.type = :comboType', [current: result.institution, comboType: RefdataValue.getByValueAndCategory(result.comboType, RDConstants.COMBO_TYPE)])
             result.availableOrgs = availableOrgs - currentMembers
 
@@ -3047,28 +3305,35 @@ class MyInstitutionController  {
         }
     }
 
+    /**
+     * Call to load the current watchlist of objects coming from we:kb
+     * @return a {@link Map} containing the {@link Org}s, {@link Package}s and {@link Platform}s currently being observed
+     */
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     def currentMarkers() {
-        log.debug 'currentMarkers()'
+//        log.debug 'currentMarkers()'
 
-        Marker.TYPE fMarkerType = Marker.TYPE.WEKB_CHANGES
+        Marker.TYPE markerType = Marker.TYPE.WEKB_CHANGES
         if (params.filterMarkerType) {
-            fMarkerType = Marker.TYPE.get(params.filterMarkerType)
+            markerType = Marker.TYPE.get(params.filterMarkerType)
         }
 
         // TODO -- permissions --
 
         Map<String, Object> result = [
                 myMarkedObjects: [
-                        org: markerService.getObjectsByClassAndType(Org.class, fMarkerType),
-                        pkg: markerService.getObjectsByClassAndType(Package.class, fMarkerType),
-                        plt: markerService.getObjectsByClassAndType(Platform.class, fMarkerType)
+                        org:        markerService.getMyObjectsByClassAndType(Org.class, markerType),
+                        provider:   markerService.getMyObjectsByClassAndType(Provider.class, markerType),
+                        vendor:     markerService.getMyObjectsByClassAndType(Vendor.class, markerType),
+                        platform:   markerService.getMyObjectsByClassAndType(Platform.class, markerType),
+                        package:    markerService.getMyObjectsByClassAndType(Package.class, markerType),
+                        tipp:       markerService.getMyObjectsByClassAndType(TitleInstancePackagePlatform.class, markerType)
                 ],
-                myXMap:             markerService.getMyXMap(),
-                filterMarkerType:   fMarkerType.value
+                myXMap:         markerService.getMyCurrentXMap(), // TODO
+                markerType:     markerType
         ]
         result
     }
@@ -3123,10 +3388,8 @@ class MyInstitutionController  {
         if (result.filterTargetType) {
             Long filterTargetType = Long.valueOf(result.filterTargetType)
 
-            if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_AGENCY.id) {
-                idQuery = idQuery + ' and wf.org is not null'
-                idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
-                queryParams.put('orgType', RDStore.OT_AGENCY)
+            if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_VENDOR.id) {
+                idQuery = idQuery + ' and wf.vendor is not null'
             }
             if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION.id) {
                 idQuery = idQuery + ' and wf.org is not null'
@@ -3140,9 +3403,7 @@ class MyInstitutionController  {
                 idQuery = idQuery + ' and wf.org = :ctxOrg'
             }
             else if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER.id) {
-                idQuery = idQuery + ' and wf.org is not null'
-                idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
-                queryParams.put('orgType', RDStore.OT_PROVIDER)
+                idQuery = idQuery + ' and wf.provider is not null'
             }
             if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION.id) {
                 idQuery = idQuery + ' and wf.subscription is not null'
@@ -3214,18 +3475,19 @@ class MyInstitutionController  {
         result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+        params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
         GrailsParameterMap queryParams = params.clone() as GrailsParameterMap
 
         result.filterSet    = params.filterSet ? true : false
 
         queryParams.comboType = result.comboType.value
         queryParams.invertDirection = true
-        Map<String, Object> fsq = filterService.getOrgComboQuery(queryParams, result.institution)
+        FilterService.Result fsr = filterService.getOrgComboQuery(queryParams, result.institution as Org)
+        if (fsr.isFilterSet) { queryParams.filterSet = true }
 
 		prf.setBenchmark('query')
 
-        List totalConsortia      = Org.executeQuery(fsq.query, fsq.queryParams)
+        List totalConsortia      = Org.executeQuery(fsr.query, fsr.queryParams)
         result.totalConsortia    = totalConsortia
         result.consortiaCount    = totalConsortia.size()
         result.consortia         = totalConsortia.drop((int) result.offset).take((int) result.max)
@@ -3269,22 +3531,8 @@ class MyInstitutionController  {
                     return
                 case 'pdf':
                     Map<String, Object> pdfOutput = exportClickMeService.exportOrgs(totalConsortia, selectedFields, 'consortium', ExportClickMeService.FORMAT.PDF, contactSwitch)
-                    Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
-                    if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
-                    else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
-                    else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
-                    else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
-                    pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
-                    byte[] pdf = wkhtmltoxService.makePdf(
-                            view: '/templates/export/_individuallyExportPdf',
-                            model: pdfOutput,
-                            pageSize: pageStruct.pageSize,
-                            orientation: pageStruct.orientation,
-                            marginLeft: 10,
-                            marginRight: 10,
-                            marginTop: 15,
-                            marginBottom: 15
-                    )
+
+                    byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                     response.setHeader('Content-disposition', 'attachment; filename="'+ file +'.pdf"')
                     response.setContentType('application/pdf')
                     response.outputStream.withStream { it << pdf }
@@ -3327,13 +3575,12 @@ class MyInstitutionController  {
                 }
             }
         }
-        //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         if(!params.subStatus) {
             if(!params.filterSet) {
-                params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+                params.subStatus = [RDStore.SUBSCRIPTION_CURRENT.id, RDStore.GENERIC_NULL_VALUE.id]
                 result.filterSet = true
             }
         }
@@ -3347,28 +3594,28 @@ class MyInstitutionController  {
         else result.filterSet    = params.filterSet ? true : false*/
 
         params.comboType = result.comboType.value
-        Map<String, Object> fsq = filterService.getOrgComboQuery(params, result.institution)
-        String tmpQuery = "select o.id " + fsq.query.minus("select o ")
-        List memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
+        FilterService.Result fsr = filterService.getOrgComboQuery(params, result.institution as Org)
+        if (fsr.isFilterSet) { params.filterSet = true }
+
+        String tmpQuery = "select o.id " + fsr.query.minus("select o ")
+        List memberIds = Org.executeQuery(tmpQuery, fsr.queryParams)
 
         Map queryParamsProviders = [
                 subOrg      : result.institution,
-                subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
-                paRoleTypes : [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
+                subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]
         ]
 
         Map queryParamsSubs = [
                 subOrg      : result.institution,
-                subRoleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA],
-                paRoleTypes : [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
+                subRoleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA]
         ]
 
-        String queryProviders = '''select distinct(or_pa.org) from OrgRole or_pa 
+        String queryProviders = '''select distinct(pvr.provider) from OrgRole or_pa, ProviderRole pvr 
 join or_pa.sub sub 
 join sub.orgRelations or_sub where
     ( sub = or_sub.sub and or_sub.org = :subOrg ) and
     ( or_sub.roleType in (:subRoleTypes) ) and
-        ( or_pa.roleType in (:paRoleTypes) )'''
+        ( pvr.subscription = sub )'''
 
         String querySubs = '''select distinct(or_pa.sub) from OrgRole or_pa 
 join or_pa.sub sub 
@@ -3399,33 +3646,18 @@ join sub.orgRelations or_sub where
             }
         }
 
-
-
-        List<Org> providers = Org.executeQuery(queryProviders, queryParamsProviders)
-
-
-/*        List<Subscription> subscriptions = []
-        if(providers || params.filterPvd) {
-            querySubs += " and or_pa.org.id in (:providers)"
-            if(params.filterPvd){
-                queryParamsSubs << [providers: Params.getLongList(params, 'filterPvd')]
-            }
-            else {
-                queryParamsSubs << [providers: providers.collect { it.id }]
-            }
-            subscriptions = Subscription.executeQuery(querySubs, queryParamsSubs)
-        }
-        result.subscriptions = subscriptions*/
-
+        List<Provider> providers = Provider.executeQuery(queryProviders, queryParamsProviders)
         result.providers = providers
 
 		prf.setBenchmark('query')
 
         if (params.filterPropDef && memberIds) {
-            fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname asc", 'o', [oids: memberIds])
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname asc", 'o', [oids: memberIds])
+            fsr.query = efq.query
+            fsr.queryParams = efq.queryParams as Map<String, Object>
         }
 
-        List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams)
+        List totalMembers = Org.executeQuery(fsr.query, fsr.queryParams)
         if(params.orgListToggler) {
             Combo.withTransaction {
                 Combo.executeUpdate('delete from Combo c where c.toOrg = :context and c.fromOrg.id in (:ids)', [context: result.institution, ids: memberIds])
@@ -3486,22 +3718,8 @@ join sub.orgRelations or_sub where
                 return
             case 'pdf':
                 Map<String, Object> pdfOutput = exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', ExportClickMeService.FORMAT.PDF, contactSwitch, configMap)
-                Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
-                if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
-                else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
-                else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
-                else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
-                pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
-                byte[] pdf = wkhtmltoxService.makePdf(
-                        view: '/templates/export/_individuallyExportPdf',
-                        model: pdfOutput,
-                        pageSize: pageStruct.pageSize,
-                        orientation: pageStruct.orientation,
-                        marginLeft: 10,
-                        marginRight: 10,
-                        marginTop: 15,
-                        marginBottom: 15
-                )
+
+                byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                 response.setHeader('Content-disposition', 'attachment; filename="'+ file +'.pdf"')
                 response.setContentType('application/pdf')
                 response.outputStream.withStream { it << pdf }
@@ -3528,6 +3746,7 @@ join sub.orgRelations or_sub where
         if (! contextService.getOrg().isCustomerType_Support()) {
             result.tableConfig << "showPackages"
             result.tableConfig << "showProviders"
+            result.tableConfig << "showVendors"
         }
 
         result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
@@ -3547,7 +3766,7 @@ join sub.orgRelations or_sub where
         switch(params.fileformat) {
             case 'xlsx':
                 //result.entries has already been filtered in service method
-                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportConsortiaParticipations(result.entries, selectedFields, result.institution, contactSwitch, ExportClickMeService.FORMAT.XLS)
+                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportConsortiaParticipations(result.entries, selectedFields, contactSwitch, ExportClickMeService.FORMAT.XLS)
                 response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb.write(response.outputStream)
@@ -3556,23 +3775,9 @@ join sub.orgRelations or_sub where
                 wb.dispose()
                 return
             case 'pdf':
-                Map<String, Object> pdfOutput = exportClickMeService.exportConsortiaParticipations(result.entries, selectedFields, result.institution, contactSwitch, ExportClickMeService.FORMAT.PDF)
-                Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
-                if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
-                else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
-                else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
-                else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
-                pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
-                byte[] pdf = wkhtmltoxService.makePdf(
-                        view: '/templates/export/_individuallyExportPdf',
-                        model: pdfOutput,
-                        pageSize: pageStruct.pageSize,
-                        orientation: pageStruct.orientation,
-                        marginLeft: 10,
-                        marginRight: 10,
-                        marginTop: 15,
-                        marginBottom: 15
-                )
+                Map<String, Object> pdfOutput = exportClickMeService.exportConsortiaParticipations(result.entries, selectedFields, contactSwitch, ExportClickMeService.FORMAT.PDF)
+
+                byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
                 response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
                 response.setContentType('application/pdf')
                 response.outputStream.withStream { it << pdf }
@@ -3584,7 +3789,7 @@ join sub.orgRelations or_sub where
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
                     //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
-                    writer.write((String) exportClickMeService.exportConsortiaParticipations(result.entries, selectedFields, result.institution, contactSwitch, ExportClickMeService.FORMAT.CSV))
+                    writer.write((String) exportClickMeService.exportConsortiaParticipations(result.entries, selectedFields, contactSwitch, ExportClickMeService.FORMAT.CSV))
                 }
                 out.close()
                 return
@@ -4015,13 +4220,14 @@ join sub.orgRelations or_sub where
             params.validOnYear = sdfyear.format(new Date())
         }*/
 
-        result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org and surorg.surveyConfig.surveyInfo.startDate != null group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.participant]) ?: []
+        result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org and surorg.surveyConfig.surveyInfo.startDate != null group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate) desc", [org: result.participant]) ?: []
 
         params.consortiaOrg = result.institution
 
-        Map<String, Object> fsq = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.participant)
+        FilterService.Result fsr = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.participant as Org)
+        if (fsr.isFilterSet) { params.filterSet = true }
 
-        result.surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
+        result.surveyResults = SurveyResult.executeQuery(fsr.query, fsr.queryParams, params)
 
         if ( params.exportXLSX ) {
 
@@ -4073,6 +4279,25 @@ join sub.orgRelations or_sub where
                 result.createOrUpdate = message(code:'default.button.save.label')
                 render template: '/templates/properties/propertyGroupModal', model: result
                 return
+            case ['moveUp', 'moveDown']:
+                PropertyDefinitionGroup.withTransaction { TransactionStatus ts ->
+                    PropertyDefinitionGroup pdg = (PropertyDefinitionGroup) genericOIDService.resolveOID(params.oid)
+                    Set<PropertyDefinitionGroup> groupSet = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :objType and pdg.tenant = :tenant order by pdg.order', [objType: pdg.ownerType, tenant: result.institution])
+                    int idx = groupSet.findIndexOf { it.id == pdg.id }
+                    int pos = pdg.order
+                    PropertyDefinitionGroup pdg2
+
+                    if (params.cmd == 'moveUp')        { pdg2 = groupSet.getAt(idx-1) }
+                    else if (params.cmd == 'moveDown') { pdg2 = groupSet.getAt(idx+1) }
+
+                    if (pdg2) {
+                        pdg.order = pdg2.order
+                        pdg.save()
+                        pdg2.order = pos
+                        pdg2.save()
+                    }
+                }
+                break
             case 'delete':
                 PropertyDefinitionGroup pdg = (PropertyDefinitionGroup) genericOIDService.resolveOID(params.oid)
                 PropertyDefinitionGroup.withTransaction { TransactionStatus ts ->
@@ -4108,11 +4333,13 @@ join sub.orgRelations or_sub where
                         }
                         else {
                             if (params.name && ownerType) {
+                                int position = PropertyDefinitionGroup.executeQuery('select coalesce(max(pdg.order), 0) from PropertyDefinitionGroup pdg where pdg.ownerType = :objType and pdg.tenant = :tenant', [objType: ownerType, tenant: result.institution])[0]
                                 propDefGroup = new PropertyDefinitionGroup(
                                         name: params.name,
                                         description: params.description,
                                         tenant: result.institution,
                                         ownerType: ownerType,
+                                        order: position + 1,
                                         isVisible: true
                                 )
                                 if (propDefGroup.save()) {
@@ -4132,8 +4359,7 @@ join sub.orgRelations or_sub where
                                     [pdg: propDefGroup]
                             )
 
-                            params.list('propertyDefinition')?.each { pd ->
-
+                            params.list('propertyDefinition').each { pd ->
                                 new PropertyDefinitionGroupItem(
                                         propDef: pd,
                                         propDefGroup: propDefGroup
@@ -4145,7 +4371,7 @@ join sub.orgRelations or_sub where
                 break
         }
 
-        Set<PropertyDefinitionGroup> unorderedPdgs = PropertyDefinitionGroup.findAllByTenant(result.institution, [sort: 'name'])
+        Set<PropertyDefinitionGroup> unorderedPdgs = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.tenant = :tenant order by pdg.order asc', [tenant: result.institution])
         result.propDefGroups = [:]
         PropertyDefinition.AVAILABLE_GROUPS_DESCR.each { String propDefGroupType ->
             result.propDefGroups.put(propDefGroupType,unorderedPdgs.findAll { PropertyDefinitionGroup pdg -> pdg.ownerType == PropertyDefinition.getDescrClass(propDefGroupType)})
@@ -4188,7 +4414,7 @@ join sub.orgRelations or_sub where
         }
         SwissKnife.setPaginationParams(result, params, result.user)
 
-        result.availableDescrs = [PropertyDefinition.SUB_PROP,PropertyDefinition.LIC_PROP,PropertyDefinition.PRS_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.ORG_PROP]
+        result.availableDescrs = [PropertyDefinition.PRS_PROP,PropertyDefinition.PRV_PROP,PropertyDefinition.VEN_PROP,PropertyDefinition.SUB_PROP,PropertyDefinition.ORG_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.LIC_PROP]
 
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
         Set<PropertyDefinition> propList = []
@@ -4294,7 +4520,7 @@ join sub.orgRelations or_sub where
                     }
                 }
             }
-            redirect action: 'manageProperties', params: [filterPropDef: params.filterPropDef]
+            redirect action: 'manageProperties', params: [descr: pd.descr, filterPropDef: params.filterPropDef]
             return
         }
     }
@@ -4334,15 +4560,19 @@ join sub.orgRelations or_sub where
     private def _resolveOwner(PropertyDefinition pd, String id) {
         def owner
         switch(pd.descr) {
-            case PropertyDefinition.SUB_PROP: owner = Subscription.get(id)
+            case PropertyDefinition.PRS_PROP: owner = Person.get(id)
                 break
-            case PropertyDefinition.LIC_PROP: owner = License.get(id)
+            case PropertyDefinition.PRV_PROP: owner = Provider.get(id)
+                break
+            case PropertyDefinition.SUB_PROP: owner = Subscription.get(id)
                 break
             case PropertyDefinition.ORG_PROP: owner = Org.get(id)
                 break
-            case PropertyDefinition.PRS_PROP: owner = Person.get(id)
-                break
             case PropertyDefinition.PLA_PROP: owner = Platform.get(id)
+                break
+            case PropertyDefinition.LIC_PROP: owner = License.get(id)
+                break
+            case PropertyDefinition.VEN_PROP: owner = Vendor.get(id)
                 break
         }
         owner
@@ -4352,7 +4582,7 @@ join sub.orgRelations or_sub where
      * Displays and manages private property definitions for this institution.
      * If the add command is specified (i.e. params.cmd is set), this method inserts a new private property definition;
      * usage is restricted to the context institution.
-     * To add a custom property definition (which is usable for every institution), the route is {@link de.laser.ajax.AjaxController#addCustomPropertyType()}
+     * To add a custom property definition (which is usable for every institution).
      * (but consider the annotation there!)
      */
     @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.IN_BETWEEN)
@@ -4370,14 +4600,14 @@ join sub.orgRelations or_sub where
                 break
             case 'toggleMandatory':
                 PropertyDefinition.withTransaction { TransactionStatus ts ->
-                    PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
+                    PropertyDefinition pd = PropertyDefinition.get(params.long('pd'))
                     pd.mandatory = !pd.mandatory
                     pd.save()
                 }
                 break
             case 'toggleMultipleOccurrence':
                 PropertyDefinition.withTransaction { TransactionStatus ts ->
-                    PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
+                    PropertyDefinition pd = PropertyDefinition.get(params.long('pd'))
                     pd.multipleOccurrence = !pd.multipleOccurrence
                     pd.save()
                 }
@@ -4390,8 +4620,25 @@ join sub.orgRelations or_sub where
                     String newName = pdTo.tenant ? "${pdTo.getI10n("name")} (priv.)" : pdTo.getI10n("name")
                     if (pdFrom && pdTo) {
                         try {
-                            int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo, Boolean.valueOf(params.overwrite), false)
-                            flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName]) as String
+                            Map<String, Integer> counts = propertyService.replacePropertyDefinitions(pdFrom, pdTo, Boolean.valueOf(params.overwrite), false)
+                            if(counts.success == 0 && counts.failures == 0) {
+                                String instanceType
+                                switch(pdFrom.descr) {
+                                    case PropertyDefinition.LIC_PROP: instanceType = message(code: 'menu.institutions.replace_prop.licenses')
+                                        break
+                                    case PropertyDefinition.PRS_PROP: instanceType = message(code: 'menu.institutions.replace_prop.persons')
+                                        break
+                                    case PropertyDefinition.SUB_PROP: instanceType = message(code: 'menu.institutions.replace_prop.subscriptions')
+                                        break
+                                    case PropertyDefinition.SVY_PROP: instanceType = message(code: 'menu.institutions.replace_prop.surveys')
+                                        break
+                                    default: instanceType = message(code: 'menu.institutions.replace_prop.default')
+                                        break
+                                }
+                                flash.message = message(code: 'menu.institutions.replace_prop.noChanges', args: [instanceType]) as String
+                            }
+                            else
+                                flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [counts.success, counts.failures, oldName, newName]) as String
                         }
                         catch (Exception e) {
                             e.printStackTrace()
@@ -4450,50 +4697,6 @@ join sub.orgRelations or_sub where
     Object managePropertyDefinitions() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        if(params.xcgPdTo) {
-            PropertyDefinition pdFrom = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdFrom)
-            PropertyDefinition pdTo = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdTo)
-            String oldName = pdFrom.tenant ? "${pdFrom.getI10n("name")} (priv.)" : pdFrom.getI10n("name")
-            String newName = pdTo.tenant ? "${pdTo.getI10n("name")} (priv.)" : pdTo.getI10n("name")
-            if (pdFrom && pdTo) {
-                try {
-                    int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo, params.overwrite == 'on', false)
-                    flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName])
-                }
-                catch (Exception e) {
-                    e.printStackTrace()
-                    flash.error = message(code: 'menu.institutions.replace_prop.error', args: [oldName, newName])
-                }
-            }
-        }
-                //PropertyDefinition.withTransaction { TransactionStatus ts ->
-                    switch(params.cmd) {
-                        /*
-                        case 'toggleMandatory': pd.mandatory = !pd.mandatory
-                            pd.save()
-                            break
-                        case 'toggleMultipleOccurrence': pd.multipleOccurrence = !pd.multipleOccurrence
-                            pd.save()
-                            break
-                         */
-                        case 'replacePropertyDefinition':
-                            break
-                            /*
-                        case 'deletePropertyDefinition':
-                            if (! pd.isHardData) {
-                                try {
-                                    pd.delete()
-                                    flash.message = message(code:'propertyDefinition.delete.success',[pd.getI10n('name')])
-                                }
-                                catch(Exception e) {
-                                    flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.getI10n('name')])
-                                }
-                            }
-                            break
-                        */
-                    }
-                //}
-
         result.languageSuffix = LocaleUtils.getCurrentLang()
 
         Map<String,Set<PropertyDefinition>> propDefs = [:]
@@ -4528,16 +4731,14 @@ join sub.orgRelations or_sub where
      * @param params the parameter map containing the property definition parameters
      * @return success or error messages
      */
-    private _deletePrivatePropertyDefinition(params) {
+    private _deletePrivatePropertyDefinition(GrailsParameterMap params) {
         PropertyDefinition.withTransaction {
             log.debug("delete private property definition for institution: " + params)
 
             String messages = ""
             Org tenant = contextService.getOrg()
-            def deleteIds = params.list('deleteIds')
 
-            deleteIds.each { did ->
-                Long id = Long.parseLong(did)
+            Params.getLongList(params, 'deleteIds').each { id ->
                 PropertyDefinition privatePropDef = PropertyDefinition.findWhere(id: id, tenant: tenant)
                 if (privatePropDef) {
 
@@ -4628,7 +4829,7 @@ join sub.orgRelations or_sub where
         }
 
         if(params.fileformat == 'xlsx') {
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.XLS, true)
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, ExportClickMeService.FORMAT.XLS, true)
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             wb.write(response.outputStream)
@@ -4643,12 +4844,32 @@ join sub.orgRelations or_sub where
             ServletOutputStream out = response.outputStream
             out.withWriter { writer ->
                 //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
-                writer.write((String) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.CSV,  true))
+                writer.write((String) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, ExportClickMeService.FORMAT.CSV,  true))
             }
             out.close()
         }
 
         render view: customerTypeService.getCustomerTypeDependingView('currentSubscriptionsTransfer'), model: result
+    }
+
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+    })
+    def exportConfigs() {
+        Map<String, Object> ctrlResult = myInstitutionControllerService.exportConfigs(this, params)
+
+        ctrlResult.result
+    }
+
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+    })
+    def exportConfigsActions() {
+        Map<String, Object> ctrlResult = myInstitutionControllerService.exportConfigsActions(this, params)
+
+        redirect(action: 'exportConfigs', params: [tab: ctrlResult.result.tab])
     }
 
 

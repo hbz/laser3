@@ -13,7 +13,7 @@ class LinkTagLib {
         String icon = attrs.icon ?: 'external alternate'
 
         out << '<span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + message(code: 'tooltip.callUrl') + '" style="bottom:-3px">&nbsp;'
-        out << '<a href="' + attrs.href + '" target="_blank" aria-label="' + attrs.href + '" class="la-js-dont-hide-button">'
+        out << '<a href="' + attrs.href + '" target="_blank" aria-label="' + attrs.href + '">'
         out << '<i class="icon ' + icon + '" aria-hidden="true"></i>'
         out << '</a>'
         out << '</span>'
@@ -30,7 +30,7 @@ class LinkTagLib {
     def wekbIconLink = { attrs, body ->
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         String href = ''
-        String label = ''
+        String label = 'Unbekannter Fehler'
 
         if (attrs.type == 'curatoryGroup') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
@@ -38,11 +38,7 @@ class LinkTagLib {
         }
         else if (attrs.type == 'org') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
-            label = message(code: 'default.provider.label') + ' in der we:kb aufrufen'
-        }
-        else if (attrs.type == 'vendor') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
-            label = message(code: 'default.agency.label') + ' in der we:kb aufrufen'
+            label = message(code: 'provider.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'package') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
@@ -52,6 +48,10 @@ class LinkTagLib {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'platform.label') + ' in der we:kb aufrufen'
         }
+        else if (attrs.type == 'provider') {
+            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            label = message(code: 'provider.label') + ' in der we:kb aufrufen'
+        }
         else if (attrs.type == 'source') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'package.source.label') + ' in der we:kb aufrufen'
@@ -59,6 +59,10 @@ class LinkTagLib {
         else if (attrs.type == 'tipp') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'title.label') + ' in der we:kb aufrufen'
+        }
+        else if (attrs.type == 'vendor') {
+            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            label = message(code: 'vendor.label') + ' in der we:kb aufrufen'
         }
         out << '<span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + label + '" >&nbsp;'
         out << '<a href="' + href + '" target="_blank" aria-label="' + label + '">'
@@ -74,7 +78,11 @@ class LinkTagLib {
 
         if (attrs.type == 'org') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
-            label = message(code: 'default.provider.label') + ' in der we:kb aufrufen'
+            label = message(code: 'provider.label') + ' in der we:kb aufrufen'
+        }
+        else if (attrs.type == 'vendor') {
+            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            label = message(code: 'vendor.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'platform') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
@@ -82,7 +90,7 @@ class LinkTagLib {
         }
 
         out << '<a href="' + href + '" target="_blank" aria-label="' + label + '" '
-        out << 'class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay" '
+        out << 'class="ui icon blue button la-modern-button la-popup-tooltip la-delay" '
         out << 'data-position="top right" data-content="' + label + '" '
 //        out << 'data-content="' + message(code: 'org.isWekbCurated.header.label') + '" '
 //        out << 'aria-label="' + message(code: 'org.isWekbCurated.header.label') + '" '

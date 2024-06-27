@@ -1,5 +1,5 @@
 <!-- template: meta/subscriptionTransferInfo -->
-<%@ page import="de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.ExportClickMeService; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
 
 <laser:serviceInjection />
 
@@ -9,7 +9,7 @@
             <thead>
             <tr>
                 <th scope="col" rowspan="3">${message(code: 'subscription.referenceYear.short.label')}</th>
-                <th scope="col" rowspan="3">${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}</th>
+                <th scope="col" rowspan="3">${message(code: 'provider.label')} / ${message(code: 'vendor.label')}</th>
                 <th scope="col" rowspan="3">${message(code: 'subscription')}</th>
                 <th scope="col" rowspan="2" class="la-smaller-table-head">${message(code: 'default.startDate.label.shy')}</th>
                 <th scope="col" rowspan="3">${message(code: 'subscription.manualCancellationDate.label.shy')}</th>
@@ -19,7 +19,7 @@
 
                 <th scope="col" rowspan="3" class="center aligned">
                     <span class="la-popup-tooltip la-delay" data-content="${message(code: 'survey.label')}" data-position="top center">
-                        <i class="chart pie large icon"></i>
+                        <i class="${Icons.SURVEY} large icon"></i>
                     </span>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned">
@@ -39,7 +39,7 @@
                 </th>
 
                 <th class="la-smaller-table-head center aligned">Reminder</th>
-                <th colspan="2" class="la-smaller-table-head center aligned">Renewal</th>
+                <th colspan="3" class="la-smaller-table-head center aligned">Renewal</th>
 
                 <th scope="col" rowspan="3" class="center aligned">
                     <span class="la-popup-tooltip la-delay"
@@ -67,6 +67,9 @@
                 <th scope="col" class="la-smaller-table-head">${message(code: 'subscription.reminderSent.table.th')}</th>
                 <th scope="col" class="la-smaller-table-head">${message(code: 'subscription.renewalSent.table.th')}</th>
                 <th scope="col" rowspan="2" class="center aligned two wide">${message(code: 'subscriptionsManagement.documents')}</th>
+                <th scope="col" rowspan="2" class="center aligned two wide">
+                    <g:message code="default.change.label"/>
+                </th>
             </tr>
             <tr>
                 <th scope="col" rowspan="1" class="la-smaller-table-head">${message(code: 'default.endDate.label')}</th>
@@ -92,12 +95,14 @@
                             </g:link>
                             <br/>
                         </g:each>
-                        <g:each in="${s.agencies}" var="org">
-                            <g:link controller="organisation" action="show" id="${org.id}" target="_blank">
-                                ${fieldValue(bean: org, field: "name")}
-                                <g:if test="${org.sortname}">
-                                    <br/> (${fieldValue(bean: org, field: "sortname")})
-                                </g:if> (${message(code: 'default.agency.label')})
+                    </td>
+                    <td>
+                        <g:each in="${s.vendors}" var="vendor">
+                            <g:link controller="vendor" action="show" id="${vendor.id}" target="_blank">
+                                ${fieldValue(bean: vendor, field: "name")}
+                                <g:if test="${vendor.sortname}">
+                                    <br/> (${fieldValue(bean: vendor, field: "sortname")})
+                                </g:if>
                             </g:link>
                             <br/>
                         </g:each>
@@ -154,7 +159,7 @@
 
                                         <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                    class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                    class="ui icon blue tiny button la-modern-button"
                                                     target="_blank">
                                                 <i class="download small icon"></i>
                                             </g:link>
@@ -258,7 +263,7 @@
                         %>
                         <g:each in="${documentSet2}" var="docctx">
                             <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
-                                <div class="ui small feed content la-js-dont-hide-this-card">
+                                <div class="ui small feed content">
                                     <div class="ui grid summary">
                                         <div class="eleven wide column la-column-right-lessPadding">
                                             <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
@@ -278,7 +283,7 @@
 
                                         <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                    class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
+                                                    class="ui icon blue tiny button la-modern-button"
                                                     target="_blank">
                                                 <i class="download small icon"></i>
                                             </g:link>
@@ -289,13 +294,31 @@
                         </g:each>
                     </td>
 
+                    <g:set var="countModificationToCostInformationAfterRenewalDoc" value="${surveyConfig ? surveyService.countModificationToCostInformationAfterRenewalDoc(s) : 0}"/>
+
+                    <td class="${surveyConfig ? countModificationToCostInformationAfterRenewalDoc == 0 ? 'positive' : 'negative' : ''}">
+                        <g:if test="${countModificationToCostInformationAfterRenewalDoc > 0}">
+                            <g:link class="ui label triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
+                                    params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]">
+                                <i class="download icon"></i> ${countModificationToCostInformationAfterRenewalDoc}
+                            </g:link>
+                        </g:if>
+                        <g:else>
+                            <g:if test="${surveyConfig}">
+                                ${countModificationToCostInformationAfterRenewalDoc}
+                            </g:if>
+                        </g:else>
+                    </td>
+
                     <td class="${s.participantTransferWithSurvey ? 'positive' : 'negative'}">
                         ${s.participantTransferWithSurvey ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                     </td>
                     <td>
                         <g:if test="${surveyConfig && surveyConfig.surveyInfo.status in [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED]}">
-                            <g:link controller="survey" action="showExportModalRenewal" id="${surveyConfig.surveyInfo.id}"
-                                    class="ui icon button blue la-js-dont-hide-button la-modern-button trigger-modal">
+                            <g:link class="triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
+                                params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION,
+                                         id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id,
+                                         modalText: 'Export: ('+ g.message(code: 'subscription.referenceYear.label')+': '+ surveyConfig.subscription.referenceYear+')']">
                                 <i class="download small icon"></i>
                             </g:link>
                         </g:if>
@@ -316,34 +339,11 @@
     </div>
 </div>
 
+
+<g:render template="/clickMe/export/js"/>
+
 <laser:script file="${this.getGroovyPageFileName()}">
     docs.init('#subscriptionTransfer-content');
-
-    $('.trigger-modal').on('click', function(e) {
-                e.preventDefault();
-
-                $.ajax({
-                    url: $(this).attr('href')
-                }).done( function (data) {
-                    $('.ui.dimmer.modals > #individuallyRenewalExportModal').remove();
-                    $('#dynamicModalContainer').empty().html(data);
-
-                    $('#dynamicModalContainer .ui.modal').modal({
-                        onVisible: function () {
-                            r2d2.initDynamicUiStuff('#individuallyRenewalExportModal');
-                            r2d2.initDynamicXEditableStuff('#individuallyRenewalExportModal');
-                        },
-                        detachable: true,
-                        autofocus: false,
-                        closable: false,
-                        transition: 'scale',
-                        onApprove : function() {
-                            $(this).find('.ui.form').submit();
-                            return false;
-                        }
-                    }).modal('show');
-                })
-            });
 
     setTimeout(function() {
     tooltip.init('#subscriptionTransfer-content');

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.remote.ApiSource; de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.storage.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.Platform; de.laser.AuditConfig; de.laser.FormService" %>
+<%@ page import="de.laser.remote.ApiSource; de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.Vendor; de.laser.Provider; de.laser.storage.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.Platform; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection />
 
 <table class="ui table">
@@ -22,7 +22,7 @@
                     ${namespace}
                     <g:if test="${ident instanceof Identifier && ident.ns.getI10n('description')}">
                         <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${ident.ns.getI10n('description')}">
-                            <i class="question circle icon"></i>
+                            <i class="grey question circle icon"></i>
                         </span>
                     </g:if>
                 </td>
@@ -38,8 +38,13 @@
                                     <span class="js-copyTopic">${ident.value}</span>
                             </span>
                         </g:else>
+                        <%--
                         <g:if test="${ident.ns.urlPrefix}">
                             <a target="_blank" href="${ident.ns.urlPrefix}${ident.value}"><i title="${ident.ns.getI10n('name')} Link" class="external alternate icon"></i></a>
+                        </g:if>
+                        --%>
+                        <g:if test="${ident.getURL()}">
+                            <ui:linkWithIcon href="${ident.getURL()}" />
                         </g:if>
                     </g:if>
                     <g:else>
@@ -52,11 +57,17 @@
                             <g:if test="${object instanceof Package}">
                                 <ui:wekbIconLink type="package" gokbId="${object.gokbId}"/>
                             </g:if>
+                            <g:elseif test="${object instanceof Platform}">
+                                <ui:wekbIconLink type="platform" gokbId="${object.gokbId}"/>
+                            </g:elseif>
+                            <g:elseif test="${object instanceof Provider}">
+                                <ui:wekbIconLink type="provider" gokbId="${object.gokbId}"/>
+                            </g:elseif>
                             <g:elseif test="${object instanceof TitleInstancePackagePlatform}">
                                 <ui:wekbIconLink type="tipp" gokbId="${object.gokbId}"/>
                             </g:elseif>
-                            <g:elseif test="${object instanceof Platform}">
-                                <ui:wekbIconLink type="platform" gokbId="${object.gokbId}"/>
+                            <g:elseif test="${object instanceof Vendor}">
+                                <ui:wekbIconLink type="vendor" gokbId="${object.gokbId}"/>
                             </g:elseif>
                         </g:if>
                     </g:else>
@@ -93,7 +104,7 @@
                                                               data-update="objIdentifierPanel"
                                                               role="button"
                                             >
-                                                <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
+                                                <i class="icon la-thumbtack slash"></i>
                                             </ui:remoteLink>
                                             <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                     params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'
@@ -118,7 +129,7 @@
                                                               data-update="objIdentifierPanel"
                                                               role="button"
                                             >
-                                                <i class="thumbtack icon la-js-editmode-icon"></i>
+                                                <i class="thumbtack icon"></i>
                                             </ui:remoteLink>
                                         </g:else>
                                     </g:if>

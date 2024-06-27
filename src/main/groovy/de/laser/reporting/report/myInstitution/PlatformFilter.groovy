@@ -2,6 +2,7 @@ package de.laser.reporting.report.myInstitution
 
 import de.laser.*
 import de.laser.helper.Params
+import de.laser.reporting.report.FilterQueries
 import de.laser.storage.BeanStore
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
@@ -30,16 +31,10 @@ class PlatformFilter extends BaseFilter {
 
         switch (filterSource) {
             case 'all-plt':
-                queryParams.platformIdList = Platform.executeQuery( 'select plt.id from Platform plt')
-//                queryParams.platformIdList = Platform.executeQuery( 'select plt.id from Platform plt where plt.status != :status',
-//                        [status: RDStore.PLATFORM_STATUS_DELETED]
-//                )
+                queryParams.platformIdList = FilterQueries.getAllPlatformIdList()
                 break
             case 'my-plt':
-                List<Long> subIdList = Subscription.executeQuery(
-                        "select s.id from Subscription s join s.orgRelations ro where (ro.roleType in (:roleTypes) and ro.org = :ctx)",
-                        [roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS], ctx: contextService.getOrg()])
-
+                queryParams.platformIdList = FilterQueries.getMyPlatformIdList()
 //                queryParams.platformIdList = Platform.executeQuery(
 //                        "select distinct plt.id from SubscriptionPackage subPkg join subPkg.subscription sub join subPkg.pkg pkg, " +
 //                        "TitleInstancePackagePlatform tipp join tipp.platform plt where tipp.pkg = pkg " +
@@ -49,11 +44,12 @@ class PlatformFilter extends BaseFilter {
 //                        "and plt.status != :pltStatus",
 //                        [subIdList: subIdList, pkgDeleted: RDStore.PACKAGE_STATUS_DELETED, tippDeleted: RDStore.TIPP_STATUS_REMOVED, pltStatus: RDStore.PLATFORM_STATUS_DELETED]
 //                )
-                queryParams.platformIdList = Platform.executeQuery(
-                        "select distinct plt.id from SubscriptionPackage subPkg join subPkg.subscription sub join subPkg.pkg pkg join pkg.nominalPlatform plt " +
-                                "where sub.id in (:subIdList)",
-                        [subIdList: subIdList]
-                )
+//                queryParams.platformIdList = Platform.executeQuery(
+//                        "select distinct plt.id from SubscriptionPackage subPkg join subPkg.subscription sub join subPkg.pkg pkg join pkg.nominalPlatform plt " +
+//                                "where sub.id in (:subIdList)",
+//                        [subIdList: subIdList]
+//                )
+
 //                queryParams.platformIdList = Platform.executeQuery(
 //                        "select distinct plt.id from SubscriptionPackage subPkg join subPkg.subscription sub join subPkg.pkg pkg join pkg.nominalPlatform plt " +
 //                        "where sub.id in (:subIdList) " +
@@ -113,13 +109,21 @@ class PlatformFilter extends BaseFilter {
                 }
                 // --> custom implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-                    if (p == 'org') {
+//                    if (p == 'org') {
+//                        Long[] pList = Params.getLongList(params, key)
+//
+//                        whereParts.add( 'plt.org.id in (:p' + (++pCount) + ')')
+//                        queryParams.put( 'p' + pCount, pList )
+//
+//                        filterLabelValue = Org.getAll(pList).collect{ it.name }
+//                    }
+                    if (p == 'provider') { // reporting.cfg.provider != reporting.cfg.platformProvider
                         Long[] pList = Params.getLongList(params, key)
 
-                        whereParts.add( 'plt.org.id in (:p' + (++pCount) + ')')
+                        whereParts.add( 'plt.provider.id in (:p' + (++pCount) + ')')
                         queryParams.put( 'p' + pCount, pList )
 
-                        filterLabelValue = Org.getAll(pList).collect{ it.name }
+                        filterLabelValue = Provider.getAll(pList).collect{ it.name }
                     }
                     else if (p == 'serviceProvider') {
                         whereParts.add( 'plt.serviceProvider.id = :p' + (++pCount) )
@@ -191,13 +195,9 @@ class PlatformFilter extends BaseFilter {
         List<Long> platformIdList = queryParams.platformIdList ? Platform.executeQuery( query, queryParams ) : []
         filterResult.data.put(BaseConfig.KEY_PLATFORM + 'IdList', platformIdList)
 
-        // -- SUB --
+        // --- subset ---
 
-        BaseConfig.getCurrentConfig( BaseConfig.KEY_PLATFORM ).keySet().each{ pk ->
-            if (pk == 'provider') {
-                _handleInternalOrgFilter(pk, filterResult)
-            }
-        }
+        handleExpandoSubsetFilter(this, BaseConfig.KEY_PLATFORM, filterResult, null)
 
         // -- ES --
 
@@ -206,10 +206,10 @@ class PlatformFilter extends BaseFilter {
         filterResult
     }
 
-    static void _handleInternalOrgFilter(String partKey, Map<String, Object> filterResult) {
-        String query = 'select distinct (plt.org.id) from Platform plt where plt.id in (:platformIdList)'
+    static void _handleSubsetProviderFilter(String partKey, Map<String, Object> filterResult) {
+        String query = 'select distinct (plt.provider.id) from Platform plt where plt.id in (:platformIdList)'
         Map<String, Object> queryParams = [ platformIdList: filterResult.data.platformIdList ]
 
-        filterResult.data.put( partKey + 'IdList', queryParams.platformIdList ? Org.executeQuery(query, queryParams) : [] )
+        filterResult.data.put( partKey + 'IdList', queryParams.platformIdList ? Provider.executeQuery(query, queryParams) : [] )
     }
 }

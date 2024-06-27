@@ -72,36 +72,39 @@
                     //these settings count only if we view an org's documents
                     if(docctx.owner.owner?.id == contextService.getOrg().id)
                         inOwnerOrg = true
-                    else if(contextService.getOrg().id == docctx.targetOrg?.id)
-                        inTargetOrg = true
-                    if(docctx.org) {
-                        switch(docctx.shareConf) {
-                            case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true //visible only for thes users of org which uploaded the document
-                                break
-                            case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || inTargetOrg) visible = true //the owner org and the target org may see the document i.e. the document has been shared with the target org
-                                break
-                            case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
-                                break
-                            default:
+                    if(docctx.targetOrg)
+                        inTargetOrg = contextService.getOrg().id == docctx.targetOrg.id
+                    else if(docctx.subscription)
+                        inTargetOrg = contextOrg.id == docctx.subscription.getSubscriberRespConsortia().id
+                    else if(docctx.license)
+                        inTargetOrg = contextOrg.id in docctx.license.getDerivedLicensees().id
+                    switch(docctx.shareConf) {
+                        case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true //visible only for thes users of org which uploaded the document
+                            break
+                        case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || inTargetOrg) visible = true //the owner org and the target org may see the document i.e. the document has been shared with the target org
+                            break
+                        case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org
+                            break
+                        default:
+                            if(docctx.org) {
                                 //fallback: documents are visible if share configuration is missing or obsolete
-                                if(docctx.shareConf) println docctx.shareConf
-                                else visible = true
-                                break
-                        }
-                    }
-                    else if(inOwnerOrg || docctx.sharedFrom) {
-                        //other owner objects than orgs - in particular licenses and subscriptions: visibility is set if the owner org visits the owner object or sharing is activated
-                        visible = true
-                    }
-                    else {
-                        /*
-                            this is a special clause for consortia member objects:
-                            - the consortium can see the documents it shared itself (directly attached documents are catched by the clause above because inOwnerOrg is true)
-                            - the single user member uploaded a document which should only be visible by the uploading member itself
-                         */
-                        if((parentAtChild && docctx.sharedFrom) || !parentAtChild && docctx.owner?.owner?.id == contextService.getOrg().id) {
-                            visible = true
-                        }
+                                visible = inOwnerOrg
+                            }
+                            else if(inOwnerOrg || docctx.sharedFrom) {
+                                //other owner objects than orgs - in particular licenses and subscriptions: visibility is set if the owner org visits the owner object or sharing is activated
+                                visible = true
+                            }
+                            else {
+                                /*
+                                    this is a special clause for consortia member objects:
+                                    - the consortium can see the documents it shared itself (directly attached documents are catched by the clause above because inOwnerOrg is true)
+                                    - the single user member uploaded a document which should only be visible by the uploading member itself
+                                */
+                                if((parentAtChild && docctx.sharedFrom) || !parentAtChild && docctx.owner?.owner?.id == contextService.getOrg().id) {
+                                    visible = true
+                                }
+                            }
+                            break
                     }
                 %>
                 <g:if test="${docctx.isDocAFile() && visible && (docctx.status != RDStore.DOC_CTX_STATUS_DELETED)}">
@@ -116,6 +119,7 @@
                             </td>
                         </g:if>
                         <td>
+                            <ui:documentShareConfigIcon docctx="${docctx}"/>
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <strong>
                                 <g:if test="${docctx.isDocAFile() && visible && supportedMimeType}">
@@ -140,22 +144,22 @@
                                 <br />
                                 ${inTargetOrg ? docctx.owner?.owner?.sortname :  docctx.targetOrg?.sortname}
                             </td>
-                        <%--
+                        %{--
                             <td>
                                 <g:if test="${docctx.org}">
-                                    <g:link controller="organisation" action="show" params="[id:docctx.org.id]"><i class="university icon small"></i> ${docctx.org.name}</g:link>
+                                    <g:link controller="organisation" action="show" params="[id:docctx.org.id]"><i class="${Icons.ORG} icon small"></i> ${docctx.org.name}</g:link>
                                 </g:if>
                                 <g:elseif test="${docctx.license}">
-                                    <g:link controller="license" action="show" params="[id:docctx.license.id]"><i class="balance scale icon small"></i> ${docctx.license.reference}</g:link>
+                                    <g:link controller="license" action="show" params="[id:docctx.license.id]"><i class="${Icons.LICENSE} icon small"></i> ${docctx.license.reference}</g:link>
                                 </g:elseif>
                                 <g:elseif test="${docctx.subscription}">
                                     <g:link controller="subscription" action="show" params="[id:docctx.subscription.id]"><i class="folder open icon small"></i> ${docctx.subscription.name}</g:link>
                                 </g:elseif>
                                 <g:elseif test="${docctx.pkg}">
-                                    <g:link controller="package" action="show" params="[id:docctx.pkg.id]"><i class="gift icon small"></i> ${docctx.pkg.name}</g:link>
+                                    <g:link controller="package" action="show" params="[id:docctx.pkg.id]"><i class="${Icons.PACKAGE} icon small"></i> ${docctx.pkg.name}</g:link>
                                 </g:elseif>
                             </td>
-                        --%>
+                        --}%
                         </g:if>
                         <td class="center aligned x">
                             <g:if test="${docctx.isDocAFile()}">

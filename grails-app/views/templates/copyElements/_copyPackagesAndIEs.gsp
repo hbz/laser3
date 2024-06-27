@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.PendingChangeConfiguration; de.laser.IssueEntitlement; de.laser.SubscriptionController; de.laser.storage.RDStore; de.laser.Person; de.laser.Subscription; de.laser.FormService; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.I10nTranslation" %>
+<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.PendingChangeConfiguration; de.laser.IssueEntitlement; de.laser.SubscriptionController; de.laser.storage.RDStore; de.laser.Person; de.laser.Subscription; de.laser.FormService; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.I10nTranslation" %>
 <laser:serviceInjection/>
 
 
@@ -54,10 +54,10 @@
                         <div class="la-copyPack-container la-element">
                             <div data-oid="${genericOIDService.getOID(sp)}" class="la-copyPack-item">
                                 <label>
-                                    <i class="gift icon"></i>
+                                    <i class="${Icons.PACKAGE} icon"></i>
                                     <g:link controller="package" action="show" target="_blank" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
                                     <ui:debugInfo>PkgId: ${sp.pkg.id}</ui:debugInfo>
-                                    <g:if test="${sp.pkg.contentProvider}">(${sp.pkg.contentProvider.name})</g:if>
+                                    <g:if test="${sp.pkg.provider}">(${sp.pkg.provider.name})</g:if>
                                 </label>
                                 <div>
                                     <g:link controller="subscription" action="index" id="${sourceObject.id}"><strong>${message(code: 'issueEntitlement.countSubscription')}</strong> ${sp.getIssueEntitlementCountOfPackage()}</g:link>
@@ -94,10 +94,10 @@
                         <div class="la-copyPack-container la-element">
                             <div data-oid="${genericOIDService.getOID(sp)}" class="la-copyPack-item">
                                 <label>
-                                    <i class="gift icon"></i>
+                                    <i class="${Icons.PACKAGE} icon"></i>
                                     <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
                                     <ui:debugInfo>PkgId: ${sp.pkg.id}</ui:debugInfo>
-                                    <g:if test="${sp.pkg.contentProvider}">(${sp.pkg.contentProvider.name})</g:if>
+                                    <g:if test="${sp.pkg.provider}">(${sp.pkg.provider.name})</g:if>
                                 </label>
                                 <div>
                                     <g:link controller="subscription" action="index" id="${targetObject?.id}"><strong>${message(code: 'issueEntitlement.countSubscription')}</strong> ${sp.getIssueEntitlementCountOfPackage()}</g:link>

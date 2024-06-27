@@ -7,11 +7,257 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+#### day of release 3.4
+
+5783    27.06.2024  rc-3.4  3.4         Andreas Bug         Adresskopiermodal verarbeitete Befehle falsch
+
+5771    24.06.2024  rc-3.4  3.4         Andreas Feature     Anbieter-Filter erläutert
+
+5776    21.06.2024  rc-3.4  3.4         Andreas Feature     fehlende Relationen nachgereicht
+
+5781    20.06.2024  rc-3.4  3.4         David   Feature     AjaxController: addToCollection und resolveOID2 entfernen
+
+5777    20.06.2024  rc-3.4  3.4         David   Feature     Org.sector entfernen
+
+5775    20.06.2024  rc-3.4  3.4         Andreas Feature     Umkodierung von ehemals öffentlichen Anbieter-/Lieferantenkontakten
+
+5772    17.06.2024  rc-3.4  3.4         Andreas Bug         Dokumente ohne Bezug wurden nicht dargestellt
+
+5770    17.06.2024  rc-3.4  3.4         Andreas Bug         obsoleten Read-Link entfernt
+
+5768    14.06.2024  rc-3.4  3.4         Andreas Bug         Export der Lizenzübertragungen schlug fehl
+
+5767    14.06.2024  rc-3.4  3.4         Andreas Bug         Bearbeitungsrechte im privaten Addressbuch fehlten
+
+5765    14.06.2024  rc-3.4  3.4         Andreas Bug         Angaben einer Konsortialstelle waren öffentlich bearbeitbar
+
+5764    13.06.2024  dev     3.4         Andreas Bug         500er und falsche Sortierung bei neuen Merkmalsgruppen aufgehoben
+
+5763    13.06.2024  dev     3.4         Andreas Bug         Falsches Argument beim Lizenzexport behoben
+
+5762    13.06.2024  dev     3.4         Andreas Bug         unsinnige Beschränkung aufgehoben
+
+5761    13.06.2024  dev     3.4         Andreas Bug         500er bei der Lizenzsuche aufgehoben für Nichtkonsortialstellen
+
+5752    10.06.2024  dev     3.4         Andreas Bug         Merkmalsverwaltung für Anbieter und Lieferanten geöffnet
+
+5751    10.06.2024  dev     3.4         Andreas Bug         dublette Erzeugung von VendorRoles unterbunden
+
+5750    10.06.2024  dev     3.4         Andreas Bug         fehlende Berechtigungsprüfung nachgereicht
+
+5749    10.06.2024  dev     3.4         Andreas Bug         fehlende Verknüpfung nachgereicht
+
+5747    10.06.2024  dev     3.4         Andreas Bug         we:kb-Filter auf we:kb-Lieferanten eingegrenzt
+
+5746    10.06.2024  dev     3.4         Andreas Bug         Anbieter und Lieferanten korrekt aufgeschlüsselt
+
+5739    07.06.2024  dev     3.4         Andreas Bug         Namensraum-Dubletten per Sync ausgehebelt
+
+5738    07.06.2024  dev     3.4         Andreas Bug         Export der Konsortialstellen funktionierte nicht
+
+5717    06.06.2024  dev     3.4         Andreas Bug         falsche Ausgabe des KBART-Export korrigiert
+
+5649    06.06.2024  dev     3.4         Andreas Feature     Kopie von Anbietern und Lieferanten
+
+5734    05.06.2024  dev     3.4         Andreas Bug         Adressabfrage unvollständig
+
+5731    05.06.2024  dev     3.4         Andreas Bug         Kundennummer-Tabelle war nicht erreichbar
+
+5729    05.06.2024  dev     3.4         Andreas Bug         Anbieter und Lieferanten konnten nicht richtig verknüpft werden
+
+5728    04.06.2024  dev     3.4         Andreas Feature     neue Referenzwerte und Merkmale aufgenommen
+
+5684    04.06.2024  dev     3.4         Moe     Feature    Umfrage-Ersteller: Mail Spam Reduzieren
+
+5019    03.06.2024  dev     3.4         Moe     Feature    Lieferant in Umfrage auswählen
+
+5726    03.06.2024  dev     3.4         Andreas Bug         Haushaltsjahr nicht berücksichtigt, Lizenz vorbelegt
+
+5720    03.06.2024  dev     3.4         Andreas Feature     Anbieter und Lieferanten um createdBy/legallyObligedBy erweitert
+
+5688    03.06.2024  dev     3.4         Andreas Feature     ElasticSearch-Index um neue Komponenten erweitert
+
+5725    29.05.2024  dev     3.4         Andreas Bug         Checkbox zum Eingrenzen der Kontaktarten überarbeitet
+
+5637    29.05.2024  dev     3.4         David   Feature     GASCO-Kontakt für Backoffice/Kundentyp Verwaltung reaktivieren
+
+5390    28.05.2024  dev     3.4         Andreas Feature     Verfahrensverzeichnis aktualisiert
+
+5722    28.05.2024  dev     3.4         Moe     Feature    SubscriptionPackage in CostItem ablösen durch nur Package Fremdschlüssel
+
+5140    27.05.2024  dev     3.4         David   Feature     Workflow´s an Objekte hängen (?)
+
+5715    27.05.2024  dev     3.4         David   Feature     Filter: currentWorkflows -> Anbieter/Lieferanten
+
+5713    24.05.2024  dev     3.4         David   Feature     Workflows anlegen für Anbieter und Lieferanten
+
+5712    24.05.2024  dev     3.4         Andreas Feature     Zuordnungsjahr bei Hinzufügen neuer Teilnehmer verteilen
+
+5711    24.05.2024  dev     3.4         David   Feature     Reporting: Subscription > Jahresring - Einrichtungslizenz
+
+5705    24.05.2024  dev     3.4         Andreas Bug         Lieferanten wurden nicht richtig gesucht
+
+5703    24.05.2024  dev     3.4         David   Feature     Animierte Gifs in images/clips werden wieder gefunden
+
+5701    24.05.2024  dev     3.4         David   Feature     Reporting: Export von Lieferanten
+
+5700    24.05.2024  dev     3.4         David   Feature     Reporting: Export von Anbietern
+
+5694    24.05.2024  dev     3.4         Andreas Bug         Korrekturen bei der Entknüpfung von Verträgen
+
+5630    24.05.2024  dev     3.4         Andreas Feature     Anleitung zum Lizenzupload angelegt
+
+5706    24.05.2024  dev     3.4         Moe     Feature    Kostenausschüttung umfrage
+
+5678    23.05.2024  dev     3.4         David   Feature     Reporting: Anbieter
+
+5677    23.05.2024  dev     3.4         David   Feature     Reporting: Lieferanten
+
+5702    23.05.2024  dev     3.4         Moe     Feature    Kosten auch bei Allgemeine Umfrage erlauben
+
+5697    22.05.2024  dev     3.4         Andreas Feature     deal_id als neuer Nanemsraum aufgenommen
+
+5691    22.05.2024  dev     3.4         Andreas Feature     Vererbbarkeit von Alterntivnamen implementiert
+
+5697    22.05.2024  dev     3.4         Moe     Feature    Neuer Identifikator: deal_id
+
+5120    22.05.2024  dev     3.4         Moe     Feature    Paket-Umfrage bauen
+
+5696    21.05.2024  dev     3.4         Moe     Feature    Balkendiagramm anzeigen bei Umfrage-Ergebnisse
+
+5693    17.05.2024  dev     3.4         Andreas Feature     verbesserte Rückmeldung bei Austausch von Merkmalen
+
+5676    14.05.2024  dev     3.4         David   Feature     Marker/Beobachtungsliste: Anbieter
+
+5675    14.05.2024  dev     3.4         David   Feature     We:kb-News: Anbieter
+
+5598    14.05.2024  dev     3.4         Moe     Feature    In der Paket Übersichtseite einen Reiter mit verknüpten Lizenzen anzeigen
+
+5659    14.05.2024  dev     3.4         Moe     Feature    Kosten per Use in Verlängerungsumfrage ermöglichen
+
+5682    14.05.2024  dev     3.4         Moe     Feature    Rechnungsstellungsinformationen bei Änderungen für Anbieter in Renewal kennzeichen
+
+5681    10.05.2024  dev     3.4         Moe     Feature    Rechnungstellungsinformationen in Umfrage abfragen
+
+5686    13.05.2024  dev     3.4         Andreas Feature     Sortierung der Merkmalsgruppen überschreiben
+
+5679    13.05.2024  dev     3.4         Andreas Bug         Weiterleitung implementiert
+
+5625    13.05.2024  dev     3.4         Andreas Feature     Alternativnamen für Lizenzen und Verträge
+
+5681    10.05.2024  dev     3.4         Moe     Feature     Rechnungstellungsinformationen in Umfrage abfragen
+
+5674    08.05.2024  dev     3.4         David   Feature     Filter: API-Zugriff
+
+4938    08.05.2024  dev     3.4         Moe     Feature     Umfragevorlagen (Umfrage kopieren auch bei Verlängerungsumfrage)
+
+5656    06.05.2024  dev     3.4         Moe     Feature     Umfrage-Kosten per Upload ermöglichen
+
+5670    30.04.2024  dev     3.4         Andreas Bug         Icon-Überbleibsel entfernt
+
+5641    30.04.2024  dev     3.4         Andreas Feature     Merkmale auch ohne Wert zu Teilnehmerlizenzen hinzufügen
+
+5634    30.04.2024  dev     3.4         Andreas Feature     Kontextleiste in die Kostenübersicht migriert
+
+5664    29.04.2024  dev     3.4         Moe     Feature     Umfrage: Teilnehmer hinzufügen per Upload
+
+5663    26.04.2024  dev     3.4         Andreas Feature     Neue Merkmalsdefinitionen aufgenommen
+
+5662    26.04.2024  dev     3.4         Andreas Feature     Neue Referenzwerte aufgenommen
+
+5661    26.04.2024  dev     3.4         Andreas Feature     Neue Referenzwerte aufgenommen
+
+5660    26.04.2024  dev     3.4         Andreas Feature     Neue Referenzwerte aufgenommen
+
+5658    26.04.2024  dev     3.4         Andreas Feature     Keine Berechnung des Wertes, wenn Umrechnungskurs fehlt
+
+5647    26.04.2024  dev     3.4         Andreas Bug         Bearbeitbarkeit der Schlüsselpaare wiederhergestellt und Sprunglinks eingebaut
+
+5617    23.04.2024  dev     3.4         Moe     Feature     Umfrage: Merkmale sortieren
+
+5652    25.04.2024  dev     3.4         David   Feature     Reporting: Einrichtungskosten in % anzeigen
+
+5646    24.04.2024  dev     3.4         David   Feature     Marker/Beobachtungsliste: Lieferanten
+
+5642    23.04.2024  dev     3.4         Moe     Feature     Ausgewählte ClickMe-Felder abspeichern als Vorlage für wiederkehrende Workflows
+
+5655    23.04.2024  dev     3.4         Andreas Feature     Sortierung der Länderauswahl umgestellt
+
+5653    23.04.2024  dev     3.4         David   Feature     Refactoring: Subscription.getSubscriber()
+
+5615    23.04.2024  dev     3.4         Ingrid  Feature     Alternierende Eingabe für Hausanschrift oder Postfach, mehr Pflichtfelder
+
+5650    23.04.2024  dev     3.4         David   Feature     Refactoring: Edit-Mode komplett entfernen
+
 --      19.04.2024  rc-3.3  3.3.10      Andreas Bug         Verhalten für neue Art von Serverantwort implementiert
+
+5640    18.04.2024  dev     3.4         David   Feature     Inaktive Accounts automatisiert deaktivieren
+
+5645    18.04.2024  dev     3.4         David   Feature     We:kb-News: Lieferanten
+
+3502    12.04.2024  dev     3.4         David   Feature     Navigation zwischen Objekten einer Liste ermöglichen
+
+5530    11.04.2024  dev     3.4         David   Feature     Dashboard für Einrichtungen
+
+5638    11.04.2024  dev     3.4         Andreas Bug         Beifang von leeren Adresszeilen entfernt
+
+5639    10.04.2024  dev     3.4         Andreas Bug         Argumentfehler in Abfrage behoben
+
+5636    10.04.2024  dev     3.4         Andreas Bug         if-Abfrage zum Abfangen ungültiger Sortierparameter korrigiert
+
+2348    10.04.2024  dev     3.4         David   Feature     getDerivedSubscriptionBySubscribers(Org org) überdenken
+
+5633    04.04.2024  dev     3.4         Moe     Feature     Mehrfachvergabe-Info bei Merkmale hinzufügen Dropdown
+
+5594    04.04.2024  dev     3.4         Moe     Feature     Einrichtung verwalten umbauen, dass nur MJL über alle MJL angezeigt werden
+
+5628    03.04.2024  dev     3.4         Moe     Feature     Schneller Zugriff auf Kbart-upload für Titel hinzufügen
+
+5619    02.04.2024  dev     3.4         Andreas Feature     Plattform-Filter erweitert
+
+5627    02.04.2024  dev     3.4         Moe     Feature     Teilnehmer-Verwaltung: Teilnehmer Filter einbauen
+
+5512    02.04.2024  dev     3.4         Moe     Feature     Teilnehmerkosten vergleichen
+
+5626    02.04.2024  dev     3.4         Moe     Feature     Teilnehmer hinzufügen: Meldung auf Dashboard für Pro Nutzer wie bei Verlängerungsumfrage
+
+5607    02.04.2024  dev     3.4         Moe     Feature     Lizenz: Einrichtung hinzufügen per Upload
+
+3996    27.03.2024  dev     3.4         Andreas Feature     Cost per Use-Erstaufschlag implementiert
+
+5624    27.03.2024  dev     3.4         Moe     Feature     Umfrage aufräumen
+
+5590    22.03.2024  dev     3.4         Moe     Feature     Teilnehmer hinzufügen: MJL optional direkt die MJL für TN mit anlegen
+
+5622    22.03.2024  dev     3.4         Andreas Feature     paketweite Erzeugung und Entfernung von dauerhaften Titel
 
 5623    21.03.2024  rc-3.3  3.3.9       Andreas Feature     kleinere Ausbesserungen am Sync, besseres Debugging
 
 --      21.03.2024  rc-3.3  3.3.9       Andreas Feature     Verbesserungen in der Performance an der API-OA-Schnittstelle
+
+5606    20.03.2024  dev     3.4         Andreas Feature     Sichtbarkeitseinstellung auf weitere Dokumententypen erweitert
+
+5516    20.03.2024  dev     3.4         David   Feature     FilterService: Manipulation der GrailsParameterMap unterbinden
+
+5618    19.03.2024  dev     3.4         Andreas Feature     Beifang von Plattformen bei der Kundennummerverwaltung entfernt
+
+5613    19.03.2024  dev     3.4         Andreas Feature     diverse Erweiterungen der Nutzungsstatistiken
+
+5608    19.03.2024  dev     3.4         Moe     Feature     Umfrage: Merkmale übertragen
+
+5620    18.03.2024  dev     3.4         Andreas Feature     Vertragsname kann jetzt vererbt werden
+
+5616    18.03.2024  dev     3.4         Andreas Feature     Umstellung des Entknüpfungsprozesses auf natives SQL
+
+5518    18.03.2024  dev     3.4         Andreas Bug         falsche Zählung in Bubble
+
+5519    18.03.2024  dev     3.4         David   Bug         Filter: Titel-Umfrage > Titel > Status wird ignoriert
+
+5602    13.03.2024  dev     3.4         Moe     Feature     Paket Akkordeon von Lizenz-Übersicht auch im Reiter Paket anzeigen
+
+4067    13.03.2024  dev     3.4         Moe     Feature     Mehrjahreslizenzen per Option beim Verlängerungsübertrag für Folgejahre erstellen
+
+5610    08.03.2024  dev     3.4         Andreas Feature     Erweiterung des Filters in "Meine Einrichtungen"
 
 5609    07.03.2024  rc-3.3  3.3.7       Andreas Bug         inkorrekte Fehlerbehandlung, wenn der we:kb-Server nicht erreichbar ist
 
@@ -23,6 +269,18 @@
 
 --      01.03.2024  rc-3.3  3.3.7       Andreas Feature     Erweiterungen der Titelbereinigung
 
+5600    29.02.2024  dev     3.4         Moe     Feature     Vorgänger/Nachfolger in Meine Lizenzen
+
+5599    29.02.2024  dev     3.4         Moe     Feature     Vorgänger/Nachfolger in Meine Lizenzen pro Einrichtung
+
+5597    28.02.2024  dev     3.4         Moe     Feature     Konsortial Spez. Comment Feld soll mehr in Umfrage sichtbar sein und in der Lizenzübersicht
+
+5515    27.02.2024  dev     3.4         Moe     Feature     Sortierung Drop down "meine Umfrage" gültig im Jahr
+
+5575    27.02.2024  dev     3.4         Andreas Feature     Erweiterung der Paketverknüpfungsmeldung
+
+5020    27.02.2024  dev     3.4         Andreas Feature     Umstellung des Vergleichs-Menüpunktes
+
 5595    26.02.2024  rc-3.3  3.3.7       Andreas Bug         BudgetCodes wurden im Export nicht aufgelöst
 
 5993    26.02.2024  rc-3.3  3.3.7       Andreas Bug         Neuer Versuch zur Behebung des Session-Mismatches
@@ -31,13 +289,43 @@
 
 5591    26.02.2024  rc-3.3  3.3.7       Andreas Bug         unnötige OID-Auflösung behoben
 
+5583    23.02.2024  dev     3.4         Moe     Feature     Umfrage export überarbeiten/aufräumen
+
+5275    23.02.2024  dev     3.4         Moe     Feature     Mehrere Kostenelemente in Verlängerungsumfrage und Lizenzumfragen
+
+5589    23.02.2024  dev     3.4         Andreas Feature     Anpassung des we:kb-Paketfilters
+
+5576    23.02.2024  dev     3.4         Andreas Feature     Umstellung der Paketverknüpfung auf Teilprozesse zu je 5000 Einträge
+
+5582    22.02.2024  dev     3.4         Andreas Bug         Lizenzver-/entknüpfung wurde nicht automatisch an die Teilnehmer weitergereicht
+
+5581    22.02.2024  dev     3.4         Andreas Bug         Tracking für Excelspalten eingebaut
+
 5579    20.02.2024  rc-3.3  3.3.6       Andreas Feature     SUSHI-Konfiguration um Plattformnamen/filter erweiter
 
 --      20.02.2024  rc-3.3  3.3.6       Andreas Bug         Abfrageargumente bei Titelumfrage korrigiert
 
+5219    19.02.2024  dev     3.4         Andreas Feature     Aktualisierung der internen Dokumentation
+
+--      14.02.2024  dev     3.4         Andreas Feature     Performanzverbesserung bei der Nutzerverwaltung
+
+5559    14.02.2024  dev     3.4         Andreas Feature     Ladebefehle bei Merkmalsladung umgestellt
+
+5551    07.02.2024  dev     3.4         Andreas Feature     fehlende Felder dem Einrichtungsexport nachgereicht
+
+4982    07.02.2024  dev     3.4         Andreas Feature     Strukturabbau bei we:kb-API-Antworten
+
+4837    07.02.2024  dev     3.4         Andreas Feature     Abwicklung der allgemeinen Plattformmerkmale
+
+5550    06.02.2024  dev     3.4         Andreas Bug         Entknüpfung eines Vertrages auf Konsortialebene wirkte sich nicht auf Teilnehmer aus
+
+5545    06.02.2024  dev     3.4         Andreas Bug         Adressmodal eindeutiger zugewiesen
+
 5556    05.02.2024  rc-3.3  3.3.5       Moe     Bug         Kosten anzeigen falsche Teilnehmer-Anzeige
 
 5555    05.02.2024  rc-3.3  3.3.5       Moe     Feature     Alle Pakete für Yoda mit Titel-Vergleich LASER vs WEKB
+
+5507    01.02.2024  dev     3.4         Andreas Feature     Beziehungsbezeichner korrigiert
 
 5554    01.02.2024  rc-3.3  3.3.5       Andreas Bug         Eigener Kostenfilter hakte, wenn nur nach Lizenz gefiltert wird
 
@@ -46,6 +334,8 @@
 5552    31.01.2024  rc-3.3  3.3.5       Andreas Bug         Identifikator-Validierungen mit Fallbacks versehen
 
 --      31.01.2024  rc-3.3  3.3.5       Andreas Bug         Routine zur Abwehr zu vieler offener Datenbankverbindungen implementiert
+
+5501    30.01.2024  dev     3.4         Andreas Feature     Schieberegler zur Auswahl des Zeitraumes für Reports implementiert
 
 --      30.01.2024  rc-3.3  3.3.5       Andreas Bug         falsche Summierung bei Platform und Database Reports
 
@@ -74,6 +364,8 @@
 5531    19.01.2024  rc-3.3  3.3.5       David   Bug         Nutzer löschen: SystemAnnouncement
 
 5517    19.01.2024  rc-3.3  3.3.5       David   Bug         Filter "Erscheinungsjahr" @ "Meine dauerhaften Titel"
+
+5521    12.01.2024  dev     3.4         David   Feature     Refactoring: PDF-Export
 
 5520    12.01.2024  rc-3.3  3.3.5       David   Bug         Vertrag anlegen als neuer Kundentyp
 

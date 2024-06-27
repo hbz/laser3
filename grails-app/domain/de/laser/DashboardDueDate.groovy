@@ -2,8 +2,8 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.utils.SqlDateUtils
 import de.laser.survey.SurveyInfo
+import de.laser.utils.SqlDateUtils
 
 /**
  * Represents a dashboard reminder for a user's dashboard. They are initialised every day per cronjob; the object's parameters to remind about are stored in {@link DueDateObject}

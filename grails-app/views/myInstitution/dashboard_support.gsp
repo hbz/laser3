@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.CustomerTypeService; de.laser.workflow.WfChecklist; de.laser.workflow.WfCheckpoint; de.laser.storage.RDStore; de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.helper.Icons; de.laser.utils.AppUtils; de.laser.CustomerTypeService; de.laser.workflow.WfChecklist; de.laser.workflow.WfCheckpoint; de.laser.storage.RDStore; de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
 
 <laser:htmlStart message="menu.institutions.dash" serviceInjection="true"/>
 
@@ -13,19 +13,19 @@
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
-                            <i class="clipboard icon la-list-icon"></i>
+                            <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
                             <div class="content">
                                 <g:link controller="myInstitution" action="currentSubscriptions">${message(code:'menu.my.subscriptions')}</g:link>
                             </div>
                         </div>
                         <div class="item">
-                            <i class="balance scale icon la-list-icon"></i>
+                            <i class="${Icons.LICENSE} icon la-list-icon"></i>
                             <div class="content">
                                 <g:link controller="myInstitution" action="currentLicenses">${message(code:'menu.my.licenses')}</g:link>
                             </div>
                         </div>
                         <div class="item">
-                            <i class="university icon la-list-icon"></i>
+                            <i class="${Icons.ORG} icon la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="manageMembers" message="menu.my.insts" />
                             </div>
@@ -35,19 +35,19 @@
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
-                            <i class="calendar check outline icon la-list-icon"></i>
+                            <i class="${Icons.TASK} icon la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem controller="myInstitution" action="tasks" message="menu.my.tasks" />
                             </div>
                         </div>
                         <div class="item">
-                            <i class="file icon la-list-icon"></i>
+                            <i class="${Icons.DOCUMENT} icon la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem controller="myInstitution" action="documents" message="menu.my.documents" />
                             </div>
                         </div>
                         <div class="item">
-                            <i class="tasks icon la-list-icon"></i>
+                            <i class="${Icons.WORKFLOW} icon la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
                             </div>
@@ -57,7 +57,7 @@
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
-                            <i class="university icon la-list-icon"></i>
+                            <i class="${Icons.ORG} icon la-list-icon"></i>
                             <div class="content">
                                 <g:link controller="org" action="show" id="${institution.id}">${message(code: 'menu.institutions.org.show')}</g:link>
                             </div>
@@ -79,13 +79,13 @@
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
-                            <i class="university icon la-list-icon"></i>
+                            <i class="${Icons.ORG} icon la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                             </div>
                         </div>
                         <div class="item">
-                            <i class="clipboard icon la-list-icon"></i>
+                            <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem controller="myInstitution" action="subscriptionsManagement" message="menu.institutions.subscriptionsManagement" />
                             </div>
@@ -124,19 +124,18 @@
         </a>
 
         <a class="${us_dashboard_tab.value == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
-            <i class="flag icon large"></i>
+            <i class="${Icons.ANNOUNCEMENT} icon large"></i>
             ${systemAnnouncements.size()} ${message(code:'announcement.plural')}
         </a>
 
         <a class="${us_dashboard_tab.value == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
-            <i class="calendar check outline icon large"></i>
+            <i class="${Icons.TASK} icon large"></i>
             ${tasksCount} ${message(code:'myinst.dash.task.label')}
         </a>
 
         <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
             <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
-                <i class="tasks icon large"></i>
-%{--                ${myWorkflowsCount + allWorkflowsCount} ${message(code:'workflow.plural')}--}%
+                <i class="${Icons.WORKFLOW} icon large"></i>
                 ${allChecklistsCount} ${message(code:'workflow.plural')}
             </a>
         </g:if>
@@ -190,16 +189,6 @@
 
         <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
 
-%{--            <g:if test="${editable}">--}%
-%{--                <div class="ui right aligned grid">--}%
-%{--                    <div class="right floated right aligned sixteen wide column">--}%
-%{--                        <a onclick="JSPC.app.createTask();" class="ui button">--}%
-%{--                            ${message(code:'task.create.new')}--}%
-%{--                        </a>--}%
-%{--                    </div>--}%
-%{--                </div>--}%
-%{--            </g:if>--}%
-
             <div class="ui cards">
                 <g:each in="${tasks}" var="tsk">
                     <div class="ui card">
@@ -228,19 +217,19 @@
                                     <div class="item">
                                         <span class="la-popup-tooltip la-delay" data-content="${message(code: 'task.' + tskObj.controller)}" data-position="left center" data-variation="tiny">
                                             <g:if test="${tskObj.controller == 'organisation'}">
-                                                <i class="university icon"></i>
+                                                <i class="${Icons.ORG} icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('subscription')}">
-                                                <i class="clipboard outline icon"></i>
+                                                <i class="${Icons.SUBSCRIPTION} icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('package')}">
-                                                <i class="gift icon"></i>
+                                                <i class="${Icons.PACKAGE} icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('license')}">
-                                                <i class="book icon"></i>
+                                                <i class="${Icons.LICENSE} icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('survey')}">
-                                                <i class="chart pie icon"></i>
+                                                <i class="${Icons.SURVEY} icon"></i>
                                             </g:if>
                                         </span>
                                     <g:if test="${tskObj.controller.contains('survey')}">
@@ -253,7 +242,7 @@
                                 </g:each>
                             </g:if>
                             <g:else>
-                                <i class="calendar check outline icon"></i> ${message(code: 'task.general')}
+                                <i class="${Icons.TASK} icon"></i> ${message(code: 'task.general')}
                             </g:else>
                         </div>
                     </div>
@@ -401,7 +390,5 @@
             };
 
         JSPC.app.dashboard.initWorkflows()
-
-    %{--        JSPC.app.createTask = bb8.ajax4SimpleModalFunction("#modalCreateTask", "<g:createLink controller="ajaxHtml" action="createTask"/>", true);--}%
     </laser:script>
 <laser:htmlEnd />

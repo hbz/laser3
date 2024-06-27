@@ -13,24 +13,24 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
-    <ui:exportDropdown>
+    %{--<ui:exportDropdown>
         <ui:exportDropdownItem>
             <g:link class="item" controller="survey" action="generatePdfForParticipant"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]">PDF-Export
             </g:link>
         </ui:exportDropdownItem>
-    </ui:exportDropdown>
+    </ui:exportDropdown>--}%
     <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id]}">
         <ui:actionsDropdown>
             <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
-                <ui:actionsDropdownItem controller="survey" action="openSurveyAgainForParticipant"
-                                               params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
+                <ui:actionsDropdownItem controller="survey" action="actionsForParticipant"
+                                               params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id, actionForParticipant: 'openSurveyAgainForParticipant']"
                                                message="openSurveyAgainForParticipant.button"/>
 
             </g:if>
             <g:if test="${!surveyConfig.isResultsSetFinishByOrg(participant)}">
-                <ui:actionsDropdownItem controller="survey" action="finishSurveyForParticipant"
-                                               params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
+                <ui:actionsDropdownItem controller="survey" action="actionsForParticipant"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id, actionForParticipant: 'finishSurveyForParticipant']"
                                                message="finishSurveyForParticipant.button"/>
 
             </g:if>
@@ -43,7 +43,7 @@
 <uiSurvey:status object="${surveyInfo}"/>
 
 
-<g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_TITLE_SELECTION]}">
+<g:if test="${surveyConfig.subscription}">
     <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
@@ -111,43 +111,6 @@
     </ui:greySegment>
 </g:if>
 
-<div class="ui stackable grid">
-    <div class="sixteen wide column">
-
-        <div class="la-inline-lists">
-
-            <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
-
-                <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
-                                                                                  costItemSums        : costItemSums,
-                                                                                  subscription        : subscription,
-                                                                                  visibleOrgRelations : visibleOrgRelations,
-                                                                                  surveyResults       : surveyResults]"/>
-            </g:if>
-
-            <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
-
-                <laser:render template="/templates/survey/generalSurvey" model="[surveyConfig        : surveyConfig,
-                                                                             costItemSums        : costItemSums,
-                                                                             subscription        : surveyConfig.subscription,
-                                                                             tasks               : tasks,
-                                                                             visibleOrgRelations : visibleOrgRelations]"/>
-            </g:if>
-
-            <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
-
-                <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
-                                                                                  costItemSums        : costItemSums,
-                                                                                  subscription        : subscription,
-                                                                                  visibleOrgRelations : visibleOrgRelations,
-                                                                                  surveyResults       : surveyResults]"/>
-
-                <laser:render template="/templates/survey/entitlementSurvey"/>
-
-            </g:if>
-
-        </div>
-    </div>
-</div>
+<laser:render template="/templates/survey/participantView"/>
 
 <laser:htmlEnd />

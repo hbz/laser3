@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService;" %>
 
     <g:if test="${isRenewSub}">
         <g:set var="pageTitle" value="${message(code: 'subscription.details.renewals.renew_sub.label')}" />
@@ -13,8 +13,8 @@
         <ui:breadcrumbs>
             <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
 
-            <g:if test="${sourceObject}">
-                <g:set var="surveyConfig" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(sourceObject, true)}"/>
+            <g:set var="surveyConfig" value="${SurveyConfig.get(Long.valueOf(fromSurvey))}"/>
+            <g:if test="${surveyConfig.isSubSurveyUseForTransfer()}">
                 <ui:crumb controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.surveyInfo.name}" />
             </g:if>
 
@@ -62,7 +62,7 @@
                         <i class="image outline icon"></i>                  ${message(code:'subscription.kind.label')} <br />
                         <i class="dolly icon"></i>                          ${message(code:'subscription.form.label')} <br />
                         <i class="box icon"></i>                            ${message(code:'subscription.resource.label')} <br />
-                        <i class="balance scale icon"></i>                  ${message(code: 'license.label')} <br />
+                        <i class="${Icons.LICENSE} icon"></i>               ${message(code: 'license.label')} <br />
                         <i class="address card icon"></i>                   ${message(code: 'subscription.specificSubscriptionEditors')} <br />
                         <i class="barcode icon"></i>                        ${message(code: 'default.identifiers.label')} <br />
                         <i class="exchange icon"></i>                       ${message(code: 'subscription.linkedObjects')}
@@ -78,9 +78,9 @@
                     </div>
                     <div class="description">
                         <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
-                        <i class="calendar check outline icon"></i> ${message(code: 'menu.institutions.tasks')} <br />
-                        <i class="file outline icon"></i>           ${message(code: 'default.documents.label')} <br />
-                        <i class="tasks icon"></i>                  ${message(code: 'workflow.plural')}
+                        <i class="${Icons.TASK} icon"></i>          ${message(code: 'menu.institutions.tasks')} <br />
+                        <i class="${Icons.DOCUMENT} icon"></i>      ${message(code: 'default.documents.label')} <br />
+                        <i class="${Icons.WORKFLOW} icon"></i>      ${message(code: 'workflow.plural')}
                     </div>
                 </div>
             </div>
@@ -94,7 +94,7 @@
                             </g:link>
                         </div>
                         <div class="description">
-                            <i class="university icon"></i> ${message(code: 'consortium.subscriber')}
+                            <i class="${Icons.ORG} icon"></i> ${message(code: 'consortium.subscriber')}
                         </div>
                     </div>
                 </div>
@@ -127,7 +127,7 @@
                         <i class="image outline icon"></i>                  ${message(code:'subscription.kind.label')}
                         <i class="dolly icon"></i>                          ${message(code:'subscription.form.label')} <br />
                         <i class="box icon"></i>                            ${message(code:'subscription.resource.label')}
-                        <i class="balance scale icon"></i>                  ${message(code: 'license.label')} <br />
+                        <i class="${Icons.LICENSE} icon"></i>               ${message(code: 'license.label')} <br />
                         <i class="address card icon"></i>                   ${message(code: 'subscription.specificSubscriptionEditors')}
                         <i class="barcode icon"></i>                        ${message(code: 'default.identifiers.label')} <br />
                         <i class="exchange icon"></i>                       ${message(code: 'subscription.linkedObjects')}
@@ -142,9 +142,9 @@
                     </div>
                     <div class="description">
                         <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
-                        <i class="calendar check outline icon"></i> ${message(code: 'menu.institutions.tasks')} <br />
-                        <i class="file outline icon"></i>           ${message(code: 'default.documents.label')} <br />
-                        <i class="tasks icon"></i>                  ${message(code: 'workflow.plural')}
+                        <i class="${Icons.TASK} icon"></i>          ${message(code: 'menu.institutions.tasks')} <br />
+                        <i class="${Icons.DOCUMENT} icon"></i>      ${message(code: 'default.documents.label')} <br />
+                        <i class="${Icons.WORKFLOW} icon"></i>      ${message(code: 'workflow.plural')}
                     </div>
                 </div>
             </ui:complexSubNavItem>
@@ -156,7 +156,7 @@
                             ${message(code: 'consortium.subscriber')}
                         </div>
                         <div class="description">
-                            <i class="university icon"></i> ${message(code: 'consortium.subscriber')}
+                            <i class="${Icons.ORG} icon"></i> ${message(code: 'consortium.subscriber')}
                         </div>
                     </div>
                 </ui:complexSubNavItem>

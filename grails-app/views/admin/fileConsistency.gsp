@@ -170,10 +170,6 @@
                                 println "Subscription ${dc.subscription.id} - ${dc.subscription.name} &nbsp;&nbsp; " +
                                         link(action: 'show', controller: 'subscription', id: dc.subscription.id) { '<i class="ui icon external alternate"></i>' }
                             }
-                            if (dc.pkg) {
-                                println "Package ${dc.pkg.id} - ${dc.pkg.name} ${dc.pkg.sortname} &nbsp;&nbsp; " +
-                                        link(action: 'show', controller: 'package', id: dc.pkg.id) { '<i class="ui icon external alternate"></i>' }
-                            }
                             if (dc.org) {
                                 println "Org ${dc.org.id} - ${dc.org.name} ${dc.org.sortname} &nbsp;&nbsp;" +
                                         link(action: 'show', controller: 'org', id: dc.org.id) { '<i class="ui icon external alternate"></i>' }

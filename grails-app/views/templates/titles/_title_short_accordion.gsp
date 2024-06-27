@@ -14,7 +14,7 @@
                 href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
     </g:if>
 </div>
-<g:if test="${(tipp.titleType == 'Book') && (tipp.editionStatement || showEmptyFields)}">
+<g:if test="${(tipp.titleType == 'monograph') && (tipp.editionStatement || showEmptyFields)}">
     <div class="item">
         <i class="grey icon copy la-popup-tooltip la-delay"
            data-content="${message(code: 'title.editionStatement.label')}"></i>
@@ -28,7 +28,7 @@
 </g:if>
 <div class="item">
     <g:if test="${controllerName != 'tipp' && tipp.id}">
-        <g:link class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+        <g:link class="ui icon tiny blue button la-popup-tooltip la-delay"
                 data-content="${message(code: 'laser')}"
                 target="_blank"
                 controller="tipp" action="show"
@@ -38,7 +38,7 @@
     </g:if>
     <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}" var="gokbAPI">
         <g:if test="${tipp.gokbId}">
-            <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+            <a role="button" class="ui icon tiny blue button la-popup-tooltip la-delay"
                data-content="${message(code: 'wekb')}"
                href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/tippContent/?id=' + tipp.gokbId : '#'}"
                target="_blank"><i class="la-gokb  icon"></i>

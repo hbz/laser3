@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:htmlStart text="Playground" serviceInjection="true" />
 
 <br />
@@ -9,9 +9,73 @@
 </h1>
 
 <div class="ui segment">
-    <p class="ui header">
-        <i class="icon large users"></i> various
-    </p>
+    <p class="ui header">Icons #1</p>
+    <div class="ui list">
+        <div class="item">
+            <i class="icon large poll"></i>
+            <div class="content"> Umfragen (poll) </div>
+        </div>
+        <div class="item">
+            <i class="icon large chartline"></i>
+            <div class="content"> Dashboard (chartline) </div>
+        </div>
+        <div class="item">
+            <i class="icon large chart pie"></i>
+            <div class="content"> Reporting (chart pie)</div>
+        </div>
+        <div class="item">
+            <i class="icon large chart bar"></i>
+            <div class="content"> Statistik (chart bar)</div>
+        </div>
+    </div>
+</div>
+
+<div class="ui segment">
+    <p class="ui header">Icons #2</p>
+    <div class="ui list">
+        <div class="item">
+            <i class="icon large ${Icons.PROVIDER}"></i>
+            <div class="content"> Anbieter (${Icons.PROVIDER})</div>
+        </div>
+        <div class="item">
+            <i class="icon large boxes"></i>
+            <div class="content"> Lieferanten (boxes)</div>
+        </div>
+        <div class="item">
+            <i class="icon large ${Icons.ORG}"></i>
+            <div class="content"> Einrichtungen (${Icons.ORG})</div>
+        </div>
+        <div class="item">
+            <i class="icon large ${Icons.PLATFORM}"></i>
+            <div class="content"> Plattformen (${Icons.PLATFORM})</div>
+        </div>
+        <div class="item">
+            <i class="icon large ${Icons.SUBSCRIPTION}"></i>
+            <div class="content"> Lizenzen (${Icons.SUBSCRIPTION})</div>
+        </div>
+        <div class="item">
+            <i class="icon large ${Icons.LICENSE}"></i>
+            <div class="content"> Verträge (${Icons.LICENSE})</div>
+        </div>
+        <div class="item">
+            <i class="icon large ${Icons.PACKAGE}"></i>
+            <div class="content"> Pakete (${Icons.PACKAGE})</div>
+        </div>
+    </div>
+</div>
+
+<div class="ui segment">
+    <p class="ui header">Icons #3</p>
+    <div class="ui list">
+        <div class="item">
+            <i class="icon large forward"></i>
+            <div class="content"> Mehrjahreslaufzeit (forward)</div>
+        </div>
+    </div>
+</div>
+
+<div class="ui segment">
+    <p class="ui header">Links</p>
     <div class="ui list">
         <div class="item">
             <i class="icon large fake"></i>
@@ -31,6 +95,14 @@
         </div>
     </div>
 </div>
+
+<pre>
+    springSecurity.errors.login.expired             ${message(code:'springSecurity.errors.login.expired')}
+    springSecurity.errors.login.passwordExpired     ${message(code:'springSecurity.errors.login.passwordExpired')}
+    springSecurity.errors.login.locked              ${message(code:'springSecurity.errors.login.locked')}
+    springSecurity.errors.login.disabled            ${message(code:'springSecurity.errors.login.disabled')}
+    springSecurity.errors.login.fail                ${message(code:'springSecurity.errors.login.fail')}
+</pre>
 
 <div class="ui segment">
     <p class="ui header">

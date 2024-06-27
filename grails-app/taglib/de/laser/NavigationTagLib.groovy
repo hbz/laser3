@@ -266,10 +266,13 @@ class NavigationTagLib {
         def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
         String linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
+        if (attrs.icon) {
+            linkBody = '<i class="icon ' + attrs.icon + '"></i> ' + linkBody
+        }
+
         if (!attrs.instRole) {
             attrs.instRole = Role.INST_USER // new default
         }
-
         boolean check = contextService.checkCachedNavPerms(attrs)
 
         if (attrs.addItemAttributes) {
@@ -289,7 +292,8 @@ class NavigationTagLib {
         }
         else {
             if (userService.hasAffiliation_or_ROLEADMIN(contextService.getUser(), contextService.getOrg(), attrs.instRole as String)) {
-                out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" data-content="' + message(code:'tooltip.onlyFullMembership') + '" role="menuitem">' + linkBody + '</div>'
+                out << '<div class="item disabled"  '
+                out << 'role="menuitem">' + linkBody + '</div>'
             }
 //            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="menuitem">' + linkBody + '</div>'
         }
@@ -300,7 +304,7 @@ class NavigationTagLib {
         Map<Object, Object> filteredAttrs = attrs.findAll{ it ->
             ! (it.key in ['addItemAttributes', 'class'])
         }
-        String css = attrs.class ? (attrs.class != 'item' ? attrs.class + ' item' : attrs.class) : 'item'
+        String css = attrs.class ? (attrs.class != 'item' ? 'item ' + attrs.class  : attrs.class) : 'item'
         filteredAttrs.put('class', css)
 
         if (attrs.addItemAttributes) {

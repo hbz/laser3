@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org;de.laser.RefdataCategory; de.laser.Person;de.laser.Contact;de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Org;de.laser.RefdataCategory; de.laser.Person;de.laser.Contact;de.laser.storage.RDConstants" %>
 
 <ui:modal id="${modalId ?: 'contactFormModal'}"
              text="${message(code: 'default.add.label', args: [message(code: 'contact.label')])}">
@@ -61,7 +61,7 @@
                     <g:message code="contact.belongesTo.uppercase.label"  />
                 </label>
                 <g:if test="${orgId}">
-                    <i class="icon university la-list-icon"></i>${Org.findById(orgId)}
+                    <i class="${Icons.ORG} icon la-list-icon"></i>${Org.findById(orgId)}
                     <input id="org" name="org.id" type="hidden" value="${orgId}" />
                 </g:if>
                 <g:else>

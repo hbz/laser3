@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.Subscription; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.OrgRole; de.laser.Org; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.SubscriptionPackage" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.Subscription; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.OrgRole; de.laser.Org; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.SubscriptionPackage" %>
 
 <laser:serviceInjection />
 <g:set var="actionStart" value="${System.currentTimeMillis()}"/>
@@ -34,7 +34,7 @@
             <g:if test="${actionName == 'index'}">
                 <g:if test="${currentTitlesCounts < 1000000}">
                     <ui:exportDropdownItem>
-                        <a class="item" data-ui="modal" href="#individuallyExportIEsModal">Export</a>
+                        <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.ISSUE_ENTITLEMENTS]"/>
                     </ui:exportDropdownItem>
                 </g:if>
                 <g:else>
@@ -44,7 +44,7 @@
             <g:elseif test="${actionName == 'addEntitlements'}">
                 <g:if test="${currentTitlesCounts < 1000000}">
                     <ui:exportDropdownItem>
-                        <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
+                        <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.TIPPS]"/>
                     </ui:exportDropdownItem>
                 </g:if>
                 <g:else>
@@ -103,7 +103,7 @@
                 <ui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription), copyObject: true]}" message="myinst.copySubscription" />
             </g:if>
             <g:else>
-                <ui:actionsDropdownItemDisabled controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription), copyObject: true]}" message="myinst.copySubscription" />
+                <ui:actionsDropdownItemDisabled message="myinst.copySubscription" />
             </g:else>
 
             <g:if test="${(contextCustomerType == CustomerTypeService.ORG_INST_PRO && !subscription.instanceOf) || customerTypeService.isConsortium( contextCustomerType )}">
@@ -128,9 +128,13 @@
                 <ui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
                 <g:if test="${subscription.packages}">
                     <ui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
-                    <g:if test="${actionName == 'addEntitlements'}">
-                        <ui:actionsDropdownItem data-ui="modal" id="selectEntitlementsWithKBART" href="#KBARTUploadForm" message="subscription.details.addEntitlements.menu"/>
+                    <g:if test="${actionName == 'renewEntitlementsWithSurvey'}">
+                        <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab)}" message="subscription.details.addEntitlements.menu"/>
                     </g:if>
+                    <g:else>
+                        <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id)}" message="subscription.details.addEntitlements.menu"/>
+                    </g:else>
+
                     <ui:actionsDropdownItem controller="subscription" action="manageEntitlementGroup" params="${[id:params.id]}" message="subscription.details.manageEntitlementGroup.label" />
                     <ui:actionsDropdownItem controller="subscription" action="index" notActive="true" params="${[id:params.id, issueEntitlementEnrichment: true]}" message="subscription.details.issueEntitlementEnrichment.label" />
                 </g:if>
@@ -165,8 +169,7 @@
                     <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && contextService.getOrg().isCustomerType_Consortium()}">
                 <div class="divider"></div>
                 <g:if test="${hasNext}">
-                    <ui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription"
-                                                       params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewalsConsortium.label"/>
+                    <ui:actionsDropdownItemDisabled tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewalsConsortium.label"/>
                 </g:if>
                 <g:else>
                     <ui:actionsDropdownItem controller="subscription" action="renewSubscription"
@@ -175,8 +178,7 @@
             </g:if>
             <g:if test ="${subscription._getCalculatedType() == CalculatedType.TYPE_LOCAL}">
                 <g:if test ="${hasNext}">
-                    <ui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription"
-                                                       params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewals.label"/>
+                    <ui:actionsDropdownItemDisabled tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewals.label"/>
                 </g:if>
                 <g:else>
                     <ui:actionsDropdownItem controller="subscription" action="renewSubscription"
@@ -189,14 +191,8 @@
 
                 <ui:actionsDropdownItem controller="survey" action="addSubtoIssueEntitlementsSurvey"
                                            params="${[sub:params.id]}" text="${message(code:'createIssueEntitlementsSurvey.label')}" />
+                <div class="divider"></div>
             </g:if>
-            <g:elseif test="${contextService.getOrg().isCustomerType_Consortium() && showConsortiaFunctions && subscription.instanceOf == null }">
-                <ui:actionsDropdownItemDisabled controller="survey" action="addSubtoSubscriptionSurvey" params="${[sub:params.id]}" text="${message(code:'createSubscriptionSurvey.label')}"
-                                                tooltip="${message(code: 'tooltip.onlyFullMembership')}" message="createSubscriptionSurvey.label"/>
-
-                <ui:actionsDropdownItemDisabled controller="survey" action="addSubtoIssueEntitlementsSurvey" params="${[sub:params.id]}" text="${message(code:'createIssueEntitlementsSurvey.label')}"
-                                                tooltip="${message(code: 'tooltip.onlyFullMembership')}" message="createIssueEntitlementsSurvey.label"/>
-            </g:elseif>
 
             <g:if test="${showConsortiaFunctions || subscription.administrative}">
                 <ui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" text="${message(code:'subscription.details.addMembers.label',args:menuArgs)}" />
@@ -227,9 +223,6 @@
                     <div class="divider"></div>
                     <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate outline icon"></i> ${message(code:'deletion.subscription')}</g:link>
                 </g:if>
-%{--                <g:else>--}%
-%{--                    <a class="item disabled" href="#"><i class="trash alternate outline icon"></i> ${message(code:'deletion.subscription')}</a>--}%
-%{--                </g:else>--}%
             </g:elseif>
         </g:if>
     </ui:actionsDropdown>
@@ -253,7 +246,7 @@
 </g:elseif>
 
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
-    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription']]}" />
+    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription', inContextOrg: inContextOrg]]}" />
     <laser:render template="financeImportTemplate" />
 </g:if>
 
@@ -262,5 +255,40 @@
     <g:set var="successor" value="${subscription._getCalculatedSuccessor()}"/>
     <laser:render template="subscriptionTransferInfo" model="${[calculatedSubList: successor + [subscription] + previous]}"/>
 </g:if>
+
+<g:if test="${editable && subscription.getConsortia()?.id == contextService.getOrg().id}">
+    <g:if test="${!(actionName.startsWith('copy') || actionName in ['renewEntitlementsWithSurvey', 'renewSubscription', 'emptySubscription'])}">
+        <laser:render template="/templates/flyouts/subscriptionMembers" model="[subscription: subscription]"/>
+    </g:if>
+</g:if>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('#selectEntitlementsWithKBART').on('click', function(e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: $(this).attr('href')
+            }).done( function (data) {
+                $('.ui.dimmer.modals > #KBARTUploadForm').remove();
+                $('#dynamicModalContainer').empty().html(data);
+
+                $('#dynamicModalContainer .ui.modal').modal({
+                   onShow: function () {
+                        r2d2.initDynamicUiStuff('#KBARTUploadForm');
+                        r2d2.initDynamicXEditableStuff('#KBARTUploadForm');
+                        $("html").css("cursor", "auto");
+                    },
+                    detachable: true,
+                    autofocus: false,
+                    closable: false,
+                    transition: 'scale',
+                    onApprove : function() {
+                        $(this).find('.ui.form').submit();
+                        return false;
+                    }
+                }).modal('show');
+            })
+        })
+</laser:script>
 
 
