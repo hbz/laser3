@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Doc; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.survey.SurveyConfig" %>
+<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Doc; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.survey.SurveyConfig" %>
 <laser:htmlStart message="subscription.details.copyDiscountScales.label" />
 
 <laser:serviceInjection/>
@@ -179,7 +179,7 @@
                             <a href="#" class="la-popup-tooltip la-delay"
                                data-content="${message(code: 'subscription.numberOfLicenses.label')}"
                                data-position="top center">
-                                <i class="university large icon"></i>
+                                <i class="${Icons.ORG} large icon"></i>
                             </a>
                         </th>
                         <th scope="col" rowspan="2">
@@ -227,7 +227,7 @@
                                         <g:if test="${s == row.destinationSubscription}">
                                             <g:set var="license" value="${row.sourceLicense}"/>
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="icon balance scale la-list-icon"></i>
+                                                <i class="${Icons.LICENSE} icon la-list-icon"></i>
                                                 <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br />
                                             </div>
                                         </g:if>
@@ -238,7 +238,7 @@
                                     <g:each in="${s.packages.sort { it.pkg.name }}" var="sp" status="ind">
                                         <g:if test="${ind < 10}">
                                             <div class="la-flexbox">
-                                                <i class="icon gift la-list-icon"></i>
+                                                <i class="${Icons.PACKAGE} icon la-list-icon"></i>
                                                 <g:link controller="subscription" action="index" id="${s.id}"
                                                         params="[pkgfilter: sp.pkg.id]"
                                                         title="${sp.pkg.provider?.name}">

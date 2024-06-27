@@ -366,7 +366,7 @@
                             </div>
                         </div>
                         <div class="content">
-                            <p class="ui header">%{--<i class="icon cloud"></i>--}% <g:message code="org.platforms.label" /></p>
+                            <p class="ui header">%{--<i class="${Icons.PLATFORM} icon"></i>--}% <g:message code="org.platforms.label" /></p>
 
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <g:each in="${platforms}" var="platform">
@@ -380,7 +380,7 @@
                                 </g:each>
                             </div>
 
-                            <p class="ui header">%{--<i class="icon gift"></i>--}% <g:message code="package.plural" /></p>
+                            <p class="ui header">%{--<i class="${Icons.PACKAGE} icon"></i>--}% <g:message code="package.plural" /></p>
 
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <g:each in="${packages}" var="pkg">
@@ -392,7 +392,7 @@
                                 </g:each>
                             </div>
 
-                            <p class="ui header">%{--<i class="icon clipboard"></i>--}% <g:message code="subscription.plural" /></p>
+                            <p class="ui header">%{--<i class="${Icons.SUBSCRIPTION} icon"></i>--}% <g:message code="subscription.plural" /></p>
 
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <div class="ui item">
@@ -413,7 +413,7 @@
                                 </div>
                             </div>
 
-                            <p class="ui header">%{--<i class="icon balance scale"></i>--}% <g:message code="license.plural" /></p>
+                            <p class="ui header">%{--<i class="${Icons.LICENSE} icon"></i>--}% <g:message code="license.plural" /></p>
 
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <div class="ui item">

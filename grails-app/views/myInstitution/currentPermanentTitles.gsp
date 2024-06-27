@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.PermanentTitle" %>
+<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.PermanentTitle" %>
 <laser:htmlStart message="myinst.currentPermanentTitles.label"/>
 
 <ui:breadcrumbs>
@@ -118,7 +118,7 @@
                                                                 </g:if>
                                                                 <g:if test="${covStmt.coverageDepth}">
                                                                     <div class="item">
-                                                                        <i class="grey icon file alternate right la-popup-tooltip la-delay"
+                                                                        <i class="grey icon ${Icons.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
                                                                            data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                                                                         <div class="content">

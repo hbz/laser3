@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.utils.SqlDateUtils; de.laser.survey.SurveyInfo; de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; de.laser.*; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.helper.Icons; de.laser.utils.LocaleUtils; de.laser.utils.SqlDateUtils; de.laser.survey.SurveyInfo; de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; de.laser.*; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
 <table class="ui celled table la-js-responsive-table la-table">
     <thead>
@@ -41,11 +41,11 @@
                             <g:link controller="subscription" action="show" id="${obj.id}">${obj.name}</g:link>
                         </g:if>
                         <g:elseif test="${obj instanceof License}">
-                            <i class="icon balance scale la-list-icon"></i>
+                            <i class="${Icons.LICENSE} icon la-list-icon"></i>
                             <g:link controller="license" action="show" id="${obj.id}">${obj.name}</g:link>
                         </g:elseif>
                         <g:elseif test="${obj instanceof SurveyInfo}">
-                            <i class="icon chart pie la-list-icon"></i>
+                            <i class="${Icons.SURVEY} icon la-list-icon"></i>
                             <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                                 <g:link controller="survey" action="show" params="[surveyConfigID: obj.surveyConfigs[0].id]"
                                         id="${obj.id}">${obj.surveyConfigs[0].getSurveyName()}
@@ -58,7 +58,7 @@
                         </g:elseif>
                         <g:elseif test="${obj instanceof Task}">
                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Aufgabe">
-                                <i class="calendar check outline icon la-list-icon"></i>
+                                <i class="${Icons.TASK} icon la-list-icon"></i>
                             </span>
                             <g:if test="${obj.subscription}">
                                 <g:link controller="subscription" action="show" id="${obj.subscription.id}">${obj.title}</g:link>
@@ -86,11 +86,11 @@
                                 <g:link controller="subscription" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
                             </g:elseif>
                             <g:elseif test="${obj.owner instanceof License}">
-                                <i class="icon balance scale la-list-icon"></i>
+                                <i class="${Icons.LICENSE} icon la-list-icon"></i>
                                 <g:link controller="license" action="show" id="${obj.owner?.id}">${obj.owner?.reference}</g:link>
                             </g:elseif>
                             <g:elseif test="${obj.owner instanceof Org}">
-                                <i class="icon university la-list-icon"></i>
+                                <i class="${Icons.ORG} icon la-list-icon"></i>
                                 <g:link controller="organisation" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
                             </g:elseif>
                             <g:else>

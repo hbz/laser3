@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.finance.CostItem" %>
+<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore; de.laser.finance.CostItem" %>
 <div class="ui tablet stackable steps">
 
     <div class="${(actionName == 'compareMembersOfTwoSubs') ? 'active' : ''} step">
@@ -42,7 +42,7 @@
                 </div>
 
                 <div class="description">
-                    <i class="gift icon"></i>${message(code: 'copySubPackagesAndIes.label')}
+                    <i class="${Icons.PACKAGE} icon"></i>${message(code: 'copySubPackagesAndIes.label')}
                 </div>
             </div>
         &nbsp;&nbsp;
@@ -104,7 +104,7 @@
                 </div>
 
                 <div class="description">
-                    <i class="gift icon"></i>${message(code: 'copySurveyPackages.label')}
+                    <i class="${Icons.PACKAGE} icon"></i>${message(code: 'copySurveyPackages.label')}
                 </div>
             </div>
         &nbsp;&nbsp;
@@ -136,7 +136,7 @@
                 </div>
 
                 <div class="description">
-                    <i class="gift icon"></i>${message(code: 'copySurveyVendors.label')}
+                    <i class="${Icons.PACKAGE} icon"></i>${message(code: 'copySurveyVendors.label')}
                 </div>
             </div>
         &nbsp;&nbsp;

@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.auth.Role
+import de.laser.helper.Icons
 import de.laser.storage.RDStore
 
 class IconTagLib {
@@ -42,7 +43,7 @@ class IconTagLib {
                 icon = 'bordered la-object-ebook'
                 break
             case 'file':
-                icon = 'bordered inverted blue file alternate la-object-extended'
+                icon = Icons.DOCUMENT + ' bordered inverted blue la-object-extended'
                 break
             case 'finance':
                 icon = 'bordered inverted teal euro sign la-object-extended'
@@ -58,7 +59,7 @@ class IconTagLib {
                 icon = 'bordered inverted grey layer group la-object-extended'
                 break
             case 'marker':
-                icon = 'bordered inverted purple bookmark la-object-extended'
+                icon = Icons.MARKER + ' bordered inverted purple la-object-extended'
                 break
             case 'package':
                 icon = 'bordered la-package la-object-extended'
@@ -67,22 +68,22 @@ class IconTagLib {
                 icon = 'search'
                 break
             case 'reporting':
-                icon = 'bordered inverted teal chartline icon la-object-extended'
+                icon = Icons.REPORTING + ' bordered inverted teal la-object-extended'
                 break
             case 'subscription':
-                icon = 'bordered inverted orange clipboard la-object-extended'
+                icon = Icons.SUBSCRIPTION + ' bordered inverted orange la-object-extended'
                 break
             case 'survey':
-                icon = 'bordered inverted pink chart pie la-object-extended'
+                icon = Icons.SURVEY + ' bordered inverted pink la-object-extended'
                 break
             case 'task':
-                icon = 'bordered inverted green calendar check outline la-object-extended'
+                icon = Icons.TASK + ' bordered inverted green la-object-extended'
                 break
             case 'user':
                 icon = 'user bordered inverted grey la-object-extended'
                 break
             case 'workflow':
-                icon = 'bordered inverted brown tasks la-object-extended'
+                icon = Icons.WORKFLOW + ' bordered inverted brown la-object-extended'
                 break
             case 'yoda':
                 icon = 'la-object star of life'
@@ -330,7 +331,7 @@ class IconTagLib {
         String tooltip = attrs.type ? message(code: 'marker.' + attrs.type ) : message(code: 'marker.label')
 
         out << '<span class="la-popup-tooltip la-delay" data-content="' + tooltip + '">'
-        out << '<i class="icon ' + (attrs.color ? attrs.color + ' ' : '') + 'bookmark"></i>'
+        out << '<i class="' + Icons.MARKER + ' icon ' + (attrs.color ? attrs.color + ' ' : '') + '"></i>'
         out << '</span>'
     }
 

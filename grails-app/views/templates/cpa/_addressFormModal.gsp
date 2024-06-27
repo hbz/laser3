@@ -1,6 +1,6 @@
 <%@ page import="de.laser.utils.LocaleUtils; de.laser.RefdataCategory; de.laser.Address; de.laser.Org; de.laser.Provider; de.laser.Vendor; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.storage.RDConstants; de.laser.I10nTranslation;" %>
 <laser:serviceInjection />
-<ui:modal formID="create_address"  modalSize="big" id="addressFormModal" text="${modalText ?: message(code: 'address.add.addressForPublic.label')}" msgClose="${message(code: 'default.button.cancel')}" msgSave="${modalMsgSave ?: message(code: 'default.button.create.label')}">
+<ui:modalAddress formID="create_address"  modalSize="big" id="addressFormModal" text="${modalText ?: message(code: 'address.add.addressForPublic.label')}" msgClose="${message(code: 'default.button.cancel')}" msgSave="${modalMsgSave ?: message(code: 'default.button.create.label')}">
     <g:form id="create_address" class="ui form" url="${url}" method="POST">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <input type="hidden" name="tab" value="addresses"/>
@@ -108,23 +108,23 @@
 
         <!-- Alternating address Buttons START-->
         <div class="ui blue buttons" style="width: 100%">
-            <button class="ui active button" id="buttonPhysicalAddress">
+            <div class="ui active button" id="buttonPhysicalAddress">
                 <h2 class="ui icon inverted header">
                     <i class="map marked alternate icon"></i>
                     <div class="content">
                         <g:message code="address.streetaddress.label" />
                     </div>
                 </h2>
-            </button>
+            </div>
             <div class="or" data-text="<g:message code='search.advancedSearch.option.OR' />"></div>
-            <button class="ui button" id="buttonPostalAddress">
+            <div class="ui button" id="buttonPostalAddress">
                 <h2 class="ui icon inverted header">
                     <i class="inbox icon"></i>
                     <div class="content">
                         <g:message code="address.pob.label" />
                     </div>
                 </h2>
-            </button>
+            </div>
         </div>
         <!-- Alternating address Buttons END-->
         <!-- Alternating address Table START-->
@@ -377,6 +377,14 @@
         }
 
         JSPC.app.removePhysicalAddress = function() {
+          // removing multiple at once from Hausanschrift
+          $("#create_address").form("remove fields", [
+            "street_1",
+            "street_2",
+            "zipcode",
+            "city"
+          ]);
+
             // adding multiple at once to Postanschrift
           $("#create_address").form("add rule", "pob", {
             rules: [
@@ -402,13 +410,7 @@
               }
             ]
           });
-          // removing multiple at once from Hausanschrift
-          $("#create_address").form("remove fields", [
-            "street_1",
-            "street_2",
-            "zipcode",
-            "city"
-          ]);
+
         }
 
         $("#buttonPhysicalAddress").click(function () {
@@ -430,7 +432,6 @@
         });
 
         let postalAddressInputs = [
-          $("#type"),
           $("#pob"),
           $("#pobZipcode"),
           $("#pobCity")
@@ -438,21 +439,53 @@
         let physicalAddressInputs = [
           $("#street_1"),
           $("#street_2"),
+          $("#additionFirst"),
+          $("#additionSecond"),
           $("#zipcode"),
           $("#city")
         ];
 
-        JSPC.app.deleteInputs = function (elems) {
-          for (let i = 0; i < elems.length; i++) {
-            $(elems[i]).val(null);
-          }
+        let postalAddressFound = false;
+        for (var i = 0; i < postalAddressInputs.length; i++) {
+
+            if ($(postalAddressInputs[i]).val() !== "") {
+                postalAddressFound = true;
+                console.log("postalAddressInputs: Non empty");
+                $("#buttonPostalAddress").addClass("active");
+                $("#buttonPhysicalAddress").removeClass("active");
+                $("#physicalAddress").addClass("disabled");
+                $("#postalAddress").removeClass("disabled");
+                $("#create_address").form("remove fields", ["street_1","street_2","zipcode","city"]);
+                break;
+            }
         }
 
+        let physicalAddressFound = false;
+        for (var i = 0; i < physicalAddressInputs.length; i++) {
 
-        JSPC.app.updateDropdown = function() {
-            var dropdownRegion = $('#region');
-            var selectedCountry = $("#country").val();
-            var selectedRegions = ${raw(params.list('region') as String)};
+            if ($(physicalAddressInputs[i]).val() !== "") {
+                physicalAddressFound = true;
+                console.log("physicalAddressInputs: Non empty");
+                $("#buttonPhysicalAddress").addClass("active");
+                $("#buttonPostalAddress").removeClass("active");
+                $("#postalAddress").addClass("disabled");
+                $("#physicalAddress").removeClass("disabled");
+                $("#create_address").form("remove fields", ["pob", "pobZipcode", "pobCity"]);
+                break;
+            }
+        }
+
+    JSPC.app.deleteInputs = function (elems) {
+      for (let i = 0; i < elems.length; i++) {
+        $(elems[i]).val(null);
+      }
+    }
+
+
+    JSPC.app.updateDropdown = function() {
+        var dropdownRegion = $('#region');
+        var selectedCountry = $("#country").val();
+        var selectedRegions = ${raw(params.list('region') as String)};
 
             dropdownRegion.empty();
             dropdownRegion.append('<option selected="true" disabled>${message(code: 'default.select.choose.label')}</option>');
@@ -479,6 +512,7 @@
 
 
 
+
     </laser:script>
 
-    </ui:modal>
+    </ui:modalAddress>

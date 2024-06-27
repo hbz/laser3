@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PersonRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.helper.Icons; de.laser.PersonRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 
 <g:set var="entityName" value="${message(code: 'person.label')}"/>
 <laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" serviceInjection="true" />
@@ -135,7 +135,7 @@
                                         <g:if test="${link.functionType}">
                                             <div class="ui item address-details">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.label')}" data-position="top right" data-variation="tiny">
-                                                    <i class="ui icon university la-list-icon"></i>
+                                                    <i class="${Icons.ORG} icon la-list-icon"></i>
                                                 </span>
 
                                                 <div class="content la-space-right">
@@ -195,7 +195,7 @@
                                         <g:if test="${link.positionType}">
                                             <div class="ui item address-details">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.label')}" data-position="top right" data-variation="tiny">
-                                                    <i class="ui icon university la-list-icon"></i>
+                                                    <i class="${Icons.ORG} icon la-list-icon"></i>
                                                 </span>
 
                                                 <div class="content la-space-right">
@@ -257,7 +257,7 @@
 
                                                 <g:if test="${link.pkg}">
                                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'package.label')}" data-position="top right" data-variation="tiny">
-                                                        <i class="ui icon university la-list-icon"></i>
+                                                        <i class="${Icons.ORG} icon la-list-icon"></i>
                                                     </span>
                                                 </g:if>
                                                 <g:if test="${link.sub}">
@@ -267,7 +267,7 @@
                                                 </g:if>
                                                 <g:if test="${link.lic}">
                                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.label')}" data-position="top right" data-variation="tiny">
-                                                        <i class="ui icon balance scale la-list-icon"></i>
+                                                        <i class="${Icons.LICENSE} icon la-list-icon"></i>
                                                     </span>
                                                 </g:if>
                                                 <g:if test="${link.tipp}">

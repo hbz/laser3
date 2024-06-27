@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.remote.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.Platform; de.laser.IssueEntitlementGroup" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Subscription; de.laser.remote.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.Platform; de.laser.IssueEntitlementGroup" %>
 
 <laser:htmlStart message="subscription.details.addEntitlements.label" serviceInjection="true" />
 
@@ -313,7 +313,7 @@
                                         </g:if>
                                         <g:if test="${covStmt.coverageDepth}">
                                             <div class="item">
-                                                <i class="grey icon file alternate right la-popup-tooltip la-delay"
+                                                <i class="grey icon ${Icons.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                                                 <div class="content">

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IssueEntitlementGroup; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.helper.Icons; de.laser.IssueEntitlementGroup; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <div class="sixteen wide column">
     <g:set var="counter" value="${offset + 1}"/>
     <g:set var="sumlistPriceEuro" value="${0}"/>
@@ -200,7 +200,7 @@
                                     </g:if>
                                     <g:if test="${covStmt.coverageDepth}">
                                         <div class="item">
-                                            <i class="grey icon file alternate right la-popup-tooltip la-delay"
+                                            <i class="grey icon ${Icons.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
                                                data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                                             <div class="content">

@@ -1,5 +1,5 @@
 <!-- _licPropGroupWrapper -->
-<%@ page import="de.laser.License; de.laser.Subscription; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*" %>
+<%@ page import="de.laser.helper.Icons; de.laser.License; de.laser.Subscription; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*" %>
 <laser:serviceInjection />
 
 <g:set var="propList" value="${propDefGroup.getCurrentProperties(ownObj)}" />
@@ -7,7 +7,7 @@
 <g:if test="${propList}">
     <div class="content">
         <h2 class="ui header">
-            <g:link controller="license" action="show" id="${ownObj.id}"><i class="balance scale icon"></i>${ownObj}</g:link>
+            <g:link controller="license" action="show" id="${ownObj.id}"><i class="${Icons.LICENSE} icon"></i>${ownObj}</g:link>
             (${propDefGroup.name})
 
             <g:if test="${showConsortiaFunctions}">

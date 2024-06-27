@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg" %>
 <laser:serviceInjection/>
 
 <table class="ui celled sortable table la-js-responsive-table la-table">
@@ -249,7 +249,7 @@
                 <g:if test="${participantResult.sub}">
                     <br/>
                     <g:link controller="subscription" action="show" id="${participantResult.sub?.id}"
-                            class="ui button orange icon"><i class="icon clipboard"></i></g:link>
+                            class="ui button orange icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
                 </g:if>
             </td>
 
