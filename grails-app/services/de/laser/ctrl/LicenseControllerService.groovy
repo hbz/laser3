@@ -92,12 +92,6 @@ class LicenseControllerService {
         LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.license)
         result.navPrevLicense = links.prevLink
         result.navNextLicense = links.nextLink
-        // restrict visible for templates/links/orgLinksAsList - done by Andreas Gálffy
-        String i10value = LocaleUtils.getLocalizedAttributeName('value')
-        result.visibleProrivers = OrgRole.executeQuery(
-                "select pr from ProviderRole pr join pr.provider p where pr.license = :license order by p.sortname",
-                [license:result.license]
-        )
 
         result.showConsortiaFunctions = showConsortiaFunctions(result.license)
 
