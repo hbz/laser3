@@ -302,7 +302,7 @@
                                 <g:link class="ui icon negative button la-modern-button" controller="subscription" action="delete" params="${[id:sub.id]}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
+                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
@@ -310,7 +310,7 @@
                                     <button class="ui disabled icon negative button la-modern-button"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate outline icon"></i>
+                                        <i class="${Icons.CMD_DELETE} icon"></i>
                                     </button>
                                 </span>
                             </g:else>

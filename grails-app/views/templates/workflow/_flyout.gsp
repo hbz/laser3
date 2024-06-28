@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowService; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowService; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <g:if test="${clist}">
@@ -200,7 +200,7 @@
 
                             <g:if test="${checkedEditable}"><!-- TODO: workflows-permissions -->
 %{--                                <div class="ui icon negative button la-modern-button"--}%
-%{--                                     data-cmd="delete:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="trash alternate outline icon"></i>--}%
+%{--                                     data-cmd="delete:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icons.CMD_DELETE} icon"></i>--}%
 %{--                                </div>--}%
                                 <div class="ui icon negative button la-modern-button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.checkpoint", args: [cpoint.title])}"
@@ -210,7 +210,7 @@
                                         data-key="${WfChecklist.KEY}:${clist.id}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
+                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                 </div>
                             </g:if>
 

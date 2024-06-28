@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore" %>
+<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <g:if test="${contact}">
 	<div class="ui js-copyTriggerParent item contact-details" style="display: flex; flex-flow: row wrap;">
@@ -36,7 +36,7 @@
                         controller="ajax" action="delete" params="[cmd: 'deleteContact', oid: genericOIDService.getOID(contact)]"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-					<i class="trash alternate outline icon"></i>
+					<i class="${Icons.CMD_DELETE} icon"></i>
 				</g:link>
             </g:if>
         </div><!-- .content -->
