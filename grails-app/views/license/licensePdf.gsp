@@ -350,13 +350,12 @@
         </g:if>
         <article>
             <header>
-                <h2><g:message code="default.ProviderAgency.singular"/></h2>
+                <h2><g:message code="provider.label"/></h2>
                 <table>
                     <g:each in="${visibleProviders}" var="role">
-                        <g:if test="${role.provider}">
                             <tr>
                                 <td>
-                                    <g:link controller="organisation" action="show" id="${role.provider.id}" absolute="true">${role.provider.name}</g:link> <i>${role.roleType.getI10n("value")}</i>
+                                    <g:link controller="provider" action="show" id="${role.provider.id}" absolute="true">${role.provider.name}</g:link>
                                 </td>
                             </tr>
                             <g:if test="${(Person.getPublicByOrgAndFunc(role.provider, 'General contact person') ||
@@ -452,7 +451,113 @@
                                 </g:if>
                                 <%-- private --%>
                             </g:if>
-                        </g:if>
+                    </g:each>
+                </table>
+            </header>
+        </article>
+        <article>
+            <header>
+                <h2><g:message code="vendor.label"/></h2>
+                <table>
+                    <g:each in="${visibleVendors}" var="role">
+                            <tr>
+                                <td>
+                                    <g:link controller="vendor" action="show" id="${role.vendor.id}" absolute="true">${role.vendor.name}</g:link>
+                                </td>
+                            </tr>
+                            <g:if test="${(Person.getPublicByOrgAndFunc(role.vendor, 'General contact person') ||
+                                    Person.getPublicByOrgAndObjectResp(role.vendor, license, 'Specific license editor') ||
+                                    Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person', institution) ||
+                                    Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, license, 'Specific license editor', institution))}">
+                                <%-- public --%>
+                                <g:if test="${ Person.getPublicByOrgAndFunc(role.vendor, 'General contact person') || Person.getPublicByOrgAndObjectResp(role.vendor, license, 'Specific license editor')  }">
+                                    <g:each in="${Person.getPublicByOrgAndFunc(role.vendor, 'General contact person')}" var="func">
+                                        <tr>
+                                            <td>
+                                                <i>${message(code:'address.public')}</i>
+                                            </td>
+                                            <td>
+                                                ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
+                                            </td>
+                                            <td>
+                                                <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
+                                            </td>
+                                            <td>
+                                                <ul>
+                                                    <g:each in="${Contact.findAllByPrsAndContentType(func, RDStore.CCT_EMAIL)}" var="email">
+                                                        <li>${email.contentType.value} ${email.content} <g:if test="${email.language}">(${email.language.getI10n("value")})</g:if></li>
+                                                    </g:each>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </g:each>
+                                    <g:each in="${Person.getPublicByOrgAndObjectResp(role.vendor, license, 'Specific license editor')}" var="resp">
+                                        <tr>
+                                            <td>
+                                                <i>${message(code:'address.public')}</i>
+                                            </td>
+                                            <td>
+                                                ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
+                                            </td>
+                                            <td>
+                                                <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${resp}</g:link>
+                                            </td>
+                                            <td>
+                                                <ul>
+                                                    <g:each in="${Contact.findAllByPrsAndContentType(resp, RDStore.CCT_EMAIL)}" var="email">
+                                                        <li>${email.contentType.'value'} ${email.content} <g:if test="${email.language}">(${email.language.getI10n("value")})</g:if></li>
+                                                    </g:each>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </g:each>
+                                </g:if>
+                                <%-- public --%>
+                                <%-- private --%>
+                                <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person', institution) || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, license, 'Specific license editor', institution)}">
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person', contextOrg)}" var="func">
+                                        <tr>
+                                            <td>
+                                                <i>${message(code:'address.private')}</i>
+                                            </td>
+                                            <td>
+                                                ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
+                                            </td>
+                                            <td>
+                                                <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
+                                            </td>
+                                            <td>
+                                                <ul>
+                                                    <g:each in="${Contact.findAllByPrsAndContentType(func, RDStore.CCT_EMAIL)}" var="email">
+                                                        <li>${email.contentType.'value'} ${email.content} <g:if test="${email.language}">(${email.language.getI10n("value")})</g:if></li>
+                                                    </g:each>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </g:each>
+                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, license, 'Specific license editor', institution)}" var="resp">
+                                        <tr>
+                                            <td>
+                                                <i>${message(code:'address.private')}</i>
+                                            </td>
+                                            <td>
+                                                ${RefdataValue.getByValue('Specific license editor').getI10n('value')}
+                                            </td>
+                                            <td>
+                                                <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${resp}</g:link>
+                                            </td>
+                                            <td>
+                                                <ul>
+                                                    <g:each in="${Contact.findAllByPrsAndContentType(resp, RDStore.CCT_EMAIL)}" var="email">
+                                                        <li>${email.contentType.'value'} ${email.content} <g:if test="${email.language}">(${email.language.getI10n("value")})</g:if></li>
+                                                    </g:each>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </g:each>
+                                </g:if>
+                                <%-- private --%>
+                            </g:if>
                     </g:each>
                 </table>
             </header>
