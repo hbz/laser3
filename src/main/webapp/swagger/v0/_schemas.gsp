@@ -249,7 +249,7 @@
           example: "2022-01-01T00:00:00"
         sub:
           $ref: "#/components/schemas/SubscriptionStub"
-        subPkg:
+        pkg:
           $ref: "#/components/schemas/Package_in_CostItem"
         taxCode:
           type: string

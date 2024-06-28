@@ -4,6 +4,31 @@ Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.las
 
 #### 3.0
 
+- removed attribute: `CostItem.subPkg`
+- added new attribute: `CostItem.pkg`
+- added new attribute: `IssueEntitlement.status`
+- added new attribute: `License.altnames`
+- added new attribute: `License.providers`
+- added new attribute: `License.vendors`
+- removed attribute: `Org.addresses` (split to public/privateAddresses)
+- removed attribute: `Org.contacts`
+- removed attribute: `Org.gokbId`
+- added new attribute: `Org.publicAddresses`
+- added new attribute: `Org.privateAddresses`
+- removed attribute: `Package.organisations`
+- added new attribute: `Package.provider`
+- added new attribute: `Package.vendors`
+- added new attribute: `Platform.provider`
+- removed attribute: `Platform.serviceProvider`
+- removed attribute: `Platform.softwareProvider`
+- added new object: `Provider`
+- added new object: `ProviderStub`
+- added new object: `Vendor`
+- added new object: `VendorStub`
+- added new attribute: `Subscription.altnames`
+- added new attribute: `Subscription.providers`
+- added new attribute: `Subscription.vendors`
+
 #### 2.15
 
 - removed attribute: `Org.sector`
