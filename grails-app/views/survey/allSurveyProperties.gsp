@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.RefdataValue; de.laser.survey.SurveyConfig" %>
+<%@ page import="de.laser.helper.Icons; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.RefdataValue; de.laser.survey.SurveyConfig" %>
 
 <laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true"/>
 
@@ -32,7 +32,7 @@
         <i class="grey question circle icon la-popup"></i>
 
         <div class="ui popup">
-            <i class="shield alternate icon"></i> = ${message(code: 'subscription.properties.my')}
+            <i class="${Icons.PRIVATE_PROPERTY} icon"></i> = ${message(code: 'subscription.properties.my')}
         </div>
         <ui:totalNumber total="${properties.size()}"/>
 
@@ -65,7 +65,7 @@
                 <td>
                     <g:if test="${property?.tenant && property?.tenant.id == institution.id}">
                         <ui:xEditable owner="${property}" field="name_${SUBSTITUTE}" type="textarea"/>
-                        <i class='shield alternate icon'></i>
+                        <i class='${Icons.PRIVATE_PROPERTY} icon'></i>
                     </g:if>
                     <g:else>
                         ${property?.getI10n('name')}
