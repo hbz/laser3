@@ -5,6 +5,7 @@ import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.helper.Icons
 import de.laser.helper.Params
 import de.laser.storage.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
@@ -199,7 +200,7 @@ class ReportingTagLib {
 
             if (prop.type.tenant?.id == tenant.id) {
                 tmp.tooltips.add( message(code: 'reporting.details.property.own') as String )
-                tmp.icons.add( '<i class="icon shield alternate la-light-grey"></i>' )
+                tmp.icons.add( '<i class="' + Icons.PRIVATE_PROPERTY + ' icon la-light-grey"></i>' )
             }
             if (!prop.isPublic && (prop.tenant && prop.tenant.id == tenant.id)) {
                 tmp.tooltips.add( message(code: 'reporting.details.property.private') as String )
