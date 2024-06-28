@@ -5,6 +5,7 @@ import de.laser.annotations.UnstableFeature
 @UnstableFeature
 class Icons {
 
+    // please do not touch during refactoring ..
     // domain classes / main objects
 
     public static String ANNOUNCEMENT       = 'flag'
@@ -35,10 +36,12 @@ class Icons {
 
     public static String WORKFLOW           = 'tasks'
 
+    // please do not touch during refactoring ..
+    // properties
 
+    public static String PRIVATE_PROPERTY           = 'shield alternate'
 
-    // refactoring ..
-
+    // please do not touch during refactoring ..
     // domain class attributes
 
     public static String ORG_LEGAL_INFORMATION      = 'hands helping'
