@@ -263,7 +263,7 @@
                                         <g:link controller="subscription" action="surveys" id="${s.id}"
                                                 class="ui icon positive button la-modern-button">
                                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info3")}">
-                                                <i class="ui icon pie chart"></i>
+                                                <i class="${Icons.SURVEY} icon"></i>
                                             </span>
                                         </g:link>
                                     </g:if>
@@ -277,7 +277,7 @@
                                                         class="ui button positive icon la-modern-button">
                                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                           data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
-                                                        <i class="ui icon pie chart"></i>
+                                                        <i class="${Icons.SURVEY} icon"></i>
                                                     </span>
                                                 </g:link>
                                             </g:if>
@@ -286,7 +286,7 @@
                                                         class="ui button blue icon la-modern-button">
                                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                           data-content="${message(code: "surveyconfig.isCompletedforOwner.false")}">
-                                                        <i class="ui icon pie chart"></i>
+                                                        <i class="${Icons.SURVEY} icon"></i>
                                                     </span>
                                                 </g:link>
                                             </g:else>
@@ -296,13 +296,13 @@
                                             <g:if test="${surveysConsortiaSub.surveyInfo?.isCompletedforOwner()}">
                                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                       data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
-                                                    <i class="ui icon pie chart blue"></i>
+                                                    <i class="${Icons.SURVEY} icon blue"></i>
                                                 </span>
                                             </g:if>
                                             <g:else>
                                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                       data-content="${message(code: "surveyconfig.isCompletedforOwner.false")}">
-                                                    <i class="ui icon pie chart open"></i>
+                                                    <i class="${Icons.SURVEY} icon open"></i>
                                                 </span>
                                             </g:else>
                                         </g:link>--}%
