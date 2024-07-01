@@ -211,7 +211,7 @@
                         <g:if test="${params.orgRole == 'Subscription Consortia'}">
                             <%
                                 Subscription targetSub
-                                if(params.identifier?.startsWith('vendor:') || params.q) {
+                                if((params.identifier?.startsWith('vendor:') || params.q) && s.instanceOf) {
                                     targetSub = s.instanceOf
                                 }
                                 else targetSub = s
