@@ -84,11 +84,11 @@
                 </g:else>
 
                 <g:if test="${oldValue != null || newValue != null}">
-                    <i class="${Icons.HELP_TOOLTIP} icon la-popup-tooltip la-delay"
+                    <i class="${Icons.HELP_TOOLTIP} la-popup-tooltip la-delay"
                        data-content="${(message(code: 'tipp.' + (entry.priceItem ? 'price.' : '') + entry.targetProperty) ?: '') + ': ' + message(code: 'pendingChange.change', args: [oldValue, newValue])}"></i>
                 </g:if>
                 <g:elseif test="${entry.targetProperty}">
-                    <i class="${Icons.HELP_TOOLTIP} icon la-popup-tooltip la-delay"
+                    <i class="${Icons.HELP_TOOLTIP} la-popup-tooltip la-delay"
                        data-content="${message(code: 'tipp.' + (entry.priceItem ? 'price.' : '') + entry.targetProperty)}"></i>
                 </g:elseif>
 

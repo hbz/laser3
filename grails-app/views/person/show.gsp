@@ -156,7 +156,7 @@
                                                                         controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]"
                                                                         role="button"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                                                    <i class="${Icons.CMD_DELETE}"></i>
                                                                 </g:link>
                                                             </div>
                                                         </g:if>
@@ -171,7 +171,7 @@
                                                                         data-confirm-term-how="delete"
                                                                         role="button"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                                                    <i class="${Icons.CMD_DELETE}"></i>
                                                                 </g:link>
                                                             </div>
                                                         </g:else>
@@ -216,7 +216,7 @@
                                                                         controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]"
                                                                         role="button"
                                                                         aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                                    <i class="${Icons.CMD_UNLINK} icon"></i>
+                                                                    <i class="${Icons.CMD_UNLINK}"></i>
                                                                 </g:link>
                                                             </div>
                                                         </g:if>
@@ -231,7 +231,7 @@
                                                                         data-confirm-term-how="delete"
                                                                         role="button"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                                                    <i class="${Icons.CMD_DELETE}"></i>
                                                                 </g:link>
                                                             </div>
                                                         </g:else>
@@ -304,7 +304,7 @@
                                                             <g:link class="ui negative button la-modern-button" controller="person" action="deletePersonRole" id="${personInstance.id}" params="[oid: oid]"
                                                                     role="button"
                                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                <i class="${Icons.CMD_DELETE} icon"></i>
+                                                                <i class="${Icons.CMD_DELETE}"></i>
                                                             </g:link>
                                                         </div>
                                                     </g:if>

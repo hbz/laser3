@@ -100,7 +100,7 @@
 %{--                                    <label>--}%
 %{--                                        ${message(code:'user.enabled.label')}--}%
 %{--                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.disabled')}">--}%
-%{--                                            <i class="${Icons.HELP_TOOLTIP} icon"></i>--}%
+%{--                                            <i class="${Icons.HELP_TOOLTIP}"></i>--}%
 %{--                                        </span>--}%
 %{--                                    </label>--}%
 %{--                                    <ui:xEditableBoolean owner="${user}" field="enabled" overwriteEditable="true"/>--}%
@@ -109,7 +109,7 @@
                                     <label>
                                         ${message(code:'user.accountExpired.label')}
                                         <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.expired')}">
-                                            <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                            <i class="${Icons.HELP_TOOLTIP}"></i>
                                         </span>
                                     </label>
                                     <ui:xEditableBoolean owner="${user}" field="accountExpired" overwriteEditable="true"/>
@@ -118,7 +118,7 @@
                                     <label>
                                         ${message(code:'user.accountLocked.label')}
                                         <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.locked')}">
-                                            <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                            <i class="${Icons.HELP_TOOLTIP}"></i>
                                         </span>
                                     </label>
                                     <ui:xEditableBoolean owner="${user}" field="accountLocked" overwriteEditable="true"/>
@@ -127,7 +127,7 @@
 %{--                                    <label>--}%
 %{--                                        ${message(code:'user.passwordExpired.label')}--}%
 %{--                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.passwordExpired')}">--}%
-%{--                                            <i class="${Icons.HELP_TOOLTIP} icon"></i>--}%
+%{--                                            <i class="${Icons.HELP_TOOLTIP}"></i>--}%
 %{--                                        </span>--}%
 %{--                                    </label>--}%
 %{--                                    <ui:xEditableBoolean owner="${user}" field="passwordExpired" overwriteEditable="true"/>--}%

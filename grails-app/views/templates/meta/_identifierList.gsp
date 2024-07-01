@@ -22,7 +22,7 @@
                     ${namespace}
                     <g:if test="${ident instanceof Identifier && ident.ns.getI10n('description')}">
                         <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${ident.ns.getI10n('description')}">
-                            <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                            <i class="${Icons.HELP_TOOLTIP}"></i>
                         </span>
                     </g:if>
                 </td>
@@ -40,7 +40,7 @@
                         </g:else>
                         %{--
                         <g:if test="${ident.ns.urlPrefix}">
-                            <a target="_blank" href="${ident.ns.urlPrefix}${ident.value}"><i title="${ident.ns.getI10n('name')} Link" class="${Icons.LINK_EXTERNAL} icon"></i></a>
+                            <a target="_blank" href="${ident.ns.urlPrefix}${ident.value}"><i title="${ident.ns.getI10n('name')} Link" class="${Icons.LINK_EXTERNAL}"></i></a>
                         </g:if>
                         --}%
                         <g:if test="${ident.getURL()}">

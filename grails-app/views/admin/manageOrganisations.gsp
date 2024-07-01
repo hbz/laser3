@@ -45,7 +45,7 @@
                 </th>
                 <th class="la-no-uppercase">
                     <span class="la-popup-tooltip la-delay" data-position="left center" data-content="${message(code:'org.legalInformation.tooltip')}">
-                        <i class="${Icons.ORG_LEGAL_INFORMATION} icon"></i>
+                        <i class="${Icons.ORG_LEGAL_INFORMATION}"></i>
                     </span>
                 </th>
                 <th>${message(code:'org.hasAccessOrg')}</th>
@@ -195,7 +195,7 @@
                                     data-orgName="${org.name}"
                                     data-ui="modal"
                                     data-href="#legalInformationModal"
-                                    data-content="Rechtl. Informationen ändern" data-position="top left"><i class="${Icons.ORG_LEGAL_INFORMATION} icon"></i></button>
+                                    data-content="Rechtl. Informationen ändern" data-position="top left"><i class="${Icons.ORG_LEGAL_INFORMATION}"></i></button>
                         </g:if>
 
                         <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay"

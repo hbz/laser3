@@ -45,7 +45,7 @@
                                 ${prop.type.getI10n('name')}
                                 <g:if test="${prop.type.getI10n('expl')}">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${prop.type.getI10n('expl')}">
-                                        <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                        <i class="${Icons.HELP_TOOLTIP}"></i>
                                     </span>
                                 </g:if>
                             </g:if>
@@ -208,7 +208,7 @@
                                                       data-update="${custom_props_div}"
                                                       role="button"
                                                       ariaLabel="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="${Icons.CMD_DELETE} icon"></i>
+                                        <i class="${Icons.CMD_DELETE}"></i>
                                     </ui:remoteLink>
                                 </g:if>
                                 <g:else>
@@ -255,7 +255,7 @@
                                                   data-update="${custom_props_div}"
                                                   role="button"
                                                   ariaLabel="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                    <i class="${Icons.CMD_DELETE}"></i>
                                 </ui:remoteLink>
                             </g:elseif>
                             <g:else>

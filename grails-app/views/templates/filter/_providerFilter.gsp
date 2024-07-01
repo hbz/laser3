@@ -22,7 +22,7 @@
                     <label for="nameContains">
                         <g:message code="org.search.provider.contains"/>
                         <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.provider.contains.tooltip')}">
-                            <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                            <i class="${Icons.HELP_TOOLTIP}"></i>
                         </span>
                     </label>
                     <input type="text" id="nameContains" name="nameContains"
@@ -80,7 +80,7 @@
                     <label for="privateContact">
                         <g:message code="contact.name"/>
                         <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.contact.tooltip')}">
-                            <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                            <i class="${Icons.HELP_TOOLTIP}"></i>
                         </span>
                     </label>
                     <input id="privateContact" name="privateContact" type="text" placeholder="${message(code: 'default.search.ph')}" value="${params.privateContact}"/>

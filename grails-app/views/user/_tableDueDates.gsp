@@ -117,7 +117,7 @@
                                           role="button"
                                           ariaLabel="${message(code:'ariaLabel.delete.universal')}"
                         >
-                            <i class="${Icons.CMD_DELETE} icon"></i>
+                            <i class="${Icons.CMD_DELETE}"></i>
                         </ui:remoteLink>
                     </g:if>
                     <g:if test="${dashDueDate?.isHidden}">

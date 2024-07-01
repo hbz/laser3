@@ -68,7 +68,7 @@
     <p class="ui header">Icons #3</p>
     <div class="ui list">
         <div class="item">
-            <i class="${Icons.SUB_IS_MULTIYEAR} icon large"></i>
+            <i class="${Icons.SUB_IS_MULTIYEAR} large"></i>
             <div class="content"> Mehrjahreslaufzeit (${Icons.SUB_IS_MULTIYEAR})</div>
         </div>
     </div>
@@ -82,11 +82,11 @@
             <div class="content"> internal link</div>
         </div>
         <div class="item">
-            <i class="${Icons.LINK_FILTERED} icon large"></i>
+            <i class="${Icons.LINK_FILTERED} large"></i>
             <div class="content"> internal link (redirect to list view with filter)</div>
         </div>
         <div class="item">
-            <i class="${Icons.LINK_EXTERNAL} icon large"></i>
+            <i class="${Icons.LINK_EXTERNAL} large"></i>
             <div class="content"> external link (${Icons.LINK_EXTERNAL})</div>
         </div>
         <div class="item">

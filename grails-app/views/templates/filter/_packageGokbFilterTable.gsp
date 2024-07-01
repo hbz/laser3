@@ -73,7 +73,7 @@
                             ${message(code: 'surveyResult.commentParticipant')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentParticipant.info')}">
-                                <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                <i class="${Icons.HELP_TOOLTIP}"></i>
                             </span>
                         </g:else>
                     </th>
@@ -82,14 +82,14 @@
                             ${message(code: 'surveyResult.commentOnlyForOwner')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                                <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                <i class="${Icons.HELP_TOOLTIP}"></i>
                             </span>
                         </g:if>
                         <g:else>
                             ${message(code: 'surveyResult.commentOnlyForParticipant')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
-                                <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                <i class="${Icons.HELP_TOOLTIP}"></i>
                             </span>
                         </g:else>
                     </th>
@@ -293,7 +293,7 @@
                                     <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}" />
                                     ${curatoryGroup.name}
                                 %{--<g:link url="${editUrl.endsWith('/') ? editUrl : editUrl+'/'}resource/show/${curatoryGroup.curatoryGroup}" target="_blank">--}%
-                                %{--    <i class="${Icons.LINK_EXTERNAL} icon"></i>--}%
+                                %{--    <i class="${Icons.LINK_EXTERNAL}"></i>--}%
                                 %{--</g:link>--}%
                                     <br />
                                 </g:each>
@@ -306,7 +306,7 @@
                                 <g:message code="package.index.result.automaticUpdates"/>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${record.source.frequency}">
-                                    <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                    <i class="${Icons.HELP_TOOLTIP}"></i>
                                 </span>
                             </g:if>
                             <g:else>

@@ -329,7 +329,7 @@
                                                     controller="myInstitution" action="dashboard" id="${clistInfo.target.id}" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}", view:'Workflows']}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="${Icons.CMD_DELETE} icon"></i>
+                                                <i class="${Icons.CMD_DELETE}"></i>
                                             </g:link>
                                         </g:if>
                                     </td>

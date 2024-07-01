@@ -220,7 +220,7 @@
                                                             <g:link class="ui negative  button la-modern-button la-selectable-button js-open-confirm-modal" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
                                                                     data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
                                                                     data-confirm-how = "unlink">
-                                                                <i class="${Icons.CMD_UNLINK} icon"></i>
+                                                                <i class="${Icons.CMD_UNLINK}"></i>
                                                             </g:link>
                                                         </div>
                                                     </div>
@@ -374,7 +374,7 @@
                                                             <g:link class="ui negative button la-modern-button la-selectable-button js-open-confirm-modal" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
                                                                     data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
                                                                     data-confirm-how = "unlink">
-                                                                <i class="${Icons.CMD_UNLINK} icon"></i>
+                                                                <i class="${Icons.CMD_UNLINK}"></i>
                                                             </g:link>
                                                         </div>
                                                     </div>

@@ -7,7 +7,7 @@
               <div class="field">
                   <label for="keyword-search"><g:message code="default.search.text"/>
                         <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.license')}">
-                          <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                          <i class="${Icons.HELP_TOOLTIP}"></i>
                         </span>
                   </label>
                   <input type="text" id="keyword-search" name="keyword-search" placeholder="${message(code:'default.search.ph')}" value="${params['keyword-search']?:''}" />

@@ -12,7 +12,7 @@
         <h3 class="ui header"><i class="ui hdd icon"></i><span class="content">Dateien</span></h3>
 
         <g:link action="deleteTempFile" class="ui negative icon button js-open-confirm-modal" data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.tempDir")}" params="[emptyDir: true]" role="button" aria-label="${message(code: 'ariaLabel.delete.universal')}">
-            <i class="${Icons.CMD_DELETE} icon"></i> Gesamtes Verzeichnis leeren
+            <i class="${Icons.CMD_DELETE}"></i> Gesamtes Verzeichnis leeren
         </g:link>
 
         <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
@@ -28,7 +28,7 @@
                     <tr>
                         <td>${tempFile.getName()}</td>
                         <td>${Files.getAttribute(tempFile.toPath(), 'creationTime')}</td>
-                        <td><g:link action="deleteTempFile" class="ui negative icon button" params="[filename: tempFile.getName()]"><i class="${Icons.CMD_DELETE} icon"></i></g:link></td>
+                        <td><g:link action="deleteTempFile" class="ui negative icon button" params="[filename: tempFile.getName()]"><i class="${Icons.CMD_DELETE}"></i></g:link></td>
                     </tr>
                 </g:each>
             </tbody>

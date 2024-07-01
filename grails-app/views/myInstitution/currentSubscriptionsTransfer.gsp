@@ -19,11 +19,11 @@
 <g:if test="${params.referenceYears}">
     <div class="ui large label la-annual-rings"><g:link action="currentSubscriptionsTransfer"
                                                         params="${[referenceYears: (Integer.parseInt(params.referenceYears).value - 1).toString()]}"
-                                                        class="item"><i class="${Icons.LINK_PREV} icon"
+                                                        class="item"><i class="${Icons.LINK_PREV}"
                                                                         aria-hidden="true"></i></g:link><span
             class="la-annual-rings-text">${params.referenceYears}</span><g:link action="currentSubscriptionsTransfer"
                                                                                 params="${[referenceYears: (Integer.parseInt(params.referenceYears).value + 1).toString()]}"
-                                                                                class="item"><i class="${Icons.LINK_NEXT} icon"
+                                                                                class="item"><i class="${Icons.LINK_NEXT}"
                                                                                                 aria-hidden="true"></i></g:link>
     </div>
 </g:if>
@@ -41,7 +41,7 @@
                 <label for="search-title">${message(code: 'default.search.text')}
                     <span data-position="right center" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.subscription')}">
-                        <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                        <i class="${Icons.HELP_TOOLTIP}"></i>
                     </span>
                 </label>
 
@@ -56,7 +56,7 @@
                 <label for="identifier">${message(code: 'default.search.identifier')}
                     <span data-position="right center" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.subscription.identifier')}">
-                        <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                        <i class="${Icons.HELP_TOOLTIP}"></i>
                     </span>
                 </label>
 
@@ -510,7 +510,7 @@
                                                                 params='[instanceId: "${s.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="${Icons.CMD_DELETE} small icon"></i>
+                                                            <i class="${Icons.CMD_DELETE} small"></i>
                                                         </g:link>
                                                     </g:if>
                                                 </g:else>%{-- (editable || editable2) --}%
@@ -712,7 +712,7 @@
                                                                 params='[instanceId: "${s.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="${Icons.CMD_DELETE} small icon"></i>
+                                                            <i class="${Icons.CMD_DELETE} small"></i>
                                                         </g:link>
                                                     </g:if>
                                                 </g:else>%{-- (editable || editable2) --}%

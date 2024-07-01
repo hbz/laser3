@@ -137,7 +137,7 @@
                                 print '<i class="circle yellow icon"></i>'
                                 break
                             default:
-                                print'<i class="' + Icons.HELP_TOOLTIP + ' icon"></i>'
+                                print'<i class="' + Icons.HELP_TOOLTIP + '"></i>'
                                 break
                         }
                     %>
@@ -236,7 +236,7 @@
                                     print '<i class="circle yellow icon"></i>'
                                     break
                                 default:
-                                    print'<i class="' + Icons.HELP_TOOLTIP + ' icon"></i>'
+                                    print'<i class="' + Icons.HELP_TOOLTIP + '"></i>'
                                     break
                             }
                         %>

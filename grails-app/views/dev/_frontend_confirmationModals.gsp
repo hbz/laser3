@@ -11,7 +11,7 @@
             data-confirm-term-how="delete"
             class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
             role="button">
-        <i aria-hidden="true" class="${Icons.CMD_DELETE} icon"></i>
+        <i aria-hidden="true" class="${Icons.CMD_DELETE}"></i>
     </g:link>
     <ul>
         <li>Damit aus dem Tabellen-Header ein Label wird, wenn Tabelle zusammengeschoben
@@ -55,7 +55,7 @@
             data-confirm-term-how="delete"
             class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
             role="button">
-        <i aria-hidden="true" class="${Icons.CMD_DELETE} icon"></i>
+        <i aria-hidden="true" class="${Icons.CMD_DELETE}"></i>
     </g:link>
 </div>
 
@@ -73,7 +73,7 @@
                       data-confirm-term-how="delete"
                       role="button">
 
-        <i aria-hidden="true" class="${Icons.CMD_DELETE} icon"></i>
+        <i aria-hidden="true" class="${Icons.CMD_DELETE}"></i>
     </ui:remoteLink>
 </div>
 

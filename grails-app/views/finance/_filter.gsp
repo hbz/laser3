@@ -81,7 +81,7 @@
                 <div class="field">
                     <label for="filterCITitle">${message(code:'financials.newCosts.costTitle')}
                         <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.title.tooltip')}">
-                            <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                            <i class="${Icons.HELP_TOOLTIP}"></i>
                         </span>
                     </label>
                     <div class="ui search selection dropdown <g:if test="${ciTitles}">allowAdditions</g:if>" id="filterCITitle">

@@ -128,7 +128,7 @@
         <g:else>
             <g:each in="${data.costItems}" var="ci" status="jj">
                 <%
-                    String icon = '<i class="' + Icons.HELP_TOOLTIP + ' icon"></i>'
+                    String icon = '<i class="' + Icons.HELP_TOOLTIP + '"></i>'
                     String dataTooltip = message(code:'financials.costItemConfiguration.notSet')
 
                     switch (ci.costItemElementConfiguration) {
@@ -272,7 +272,7 @@
                                         data-confirm-term-how="delete"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                    <i class="${Icons.CMD_DELETE}"></i>
                                 </g:link>
                             </td>
                         </g:if>

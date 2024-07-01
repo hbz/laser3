@@ -502,7 +502,7 @@
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.tipp.name])}"
                                                                         data-confirm-term-how="delete"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                                                    <i class="${Icons.CMD_DELETE}"></i>
                                                                 </g:link>
                                                             </g:if>
                                                             <g:else>
@@ -513,7 +513,7 @@
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.tipp.name])}"
                                                                         data-confirm-term-how="delete"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                                                    <i class="${Icons.CMD_DELETE}"></i>
                                                                 </g:link>
                                                             </g:else>
                                                         </g:if>
@@ -571,7 +571,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.coverageDepth}">
                                                                 <div class="item">
-                                                                    <i class="grey icon ${Icons.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>
+                                                                    <i class="grey ${Icons.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>
                                                                     <div class="content">
                                                                         <div class="header">
                                                                             ${message(code: 'tipp.coverageDepth')}

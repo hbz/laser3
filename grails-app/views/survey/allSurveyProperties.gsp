@@ -29,10 +29,10 @@
 
     <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyProperty.all.label')}
 
-        <i class="${Icons.HELP_TOOLTIP} icon la-popup"></i>
+        <i class="${Icons.HELP_TOOLTIP} la-popup"></i>
 
         <div class="ui popup">
-            <i class="${Icons.PRIVATE_PROPERTY} icon"></i> = ${message(code: 'subscription.properties.my')}
+            <i class="${Icons.PRIVATE_PROPERTY}"></i> = ${message(code: 'subscription.properties.my')}
         </div>
         <ui:totalNumber total="${properties.size()}"/>
 
@@ -65,7 +65,7 @@
                 <td>
                     <g:if test="${property?.tenant && property?.tenant.id == institution.id}">
                         <ui:xEditable owner="${property}" field="name_${SUBSTITUTE}" type="textarea"/>
-                        <i class='${Icons.PRIVATE_PROPERTY} icon'></i>
+                        <i class='${Icons.PRIVATE_PROPERTY}'></i>
                     </g:if>
                     <g:else>
                         ${property?.getI10n('name')}
@@ -104,7 +104,7 @@
                                 data-confirm-term-how="delete"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="${Icons.CMD_DELETE} icon"></i>
+                            <i class="${Icons.CMD_DELETE}"></i>
                         </g:link>
                     </g:if>
                 </td>

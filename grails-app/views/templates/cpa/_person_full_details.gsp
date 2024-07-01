@@ -126,7 +126,7 @@
                                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                        <i class="${Icons.CMD_UNLINK} icon"></i>
+                                        <i class="${Icons.CMD_UNLINK}"></i>
                                     </g:link>
                                 </g:if>
                                 <g:else>
@@ -138,7 +138,7 @@
                                             data-confirm-term-how="delete"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="${Icons.CMD_DELETE} icon"></i>
+                                        <i class="${Icons.CMD_DELETE}"></i>
                                     </g:link>
                                 </g:else>
                             </g:if>
@@ -168,7 +168,7 @@
                                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                        <i class="${Icons.CMD_UNLINK} icon"></i>
+                                        <i class="${Icons.CMD_UNLINK}"></i>
                                     </g:link>
                                 </g:if>
                                 <g:else>
@@ -180,7 +180,7 @@
                                             data-confirm-term-how="delete"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="${Icons.CMD_DELETE} icon"></i>
+                                        <i class="${Icons.CMD_DELETE}"></i>
                                     </g:link>
                                 </g:else>
                             </g:if>
@@ -209,7 +209,7 @@
                                         controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                    <i class="${Icons.CMD_UNLINK} icon"></i>
+                                    <i class="${Icons.CMD_UNLINK}"></i>
                                 </g:link>
                             </g:if>
                         </div>
@@ -229,7 +229,7 @@
                     controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
                     role="button"
                     aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                <i class="${Icons.CMD_UNLINK} icon"></i>
+                <i class="${Icons.CMD_UNLINK}"></i>
             </g:link>
         </td>
     </g:if>

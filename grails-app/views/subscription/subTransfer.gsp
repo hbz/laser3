@@ -267,7 +267,7 @@
                                                         params='[instanceId: "${subscription.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                         role="button"
                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                                    <i class="${Icons.CMD_DELETE}"></i>
                                                 </g:link>
                                             </g:if>
                                             <g:else>
@@ -345,7 +345,7 @@
                                                         params='[instanceId: "${subscription.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                         role="button"
                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                                    <i class="${Icons.CMD_DELETE}"></i>
                                                 </g:link>
                                             </g:if>
                                             <g:else>

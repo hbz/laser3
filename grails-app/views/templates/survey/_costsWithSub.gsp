@@ -81,7 +81,7 @@
                                             break
                                         default:
                                             dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                            icon = '<i class="' + Icons.HELP_TOOLTIP + ' icon"></i>'
+                                            icon = '<i class="' + Icons.HELP_TOOLTIP + '"></i>'
                                             break
                                     }
                                 %>
@@ -153,7 +153,7 @@
                                                     break
                                                 default:
                                                     dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                                    icon = '<i class="' + Icons.HELP_TOOLTIP + ' icon"></i>'
+                                                    icon = '<i class="' + Icons.HELP_TOOLTIP + '"></i>'
                                                     break
                                             }
                                         %>
@@ -268,7 +268,7 @@
                                                 break
                                             default:
                                                 dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                                icon = '<i class="' + Icons.HELP_TOOLTIP + ' icon"></i>'
+                                                icon = '<i class="' + Icons.HELP_TOOLTIP + '"></i>'
                                                 break
                                         }
                                     %>

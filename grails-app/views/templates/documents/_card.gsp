@@ -149,7 +149,7 @@
                                         params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                    <i class="${Icons.CMD_DELETE}"></i>
                                 </g:link>
                             </g:if>
                             <g:elseif test="${docctx.shareConf != RDStore.SHARE_CONF_UPLOADER_AND_TARGET}">
@@ -181,7 +181,7 @@
 %{--                                            params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'--}%
 %{--                                            role="button"--}%
 %{--                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">--}%
-%{--                                        <i class="${Icons.CMD_DELETE} icon"></i>--}%
+%{--                                        <i class="${Icons.CMD_DELETE}"></i>--}%
 %{--                                    </g:link>--}%
 %{--                                </g:if>--}%
 %{--                                <g:else>--}%

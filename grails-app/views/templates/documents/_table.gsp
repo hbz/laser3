@@ -206,7 +206,7 @@
                                             params='[instanceId:"${redirectId}", deleteId:"${docctx.id}", redirectAction:"${actionName}", redirectTab: "${params.tab}"]'
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="${Icons.CMD_DELETE} icon"></i>
+                                        <i class="${Icons.CMD_DELETE}"></i>
                                     </g:link>
                                 </g:if>
                             </g:if>

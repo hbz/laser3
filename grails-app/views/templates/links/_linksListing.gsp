@@ -125,7 +125,7 @@
                                                                 params="${[license: link.sourceLicense.id, id: subscription.id]}"
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                            <i class="${Icons.CMD_UNLINK} icon"></i>
+                                                            <i class="${Icons.CMD_UNLINK}"></i>
                                                         </g:link>
                                                     </span>
                                                     <g:if test="${atConsortialParent}">
@@ -155,7 +155,7 @@
                                                             params="${[oid: genericOIDService.getOID(link)]}"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                        <i class="${Icons.CMD_UNLINK} icon"></i>
+                                                        <i class="${Icons.CMD_UNLINK}"></i>
                                                     </g:link>
                                                 </span>
                                             </g:else>

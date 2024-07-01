@@ -89,7 +89,7 @@
                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [orgInstance.altnames[0].name])}"
                                                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(orgInstance.altnames[0])}')">
-                                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                                    <i class="${Icons.CMD_DELETE}"></i>
                                                 </ui:remoteLink>
                                             </g:if>
                                         </div>
@@ -107,7 +107,7 @@
                                                             <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                            data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                <i class="${Icons.CMD_DELETE} icon"></i>
+                                                                <i class="${Icons.CMD_DELETE}"></i>
                                                             </ui:remoteLink>
                                                         </div>
                                                     </div>
@@ -145,7 +145,7 @@
                                 <g:message code="org.legalPatronName.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.legalPatronName.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                    <i class="${Icons.HELP_TOOLTIP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -157,7 +157,7 @@
                                 <g:message code="org.urlGov.label"/>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.urlGov.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                    <i class="${Icons.HELP_TOOLTIP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -179,7 +179,7 @@
                                 <g:message code="org.linkResolverBase.label"/>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.linkResolverBase.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                    <i class="${Icons.HELP_TOOLTIP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -191,7 +191,7 @@
                                 <g:message code="org.eInvoice.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.eInvoice.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                    <i class="${Icons.HELP_TOOLTIP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -203,7 +203,7 @@
                                 <g:message code="org.eInvoicePortal.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.eInvoicePortal.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                    <i class="${Icons.HELP_TOOLTIP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -278,7 +278,7 @@
                                                             action="unlinkOrg" params="[id: orgInstance.id, combo: row.id]"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                        <i class="${Icons.CMD_UNLINK} icon"></i>
+                                                        <i class="${Icons.CMD_UNLINK}"></i>
                                                     </g:link>
                                                 </span>
                                             </g:if>
@@ -334,7 +334,7 @@
                                 <g:message code="org.libraryType.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.libraryType.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                    <i class="${Icons.HELP_TOOLTIP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -382,7 +382,7 @@
                                 <g:message code="org.libraryNetwork.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.libraryNetwork.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                    <i class="${Icons.HELP_TOOLTIP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -395,7 +395,7 @@
                                 <g:message code="org.funderType.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.funderType.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                    <i class="${Icons.HELP_TOOLTIP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -407,7 +407,7 @@
                                 <g:message code="org.funderHSK.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.funderHSK.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                    <i class="${Icons.HELP_TOOLTIP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -419,7 +419,7 @@
                                 <g:message code="address.country.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.country.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                    <i class="${Icons.HELP_TOOLTIP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -430,7 +430,7 @@
                                 <g:message code="org.region.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.region.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                    <i class="${Icons.HELP_TOOLTIP}"></i>
                                 </span>
                             </dt>
                             <dd>

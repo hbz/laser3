@@ -10,7 +10,7 @@
                 <%--
                <label>${message(code: 'default.search.text')}
                    <span data-position="right center" data-variation="tiny" data-content="${message(code:'default.search.tooltip.subscription')}">
-                       <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                       <i class="${Icons.HELP_TOOLTIP}"></i>
                    </span>
                </label>
                <div class="ui input">

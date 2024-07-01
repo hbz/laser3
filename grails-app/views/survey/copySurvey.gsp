@@ -177,14 +177,14 @@
                                         ${surveyProperty.surveyProperty.getI10n('name')}
 
                                         <g:if test="${surveyProperty.surveyProperty.tenant?.id == institution.id}">
-                                            <i class='${Icons.PRIVATE_PROPERTY} icon'></i>
+                                            <i class='${Icons.PRIVATE_PROPERTY}'></i>
                                         </g:if>
 
                                         <g:if test="${surveyProperty.surveyProperty.getI10n('expl')}">
                                             <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                   data-position="right center"
                                                   data-content="${surveyProperty.surveyProperty.getI10n('expl')}">
-                                                <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                                <i class="${Icons.HELP_TOOLTIP}"></i>
                                             </span>
                                         </g:if>
 
@@ -332,7 +332,7 @@
                         <span data-position="right center" data-variation="tiny"
                               class="la-popup-tooltip la-delay"
                               data-content="${message(code: 'default.search.tooltip.subscription')}">
-                            <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                            <i class="${Icons.HELP_TOOLTIP}"></i>
                         </span>
                     </label>
 

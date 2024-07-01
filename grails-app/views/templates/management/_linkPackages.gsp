@@ -14,7 +14,7 @@
                             <div class="right floated content">
                                 <button class="ui negative button la-modern-button la-selectable-button unlinkPackages" ${!editable || isUnlinkingRunning ? 'disabled="disabled"' : ''}
                                         data-package="${subPkg.pkg.id}" data-subscription="${subPkg.subscription.id}">
-                                    <i class="${Icons.CMD_UNLINK} icon"></i>
+                                    <i class="${Icons.CMD_UNLINK}"></i>
                                 </button>
                             </div>
                         </div>

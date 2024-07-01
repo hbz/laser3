@@ -412,7 +412,7 @@ class UiTagLib {
             if (! simpleFilter) {
                 out << '<button aria-expanded="' + (extended ? 'true':'false') + '" class="ui right floated button la-inline-labeled la-js-filterButton la-clearfix' + (extended ? '':' blue') + '">'
                 out << '    Filter'
-                out << '    <i aria-hidden="true" class="' + Icons.LINK_FILTERED + ' icon"></i>'
+                out << '    <i aria-hidden="true" class="' + Icons.LINK_FILTERED + '"></i>'
                 out << '   <span class="ui circular label la-js-filter-total hidden">0</span>'
                 out << '</button>'
 

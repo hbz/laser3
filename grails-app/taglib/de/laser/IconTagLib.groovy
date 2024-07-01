@@ -323,7 +323,7 @@ class IconTagLib {
 
         out << '<span class="la-long-tooltip la-popup-tooltip la-delay"'
         out << ' data-position="bottom center" data-content="' + tt +'">'
-        out << '<i class="' + Icons.SUB_IS_MULTIYEAR + ' icon ' + color + '"></i>'
+        out << '<i class="' + Icons.SUB_IS_MULTIYEAR + ' ' + color + '"></i>'
         out << '</span>'
     }
 

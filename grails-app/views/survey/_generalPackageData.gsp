@@ -84,7 +84,7 @@
                                                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                                       data-position="right center"
                                                                       data-content="${pkgInfo.packageInstanceRecord.source.frequency}">
-                                                                    <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                                                    <i class="${Icons.HELP_TOOLTIP}"></i>
                                                                 </span>
                                                             </g:if>
                                                             <g:else>

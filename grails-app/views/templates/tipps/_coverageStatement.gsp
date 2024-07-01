@@ -36,7 +36,7 @@
                 <ui:xEditable owner="${covStmt}" field="coverageNote" overwriteEditable="${overwriteEditable}"/>
             </div>
             <div class="la-card-flexRow">
-                <i class="grey icon ${Icons.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>
+                <i class="grey ${Icons.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>
                 <ui:xEditable owner="${covStmt}" field="coverageDepth" overwriteEditable="${overwriteEditable}"/>
             </div>
             <div class="la-card-flexRow">

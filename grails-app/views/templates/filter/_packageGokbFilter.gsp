@@ -26,7 +26,7 @@
                         <label for="search-title">${message(code: 'default.search.text')}
                             <span data-position="right center" class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'default.search.tooltip.package')}">
-                                <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                                <i class="${Icons.HELP_TOOLTIP}"></i>
                             </span>
                         </label>
 

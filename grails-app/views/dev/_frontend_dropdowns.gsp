@@ -66,9 +66,9 @@
         <div class="field">
             <label for="filterPropDef">
                 Merkmal
-                <i aria-hidden="true" class="${Icons.HELP_TOOLTIP} icon la-popup"></i>
+                <i aria-hidden="true" class="${Icons.HELP_TOOLTIP} la-popup"></i>
                 <div class="ui popup">
-                    <i aria-hidden="true" class="${Icons.PRIVATE_PROPERTY} icon"></i> = Mein Merkmal
+                    <i aria-hidden="true" class="${Icons.PRIVATE_PROPERTY}"></i> = Mein Merkmal
                 </div>
             </label>
             <select class="ui dropdown">
@@ -107,7 +107,7 @@
         <br />
         <div class="field">
                 <div class="ui popup">
-                    <i aria-hidden="true" class="${Icons.PRIVATE_PROPERTY} icon"></i> = Mein Merkmal
+                    <i aria-hidden="true" class="${Icons.PRIVATE_PROPERTY}"></i> = Mein Merkmal
                 </div>
             </label>
             <select class="ui search dropdown">
@@ -149,7 +149,7 @@
         <br />
         <div class="field">
                 <div class="ui popup">
-                    <i aria-hidden="true" class="${Icons.PRIVATE_PROPERTY} icon"></i> = Mein Merkmal
+                    <i aria-hidden="true" class="${Icons.PRIVATE_PROPERTY}"></i> = Mein Merkmal
                 </div>
             </label>
             <div class="la-filter">
@@ -200,9 +200,9 @@
         <div class="field">
             <label for="filterPropDef">
                 Merkmal
-                <i aria-hidden="true" class="${Icons.HELP_TOOLTIP} icon la-popup"></i>
+                <i aria-hidden="true" class="${Icons.HELP_TOOLTIP} la-popup"></i>
                 <div class="ui popup">
-                    <i aria-hidden="true" class="${Icons.PRIVATE_PROPERTY} icon"></i> = Mein Merkmal
+                    <i aria-hidden="true" class="${Icons.PRIVATE_PROPERTY}"></i> = Mein Merkmal
                 </div>
             </label>
             <div class="ui search selection dropdown ">
@@ -212,10 +212,10 @@
                 <div class="menu">
                     <div class="item selected" data-value="1">Abbestellgrund</div>
                     <div class="item" data-value="2">Abbestellquote</div>
-                    <div class="item" data-value="3">AGB <i aria-hidden="true" class="${Icons.PRIVATE_PROPERTY} icon"></i></div>
-                    <div class="item" data-value="4">Alternativname <i aria-hidden="true" class="${Icons.PRIVATE_PROPERTY} icon"></i></div>
+                    <div class="item" data-value="3">AGB <i aria-hidden="true" class="${Icons.PRIVATE_PROPERTY}"></i></div>
+                    <div class="item" data-value="4">Alternativname <i aria-hidden="true" class="${Icons.PRIVATE_PROPERTY}"></i></div>
                     <div class="item" data-value="5" >Archivzugriff</div>
-                    <div class="item" data-value="6" >Bei hbz Aufnahme der Metadaten nachfragen <i aria-hidden="true" class="${Icons.PRIVATE_PROPERTY} icon"></i></div>
+                    <div class="item" data-value="6" >Bei hbz Aufnahme der Metadaten nachfragen <i aria-hidden="true" class="${Icons.PRIVATE_PROPERTY}"></i></div>
                     <div class="item" data-value="7">Bestellnummer im Erwerbungssystem</div>
                     <div class="item" data-value="8">Bundesweit offen</div>
                     <div class="item" data-value="9">DBIS-Eintrag</div>
@@ -233,9 +233,9 @@
             &lt;div class=&quot;field&quot;&gt;
             &lt;label <strong>for=&quot;filterPropDef&quot;</strong>&gt;
         Merkmal
-        &lt;i class=&quot;${Icons.HELP_TOOLTIP} icon la-popup&quot;&gt;&lt;/i&gt;
+        &lt;i class=&quot;${Icons.HELP_TOOLTIP} la-popup&quot;&gt;&lt;/i&gt;
         &lt;div class=&quot;ui  popup &quot;&gt;
-        &lt;i class=&quot;${Icons.PRIVATE_PROPERTY} icon&quot;&gt;&lt;/i&gt; = Meine Merkmal
+        &lt;i class=&quot;${Icons.PRIVATE_PROPERTY} &quot;&gt;&lt;/i&gt; = Meine Merkmal
         &lt;/div&gt;
         &lt;/label&gt;
         &lt;div class=&quot;ui search selection dropdown la-filterPropDef&quot;&gt;
@@ -245,7 +245,7 @@
         &lt;div class=&quot;menu&quot;&gt;
         &lt;div class=&quot;item selected&quot; data-value=&quot;linkurl&quot;&gt;Abbestellgrund&lt;/div&gt;
         &lt;div class=&quot;item&quot; data-value=&quot;linkurl&quot;&gt;Abbestellquote&lt;/div&gt;
-        &lt;div class=&quot;item&quot; data-value=&quot;linkurl&quot;&gt;AGB &lt;i class=&quot;${Icons.PRIVATE_PROPERTY} icon&quot;&gt;&lt;/i&gt;&lt;/div&gt;
+        &lt;div class=&quot;item&quot; data-value=&quot;linkurl&quot;&gt;AGB &lt;i class=&quot;${Icons.PRIVATE_PROPERTY} &quot;&gt;&lt;/i&gt;&lt;/div&gt;
         &lt;/div&gt;
         &lt;/div&gt;
         &lt;/div&gt;

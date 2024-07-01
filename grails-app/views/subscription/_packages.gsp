@@ -491,7 +491,7 @@
                                     </g:each>
                                     <tr>
                                         <th class="control-label">
-                                            <g:message code="subscription.packages.freezeHolding"/> <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="${Icons.HELP_TOOLTIP} icon"></i></span>
+                                            <g:message code="subscription.packages.freezeHolding"/> <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="${Icons.HELP_TOOLTIP}"></i></span>
                                         </th>
                                         <td>
                                             <g:if test="${!subscription.instanceOf}">

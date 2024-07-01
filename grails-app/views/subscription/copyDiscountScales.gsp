@@ -36,7 +36,7 @@
                     <span data-position="right center" data-variation="tiny"
                           class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.subscription')}">
-                        <i class="${Icons.HELP_TOOLTIP} icon"></i>
+                        <i class="${Icons.HELP_TOOLTIP}"></i>
                     </span>
                 </label>
 

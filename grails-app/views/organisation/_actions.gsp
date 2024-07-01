@@ -61,7 +61,7 @@
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.disable.allInstUsers")}" data-confirm-term-how="ok">
                     <i class="user lock icon"></i> ${message(code:'org.disableAllUsers.label')}
                 </g:link>
-                <g:link class="item" action="delete" id="${params.id}"><i class="${Icons.CMD_DELETE} icon"></i> ${message(code:'deletion.org')}</g:link>
+                <g:link class="item" action="delete" id="${params.id}"><i class="${Icons.CMD_DELETE}"></i> ${message(code:'deletion.org')}</g:link>
             </g:if>
         </sec:ifAnyGranted>
     </ui:actionsDropdown>
