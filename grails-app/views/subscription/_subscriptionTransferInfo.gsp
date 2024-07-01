@@ -19,7 +19,7 @@
 
                 <th scope="col" rowspan="3" class="center aligned">
                     <span class="la-popup-tooltip la-delay" data-content="${message(code: 'survey.label')}" data-position="top center">
-                        <i class="${Icons.SURVEY} large icon"></i>
+                        <i class="${Icons.SURVEY} large"></i>
                     </span>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned">

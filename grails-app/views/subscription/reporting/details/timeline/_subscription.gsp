@@ -45,10 +45,10 @@
                         <%
                             Map<String, List> navMap = linksGenerationService.generateNavigation(sub, false)
                             navMap.prevLink.each { prevSub ->
-                                print g.link([controller: 'subscription', action: 'show', id: prevSub], '<i class="' + Icons.LINK_PREV + ' icon"></i>' )
+                                print g.link([controller: 'subscription', action: 'show', id: prevSub], '<i class="' + Icons.LINK_PREV + '"></i>' )
                             }
                             navMap.nextLink.each { nextSub ->
-                                print g.link([controller: 'subscription', action: 'show', id: nextSub], '<i class="' + Icons.LINK_NEXT + ' icon"></i>' )
+                                print g.link([controller: 'subscription', action: 'show', id: nextSub], '<i class="' + Icons.LINK_NEXT + '"></i>' )
                             }
                         %>
                     </td>

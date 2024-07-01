@@ -189,7 +189,7 @@
                             <g:message code="person.last_name.label"/> <g:message code="messageRequiredField" />
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'person.last_name.info')}">
-                                <i class="question circle icon"></i>
+                                <i class="${Icons.HELP_TOOLTIP}"></i>
                             </span>
                         </label>
                         <g:textField name="last_name"  value="${personInstance?.last_name}"/>

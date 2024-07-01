@@ -300,7 +300,7 @@
                             <g:if test="${participant.newSub}">
                                 <g:link mapping="subfinance" controller="finance" action="index"
                                         params="${[sub: participant.newSub.id]}"
-                                        class="ui button icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
+                                        class="ui button icon"><i class="${Icons.SUBSCRIPTION}"></i></g:link>
                             </g:if>
 
                             <g:if test="${surveyConfig.subSurveyUseForTransfer}">

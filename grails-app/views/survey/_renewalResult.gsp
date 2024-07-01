@@ -13,7 +13,7 @@
             <g:if test="${participationProperty?.getI10n('expl')}">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${participationProperty?.getI10n('expl')}">
-                    <i class="question circle icon"></i>
+                    <i class="${Icons.HELP_TOOLTIP}"></i>
                 </span>
             </g:if>
         </th>
@@ -31,7 +31,7 @@
                 <g:if test="${surveyProperty?.getI10n('expl')}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                           data-content="${surveyProperty.getI10n('expl')}">
-                        <i class="question circle icon"></i>
+                        <i class="${Icons.HELP_TOOLTIP}"></i>
                     </span>
                 </g:if>
             </th>
@@ -115,7 +115,7 @@
                 <g:if test="${participantResult.resultOfParticipation.comment}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                           data-content="${participantResult.resultOfParticipation.comment}">
-                        <i class="grey question circle icon"></i>
+                        <i class="${Icons.HELP_TOOLTIP}"></i>
                     </span>
                 </g:if>
 
@@ -142,7 +142,7 @@
                 <g:if test="${participantResult.participantPropertyTwoComment}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                           data-content="${participantResult.participantPropertyTwoComment}">
-                        <i class="grey question circle icon"></i>
+                        <i class="${Icons.HELP_TOOLTIP}"></i>
                     </span>
                 </g:if>
 
@@ -157,7 +157,7 @@
                 <g:if test="${participantResult.participantPropertyThreeComment}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                           data-content="${participantResult.participantPropertyThreeComment}">
-                        <i class="grey question circle icon"></i>
+                        <i class="${Icons.HELP_TOOLTIP}"></i>
                     </span>
                 </g:if>
             </g:if>
@@ -172,7 +172,7 @@
                 <g:if test="${participantResult.participantPropertyFourComment}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                           data-content="${participantResult.participantPropertyFourComment}">
-                        <i class="grey question circle icon"></i>
+                        <i class="${Icons.HELP_TOOLTIP}"></i>
                     </span>
                 </g:if>
             </g:if>
@@ -187,7 +187,7 @@
                 <g:if test="${participantResult.participantPropertyFiveComment}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                           data-content="${participantResult.participantPropertyFiveComment}">
-                        <i class="grey question circle icon"></i>
+                        <i class="${Icons.HELP_TOOLTIP}"></i>
                     </span>
                 </g:if>
             </g:if>
@@ -203,7 +203,7 @@
                     <g:if test="${participantResultProperty.comment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${participantResultProperty.comment}">
-                            <i class="grey question circle icon"></i>
+                            <i class="${Icons.HELP_TOOLTIP}"></i>
                         </span>
                     </g:if>
 
@@ -249,7 +249,7 @@
                 <g:if test="${participantResult.sub}">
                     <br/>
                     <g:link controller="subscription" action="show" id="${participantResult.sub?.id}"
-                            class="ui button orange icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
+                            class="ui button orange icon"><i class="${Icons.SUBSCRIPTION}"></i></g:link>
                 </g:if>
             </td>
 

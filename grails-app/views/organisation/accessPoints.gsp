@@ -169,13 +169,13 @@
                                         data-confirm-term-how="delete"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                    <i class="${Icons.CMD_DELETE}"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                                       data-content="${message(code: 'accessPoint.list.deleteDisabledInfo', args: [accessPointItem['platformLinkCount'], accessPointItem['subscriptionLinkCount']])}">
-                                    <span class="ui negative icon button la-modern-button disabled"><i class="${Icons.CMD_DELETE} icon"></i>
+                                    <span class="ui negative icon button la-modern-button disabled"><i class="${Icons.CMD_DELETE}"></i>
                                     </span>
                                 </span>
                             </g:else>

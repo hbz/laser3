@@ -7,7 +7,7 @@
         <tr>
             <td>
                 <span class="la-flexbox la-minor-object">
-                    <i class="${Icons.VENDOR} la-list-icon la-popup-tooltip la-delay icon" data-content="${message(code:'vendor.label')}"></i>
+                    <i class="${Icons.VENDOR} la-list-icon la-popup-tooltip la-delay" data-content="${message(code:'vendor.label')}"></i>
                 </span>
                 <g:link controller="vendor" action="show" id="${role.vendor.id}">
                     ${role.vendor.name}
@@ -47,7 +47,7 @@
                                     data-confirm-term-how = "unlink"
                                     role="button"
                                     aria-label="${message(code:'ariaLabel.unlink.provider-agency.subscription')}">
-                                    <i class="${Icons.CMD_UNLINK} icon"></i>
+                                    <i class="${Icons.CMD_UNLINK}"></i>
                                 </g:link>
                             </span>
                         </g:if>
@@ -261,7 +261,7 @@
                                                             <g:link class="ui negative  button la-modern-button la-selectable-button js-open-confirm-modal" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
                                                                     data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
                                                                     data-confirm-how = "unlink">
-                                                                <i class="${Icons.CMD_UNLINK} icon"></i>
+                                                                <i class="${Icons.CMD_UNLINK}"></i>
                                                             </g:link>
                                                         </div>
                                                     </div>
@@ -415,7 +415,7 @@
                                                             <g:link class="ui negative button la-modern-button la-selectable-button js-open-confirm-modal" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
                                                                     data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
                                                                     data-confirm-how = "unlink">
-                                                                <i class="${Icons.CMD_UNLINK} icon"></i>
+                                                                <i class="${Icons.CMD_UNLINK}"></i>
                                                             </g:link>
                                                         </div>
                                                     </div>

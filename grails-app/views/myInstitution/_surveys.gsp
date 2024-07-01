@@ -56,7 +56,7 @@
                                             <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                                     params="[surveyConfigID: surveyConfig.id]"
                                                     class="ui icon blue button la-modern-button">
-                                                <i class="${Icons.SURVEY} icon"></i>
+                                                <i class="${Icons.SURVEY}"></i>
                                             </g:link>
                                     </span>
                             </span>

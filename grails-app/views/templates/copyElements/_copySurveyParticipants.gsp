@@ -61,12 +61,12 @@
                                                     <g:message code="surveyOrg.perennialTerm.available"/>
                                                     <br />
                                                     <g:link controller="subscription" action="show" class="ui icon button" id="${existSubforOrg[0].id}">
-                                                        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                                                        <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:link controller="subscription" action="show" class="ui icon button" id="${existSubforOrg[0].id}">
-                                                        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                                                        <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
                                                     </g:link>
                                                 </g:else>
                                             </g:if>
@@ -138,12 +138,12 @@
                                                     <g:message code="surveyOrg.perennialTerm.available"/>
                                                     <br />
                                                     <g:link controller="subscription" action="show" class="ui icon button" id="${existSubforOrg[0].id}">
-                                                        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                                                        <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:link controller="subscription" action="show" class="ui icon button" id="${existSubforOrg[0].id}">
-                                                        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                                                        <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
                                                     </g:link>
                                                 </g:else>
                                             </g:if>

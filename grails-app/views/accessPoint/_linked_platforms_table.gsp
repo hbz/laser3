@@ -28,7 +28,7 @@
                   data-confirm-term-how="unlink" data-confirm-id="${java.util.UUID.randomUUID().toString()}"
                   role="button"
                   aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-            <i class="${Icons.CMD_UNLINK} icon"></i>
+            <i class="${Icons.CMD_UNLINK}"></i>
           </g:link>
         </td>
       </g:if>

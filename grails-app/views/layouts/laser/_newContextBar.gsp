@@ -78,7 +78,7 @@
                     <div class="item la-cb-action">
                         <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionTransfer-toggle"
                                 data-content="${message(code:'statusbar.showSubscriptionTransfer.tooltip')}" data-position="bottom left">
-                            <i class="${Icons.SUBSCRIPTION} icon"></i>
+                            <i class="${Icons.SUBSCRIPTION}"></i>
                         </button>
                     </div>
                 </g:if>
@@ -91,10 +91,10 @@
                     <div class="item la-cb-action">
 %{--                        <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionMembers-toggle"--}%
 %{--                                data-content="${message(code:'consortium.member.plural')} ${message(code:'default.and')} ${message(code:'subscription.member.plural')}" data-position="bottom left">--}%
-%{--                            <i class="${Icons.ORG} icon"></i>--}%
+%{--                            <i class="${Icons.ORG}"></i>--}%
 %{--                        </button>--}%
                         <button class="ui icon button la-toggle-ui" id="subscriptionMembers-toggle">
-                            <i class="${Icons.ORG} icon"></i>
+                            <i class="${Icons.ORG}"></i>
                         </button>
                     </div>
                 </g:if>
@@ -200,7 +200,7 @@
                                                         <i class="icon arrow ${linkPrio == 1 ? 'right' : 'left'} la-list-icon"></i>
                                                     </g:if>
                                                     <g:else>
-                                                        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                                                        <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
                                                     </g:else>
                                                     ${linkType}
                                                 </span>
@@ -214,7 +214,7 @@
                                                     (<g:formatDate formatName="default.date.format.notime" date="${linkTarget.startDate}"/> - <g:formatDate formatName="default.date.format.notime" date="${linkTarget.endDate}"/>)
                                                 </span>
                                                 <span class="description">
-                                                    <i class="${Icons.LICENSE} icon la-list-icon"></i>
+                                                    <i class="${Icons.LICENSE} la-list-icon"></i>
                                                     ${linkType}
                                                 </span>
                                             </g:link>
@@ -260,7 +260,7 @@
                                                     (<g:formatDate formatName="default.date.format.notime" date="${linkTarget.startDate}"/> - <g:formatDate formatName="default.date.format.notime" date="${linkTarget.endDate}"/>)
                                                 </span>
                                                 <span class="description">
-                                                    <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                                                    <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
                                                     ${linkType}
                                                 </span>
                                             </g:link>
@@ -277,7 +277,7 @@
                                                         <i class="icon arrow ${linkPrio == 1 ? 'right' : 'left'} la-list-icon"></i>
                                                     </g:if>
                                                     <g:else>
-                                                        <i class="${Icons.LICENSE} icon la-list-icon"></i>
+                                                        <i class="${Icons.LICENSE} la-list-icon"></i>
                                                     </g:else>
                                                     ${linkType}
                                                 </span>

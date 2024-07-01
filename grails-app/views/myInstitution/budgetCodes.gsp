@@ -30,7 +30,7 @@
                     ${message(code: 'financials.budgetCode.usage')}
                     <span data-position="right center" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'financials.budgetCode.usage.explanation')}">
-                        <i class="question circle icon"></i>
+                        <i class="${Icons.HELP_TOOLTIP}"></i>
                     </span>
                 </th>
                 <g:if test="${editable}">
@@ -66,7 +66,7 @@
                                         class="ui icon negative button la-modern-button js-open-confirm-modal"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                    <i class="${Icons.CMD_DELETE}"></i>
                                 </g:link>
                             </g:if>
                         </td>

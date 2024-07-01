@@ -63,7 +63,7 @@
                 <g:link controller="admin" action="deleteSystemMessage" id="${msg.id}" class="ui negative icon button la-modern-button"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="${Icons.CMD_DELETE} icon"></i>
+                    <i class="${Icons.CMD_DELETE}"></i>
                 </g:link>
             </td>
         </tr>

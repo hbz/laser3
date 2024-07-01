@@ -1,4 +1,4 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
 <laser:htmlStart message="myinst.menu.pendingChanges.label" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -84,11 +84,11 @@
                 </g:else>
 
                 <g:if test="${oldValue != null || newValue != null}">
-                    <i class="grey question circle icon la-popup-tooltip la-delay"
+                    <i class="${Icons.HELP_TOOLTIP} la-popup-tooltip la-delay"
                        data-content="${(message(code: 'tipp.' + (entry.priceItem ? 'price.' : '') + entry.targetProperty) ?: '') + ': ' + message(code: 'pendingChange.change', args: [oldValue, newValue])}"></i>
                 </g:if>
                 <g:elseif test="${entry.targetProperty}">
-                    <i class="grey question circle icon la-popup-tooltip la-delay"
+                    <i class="${Icons.HELP_TOOLTIP} la-popup-tooltip la-delay"
                        data-content="${message(code: 'tipp.' + (entry.priceItem ? 'price.' : '') + entry.targetProperty)}"></i>
                 </g:elseif>
 

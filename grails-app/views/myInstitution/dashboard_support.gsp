@@ -13,19 +13,19 @@
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
-                            <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                            <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
                             <div class="content">
                                 <g:link controller="myInstitution" action="currentSubscriptions">${message(code:'menu.my.subscriptions')}</g:link>
                             </div>
                         </div>
                         <div class="item">
-                            <i class="${Icons.LICENSE} icon la-list-icon"></i>
+                            <i class="${Icons.LICENSE} la-list-icon"></i>
                             <div class="content">
                                 <g:link controller="myInstitution" action="currentLicenses">${message(code:'menu.my.licenses')}</g:link>
                             </div>
                         </div>
                         <div class="item">
-                            <i class="${Icons.ORG} icon la-list-icon"></i>
+                            <i class="${Icons.ORG} la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="manageMembers" message="menu.my.insts" />
                             </div>
@@ -35,19 +35,19 @@
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
-                            <i class="${Icons.TASK} icon la-list-icon"></i>
+                            <i class="${Icons.TASK} la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem controller="myInstitution" action="tasks" message="menu.my.tasks" />
                             </div>
                         </div>
                         <div class="item">
-                            <i class="${Icons.DOCUMENT} icon la-list-icon"></i>
+                            <i class="${Icons.DOCUMENT} la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem controller="myInstitution" action="documents" message="menu.my.documents" />
                             </div>
                         </div>
                         <div class="item">
-                            <i class="${Icons.WORKFLOW} icon la-list-icon"></i>
+                            <i class="${Icons.WORKFLOW} la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
                             </div>
@@ -57,7 +57,7 @@
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
-                            <i class="${Icons.ORG} icon la-list-icon"></i>
+                            <i class="${Icons.ORG} la-list-icon"></i>
                             <div class="content">
                                 <g:link controller="org" action="show" id="${institution.id}">${message(code: 'menu.institutions.org.show')}</g:link>
                             </div>
@@ -79,13 +79,13 @@
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
-                            <i class="${Icons.ORG} icon la-list-icon"></i>
+                            <i class="${Icons.ORG} la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                             </div>
                         </div>
                         <div class="item">
-                            <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                            <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem controller="myInstitution" action="subscriptionsManagement" message="menu.institutions.subscriptionsManagement" />
                             </div>
@@ -124,18 +124,18 @@
         </a>
 
         <a class="${us_dashboard_tab.value == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
-            <i class="${Icons.ANNOUNCEMENT} icon large"></i>
+            <i class="${Icons.ANNOUNCEMENT} large"></i>
             ${systemAnnouncements.size()} ${message(code:'announcement.plural')}
         </a>
 
         <a class="${us_dashboard_tab.value == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
-            <i class="${Icons.TASK} icon large"></i>
+            <i class="${Icons.TASK} large"></i>
             ${tasksCount} ${message(code:'myinst.dash.task.label')}
         </a>
 
         <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
             <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
-                <i class="${Icons.WORKFLOW} icon large"></i>
+                <i class="${Icons.WORKFLOW} large"></i>
                 ${allChecklistsCount} ${message(code:'workflow.plural')}
             </a>
         </g:if>
@@ -217,19 +217,19 @@
                                     <div class="item">
                                         <span class="la-popup-tooltip la-delay" data-content="${message(code: 'task.' + tskObj.controller)}" data-position="left center" data-variation="tiny">
                                             <g:if test="${tskObj.controller == 'organisation'}">
-                                                <i class="${Icons.ORG} icon"></i>
+                                                <i class="${Icons.ORG}"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('subscription')}">
-                                                <i class="${Icons.SUBSCRIPTION} icon"></i>
+                                                <i class="${Icons.SUBSCRIPTION}"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('package')}">
-                                                <i class="${Icons.PACKAGE} icon"></i>
+                                                <i class="${Icons.PACKAGE}"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('license')}">
-                                                <i class="${Icons.LICENSE} icon"></i>
+                                                <i class="${Icons.LICENSE}"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('survey')}">
-                                                <i class="${Icons.SURVEY} icon"></i>
+                                                <i class="${Icons.SURVEY}"></i>
                                             </g:if>
                                         </span>
                                     <g:if test="${tskObj.controller.contains('survey')}">
@@ -242,7 +242,7 @@
                                 </g:each>
                             </g:if>
                             <g:else>
-                                <i class="${Icons.TASK} icon"></i> ${message(code: 'task.general')}
+                                <i class="${Icons.TASK}"></i> ${message(code: 'task.general')}
                             </g:else>
                         </div>
                     </div>
@@ -329,7 +329,7 @@
                                                     controller="myInstitution" action="dashboard" id="${clistInfo.target.id}" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}", view:'Workflows']}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="${Icons.CMD_DELETE} icon"></i>
+                                                <i class="${Icons.CMD_DELETE}"></i>
                                             </g:link>
                                         </g:if>
                                     </td>

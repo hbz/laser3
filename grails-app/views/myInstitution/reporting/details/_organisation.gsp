@@ -76,7 +76,7 @@
                                 <a href="${wekb.baseUrl + '/public/orgContent/' + org.gokbId}" target="_blank">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.chart.result.link.unchecked.label')}"
                                             data-position="top right">
-                                        <i class="${Icons.LINK_EXTERNAL} icon grey"></i>
+                                        <i class="${Icons.LINK_EXTERNAL} grey"></i>
                                     </span>
                                 </a>
                             </g:if>

@@ -49,7 +49,7 @@ class IconTagLib {
                 icon = 'bordered inverted teal euro sign la-object-extended'
                 break
             case 'help':
-                icon = 'question circle bordered inverted grey la-object-extended'
+                icon = Icons.HELP_TOOLTIP + ' bordered inverted la-object-extended'
                 break
             case 'journal':
             case 'serial':
@@ -323,7 +323,7 @@ class IconTagLib {
 
         out << '<span class="la-long-tooltip la-popup-tooltip la-delay"'
         out << ' data-position="bottom center" data-content="' + tt +'">'
-        out << '<i class="' + Icons.SUB_IS_MULTIYEAR + ' icon ' + color + '"></i>'
+        out << '<i class="' + Icons.SUB_IS_MULTIYEAR + ' ' + color + '"></i>'
         out << '</span>'
     }
 
@@ -331,7 +331,7 @@ class IconTagLib {
         String tooltip = attrs.type ? message(code: 'marker.' + attrs.type ) : message(code: 'marker.label')
 
         out << '<span class="la-popup-tooltip la-delay" data-content="' + tooltip + '">'
-        out << '<i class="' + Icons.MARKER + ' icon ' + (attrs.color ? attrs.color + ' ' : '') + '"></i>'
+        out << '<i class="' + Icons.MARKER + (attrs.color ? ' ' + attrs.color : '') + '"></i>'
         out << '</span>'
     }
 

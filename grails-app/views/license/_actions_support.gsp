@@ -47,7 +47,7 @@
 
             <g:if test="${editable}">
                 <div class="divider"></div>
-                <g:link class="item" action="delete" id="${params.id}"><i class="${Icons.CMD_DELETE} icon"></i> ${message(code:'deletion.license')}</g:link>
+                <g:link class="item" action="delete" id="${params.id}"><i class="${Icons.CMD_DELETE}"></i> ${message(code:'deletion.license')}</g:link>
             </g:if>
         </g:if>
 

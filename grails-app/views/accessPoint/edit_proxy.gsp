@@ -90,7 +90,7 @@
                                     class="ui negative icon button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="${Icons.CMD_DELETE} icon"></i>
+                                <i class="${Icons.CMD_DELETE}"></i>
                             </g:link>
                         </g:if>
                     </td>
@@ -112,7 +112,7 @@
                             <label for="ipv4_ip">${message(code: 'accessPoint.ip.data')}
                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                                       data-content="${message(code: "accessPoint.ip.input")}">
-                                    <i class="grey question circle icon"></i></span>
+                                    <i class="${Icons.HELP_TOOLTIP} la-popup"></i></span>
                             </label>
 
                             <g:if test="${autofocus == true}">
@@ -153,7 +153,7 @@
                                 class="ui negative icon button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="${Icons.CMD_DELETE} icon"></i>
+                            <i class="${Icons.CMD_DELETE}"></i>
                         </g:link>
                     </g:if>
                 </td>
@@ -175,7 +175,7 @@
                         <label for="ipv6_ip">${message(code: 'accessPoint.ip.data')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay"
                                   data-content="${message(code: "accessPoint.ip.input")}">
-                                <i class="grey question circle icon la-popup"></i></span>
+                                <i class="${Icons.HELP_TOOLTIP} la-popup"></i></span>
                         </label>
 
                         <g:if test="${autofocus == true}">

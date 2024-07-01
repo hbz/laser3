@@ -40,7 +40,7 @@
             <th>${message(code: 'surveyProperty.plural.label')}</th>
             <th>
                 <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfigDocs.label')}" data-position="top center">
-                <i class="${Icons.DOCUMENT} large icon"></i>
+                <i class="${Icons.DOCUMENT} large"></i>
                 </a>
             </th>
             <th>
@@ -81,7 +81,7 @@
                         <g:if test="${surveyConfig.subSurveyUseForTransfer}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info2")}">
-                                <i class="${Icons.SURVEY} icon la-list-icon"></i>
+                                <i class="${Icons.SURVEY} la-list-icon"></i>
                             </span>
                         </g:if>
 

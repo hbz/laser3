@@ -54,7 +54,7 @@
                 %{--DOCUMENTS:--}%
                 <tr data-element="copyObject.takeDocs">
                     <td data-element="source">
-                        <div class="la-min-height"><strong><i class="${Icons.DOCUMENT} icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong></div>
+                        <div class="la-min-height"><strong><i class="${Icons.DOCUMENT}"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong></div>
                         <g:each in="${sourceDocuments}" var="docctx">
                             <g:if test="${(docctx.isDocAFile() && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                 <div data-id="${docctx.id}" class="la-element la-min-height">
@@ -106,7 +106,7 @@
                     </td>
                     <g:if test="${!copyObject && targetObject}">
                         <td data-element="target">
-                            <div class="la-min-height"><strong><i class="${Icons.DOCUMENT} icon"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong><br /></div>
+                            <div class="la-min-height"><strong><i class="${Icons.DOCUMENT}"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong><br /></div>
                             <g:if test="${targetObject}">
                                     <g:each in="${targetDocuments}" var="docctx">
                                         <g:if test="${(docctx.isDocAFile() && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
@@ -286,7 +286,7 @@
                 %{--TASKS:--}%
                 <tr data-element="copyObject.takeTasks">
                     <td data-element="source">
-                        <div class="la-min-height"><strong><i class="${Icons.TASK} icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong></div>
+                        <div class="la-min-height"><strong><i class="${Icons.TASK}"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong></div>
                         <g:each in="${sourceTasks}" var="tsk">
                             <div data-id="${tsk?.id}" class="la-element la-min-height">
                                 <label>
@@ -317,7 +317,7 @@
                     </g:if>
                     <g:if test="${!copyObject && targetObject}">
                                 <td data-element="target">
-                                    <div class="la-min-height"><strong><i class="${Icons.TASK} icon"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong></div>
+                                    <div class="la-min-height"><strong><i class="${Icons.TASK}"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong></div>
                                     <g:each in="${targetTasks}" var="tsk">
                                         <div data-id="${tsk?.id}" class="la-element la-min-height">
                                         <strong>${tsk?.title}</strong> (${message(code: 'task.endDate.label')}

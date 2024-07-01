@@ -72,7 +72,7 @@
 
         <tr>
             <td>
-                <i class="${Icons.CMD_UNLINK} icon"></i>
+                <i class="${Icons.CMD_UNLINK}"></i>
             </td>
             <td>
                 Objekt wird entknüpft

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; org.grails.orm.hibernate.cfg.GrailsHibernateUtil; de.laser.survey.SurveyConfig;de.laser.License; de.laser.properties.SubscriptionProperty; de.laser.properties.LicenseProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.Subscription" %>
+<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; org.grails.orm.hibernate.cfg.GrailsHibernateUtil; de.laser.survey.SurveyConfig;de.laser.License; de.laser.properties.SubscriptionProperty; de.laser.properties.LicenseProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.Subscription" %>
 <laser:serviceInjection/>
 
 <g:set var="overwriteEditable" value="${false}"/>
@@ -92,7 +92,7 @@
                     <g:if test="${propKey.getI10n('expl')}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${propKey.getI10n('expl')}">
-                            <i class="grey question circle icon"></i>
+                            <i class="${Icons.HELP_TOOLTIP}"></i>
                         </span>
                     </g:if>
                 </g:if>

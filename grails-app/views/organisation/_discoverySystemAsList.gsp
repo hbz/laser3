@@ -15,7 +15,7 @@
                                            controller="organisation" action="deleteDiscoverySystem" params="[id: org.id, oid: genericOIDService.getOID(frontend)]"
                                            role="button"
                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="${Icons.CMD_DELETE} icon"></i>
+                                <i class="${Icons.CMD_DELETE}"></i>
                             </g:link>
                         </div>
                     </div>
@@ -40,7 +40,7 @@
                                            controller="organisation" action="deleteDiscoverySystem" params="[id: org.id, oid: genericOIDService.getOID(index)]"
                                            role="button"
                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="${Icons.CMD_DELETE} icon"></i>
+                                <i class="${Icons.CMD_DELETE}"></i>
                             </g:link>
                         </div>
                     </div>

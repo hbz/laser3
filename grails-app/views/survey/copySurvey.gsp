@@ -177,14 +177,14 @@
                                         ${surveyProperty.surveyProperty.getI10n('name')}
 
                                         <g:if test="${surveyProperty.surveyProperty.tenant?.id == institution.id}">
-                                            <i class='${Icons.PRIVATE_PROPERTY} icon'></i>
+                                            <i class='${Icons.PRIVATE_PROPERTY}'></i>
                                         </g:if>
 
                                         <g:if test="${surveyProperty.surveyProperty.getI10n('expl')}">
                                             <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                   data-position="right center"
                                                   data-content="${surveyProperty.surveyProperty.getI10n('expl')}">
-                                                <i class="grey question circle icon"></i>
+                                                <i class="${Icons.HELP_TOOLTIP}"></i>
                                             </span>
                                         </g:if>
 
@@ -332,7 +332,7 @@
                         <span data-position="right center" data-variation="tiny"
                               class="la-popup-tooltip la-delay"
                               data-content="${message(code: 'default.search.tooltip.subscription')}">
-                            <i class="grey question circle icon"></i>
+                            <i class="${Icons.HELP_TOOLTIP}"></i>
                         </span>
                     </label>
 
@@ -504,7 +504,7 @@
                                     <g:each in="${s.packages.sort { it.pkg.name }}" var="sp" status="ind">
                                         <g:if test="${ind < 10}">
                                             <div class="la-flexbox">
-                                                <i class="${Icons.PACKAGE} icon la-list-icon"></i>
+                                                <i class="${Icons.PACKAGE} la-list-icon"></i>
                                                 <g:link controller="subscription" action="index" id="${s.id}"
                                                         params="[pkgfilter: sp.pkg.id]"
                                                         title="${sp.pkg.provider?.name}">

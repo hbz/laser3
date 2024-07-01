@@ -38,14 +38,14 @@
             <th class="center aligned la-smaller-table-head"  rowspan="2" >
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.previous.label')}">
-                    <i class="${Icons.LINK_PREV} icon"></i>
+                    <i class="${Icons.LINK_PREV}"></i>
                 </span>
             </th>
             <g:sortableColumn property="subT.name" params="${params}" title="${message(code:'default.subscription.label')}" class="la-smaller-table-head" />
             <th class="center aligned la-smaller-table-head" rowspan="2" >
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.next.label')}">
-                    <i class="${Icons.LINK_NEXT} icon"></i>
+                    <i class="${Icons.LINK_NEXT}"></i>
                 </span>
             </th>
             <g:if test="${'showPackages' in tableConfig}">
@@ -125,31 +125,31 @@
                 %>
                 <td class="center aligned">
                     <g:if test="${navPrevSubMember}">
-                        <g:link controller="subscription" action="show" id="${navPrevSubMember}"><i class="${Icons.LINK_PREV} icon"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${navPrevSubMember}"><i class="${Icons.LINK_PREV}"></i></g:link>
                     </g:if>
                 </td>
                 <th scope="row" class="la-th-column">
                     <div class="la-flexbox la-main-object">
-                        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                        <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
                         <g:link controller="subscription" action="show" id="${subCons.id}">${subCons.name}</g:link>
                     </div>
                     <g:each in="${linkedLicenses.get(subCons)}" var="linkedLicense">
                         <div class="la-flexbox la-minor-object">
-                            <i class="${Icons.LICENSE} icon la-list-icon"></i>
+                            <i class="${Icons.LICENSE} la-list-icon"></i>
                             <g:link controller="license" action="show" id="${linkedLicense.id}">${linkedLicense.reference}</g:link><br />
                         </div>
                     </g:each>
                 </th>
                 <td class="center aligned">
                     <g:if test="${navNextSubMember}">
-                        <g:link controller="subscription" action="show" id="${navNextSubMember}"><i class="${Icons.LINK_NEXT} icon"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${navNextSubMember}"><i class="${Icons.LINK_NEXT}"></i></g:link>
                     </g:if>
                 </td>
                 <g:if test="${'showPackages' in tableConfig}">
                     <td>
                         <g:each in="${subCons.packages}" var="subPkg">
                             <div class="la-flexbox">
-                                <i class="${Icons.PACKAGE} icon la-list-icon"></i>
+                                <i class="${Icons.PACKAGE} la-list-icon"></i>
                                 <g:link controller="package" action="show" id="${subPkg.pkg.id}">${subPkg.pkg.name}</g:link>
                             </div>
                         </g:each>
@@ -223,7 +223,7 @@
                             break
                         default:
                             dataTooltip = message(code:'financials.costItemConfiguration.notSet')
-                            icon = '<i class="grey question circle icon"></i>'
+                            icon = '<i class="' + Icons.HELP_TOOLTIP + '"></i>'
                             break
                     }
                     %>

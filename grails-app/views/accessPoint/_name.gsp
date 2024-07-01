@@ -1,15 +1,16 @@
+<%@ page import="de.laser.helper.Icons" %>
 <div class="field required">
     <label>${message(code: 'accessPoint.' + accessMethod + '.name.label')}
         <g:if test="${accessMethod == 'proxy'}">
             <span class="la-long-tooltip la-popup-tooltip la-delay"
                   data-content="${message(code: "accessPoint.proxy.help")}">
-                <i class="grey question circle icon la-popup"></i></span>
+                <i class="${Icons.HELP_TOOLTIP} la-popup"></i></span>
         </g:if>
 
         <g:if test="${accessMethod == 'ezproxy'}">
             <span class="la-long-tooltip la-popup-tooltip la-delay"
                   data-content="${message(code: "accessPoint.ezproxy.help")}">
-                <i class="grey question circle icon la-popup"></i></span>
+                <i class="${Icons.HELP_TOOLTIP} la-popup"></i></span>
         </g:if>
 
     </label>
@@ -23,7 +24,7 @@
                         <label>${message(code: "${nameOption.key}")}
                             <span class="la-long-tooltip la-popup-tooltip la-delay"
                                   data-content="${message(code: "${nameOption.key}.help")}">
-                                <i class="grey question circle icon la-popup"></i></span>
+                                <i class="${Icons.HELP_TOOLTIP} la-popup"></i></span>
                         </label>
                     </div>
                 </div>

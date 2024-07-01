@@ -151,7 +151,7 @@ ${currentAnnouncement?.getCleanContent()}
                         <br />
                         <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'delete']" role="button" class="ui negative icon button la-modern-button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i aria-hidden="true" class="${Icons.CMD_DELETE} icon"></i></g:link>
+                            <i aria-hidden="true" class="${Icons.CMD_DELETE}"></i></g:link>
                         <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'edit']" role="button" class="ui icon button la-modern-button"><i aria-hidden="true" class="edit icon"></i></g:link>
 
                         <g:if test="${mailDisabled}">

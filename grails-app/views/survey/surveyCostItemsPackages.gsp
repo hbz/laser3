@@ -35,7 +35,7 @@
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
     <g:if test="${surveyConfig.subscription}">
-        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+        <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
             ${surveyConfig.getConfigNameShort()}
         </g:link>
@@ -143,7 +143,7 @@
                                                     data-position="right center"
                                                     data-content="${message(code: 'surveyCostItems.bulkOption.info')}">
                             ${message(code: 'surveyCostItems.bulkOption.label')}
-                            <i class="grey question circle icon"></i>
+                            <i class="${Icons.HELP_TOOLTIP}"></i>
                         </span></h3>
 
                         <div class="ui basic segment">
@@ -328,7 +328,7 @@
                         data-confirm-id="processSurveyCostItemsBulk"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="${Icons.CMD_DELETE} icon"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
+                    <i class="${Icons.CMD_DELETE}"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
                 </button>
 
             </g:form>

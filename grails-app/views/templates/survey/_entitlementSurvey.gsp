@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.Icons" %>
 <div class="ui card la-time-card">
     <div class="content">
         <div class="header"><g:message code="renewEntitlementsWithSurvey.selectableTitles"/></div>
@@ -30,7 +31,7 @@
     <a class="item" data-tab="currentTitles"><g:message code="renewEntitlementsWithSurvey.currentTitles"/>
         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
               data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitles.mouseover')}">
-            <i class="grey question circle icon"></i>
+            <i class="${Icons.HELP_TOOLTIP}"></i>
         </span>
     </a>
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.remote.ApiSource; de.laser.Org" %>
+<%@ page import="de.laser.helper.Icons; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.remote.ApiSource; de.laser.Org" %>
 <laser:htmlStart message="subscription.details.renewEntitlements.label" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -195,7 +195,7 @@
 
             <h4 class="ui dividing header"><g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.label"/>
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'renewEntitlementsWithSurvey.issueEntitlementSelect.info')}">
-                <i class="grey question circle icon"></i>
+                <i class="${Icons.HELP_TOOLTIP}"></i>
             </span></h4>
 
             <div class="two fields">
@@ -270,7 +270,7 @@
         <g:message code="renewEntitlementsWithSurvey.currentTitles"/>
             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                   data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitles.mouseover')}">
-                <i class="grey question circle icon"></i>
+                <i class="${Icons.HELP_TOOLTIP}"></i>
             </span>
         <div class="ui circular label">${countCurrentPermanentTitles}</div>
     </g:link>

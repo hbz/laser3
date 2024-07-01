@@ -25,14 +25,14 @@
                         <th class="center aligned"  rowspan="2" scope="col">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                   data-content="${message(code: 'default.previous.label')}">
-                                <i class="${Icons.LINK_PREV} icon"></i>
+                                <i class="${Icons.LINK_PREV}"></i>
                             </span>
                         </th>
                         <g:sortableColumn params="${params}" property="s.name" title="${subscriptionHeader}" rowspan="2" scope="col" />
                         <th class="center aligned" rowspan="2" scope="col">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                   data-content="${message(code: 'default.next.label')}">
-                                <i class="${Icons.LINK_NEXT} icon"></i>
+                                <i class="${Icons.LINK_NEXT}"></i>
                             </span>
                         </th>
                         <g:if test="${'showPackages' in tableConfig}">
@@ -56,7 +56,7 @@
                         <g:if test="${params.orgRole in ['Subscription Consortia']}">
                             <th scope="col" rowspan="2" class="center aligned">
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
-                                    <i class="${Icons.ORG} large icon"></i>
+                                    <i class="${Icons.ORG} large"></i>
                                 </span>
                             </th>
                             <th scope="col" rowspan="2" class="center aligned">
@@ -94,7 +94,7 @@
                         %>
                         <td class="center aligned">
                             <g:if test="${navPrevSub}">
-                                <g:link controller="subscription" action="show" id="${navPrevSub}"><i class="${Icons.LINK_PREV} icon"></i></g:link>
+                                <g:link controller="subscription" action="show" id="${navPrevSub}"><i class="${Icons.LINK_PREV}"></i></g:link>
                             </g:if>
                         </td>
                         <th scope="row" class="la-th-column">
@@ -119,7 +119,7 @@
                                     <g:if test="${s == row.destinationSubscription}">
                                         <g:set var="license" value="${row.sourceLicense}"/>
                                         <div class="la-flexbox la-minor-object">
-                                            <i class="${Icons.LICENSE} icon la-list-icon"></i>
+                                            <i class="${Icons.LICENSE} la-list-icon"></i>
                                             <g:link controller="license" action="show" id="${license.id}">
                                                 ${license.reference}
                                             </g:link><br />
@@ -130,7 +130,7 @@
                         </th>
                         <td class="center aligned">
                             <g:if test="${navNextSub}">
-                                <g:link controller="subscription" action="show" id="${navNextSub}"><i class="${Icons.LINK_NEXT} icon"></i></g:link>
+                                <g:link controller="subscription" action="show" id="${navNextSub}"><i class="${Icons.LINK_NEXT}"></i></g:link>
                             </g:if>
                         </td>
                         <g:if test="${'showPackages' in tableConfig}">
@@ -139,7 +139,7 @@
                             <g:each in="${s.packages}" var="sp" status="ind">
                                 <g:if test="${ind < 10}">
                                     <div class="la-flexbox">
-                                        <i class="${Icons.PACKAGE} icon la-list-icon"></i>
+                                        <i class="${Icons.PACKAGE} la-list-icon"></i>
                                         <g:link controller="subscription" action="index" id="${s.id}" params="[pkgfilter: sp.pkg.id]"
                                                 title="${sp.pkg.provider?.name}">
                                             ${sp.pkg.name}
@@ -263,7 +263,7 @@
                                         <g:link controller="subscription" action="surveys" id="${s.id}"
                                                 class="ui icon positive button la-modern-button">
                                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info3")}">
-                                                <i class="${Icons.SURVEY} icon"></i>
+                                                <i class="${Icons.SURVEY}"></i>
                                             </span>
                                         </g:link>
                                     </g:if>
@@ -277,7 +277,7 @@
                                                         class="ui button positive icon la-modern-button">
                                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                           data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
-                                                        <i class="${Icons.SURVEY} icon"></i>
+                                                        <i class="${Icons.SURVEY}"></i>
                                                     </span>
                                                 </g:link>
                                             </g:if>
@@ -286,7 +286,7 @@
                                                         class="ui button blue icon la-modern-button">
                                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                           data-content="${message(code: "surveyconfig.isCompletedforOwner.false")}">
-                                                        <i class="${Icons.SURVEY} icon"></i>
+                                                        <i class="${Icons.SURVEY}"></i>
                                                     </span>
                                                 </g:link>
                                             </g:else>

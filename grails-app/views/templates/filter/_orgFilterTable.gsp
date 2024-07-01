@@ -56,7 +56,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('legalInformation')}">
                 <th class="la-no-uppercase">
                     <span class="la-popup-tooltip la-delay" data-content="${message(code: 'org.legalInformation.tooltip')}">
-                        <i class="${Icons.ORG_LEGAL_INFORMATION} icon"></i>
+                        <i class="${Icons.ORG_LEGAL_INFORMATION}"></i>
                     </span>
                 </th>
             </g:if>

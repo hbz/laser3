@@ -183,7 +183,7 @@ class ModalTagLib {
         out << '<div class="actions">'
         out << '<button class="ui deny button">' + msgCancel + '</button>'
         out << '<button id="js-confirmation-button" class="ui positive right labeled icon button">' + msgDelete
-        out << '    <i aria-hidden="true" class="' + Icons.CMD_DELETE + ' icon"></i>'
+        out << '    <i aria-hidden="true" class="' + Icons.CMD_DELETE + '"></i>'
         out << '</button>'
         out << '</div>'
         out << '</div>'

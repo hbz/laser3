@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.utils.LocaleUtils" %>
+<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.utils.LocaleUtils" %>
 <laser:serviceInjection/>
 <g:set var="costItemsSurvey"
        value="${surveyOrg ? CostItem.findAllBySurveyOrgAndPkgIsNull(surveyOrg) : null}"/>
@@ -57,7 +57,7 @@
                                         break
                                     default:
                                         dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                        icon = '<i class="grey question circle icon"></i>'
+                                        icon = '<i class="' + Icons.HELP_TOOLTIP + '"></i>'
                                         break
                                 }
                             %>

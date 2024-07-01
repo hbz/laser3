@@ -37,15 +37,15 @@
                 <td>
                     <div class="la-flexbox">
                         <g:if test="${obj instanceof Subscription}">
-                            <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                            <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
                             <g:link controller="subscription" action="show" id="${obj.id}">${obj.name}</g:link>
                         </g:if>
                         <g:elseif test="${obj instanceof License}">
-                            <i class="${Icons.LICENSE} icon la-list-icon"></i>
+                            <i class="${Icons.LICENSE} la-list-icon"></i>
                             <g:link controller="license" action="show" id="${obj.id}">${obj.name}</g:link>
                         </g:elseif>
                         <g:elseif test="${obj instanceof SurveyInfo}">
-                            <i class="${Icons.SURVEY} icon la-list-icon"></i>
+                            <i class="${Icons.SURVEY} la-list-icon"></i>
                             <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                                 <g:link controller="survey" action="show" params="[surveyConfigID: obj.surveyConfigs[0].id]"
                                         id="${obj.id}">${obj.surveyConfigs[0].getSurveyName()}
@@ -58,7 +58,7 @@
                         </g:elseif>
                         <g:elseif test="${obj instanceof Task}">
                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Aufgabe">
-                                <i class="${Icons.TASK} icon la-list-icon"></i>
+                                <i class="${Icons.TASK} la-list-icon"></i>
                             </span>
                             <g:if test="${obj.subscription}">
                                 <g:link controller="subscription" action="show" id="${obj.subscription.id}">${obj.title}</g:link>
@@ -82,15 +82,15 @@
                                 ${obj.owner.first_name}&nbsp;${obj.owner.last_name}
                             </g:if>
                             <g:elseif test="${obj.owner instanceof Subscription}">
-                                <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                                <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
                                 <g:link controller="subscription" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
                             </g:elseif>
                             <g:elseif test="${obj.owner instanceof License}">
-                                <i class="${Icons.LICENSE} icon la-list-icon"></i>
+                                <i class="${Icons.LICENSE} la-list-icon"></i>
                                 <g:link controller="license" action="show" id="${obj.owner?.id}">${obj.owner?.reference}</g:link>
                             </g:elseif>
                             <g:elseif test="${obj.owner instanceof Org}">
-                                <i class="${Icons.ORG} icon la-list-icon"></i>
+                                <i class="${Icons.ORG} la-list-icon"></i>
                                 <g:link controller="organisation" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
                             </g:elseif>
                             <g:else>
@@ -117,7 +117,7 @@
                                           role="button"
                                           ariaLabel="${message(code:'ariaLabel.delete.universal')}"
                         >
-                            <i class="${Icons.CMD_DELETE} icon"></i>
+                            <i class="${Icons.CMD_DELETE}"></i>
                         </ui:remoteLink>
                     </g:if>
                     <g:if test="${dashDueDate?.isHidden}">

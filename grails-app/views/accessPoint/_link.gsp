@@ -1,9 +1,10 @@
+<%@ page import="de.laser.helper.Icons" %>
 <div class="ui card">
     <div class="content">
         <div class="header">
             <h3>${message(code: 'accessPoint.link.with.platform')}
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: 'accessPoint.platformHelp')}">
-                    <i class="grey question circle icon la-popup"></i>
+                    <i class="${Icons.HELP_TOOLTIP} la-popup"></i>
                 </span>
             </h3>
         </div>
@@ -47,7 +48,7 @@
                 ${message(code: 'accessPoint.link.with.subscription')}
                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                       data-html='${message(code: "accessPoint.linkedSubscriptionHelp")}'>
-                    <i class="grey question circle icon la-popup"></i>
+                    <i class="${Icons.HELP_TOOLTIP} la-popup"></i>
                 </span>
             </h3>
         </div>

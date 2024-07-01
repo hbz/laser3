@@ -49,9 +49,9 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
             </div>
             <div class="description">
                 <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
-                <i class="${Icons.TASK} icon"></i>          ${message(code: 'menu.institutions.tasks')} <br />
-                <i class="${Icons.DOCUMENT} icon"></i>      ${message(code: 'default.documents.label')} <br />
-                <i class="${Icons.WORKFLOW} icon"></i>      ${message(code: 'workflow.plural')}
+                <i class="${Icons.TASK}"></i>          ${message(code: 'menu.institutions.tasks')} <br />
+                <i class="${Icons.DOCUMENT}"></i>      ${message(code: 'default.documents.label')} <br />
+                <i class="${Icons.WORKFLOW}"></i>      ${message(code: 'workflow.plural')}
             </div>
         </div>
     </ui:complexSubNavItem>
@@ -65,7 +65,7 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
                     ${message(code: 'consortium.subscriber')}
                 </div>
                 <div class="description">
-                    <i class="${Icons.ORG} icon"></i> ${message(code: 'consortium.subscriber')}
+                    <i class="${Icons.ORG}"></i> ${message(code: 'consortium.subscriber')}
                 </div>
             </div>
         </ui:complexSubNavItem>

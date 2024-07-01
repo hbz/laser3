@@ -4,7 +4,7 @@
 
     <h1 class="ui header">
 %{--        <i class="${Icons.ORG} icon la-list-icon"></i>--}%
-%{--        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>--}%
+%{--        <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>--}%
         ${message(code:'consortium.member.plural')} ${message(code:'default.and')} ${message(code:'subscription.member.plural')}
     </h1>
 
@@ -34,7 +34,7 @@
                         </td>
                         <td>
                             <g:link controller="org" action="show" id="${subInst.id}" class="item">
-                                <i class="${Icons.ORG} icon la-list-icon"></i>
+                                <i class="${Icons.ORG} la-list-icon"></i>
                                 ${subInst.sortname ?: subInst.name}
                             </g:link>
                         </td>
@@ -47,7 +47,7 @@
                         </td>
                         <td>
                             <g:link controller="subscription" action="show" id="${sub.id}" class="item">
-                                <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                                <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
                                 ${sub}
                                 <span style="margin-left:0.5em">
                                     (<g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/> - <g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/>)

@@ -61,7 +61,7 @@
                     <g:message code="contact.belongesTo.uppercase.label"  />
                 </label>
                 <g:if test="${orgId}">
-                    <i class="${Icons.ORG} icon la-list-icon"></i>${Org.findById(orgId)}
+                    <i class="${Icons.ORG} la-list-icon"></i>${Org.findById(orgId)}
                     <input id="org" name="org.id" type="hidden" value="${orgId}" />
                 </g:if>
                 <g:else>

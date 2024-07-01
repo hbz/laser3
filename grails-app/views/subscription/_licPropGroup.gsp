@@ -1,5 +1,5 @@
 <!-- _licPropGroup.gsp -->
-<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.License; de.laser.AuditConfig" %>
+<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.License; de.laser.AuditConfig" %>
 
 <table class="ui table compact la-table-inCard la-ignore-fixed">
     <g:if test="${propList}">
@@ -18,7 +18,7 @@
                             ${prop.type.getI10n('name')}
                             <g:if test="${prop.type.getI10n('expl')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${prop.type.getI10n('expl')}">
-                                    <i class="grey question circle icon"></i>
+                                    <i class="${Icons.HELP_TOOLTIP}"></i>
                                 </span>
                             </g:if>
                         </g:if>

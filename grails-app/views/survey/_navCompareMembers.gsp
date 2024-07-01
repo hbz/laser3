@@ -42,7 +42,7 @@
                 </div>
 
                 <div class="description">
-                    <i class="${Icons.PACKAGE} icon"></i>${message(code: 'copySubPackagesAndIes.label')}
+                    <i class="${Icons.PACKAGE}"></i>${message(code: 'copySubPackagesAndIes.label')}
                 </div>
             </div>
         &nbsp;&nbsp;
@@ -104,7 +104,7 @@
                 </div>
 
                 <div class="description">
-                    <i class="${Icons.PACKAGE} icon"></i>${message(code: 'copySurveyPackages.label')}
+                    <i class="${Icons.PACKAGE}"></i>${message(code: 'copySurveyPackages.label')}
                 </div>
             </div>
         &nbsp;&nbsp;
@@ -136,7 +136,7 @@
                 </div>
 
                 <div class="description">
-                    <i class="${Icons.PACKAGE} icon"></i>${message(code: 'copySurveyVendors.label')}
+                    <i class="${Icons.PACKAGE}"></i>${message(code: 'copySurveyVendors.label')}
                 </div>
             </div>
         &nbsp;&nbsp;

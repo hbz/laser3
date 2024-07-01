@@ -327,7 +327,7 @@
 
                     <strong>${propertiesFilterPropDef.getI10n('name')}
                         <g:if test="${propertiesFilterPropDef.tenant != null}">
-                            <i class="${Icons.PRIVATE_PROPERTY} icon"></i>
+                            <i class="${Icons.PRIVATE_PROPERTY}"></i>
                         </g:if>
                     </strong>
                 </div>

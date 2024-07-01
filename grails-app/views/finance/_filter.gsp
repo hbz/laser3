@@ -1,5 +1,5 @@
 <!-- _filter.gsp -->
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.I10nTranslation; java.text.SimpleDateFormat;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.FinanceController;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.helper.Icons; de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.I10nTranslation; java.text.SimpleDateFormat;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.FinanceController;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
 <%
@@ -81,7 +81,7 @@
                 <div class="field">
                     <label for="filterCITitle">${message(code:'financials.newCosts.costTitle')}
                         <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.title.tooltip')}">
-                            <i class="grey question circle icon"></i>
+                            <i class="${Icons.HELP_TOOLTIP}"></i>
                         </span>
                     </label>
                     <div class="ui search selection dropdown <g:if test="${ciTitles}">allowAdditions</g:if>" id="filterCITitle">

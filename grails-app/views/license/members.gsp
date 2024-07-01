@@ -81,7 +81,7 @@
             <th class="la-no-uppercase">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.previous.label')}">
-                    <i class="${Icons.LINK_PREV} icon"></i>
+                    <i class="${Icons.LINK_PREV}"></i>
                 </span>
             </th>
             <th>${message(code:'default.startDate.label.shy')}</th>
@@ -89,7 +89,7 @@
             <th class="la-no-uppercase">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.next.label')}">
-                    <i class="${Icons.LINK_NEXT} icon"></i>
+                    <i class="${Icons.LINK_NEXT}"></i>
                 </span>
             </th>
             <th>${message(code: 'license')}</th>
@@ -110,14 +110,14 @@
                 <td>${lic.reference}</td>
                 <td class="center aligned">
                     <g:if test="${navPrevLicense}">
-                        <g:link controller="license" action="show" id="${navPrevLicense.id}"><i class="${Icons.LINK_PREV} icon"></i></g:link>
+                        <g:link controller="license" action="show" id="${navPrevLicense.id}"><i class="${Icons.LINK_PREV}"></i></g:link>
                     </g:if>
                 </td>
                 <td><g:formatDate formatName="default.date.format.notime" date="${lic.startDate}"/></td>
                 <td><g:formatDate formatName="default.date.format.notime" date="${lic.endDate}"/></td>
                 <td class="center aligned">
                     <g:if test="${navNextLicense}">
-                        <g:link controller="license" action="show" id="${navNextLicense.id}"><i class="${Icons.LINK_NEXT} icon"></i></g:link>
+                        <g:link controller="license" action="show" id="${navNextLicense.id}"><i class="${Icons.LINK_NEXT}"></i></g:link>
                     </g:if>
                 </td>
                 <td>

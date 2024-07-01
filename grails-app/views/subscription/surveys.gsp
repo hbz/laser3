@@ -53,7 +53,7 @@
                         <g:if test="${surveyConfig.subSurveyUseForTransfer}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info2")}">
-                                <i class="grey ${Icons.SURVEY} icon la-list-icon"></i>
+                                <i class="grey ${Icons.SURVEY} la-list-icon"></i>
                             </span>
                         </g:if>
                         ${surveyConfig.getSurveyName()}

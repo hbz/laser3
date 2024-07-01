@@ -84,7 +84,7 @@
                             break
                         default:
                             dataTooltip = message(code:'financials.costItemConfiguration.notSet')
-                            icon = '<i class="grey question circle icon"></i>'
+                            icon = '<i class="' + Icons.HELP_TOOLTIP + '"></i>'
                             break
                     }
                 %>
@@ -181,7 +181,7 @@
                                         data-confirm-term-how="delete"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="${Icons.CMD_DELETE} icon"></i>
+                                <i class="${Icons.CMD_DELETE}"></i>
                             </g:link>
                         </g:if>
                     </td>

@@ -44,19 +44,19 @@
                     <th class="one wide">${message(code:'sidewide.number')}</th>
                     <th class="ten wide">
                         <g:if test="${objCat.value.first() instanceof Org}">
-                            <i class="${Icons.ORG} icon grey la-list-icon"></i> ???
+                            <i class="${Icons.ORG} grey la-list-icon"></i> ???
                         </g:if>
                         <g:elseif test="${objCat.value.first() instanceof Package}">
-                            <i class="${Icons.PACKAGE} icon grey la-list-icon"></i> ${message(code:'package.label')}
+                            <i class="${Icons.PACKAGE} grey la-list-icon"></i> ${message(code:'package.label')}
                         </g:elseif>
                         <g:elseif test="${objCat.value.first() instanceof Platform}">
-                            <i class="${Icons.PLATFORM} icon grey la-list-icon"></i> ${message(code:'platform.label')}
+                            <i class="${Icons.PLATFORM} grey la-list-icon"></i> ${message(code:'platform.label')}
                         </g:elseif>
                         <g:if test="${objCat.value.first() instanceof Provider}">
-                            <i class="${Icons.PROVIDER} icon grey la-list-icon"></i> ${message(code:'provider.label')}
+                            <i class="${Icons.PROVIDER} grey la-list-icon"></i> ${message(code:'provider.label')}
                         </g:if>
                         <g:elseif test="${objCat.value.first() instanceof Vendor}">
-                            <i class="${Icons.VENDOR} icon grey la-list-icon"></i> ${message(code:'vendor')}
+                            <i class="${Icons.VENDOR} grey la-list-icon"></i> ${message(code:'vendor')}
                         </g:elseif>
                         <g:elseif test="${objCat.value.first() instanceof TitleInstancePackagePlatform}">
                             <i class="icon grey book la-list-icon"></i> ${message(code:'title')}

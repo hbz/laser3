@@ -32,7 +32,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                     <i class="image outline icon"></i>                  ${message(code:'subscription.kind.label')} <br />
                     <i class="dolly icon"></i>                          ${message(code:'subscription.form.label')} <br />
                     <i class="box icon"></i>                            ${message(code:'subscription.resource.label')} <br />
-                    <i class="${Icons.LICENSE} icon"></i>               ${message(code: 'license.label')} <br />
+                    <i class="${Icons.LICENSE}"></i>               ${message(code: 'license.label')} <br />
                     <i class="address card icon"></i>                   ${message(code: 'subscription.specificSubscriptionEditors')} <br />
                     <i class="barcode icon"></i>                        ${message(code: 'default.identifiers.label')} <br />
                     <i class="exchange icon"></i>                       ${message(code: 'subscription.linkedObjects')}
@@ -47,9 +47,9 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
             </div>
             <div class="description">
                 <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
-                <i class="${Icons.TASK} icon"></i>          ${message(code: 'menu.institutions.tasks')} <br />
-                <i class="${Icons.DOCUMENT} icon"></i>      ${message(code: 'default.documents.label')} <br />
-                <i class="${Icons.WORKFLOW} icon"></i>      ${message(code: 'workflow.plural')}
+                <i class="${Icons.TASK}"></i>          ${message(code: 'menu.institutions.tasks')} <br />
+                <i class="${Icons.DOCUMENT}"></i>      ${message(code: 'default.documents.label')} <br />
+                <i class="${Icons.WORKFLOW}"></i>      ${message(code: 'workflow.plural')}
             </div>
         </div>
     </div>
@@ -61,7 +61,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                     ${message(code: 'consortium.subscriber')}
                 </div>
                 <div class="description">
-                    <i class="${Icons.ORG} icon"></i> ${message(code: 'consortium.subscriber')}
+                    <i class="${Icons.ORG}"></i> ${message(code: 'consortium.subscriber')}
                 </div>
             </div>
         </div>

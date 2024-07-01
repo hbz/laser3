@@ -189,7 +189,7 @@
                             <g:if test="${surveyProperty.getI10n('expl')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${surveyProperty.getI10n('expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="${Icons.HELP_TOOLTIP}"></i>
                                 </span>
                             </g:if>
                         </th>
@@ -199,7 +199,7 @@
                     <th>${message(code: 'surveyResult.commentOnlyForOwner')}
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                            <i class="question circle icon"></i>
+                            <i class="${Icons.HELP_TOOLTIP}"></i>
                         </span>
                     </th>
                 </g:if>
@@ -537,7 +537,7 @@
                                                                 params='[instanceId: "${subParticipant.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="${Icons.CMD_DELETE} small icon"></i>
+                                                            <i class="${Icons.CMD_DELETE} small"></i>
                                                         </g:link>
                                                     </g:if>
                                                 </g:else>%{-- (editable || editable2) --}%
@@ -597,7 +597,7 @@
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
                             class="ui button blue icon la-modern-button la-popup-tooltip la-delay"
                             data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                        <i class="${Icons.SURVEY} icon"></i>
+                        <i class="${Icons.SURVEY}"></i>
                     </g:link>
 
                     <g:if test="${surveyConfig.subscription}">
@@ -605,7 +605,7 @@
                             <g:if test="${participantSub}">
                                 <br/>
                                 <g:link controller="subscription" action="show" id="${participantSub.id}"
-                                        class="ui button orange icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
+                                        class="ui button orange icon"><i class="${Icons.SUBSCRIPTION}"></i></g:link>
                             </g:if>
                     </g:if>
                 </td>
@@ -771,7 +771,7 @@
                             <g:if test="${surveyProperty.getI10n('expl')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${surveyProperty.getI10n('expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="${Icons.HELP_TOOLTIP}"></i>
                                 </span>
                             </g:if>
                         </th>
@@ -781,7 +781,7 @@
                     <th>${message(code: 'surveyResult.commentOnlyForOwner')}
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                            <i class="question circle icon"></i>
+                            <i class="${Icons.HELP_TOOLTIP}"></i>
                         </span>
                     </th>
                 </g:if>
@@ -1120,7 +1120,7 @@
                                                                 params='[instanceId: "${subParticipant.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="${Icons.CMD_DELETE} small icon"></i>
+                                                            <i class="${Icons.CMD_DELETE} small"></i>
                                                         </g:link>
                                                     </g:if>
                                                 </g:else>%{-- (editable || editable2) --}%
@@ -1181,7 +1181,7 @@
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
                             class="ui button blue icon la-modern-button la-popup-tooltip la-delay"
                             data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                        <i class="${Icons.SURVEY} icon"></i>
+                        <i class="${Icons.SURVEY}"></i>
                     </g:link>
 
                     <g:if test="${surveyConfig.subscription}">
@@ -1189,7 +1189,7 @@
                         <g:if test="${participantSub}">
                             <br/>
                             <g:link controller="subscription" action="show" id="${participantSub.id}"
-                                    class="ui button orange icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
+                                    class="ui button orange icon"><i class="${Icons.SUBSCRIPTION}"></i></g:link>
                         </g:if>
                     </g:if>
                 </td>

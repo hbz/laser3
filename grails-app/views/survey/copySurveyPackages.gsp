@@ -216,7 +216,7 @@
                             <g:if test="${participant.newSub}">
                                 <g:link controller="subscription" action="index"
                                         params="${[id: participant.newSub.id]}"
-                                        class="ui button icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
+                                        class="ui button icon"><i class="${Icons.SUBSCRIPTION}"></i></g:link>
                             </g:if>
 
                             <g:if test="${surveyConfig.subSurveyUseForTransfer}">
@@ -254,7 +254,7 @@
                         <div class="field">
                             <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span
                                     class="la-long-tooltip la-popup-tooltip la-delay"
-                                    data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="grey question circle icon"></i></span>
+                                    data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="${Icons.HELP_TOOLTIP}"></i></span>
                             </label>
                         </div>
 
