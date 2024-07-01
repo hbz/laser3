@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.RefdataCategory; grails.plugins.orm.auditable.Auditable; de.laser.AuditConfig" %>
+<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.RefdataCategory; grails.plugins.orm.auditable.Auditable; de.laser.AuditConfig" %>
 <laser:htmlStart message="menu.institutions.manage_props" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -46,9 +46,11 @@
     <div class="ui segment">
         <g:form action="processManageProperties" method="post" class="ui form">
             <div class="field">
-                <h2 class="ui header"><g:if test="${filterPropDef.tenant != null}"><i
-                        class="shield alternate icon"></i></g:if><g:message code="property.manageProperties.add"
-                                                                            args="[filterPropDef.getI10n('name')]"/>
+                <h2 class="ui header">
+                    <g:if test="${filterPropDef.tenant != null}">
+                        <i class="${Icons.PRIVATE_PROPERTY} icon"></i>
+                    </g:if>
+                    <g:message code="property.manageProperties.add" args="[filterPropDef.getI10n('name')]"/>
                 </h2>
 
                 ${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef.type)}
@@ -285,7 +287,7 @@
             <div class="field">
                 <h2 class="ui header">
                     <g:if test="${filterPropDef.tenant != null}">
-                        <i class="shield alternate icon"></i>
+                        <i class="${Icons.PRIVATE_PROPERTY} icon"></i>
                     </g:if>
                     <g:message code="property.manageProperties.edit" args="[filterPropDef.getI10n('name')]"/>
                 </h2>

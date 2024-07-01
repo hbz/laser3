@@ -2706,7 +2706,7 @@ class MyInstitutionController  {
             if (sendSurveyFinishMail) {
                 boolean sendMailToSurveyOwner = true
 
-                if (!surveyInfo.isMandatory && OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS) != OrgSetting.SETTING_NOT_FOUND && OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY).rdValue == RDStore.YN_YES) {
+                if (!surveyInfo.isMandatory && OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY) != OrgSetting.SETTING_NOT_FOUND && OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY).rdValue == RDStore.YN_YES) {
                     int countAllResultsIsRefNo = 0
                     int countAllResultsIsRef = 0
                     surveyResults.each { SurveyResult surre ->
