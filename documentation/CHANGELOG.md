@@ -9,6 +9,8 @@
 
 #### day of release 3.4
 
+
+
 5783    27.06.2024  rc-3.4  3.4         Andreas Bug         Adresskopiermodal verarbeitete Befehle falsch
 
 5771    24.06.2024  rc-3.4  3.4         Andreas Feature     Anbieter-Filter erläutert
@@ -68,6 +70,8 @@
 5728    04.06.2024  dev     3.4         Andreas Feature     neue Referenzwerte und Merkmale aufgenommen
 
 5684    04.06.2024  dev     3.4         Moe     Feature    Umfrage-Ersteller: Mail Spam Reduzieren
+
+4912    03.06.2024  dev     3.4         Ingrid  Feature    Laser Plans Tabelle designen und an prominenter Stelle anzeigen lassen
 
 5019    03.06.2024  dev     3.4         Moe     Feature    Lieferant in Umfrage auswählen
 
