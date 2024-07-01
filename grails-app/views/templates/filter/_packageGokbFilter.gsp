@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.helper.Icons; de.laser.helper.Params; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 <ui:filter>
     <g:form action="${actionName}" controller="${controllerName}" params="${params}" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
@@ -26,7 +26,7 @@
                         <label for="search-title">${message(code: 'default.search.text')}
                             <span data-position="right center" class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'default.search.tooltip.package')}">
-                                <i class="grey question circle icon"></i>
+                                <i class="${Icons.HELP_TOOLTIP} icon"></i>
                             </span>
                         </label>
 

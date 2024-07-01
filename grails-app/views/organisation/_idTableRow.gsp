@@ -5,13 +5,13 @@
         <g:if test="${showGlobalUid}">
             <g:message code="globalUID.label" />
             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'globalUID.desc')}">
-                <i class="grey question circle icon"></i>
+                <i class="${Icons.HELP_TOOLTIP} icon"></i>
             </span>
         </g:if>
         <g:elseif test="${showWekbId}">
             <g:message code="org.wekbId.label" />
             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'org.wekbId.desc')}">
-                <i class="grey question circle icon"></i>
+                <i class="${Icons.HELP_TOOLTIP} icon"></i>
             </span>
         </g:elseif>
         <g:else>
@@ -19,7 +19,7 @@
 
             <g:if test="${id.ns.getI10n('description')}">
                 <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${id.ns.getI10n('description')}">
-                    <i class="grey question circle icon"></i>
+                    <i class="${Icons.HELP_TOOLTIP} icon"></i>
                 </span>
             </g:if>
         </g:else>

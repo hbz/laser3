@@ -254,7 +254,7 @@
                         <div class="field">
                             <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span
                                     class="la-long-tooltip la-popup-tooltip la-delay"
-                                    data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="grey question circle icon"></i></span>
+                                    data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="${Icons.HELP_TOOLTIP} icon"></i></span>
                             </label>
                         </div>
 

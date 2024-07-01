@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.Org;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.Org;" %>
 <laser:serviceInjection />
 
 <laser:render template="/subscription/reporting/details/timeline/base.part1" />
@@ -137,7 +137,7 @@
                                 print '<i class="circle yellow icon"></i>'
                                 break
                             default:
-                                print'<i class="grey question circle icon"></i>'
+                                print'<i class="' + Icons.HELP_TOOLTIP + ' icon"></i>'
                                 break
                         }
                     %>
@@ -236,7 +236,7 @@
                                     print '<i class="circle yellow icon"></i>'
                                     break
                                 default:
-                                    print'<i class="grey question circle icon"></i>'
+                                    print'<i class="' + Icons.HELP_TOOLTIP + ' icon"></i>'
                                     break
                             }
                         %>

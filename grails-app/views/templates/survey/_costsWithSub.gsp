@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.utils.LocaleUtils" %>
+<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.utils.LocaleUtils" %>
 <laser:serviceInjection/>
 <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_TITLE_SELECTION.id]}">
     <g:set var="costItemsSurvey"
@@ -81,7 +81,7 @@
                                             break
                                         default:
                                             dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                            icon = '<i class="grey question circle icon"></i>'
+                                            icon = '<i class="' + Icons.HELP_TOOLTIP + ' icon"></i>'
                                             break
                                     }
                                 %>
@@ -153,7 +153,7 @@
                                                     break
                                                 default:
                                                     dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                                    icon = '<i class="grey question circle icon"></i>'
+                                                    icon = '<i class="' + Icons.HELP_TOOLTIP + ' icon"></i>'
                                                     break
                                             }
                                         %>
@@ -268,7 +268,7 @@
                                                 break
                                             default:
                                                 dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                                icon = '<i class="grey question circle icon"></i>'
+                                                icon = '<i class="' + Icons.HELP_TOOLTIP + ' icon"></i>'
                                                 break
                                         }
                                     %>

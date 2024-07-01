@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.helper.Icons; de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
 
 <%
     String lang = LocaleUtils.getCurrentLang()
@@ -22,7 +22,7 @@
                     <label for="nameContains">
                         <g:message code="org.search.vendor.contains"/>
                         <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.vendor.contains.tooltip')}">
-                            <i class="grey question circle icon"></i>
+                            <i class="${Icons.HELP_TOOLTIP} icon"></i>
                         </span>
                     </label>
                     <input type="text" id="nameContains" name="nameContains"
@@ -68,7 +68,7 @@
                     <label for="privateContact">
                         <g:message code="contact.name"/>
                         <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.contact.tooltip')}">
-                            <i class="grey question circle icon"></i>
+                            <i class="${Icons.HELP_TOOLTIP} icon"></i>
                         </span>
                     </label>
                     <input id="privateContact" name="privateContact" type="text" placeholder="${message(code: 'default.search.ph')}" value="${params.privateContact}"/>

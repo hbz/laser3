@@ -55,7 +55,7 @@
                             ${prop.type.getI10n('name')}
                             <g:if test="${prop.type.getI10n('expl')}">
                                 <span class="la-popup-tooltip la-delay" data-position="right center" data-content="${prop.type.getI10n('expl')}">
-                                    <i class="grey question circle icon"></i>
+                                    <i class="${Icons.HELP_TOOLTIP} icon"></i>
                                 </span>
                             </g:if>
                         </g:if>

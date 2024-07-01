@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore;" %>
 <ui:modal id="modalAllTitleInfos" text="${message(code: 'title.details')}"
              hideSubmitButton="true">
 
@@ -35,7 +35,7 @@
                    data-content="${message(code: 'subscription.details.access_start')}"></i>
                 <g:if test="${editable}">
                     <ui:xEditable owner="${ie}" type="date" field="accessStartDate"/>
-                    <i class="grey question circle icon la-popup-tooltip la-delay"
+                    <i class="${Icons.HELP_TOOLTIP} icon la-popup-tooltip la-delay"
                        data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                 </g:if>
                 <g:else>
@@ -48,7 +48,7 @@
                    data-content="${message(code: 'subscription.details.access_end')}"></i>
                 <g:if test="${editable}">
                     <ui:xEditable owner="${ie}" type="date" field="accessEndDate"/>
-                    <i class="grey question circle icon la-popup-tooltip la-delay"
+                    <i class="${Icons.HELP_TOOLTIP} icon la-popup-tooltip la-delay"
                        data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                 </g:if>
                 <g:else>

@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.Icons" %>
 <%
     int filterFieldsSize
     Map totalFields
@@ -333,12 +334,12 @@
                 <label>${message(code: 'default.export.cfg.csv')}
                     <g:if test="${accessPointNotice}">
                         <span data-tooltip="${message(code: 'exportClickMe.exportCSV.noAccessPoints')}">
-                            <i class="grey question circle icon"></i>
+                            <i class="${Icons.HELP_TOOLTIP} icon"></i>
                         </span>
                     </g:if>
                     <g:if test="${currentTabNotice}">
                         <span data-tooltip="${message(code: 'exportClickMe.exportCSV.currentTabOnly')}">
-                            <i class="grey question circle icon"></i>
+                            <i class="${Icons.HELP_TOOLTIP} icon"></i>
                         </span>
                     </g:if>
                 </label>
@@ -416,7 +417,7 @@
                     <button class="ui button positive export" value="saveClickMeConfig" name="saveClickMeConfig">Export <g:message code="default.config.label"/> <g:message
                             code="default.button.save"/> </button>
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: 'clickMeConfig.save.info')}">
-                        <i class="grey question circle icon la-popup"></i>
+                        <i class="${Icons.HELP_TOOLTIP} icon la-popup"></i>
                     </span>
                 </div>
 

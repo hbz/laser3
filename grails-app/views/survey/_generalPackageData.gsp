@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.helper.Icons; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
 <laser:serviceInjection/>
 
 <div class="ui card">
@@ -84,7 +84,7 @@
                                                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                                       data-position="right center"
                                                                       data-content="${pkgInfo.packageInstanceRecord.source.frequency}">
-                                                                    <i class="grey question circle icon"></i>
+                                                                    <i class="${Icons.HELP_TOOLTIP} icon"></i>
                                                                 </span>
                                                             </g:if>
                                                             <g:else>

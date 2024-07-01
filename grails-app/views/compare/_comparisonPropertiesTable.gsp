@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.License; de.laser.properties.SubscriptionProperty; de.laser.properties.LicenseProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.AuditConfig; de.laser.interfaces.CalculatedType;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Subscription; de.laser.License; de.laser.properties.SubscriptionProperty; de.laser.properties.LicenseProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.AuditConfig; de.laser.interfaces.CalculatedType;" %>
 <laser:serviceInjection/>
 <thead>
 <tr>
@@ -31,7 +31,7 @@
                 <g:if test="${propKey.getI10n('expl')}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                           data-content="${propKey.getI10n('expl')}">
-                        <i class="grey question circle icon"></i>
+                        <i class="${Icons.HELP_TOOLTIP} icon"></i>
                     </span>
                 </g:if>
             </g:if>

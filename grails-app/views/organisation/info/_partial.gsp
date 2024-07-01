@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore" %>
+<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore" %>
 
 %{--<h2 class="ui small header" style="display:inline-block;background-color:red;color:white;padding:0.5em 1em">DEMO</h2>--}%
 
@@ -10,7 +10,7 @@
     <a class="ui item stats-toggle" data-target="stats_provider">
         <span class="">
             ${message(code:'provider.label')}
-            <i class="grey question circle icon la-popup-tooltip la-delay" data-content="${message(code: 'subscription.plural')}, ${message(code: 'package.plural')}, ${message(code: 'platform.plural')}"></i>
+            <i class="${Icons.HELP_TOOLTIP} icon la-popup-tooltip la-delay" data-content="${message(code: 'subscription.plural')}, ${message(code: 'package.plural')}, ${message(code: 'platform.plural')}"></i>
         </span>
         <span class="ui ${providerMap?.size() ? 'primary' : ''} label"> ${providerMap?.size() ?: 0} </span>
     </a>

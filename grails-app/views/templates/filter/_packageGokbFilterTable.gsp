@@ -1,4 +1,4 @@
-<%@page import="de.laser.Provider; de.laser.CustomerTypeService; de.laser.survey.SurveyPackageResult; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.Vendor; de.laser.convenience.Marker; de.laser.utils.DateUtils; de.laser.storage.RDConstants; de.laser.Package; de.laser.Org; de.laser.Platform; de.laser.RefdataValue" %>
+<%@page import="de.laser.helper.Icons; de.laser.Provider; de.laser.CustomerTypeService; de.laser.survey.SurveyPackageResult; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.Vendor; de.laser.convenience.Marker; de.laser.utils.DateUtils; de.laser.storage.RDConstants; de.laser.Package; de.laser.Org; de.laser.Platform; de.laser.RefdataValue" %>
 <laser:serviceInjection/>
 <table class="ui sortable celled la-js-responsive-table la-table table">
     <thead>
@@ -73,7 +73,7 @@
                             ${message(code: 'surveyResult.commentParticipant')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentParticipant.info')}">
-                                <i class="question circle icon"></i>
+                                <i class="${Icons.HELP_TOOLTIP} icon"></i>
                             </span>
                         </g:else>
                     </th>
@@ -82,14 +82,14 @@
                             ${message(code: 'surveyResult.commentOnlyForOwner')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                                <i class="question circle icon"></i>
+                                <i class="${Icons.HELP_TOOLTIP} icon"></i>
                             </span>
                         </g:if>
                         <g:else>
                             ${message(code: 'surveyResult.commentOnlyForParticipant')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
-                                <i class="question circle icon"></i>
+                                <i class="${Icons.HELP_TOOLTIP} icon"></i>
                             </span>
                         </g:else>
                     </th>
@@ -306,7 +306,7 @@
                                 <g:message code="package.index.result.automaticUpdates"/>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${record.source.frequency}">
-                                    <i class="grey question circle icon"></i>
+                                    <i class="${Icons.HELP_TOOLTIP} icon"></i>
                                 </span>
                             </g:if>
                             <g:else>

@@ -116,7 +116,7 @@
                         <label for="ipv4_ip">${message(code: 'accessPoint.ip.data')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay"
                                   data-content="${message(code: "accessPoint.ip.input")}">
-                                <i class="grey question circle icon la-popup"></i></span>
+                                <i class="${Icons.HELP_TOOLTIP} icon la-popup"></i></span>
                         </label>
 
 
@@ -181,7 +181,7 @@
                     <label for="ipv6_ip">${message(code: 'accessPoint.ip.data')}
                         <span class="la-long-tooltip la-popup-tooltip la-delay"
                               data-content="${message(code: "accessPoint.ip.input")}">
-                            <i class="grey question circle icon la-popup"></i></span>
+                            <i class="${Icons.HELP_TOOLTIP} icon la-popup"></i></span>
                     </label>
 
                     <g:if test="${autofocus == true}">

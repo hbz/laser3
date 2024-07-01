@@ -1,6 +1,5 @@
-<%@ page import="de.laser.helper.Params; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.OrgRole;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.helper.Icons; de.laser.helper.Params; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.OrgRole;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 <%--<laser:serviceInjection />--%>
-
 <ui:filter>
     <g:form action="${actionName}" controller="${controllerName}" method="get" class="ui small form">
         <g:if test="${license}">
@@ -11,7 +10,7 @@
                 <%--
                <label>${message(code: 'default.search.text')}
                    <span data-position="right center" data-variation="tiny" data-content="${message(code:'default.search.tooltip.subscription')}">
-                       <i class="grey question circle icon"></i>
+                       <i class="${Icons.HELP_TOOLTIP} icon"></i>
                    </span>
                </label>
                <div class="ui input">
