@@ -46,6 +46,8 @@ class Icons {
 
     public static String ORG_LEGAL_INFORMATION      = 'hands helping'
 
+    public static String SUB_IS_MULTIYEAR           = 'forward'
+
     public static String TIPP_COVERAGE_DEPTH        = 'file alternate' // ? right
 
     // please do not touch during refactoring ..
@@ -54,4 +56,11 @@ class Icons {
     public static String CMD_DELETE                 = 'trash alternate outline'
 
     public static String CMD_UNLINK                 = 'unlink'
+
+    // please do not touch during refactoring ..
+    // links
+
+    public static String LINK_EXTERNAL              = 'external alternate'
+
+    public static String LINK_FILTERED              = 'filter'
 }

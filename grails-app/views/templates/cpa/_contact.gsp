@@ -16,7 +16,7 @@
             <g:if test="${contact.contentType == RDStore.CCT_EMAIL}">
                 <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code: 'tooltip.sendMail')}">
                     <a href="mailto:${contact.content}" class="ui icon blue button la-modern-button">
-                        <i class="external alternate icon"></i>
+                        <i class="${Icons.LINK_EXTERNAL} icon"></i>
                     </a>
                 </span>
             </g:if>
@@ -24,7 +24,7 @@
             <g:if test="${contact.contentType == RDStore.CCT_URL}">
                 <span class="la-popup-tooltip la-delay" data-position="top right"  data-content="${message(code: 'tooltip.callUrl')}">
                     <a href="${contact.content}" target="_blank" class="ui icon blue button la-modern-button">
-                        <i class="external alternate icon"></i>
+                        <i class="${Icons.LINK_EXTERNAL} icon"></i>
                     </a>
                 </span>
             </g:if>
