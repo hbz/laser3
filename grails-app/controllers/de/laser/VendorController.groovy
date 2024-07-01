@@ -324,7 +324,7 @@ class VendorController {
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
-    @Check404(domain=Provider)
+    @Check404(domain=Vendor)
     def addressbook() {
         Map<String, Object> result = vendorService.getResultGenerics(params)
         if(!result) {
@@ -401,7 +401,7 @@ class VendorController {
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
-    @Check404(domain=Provider)
+    @Check404(domain=Vendor)
     def tasks() {
         Map<String,Object> result = vendorService.getResultGenerics(params)
         if (!result) {
@@ -435,9 +435,9 @@ class VendorController {
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
-    @Check404(domain=Provider)
+    @Check404(domain=Vendor)
     def notes() {
-        Map<String, Object> result = providerService.getResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = vendorService.getResultGenerics(params)
         if(!result) {
             response.sendError(401)
             return
@@ -455,7 +455,7 @@ class VendorController {
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
-    @Check404(domain=Provider)
+    @Check404(domain=Vendor)
     def documents() {
         Map<String, Object> result = vendorService.getResultGenerics(params)
         if(!result) {
