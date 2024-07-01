@@ -52,4 +52,6 @@ class Icons {
     // cmds, functions
 
     public static String CMD_DELETE                 = 'trash alternate outline'
+
+    public static String CMD_UNLINK                 = 'unlink'
 }

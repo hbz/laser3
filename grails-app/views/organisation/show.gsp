@@ -278,7 +278,7 @@
                                                             action="unlinkOrg" params="[id: orgInstance.id, combo: row.id]"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                        <i class="unlink icon"></i>
+                                                        <i class="${Icons.CMD_UNLINK} icon"></i>
                                                     </g:link>
                                                 </span>
                                             </g:if>

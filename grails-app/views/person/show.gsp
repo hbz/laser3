@@ -216,7 +216,7 @@
                                                                         controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]"
                                                                         role="button"
                                                                         aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                                    <i class="unlink icon"></i>
+                                                                    <i class="${Icons.CMD_UNLINK} icon"></i>
                                                                 </g:link>
                                                             </div>
                                                         </g:if>
