@@ -504,7 +504,7 @@
                                     <g:each in="${s.packages.sort { it.pkg.name }}" var="sp" status="ind">
                                         <g:if test="${ind < 10}">
                                             <div class="la-flexbox">
-                                                <i class="${Icons.PACKAGE} icon la-list-icon"></i>
+                                                <i class="${Icons.PACKAGE} la-list-icon"></i>
                                                 <g:link controller="subscription" action="index" id="${s.id}"
                                                         params="[pkgfilter: sp.pkg.id]"
                                                         title="${sp.pkg.provider?.name}">

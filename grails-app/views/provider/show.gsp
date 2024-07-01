@@ -426,7 +426,7 @@
                                 </g:each>
                             </div>
 
-                            <p class="ui header">%{--<i class="${Icons.PACKAGE} icon"></i>--}% <g:message code="package.plural" /></p>
+                            <p class="ui header">%{--<i class="${Icons.PACKAGE}"></i>--}% <g:message code="package.plural" /></p>
 
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <g:each in="${packages}" var="pkg">
@@ -438,7 +438,7 @@
                                 </g:each>
                             </div>
 
-                            <p class="ui header">%{--<i class="${Icons.SUBSCRIPTION} icon"></i>--}% <g:message code="subscription.plural" /></p>
+                            <p class="ui header">%{--<i class="${Icons.SUBSCRIPTION}"></i>--}% <g:message code="subscription.plural" /></p>
 
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <div class="ui item">
@@ -459,7 +459,7 @@
                                 </div>
                             </div>
 
-                            <p class="ui header">%{--<i class="${Icons.LICENSE} icon"></i>--}% <g:message code="license.plural" /></p>
+                            <p class="ui header">%{--<i class="${Icons.LICENSE}"></i>--}% <g:message code="license.plural" /></p>
 
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <div class="ui item">

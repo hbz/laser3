@@ -135,7 +135,7 @@
                                         <g:if test="${link.functionType}">
                                             <div class="ui item address-details">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.label')}" data-position="top right" data-variation="tiny">
-                                                    <i class="${Icons.ORG} icon la-list-icon"></i>
+                                                    <i class="${Icons.ORG} la-list-icon"></i>
                                                 </span>
 
                                                 <div class="content la-space-right">
@@ -195,7 +195,7 @@
                                         <g:if test="${link.positionType}">
                                             <div class="ui item address-details">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.label')}" data-position="top right" data-variation="tiny">
-                                                    <i class="${Icons.ORG} icon la-list-icon"></i>
+                                                    <i class="${Icons.ORG} la-list-icon"></i>
                                                 </span>
 
                                                 <div class="content la-space-right">
@@ -257,17 +257,17 @@
 
                                                 <g:if test="${link.pkg}">
                                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'package.label')}" data-position="top right" data-variation="tiny">
-                                                        <i class="${Icons.ORG} icon la-list-icon"></i>
+                                                        <i class="${Icons.ORG} la-list-icon"></i>
                                                     </span>
                                                 </g:if>
                                                 <g:if test="${link.sub}">
                                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'default.subscription.label')}" data-position="top right" data-variation="tiny">
-                                                        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                                                        <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
                                                     </span>
                                                 </g:if>
                                                 <g:if test="${link.lic}">
                                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.label')}" data-position="top right" data-variation="tiny">
-                                                        <i class="${Icons.LICENSE} icon la-list-icon"></i>
+                                                        <i class="${Icons.LICENSE} la-list-icon"></i>
                                                     </span>
                                                 </g:if>
                                                 <g:if test="${link.tipp}">

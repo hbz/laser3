@@ -130,12 +130,12 @@
                 </td>
                 <th scope="row" class="la-th-column">
                     <div class="la-flexbox la-main-object">
-                        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                        <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
                         <g:link controller="subscription" action="show" id="${subCons.id}">${subCons.name}</g:link>
                     </div>
                     <g:each in="${linkedLicenses.get(subCons)}" var="linkedLicense">
                         <div class="la-flexbox la-minor-object">
-                            <i class="${Icons.LICENSE} icon la-list-icon"></i>
+                            <i class="${Icons.LICENSE} la-list-icon"></i>
                             <g:link controller="license" action="show" id="${linkedLicense.id}">${linkedLicense.reference}</g:link><br />
                         </div>
                     </g:each>
@@ -149,7 +149,7 @@
                     <td>
                         <g:each in="${subCons.packages}" var="subPkg">
                             <div class="la-flexbox">
-                                <i class="${Icons.PACKAGE} icon la-list-icon"></i>
+                                <i class="${Icons.PACKAGE} la-list-icon"></i>
                                 <g:link controller="package" action="show" id="${subPkg.pkg.id}">${subPkg.pkg.name}</g:link>
                             </div>
                         </g:each>

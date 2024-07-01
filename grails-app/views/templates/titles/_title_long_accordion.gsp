@@ -410,7 +410,7 @@
         <g:if test="${showPlattform}">
             <g:if test="${tipp.platform.name}">
                 <div class="item">
-                    <i class="${Icons.PLATFORM} grey icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.platform')}"></i>
+                    <i class="${Icons.PLATFORM} grey la-popup-tooltip la-delay" data-content="${message(code: 'tipp.platform')}"></i>
                     <div class="content">
                         <div class="header">
                             ${message(code: 'tipp.platform')}

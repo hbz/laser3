@@ -65,7 +65,7 @@
                 <div class="ui list">
                     <g:each in="${participantPerpetualAccessToTitle}" var="pt">
                         <div class="item">
-                                <i class="${Icons.SUBSCRIPTION} icon"></i>
+                                <i class="${Icons.SUBSCRIPTION}"></i>
                                 <div class="content">
                                     <div class="header"
                                         <g:link controller="subscription"

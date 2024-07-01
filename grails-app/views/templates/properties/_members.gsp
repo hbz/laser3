@@ -72,7 +72,7 @@
                 <td class="x">
                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.notInherited.fromConsortia2')}" data-position="top right"><i class="large icon cart arrow down grey"></i></span>
                     <g:if test="${memberSubs}">
-                        (<span data-content="${message(code:'property.notInherited.info.propertyCount')}"><i class="ui icon sticky note grey"></i></span> ${SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null and sp.type = :type', [subscriptionSet: memberSubs, context: contextOrg, type: propType]).size() ?: 0} / <span data-content="${message(code:'property.notInherited.info.membersCount')}"><i class="${Icons.SUBSCRIPTION} icon grey"></i></span> ${memberSubs.size() ?: 0})
+                        (<span data-content="${message(code:'property.notInherited.info.propertyCount')}"><i class="ui icon sticky note grey"></i></span> ${SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null and sp.type = :type', [subscriptionSet: memberSubs, context: contextOrg, type: propType]).size() ?: 0} / <span data-content="${message(code:'property.notInherited.info.membersCount')}"><i class="${Icons.SUBSCRIPTION} grey"></i></span> ${memberSubs.size() ?: 0})
                     </g:if>
                 </td>
             </tr>

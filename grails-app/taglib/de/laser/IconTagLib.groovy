@@ -331,7 +331,7 @@ class IconTagLib {
         String tooltip = attrs.type ? message(code: 'marker.' + attrs.type ) : message(code: 'marker.label')
 
         out << '<span class="la-popup-tooltip la-delay" data-content="' + tooltip + '">'
-        out << '<i class="' + Icons.MARKER + ' icon ' + (attrs.color ? attrs.color + ' ' : '') + '"></i>'
+        out << '<i class="' + Icons.MARKER + (attrs.color ? ' ' + attrs.color : '') + '"></i>'
         out << '</span>'
     }
 

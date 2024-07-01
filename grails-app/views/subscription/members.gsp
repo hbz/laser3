@@ -136,14 +136,14 @@
                 <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()}">
                     <th class="center aligned la-no-uppercase">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="${message(code: 'subscription.linktoLicense')}">
-                            <i class="${Icons.LICENSE} icon"></i>
+                            <i class="${Icons.LICENSE}"></i>
                         </span>
                     </th>
                 </g:if>
                 <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                     <th class="center aligned la-no-uppercase">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="${message(code: 'subscription.packages.label')}">
-                            <i class="${Icons.PACKAGE} icon"></i>
+                            <i class="${Icons.PACKAGE}"></i>
                         </span>
                     </th>
                 </g:if>

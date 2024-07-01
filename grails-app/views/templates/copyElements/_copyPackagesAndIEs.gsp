@@ -54,7 +54,7 @@
                         <div class="la-copyPack-container la-element">
                             <div data-oid="${genericOIDService.getOID(sp)}" class="la-copyPack-item">
                                 <label>
-                                    <i class="${Icons.PACKAGE} icon"></i>
+                                    <i class="${Icons.PACKAGE}"></i>
                                     <g:link controller="package" action="show" target="_blank" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
                                     <ui:debugInfo>PkgId: ${sp.pkg.id}</ui:debugInfo>
                                     <g:if test="${sp.pkg.provider}">(${sp.pkg.provider.name})</g:if>
@@ -94,7 +94,7 @@
                         <div class="la-copyPack-container la-element">
                             <div data-oid="${genericOIDService.getOID(sp)}" class="la-copyPack-item">
                                 <label>
-                                    <i class="${Icons.PACKAGE} icon"></i>
+                                    <i class="${Icons.PACKAGE}"></i>
                                     <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
                                     <ui:debugInfo>PkgId: ${sp.pkg.id}</ui:debugInfo>
                                     <g:if test="${sp.pkg.provider}">(${sp.pkg.provider.name})</g:if>

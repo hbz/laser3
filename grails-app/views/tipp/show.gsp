@@ -207,7 +207,7 @@
 
         <div class="content">
             <div class="item">
-                <i class="${Icons.PLATFORM} grey icon la-popup-tooltip la-delay"
+                <i class="${Icons.PLATFORM} grey la-popup-tooltip la-delay"
                    data-content="${message(code: 'platform.label')}"></i>
                 <g:if test="${tipp.platform.name}">
                     <g:link controller="platform" action="show" id="${tipp.platform.id}">

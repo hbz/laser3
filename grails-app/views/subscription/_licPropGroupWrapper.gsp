@@ -7,7 +7,7 @@
 <g:if test="${propList}">
     <div class="content">
         <h2 class="ui header">
-            <g:link controller="license" action="show" id="${ownObj.id}"><i class="${Icons.LICENSE} icon"></i>${ownObj}</g:link>
+            <g:link controller="license" action="show" id="${ownObj.id}"><i class="${Icons.LICENSE}"></i>${ownObj}</g:link>
             (${propDefGroup.name})
 
             <g:if test="${showConsortiaFunctions}">

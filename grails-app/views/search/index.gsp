@@ -531,7 +531,7 @@
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
-                                        <i class="${Icons.SURVEY} circular icon inverted pink"></i>
+                                        <i class="${Icons.SURVEY} circular inverted pink"></i>
                                     </span>
 
                                     <g:link controller="survey" action="show"
@@ -572,7 +572,7 @@
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
-                                        <i class="${Icons.SURVEY} circular icon inverted pink"></i>
+                                        <i class="${Icons.SURVEY} circular inverted pink"></i>
                                     </span>
 
                                     <g:link controller="myInstitution" action="currentSurveys"
@@ -606,7 +606,7 @@
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
-                                        <i class="${Icons.TASK} circular icon inverted green"></i>
+                                        <i class="${Icons.TASK} circular inverted green"></i>
                                     </span>
 
                                     <g:link controller="myInstitution" action="tasks" params="[taskName: object.name]">${object.name}</g:link>
@@ -704,7 +704,7 @@
                                     <g:set var="docContext" value="${DocContext.get(object.dbId)}"/>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
-                                        <i class="${Icons.DOCUMENT} icon circular inverted grey"></i>
+                                        <i class="${Icons.DOCUMENT} circular inverted grey"></i>
                                     </span>
 
                                     <g:link controller="${object.objectClassName}" action="documents" id="${object.objectId}">${object.name}</g:link>

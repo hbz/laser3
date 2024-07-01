@@ -34,7 +34,7 @@
     <p class="ui header">Icons #2</p>
     <div class="ui list">
         <div class="item">
-            <i class="${Icons.PROVIDER} icon large"></i>
+            <i class="${Icons.PROVIDER} large"></i>
             <div class="content"> Anbieter (${Icons.PROVIDER})</div>
         </div>
         <div class="item">
@@ -42,23 +42,23 @@
             <div class="content"> Lieferanten (boxes)</div>
         </div>
         <div class="item">
-            <i class="${Icons.ORG} icon large"></i>
+            <i class="${Icons.ORG} large"></i>
             <div class="content"> Einrichtungen (${Icons.ORG})</div>
         </div>
         <div class="item">
-            <i class="${Icons.PLATFORM} icon large"></i>
+            <i class="${Icons.PLATFORM} large"></i>
             <div class="content"> Plattformen (${Icons.PLATFORM})</div>
         </div>
         <div class="item">
-            <i class="${Icons.SUBSCRIPTION} icon large"></i>
+            <i class="${Icons.SUBSCRIPTION} large"></i>
             <div class="content"> Lizenzen (${Icons.SUBSCRIPTION})</div>
         </div>
         <div class="item">
-            <i class="${Icons.LICENSE} icon large"></i>
+            <i class="${Icons.LICENSE} large"></i>
             <div class="content"> Verträge (${Icons.LICENSE})</div>
         </div>
         <div class="item">
-            <i class="${Icons.PACKAGE} icon large"></i>
+            <i class="${Icons.PACKAGE} large"></i>
             <div class="content"> Pakete (${Icons.PACKAGE})</div>
         </div>
     </div>

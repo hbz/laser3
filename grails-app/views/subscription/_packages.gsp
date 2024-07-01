@@ -27,7 +27,7 @@
                             <div class="three wide column">
                                 <div>
                                     <g:if test="${sp.pkg.provider}">
-                                        <i aria-hidden="true" class="${Icons.PROVIDER} grey outline icon la-popup-tooltip la-delay" data-content="${message(code: 'provider.label')}"></i>
+                                        <i aria-hidden="true" class="${Icons.PROVIDER} grey outline la-popup-tooltip la-delay" data-content="${message(code: 'provider.label')}"></i>
                                         <g:link controller="provider" action="show" id="${sp.pkg.provider.id}">${sp.pkg.provider.name}</g:link>
                                         <g:if test="${sp.pkg.provider.homepage}"><ui:linkWithIcon href="${sp.pkg.provider.homepage.startsWith('http') ? sp.pkg.provider.homepage : 'http://' + sp.pkg.provider.homepage}"/></g:if>
                                         <g:if test="${sp.pkg.provider.gokbId}"><ui:wekbIconLink type="provider" gokbId="${sp.pkg.provider.gokbId}"/></g:if>
@@ -36,7 +36,7 @@
                                 <g:each in="${sp.pkg.vendors}" var="pv">
                                     <g:set var="vendorRecord" value="${packageInstanceRecord.vendors.find { rec -> rec.vendorUuid == pv.vendor.gokbId }}"/>
                                     <div>
-                                        <i aria-hidden="true" class="${Icons.VENDOR} grey icon la-popup-tooltip la-delay" data-content="${message(code: 'vendor.label')}"></i>
+                                        <i aria-hidden="true" class="${Icons.VENDOR} grey la-popup-tooltip la-delay" data-content="${message(code: 'vendor.label')}"></i>
                                         <g:link controller="vendor" action="show" id="${pv.vendor.id}">${pv.vendor.name}</g:link>
                                         <g:if test="${vendorRecord.homepage}"><ui:linkWithIcon href="${vendorRecord.homepage.startsWith('http') ? vendorRecord.homepage : 'http://' + vendorRecord.homepage}"/></g:if>
                                         <g:if test="${pv.vendor.gokbId}"><ui:wekbIconLink type="vendor" gokbId="${pv.vendor.gokbId}"/></g:if>
@@ -45,7 +45,7 @@
                             </div>
                             <div class="three wide column">
                                 <g:if test="${sp.pkg.nominalPlatform}">
-                                    <i aria-hidden="true" class="${Icons.PLATFORM} grey icon la-popup-tooltip la-delay" data-content="${message(code: 'platform.label')}"></i>
+                                    <i aria-hidden="true" class="${Icons.PLATFORM} grey la-popup-tooltip la-delay" data-content="${message(code: 'platform.label')}"></i>
                                     <g:link controller="platform" action="show" id="${sp.pkg.nominalPlatform.id}">${sp.pkg.nominalPlatform.name}</g:link>
                                     <ui:linkWithIcon href="${sp.pkg.nominalPlatform.primaryUrl?.startsWith('http') ? sp.pkg.nominalPlatform.primaryUrl : 'http://' + sp.pkg.nominalPlatform.primaryUrl}"/>
                                     <ui:wekbIconLink type="platform" gokbId="${sp.pkg.nominalPlatform.gokbId}"/>

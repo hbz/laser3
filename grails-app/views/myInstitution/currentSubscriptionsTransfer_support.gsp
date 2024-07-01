@@ -286,7 +286,7 @@
 
                     <th scope="col" rowspan="3" class="center aligned">
                         <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'survey.label')}" data-position="top center">
-                            <i class="${Icons.SURVEY} large icon"></i>
+                            <i class="${Icons.SURVEY} large"></i>
                         </a>
                     </th>
 

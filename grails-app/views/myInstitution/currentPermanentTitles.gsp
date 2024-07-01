@@ -162,7 +162,7 @@
                                                             <div class="ui list">
                                                                 <g:each in="${ie_infos}" var="ie">
                                                                     <div class="item">
-                                                                        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                                                                        <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
                                                                         <div class="content">
                                                                             <div class="header">
                                                                                 <g:link controller="subscription"

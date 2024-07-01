@@ -87,7 +87,7 @@
             <g:if test="${filteredOrphanedProperties}">
                 <div>
                     <h5 class="ui header">
-                        <g:link controller="license" action="show" id="${license.id}"><i class="${Icons.LICENSE} icon"></i>${license}</g:link>
+                        <g:link controller="license" action="show" id="${license.id}"><i class="${Icons.LICENSE}"></i>${license}</g:link>
                         (${message(code:'subscription.properties')})
                     </h5>
 

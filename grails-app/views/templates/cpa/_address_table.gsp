@@ -44,17 +44,17 @@
             <g:if test="${tmplShowOrgName}">
                 <td>
                     <g:if test="${address.org}">
-                        <i class="${Icons.ORG} icon la-list-icon"></i>
+                        <i class="${Icons.ORG} la-list-icon"></i>
                         <g:link controller="organisation" action="addressbook"
                                 id="${address.org.id}">${address.org.name} (${address.org.sortname})</g:link>
                     </g:if>
                     <g:if test="${address.provider}">
-                        <i class="${Icons.PROVIDER} icon la-list-icon"></i>
+                        <i class="${Icons.PROVIDER} la-list-icon"></i>
                         <g:link controller="provider" action="addressbook"
                                 id="${address.provider.id}">${address.provider.name} (${address.provider.sortname})</g:link>
                     </g:if>
                     <g:if test="${address.vendor}">
-                        <i class="${Icons.VENDOR} icon la-list-icon"></i>
+                        <i class="${Icons.VENDOR} la-list-icon"></i>
                         <g:link controller="vendor" action="addressbook"
                                 id="${address.vendor.id}">${address.vendor.name} (${address.vendor.sortname})</g:link>
                     </g:if>

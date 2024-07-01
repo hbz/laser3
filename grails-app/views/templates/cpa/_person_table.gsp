@@ -152,7 +152,7 @@
                         <g:set var="org" value="${Org.get(orgId.key)}"/>
                         <div class="ui item ">
                                 <div class="la-flexbox">
-                                    <i class="${Icons.ORG} icon la-list-icon"></i>
+                                    <i class="${Icons.ORG} la-list-icon"></i>
                                     <g:link controller="organisation" action="addressbook"
                                             id="${org.id}">${org.name} (${org.sortname})</g:link>
                                 </div>
@@ -162,7 +162,7 @@
                         <g:set var="provider" value="${Provider.get(providerId.key)}"/>
                         <div class="ui item ">
                                 <div class="la-flexbox">
-                                    <i class="${Icons.PROVIDER} icon la-list-icon"></i>
+                                    <i class="${Icons.PROVIDER} la-list-icon"></i>
                                     <g:link controller="provider" action="addressbook"
                                             id="${provider.id}">${provider.name} (${provider.sortname})</g:link>
                                 </div>
@@ -172,7 +172,7 @@
                         <g:set var="vendor" value="${Vendor.get(venId.key)}"/>
                         <div class="ui item ">
                                 <div class="la-flexbox">
-                                    <i class="${Icons.VENDOR} icon la-list-icon"></i>
+                                    <i class="${Icons.VENDOR} la-list-icon"></i>
                                     <g:link controller="vendor" action="addressbook"
                                             id="${vendor.id}">${vendor.name} (${vendor.sortname})</g:link>
                                 </div>

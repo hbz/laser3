@@ -597,7 +597,7 @@
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
                             class="ui button blue icon la-modern-button la-popup-tooltip la-delay"
                             data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                        <i class="${Icons.SURVEY} icon"></i>
+                        <i class="${Icons.SURVEY}"></i>
                     </g:link>
 
                     <g:if test="${surveyConfig.subscription}">
@@ -605,7 +605,7 @@
                             <g:if test="${participantSub}">
                                 <br/>
                                 <g:link controller="subscription" action="show" id="${participantSub.id}"
-                                        class="ui button orange icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
+                                        class="ui button orange icon"><i class="${Icons.SUBSCRIPTION}"></i></g:link>
                             </g:if>
                     </g:if>
                 </td>
@@ -1181,7 +1181,7 @@
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
                             class="ui button blue icon la-modern-button la-popup-tooltip la-delay"
                             data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                        <i class="${Icons.SURVEY} icon"></i>
+                        <i class="${Icons.SURVEY}"></i>
                     </g:link>
 
                     <g:if test="${surveyConfig.subscription}">
@@ -1189,7 +1189,7 @@
                         <g:if test="${participantSub}">
                             <br/>
                             <g:link controller="subscription" action="show" id="${participantSub.id}"
-                                    class="ui button orange icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
+                                    class="ui button orange icon"><i class="${Icons.SUBSCRIPTION}"></i></g:link>
                         </g:if>
                     </g:if>
                 </td>

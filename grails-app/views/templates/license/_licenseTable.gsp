@@ -18,7 +18,7 @@
                       <g:if test="${'memberLicenses' in licenseFilterTable}">
                           <th rowspan="2" class="center aligned">
                               <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.incoming.childs')}" data-position="top right">
-                                  <i class="${Icons.LICENSE} large icon"></i>
+                                  <i class="${Icons.LICENSE} large"></i>
                               </span>
                           </th>
                       </g:if>
@@ -59,7 +59,7 @@
                               </g:link>
                               <g:each in="${allLinkedSubscriptions.get(l)}" var="sub">
                                   <div class="la-flexbox la-minor-object">
-                                      <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                                      <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
                                       <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br />
                                   </div>
                               </g:each>
@@ -68,7 +68,7 @@
                               <td>
                                   <g:each in="${l.derivedLicenses}" var="lChild">
                                       <g:link controller="license" action="show" id="${lChild.id}">
-                                          <p><i class="${Icons.LICENSE} icon la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'license.member')}"></i> ${lChild}</p>
+                                          <p><i class="${Icons.LICENSE} la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'license.member')}"></i> ${lChild}</p>
                                       </g:link>
                                   </g:each>
                               </td>

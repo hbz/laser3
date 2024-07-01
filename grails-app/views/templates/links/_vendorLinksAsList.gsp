@@ -7,7 +7,7 @@
         <tr>
             <td>
                 <span class="la-flexbox la-minor-object">
-                    <i class="${Icons.VENDOR} la-list-icon la-popup-tooltip la-delay icon" data-content="${message(code:'vendor.label')}"></i>
+                    <i class="${Icons.VENDOR} la-list-icon la-popup-tooltip la-delay" data-content="${message(code:'vendor.label')}"></i>
                 </span>
                 <g:link controller="vendor" action="show" id="${role.vendor.id}">
                     ${role.vendor.name}
