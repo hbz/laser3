@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.storage.RDConstants;" %>
 
 <laser:htmlStart message="org.nav.accessPoints" serviceInjection="true" />
         <g:set var="entityName" value="${message(code: 'org.label')}" />
@@ -169,14 +169,14 @@
                                         data-confirm-term-how="delete"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
+                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                                       data-content="${message(code: 'accessPoint.list.deleteDisabledInfo', args: [accessPointItem['platformLinkCount'], accessPointItem['subscriptionLinkCount']])}">
-                                    <div class="ui negative icon button la-modern-button disabled"><i class="trash alternate outline icon"></i>
-                                    </div>
+                                    <span class="ui negative icon button la-modern-button disabled"><i class="${Icons.CMD_DELETE} icon"></i>
+                                    </span>
                                 </span>
                             </g:else>
 

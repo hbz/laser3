@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.*; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyConfig; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.*; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 <laser:serviceInjection/>
 
 <%
@@ -113,7 +113,7 @@
                                         params='[id: surveyInfo.id, deleteId: "${docctx.id}"]'
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
+                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                 </g:link>
                             </g:if>
                         </div>

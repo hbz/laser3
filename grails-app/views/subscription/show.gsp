@@ -1,4 +1,4 @@
-<%@ page import="de.laser.config.ConfigMapper; de.laser.Person; de.laser.PersonRole; de.laser.Subscription; de.laser.Links; java.text.SimpleDateFormat;de.laser.properties.PropertyDefinition; de.laser.OrgRole; de.laser.License;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.interfaces.CalculatedType; de.laser.FormService; de.laser.AuditConfig" %>
+<%@ page import="de.laser.helper.Icons; de.laser.config.ConfigMapper; de.laser.Person; de.laser.PersonRole; de.laser.Subscription; de.laser.Links; java.text.SimpleDateFormat;de.laser.properties.PropertyDefinition; de.laser.OrgRole; de.laser.License;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.interfaces.CalculatedType; de.laser.FormService; de.laser.AuditConfig" %>
 <laser:htmlStart message="subscription.details.label" serviceInjection="true"/>
 
 %{-- flyouts --}%
@@ -105,7 +105,7 @@
                                                                     <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
                                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
                                                                                    data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                        <i class="trash alternate outline icon"></i>
+                                                                        <i class="${Icons.CMD_DELETE} icon"></i>
                                                                     </ui:remoteLink>
                                                                 </div>
                                                             </g:if>
@@ -132,7 +132,7 @@
                                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
                                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
                                                                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(subscription.altnames[0])}')">
-                                                                    <i class="trash alternate outline icon"></i>
+                                                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                                                 </ui:remoteLink>
                                                             </div>
                                                         </g:else>
@@ -144,7 +144,7 @@
                                                         <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
                                                                        data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(subscription.altnames[0])}')">
-                                                            <i class="trash alternate outline icon"></i>
+                                                            <i class="${Icons.CMD_DELETE} icon"></i>
                                                         </ui:remoteLink>
                                                     </g:else>
                                                 </g:if>
@@ -186,7 +186,7 @@
                                                                         <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                                        data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                            <i class="trash alternate outline icon"></i>
+                                                                            <i class="${Icons.CMD_DELETE} icon"></i>
                                                                         </ui:remoteLink>
                                                                     </div>
                                                                 </g:if>
@@ -213,7 +213,7 @@
                                                                     <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                                    data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                        <i class="trash alternate outline icon"></i>
+                                                                        <i class="${Icons.CMD_DELETE} icon"></i>
                                                                     </ui:remoteLink>
                                                                 </div>
                                                             </g:else>
@@ -226,7 +226,7 @@
                                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                    <i class="trash alternate outline icon"></i>
+                                                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                                                 </ui:remoteLink>
                                                             </div>
                                                         </g:else>

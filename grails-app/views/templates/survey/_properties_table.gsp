@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.survey.SurveyOrg; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition; de.laser.RefdataCategory; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue; de.laser.survey.SurveyOrg; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition; de.laser.RefdataCategory; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties;" %>
 <laser:serviceInjection/>
 
 <g:if test="${controllerName == 'survey' && actionName == 'show'}">
@@ -28,7 +28,7 @@
                     ${surveyPropertyConfig.surveyProperty.getI10n('name')}
 
                     <g:if test="${surveyPropertyConfig.surveyProperty.tenant?.id == contextService.getOrg().id}">
-                        <i class='shield alternate icon'></i>
+                        <i class='${Icons.PRIVATE_PROPERTY} icon'></i>
                     </g:if>
 
                     <g:if test="${surveyPropertyConfig.surveyProperty.getI10n('expl')}">
@@ -107,7 +107,7 @@
                                 params="[actionForSurveyProperty: 'deleteSurveyPropFromConfig', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id]"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="trash alternate outline icon"></i>
+                            <i class="${Icons.CMD_DELETE} icon"></i>
                         </g:link>
                     </td>
                 </g:if>
@@ -129,7 +129,7 @@
                                 <ui:dropdown name="selectedProperty"
                                              class="la-filterPropDef"
                                              from="${selectableProperties.sort{it.getI10n('name')}}"
-                                             iconWhich="shield alternate"
+                                             iconWhich="${Icons.PRIVATE_PROPERTY}"
                                              optionKey="${{ "${it.id}" }}"
                                              optionValue="${{ it.getI10n('name') }}"
                                              noSelection="${message(code: 'default.search_for.label', args: [message(code: 'surveyProperty.label')])}"

@@ -1,4 +1,4 @@
-<%--
+%{--
 <h1>Offene Fragen in Bezug auf WCAG</h1>
 <h2>Icons</h2>
 <h3>Dekorative Icon mit einer Dopplung der Semantik durch Text, der daneben steht.</h3>
@@ -24,7 +24,7 @@
 </div>
 <h3>Icons in einem Button, der eine Bezeichnung hat</h3>
 <button class="ui   button la-inline-labeled la-js-filterButton la-clearfix blue"> Filter <i
-        aria-hidden="true" class="filter icon"></i> <span
+        aria-hidden="true" class="${Icons.LINK_FILTERED} icon"></i> <span
         class="ui circular label la-js-filter-total hidden">0</span>
 </button>
 <h3>Icons in einem Link ohne zusätzlichen Text</h3>
@@ -34,4 +34,4 @@
 <g:message code="default.title.label" /> <g:message code="messageRequiredField" />
 
 
- --%>
+--}%

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Vendor; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.ProviderLink; de.laser.Contact; de.laser.remote.ApiSource; de.laser.Provider" %>
+<%@ page import="de.laser.helper.Icons; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Vendor; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.ProviderLink; de.laser.Contact; de.laser.remote.ApiSource; de.laser.Provider" %>
 
 <g:set var="entityName" value="${message(code: 'provider.label')}"/>
 
@@ -69,7 +69,7 @@
                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: provider.altnames[0].id]"
                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [provider.altnames[0].name])}"
                                                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(provider.altnames[0])}')">
-                                                    <i class="trash alternate outline icon"></i>
+                                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                                 </ui:remoteLink>
                                             </g:if>
                                         </div>
@@ -91,7 +91,7 @@
                                                             <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                            data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                <i class="trash alternate outline icon"></i>
+                                                                <i class="${Icons.CMD_DELETE} icon"></i>
                                                             </ui:remoteLink>
                                                         </div>
                                                     </div>
@@ -311,7 +311,7 @@
                                                             action="unlinkProviderVendor" params="[id: provider.id, combo: row.id]"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                        <i class="unlink icon"></i>
+                                                        <i class="${Icons.CMD_UNLINK} icon"></i>
                                                     </g:link>
                                                 </span>
                                             </g:if>
@@ -444,7 +444,7 @@
                                 <div class="ui item">
                                     <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: provider.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id]">
                                         <div class="content la-space-right">
-                                            <i class="icon filter"></i> <g:message code="subscription.plural.current" />
+                                            <i class="${Icons.LINK_FILTERED} icon"></i> <g:message code="subscription.plural.current" />
                                             &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}</div>
                                         </div>
                                     </g:link>
@@ -452,7 +452,7 @@
                                 <div class="ui item">
                                     <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: provider.globalUID, status: 'FETCH_ALL']">
                                         <div class="content la-space-right">
-                                            <i class="icon filter"></i> <g:message code="subscription.plural.total" />
+                                            <i class="${Icons.LINK_FILTERED} icon"></i> <g:message code="subscription.plural.total" />
                                             &nbsp;<div class="ui blue circular label">${subLinks}</div>
                                         </div>
                                     </g:link>
@@ -465,14 +465,14 @@
                                 <div class="ui item">
                                     <div class="content la-space-right">
                                         <g:link controller="myInstitution" action="currentLicenses" params="[licensor: provider.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']">
-                                            <i class="icon filter"></i> <g:message code="license.plural.current" />
+                                            <i class="${Icons.LINK_FILTERED} icon"></i> <g:message code="license.plural.current" />
                                             &nbsp;<div class="ui blue circular label">${currentLicensesCount}</div></g:link>
                                     </div>
                                 </div>
                                 <div class="ui item">
                                     <div class="content la-space-right">
                                         <g:link controller="myInstitution" action="currentLicenses" params="[licensor: provider.id, filterSubmit: 'Filtern']">
-                                            <i class="icon filter"></i> <g:message code="license.plural.total" />
+                                            <i class="${Icons.LINK_FILTERED} icon"></i> <g:message code="license.plural.total" />
                                             &nbsp;<div class="ui blue circular label">${licLinks}</div></g:link>
                                     </div>
                                 </div>
@@ -542,7 +542,7 @@
                                     <div class="ui item">
                                         <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: provider.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id]">
                                             <div class="content la-space-right">
-                                                <i class="icon filter"></i> <g:message code="subscription.plural.current" />
+                                                <i class="${Icons.LINK_FILTERED} icon"></i> <g:message code="subscription.plural.current" />
                                                 &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}</div>
                                             </div>
                                         </g:link>
@@ -550,7 +550,7 @@
                                     <div class="ui item">
                                         <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: provider.globalUID, status: 'FETCH_ALL']">
                                             <div class="content la-space-right">
-                                                <i class="icon filter"></i> <g:message code="subscription.plural.total" />
+                                                <i class="${Icons.LINK_FILTERED} icon"></i> <g:message code="subscription.plural.total" />
                                                 &nbsp;<div class="ui blue circular label">${subLinks.size()}</div>
                                             </div>
                                         </g:link>
@@ -572,14 +572,14 @@
                                     <div class="ui item">
                                         <div class="content la-space-right">
                                             <g:link controller="myInstitution" action="currentLicenses" params="[licensor: provider.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']">
-                                                <i class="icon filter"></i> <g:message code="license.plural.current" />
+                                                <i class="${Icons.LINK_FILTERED} icon"></i> <g:message code="license.plural.current" />
                                                 &nbsp;<div class="ui blue circular label">${currentLicensesCount}</div></g:link>
                                         </div>
                                     </div>
                                     <div class="ui item">
                                         <div class="content la-space-right">
                                             <g:link controller="myInstitution" action="currentLicenses" params="[licensor: provider.id, filterSubmit: 'Filtern']">
-                                                <i class="icon filter"></i> <g:message code="license.plural.total" />
+                                                <i class="${Icons.LINK_FILTERED} icon"></i> <g:message code="license.plural.total" />
                                                 &nbsp;<div class="ui blue circular label">${licLinks.size()}</div></g:link>
                                         </div>
                                     </div>

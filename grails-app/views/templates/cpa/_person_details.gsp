@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.Icons" %>
 <g:if test="${person}">
     <div class="ui divided middle aligned selection list la-flex-list">
 
@@ -96,7 +97,7 @@
                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                        <i class="unlink icon"></i>
+                        <i class="${Icons.CMD_UNLINK} icon"></i>
                     </g:link>
                 </g:if>
             </div>
