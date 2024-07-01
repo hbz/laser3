@@ -285,7 +285,7 @@
                                                 <i class="${Icons.VENDOR} icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('subscription')}">
-                                                <i class="clipboard outline icon"></i>
+                                                <i class="${Icons.SUBSCRIPTION} icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('package')}">
                                                 <i class="${Icons.PACKAGE} icon"></i>

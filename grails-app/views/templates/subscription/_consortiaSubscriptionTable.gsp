@@ -130,7 +130,7 @@
                 </td>
                 <th scope="row" class="la-th-column">
                     <div class="la-flexbox la-main-object">
-                        <i class="icon clipboard outline la-list-icon"></i>
+                        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
                         <g:link controller="subscription" action="show" id="${subCons.id}">${subCons.name}</g:link>
                     </div>
                     <g:each in="${linkedLicenses.get(subCons)}" var="linkedLicense">
