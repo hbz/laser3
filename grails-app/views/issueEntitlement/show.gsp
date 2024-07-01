@@ -1,4 +1,4 @@
-<%@ page import="de.laser.config.ConfigMapper; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.remote.ApiSource; de.laser.IssueEntitlement" %>
+<%@ page import="de.laser.helper.Icons; de.laser.config.ConfigMapper; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.remote.ApiSource; de.laser.IssueEntitlement" %>
 
 <g:set var="entityName" value="${message(code: 'issueEntitlement.label')}"/>
 <laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" />
@@ -65,7 +65,7 @@
                 <div class="ui list">
                     <g:each in="${participantPerpetualAccessToTitle}" var="pt">
                         <div class="item">
-                                <i class="icon clipboard outline"></i>
+                                <i class="${Icons.SUBSCRIPTION} icon"></i>
                                 <div class="content">
                                     <div class="header"
                                         <g:link controller="subscription"

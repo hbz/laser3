@@ -26,7 +26,7 @@ class Icons {
 
     public static String REPORTING          = 'chartline'
 
-    public static String SUBSCRIPTION       = 'clipboard'       // todo: variant - 'clipboard outline'
+    public static String SUBSCRIPTION       = 'clipboard'       // todo: duplicate license.licenseCategory, tipp.accessStartDate/tipp.accessEndDate
 
     public static String SURVEY             = 'chart pie'
 
@@ -46,6 +46,8 @@ class Icons {
 
     public static String ORG_LEGAL_INFORMATION      = 'hands helping'
 
+    public static String SUB_IS_MULTIYEAR           = 'forward'
+
     public static String TIPP_COVERAGE_DEPTH        = 'file alternate' // ? right
 
     // please do not touch during refactoring ..
@@ -54,4 +56,15 @@ class Icons {
     public static String CMD_DELETE                 = 'trash alternate outline'
 
     public static String CMD_UNLINK                 = 'unlink'
+
+    // please do not touch during refactoring ..
+    // links
+
+    public static String LINK_EXTERNAL              = 'external alternate'
+
+    public static String LINK_FILTERED              = 'filter'
+
+    public static String LINK_NEXT                  = 'arrow right'     // todo: duplicate: ui:anualRings, ui:statusWithRings
+
+    public static String LINK_PREV                  = 'arrow left'      // todo: duplicate: ui:anualRings, ui:statusWithRings
 }

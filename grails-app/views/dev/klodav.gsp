@@ -34,7 +34,7 @@
     <p class="ui header">Icons #2</p>
     <div class="ui list">
         <div class="item">
-            <i class="icon large ${Icons.PROVIDER}"></i>
+            <i class="${Icons.PROVIDER} icon large"></i>
             <div class="content"> Anbieter (${Icons.PROVIDER})</div>
         </div>
         <div class="item">
@@ -42,23 +42,23 @@
             <div class="content"> Lieferanten (boxes)</div>
         </div>
         <div class="item">
-            <i class="icon large ${Icons.ORG}"></i>
+            <i class="${Icons.ORG} icon large"></i>
             <div class="content"> Einrichtungen (${Icons.ORG})</div>
         </div>
         <div class="item">
-            <i class="icon large ${Icons.PLATFORM}"></i>
+            <i class="${Icons.PLATFORM} icon large"></i>
             <div class="content"> Plattformen (${Icons.PLATFORM})</div>
         </div>
         <div class="item">
-            <i class="icon large ${Icons.SUBSCRIPTION}"></i>
+            <i class="${Icons.SUBSCRIPTION} icon large"></i>
             <div class="content"> Lizenzen (${Icons.SUBSCRIPTION})</div>
         </div>
         <div class="item">
-            <i class="icon large ${Icons.LICENSE}"></i>
+            <i class="${Icons.LICENSE} icon large"></i>
             <div class="content"> Verträge (${Icons.LICENSE})</div>
         </div>
         <div class="item">
-            <i class="icon large ${Icons.PACKAGE}"></i>
+            <i class="${Icons.PACKAGE} icon large"></i>
             <div class="content"> Pakete (${Icons.PACKAGE})</div>
         </div>
     </div>
@@ -68,8 +68,8 @@
     <p class="ui header">Icons #3</p>
     <div class="ui list">
         <div class="item">
-            <i class="icon large forward"></i>
-            <div class="content"> Mehrjahreslaufzeit (forward)</div>
+            <i class="${Icons.SUB_IS_MULTIYEAR} icon large"></i>
+            <div class="content"> Mehrjahreslaufzeit (${Icons.SUB_IS_MULTIYEAR})</div>
         </div>
     </div>
 </div>
@@ -82,12 +82,12 @@
             <div class="content"> internal link</div>
         </div>
         <div class="item">
-            <i class="icon large filter"></i>
+            <i class="${Icons.LINK_FILTERED} icon large"></i>
             <div class="content"> internal link (redirect to list view with filter)</div>
         </div>
         <div class="item">
-            <i class="icon large external alternate"></i>
-            <div class="content"> external link</div>
+            <i class="${Icons.LINK_EXTERNAL} icon large"></i>
+            <div class="content"> external link (${Icons.LINK_EXTERNAL})</div>
         </div>
         <div class="item">
             <i class="icon large fake"></i>
