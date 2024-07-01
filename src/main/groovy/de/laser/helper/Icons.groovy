@@ -48,4 +48,10 @@ class Icons {
 
     public static String TIPP_COVERAGE_DEPTH        = 'file alternate' // ? right
 
+    // please do not touch during refactoring ..
+    // cmds, functions
+
+    public static String CMD_DELETE                 = 'trash alternate outline'
+
+    public static String CMD_UNLINK                 = 'unlink'
 }

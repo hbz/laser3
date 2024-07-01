@@ -1,4 +1,4 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; de.laser.remote.ApiSource; de.laser.storage.RDConstants; de.laser.Platform; de.laser.RefdataValue; de.laser.utils.DateUtils;" %>
+<%@ page import="de.laser.helper.Icons; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.remote.ApiSource; de.laser.storage.RDConstants; de.laser.Platform; de.laser.RefdataValue; de.laser.utils.DateUtils;" %>
 <laser:htmlStart message="platform.details" />
 
 <ui:debugInfo>
@@ -243,7 +243,7 @@
                                             data-confirm-term-how="unlink"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                        <i class="unlink icon"></i>
+                                        <i class="${Icons.CMD_UNLINK} icon"></i>
                                     </g:link>
                                 </g:if>
 

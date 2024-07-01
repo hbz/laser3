@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyLinks; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.Subscription; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyLinks; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.Subscription; de.laser.storage.RDStore;" %>
 
 <g:if test="${contextOrg?.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
     <ui:card message="surveyLinks.label" href="#surveyLinks"
@@ -44,7 +44,7 @@
                                                         params="${[unlinkSurveyLink: surveyLink.id, surveyConfigID: surveyConfig.id, id: surveyInfo.id]}"
                                                         role="button"
                                                         aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                    <i class="unlink icon"></i>
+                                                    <i class="${Icons.CMD_UNLINK} icon"></i>
                                                 </g:link>
                                             </span>
                                         </g:if>

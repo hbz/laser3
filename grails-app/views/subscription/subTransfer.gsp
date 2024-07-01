@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ExportClickMeService; de.laser.Doc; de.laser.DocContext; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.storage.RDStore; de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.helper.Icons; de.laser.ExportClickMeService; de.laser.Doc; de.laser.DocContext; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.storage.RDStore; de.laser.survey.SurveyOrg" %>
 <laser:htmlStart message="subscription.details.subTransfer.label" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
@@ -267,7 +267,7 @@
                                                         params='[instanceId: "${subscription.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                         role="button"
                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                    <i class="trash alternate outline icon"></i>
+                                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                                 </g:link>
                                             </g:if>
                                             <g:else>
@@ -345,7 +345,7 @@
                                                         params='[instanceId: "${subscription.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                         role="button"
                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                    <i class="trash alternate outline icon"></i>
+                                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                                 </g:link>
                                             </g:if>
                                             <g:else>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Doc; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Doc; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyConfigDocs.label')})" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -120,7 +120,7 @@
                                             params='[surveyConfigID: surveyConfig.id, id: surveyInfo.id, deleteId: "${docctx.id}", redirectAction: "${actionName}"]'
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate outline icon"></i>
+                                        <i class="${Icons.CMD_DELETE} icon"></i>
                                     </g:link>
                                 </g:if>
                             </g:if>

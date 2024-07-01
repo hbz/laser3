@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.Icons" %>
 <laser:htmlStart message="menu.admin.dataConsistency" />
 
 <ui:breadcrumbs>
@@ -106,7 +107,7 @@
                         mergeables.push(elem.id)
                     }
                     if (elem.deletable) {
-                        markup += ' <i class="icon trash alternate outline negative"></i> '
+                        markup += ' <i class="${Icons.CMD_DELETE} icon negative"></i> '
                         deletables.push(elem.id)
                     }
                     markup += '</a></div>'
@@ -122,7 +123,7 @@
                 if (deletables.length > 0) {
                     var deleteUrl = "<g:createLink controller="admin" action="dataConsistency" />?task=delete&objType=Org";
                     deleteUrl += '&objId=' + deletables.join('&objId=')
-                    $html.append( '<a href="' + deleteUrl + '" class="ui button negative"><i class="icon trash alternate outline"></i> Löschen</a>' )
+                    $html.append( '<a href="' + deleteUrl + '" class="ui button negative"><i class="${Icons.CMD_DELETE} icon"></i> Löschen</a>' )
                 }
                 $('#modalConsistencyCheck').modal('show')
             }

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.survey.SurveyConfig;de.laser.RefdataValue;de.laser.finance.CostItem;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.storage.RDConstants; de.laser.survey.SurveyConfig;de.laser.RefdataValue;de.laser.finance.CostItem;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyCostItems.label')})" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -368,7 +368,7 @@
                         data-confirm-id="processSurveyCostItemsBulk"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="trash alternate outline icon"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
+                    <i class="${Icons.CMD_DELETE} icon"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
                 </button>
 
             </g:form>

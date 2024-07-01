@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Vendor; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.VendorLink; de.laser.Contact;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Vendor; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.VendorLink; de.laser.Contact;" %>
 
 <laser:htmlStart message="${'menu.institutions.vendor.show'}" serviceInjection="true" />
 
@@ -60,7 +60,7 @@
                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: vendor.altnames[0].id]"
                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [vendor.altnames[0].name])}"
                                                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(vendor.altnames[0])}')">
-                                                    <i class="trash alternate outline icon"></i>
+                                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                                 </ui:remoteLink>
                                             </g:if>
                                         </div>
@@ -82,7 +82,7 @@
                                                             <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                            data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                <i class="trash alternate outline icon"></i>
+                                                                <i class="${Icons.CMD_DELETE} icon"></i>
                                                             </ui:remoteLink>
                                                         </div>
                                                     </div>
@@ -383,7 +383,7 @@
                                                             action="unlinkProviderVendor" params="[id: vendor.id, combo: row.id]"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                        <i class="unlink icon"></i>
+                                                        <i class="${Icons.CMD_UNLINK} icon"></i>
                                                     </g:link>
                                                 </span>
                                             </g:if>
