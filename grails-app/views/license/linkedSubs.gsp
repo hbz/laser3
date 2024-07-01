@@ -13,7 +13,7 @@
     <ui:h1HeaderWithIcon visibleProviders="${visibleProviders}">
         <ui:xEditable owner="${license}" field="reference" id="reference"/>
     </ui:h1HeaderWithIcon>
-    <ui:totalNumber total="${subscriptions.size() ?: 0}"/>
+
     <ui:anualRings object="${license}" controller="license" action="linkedSubs" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
 <laser:render template="${customerTypeService.getNavTemplatePath()}" />
@@ -101,6 +101,10 @@
             </g:else>
         </g:form>
     </ui:filter>
+
+<h3 class="ui left floated aligned icon header la-clear-before">${message(code: 'subscription.plural')}
+<ui:totalNumber total="${subscriptions.size() ?: 0}"/>
+</h3>
 
 <table class="ui celled la-js-responsive-table la-js-responsive-table la-table table">
     <thead>
