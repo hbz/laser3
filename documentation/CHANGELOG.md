@@ -9,7 +9,7 @@
 
 #### day of release 3.4
 
-
+5669    27.06.2024  rc-3.4  3.4         Ingrid  Feature     Änderung des Modals für "Kontakt hinzufügen"
 
 5783    27.06.2024  rc-3.4  3.4         Andreas Bug         Adresskopiermodal verarbeitete Befehle falsch
 
@@ -373,6 +373,8 @@
 
 5520    12.01.2024  rc-3.3  3.3.5       David   Bug         Vertrag anlegen als neuer Kundentyp
 
+5491    10.01.2024  rc-3.4              Ingrid  Feature     Adressexport: Schließen des Modals verbessern
+
 5512    09.01.2024  rc-3.3  3.3.3       Moe     Bug         Teilnehmerkosten vergleichen
 
 5488    09.01.2024  rc-3.3  3.3.3       Moe     Bug         Kostenausschütung rundet Preise ohne dies zu wollen
@@ -406,6 +408,8 @@
 5489    03.01.2024  rc-3.3  3.3.3       David   Bug         Alle Pakete: Filter Kuratorengruppentyp liefert keine Ergebnisse
 
 5490    02.01.2024  rc-3.3  3.3.3       David   Bug         404 Übersicht Referenzwerte
+
+5459    14.12.2023  rc-3.4              Ingrid  Feature     Neues Kontextmenue verhält sich jetzt responsible
 
 5485    13.12.2023  rc-3.3  3.3.3       David   Bug         Alle Einrichtungen > Filter: Status geht verloren
 
