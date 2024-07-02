@@ -37704,7 +37704,7 @@ i.icon.hand.pointer.outline.slash {
   font-family: 'icomoon';
 }
 
-i.icon.pencil.alternate.slash {
+i.icon.write.slash {
   font-family: 'icomoon';
 }
 
@@ -37862,7 +37862,7 @@ i.icon.hand.pointer.outline.slash:before {
   content: "\e901";
 }
 
-i.icon.pencil.alternate.slash:before {
+i.icon.write.slash:before {
   content: "\e902";
 }
 
