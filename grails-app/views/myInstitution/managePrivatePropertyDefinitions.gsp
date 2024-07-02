@@ -57,18 +57,18 @@
                                         <td>
                                             <g:if test="${pd.isHardData}">
                                                 <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
-                                                    <i class="${Icons.PROPERTY_HARDDATA} green"></i>
+                                                    <i class="${Icons.PROPERTY_HARDDATA}"></i>
                                                 </span>
                                             </g:if>
                                             <g:if test="${pd.multipleOccurrence}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                                    <i class="${Icons.PROPERTY_MULTIPLE} orange"></i>
+                                                    <i class="${Icons.PROPERTY_MULTIPLE}"></i>
                                                 </span>
                                             </g:if>
 
                                             <g:if test="${pd.isUsedForLogic}">
                                                 <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
-                                                    <i class="${Icons.PROPERTY_USEDFORLOGIC} red"></i>
+                                                    <i class="${Icons.PROPERTY_LOGIC}"></i>
                                                 </span>
                                             </g:if>
                                         </td>

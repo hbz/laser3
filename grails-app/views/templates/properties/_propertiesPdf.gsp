@@ -116,7 +116,7 @@
                                         ${prop.type.getI10n('name')}
                                     </g:else>
                                     %{--<g:if test="${prop.type.multipleOccurrence}">
-                                        <span class="${Icons.PROPERTY_MULTIPLE} orange"> M </span>
+                                        <span class="${Icons.PROPERTY_MULTIPLE}"> M </span>
                                     </g:if>--}%
                                 </td>
                                 <td>

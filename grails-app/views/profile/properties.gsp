@@ -65,7 +65,7 @@
                             <td>
                                 <g:if test="${pd.multipleOccurrence}">
                                     <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                        <i class="${Icons.PROPERTY_MULTIPLE} orange"></i>
+                                        <i class="${Icons.PROPERTY_MULTIPLE}"></i>
                                     </span>
                                 </g:if>
                             </td>
