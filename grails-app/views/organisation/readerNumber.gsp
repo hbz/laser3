@@ -74,7 +74,7 @@
                                     <g:if test="${missing}">
                                         <a role="button" class="ui icon button blue la-modern-button" data-ui="modal" href="#newForSemester${numbersInstance.getKey().id}"
                                            aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                            <i aria-hidden="true" class="write icon"></i>
+                                            <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
                                         </a>
                                     </g:if>
                                     <g:link class="ui icon negative button la-modern-button js-open-confirm-modal" controller="readerNumber" action="delete"

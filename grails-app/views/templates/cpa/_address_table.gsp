@@ -155,7 +155,7 @@
                         <button type="button" onclick="JSPC.app.editAddress(${address.id})" class="ui icon button blue la-modern-button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="write icon"></i>
+                            <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
                         </button>
                         <g:link class="ui negative button icon js-open-confirm-modal la-modern-button"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.address.addressbook")}"

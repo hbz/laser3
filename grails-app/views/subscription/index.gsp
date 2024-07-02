@@ -612,13 +612,12 @@
                                                         <div class="ui list">
                                                             <g:if test="${ie}">
                                                                 <div class="item">
-                                                                    <i class="grey icon edit la-popup-tooltip la-delay"
+                                                                    <i class="grey ${Icons.CMD_EDIT} la-popup-tooltip la-delay"
                                                                        data-content="${message(code: 'issueEntitlement.myNotes')}"></i>
                                                                     <div class="content">
                                                                         <div class="header"><g:message code="issueEntitlement.myNotes"/></div>
                                                                         <div class="description">
-                                                                            <ui:xEditable owner="${ie}" type="text"
-                                                                                          field="notes"/>
+                                                                            <ui:xEditable owner="${ie}" type="text" field="notes"/>
                                                                         </div>
                                                                     </div>
                                                                 </div>

@@ -75,6 +75,24 @@
 </div>
 
 <div class="ui segment">
+    <p class="ui header">...</p>
+    <div class="ui list">
+        <div class="item">
+            <i class="edit icon large"></i>
+            <div class="content">edit</div>
+        </div>
+        <div class="item">
+            <i class="pencil icon large"></i>
+            <div class="content">pencil</div>
+        </div>
+        <div class="item">
+            <i class="write icon large"></i>
+            <div class="content">write</div>
+        </div>
+    </div>
+</div>
+
+<div class="ui segment">
     <p class="ui header">Links</p>
     <div class="ui list">
         <div class="item">

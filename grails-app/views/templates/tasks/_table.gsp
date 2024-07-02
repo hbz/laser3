@@ -79,7 +79,7 @@
                         <g:if test="${overwriteEditable}">
                             <a onclick="JSPC.app.editTask(${taskInstance.id});" class="ui icon button blue la-modern-button"
                                role="button" aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="write icon"></i>
+                                <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
                             </a>
                         </g:if>
                         <g:if test="${(user == taskInstance.creator && userIsInstEditorOrRoleAdmin) || contextService.isInstAdm_or_ROLEADMIN()}">
