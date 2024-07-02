@@ -1,4 +1,4 @@
-<%@ page import="de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.auth.Role; de.laser.UserSetting.KEYS; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.helper.Icons; de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.auth.Role; de.laser.UserSetting.KEYS; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart message="profile.user" serviceInjection="true" />
 
@@ -9,7 +9,7 @@
 <ui:controlButtons>
     <ui:actionsDropdown>
         <g:link class="ui item" controller="profile" action="delete">
-            <i class="trash alternate outline icon"></i>${message(code:'profile.account.delete.button')}
+            <i class="${Icons.CMD_DELETE} icon"></i>${message(code:'profile.account.delete.button')}
         </g:link>
     </ui:actionsDropdown>
 </ui:controlButtons>

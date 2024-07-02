@@ -1,4 +1,4 @@
-<%@ page import="de.laser.GenericOIDService; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.auth.Role;de.laser.auth.UserRole;de.laser.UserSetting" %>
+<%@ page import="de.laser.helper.Icons; de.laser.GenericOIDService; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.auth.Role;de.laser.auth.UserRole;de.laser.UserSetting" %>
 <laser:serviceInjection/>
 
 <table class="ui sortable celled la-js-responsive-table la-table compact table">
@@ -119,25 +119,25 @@
                                 <g:link controller="profile" action="delete" class="ui icon negative button la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate outline icon"></i></g:link>
+                                <i class="${Icons.CMD_DELETE} icon"></i></g:link>
                             </g:if>
                             <g:elseif test="${controllerName == 'user'}">
                                 <g:link controller="${controllerName}" action="${deleteLink}" params="${[id: us.id]}" class="ui icon negative button la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate outline icon"></i></g:link>
+                                <i class="${Icons.CMD_DELETE} icon"></i></g:link>
                             </g:elseif>
                             <g:elseif test="${controllerName == 'myInstitution'}">
                                 <g:link controller="${controllerName}" action="${deleteLink}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon negative button la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate outline icon"></i></g:link>
+                                <i class="${Icons.CMD_DELETE} icon"></i></g:link>
                             </g:elseif>
                             <g:elseif test="${controllerName == 'organisation'}">
                                 <g:link controller="${controllerName}" action="${deleteLink}" id="${orgInstance.id}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon negative button la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate outline icon"></i></g:link>
+                                <i class="${Icons.CMD_DELETE} icon"></i></g:link>
                             </g:elseif>
 
                         </g:if>
@@ -146,7 +146,7 @@
                                 <button class="ui icon negative button la-modern-button" disabled="disabled"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
+                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                 </button>
                             </span>
                         </g:else>

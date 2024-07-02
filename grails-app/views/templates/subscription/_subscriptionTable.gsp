@@ -25,14 +25,14 @@
                         <th class="center aligned"  rowspan="2" scope="col">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                   data-content="${message(code: 'default.previous.label')}">
-                                <i class="arrow left icon"></i>
+                                <i class="${Icons.LINK_PREV} icon"></i>
                             </span>
                         </th>
                         <g:sortableColumn params="${params}" property="s.name" title="${subscriptionHeader}" rowspan="2" scope="col" />
                         <th class="center aligned" rowspan="2" scope="col">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                   data-content="${message(code: 'default.next.label')}">
-                                <i class="arrow right icon"></i>
+                                <i class="${Icons.LINK_NEXT} icon"></i>
                             </span>
                         </th>
                         <g:if test="${'showPackages' in tableConfig}">
@@ -94,7 +94,7 @@
                         %>
                         <td class="center aligned">
                             <g:if test="${navPrevSub}">
-                                <g:link controller="subscription" action="show" id="${navPrevSub}"><i class="arrow left icon"></i></g:link>
+                                <g:link controller="subscription" action="show" id="${navPrevSub}"><i class="${Icons.LINK_PREV} icon"></i></g:link>
                             </g:if>
                         </td>
                         <th scope="row" class="la-th-column">
@@ -130,7 +130,7 @@
                         </th>
                         <td class="center aligned">
                             <g:if test="${navNextSub}">
-                                <g:link controller="subscription" action="show" id="${navNextSub}"><i class="arrow right icon"></i></g:link>
+                                <g:link controller="subscription" action="show" id="${navNextSub}"><i class="${Icons.LINK_NEXT} icon"></i></g:link>
                             </g:if>
                         </td>
                         <g:if test="${'showPackages' in tableConfig}">
@@ -209,22 +209,15 @@
                             <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label.shy')}:"><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></span>
                         </td>
                         <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                            <%
-                                Subscription targetSub
-                                if(params.identifier?.startsWith('vendor:') || params.q) {
-                                    targetSub = s.instanceOf
-                                }
-                                else targetSub = s
-                            %>
-                            <g:set var="childSubIds" value="${Subscription.executeQuery('select s.id from Subscription s where s.instanceOf = :parent',[parent:targetSub])}"/>
+                            <g:set var="childSubIds" value="${Subscription.executeQuery('select s.id from Subscription s where s.instanceOf = :parent',[parent:s])}"/>
                             <td>
                                 <g:if test="${childSubIds.size() > 0}">
-                                    <g:link controller="subscription" action="members" params="${[id:targetSub.id]}">
+                                    <g:link controller="subscription" action="members" params="${[id:s.id]}">
                                         <div class="ui blue circular label">${childSubIds.size()}</div>
                                     </g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link controller="subscription" action="addMembers" params="${[id:targetSub.id]}">
+                                    <g:link controller="subscription" action="addMembers" params="${[id:s.id]}">
                                         <div class="ui blue circular label">
                                             ${childSubIds.size()}
                                         </div>
@@ -232,7 +225,7 @@
                                 </g:else>
                             </td>
                             <td>
-                                <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:targetSub.id]}">
+                                <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
                                     <g:if test="${institution.isCustomerType_Consortium()}">
                                         <div class="ui blue circular label">
                                             ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(*) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
@@ -263,7 +256,7 @@
                                         <g:link controller="subscription" action="surveys" id="${s.id}"
                                                 class="ui icon positive button la-modern-button">
                                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info3")}">
-                                                <i class="ui icon pie chart"></i>
+                                                <i class="${Icons.SURVEY} icon"></i>
                                             </span>
                                         </g:link>
                                     </g:if>
@@ -277,7 +270,7 @@
                                                         class="ui button positive icon la-modern-button">
                                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                           data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
-                                                        <i class="ui icon pie chart"></i>
+                                                        <i class="${Icons.SURVEY} icon"></i>
                                                     </span>
                                                 </g:link>
                                             </g:if>
@@ -286,7 +279,7 @@
                                                         class="ui button blue icon la-modern-button">
                                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                           data-content="${message(code: "surveyconfig.isCompletedforOwner.false")}">
-                                                        <i class="ui icon pie chart"></i>
+                                                        <i class="${Icons.SURVEY} icon"></i>
                                                     </span>
                                                 </g:link>
                                             </g:else>
@@ -296,13 +289,13 @@
                                             <g:if test="${surveysConsortiaSub.surveyInfo?.isCompletedforOwner()}">
                                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                       data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
-                                                    <i class="ui icon pie chart blue"></i>
+                                                    <i class="${Icons.SURVEY} icon blue"></i>
                                                 </span>
                                             </g:if>
                                             <g:else>
                                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                       data-content="${message(code: "surveyconfig.isCompletedforOwner.false")}">
-                                                    <i class="ui icon pie chart open"></i>
+                                                    <i class="${Icons.SURVEY} icon open"></i>
                                                 </span>
                                             </g:else>
                                         </g:link>--}%

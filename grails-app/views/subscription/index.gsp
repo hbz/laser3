@@ -502,7 +502,7 @@
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.tipp.name])}"
                                                                         data-confirm-term-how="delete"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="trash alternate outline icon"></i>
+                                                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                                                 </g:link>
                                                             </g:if>
                                                             <g:else>
@@ -513,7 +513,7 @@
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.tipp.name])}"
                                                                         data-confirm-term-how="delete"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="trash alternate outline icon"></i>
+                                                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                                                 </g:link>
                                                             </g:else>
                                                         </g:if>

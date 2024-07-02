@@ -1,4 +1,4 @@
-<%@page import="de.laser.remote.ApiSource; de.laser.IdentifierNamespace"%>
+<%@page import="de.laser.helper.Icons; de.laser.remote.ApiSource; de.laser.IdentifierNamespace"%>
 <tr>
     <td>${tableRowNr}</td>
     <td>
@@ -54,7 +54,7 @@
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [id?.ns?.ns+": "+id.value])}"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="trash alternate outline icon"></i>
+                    <i class="${Icons.CMD_DELETE} icon"></i>
                 </g:link>
             </g:if>
         </td>

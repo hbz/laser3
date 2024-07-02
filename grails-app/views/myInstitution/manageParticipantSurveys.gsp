@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.Org;de.laser.RefdataCategory;de.laser.survey.SurveyInfo;de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;de.laser.survey.SurveyResult" %>
+<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.Org;de.laser.RefdataCategory;de.laser.survey.SurveyInfo;de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;de.laser.survey.SurveyResult" %>
 <laser:htmlStart message="manageParticipantSurveys.header" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -252,7 +252,7 @@
                             <g:if test="${surveyConfig?.subSurveyUseForTransfer}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info2")}">
-                                    <i class="icon pie chart la-list-icon"></i>
+                                    <i class="${Icons.SURVEY} icon la-list-icon"></i>
                                 </span>
                             </g:if>
                             <g:link controller="survey" action="show" id="${surveyInfo.id}" class="ui ">

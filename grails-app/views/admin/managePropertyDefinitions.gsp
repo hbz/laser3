@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.I10nTranslation; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.helper.Icons; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.I10nTranslation; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <laser:htmlStart message="menu.admin.managePropertyDefinitions" serviceInjection="true"/>
 
@@ -176,7 +176,7 @@
                                                     params="${[cmd: 'deletePropertyDefinition', pd: pd.id]}" class="ui icon negative button la-modern-button"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="trash alternate outline icon"></i>
+                                                <i class="${Icons.CMD_DELETE} icon"></i>
                                             </g:link>
                                         </g:if>
                                     </td>

@@ -285,7 +285,7 @@
                                                 <i class="${Icons.VENDOR} icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('subscription')}">
-                                                <i class="clipboard outline icon"></i>
+                                                <i class="${Icons.SUBSCRIPTION} icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('package')}">
                                                 <i class="${Icons.PACKAGE} icon"></i>
@@ -415,7 +415,7 @@
                                                     controller="myInstitution" action="dashboard" id="${clistInfo.target.id}" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}", view:'Workflows']}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="trash alternate outline icon"></i>
+                                                <i class="${Icons.CMD_DELETE} icon"></i>
                                             </g:link>
                                         </g:if>
                                     </td>

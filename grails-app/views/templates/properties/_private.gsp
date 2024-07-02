@@ -3,7 +3,7 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#private-property-wrapper-xxx"); --}%
 
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.CustomerTypeService; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; java.net.URL" %>
+<%@ page import="de.laser.helper.Icons; de.laser.utils.LocaleUtils; de.laser.CustomerTypeService; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; java.net.URL" %>
 <laser:serviceInjection />
 
 
@@ -110,7 +110,7 @@
                                               data-update="${propertyWrapper}"
                                               role="button"
                                               ariaLabel="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate outline icon"></i>
+                                <i class="${Icons.CMD_DELETE} icon"></i>
                             </ui:remoteLink>
                         </g:if>
                     </td>
