@@ -576,7 +576,7 @@ class UiTagLib {
         String type = attrs.type == 'year' ? 'yearpicker' : 'datepicker'
         out <<   '<div class="ui calendar '+type+'">'
         out <<     '<div class="ui input left icon">'
-        out <<       '<i aria-hidden="true" class="calendar icon"></i>'
+        out <<       '<i aria-hidden="true" class="' + Icons.DATE + '"></i>'
         out <<       '<input class="' + inputCssClass + '" name="' + name +  '" id="' + id +'" type="text" placeholder="' + placeholder + '" value="' + value + '" ' + required + '>'
         out <<     '</div>'
         out <<   '</div>'

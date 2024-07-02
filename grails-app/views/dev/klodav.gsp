@@ -68,8 +68,8 @@
     <p class="ui header">Icons #3</p>
     <div class="ui list">
         <div class="item">
-            <i class="${Icons.SUB_IS_MULTIYEAR} large"></i>
-            <div class="content"> Mehrjahreslaufzeit (${Icons.SUB_IS_MULTIYEAR})</div>
+            <i class="${Icons.SUBSCRIPTION_IS_MULTIYEAR} large"></i>
+            <div class="content"> Mehrjahreslaufzeit (${Icons.SUBSCRIPTION_IS_MULTIYEAR})</div>
         </div>
     </div>
 </div>

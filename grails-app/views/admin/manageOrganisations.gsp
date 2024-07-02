@@ -98,7 +98,7 @@
                             def gascoEntry = OrgSetting.get(org, OrgSetting.KEYS.GASCO_ENTRY)
                             if (gascoEntry != OrgSetting.SETTING_NOT_FOUND && gascoEntry.getValue()?.value == 'Yes') {
                                 println ' <span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + message(code:'org.gascoEntry.label') + '">'
-                                println ' <i class="icon blue layer group"></i>'
+                                println ' <i class="' + Icons.GASCO + ' blue"></i>'
                                 println ' </span>'
                                 gascoEntry = gascoEntry.getValue()
                             } else {
@@ -184,7 +184,7 @@
                                     data-orgName="${org.name}"
                                     data-ui="modal"
                                     data-href="#gascoEntryModal"
-                                    data-content="GASCO-Eintrag ändern" data-position="top left"><i class="layer group icon"></i></button>
+                                    data-content="GASCO-Eintrag ändern" data-position="top left"><i class="${Icons.GASCO}"></i></button>
                         </g:if>
 
                         <g:if test="${org.isCustomerType_Inst()}">

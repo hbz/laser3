@@ -12,6 +12,8 @@ class Icons {
 
     public static String DOCUMENT                   = 'file alternate icon' // todo: duplicate > tipp.coverageDepth > Icons.TIPP_COVERAGE_DEPTH
 
+    public static String GASCO                      = 'layer group icon'
+
     public static String LICENSE                    = 'balance scale icon'
 
     public static String MARKER                     = 'bookmark icon'       // todo: duplicate > reporting.history/bookmarks
@@ -39,9 +41,13 @@ class Icons {
     // please do not touch during refactoring ..
     // domain class attributes
 
+    public static String ADDRESS_PUBLIC             = 'address card icon'
+
+    public static String ADDRESS_PRIVATE            = 'address card outline icon'
+
     public static String ORG_LEGAL_INFORMATION      = 'hands helping icon'
 
-    public static String SUB_IS_MULTIYEAR           = 'forward icon'
+    public static String SUBSCRIPTION_IS_MULTIYEAR  = 'forward icon'
 
     public static String TIPP_COVERAGE_DEPTH        = 'file alternate icon' // ? right
 

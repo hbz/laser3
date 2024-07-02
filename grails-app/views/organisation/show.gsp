@@ -566,10 +566,10 @@
                                                             <div class="row">
                                                                 <div class="two wide column">
                                                                     <g:if test="${prs.isPublic}">
-                                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                        <i class="${Icons.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                                     </g:if>
                                                                     <g:else>
-                                                                        <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                        <i class="${Icons.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                     </g:else>
                                                                 </div>
                                                                 <div class="fourteen wide column">
@@ -606,10 +606,10 @@
                                                             <div class="row">
                                                                 <div class="two wide column">
                                                                     <g:if test="${prs.isPublic}">
-                                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                        <i class="${Icons.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                                     </g:if>
                                                                     <g:else>
-                                                                        <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                        <i class="${Icons.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                     </g:else>
                                                                 </div>
                                                                 <div class="fourteen wide column">
@@ -738,10 +738,10 @@
                                                             <div class="row">
                                                                 <div class="two wide column">
                                                                     <g:if test="${person.isPublic}">
-                                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                        <i class="${Icons.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                                     </g:if>
                                                                     <g:else>
-                                                                        <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                        <i class="${Icons.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                     </g:else>
                                                                 </div>
                                                                 <div class="fourteen wide column">
@@ -830,10 +830,10 @@
                                                                 <div class="row">
                                                                     <div class="two wide column">
                                                                         <g:if test="${person.isPublic}">
-                                                                            <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                            <i class="${Icons.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                                         </g:if>
                                                                         <g:else>
-                                                                            <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                            <i class="${Icons.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                         </g:else>
                                                                     </div>
                                                                     <div class="fourteen wide column">

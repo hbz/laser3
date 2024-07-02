@@ -78,7 +78,7 @@
                         </g:elseif>
                         <g:elseif test="${obj instanceof AbstractPropertyWithCalculatedLastUpdated}">
                             <g:if test="${obj.owner instanceof Person}">
-                                <i class="icon address book la-list-icon"></i>
+                                <i class="${Icons.ADDRESS_PUBLIC} la-list-icon"></i>
                                 ${obj.owner.first_name}&nbsp;${obj.owner.last_name}
                             </g:if>
                             <g:elseif test="${obj.owner instanceof Subscription}">

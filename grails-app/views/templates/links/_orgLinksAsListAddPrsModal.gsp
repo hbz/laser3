@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PersonRole" %>
+<%@ page import="de.laser.helper.Icons; de.laser.PersonRole" %>
 <ui:modal id="${cssId}" text="Neuen ${modalPrsLinkRole.getI10n("value")} hinzufügen" hideSubmitButton="true">
 
     <p>${message(code:'myinst.addressBook.visibleOnly')}</p>
@@ -18,7 +18,7 @@
                         <tr>
                             <td>
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
-                                    <i class="address card icon"></i>
+                                    <i class="${Icons.ADDRESS_PUBLIC}"></i>
                                 </span>
                                 ${p}
                             </td>
@@ -46,7 +46,7 @@
                         <tr>
                             <td>
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
-                                    <i class="address card outline icon"></i>
+                                    <i class="${Icons.ADDRESS_PRIVATE}"></i>
                                 </span>
                                 ${p}
                             </td>

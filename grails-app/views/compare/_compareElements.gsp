@@ -190,7 +190,7 @@
                 <td>
 
                     <strong>
-                        <i class="address card icon"></i>
+                        <i class="${Icons.ADDRESS_PUBLIC}"></i>
                         ${message(code: 'subscription.specificSubscriptionEditors')}:
                     </strong>
                 </td>
@@ -206,7 +206,7 @@
                                     <span class="la-popup-tooltip la-delay"
                                           data-content="${message(code: 'address.public')}"
                                           data-position="top right">
-                                        <i class="address card icon"></i>
+                                        <i class="${Icons.ADDRESS_PUBLIC}"></i>
                                     </span>
                                     ${resp}
                                     (<strong><i class="${Icons.PROVIDER} la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'provider.label')}"></i>:</strong>
@@ -221,7 +221,7 @@
                                     <span class="la-popup-tooltip la-delay"
                                           data-content="${message(code: 'address.private')}"
                                           data-position="top right">
-                                        <i class="address card outline icon"></i>
+                                        <i class="${Icons.ADDRESS_PRIVATE}"></i>
                                     </span>
                                     ${resp}
                                     (<strong><i class="${Icons.PROVIDER} la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'provider.label')}"></i>:</strong>
@@ -242,7 +242,7 @@
                                 <span class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'address.public')}"
                                       data-position="top right">
-                                    <i class="address card icon"></i>
+                                    <i class="${Icons.ADDRESS_PUBLIC}"></i>
                                 </span>
                                 ${resp}
                                 (<strong><i class="${Icons.VENDOR} la-list-icon la-popup-tooltip la-delay" data-content="${message(code:'vendor.label')}"></i>:</strong>
@@ -257,7 +257,7 @@
                                 <span class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'address.private')}"
                                       data-position="top right">
-                                    <i class="address card outline icon"></i>
+                                    <i class="${Icons.ADDRESS_PRIVATE}"></i>
                                 </span>
                                 ${resp}
                                 (<strong><i class="${Icons.VENDOR} la-list-icon la-popup-tooltip la-delay" data-content="${message(code:'vendor.label')}"></i>:</strong>

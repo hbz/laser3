@@ -510,54 +510,6 @@ class AjaxJsonController {
     }
 
     /**
-     * Retrieves provider {@link Org}s with their private contacts; the result may be filtered by name
-     * @return a {@link Map} containing entries for a DataTables table output
-     */
-    @Secured(['ROLE_USER'])
-    def getProvidersWithPrivateContacts() {
-        Map<String, Object> result = [:]
-        String fuzzyString = params.sSearch ? ('%' + params.sSearch.trim().toLowerCase() + '%') : '%'
-
-        Map<String, Object> query_params = [
-                name: fuzzyString,
-                status: RDStore.O_STATUS_DELETED
-        ]
-        String countQry = "select count(*) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status)"
-        String rowQry = "select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status) order by o.name asc"
-
-        List cq = Org.executeQuery(countQry,query_params)
-
-        List<Org> rq = Org.executeQuery(rowQry,
-                query_params,
-                [max:params.iDisplayLength?:1000,offset:params.iDisplayStart?:0])
-
-        result.aaData = []
-        result.sEcho = params.sEcho
-        result.iTotalRecords = cq[0]
-        result.iTotalDisplayRecords = cq[0]
-
-        Org currOrg = (Org) genericOIDService.resolveOID(params.oid)
-        List<Person> contacts = Person.findAllByContactTypeAndTenant(RDStore.PERSON_CONTACT_TYPE_PERSONAL, currOrg)
-
-        LinkedHashMap personRoles = [:]
-        PersonRole.findAll().each { PersonRole prs ->
-            personRoles.put(prs.org, prs.prs)
-        }
-        rq.each { Org it ->
-            int ctr = 0
-            LinkedHashMap row = [:]
-            String name = it["name"]
-            if (personRoles.get(it) && contacts.indexOf(personRoles.get(it)) > -1)
-                name += '<span data-tooltip="Persönlicher Kontakt vorhanden"><i class="address book icon"></i></span>'
-            row["${ctr++}"] = name
-            row["DT_RowId"] = "${it.class.name}:${it.id}"
-            result.aaData.add(row)
-        }
-
-        render result as JSON
-    }
-
-    /**
      * Retrieves the region list for German speaking countries
      * @return a {@link Set} of reference data entries
      */

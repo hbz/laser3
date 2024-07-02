@@ -66,7 +66,7 @@
                         <i class="pizza slice icon"></i>    ${message(code:'subscription.holdingSelection.label')}
                         <i class="${Icons.LICENSE}"></i>   ${message(code: 'license.label')}
                         <i class="${Icons.ORG}"></i>       ${message(code: 'subscription.organisations.label')} <br />
-                        <i class="address card icon"></i>   ${message(code: 'subscription.specificSubscriptionEditors')}
+                        <i class="${Icons.ADDRESS_PUBLIC}"></i>   ${message(code: 'subscription.specificSubscriptionEditors')}
                         <i class="barcode icon"></i>        ${message(code: 'default.identifiers.label')}
                         <i class="exchange icon"></i>       ${message(code: 'subscription.linkedObjects')}
                     </div>
@@ -151,7 +151,7 @@
                         <i class="pizza slice icon"></i>                    ${message(code:'subscription.holdingSelection.label')}
                         <i class="${Icons.LICENSE}"></i>               ${message(code: 'license.label')} <br />
                         <i class="${Icons.ORG}"></i>                   ${message(code: 'subscription.organisations.label')}
-                        <i class="address card icon"></i>                   ${message(code: 'subscription.specificSubscriptionEditors')} <br />
+                        <i class="${Icons.ADDRESS_PUBLIC}"></i>             ${message(code: 'subscription.specificSubscriptionEditors')} <br />
                         <i class="barcode icon"></i>                        ${message(code: 'default.identifiers.label')}
                     </div>
                 </div>

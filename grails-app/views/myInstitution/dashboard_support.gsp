@@ -63,7 +63,7 @@
                             </div>
                         </div>
                         <div class="item">
-                            <i class="address book icon la-list-icon"></i>
+                            <i class="${Icons.ADDRESS_PUBLIC} la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
                             </div>

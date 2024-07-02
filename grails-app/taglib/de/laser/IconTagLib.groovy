@@ -20,7 +20,7 @@ class IconTagLib {
         if (attrs.type) {
         switch (attrs.type.toLowerCase()) {
             case 'addressbook':
-                icon = 'bordered inverted teal address book la-object-extended'
+                icon = Icons.ADDRESS_PUBLIC + ' bordered inverted teal la-object-extended'
                 break
             case 'admin':
                 icon = 'la-object tools'
@@ -56,7 +56,7 @@ class IconTagLib {
                 icon = 'bordered la-object-journal'
                 break
             case 'gasco':
-                icon = 'bordered inverted grey layer group la-object-extended'
+                icon = Icons.GASCO +' bordered inverted grey la-object-extended'
                 break
             case 'marker':
                 icon = Icons.MARKER + ' bordered inverted purple la-object-extended'
@@ -212,7 +212,7 @@ class IconTagLib {
     def contactIcon = { attrs, body ->
 
         String msg = message(code: 'contact.icon.label.contactinfo')
-        String icon = 'icon address book la-list-icon'
+        String icon = Icons.ADDRESS_PUBLIC + ' la-list-icon'
 
         switch (attrs.type) {
             case [ 'E-Mail', 'Mail' ]: // 'Mail' -> Deprecated
@@ -323,7 +323,7 @@ class IconTagLib {
 
         out << '<span class="la-long-tooltip la-popup-tooltip la-delay"'
         out << ' data-position="bottom center" data-content="' + tt +'">'
-        out << '<i class="' + Icons.SUB_IS_MULTIYEAR + ' ' + color + '"></i>'
+        out << '<i class="' + Icons.SUBSCRIPTION_IS_MULTIYEAR + ' ' + color + '"></i>'
         out << '</span>'
     }
 
