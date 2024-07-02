@@ -91,7 +91,7 @@
                             </div>
                         </div>
                         <div class="item">
-                            <i class="question icon la-list-icon"></i>
+                            <i class="${Icons.HELP_TOOLTIP} la-list-icon"></i>
                             <div class="content">
                                 <g:link controller="profile" action="help">${message(code:'menu.user.help')}</g:link>
                             </div>

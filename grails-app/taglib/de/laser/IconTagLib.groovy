@@ -90,7 +90,7 @@ class IconTagLib {
                 break
         }
         }
-        out << '<i aria-hidden="true" class="icon ' + icon + '"></i> '
+        out << '<i aria-hidden="true" class="icon ' + icon + '"></i> ' // TODO erms-5784 doubles 'icon'
     }
 
     def propertyIcon = { attrs, body ->

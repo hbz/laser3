@@ -138,11 +138,11 @@
                                     <td>
                                         ${idNs.ns}
                                         <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataId.tooltip', args:[idNs.id])}">
-                                            <i class="info circle icon blue"></i>
+                                            <i class="${Icons.PROPERTY_USED}"></i>
                                         </span>
                                         <g:if test="${idNs.isHardData}">
                                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="check circle icon green"></i>
+                                                <i class="${Icons.PROPERTY_HARDDATA}"></i>
                                             </span>
                                         </g:if>
                                     </td>
@@ -206,11 +206,11 @@
                                     <td>
                                         ${idNs.ns}
                                         <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataId.tooltip', args:[idNs.id])}">
-                                            <i class="info circle icon blue"></i>
+                                            <i class="${Icons.PROPERTY_USED}"></i>
                                         </span>
                                         <g:if test="${idNs.isHardData}">
                                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="check circle icon green"></i>
+                                                <i class="${Icons.PROPERTY_HARDDATA}"></i>
                                             </span>
                                         </g:if>
                                     </td>

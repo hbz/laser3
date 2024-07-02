@@ -35,12 +35,12 @@
                             </g:else>
                             <g:if test="${propType.mandatory}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.mandatory.tooltip')}">
-                                    <i class="star icon yellow"></i>
+                                    <i class="${Icons.PROPERTY_MANDATORY} yellow"></i>
                                 </span>
                             </g:if>
                             <g:if test="${propType.multipleOccurrence}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                    <i class="redo icon orange"></i>
+                                    <i class="${Icons.PROPERTY_MULTIPLE}"></i>
                                 </span>
                             </g:if>
                         </g:link>
@@ -59,12 +59,12 @@
                         </g:else>
                         <g:if test="${propType.mandatory}">
                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.mandatory.tooltip')}">
-                                <i class="star icon yellow"></i>
+                                <i class="${Icons.PROPERTY_MANDATORY} yellow"></i>
                             </span>
                         </g:if>
                         <g:if test="${propType.multipleOccurrence}">
                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                <i class="redo icon orange"></i>
+                                <i class="${Icons.PROPERTY_MULTIPLE}"></i>
                             </span>
                         </g:if>
                     </g:else>

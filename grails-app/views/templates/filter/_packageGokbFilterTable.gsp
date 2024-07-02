@@ -396,7 +396,7 @@
                         <td class="center aligned">
                             <g:if test="${pkg && pkg.id in currentPackageIdSet}">
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.packages')}">
-                                    <i class="icon yellow star"></i>
+                                    <i class="${Icons.MY_OBJECT} yellow"></i>
                                 </span>
                             </g:if>
                         </td>

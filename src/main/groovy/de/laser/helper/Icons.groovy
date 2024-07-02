@@ -50,10 +50,22 @@ class Icons {
 
     public static String PRIVATE_PROPERTY           = 'shield alternate icon'
 
+    public static String PROPERTY_HARDDATA          = 'check circle icon green'
+
+    public static String PROPERTY_LOGIC             = 'cube icon red'
+
+    public static String PROPERTY_MANDATORY         = 'star icon'               // todo: duplicate: survey/renew? > Icons.MY_OBJECT
+
+    public static String PROPERTY_MULTIPLE          = 'redo icon orange'        // todo: duplicate: currentSubscriptionsTransfer
+
+    public static String PROPERTY_USED              = 'info circle icon blue'   // todo: duplicate: discountScale.note
+
     // please do not touch during refactoring ..
     // generic
 
     public static String HELP_TOOLTIP               = 'grey question circle icon'
+
+    public static String MY_OBJECT                  = 'star icon'           // todo: duplicate: survey/renew? > Icons.MANDATORY_PROPERTY
 
     // please do not touch during refactoring ..
     // cmds, functions
