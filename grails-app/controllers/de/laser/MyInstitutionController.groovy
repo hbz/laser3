@@ -1865,9 +1865,9 @@ class MyInstitutionController  {
             subQryParams.selVen = filterVen
         }
         Set<Long> subIds = Subscription.executeQuery("select sub.id from Subscription sub join sub.orgRelations oo "+pkgJoin+" where oo.org = :institution and "+subscriptionQueryFilter.join(" and "), subQryParams)
-        qryParams.subIds = subIds
         List<String> countQueryFilter = queryFilter.clone()
         Map<String, Object> countQueryParams = qryParams.clone()
+        countQueryParams.subIds = subIds
         prf.setBenchmark('before sub IDs')
 
         if (params.status) {
@@ -1883,7 +1883,7 @@ class MyInstitutionController  {
         String qryString = "from IssueEntitlement ie join ie.tipp tipp where ie.subscription.id in (:subIds) "
         //String qryString = "from TitleInstancePackagePlatform tipp where exists (select ie.id from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo join sub.packages sp join sp.pkg pkg where ie.tipp = tipp and oo.org = :institution "
 
-        String countQueryString = qryString
+        String countQueryString = " from IssueEntitlement ie where ie.subscription.id in (:subIds) "
         if(queryFilter) {
             qryString += ' and ' + queryFilter.join(' and ')
         }
@@ -1955,7 +1955,7 @@ class MyInstitutionController  {
 
         Map<String, Object> selectedFields = [:]
         Set<Long> allTitles = subCache.get("titleIDs") ?: []
-        if(qryParams.containsKey("subIds")) {
+        if(subIds) {
             if(params.containsKey('fileformat') && params.fileformat != 'kbart') {
                 Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
                 selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
