@@ -34,7 +34,7 @@ class Icons {
 
     public static String TASK                       = 'calendar check outline icon'
 
-    public static String VENDOR                     = 'shipping fast icon'  // todo: duplicate > subscription/license.isPublicForApi
+    public static String VENDOR                     = 'boxes icon'
 
     public static String WORKFLOW                   = 'tasks icon'
 
@@ -56,29 +56,31 @@ class Icons {
 
     public static String PRIVATE_PROPERTY           = 'shield alternate icon'
 
-    public static String PROPERTY_HARDDATA          = 'check circle icon green'
+    public static String PROPERTY_HARDDATA          = 'check circle icon green' // COLOR !!
 
-    public static String PROPERTY_LOGIC             = 'cube icon red'
+    public static String PROPERTY_LOGIC             = 'cube icon red'           // COLOR !!
 
     public static String PROPERTY_MANDATORY         = 'star icon'               // todo: duplicate: survey/renew? > Icons.MY_OBJECT
 
-    public static String PROPERTY_MULTIPLE          = 'redo icon orange'        // todo: duplicate: currentSubscriptionsTransfer
+    public static String PROPERTY_MULTIPLE          = 'redo icon orange'        // COLOR !!  todo: duplicate: currentSubscriptionsTransfer
 
-    public static String PROPERTY_USED              = 'info circle icon blue'   // todo: duplicate: discountScale.note
+    public static String PROPERTY_USED              = 'info circle icon blue'   // COLOR !! todo: duplicate: discountScale.note
 
     // please do not touch during refactoring ..
     // generic
 
     public static String DATE                       = 'calendar alternate outline icon'
 
-    public static String HELP_TOOLTIP               = 'grey question circle icon'
+    public static String HELP_TOOLTIP               = 'grey question circle icon'    // COLOR !!
 
-    public static String MY_OBJECT                  = 'star icon'           // todo: duplicate: survey/renew? > Icons.MANDATORY_PROPERTY
+    public static String MY_OBJECT                  = 'star icon'                   // todo: duplicate: survey/renew? > Icons.MANDATORY_PROPERTY
 
     // please do not touch during refactoring ..
     // cmds, functions
 
     public static String CMD_DELETE                 = 'trash alternate outline icon'
+
+    public static String CMD_DOWNLOAD               = 'download icon'
 
     public static String CMD_EDIT                   = 'write icon'
 

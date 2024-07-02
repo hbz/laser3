@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.helper.Icons
 import de.laser.utils.SwissKnife
 
 class DropdownTagLib {
@@ -16,7 +17,7 @@ class DropdownTagLib {
     def exportDropdown = { attrs, body ->
 
         out << '<div class="ui simple dropdown button">'
-        out <<     '<i class="download icon"></i>'
+        out <<     '<i class="' + Icons.CMD_DOWNLOAD + '"></i>'
         out <<     '<div class="menu">'
         out <<         body()
         out <<     '</div>'

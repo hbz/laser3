@@ -1,8 +1,9 @@
+<%@ page import="de.laser.helper.Icons" %>
 <br />
 
 <div style="text-align: right">
     <button id="details-export-button" class="ui icon button" data-href="#detailsExportModal" data-ui="modal">
-        <i class="ui icon download"></i>
+        <i class="${Icons.CMD_DOWNLOAD}"></i>
     </button>
 </div>
 

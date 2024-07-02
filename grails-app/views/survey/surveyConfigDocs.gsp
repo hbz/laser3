@@ -106,7 +106,7 @@
                             <g:if test="${docctx.isDocAFile()}">
 
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i
-                                        class="download icon"></i></g:link>
+                                        class="${Icons.CMD_DOWNLOAD}"></i></g:link>
                                 <g:if test="${editable && !docctx.sharedFrom}">
                                     <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-ui="modal"
                                             href="#modalEditDocument_${docctx.id}"

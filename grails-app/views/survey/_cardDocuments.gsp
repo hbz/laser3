@@ -59,7 +59,7 @@
                         </div>
 
                         <div class="right aligned seven wide column">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>
 
                             <g:if test="${!(ownobj instanceof SurveyConfig)}">
                                 <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton()}">
