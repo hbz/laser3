@@ -262,7 +262,7 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="item">
-                                                                            <i class="grey icon edit la-popup-tooltip la-delay"
+                                                                            <i class="grey ${Icons.CMD_EDIT} la-popup-tooltip la-delay"
                                                                                data-content="${message(code: 'issueEntitlement.myNotes')}"></i>
                                                                             <div class="content">
                                                                                 <div class="header"><g:message code="issueEntitlement.myNotes"/></div>

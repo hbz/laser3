@@ -45,7 +45,7 @@
             <g:if test="${editable}">
                 <button class="ui icon button blue la-modern-button" onclick="JSPC.app.IdContoller.editIdentifier(${id.id});"
                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                    <i aria-hidden="true" class="write icon"></i>
+                    <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
                 </button>
                 <g:link controller="ajax"
                         action="deleteIdentifier"

@@ -45,7 +45,7 @@
                 </td>
                 <td class="center aligned">
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon pencil"></i></button>
+                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="${Icons.CMD_EDIT}"></i></button>
                     </g:if>
                     <g:elseif test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
                         <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon search"></i></button>

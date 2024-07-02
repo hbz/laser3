@@ -101,7 +101,7 @@
                                         data-ui="modal"
                                         data-href="#modalEditDocument_${docctx.id}"
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                    <i class="pencil icon"></i>
+                                    <i class="${Icons.CMD_EDIT}"></i>
                                 </button>
                             </g:if>
                             <g:elseif test="${docctx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET}">
@@ -171,7 +171,7 @@
 %{--                                        data-ui="modal"--}%
 %{--                                        data-href="#modalEditDocument_${docctx.id}"--}%
 %{--                                        aria-label="${message(code: 'ariaLabel.change.universal')}">--}%
-%{--                                    <i class="pencil icon"></i></button>--}%
+%{--                                    <i class="${Icons.CMD_EDIT}"></i></button>--}%
 
 %{--                                <%-- START Second Button --%>--}%
 %{--                                <g:if test="${!docctx.isShared}">--}%
@@ -268,7 +268,7 @@
                                 <button type="button" class="ui icon blue button la-modern-button" data-ui="modal"
                                         data-href="#modalEditDocument_${docctx.id}"
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                <i class="pencil icon"></i></button>
+                                <i class="${Icons.CMD_EDIT}"></i></button>
                             </g:if>
                             --}%
                         </div>

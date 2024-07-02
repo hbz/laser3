@@ -496,7 +496,7 @@
                                                                 data-ui="modal"
                                                                 data-href="#modalEditDocument_${docctx.id}"
                                                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                                            <i class="pencil small icon"></i>
+                                                            <i class="${Icons.CMD_EDIT} small"></i>
                                                         </button>
                                                     </g:if>
 
@@ -698,7 +698,7 @@
                                                                 data-ui="modal"
                                                                 data-href="#modalEditDocument_${docctx.id}"
                                                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                                            <i class="pencil small icon"></i>
+                                                            <i class="${Icons.CMD_EDIT} small"></i>
                                                         </button>
                                                     </g:if>
 

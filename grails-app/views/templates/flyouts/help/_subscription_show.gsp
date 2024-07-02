@@ -23,7 +23,7 @@
         </tr>
         <tr>
             <td>
-                <i class="pencil green alternate icon" aria-hidden="true"></i>
+                <i class="${Icons.CMD_EDIT} green" aria-hidden="true"></i>
             </td>
             <td>
                 Aktuell: Inhalte editierbar
@@ -31,7 +31,7 @@
         </tr>
         <tr>
             <td>
-                <i class="pencil alternate slash icon" aria-hidden="true"></i>
+                <i class="${Icons.CMD_EDIT} slash" aria-hidden="true"></i>
             </td>
             <td>
                 Aktuell: Inhalte nicht editierbar
@@ -39,7 +39,7 @@
         </tr>
         <tr>
             <td>
-                <i class="pencil alternate blue icon" aria-hidden="true"></i>
+                <i class="${Icons.CMD_EDIT} blue" aria-hidden="true"></i>
             </td>
             <td>
                 Verknüpfung bearbeiten

@@ -112,7 +112,7 @@
                                             href="#modalEditDocument_${docctx.id}"
                                             data-content="${message(code: "template.documents.edit")}"
                                             aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                        <i class="pencil icon"></i></button>
+                                        <i class="${Icons.CMD_EDIT}"></i></button>
                                     <g:link controller="${controllerName}" action="deleteDocuments"
                                             class="ui icon negative button la-modern-button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"

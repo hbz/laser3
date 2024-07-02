@@ -80,6 +80,8 @@ class Icons {
 
     public static String CMD_DELETE                 = 'trash alternate outline icon'
 
+    public static String CMD_EDIT                   = 'write icon'
+
     public static String CMD_UNLINK                 = 'unlink icon'
 
     // please do not touch during refactoring ..

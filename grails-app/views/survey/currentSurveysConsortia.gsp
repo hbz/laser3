@@ -390,7 +390,7 @@
                             class="ui button blue icon la-modern-button"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.change.universal')}">
-                        <i class="pencil icon"></i>
+                        <i class="${Icons.CMD_EDIT}"></i>
                     </g:link>
 
                     <g:if test="${editable}">

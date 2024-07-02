@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.License; de.laser.Person; de.laser.storage.RDStore; de.laser.FormService" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Subscription; de.laser.License; de.laser.Person; de.laser.storage.RDStore; de.laser.FormService" %>
 <laser:serviceInjection/>
 
 <g:if test="${filteredSubscriptions}">
@@ -191,7 +191,7 @@
                                     class="ui icon button blue la-modern-button"
                                     data-position="left center"
                                     role="button">
-                                <i aria-hidden="true" class="write icon"></i></g:link>
+                                <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i></g:link>
                         </td>
                     </tr>
                 </g:each>

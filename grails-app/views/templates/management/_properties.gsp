@@ -288,7 +288,7 @@
                                 class="ui icon button blue la-modern-button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="write icon"></i>
+                            <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
                         </g:link>
                     </td>
                 </tr>
@@ -629,7 +629,7 @@
                                     class="ui icon button blue la-modern-button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="write icon"></i></g:link>
+                                <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i></g:link>
                         </td>
                     </tr>
                 </g:each>
