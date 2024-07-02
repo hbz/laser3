@@ -75,7 +75,7 @@
                                     <td>
                                         <g:if test="${rdv.isHardData}">
                                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="check circle icon green"></i>
+                                                <i class="${Icons.PROPERTY_HARDDATA} green"></i>
                                             </span>
                                         </g:if>
 

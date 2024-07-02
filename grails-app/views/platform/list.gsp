@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.Platform; de.laser.Package; de.laser.Org; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.helper.Icons; de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.Platform; de.laser.Package; de.laser.Org; de.laser.storage.RDStore" %>
 <laser:htmlStart message="platforms.all_platforms.label" serviceInjection="true" />
 
 	<ui:breadcrumbs>
@@ -88,7 +88,7 @@
 								<td class="center aligned">
 									<g:if test="${platformInstance && myPlatformIds.contains(platformInstance.id)}">
 										<span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.platforms')}">
-											<i class="icon yellow star"></i>
+											<i class="${Icons.MY_OBJECT} yellow"></i>
 										</span>
 									</g:if>
 								</td>

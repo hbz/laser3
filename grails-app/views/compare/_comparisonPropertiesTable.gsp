@@ -42,7 +42,7 @@
             <g:if test="${propKey.multipleOccurrence}">
                 <span data-position="top right" class="la-popup-tooltip la-delay"
                       data-content="${message(code: 'default.multipleOccurrence.tooltip')}">
-                    <i class="redo icon orange"></i>
+                    <i class="${Icons.PROPERTY_MULTIPLE} orange"></i>
                 </span>
             </g:if>
         </td>

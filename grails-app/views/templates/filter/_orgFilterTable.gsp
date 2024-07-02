@@ -1003,17 +1003,17 @@
                 <td class="center aligned">
                     <g:if test="${actionName == 'listProvider'}">
                         <g:if test="${currentProviderIdList && (org.id in currentProviderIdList)}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.providers')}"><i class="icon yellow star"></i></span>
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.providers')}"><i class="${Icons.MY_OBJECT} yellow"></i></span>
                         </g:if>
                     </g:if>
                     <g:if test="${actionName == 'listInstitution'}">
                         <g:if test="${currentConsortiaMemberIdList && (org.id in currentConsortiaMemberIdList)}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.insts')}"><i class="icon yellow star"></i></span>
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.insts')}"><i class="${Icons.MY_OBJECT} yellow"></i></span>
                         </g:if>
                     </g:if>
                     <g:if test="${actionName == 'listConsortia'}">
                         <g:if test="${currentConsortiaIdList && (org.id in currentConsortiaIdList)}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.consortia')}"><i class="icon yellow star"></i></span>
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.consortia')}"><i class="${Icons.MY_OBJECT} yellow"></i></span>
                         </g:if>
                     </g:if>
                 </td>

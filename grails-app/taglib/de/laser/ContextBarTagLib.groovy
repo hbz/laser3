@@ -134,7 +134,7 @@ class ContextBarTagLib {
 
         out << '<div class="item la-cb-info">'
         out <<     openSpan
-        out <<         '<i class="icon ' + (attrs.icon ? attrs.icon + ' ' : '') + (attrs.color ? attrs.color + ' ' : '') + '"></i>'
+        out <<         '<i class="icon ' + (attrs.icon ? attrs.icon + ' ' : '') + (attrs.color ? attrs.color + ' ' : '') + '"></i>' // TODO erms-5784 doubles 'icon'
         out <<     '</span>'
         out << '</div>'
     }

@@ -50,12 +50,12 @@
                                     <td>
                                         <g:if test="${pd.isHardData}">
                                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="check circle icon green"></i>
+                                                <i class="${Icons.PROPERTY_HARDDATA} green"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.multipleOccurrence}">
                                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                                <i class="redo icon orange"></i>
+                                                <i class="${Icons.PROPERTY_MULTIPLE} orange"></i>
                                             </span>
                                         </g:if>
 
@@ -66,7 +66,7 @@
                                         </g:if>
                                         <g:if test="${pd.isUsedForLogic}">
                                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
-                                                <i class="ui icon red cube"></i>
+                                                <i class="${Icons.PROPERTY_USEDFORLOGIC} red"></i>
                                             </span>
                                         </g:if>
                                     </td>
@@ -126,7 +126,7 @@
                                         <g:if test="${pd.mandatory}">
                                             <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="top left"
                                                     params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="ui icon yellow button la-modern-button la-popup-tooltip la-delay">
-                                                <i class="star icon"></i>
+                                                <i class="${Icons.PROPERTY_MANDATORY}"></i>
                                             </g:link>
                                         </g:if>
                                         <g:else>

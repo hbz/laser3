@@ -5,6 +5,7 @@ import de.laser.License
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.helper.Icons
 import de.laser.survey.SurveyResult
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractI10n
@@ -464,7 +465,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
         matches.each { it ->
             if (params.tenant.equals(it.getTenant()?.id?.toString())) {
-                result.add([id: "${it.id}", text: "${it.getI10n('name')}", icon: it.multipleOccurrence ? 'redo icon orange' : ''])
+                result.add([id: "${it.id}", text: "${it.getI10n('name')}", icon: it.multipleOccurrence ? Icons.PROPERTY_MULTIPLE + ' orange' : ''])
             }
         }
 
