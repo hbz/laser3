@@ -110,7 +110,7 @@
                                      data-position="right center"
                                      data-variation="tiny"
                                      data-content="${costItemSurvey.costDescription}">
-                                    <i class="question small circular inverted icon"></i>
+                                    <i class="${Icons.HELP_TOOLTIP}"></i>
                                 </div>
                             </g:if>
                         </td>
