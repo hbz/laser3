@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.Icons" %>
 
 <table class="ui celled la-js-responsive-table la-table table">
     <thead>
@@ -14,7 +15,7 @@
         <tr>
             <g:if test="${pr.org}">
                 <td>
-                    <g:if test="${! pr.prs.isPublic}"><i class="address book outline icon"></i> </g:if>
+                    <g:if test="${! pr.prs.isPublic}"><i class="${Icons.ADDRESS_PRIVATE}"></i> </g:if>
                     ${pr.prs}
                 </td>
                 <g:if test="${tmplShowFunction}">

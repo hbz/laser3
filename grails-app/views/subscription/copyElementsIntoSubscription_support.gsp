@@ -57,13 +57,13 @@
                         </g:link>
                     </div>
                     <div class="description">
-                        <i class="calendar alternate outline icon"></i>     ${message(code: 'subscription.periodOfValidity.label')} <br />
+                        <i class="${Icons.DATE}"></i>                       ${message(code: 'subscription.periodOfValidity.label')} <br />
                         <i class="ellipsis vertical icon"></i>              ${message(code:'subscription.status.label')} <br />
                         <i class="image outline icon"></i>                  ${message(code:'subscription.kind.label')} <br />
                         <i class="dolly icon"></i>                          ${message(code:'subscription.form.label')} <br />
                         <i class="box icon"></i>                            ${message(code:'subscription.resource.label')} <br />
                         <i class="${Icons.LICENSE}"></i>               ${message(code: 'license.label')} <br />
-                        <i class="address card icon"></i>                   ${message(code: 'subscription.specificSubscriptionEditors')} <br />
+                        <i class="${Icons.ADDRESS_PUBLIC}"></i>             ${message(code: 'subscription.specificSubscriptionEditors')} <br />
                         <i class="barcode icon"></i>                        ${message(code: 'default.identifiers.label')} <br />
                         <i class="exchange icon"></i>                       ${message(code: 'subscription.linkedObjects')}
                     </div>
@@ -122,13 +122,13 @@
                         ${message(code: 'copyElementsIntoObject.general_data.label')}
                     </div>
                     <div class="description">
-                        <i class="calendar alternate outline icon"></i>     ${message(code: 'subscription.periodOfValidity.label')} <br />
+                        <i class="${Icons.DATE}"></i>                       ${message(code: 'subscription.periodOfValidity.label')} <br />
                         <i class="ellipsis vertical icon"></i>              ${message(code:'subscription.status.label')}
                         <i class="image outline icon"></i>                  ${message(code:'subscription.kind.label')}
                         <i class="dolly icon"></i>                          ${message(code:'subscription.form.label')} <br />
                         <i class="box icon"></i>                            ${message(code:'subscription.resource.label')}
                         <i class="${Icons.LICENSE}"></i>               ${message(code: 'license.label')} <br />
-                        <i class="address card icon"></i>                   ${message(code: 'subscription.specificSubscriptionEditors')}
+                        <i class="${Icons.ADDRESS_PUBLIC}"></i>             ${message(code: 'subscription.specificSubscriptionEditors')}
                         <i class="barcode icon"></i>                        ${message(code: 'default.identifiers.label')} <br />
                         <i class="exchange icon"></i>                       ${message(code: 'subscription.linkedObjects')}
                     </div>
