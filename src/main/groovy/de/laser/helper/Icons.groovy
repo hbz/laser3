@@ -63,6 +63,8 @@ class Icons {
     // please do not touch during refactoring ..
     // generic
 
+    public static String DATE                       = 'calendar alternate outline icon'
+
     public static String HELP_TOOLTIP               = 'grey question circle icon'
 
     public static String MY_OBJECT                  = 'star icon'           // todo: duplicate: survey/renew? > Icons.MANDATORY_PROPERTY

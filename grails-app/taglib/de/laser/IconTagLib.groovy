@@ -132,19 +132,19 @@ class IconTagLib {
                 icon = 'pizza slice'
                 break
             case 'startDate':
-                icon = 'calendar alternate outline'
+                icon = Icons.DATE
                 break
             case 'endDate':
-                icon = 'calendar alternate outline'
+                icon = Icons.DATE
                 break
             case 'type':
                 icon = 'image outline'
                 break
             case 'manualCancellationDate':
-                icon = 'calendar alternate outline'
+                icon = Icons.DATE
                 break
             case 'referenceYear':
-                icon = 'calendar alternate outline'
+                icon = Icons.DATE
                 break
             case 'licenseUrl':
                 icon = 'cloud'
@@ -157,7 +157,7 @@ class IconTagLib {
                 break
         }
 
-        out << '<i aria-hidden="true" class="' + cssClass + ' icon ' + icon + '"></i> '
+        out << '<i aria-hidden="true" class="' + cssClass + ' icon ' + icon + '"></i> ' // TODO erms-5784 doubles 'icon'
 
         if(showToolTipp) {
             out << '</span>'

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IssueEntitlementCoverage" %>
+<%@ page import="de.laser.helper.Icons; de.laser.IssueEntitlementCoverage" %>
 <g:set var="overwriteEditable" value="${(overwriteEditable == null) ? editable : overwriteEditable}"/>
 
 
@@ -13,7 +13,7 @@
     <div class="la-onliner">
         <g:if test="${covStmt.startDate || objectTypeIsIE}">
             <span class="la-online-wrap">
-                <i class="grey fitted calendar alternate icon la-popup-tooltip la-delay"
+                <i class="grey fitted ${Icons.DATE} la-popup-tooltip la-delay"
                    data-content="${message(code: 'tipp.startDate.tooltip')}"></i>
                 <ui:xEditable owner="${covStmt}" type="date" field="startDate"
                               overwriteEditable="${overwriteEditable}"/>
@@ -50,7 +50,7 @@
 
         <g:if test="${covStmt.endDate || objectTypeIsIE}">
             <span class="la-online-wrap">
-                <i class="grey fitted calendar alternate icon la-popup-tooltip la-delay"
+                <i class="grey fitted ${Icons.DATE} la-popup-tooltip la-delay"
                    data-content="${message(code: 'tipp.endDate.tooltip')}"></i>
                 <ui:xEditable owner="${covStmt}" type="date" field="endDate"
                               overwriteEditable="${overwriteEditable}"/>

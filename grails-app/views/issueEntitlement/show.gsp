@@ -128,7 +128,7 @@
 
                 <div class="la-icon-list">
                     <div class="item">
-                        <i class="grey calendar icon la-popup-tooltip la-delay"
+                        <i class="grey ${Icons.DATE} la-popup-tooltip la-delay"
                            data-content="${message(code: 'subscription.details.access_start')}"></i>
                         <g:if test="${editable}">
                             <ui:xEditable owner="${issueEntitlementInstance}" type="date"
@@ -143,7 +143,7 @@
                     </div>
 
                     <div class="item">
-                        <i class="grey calendar icon la-popup-tooltip la-delay"
+                        <i class="grey ${Icons.DATE} la-popup-tooltip la-delay"
                            data-content="${message(code: 'subscription.details.access_end')}"></i>
                         <g:if test="${editable}">
                             <ui:xEditable owner="${issueEntitlementInstance}" type="date" field="accessEndDate"/>
