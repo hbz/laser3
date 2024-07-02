@@ -131,11 +131,11 @@
                 <td class="center aligned">
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
 %{--                        <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + clist.id + ':' + WfChecklist.KEY + ':' + clist.id]}" />--}%
-%{--                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon pencil"></i></button>--}%
+%{--                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="${Icons.CMD_EDIT}"></i></button>--}%
                     </g:if>
                     <g:elseif test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
 %{--                        <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + clist.id + ':' + WfChecklist.KEY + ':' + clist.id]}" />--}%
-%{--                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon pencil"></i></button>--}%
+%{--                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="${Icons.CMD_EDIT}"></i></button>--}%
                     </g:elseif>
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                         <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"

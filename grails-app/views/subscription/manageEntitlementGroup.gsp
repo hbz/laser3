@@ -55,7 +55,7 @@
                             params="[titleGroup: titleGroup.id]"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.change.universal')}">
-                        <i class="pencil icon"></i>
+                        <i class="${Icons.CMD_EDIT}"></i>
                     </g:link>
                     <g:if test="${editable}">
                         <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.issueEntitlementGroup = :titleGroup',[titleGroup:titleGroup])}"/>

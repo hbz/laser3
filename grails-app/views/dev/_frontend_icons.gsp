@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.Icons" %>
 <h2 class="ui dividing header">Icons<a class="anchor" id="icons"></a></h2>
 <h4 class="ui header">Zusätzliche Icons</h4>
 <div class="html ui top attached segment example">
@@ -5,7 +6,7 @@
     <div class="ui doubling five column grid">
         <div class="column"><i aria-hidden="true" class="hand pointer outline slash icon"></i>hand pointer outline slash</div>
 
-        <div class="column"><i aria-hidden="true" class="pencil alternate slash icon"></i>pencil alternate slash</div>
+        <div class="column"><i aria-hidden="true" class="${Icons.CMD_EDIT} slash"></i>write slash</div>
 
         <div class="column"><i aria-hidden="true" class="la-thumbtack slash icon"></i>la-thumbtack slash</div>
 

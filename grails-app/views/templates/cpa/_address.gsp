@@ -24,7 +24,7 @@
                        onclick="JSPC.app.editAddress(${address.id});"
                        role="button"
                        aria-label="${message(code: 'ariaLabel.change.universal')}">
-                        <i class="pencil icon"></i>
+                        <i class="${Icons.CMD_EDIT}"></i>
                     </a>
 
                     <g:set var="oid" value="${address.class.name}:${address.id}" />

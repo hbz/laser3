@@ -139,7 +139,7 @@
                             <div class="four wide column">
 %{--                                <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id}">--}%
 %{--                                    <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />--}%
-%{--                                    <button type="button" class="ui icon blue button la-modern-button" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>--}%
+%{--                                    <button type="button" class="ui icon blue button la-modern-button" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="${Icons.CMD_EDIT}"></i></button>--}%
 %{--                                </g:if>--}%
                             </div>
                         </div>

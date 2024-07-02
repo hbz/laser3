@@ -104,7 +104,7 @@
                                         data-ui="modal"
                                         data-href="#modalEditDocument_${docctx.id}"
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                    <i class="pencil icon"></i></button>
+                                    <i class="${Icons.CMD_EDIT}"></i></button>
 
                                 <g:link controller="survey" action="deleteDocuments"
                                         class="ui icon negative button la-modern-button js-open-confirm-modal"
