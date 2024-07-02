@@ -1,27 +1,30 @@
 <%@ page import="de.laser.helper.Icons; de.laser.helper.Params; de.laser.License; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.Person; de.laser.Subscription" %>
-
+<g:set var="start" value="${System.currentTimeMillis()}"/>
 <laser:htmlStart text="${message(code:'license.details.incoming.childs',args:[message(code:'consortium.subscriber')])}" serviceInjection="true" />
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
+${System.currentTimeMillis()-start} msecs
     <ui:controlButtons>
         <g:if test="${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')}">
             <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
         </g:if>
     </ui:controlButtons>
-
+${System.currentTimeMillis()-start} msecs
     <ui:h1HeaderWithIcon visibleProviders="${visibleProviders}">
         <ui:xEditable owner="${license}" field="reference" id="reference"/>
     </ui:h1HeaderWithIcon>
     <ui:totalNumber total="${validMemberLicenses.size() ?: 0}"/>
     <ui:anualRings object="${license}" controller="license" action="members" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
-
+${System.currentTimeMillis()-start} msecs
 <laser:render template="${customerTypeService.getNavTemplatePath()}" />
 
 <ui:filter>
     <g:form action="members" controller="license" params="${[id:params.id]}" method="get" class="ui form">
         <div class="three fields">
+            <%-- sense??? ask Melanie!
             <div class="field">
+                ${System.currentTimeMillis()-start} msecs
                 <label for="subscription">${message(code:'subscription')}</label>
                 <select id="subscription" name="subscription" multiple="" class="ui selection fluid dropdown">
                     <option value="">${message(code:'default.select.choose.label')}</option>
@@ -30,11 +33,14 @@
                     </g:each>
                 </select>
             </div>
+            --%>
             <div class="field">
+                ${System.currentTimeMillis()-start} msecs
                 <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
 
             <div class="field">
+                ${System.currentTimeMillis()-start} msecs
                 <label>${message(code: 'default.status.label')}</label>
                 <ui:select class="ui dropdown" name="status"
                               from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
@@ -97,7 +103,7 @@
         </tr>
     </thead>
     <tbody>
-
+    ${System.currentTimeMillis()-start} msecs
         <g:each in="${validMemberLicenses}" status="i" var="row">
             <g:set var="lic" value="${row.license}"/>
             <%
@@ -106,7 +112,7 @@
                 License navNextLicense = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
             %>
             <tr>
-                <td>${i + 1}</td>
+                <td>${i + 1} ${System.currentTimeMillis()-start} msecs</td>
                 <td>${lic.reference}</td>
                 <td class="center aligned">
                     <g:if test="${navPrevLicense}">
@@ -134,6 +140,7 @@
                         <g:link action="linkMemberLicensesToSubs" id="${lic.id}"><ui:totalNumber total="${row.subs}"/></g:link>
                     </g:else>
                 </td>
+                ${System.currentTimeMillis()-start} msecs
             </tr>
         </g:each>
 

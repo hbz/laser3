@@ -320,16 +320,44 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         }
         log.debug("${WfChecklist.executeUpdate('update WfChecklist wf set wf.vendor = :vendor, wf.org = null where wf.org = :agency', [vendor: v, agency: agency])} workflow checkpoints updated")
         //those property definitions should not exist actually ...
-        LicenseProperty.executeUpdate('delete from LicenseProperty lp where lp.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
-        OrgProperty.executeUpdate('delete from OrgProperty op where op.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
+        /*
         ProviderProperty.executeUpdate('delete from ProviderProperty pp where pp.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
         VendorProperty.executeUpdate('delete from VendorProperty vp where vp.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
         SubscriptionProperty.executeUpdate('delete from SubscriptionProperty sp where sp.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
+        LicenseProperty.executeUpdate('delete from LicenseProperty lp where lp.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
+        OrgProperty.executeUpdate('delete from OrgProperty op where op.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
         SurveyResult.executeUpdate('delete from SurveyResult sr where sr.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
+        */
         PropertyDefinition.executeUpdate('delete from PropertyDefinition pd where pd.tenant = :agency', [agency: agency])
         OrgProperty.findAllByOwner(agency).each { OrgProperty op ->
             PropertyDefinition type = PropertyDefinition.findByNameAndDescrAndTenant(op.type.name, PropertyDefinition.VEN_PROP, op.type.tenant)
-            if(!VendorProperty.findByOwnerAndTypeAndTenant(v, type, op.tenant)) {
+            String valueFilter = ''
+            Map<String, Object> propParams = [owner: v, type: type, tenant: op.tenant]
+            if(op.dateValue) {
+                propParams.value = op.dateValue
+                valueFilter = 'and vp.dateValue = :value'
+            }
+            if(op.decValue) {
+                propParams.value = op.decValue
+                valueFilter = 'and vp.decValue = :value'
+            }
+            if(op.intValue) {
+                propParams.value = op.intValue
+                valueFilter = 'and vp.intValue = :value'
+            }
+            if(op.refValue) {
+                propParams.value = op.refValue
+                valueFilter = 'and vp.refValue = :value'
+            }
+            if(op.stringValue) {
+                propParams.value = op.stringValue
+                valueFilter = 'and vp.stringValue = :value'
+            }
+            if(op.urlValue) {
+                propParams.value = op.urlValue
+                valueFilter = 'and vp.urlValue = :value'
+            }
+            if(!VendorProperty.executeQuery('select vp from VendorProperty vp where vp.owner = :owner and vp.type = :type and vp.tenant = :tenant '+valueFilter, propParams)) {
                 VendorProperty vp = new VendorProperty(owner: v, type: type)
                 if(op.dateValue)
                     vp.dateValue = op.dateValue

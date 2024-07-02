@@ -202,44 +202,46 @@ class VendorService {
             Set<OrgRole> agencyRelations = OrgRole.findAllByRoleType(RDStore.OR_AGENCY)
             Set<Long> toDelete = []
             agencyRelations.each { OrgRole ar ->
-                Vendor v = Vendor.findByGlobalUID(ar.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
-                if (!v) {
-                    v = Vendor.convertFromAgency(ar.org)
-                }
-                if (ar.sub && !VendorRole.findByVendorAndSubscription(v, ar.sub)) {
-                    VendorRole vr = new VendorRole(vendor: v, subscription: ar.sub, isShared: ar.isShared)
-                    if (vr.save()) {
-                        if (ar.isShared) {
-                            List<Subscription> newTargets = Subscription.findAllByInstanceOf(vr.subscription)
-                            newTargets.each{ Subscription sub ->
-                                vr.addShareForTarget_trait(sub)
-                            }
-                            //log.debug("${OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: ar])} shares deleted")
-                        }
-                        log.debug("processed: ${vr.vendor}:${vr.subscription} ex ${ar.org}:${ar.sub}")
+                if(!ar.org.getCustomerType()) {
+                    Vendor v = Vendor.findByGlobalUID(ar.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
+                    if (!v) {
+                        v = Vendor.convertFromAgency(ar.org)
                     }
-                    else log.error(vr.errors.getAllErrors().toListString())
-                }
-                else if(ar.lic && !VendorRole.findByVendorAndLicense(v, ar.lic)) {
-                    VendorRole vr = new VendorRole(vendor: v, license: ar.lic, isShared: ar.isShared)
-                    if (vr.save()) {
-                        if (ar.isShared) {
-                            List<License> newTargets = License.findAllByInstanceOf(vr.license)
-                            newTargets.each{ License lic ->
-                                vr.addShareForTarget_trait(lic)
+                    if (ar.sub && !VendorRole.findByVendorAndSubscription(v, ar.sub)) {
+                        VendorRole vr = new VendorRole(vendor: v, subscription: ar.sub, isShared: ar.isShared)
+                        if (vr.save()) {
+                            if (ar.isShared) {
+                                List<Subscription> newTargets = Subscription.findAllByInstanceOf(vr.subscription)
+                                newTargets.each{ Subscription sub ->
+                                    vr.addShareForTarget_trait(sub)
+                                }
+                                //log.debug("${OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: ar])} shares deleted")
                             }
-                            //log.debug("${OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: ar])} shares deleted")
+                            log.debug("processed: ${vr.vendor}:${vr.subscription} ex ${ar.org}:${ar.sub}")
                         }
-                        log.debug("processed: ${vr.vendor}:${vr.license} ex ${ar.org}:${ar.lic}")
+                        else log.error(vr.errors.getAllErrors().toListString())
                     }
-                    else log.error(vr.errors.getAllErrors().toListString())
-                }
-                else if (ar.pkg) {
-                    if(!PackageVendor.findByVendorAndPkg(v, ar.pkg)) {
-                        PackageVendor pv = new PackageVendor(vendor: v, pkg: ar.pkg)
-                        if (pv.save())
-                            log.debug("processed: ${pv.vendor}:${pv.pkg} ex ${ar.org}:${ar.pkg}")
-                        else log.error(pv.errors.getAllErrors().toListString())
+                    else if(ar.lic && !VendorRole.findByVendorAndLicense(v, ar.lic)) {
+                        VendorRole vr = new VendorRole(vendor: v, license: ar.lic, isShared: ar.isShared)
+                        if (vr.save()) {
+                            if (ar.isShared) {
+                                List<License> newTargets = License.findAllByInstanceOf(vr.license)
+                                newTargets.each{ License lic ->
+                                    vr.addShareForTarget_trait(lic)
+                                }
+                                //log.debug("${OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: ar])} shares deleted")
+                            }
+                            log.debug("processed: ${vr.vendor}:${vr.license} ex ${ar.org}:${ar.lic}")
+                        }
+                        else log.error(vr.errors.getAllErrors().toListString())
+                    }
+                    else if (ar.pkg) {
+                        if(!PackageVendor.findByVendorAndPkg(v, ar.pkg)) {
+                            PackageVendor pv = new PackageVendor(vendor: v, pkg: ar.pkg)
+                            if (pv.save())
+                                log.debug("processed: ${pv.vendor}:${pv.pkg} ex ${ar.org}:${ar.pkg}")
+                            else log.error(pv.errors.getAllErrors().toListString())
+                        }
                     }
                 }
                 ar.delete()

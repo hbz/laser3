@@ -475,7 +475,8 @@ class LicenseController {
             //}
             //}
         }
-
+        /*
+        if used, we should move it to AJAX ==> ControlledListService!
         if(validMemberLicenses) {
             String subQuery = "select l.destinationSubscription from Links l join l.destinationSubscription s where l.sourceLicense in (:licenses) and l.linkType = :linkType "
             if (params.status) {
@@ -484,6 +485,7 @@ class LicenseController {
                 result.subscriptionsForFilter = Subscription.executeQuery(subQuery, [linkType:RDStore.LINKTYPE_LICENSE, licenses:validMemberLicenses])
             }
         }
+        */
         result.validMemberLicenses = filteredMemberLicenses
         result
     }
@@ -506,7 +508,7 @@ class LicenseController {
 
     /**
      * this is very ugly and should be subject of refactor - - but unfortunately, the
-     * {@link SubscriptionsQueryService#myInstitutionCurrentSubscriptionsBaseQuery(java.lang.Object)}
+     * {@link SubscriptionsQueryService#myInstitutionCurrentSubscriptionsBaseQuery(java.util.Map)}
      * requires the {@link GrailsParameterMap} as parameter.
      * @return validOn and defaultSet-parameters of the filter
      */

@@ -1834,9 +1834,8 @@ class MyInstitutionController  {
         }*/
 
         if ((params.filter) && (params.filter.length() > 0)) {
-            //genfunc_filter_matcher needs rework because it causes memory leak
-            queryFilter << "( lower(tipp.name) like lower(:titlestr) or lower(tipp.firstAuthor) like lower(:titlestr) or lower(tipp.firstEditor) like lower(:titlestr) )"
-            qryParams.titlestr = "%${params.get('filter').toString()}%"
+            queryFilter << "ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where genfunc_filter_matcher(tipp.name, :titlestr) = true or genfunc_filter_matcher(tipp.firstAuthor, :titlestr) = true or genfunc_filter_matcher(tipp.firstEditor, :titlestr) = true )"
+            qryParams.titlestr = params.filter
         }
 
         if (filterSub) {
@@ -1865,10 +1864,11 @@ class MyInstitutionController  {
             subscriptionQueryFilter << "pkg in (select pv.pkg from PackageVendor pv where pv.vendor in (:selVen))"
             subQryParams.selVen = filterVen
         }
-        qryParams.subIds = Subscription.executeQuery("select sub.id from Subscription sub join sub.orgRelations oo "+pkgJoin+" where oo.org = :institution and "+subscriptionQueryFilter.join(" and "), subQryParams)
-        prf.setBenchmark('before sub IDs')
+        Set<Long> subIds = Subscription.executeQuery("select sub.id from Subscription sub join sub.orgRelations oo "+pkgJoin+" where oo.org = :institution and "+subscriptionQueryFilter.join(" and "), subQryParams)
+        qryParams.subIds = subIds
         List<String> countQueryFilter = queryFilter.clone()
         Map<String, Object> countQueryParams = qryParams.clone()
+        prf.setBenchmark('before sub IDs')
 
         if (params.status) {
             queryFilter << "ie.status in (:status)"
@@ -1951,7 +1951,7 @@ class MyInstitutionController  {
             }
         }
         qryString += orderByClause
-        //log.debug(qryString)
+        log.debug(qryString.replace(':subIds', subIds.join(',')))
 
         Map<String, Object> selectedFields = [:]
         Set<Long> allTitles = subCache.get("titleIDs") ?: []
