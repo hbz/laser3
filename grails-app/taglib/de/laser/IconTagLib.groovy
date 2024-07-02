@@ -120,7 +120,7 @@ class IconTagLib {
                 icon = 'box'
                 break
             case 'isPublicForApi':
-                icon = 'shipping fast'
+                icon = 'lock open'
                 break
             case 'hasPerpetualAccess':
                 icon = 'flag outline'
@@ -217,11 +217,11 @@ class IconTagLib {
         switch (attrs.type) {
             case [ 'E-Mail', 'Mail' ]: // 'Mail' -> Deprecated
                 msg = message(code: 'contact.icon.label.email')
-                icon = 'ui icon envelope outline la-list-icon  la-js-copyTriggerIcon'
+                icon = 'icon envelope outline la-list-icon  la-js-copyTriggerIcon'
                 break
             case 'Fax':
                 msg = message(code: 'contact.icon.label.fax')
-                icon = 'ui icon tty la-list-icon'
+                icon = 'icon tty la-list-icon'
                 break
             case 'Phone':
                 msg = message(code: 'contact.icon.label.phone')
@@ -272,13 +272,13 @@ class IconTagLib {
 
                 switch (doc.confidentiality) {
                     case RDStore.DOC_CONF_PUBLIC:
-                        markup = markup + '<i class="ui icon lock open olive" style="margin-right: 0px"></i> '
+                        markup = markup + '<i class="icon lock open olive" style="margin-right: 0px"></i> '
                         break;
                     case RDStore.DOC_CONF_INTERNAL:
-                        markup = markup + '<i class="ui icon lock yellow"  style="margin-right: 0px"></i> '
+                        markup = markup + '<i class="icon lock yellow"  style="margin-right: 0px"></i> '
                         break;
                     case RDStore.DOC_CONF_STRICTLY:
-                        markup = markup + '<i class="ui icon lock orange"  style="margin-right: 0px"></i> '
+                        markup = markup + '<i class="icon lock orange"  style="margin-right: 0px"></i> '
                         break;
                     default:
                         markup = markup + ''
@@ -301,13 +301,13 @@ class IconTagLib {
 
                 switch(docctx.shareConf) {
                     case RDStore.SHARE_CONF_UPLOADER_ORG:
-                        markup = '<span class="ui icon la-popup-tooltip la-delay" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_UPLOADER_ORG.getI10n('value') + '" style="margin-left:1em"> <i class="ui icon eye slash blue"></i></span>'
+                        markup = '<span class="ui icon la-popup-tooltip la-delay" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_UPLOADER_ORG.getI10n('value') + '" style="margin-left:1em"> <i class="icon eye slash blue"></i></span>'
                         break
                     case RDStore.SHARE_CONF_UPLOADER_AND_TARGET:
-                        markup = '<span class="ui icon la-popup-tooltip la-delay" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_UPLOADER_AND_TARGET.getI10n('value') + '" style="margin-left:1em"> <i class="ui icon eye slash red"></i></span>'
+                        markup = '<span class="ui icon la-popup-tooltip la-delay" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_UPLOADER_AND_TARGET.getI10n('value') + '" style="margin-left:1em"> <i class="icon eye slash red"></i></span>'
                         break
                     case RDStore.SHARE_CONF_ALL:
-                        markup = '<span class="ui icon la-popup-tooltip la-delay" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_ALL.getI10n('value') + '" style="margin-left:1em"> <i class="ui icon eye blue"></i></span>'
+                        markup = '<span class="ui icon la-popup-tooltip la-delay" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_ALL.getI10n('value') + '" style="margin-left:1em"> <i class="icon eye blue"></i></span>'
                         break
                 }
 

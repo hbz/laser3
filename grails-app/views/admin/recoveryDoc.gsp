@@ -41,10 +41,10 @@
                                     print "${dc.id} : "
 
                                     if (dc.isShared) {
-                                        print " <i class='ui icon share alternate square'></i> "
+                                        print " <i class='icon share alternate square'></i> "
                                     }
                                     if (dc.sharedFrom) {
-                                        print " <i class='ui icon share alternate'></i> "
+                                        print " <i class='icon share alternate'></i> "
                                     }
 
                                     if (dc.license) {
@@ -113,10 +113,10 @@
                                             print "${dc.id} : "
 
                                             if (dc.isShared) {
-                                                print " <i class='ui icon share alternate square'></i> "
+                                                print " <i class='icon share alternate square'></i> "
                                             }
                                             if (dc.sharedFrom) {
-                                                print " <i class='ui icon share alternate'></i> "
+                                                print " <i class='icon share alternate'></i> "
                                             }
 
                                             if (dc.license) {

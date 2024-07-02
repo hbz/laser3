@@ -6,7 +6,7 @@
     <div class="item js-copyTriggerParent">
         <span class="js-copyTrigger js-copyTopic la-popup-tooltip la-delay"
               data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
-            <i class="ui icon envelope outline la-list-icon la-js-copyTriggerIcon"></i>
+            <i class="icon envelope outline la-list-icon la-js-copyTriggerIcon"></i>
             mailto:example@example.de
         </span>
     </div>

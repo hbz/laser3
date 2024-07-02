@@ -562,7 +562,7 @@ making obsolete package/actions
                                                                                         overwriteEditable   : false
                                                                                 ]}" />
                                                                             <%--<div class="js-copyTriggerParent">
-                                                                                <i class="ui icon envelope outline la-list-icon js-copyTrigger"></i>
+                                                                                <i class="icon envelope outline la-list-icon js-copyTrigger"></i>
                                                                                 <span class="la-popup-tooltip la-delay" data-position="right center " data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
                                                                                     <a class="la-break-all js-copyTopic" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
                                                                                 </span>

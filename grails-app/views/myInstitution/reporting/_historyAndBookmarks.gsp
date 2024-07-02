@@ -16,7 +16,7 @@
                         <td>
                             <g:link controller="myInstitution" action="reporting" class="ui large icon button blue la-modern-button reporting-callLink"
                                     params="${[filter: meta.filter /*, token: fhRCache.token*/ ] + filterCache.map}">
-                                <i class="ui icon ${BaseConfig.getIcon(meta.filter)}" aria-hidden="true"></i>
+                                <i class="icon ${BaseConfig.getIcon(meta.filter)}" aria-hidden="true"></i>
                             </g:link>
                         </td>
                         <td>
@@ -66,7 +66,7 @@
                         <td>
                             <g:link controller="myInstitution" action="reporting" class="ui large icon button blue la-modern-button reporting-callLink"
                                 params="${[filter: fav.filter /*, token: fhRCache.token*/ ] + fav.getParsedFilterMap()}">
-                                <i class="ui icon ${BaseConfig.getIcon(fav.filter)}" aria-hidden="true"></i>
+                                <i class="icon ${BaseConfig.getIcon(fav.filter)}" aria-hidden="true"></i>
                             </g:link>
                         </td>
                         <td>
@@ -74,7 +74,7 @@
                                 <div class="header">
                                     <strong><ui:xEditable owner="${fav}" field="title" overwriteEditable="true" /></strong>
                                     <g:if test="${fav.id == lastAddedBookmarkId}">
-                                        <i id="last-added-bookmark" class="ui icon bookmark small teal"></i>
+                                        <i id="last-added-bookmark" class="icon bookmark small teal"></i>
                                     </g:if>
                                 </div>
                                 <div class="description">

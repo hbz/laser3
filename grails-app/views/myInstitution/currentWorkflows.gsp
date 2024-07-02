@@ -102,7 +102,7 @@
                 </td>
                 <td>
                     <div class="la-flexbox">
-                        <i class="ui icon ${clistInfo.targetIcon} la-list-icon"></i>
+                        <i class="icon ${clistInfo.targetIcon} la-list-icon"></i>
                         <g:link controller="${clistInfo.targetController}" action="show" params="${[id: clistInfo.target.id]}">
                             ${clistInfo.targetName}
                             <br/>

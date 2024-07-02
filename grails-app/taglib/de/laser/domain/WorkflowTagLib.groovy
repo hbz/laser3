@@ -43,8 +43,8 @@ class WorkflowTagLib {
                 '<i class="' + Icons.DATE + ' la-light-grey"></i> ' + message(code:'workflow.checkpoint.noDate')
         ))
         fields.add( (cpoint.done == true ?
-                '<i class="ui icon check square outline"></i> ' + message(code:'workflow.checkpoint.done') :
-                '<i class="ui icon square outline la-light-grey"></i> ' + message(code:'workflow.checkpoint.open')
+                '<i class="icon check square outline"></i> ' + message(code:'workflow.checkpoint.done') :
+                '<i class="icon square outline la-light-grey"></i> ' + message(code:'workflow.checkpoint.open')
         ))
 
         tooltip = tooltip + '<p>' + fields.join('<br/>') + '</p>'
@@ -55,7 +55,7 @@ class WorkflowTagLib {
 
         out << '<span class="la-popup-tooltip la-delay" data-position="top center" data-html="' + tooltip.encodeAsHTML() + '">'
         out <<   '<a href="' + g.createLink( controller:'ajaxHtml', action:'workflowModal', params:attrs.params ) + '" class="ui icon button wfModalLink">'
-        out <<     '<i class="ui icon ' + cssColor + ' ' + cssIcon + '" style="margin-left:0;"></i>'
+        out <<     '<i class="icon ' + cssColor + ' ' + cssIcon + '" style="margin-left:0;"></i>'
         out <<   '</a>'
         out << '</span>'
     }

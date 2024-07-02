@@ -341,6 +341,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
     String getPackageSize(){
 
-        return '(<span data-tooltip="Titel im Paket"><i class="ui icon book"></i></span>' + executeQuery('select count(*) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current',[ctx:this,current:RDStore.TIPP_STATUS_CURRENT])[0] + ')'
+        return '(<span data-tooltip="Titel im Paket"><i class="icon book"></i></span>' + executeQuery('select count(*) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current',[ctx:this,current:RDStore.TIPP_STATUS_CURRENT])[0] + ')'
     }
 }

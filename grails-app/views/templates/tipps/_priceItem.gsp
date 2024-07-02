@@ -16,7 +16,7 @@
             <g:if test="${editable}">
                 <span class="right floated">
                     <button class="ui compact icon button tiny removeObject" data-objType="priceItem" data-objId="${priceItem.id}" data-trigger="${genericOIDService.getOID(priceItem)}">
-                        <i class="ui icon minus" data-content="Preis entfernen"></i>
+                        <i class="icon minus" data-content="Preis entfernen"></i>
                     </button>
                 </span>
             </g:if>

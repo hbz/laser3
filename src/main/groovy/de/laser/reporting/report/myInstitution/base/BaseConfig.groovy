@@ -289,15 +289,15 @@ class BaseConfig {
                             [   id: 1,
                                 value_de: messageSource.getMessage(ck + 'legalInfo.1', null, localeDe),
                                 value_en: messageSource.getMessage(ck + 'legalInfo.1', null, localeEn),
-                            ],  // ui icon green check circle
+                            ],  // icon green check circle
                             [   id: 2,
                                 value_de: messageSource.getMessage(ck + 'legalInfo.2', null, localeDe),
                                 value_en: messageSource.getMessage(ck + 'legalInfo.2', null, localeEn),
-                            ],  // ui icon grey outline circle
+                            ],  // icon grey outline circle
                             [   id: 3,
                                 value_de: messageSource.getMessage(ck + 'legalInfo.3', null, localeDe),
                                 value_en: messageSource.getMessage(ck + 'legalInfo.3', null, localeEn),
-                            ]   // ui icon red question mark
+                            ]   // icon red question mark
                     ]]
         }
         else if (key == CI_GENERIC_ANNUAL) {
