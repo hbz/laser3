@@ -2,8 +2,7 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.cache.SessionCacheWrapper
-import de.laser.convenience.Marker
-import de.laser.interfaces.MarkerSupport
+import de.laser.helper.Icons
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.utils.AppUtils
@@ -371,10 +370,6 @@ class UiTagLib {
         }
     }
 
-    def markerSwitch = { attrs, body ->
-
-    }
-
     //<ui:filter simple="true|false" extended="true|false"> CONTENT </ui:filter>
 
     def filter = { attrs, body ->
@@ -417,7 +412,7 @@ class UiTagLib {
             if (! simpleFilter) {
                 out << '<button aria-expanded="' + (extended ? 'true':'false') + '" class="ui right floated button la-inline-labeled la-js-filterButton la-clearfix' + (extended ? '':' blue') + '">'
                 out << '    Filter'
-                out << '    <i aria-hidden="true" class="filter icon"></i>'
+                out << '    <i aria-hidden="true" class="' + Icons.LINK_FILTERED + ' icon"></i>'
                 out << '   <span class="ui circular label la-js-filter-total hidden">0</span>'
                 out << '</button>'
 

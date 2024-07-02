@@ -163,7 +163,7 @@
                                 controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: genericOIDService.getOID(address)]"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="trash alternate outline icon"></i>
+                            <i class="${Icons.CMD_DELETE} icon"></i>
                         </g:link>
                     </g:if>
                 </td>

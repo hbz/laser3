@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.Icons" %>
 <laser:serviceInjection/>
 
     <table class="ui celled sortable table la-table la-js-responsive-table">
@@ -71,7 +72,7 @@
                                     params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate outline icon"></i>
+                                <i class="${Icons.CMD_DELETE} icon"></i>
                             </g:link>
                         </g:if>
                         <g:else>

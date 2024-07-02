@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.properties.OrgProperty; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.storage.RDStore; de.laser.Org; de.laser.properties.PropertyDefinition;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.properties.OrgProperty; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.storage.RDStore; de.laser.Org; de.laser.properties.PropertyDefinition;" %>
 <laser:serviceInjection />
 <g:set var="wekb" value="${ElasticSearchHelper.getCurrentApiSource()}"/>
 
@@ -48,7 +48,7 @@
                             <a href="${wekb.baseUrl + '/resource/show/' + provider.gokbId}" target="_blank">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.chart.result.link.unchecked.label')}"
                                         data-position="top right">
-                                    <i class="icon external alternate grey"></i>
+                                    <i class="${Icons.LINK_EXTERNAL} icon grey"></i>
                                 </span>
                             </a>
                         </g:if>

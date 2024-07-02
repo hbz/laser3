@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.I10nTranslation" %>
+<%@ page import="de.laser.helper.Icons; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.I10nTranslation" %>
 
 <laser:htmlStart message="menu.institutions.private_props" serviceInjection="true"/>
 
@@ -152,7 +152,7 @@
                                                             class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                        <i class="trash alternate outline icon"></i>
+                                                        <i class="${Icons.CMD_DELETE} icon"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>

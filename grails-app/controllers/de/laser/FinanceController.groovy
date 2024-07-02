@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat
 class FinanceController  {
 
     DeletionService deletionService
+    DocstoreService docstoreService
     EscapeService escapeService
     ExportClickMeService exportClickMeService
     ExportService exportService
@@ -41,6 +42,7 @@ class FinanceController  {
     FinanceService financeService
     GenericOIDService genericOIDService
     PendingChangeService pendingChangeService
+    TaskService taskService
     UserService userService
     WorkflowService workflowService
 
@@ -116,7 +118,13 @@ class FinanceController  {
                     result.currentCostItemCounts = result.financialData.subscr.count
                 }
             }
-            result.workflowCount = workflowService.getWorkflowCount(result.subscription, result.contextOrg)
+            result.checklistCount = workflowService.getWorkflowCount(result.subscription, result.institution)
+            int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.subscription).size()
+            int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.subscription).size()
+            result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
+
+            result.notesCount       = docstoreService.getNotesCount(result.subscription, result.institution)
+            result.docsCount       = docstoreService.getDocsCount(result.subscription, result.institution)
 
             result.ciTitles = result.financialData.ciTitles
             result.budgetCodes = result.financialData.budgetCodes

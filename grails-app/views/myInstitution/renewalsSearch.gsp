@@ -169,7 +169,7 @@
                     <td><g:if test="${itm.getClass().getName() != Subscription.class.name}">
                         <i class="${Icons.PACKAGE} icon"></i>${itm.name}
                     </g:if><g:else>
-                        <i class="clipboard outline icon"></i>${itm.name}<hr />
+                        <i class="${Icons.SUBSCRIPTION} icon"></i>${itm.name}<hr />
                     </g:else>
                     </td>
                     <td><g:if test="${itm.getClass().getName() != Subscription.class.name}">

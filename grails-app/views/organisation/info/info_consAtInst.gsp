@@ -161,7 +161,7 @@
                                     <tr data-id="${subId}" data-referenceYear="${sub.referenceYear}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="icon clipboard la-list-icon"></i>
+                                                <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
 
                                                 <g:if test="${OrgRole.findBySubAndOrgAndRoleType(sub, orgInstance, RDStore.OR_SUBSCRIBER_CONS_HIDDEN)}">
@@ -261,7 +261,7 @@
                                     <tr data-id="${subId}" data-referenceYear="${sub.referenceYear}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="icon clipboard la-list-icon"></i>
+                                                <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                                             </div>
                                         </td>
@@ -337,7 +337,7 @@
                                 <tr data-id="${surveyInfo.id}">
                                     <td>
                                         <div class="la-flexbox la-minor-object">
-                                            <i class="icon pie chart la-list-icon"></i>
+                                            <i class="${Icons.SURVEY} icon la-list-icon"></i>
                                             <g:link controller="survey" action="show" id="${surveyInfo.id}" target="_blank">${surveyInfo.name}</g:link>
                                         </div>
                                     </td>
@@ -367,7 +367,7 @@
                                     <tr data-id="${surveyInfo.id}" data-ctype="survey-subsciption" class="hidden sub">
                                         <td style="padding-left:2rem;">
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="icon clipboard la-list-icon"></i>
+                                                <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                                             </div>
                                         </td>

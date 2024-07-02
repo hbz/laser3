@@ -26,6 +26,7 @@ class LicenseControllerService {
     LicenseService licenseService
     TaskService taskService
     WorkflowService workflowService
+    SubscriptionsQueryService subscriptionsQueryService
 
 
     //--------------------------------------------- workflows -------------------------------------------------
@@ -92,12 +93,6 @@ class LicenseControllerService {
         LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.license)
         result.navPrevLicense = links.prevLink
         result.navNextLicense = links.nextLink
-        // restrict visible for templates/links/orgLinksAsList - done by Andreas Gálffy
-        String i10value = LocaleUtils.getLocalizedAttributeName('value')
-        result.visibleProrivers = OrgRole.executeQuery(
-                "select pr from ProviderRole pr join pr.provider p where pr.license = :license order by p.sortname",
-                [license:result.license]
-        )
 
         result.showConsortiaFunctions = showConsortiaFunctions(result.license)
 
@@ -108,6 +103,14 @@ class LicenseControllerService {
         result.notesCount = docstoreService.getNotesCount(result.license, result.contextOrg)
         result.docsCount       = docstoreService.getDocsCount(result.license, result.contextOrg)
         result.checklistCount   = workflowService.getWorkflowCount(result.license, result.contextOrg)
+
+        GrailsParameterMap clone = params.clone() as GrailsParameterMap
+        if(!clone.license){
+            clone.license = result.license.id
+        }
+        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(clone)
+        result.subsCount   = result.license ? Subscription.executeQuery( "select count(*) " + tmpQ[0].split('order by')[0] , tmpQ[1] )[0] : 0
+
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 

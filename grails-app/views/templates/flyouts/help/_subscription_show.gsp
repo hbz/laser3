@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.Icons" %>
 <div class="ui flyout" id="help-content" style="padding:50px 0 10px 0;overflow:scroll">
 
     <h1 class="ui header">Erklärung der Icons</h1>
@@ -71,7 +72,7 @@
 
         <tr>
             <td>
-                <i class="unlink icon"></i>
+                <i class="${Icons.CMD_UNLINK} icon"></i>
             </td>
             <td>
                 Objekt wird entknüpft

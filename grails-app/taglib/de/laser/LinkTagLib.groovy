@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.helper.Icons
 import de.laser.remote.ApiSource
 
 class LinkTagLib {
@@ -9,21 +10,13 @@ class LinkTagLib {
     static namespace = 'ui'
 
     def linkWithIcon = { attrs, body ->
-
-        String icon = attrs.icon ?: 'external alternate'
+        String icon = attrs.icon ?: Icons.LINK_EXTERNAL
 
         out << '<span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + message(code: 'tooltip.callUrl') + '" style="bottom:-3px">&nbsp;'
         out << '<a href="' + attrs.href + '" target="_blank" aria-label="' + attrs.href + '">'
-        out << '<i class="icon ' + icon + '" aria-hidden="true"></i>'
+        out << '<i class="' + icon + ' icon" aria-hidden="true"></i>'
         out << '</a>'
         out << '</span>'
-    }
-
-    // <externalIconLink href="${target}" tooltip="icon tooltip" />
-    def externalIconLink = {attrs, body ->
-        out << '<a href="' + attrs.href + '" target="_blank" aria-label="' + attrs.href + '">'
-        out << '<i class="icon external alternate" aria-hidden="true"' + (attrs.tooltip ? ' title="' + attrs.tooltip + '"' : '') + '></i>'
-        out << '</a>'
     }
 
     // <wekbIconLink href="${target}" />

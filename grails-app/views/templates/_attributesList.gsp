@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.Icons" %>
 <laser:serviceInjection/>
 <g:if test="${attributes}">
     <div class="ui divided middle aligned selection list la-flex-list">
@@ -21,7 +22,7 @@
                                         controller="${controllerName}" action="${deleteAction}" params="[id: ownObj.id, field: field, removeObjectOID: genericOIDService.getOID(attribute)]"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
+                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                 </g:link>
                             </div>
                         </div>

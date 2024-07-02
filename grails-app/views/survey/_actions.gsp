@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org" %>
+<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org" %>
 <laser:serviceInjection/>
 
 
@@ -138,7 +138,7 @@
                             id="${surveyInfo.id}"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                        <i class="trash alternate outline icon"></i> ${message(code:'deletion.survey')}
+                        <i class="${Icons.CMD_DELETE} icon"></i> ${message(code:'deletion.survey')}
                     </g:link>
                 </g:if>
             </g:else>

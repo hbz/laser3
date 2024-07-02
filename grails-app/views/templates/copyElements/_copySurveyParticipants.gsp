@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.Person; de.laser.survey.SurveyConfig; de.laser.SubscriptionsQueryService; java.text.SimpleDateFormat; de.laser.storage.RDStore; de.laser.FormService" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Subscription; de.laser.Person; de.laser.survey.SurveyConfig; de.laser.SubscriptionsQueryService; java.text.SimpleDateFormat; de.laser.storage.RDStore; de.laser.FormService" %>
 <laser:serviceInjection/>
 
     <laser:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
@@ -61,12 +61,12 @@
                                                     <g:message code="surveyOrg.perennialTerm.available"/>
                                                     <br />
                                                     <g:link controller="subscription" action="show" class="ui icon button" id="${existSubforOrg[0].id}">
-                                                        <i class="icon clipboard la-list-icon"></i>
+                                                        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:link controller="subscription" action="show" class="ui icon button" id="${existSubforOrg[0].id}">
-                                                        <i class="icon clipboard la-list-icon"></i>
+                                                        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
                                                     </g:link>
                                                 </g:else>
                                             </g:if>
@@ -138,12 +138,12 @@
                                                     <g:message code="surveyOrg.perennialTerm.available"/>
                                                     <br />
                                                     <g:link controller="subscription" action="show" class="ui icon button" id="${existSubforOrg[0].id}">
-                                                        <i class="icon clipboard la-list-icon"></i>
+                                                        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:link controller="subscription" action="show" class="ui icon button" id="${existSubforOrg[0].id}">
-                                                        <i class="icon clipboard la-list-icon"></i>
+                                                        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
                                                     </g:link>
                                                 </g:else>
                                             </g:if>

@@ -1,4 +1,4 @@
-<%@page import="de.laser.storage.RDConstants; org.apache.commons.lang3.RandomStringUtils; de.laser.storage.RDStore; de.laser.*; de.laser.interfaces.CalculatedType" %>
+<%@page import="de.laser.helper.Icons; de.laser.storage.RDConstants; org.apache.commons.lang3.RandomStringUtils; de.laser.storage.RDStore; de.laser.*; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection/>
 <%
     boolean parentAtChild = false
@@ -206,7 +206,7 @@
                                             params='[instanceId:"${redirectId}", deleteId:"${docctx.id}", redirectAction:"${actionName}", redirectTab: "${params.tab}"]'
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate outline icon"></i>
+                                        <i class="${Icons.CMD_DELETE} icon"></i>
                                     </g:link>
                                 </g:if>
                             </g:if>

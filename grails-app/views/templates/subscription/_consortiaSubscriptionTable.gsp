@@ -38,14 +38,14 @@
             <th class="center aligned la-smaller-table-head"  rowspan="2" >
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.previous.label')}">
-                    <i class="arrow left icon"></i>
+                    <i class="${Icons.LINK_PREV} icon"></i>
                 </span>
             </th>
             <g:sortableColumn property="subT.name" params="${params}" title="${message(code:'default.subscription.label')}" class="la-smaller-table-head" />
             <th class="center aligned la-smaller-table-head" rowspan="2" >
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.next.label')}">
-                    <i class="arrow right icon"></i>
+                    <i class="${Icons.LINK_NEXT} icon"></i>
                 </span>
             </th>
             <g:if test="${'showPackages' in tableConfig}">
@@ -125,12 +125,12 @@
                 %>
                 <td class="center aligned">
                     <g:if test="${navPrevSubMember}">
-                        <g:link controller="subscription" action="show" id="${navPrevSubMember}"><i class="arrow left icon"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${navPrevSubMember}"><i class="${Icons.LINK_PREV} icon"></i></g:link>
                     </g:if>
                 </td>
                 <th scope="row" class="la-th-column">
                     <div class="la-flexbox la-main-object">
-                        <i class="icon clipboard outline la-list-icon"></i>
+                        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
                         <g:link controller="subscription" action="show" id="${subCons.id}">${subCons.name}</g:link>
                     </div>
                     <g:each in="${linkedLicenses.get(subCons)}" var="linkedLicense">
@@ -142,7 +142,7 @@
                 </th>
                 <td class="center aligned">
                     <g:if test="${navNextSubMember}">
-                        <g:link controller="subscription" action="show" id="${navNextSubMember}"><i class="arrow right icon"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${navNextSubMember}"><i class="${Icons.LINK_NEXT} icon"></i></g:link>
                     </g:if>
                 </td>
                 <g:if test="${'showPackages' in tableConfig}">

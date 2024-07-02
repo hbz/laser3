@@ -156,7 +156,7 @@
                                                                         controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]"
                                                                         role="button"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="trash alternate outline icon"></i>
+                                                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                                                 </g:link>
                                                             </div>
                                                         </g:if>
@@ -171,7 +171,7 @@
                                                                         data-confirm-term-how="delete"
                                                                         role="button"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="trash alternate outline icon"></i>
+                                                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                                                 </g:link>
                                                             </div>
                                                         </g:else>
@@ -216,7 +216,7 @@
                                                                         controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]"
                                                                         role="button"
                                                                         aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                                    <i class="unlink icon"></i>
+                                                                    <i class="${Icons.CMD_UNLINK} icon"></i>
                                                                 </g:link>
                                                             </div>
                                                         </g:if>
@@ -231,7 +231,7 @@
                                                                         data-confirm-term-how="delete"
                                                                         role="button"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="trash alternate outline icon"></i>
+                                                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                                                 </g:link>
                                                             </div>
                                                         </g:else>
@@ -262,7 +262,7 @@
                                                 </g:if>
                                                 <g:if test="${link.sub}">
                                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'default.subscription.label')}" data-position="top right" data-variation="tiny">
-                                                        <i class="ui icon clipboard outline la-list-icon"></i>
+                                                        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
                                                     </span>
                                                 </g:if>
                                                 <g:if test="${link.lic}">
@@ -304,7 +304,7 @@
                                                             <g:link class="ui negative button la-modern-button" controller="person" action="deletePersonRole" id="${personInstance.id}" params="[oid: oid]"
                                                                     role="button"
                                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                <i class="trash alternate outline icon"></i>
+                                                                <i class="${Icons.CMD_DELETE} icon"></i>
                                                             </g:link>
                                                         </div>
                                                     </g:if>

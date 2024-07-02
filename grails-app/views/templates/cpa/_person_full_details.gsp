@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PersonRole; de.laser.storage.RDStore; de.laser.Person; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.helper.Icons; de.laser.PersonRole; de.laser.storage.RDStore; de.laser.Person; de.laser.storage.RDConstants" %>
 
 <g:if test="${person && personContext}">
     <div class="ui divided middle aligned ${noSelection ? '' : 'selection'} list la-flex-list la-list-border-around">
@@ -126,7 +126,7 @@
                                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                        <i class="unlink icon"></i>
+                                        <i class="${Icons.CMD_UNLINK} icon"></i>
                                     </g:link>
                                 </g:if>
                                 <g:else>
@@ -138,7 +138,7 @@
                                             data-confirm-term-how="delete"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate outline icon"></i>
+                                        <i class="${Icons.CMD_DELETE} icon"></i>
                                     </g:link>
                                 </g:else>
                             </g:if>
@@ -168,7 +168,7 @@
                                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                        <i class="unlink icon"></i>
+                                        <i class="${Icons.CMD_UNLINK} icon"></i>
                                     </g:link>
                                 </g:if>
                                 <g:else>
@@ -180,7 +180,7 @@
                                             data-confirm-term-how="delete"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate outline icon"></i>
+                                        <i class="${Icons.CMD_DELETE} icon"></i>
                                     </g:link>
                                 </g:else>
                             </g:if>
@@ -209,7 +209,7 @@
                                         controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                    <i class="unlink icon"></i>
+                                    <i class="${Icons.CMD_UNLINK} icon"></i>
                                 </g:link>
                             </g:if>
                         </div>
@@ -229,7 +229,7 @@
                     controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
                     role="button"
                     aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                <i class="unlink icon"></i>
+                <i class="${Icons.CMD_UNLINK} icon"></i>
             </g:link>
         </td>
     </g:if>

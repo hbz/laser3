@@ -132,7 +132,7 @@
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="ui icon pie chart" aria-hidden="true"></i>
+                    <i class="${Icons.SURVEY} icon" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -210,7 +210,7 @@
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="ui icon pie chart" aria-hidden="true"></i>
+                    <i class="${Icons.SURVEY} icon" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -288,7 +288,7 @@
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="ui icon pie chart" aria-hidden="true"></i>
+                    <i class="${Icons.SURVEY} icon" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -366,7 +366,7 @@
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="ui icon pie chart" aria-hidden="true"></i>
+                    <i class="${Icons.SURVEY} icon" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -444,7 +444,7 @@
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="ui icon pie chart" aria-hidden="true"></i>
+                    <i class="${Icons.SURVEY} icon" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -630,7 +630,7 @@
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="ui icon pie chart" aria-hidden="true"></i>
+                    <i class="${Icons.SURVEY} icon" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -708,7 +708,7 @@
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="ui icon pie chart" aria-hidden="true"></i>
+                    <i class="${Icons.SURVEY} icon" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -786,7 +786,7 @@
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="ui icon pie chart" aria-hidden="true"></i>
+                    <i class="${Icons.SURVEY} icon" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -864,7 +864,7 @@
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="ui icon pie chart" aria-hidden="true"></i>
+                    <i class="${Icons.SURVEY} icon" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -942,7 +942,7 @@
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="ui icon pie chart" aria-hidden="true"></i>
+                    <i class="${Icons.SURVEY} icon" aria-hidden="true"></i>
                 </span>
             </a>
 

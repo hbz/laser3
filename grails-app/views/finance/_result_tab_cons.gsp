@@ -1,5 +1,5 @@
 <!-- _result_tab_cons.gsp -->
-<%@ page import="de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.finance.CostItemElementConfiguration;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.FinanceController;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.finance.CostItemElementConfiguration;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.FinanceController;de.laser.finance.CostItem" %>
 
 <laser:serviceInjection />
 
@@ -272,7 +272,7 @@
                                         data-confirm-term-how="delete"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
+                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                 </g:link>
                             </td>
                         </g:if>

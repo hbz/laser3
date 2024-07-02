@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.AuditConfig;de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.RefdataCategory; de.laser.AuditConfig;de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
 <laser:htmlStart message="surveyInfo.renewal" />
 
 <ui:breadcrumbs>
@@ -29,7 +29,7 @@
 <uiSurvey:status object="${surveyInfo}"/>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+    <ui:linkWithIcon icon="${Icons.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <ui:messages data="${flash}"/>

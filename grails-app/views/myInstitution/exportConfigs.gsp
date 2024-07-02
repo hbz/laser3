@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.Icons" %>
 <laser:htmlStart message="menu.institutions.clickMeConfig" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -77,7 +78,7 @@
                                         params="${[cmd: 'delete', id: clickMeConfig.id, tab: params.tab]}" class="ui icon negative button  la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
+                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                 </g:link>
                             </td>
                         </g:if>

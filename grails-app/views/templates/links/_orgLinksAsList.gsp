@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.helper.Icons; de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <laser:serviceInjection />
 <table class="ui compact table">
     <g:each in="${roleLinks.sort{it.roleType.id}}" var="role">
@@ -220,7 +220,7 @@
                                                             <g:link class="ui negative  button la-modern-button la-selectable-button js-open-confirm-modal" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
                                                                     data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
                                                                     data-confirm-how = "unlink">
-                                                                <i class="unlink icon"></i>
+                                                                <i class="${Icons.CMD_UNLINK} icon"></i>
                                                             </g:link>
                                                         </div>
                                                     </div>
@@ -374,7 +374,7 @@
                                                             <g:link class="ui negative button la-modern-button la-selectable-button js-open-confirm-modal" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
                                                                     data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
                                                                     data-confirm-how = "unlink">
-                                                                <i class="unlink icon"></i>
+                                                                <i class="${Icons.CMD_UNLINK} icon"></i>
                                                             </g:link>
                                                         </div>
                                                     </div>

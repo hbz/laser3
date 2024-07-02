@@ -3942,7 +3942,7 @@ class ExportClickMeService {
         }
 
         if (renewalResult.orgsContinuetoSubscription) {
-            sheetData = _exportSurveyPackagesAndSurveyVendors(renewalResult.surveyConfig, renewalResult.surveyConfigrenewalResult.orgsContinuetoSubscription.participant, sheetData, selectedExportFields, locale, " - 5", format)
+            sheetData = _exportSurveyPackagesAndSurveyVendors(renewalResult.surveyConfig, renewalResult.orgsContinuetoSubscription.participant, sheetData, selectedExportFields, locale, " - 5", format)
         }
 
         if (renewalResult.orgsWithMultiYearTermSub) {

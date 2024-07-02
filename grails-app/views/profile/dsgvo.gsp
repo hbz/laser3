@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.Icons" %>
 <laser:htmlStart message="privacyNotice" />
 
 <ui:breadcrumbs>
@@ -12,7 +13,7 @@
 <ui:greySegment>
 
 <a href="https://www.hbz-nrw.de/datenschutz" class="ui button" target="_blank" onclick="$('#modalDsgvo').modal('hide')">
-    <i class="external alternate icon"></i> ${message(code:'dse')}
+    <i class="${Icons.LINK_EXTERNAL} icon"></i> ${message(code:'dse')}
 </a>
 
 <br />

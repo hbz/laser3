@@ -1,5 +1,5 @@
 <!-- A: templates/properties/_group -->
-<%@ page import="de.laser.Subscription; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.AuditConfig; de.laser.FormService" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Subscription; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection/>
 <g:if test="${newProp}">
     <ui:errors bean="${newProp}" />
@@ -233,7 +233,7 @@
                                                   data-update="${custom_props_div}"
                                                   role="button"
                                                   ariaLabel="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
+                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                 </ui:remoteLink>
                             </g:if>
                             <g:else>

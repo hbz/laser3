@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.RefdataValue; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.helper.Icons; de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.RefdataValue; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <laser:htmlStart message="menu.admin.manageRefdatas" />
 
@@ -122,7 +122,7 @@
                                                     params="${[cmd: 'deleteRefdataValue', rdv: RefdataValue.class.name + ':' + rdv.id]}" class="ui icon negative button la-modern-button"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="trash alternate outline icon"></i>
+                                                <i class="${Icons.CMD_DELETE} icon"></i>
                                             </g:link>
                                         </g:if>
                                     </td>

@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.Icons" %>
 <g:if test="${address}">
 	<div class="ui item address-details">
         <div style="display: flex" class="js-copyTriggerParent">
@@ -33,7 +34,7 @@
                             controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: oid]"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                        <i class="trash alternate outline icon"></i>
+                        <i class="${Icons.CMD_DELETE} icon"></i>
                     </g:link>
                 </div>
             </g:if>

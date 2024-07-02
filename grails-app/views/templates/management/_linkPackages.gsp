@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Package; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.FormService; de.laser.SubscriptionPackage; de.laser.Subscription" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Package; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.FormService; de.laser.SubscriptionPackage; de.laser.Subscription" %>
 <laser:serviceInjection/>
 
 <g:if test="${filteredSubscriptions}">
@@ -14,7 +14,7 @@
                             <div class="right floated content">
                                 <button class="ui negative button la-modern-button la-selectable-button unlinkPackages" ${!editable || isUnlinkingRunning ? 'disabled="disabled"' : ''}
                                         data-package="${subPkg.pkg.id}" data-subscription="${subPkg.subscription.id}">
-                                    <i class="unlink icon"></i>
+                                    <i class="${Icons.CMD_UNLINK} icon"></i>
                                 </button>
                             </div>
                         </div>

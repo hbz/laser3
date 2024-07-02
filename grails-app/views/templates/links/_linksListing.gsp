@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.Subscription; de.laser.License; de.laser.Links" %>
+<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore; de.laser.Subscription; de.laser.License; de.laser.Links" %>
 <laser:serviceInjection/>
 
 
@@ -125,7 +125,7 @@
                                                                 params="${[license: link.sourceLicense.id, id: subscription.id]}"
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                            <i class="unlink icon"></i>
+                                                            <i class="${Icons.CMD_UNLINK} icon"></i>
                                                         </g:link>
                                                     </span>
                                                     <g:if test="${atConsortialParent}">
@@ -155,7 +155,7 @@
                                                             params="${[oid: genericOIDService.getOID(link)]}"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                        <i class="unlink icon"></i>
+                                                        <i class="${Icons.CMD_UNLINK} icon"></i>
                                                     </g:link>
                                                 </span>
                                             </g:else>

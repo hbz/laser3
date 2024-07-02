@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.License; de.laser.RefdataValue; de.laser.interfaces.CalculatedType; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.helper.Icons; de.laser.helper.Params; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.License; de.laser.RefdataValue; de.laser.interfaces.CalculatedType; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart text="${message(code:'license.details.incoming.childs',args:[message(code:'consortium.subscriber')])}" serviceInjection="true"/>
 
@@ -13,7 +13,7 @@
     <ui:h1HeaderWithIcon visibleProviders="${visibleProviders}">
         <ui:xEditable owner="${license}" field="reference" id="reference"/>
     </ui:h1HeaderWithIcon>
-    <ui:totalNumber total="${subscriptions.size() ?: 0}"/>
+
     <ui:anualRings object="${license}" controller="license" action="linkedSubs" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
 <laser:render template="${customerTypeService.getNavTemplatePath()}" />
@@ -102,6 +102,10 @@
         </g:form>
     </ui:filter>
 
+<h3 class="ui left floated aligned icon header la-clear-before">${message(code: 'subscription.plural')}
+<ui:totalNumber total="${subscriptions.size() ?: 0}"/>
+</h3>
+
 <table class="ui celled la-js-responsive-table la-js-responsive-table la-table table">
     <thead>
         <tr>
@@ -115,7 +119,7 @@
             <th>
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.previous.label')}">
-                    <i class="arrow left icon"></i>
+                    <i class="${Icons.LINK_PREV} icon"></i>
                 </span>
             </th>
             <th>${message(code:'default.startDate.label.shy')}</th>
@@ -123,7 +127,7 @@
             <th>
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.next.label')}">
-                    <i class="arrow right icon"></i>
+                    <i class="${Icons.LINK_NEXT} icon"></i>
                 </span>
             </th>
             <th>${message(code:'default.status.label')}</th>
@@ -195,14 +199,14 @@
                 </td>
                 <td class="center aligned">
                     <g:if test="${navPrevSubscription}">
-                        <g:link controller="subscription" action="show" id="${navPrevSubscription.id}"><i class="arrow left icon"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${navPrevSubscription.id}"><i class="${Icons.LINK_PREV} icon"></i></g:link>
                     </g:if>
                 </td>
                 <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                 <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
                 <td class="center aligned">
                     <g:if test="${navNextSubscription}">
-                        <g:link controller="subscription" action="show" id="${navNextSubscription.id}"><i class="arrow right icon"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${navNextSubscription.id}"><i class="${Icons.LINK_NEXT} icon"></i></g:link>
                     </g:if>
                 </td>
                 <td>

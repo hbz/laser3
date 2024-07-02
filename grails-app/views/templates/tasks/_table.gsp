@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.helper.Icons; de.laser.storage.RDConstants" %>
 <laser:serviceInjection />
 
 <g:set var="institution" value="${contextService.getOrg()}"/>
@@ -89,7 +89,7 @@
                                     action="deleteTask" controller="ajax" params="[deleteId:taskInstance.id]"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.task')}">
-                                <i class="trash alternate outline icon"></i>
+                                <i class="${Icons.CMD_DELETE} icon"></i>
                             </g:link>
                         </g:if>
                     </td>

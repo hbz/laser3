@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.survey.SurveyOrg; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.RefdataValue" %>
+<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.survey.SurveyOrg; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.RefdataValue" %>
 
 <div class="ui stackable grid">
     <div class="eleven wide column">
@@ -52,14 +52,14 @@
                         <g:if test="${editable}">
                             <span class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'default.button.delete.label')}">
-                                <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
+                                <g:link class="ui negative icon button la-modern-button la-selectable-button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.generic", args: [message(code: 'surveyconfig.url.label', args: [i + 1])])}"
                                         data-confirm-term-how="delete"
                                         controller="survey" action="addSurveyUrl"
                                         params="${[deleteSurveyUrl: surveyUrl.id, surveyConfigID: surveyConfig.id, id: surveyInfo.id]}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
+                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                 </g:link>
                             </span>
                         </g:if>

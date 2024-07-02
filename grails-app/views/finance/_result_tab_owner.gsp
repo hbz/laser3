@@ -1,5 +1,5 @@
 <!-- _result_tab_owner.gsp -->
-<%@page import="de.laser.storage.RDStore;de.laser.finance.CostItem"%>
+<%@page import="de.laser.helper.Icons; de.laser.storage.RDStore;de.laser.finance.CostItem"%>
 <laser:serviceInjection />
 <%
     int colspan = 2
@@ -181,7 +181,7 @@
                                         data-confirm-term-how="delete"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate outline icon"></i>
+                                <i class="${Icons.CMD_DELETE} icon"></i>
                             </g:link>
                         </g:if>
                     </td>

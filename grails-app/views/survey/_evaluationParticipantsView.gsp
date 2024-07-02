@@ -537,7 +537,7 @@
                                                                 params='[instanceId: "${subParticipant.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="trash alternate outline small icon"></i>
+                                                            <i class="${Icons.CMD_DELETE} small icon"></i>
                                                         </g:link>
                                                     </g:if>
                                                 </g:else>%{-- (editable || editable2) --}%
@@ -1120,7 +1120,7 @@
                                                                 params='[instanceId: "${subParticipant.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="trash alternate outline small icon"></i>
+                                                            <i class="${Icons.CMD_DELETE} small icon"></i>
                                                         </g:link>
                                                     </g:if>
                                                 </g:else>%{-- (editable || editable2) --}%

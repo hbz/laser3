@@ -1,4 +1,4 @@
-<%@ page import="de.laser.DocContext; de.laser.Doc; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.helper.Icons; de.laser.DocContext; de.laser.Doc; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <%
@@ -95,7 +95,7 @@
                                         params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
+                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                 </g:link>
                             </g:if>
                             <g:else>

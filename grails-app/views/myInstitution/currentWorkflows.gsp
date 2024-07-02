@@ -1,4 +1,4 @@
-<%@ page import="de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.License; de.laser.Subscription; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.*; de.laser.RefdataCategory; de.laser.WorkflowService" %>
+<%@ page import="de.laser.helper.Icons; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.License; de.laser.Subscription; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.*; de.laser.RefdataCategory; de.laser.WorkflowService" %>
 
 <laser:htmlStart message="menu.my.workflows" serviceInjection="true"/>
 
@@ -144,7 +144,7 @@
                                 controller="myInstitution" action="currentWorkflows" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}"]}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="trash alternate outline icon"></i>
+                            <i class="${Icons.CMD_DELETE} icon"></i>
                         </g:link>
                     </g:if>
                 </td>
