@@ -389,7 +389,7 @@
                             <g:link controller="survey" action="copySurvey" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig.id, q: surveyConfig?.subscription?.providers ? surveyConfig.subscription.providers[0].name : '']"
                                     class="ui icon blue button la-modern-button">
-                                <i class="icon copy"></i>
+                                <i class="${Icons.CMD_COPY}"></i>
                                 </div>
                             </g:link>
                         </g:if>

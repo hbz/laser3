@@ -60,8 +60,8 @@
 <i class="la-object-extended bordered la-database icon"></i>
 <i class="la-object-extended bordered la-ebook icon"></i>
 <i class="la-object-extended bordered la-book icon"></i>
-<i aria-hidden="true" class="la-object-extended bordered icon inverted brown icon tasks"></i>
-<i aria-hidden="true" class="la-object-extended bordered icon inverted pink chart pie"></i>
+<i aria-hidden="true" class="${Icons.WORKFLOW} la-object-extended bordered inverted brown"></i>
+<i aria-hidden="true" class="${Icons.SURVEY} la-object-extended bordered inverted pink"></i>
 <div class="html ui top attached segment example">
 
     <div class="ui doubling five column grid">
@@ -83,9 +83,9 @@
 
         <div class="column"><i class="la-object-extended bordered la-book icon"></i>la-object-extended bordered la-book icon</div>
 
-        <div class="column"><i aria-hidden="true" class="la-object-extended bordered icon inverted brown icon tasks"></i>la-object-extended bordered icon inverted brown icon tasks</div>
+        <div class="column"><i aria-hidden="true" class="${Icons.WORKFLOW} la-object-extended bordered inverted brown"></i>${Icons.SURVEY} la-object-extended bordered inverted brown</div>
 
-        <div class="column"><i aria-hidden="true" class="la-object-extended bordered icon inverted pink chart pie"></i>la-object-extended bordered icon inverted pink chart pie</div>
+        <div class="column"><i aria-hidden="true" class="${Icons.SURVEY} la-object-extended bordered inverted pink"></i>${Icons.SURVEY} la-object-extended bordered inverted pink</div>
 
     </div>
 

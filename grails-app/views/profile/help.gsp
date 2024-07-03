@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue;de.laser.auth.Role;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue;de.laser.auth.Role;" %>
 <laser:htmlStart message="menu.user.help" />
 
 <ui:breadcrumbs>
@@ -8,7 +8,7 @@
 <ui:h1HeaderWithIcon message="menu.user.help" type="help"/>
 <br />
 <br />
-<h2 class="ui icon header la-clear-before la-noMargin-top"><i class="icon question circle outline"></i> <g:message code="help.contentHelp"/></h2>
+<h2 class="ui icon header la-clear-before la-noMargin-top"><i class="${Icons.HELP} circle outline"></i> <g:message code="help.contentHelp"/></h2>
 
 <style>
 .segment > p.header {
@@ -38,7 +38,7 @@
 <br />
 <br />
 
-<h2 class="ui icon header la-clear-before la-noMargin-top"><i class="icon question circle outline"></i> <g:message code="help.technicalHelp"/></h2>
+<h2 class="ui icon header la-clear-before la-noMargin-top"><i class="${Icons.HELP} circle outline"></i> <g:message code="help.technicalHelp"/></h2>
 
 <div class="ui segment">
     <p class="ui header">

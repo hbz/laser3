@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyLinks;de.laser.survey.SurveyInfo;de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyLinks;de.laser.survey.SurveyInfo;de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 
 <ui:modal id="surveyLinks" text="${message(code: 'surveyLinks.link.button')}" msgSave="${message(code: 'default.button.link.label')}">
@@ -8,7 +8,7 @@
                 <div class="row">
                     <div class="six wide column">
                         ${message(code: 'surveyLinks.link.info')} <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'surveyLinks.link.info.tooltip')}">
-                        <i class="info circle icon blue"></i>
+                        <i class="${Icons.INFO_TOOLTIP} blue"></i>
                     </span>
                     </div>
                     <div class="ten wide column">

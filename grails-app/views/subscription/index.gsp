@@ -27,7 +27,7 @@
 
 <g:if test="${permanentTitlesProcessRunning}">
     <div class="ui icon warning message">
-        <i class="info icon"></i>
+        <i class="${Icons.INFO}"></i>
         <div class="content">
             <div class="header">Info</div>
 
@@ -51,7 +51,7 @@
     </g:if>
     <g:if test="${errorKBART}">
         <ui:msg icon="ui exclamation icon" class="error" message="subscription.details.addEntitlements.titleNotMatched" args="[errorCount]"/>
-        <g:link class="ui icon button la-modern-button" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="ui icon download"></i></g:link>
+        <g:link class="ui icon button la-modern-button" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>
     </g:if>
 
 </g:if>

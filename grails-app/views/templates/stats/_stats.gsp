@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.base.AbstractReport; de.laser.finance.CostItem" %>
+<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.base.AbstractReport; de.laser.finance.CostItem" %>
 
 <g:if test="${platformInstanceRecords.values().statisticsFormat.contains('COUNTER')}">
     <laser:serviceInjection/>
@@ -69,7 +69,7 @@
                 message="default.usage.counter4reportInfo.text" noClose="true"/>
         --%>
             <div class="ui icon info message">
-                <i class="info icon"></i>
+                <i class="${Icons.INFO}"></i>
                 <div class="content">
                     <div class="header">${message(code: 'default.usage.counter4reportInfo.header')}</div>
 

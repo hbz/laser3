@@ -83,7 +83,7 @@
                                     <g:if test="${countModificationToCostInformationAfterRenewalDoc > 0}">
                                         <g:link class="ui label triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
                                                 params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyUseForTransfer.surveyInfo.id, surveyConfigID: surveyUseForTransfer.id]">
-                                            <i class="download icon"></i> ${countModificationToCostInformationAfterRenewalDoc}
+                                            <i class="${Icons.CMD_DOWNLOAD}"></i> ${countModificationToCostInformationAfterRenewalDoc}
                                         </g:link>
                                     </g:if>
                                     <g:else>
@@ -173,7 +173,7 @@
                                         <g:if test="${subscription.discountScale.note}">
                                             <span data-position="top left" class="la-popup-tooltip la-delay"
                                                   data-content="${subscription.discountScale.note}">
-                                                <i class="info circle icon blue"></i>
+                                                <i class="${Icons.INFO_TOOLTIP} blue"></i>
                                             </span>
                                         </g:if>
                                     </g:if>
@@ -237,14 +237,14 @@
                                         <%-- 1 --%>
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                     class="ui icon blue button la-modern-button"
-                                                    target="_blank"><i class="download icon"></i></g:link>
+                                                    target="_blank"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>
                                         </g:if>
                                         <g:else>
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                             <%-- 1 --%>
                                                 <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                         class="ui icon blue button la-modern-button"
-                                                        target="_blank"><i class="download icon"></i></g:link>
+                                                        target="_blank"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>
 
                                             <%-- 2 --%>
                                                 <laser:render template="/templates/documents/modal"
@@ -315,14 +315,14 @@
                                         <%-- 1 --%>
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                     class="ui icon blue button la-modern-button"
-                                                    target="_blank"><i class="download icon"></i></g:link>
+                                                    target="_blank"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>
                                         </g:if>
                                         <g:else>
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                             <%-- 1 --%>
                                                 <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                         class="ui icon blue button la-modern-button"
-                                                        target="_blank"><i class="download icon"></i></g:link>
+                                                        target="_blank"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>
 
                                             <%-- 2 --%>
                                                 <laser:render template="/templates/documents/modal"

@@ -150,7 +150,7 @@
 
     <g:if test="${(tipp.titleType == 'monograph') && (tipp.editionStatement || showEmptyFields)}">
         <div class="item">
-            <i class="grey icon copy la-popup-tooltip la-delay"
+            <i class="grey ${Icons.CMD_COPY} la-popup-tooltip la-delay"
                data-content="${message(code: 'title.editionStatement.label')}"></i>
 
             <div class="content">
@@ -161,7 +161,7 @@
 
     <g:if test="${(tipp.titleType == 'monograph') && (tipp.editionNumber || showEmptyFields)}">
         <div class="item">
-            <i class="grey icon copy la-popup-tooltip la-delay"
+            <i class="grey ${Icons.CMD_COPY} la-popup-tooltip la-delay"
                data-content="${message(code: 'tipp.editionNumber.tooltip')}"></i>
 
             <div class="content">
@@ -334,7 +334,7 @@
     <g:if test="${showPackage}">
         <g:if test="${tipp.pkg.id}">
             <div class="item">
-                <i class="grey icon gift scale la-popup-tooltip la-delay"
+                <i class="grey ${Icons.PACKAGE} la-popup-tooltip la-delay"
                    data-content="${message(code: 'package.label')}"></i>
 
                 <div class="content">

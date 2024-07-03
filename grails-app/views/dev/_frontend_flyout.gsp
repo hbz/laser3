@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.Icons" %>
 <h2 class="ui dividing header">Flyout<a class="anchor" id="flyout"></a>
 </h2>
 
@@ -5,7 +6,7 @@
 <div class="ui flyout test">
     <i class="close icon"></i>
     <div class="ui header">
-        <i class="question icon"></i>
+        <i class="${Icons.HELP}"></i>
         <div class="content">
             Archive Old Messages
         </div>
@@ -43,7 +44,7 @@
             &lt;div class="ui flyout"&gt;
                 &lt;i class="close icon">&lt;/i&gt;
             &lt;div class="ui header">
-            &lt;i class="question icon">&lt;/i&gt;
+            &lt;i class="${Icons.HELP}">&lt;/i&gt;
             &lt;div class="content"&gt;
                         Archive Old Messages
             &lt;/div&gt;

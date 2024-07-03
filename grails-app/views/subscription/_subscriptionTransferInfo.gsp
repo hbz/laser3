@@ -55,7 +55,7 @@
                     <span class="la-popup-tooltip la-delay"
                        data-content="${message(code: 'renewalEvaluation.exportRenewal')}"
                        data-position="top center">
-                        <i class="download icon"></i>
+                        <i class="${Icons.CMD_DOWNLOAD}"></i>
                     </span>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned"></th>
@@ -238,7 +238,7 @@
                                 ${s.discountScale.name} : ${s.discountScale.discount}
                                 <g:if test="${s.discountScale.note}">
                                     <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${s.discountScale.note}">
-                                        <i class="info circle icon blue"></i>
+                                        <i class="${Icons.INFO_TOOLTIP} blue"></i>
                                     </span>
                                 </g:if>
                             </g:if>
@@ -300,7 +300,7 @@
                         <g:if test="${countModificationToCostInformationAfterRenewalDoc > 0}">
                             <g:link class="ui label triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
                                     params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]">
-                                <i class="download icon"></i> ${countModificationToCostInformationAfterRenewalDoc}
+                                <i class="${Icons.CMD_DOWNLOAD}"></i> ${countModificationToCostInformationAfterRenewalDoc}
                             </g:link>
                         </g:if>
                         <g:else>

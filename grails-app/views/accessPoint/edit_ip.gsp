@@ -77,17 +77,17 @@
             <tr>
                 <th class="five wide">${message(code: 'accessPoint.ip.format.input')}
                     &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv4Inputs()">
-                    <i class="copy outline icon"></i>
+                    <i class="${Icons.CMD_COPY}"></i>
                     </button>
                 </th>
                 <th class="five wide">${message(code: 'accessPoint.ip.format.range')}
                     &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv4Ranges()">
-                        <i class="copy outline icon"></i>
+                        <i class="${Icons.CMD_COPY}"></i>
                     </button>
                 </th>
                 <th class="five wide">${message(code: 'accessPoint.ip.format.cidr')}
                     &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv4Cidrs()">
-                        <i class="copy outline icon"></i>
+                        <i class="${Icons.CMD_COPY}"></i>
                     </button>
                 </th>
                 <th class="one wide">${message(code: 'default.actions.label')}</th>
@@ -157,17 +157,17 @@
         <tr>
             <th class="five wide">${message(code: 'accessPoint.ip.format.input')}
                 &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv6Inputs()">
-                    <i class="copy outline icon"></i>
+                    <i class="${Icons.CMD_COPY}"></i>
                 </button>
             </th>
             <th class="five wide">${message(code: 'accessPoint.ip.format.range')}
                 &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv6Ranges()">
-                    <i class="copy outline icon"></i>
+                    <i class="${Icons.CMD_COPY}"></i>
                 </button>
             </th>
             <th class="five wide">${message(code: 'accessPoint.ip.format.cidr')}
                 &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv6Cidrs()">
-                    <i class="copy outline icon"></i>
+                    <i class="${Icons.CMD_COPY}"></i>
                 </button>
             </th>
             <th class="one wide">${message(code: 'default.actions.label')}</th>

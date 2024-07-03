@@ -297,7 +297,7 @@
         </div>
 
         <div class="ui icon info message">
-            <i class="info icon"></i>
+            <i class="${Icons.INFO}"></i>
             <div class="content">
                 <g:message code="subscriptionsManagement.info2" args="${args.memberTypeSingle}"/> <br />
 

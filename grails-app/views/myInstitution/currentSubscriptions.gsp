@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ExportClickMeService; grails.plugin.springsecurity.SpringSecurityUtils;de.laser.CustomerTypeService; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.helper.Icons; de.laser.ExportClickMeService; grails.plugin.springsecurity.SpringSecurityUtils;de.laser.CustomerTypeService; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 
 <laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true" />
 
@@ -51,7 +51,7 @@
     <ui:messages data="${flash}"/>
 
     <g:if test="${vendorNotice}">
-        <ui:msg icon="ui info icon" class="info" message="myinst.currentSubscriptions.vendorNotice" noClose="true"/>
+        <ui:msg icon="${Icons.INFO}" class="info" message="myinst.currentSubscriptions.vendorNotice" noClose="true"/>
     </g:if>
 
     <laser:render template="${customerTypeService.getSubscriptionFilterTemplatePath()}"/>

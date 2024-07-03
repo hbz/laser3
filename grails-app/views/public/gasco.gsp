@@ -182,7 +182,7 @@
                                         </g:each>
                                         <g:each in="${Contact.findAllByPrsAndContentType( person, RDStore.CCT_EMAIL )}" var="prsContact">
                                             <div class="description js-copyTriggerParent">
-                                                <i class="ui icon envelope outline la-list-icon js-copyTrigger la-js-copyTriggerIcon la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}"></i>
+                                                <i class="icon envelope outline la-list-icon js-copyTrigger la-js-copyTriggerIcon la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}"></i>
                                                 <span class="la-popup-tooltip la-delay" data-position="right center" data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
                                                     <a class="la-break-all js-copyTopic" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
                                                 </span>
@@ -197,7 +197,7 @@
                     <td class="center aligned">
                         <g:if test="${flyoutCheckList.contains(sub.id)}">
                             <g:link class="flyoutLink ui icon button blue la-modern-button" controller="public" action="gascoFlyout" data-key="${sub.id}">
-                                <i class="icon info"></i>
+                                <i class="${Icons.INFO}"></i>
                             </g:link>
                         </g:if>
                         <g:else>
@@ -213,7 +213,7 @@
 
     <div id="gascoFlyout" class="ui eight wide flyout" style="padding:50px 0 10px 0;overflow:scroll">
         <div class="ui header">
-            <i class="info icon"></i>
+            <i class="${Icons.INFO}"></i>
             <div class="content"></div>
         </div>
         <div class="content">

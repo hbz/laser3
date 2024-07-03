@@ -122,7 +122,7 @@
                 <g:if test="${surveyOrg && surveyOrg.ownerComment}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                           data-content="${surveyOrg.ownerComment}">
-                        <i class="info circle icon"></i>
+                        <i class="${Icons.INFO_TOOLTIP}"></i>
                     </span>
                 </g:if>
 
@@ -213,7 +213,7 @@
                     <g:if test="${surveyOrg && surveyOrg.ownerComment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${surveyOrg.ownerComment}">
-                            <i class="info circle icon"></i>
+                            <i class="${Icons.INFO_TOOLTIP}"></i>
                         </span>
                     </g:if>
 

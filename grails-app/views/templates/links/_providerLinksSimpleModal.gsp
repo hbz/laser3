@@ -1,11 +1,11 @@
-<%@ page import="de.laser.Org" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Org" %>
 <g:if test="${editmode}">
     <a role="button" class="ui button" data-ui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
 </g:if>
 
 <ui:modal contentClass="scrolling" modalSize="medium" id="${tmplModalID}" text="${tmplText}" isEditModal="${editmode}">
     <div class="ui info message">
-        <i class="info circle icon"></i> ${message(code: 'subscription.details.linkProvider.minTwoLetters')}
+        <i class="${Icons.INFO}"></i> ${message(code: 'subscription.details.linkProvider.minTwoLetters')}
     </div>
     <g:form id="create_provider_role_link_${tmplModalID}" class="ui form" url="[controller:'ajax', action:'addProviderRole']" method="post">
         <input type="hidden" name="parent" value="${parent}" />

@@ -1,4 +1,4 @@
-<%@page import="de.laser.config.ConfigMapper; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
+<%@page import="de.laser.helper.Icons; de.laser.config.ConfigMapper; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
 <laser:htmlStart message="myinst.reporting" serviceInjection="true">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
@@ -22,7 +22,7 @@
                     <i class="icon history"></i>
             </div>
             <div id="info-toggle" class="ui icon button right floated">
-                <i class="icon question"></i>
+                <i class="${Icons.HELP}"></i>
             </div>
         </div>
 
@@ -32,7 +32,7 @@
 
             <div class="ui segment">
                 <span class="ui top attached label" style="text-align:center;">
-                    <i class="icon question large"></i>${message(code:'reporting.ui.global.help')}
+                    <i class="${Icons.HELP} large"></i>${message(code:'reporting.ui.global.help')}
                 </span>
                 <div style="margin: 3.5em 2em 0.5em !important">
                     <p>
@@ -56,7 +56,7 @@
                         ${message(code:'reporting.ui.global.infoBookmarks')}
                     </p>
                     <p>
-                        <i class="icon question blue"></i><strong>${message(code:'reporting.ui.global.help')}</strong> <br />
+                        <i class="${Icons.HELP} blue"></i><strong>${message(code:'reporting.ui.global.help')}</strong> <br />
                         ${message(code:'reporting.ui.global.infoHelp')}
                     </p>
                     <p>

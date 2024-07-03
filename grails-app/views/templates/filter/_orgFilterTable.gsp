@@ -347,7 +347,7 @@
                                 )}" var="telNr">
                                     <div class="item">
                                         <span data-position="right center">
-                                            <i class="ui icon phone"></i>
+                                            <i class="icon phone"></i>
                                             ${telNr.content}
                                         </span><br />
                                     </div>
@@ -381,21 +381,21 @@
                         <g:set var="precedents" value="${Org.executeQuery('select c.toOrg from Combo c where c.fromOrg = :org and c.type = :follows',[org: org, follows: RDStore.COMBO_TYPE_FOLLOWS])}"/>
                         <g:each in="${precedents}" var="precedent">
                             <span class="la-popup-tooltip" data-position="top right" data-content="<g:message code="org.succeedsTo.label" args="${[precedent.sortname ?: precedent.name]}"/>">
-                                <g:link controller="org" action="show" id="${precedent.id}"><i class="ui icon left arrow"></i></g:link>
+                                <g:link controller="org" action="show" id="${precedent.id}"><i class="${Icons.LINK_PREV}"></i></g:link>
                             </span>
                         </g:each>
                         <span class="la-popup-tooltip la-delay" data-position="top right">
-                            <i class="ui icon green circle"></i>
+                            <i class="icon green circle"></i>
                         </span>
                     </g:if>
                     <g:if test="${org.status == RDStore.ORG_STATUS_RETIRED}">
                         <span class="la-popup-tooltip la-delay" data-position="top right" <g:if test="${org.retirementDate}">data-content="<g:message code="org.retirementDate.label"/>: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${org.retirementDate}"/>"</g:if>>
-                            <i class="ui icon yellow circle"></i>
+                            <i class="icon yellow circle"></i>
                         </span>
                         <g:set var="successors" value="${Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :org and c.type = :follows',[org: org, follows: RDStore.COMBO_TYPE_FOLLOWS])}"/>
                         <g:each in="${successors}" var="successor">
                             <span class="la-popup-tooltip" data-position="top right" data-content="<g:message code="org.succeededBy.label" args="${[successor.sortname ?: successor.name]}"/>">
-                                <g:link controller="org" action="show" id="${successor.id}"><i class="ui icon right arrow"></i></g:link>
+                                <g:link controller="org" action="show" id="${successor.id}"><i class="${Icons.LINK_NEXT}"></i></g:link>
                             </span>
                         </g:each>
                     </g:if>
@@ -406,19 +406,19 @@
                     <g:if test="${org.createdBy && org.legallyObligedBy}">
                         <span class="la-popup-tooltip la-delay" data-position="top right"
                               data-content="${message(code: 'org.legalInformation.1.tooltip', args: [org.createdBy, org.legallyObligedBy])}">
-                            <i class="ui icon green check circle"></i>
+                            <i class="icon green check circle"></i>
                         </span>
                     </g:if>
                     <g:elseif test="${org.createdBy}">
                         <span class="la-popup-tooltip la-delay" data-position="top right"
                               data-content="${message(code: 'org.legalInformation.2.tooltip', args: [org.createdBy])}">
-                            <i class="ui icon grey outline circle"></i>
+                            <i class="icon grey outline circle"></i>
                         </span>
                     </g:elseif>
                     <g:elseif test="${org.legallyObligedBy}">
                         <span class="la-popup-tooltip la-delay" data-position="top right"
                               data-content="${message(code: 'org.legalInformation.3.tooltip', args: [org.legallyObligedBy])}">
-                            <i class="ui icon red question mark"></i>
+                            <i class="icon red question mark"></i>
                         </span>
                     </g:elseif>
                 </td>

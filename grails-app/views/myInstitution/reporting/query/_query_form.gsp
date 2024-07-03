@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.report.myInstitution.base.BaseConfig" %>
+<%@ page import="de.laser.helper.Icons; de.laser.reporting.report.myInstitution.base.BaseConfig" %>
 <g:set var="esdConfig" value="${BaseConfig.getCurrentConfigElasticsearchData(cfgKey)}" />
 
 <div class="ui segment form">
@@ -56,8 +56,8 @@
 
         <div class="field" style="text-align: right">
             <label for="query-export-button">&nbsp;</label>
-            <button id="query-export-button" class="ui icon button la-modern-button" data-href="#queryExportModal" data-ui="modal" disabled><i class="ui icon download"></i></button>
-            <button id="query-help-button" class="ui icon button la-modern-button" data-href="#queryHelpModal" data-ui="modal" disabled><i class="ui icon question"></i></button>
+            <button id="query-export-button" class="ui icon button la-modern-button" data-href="#queryExportModal" data-ui="modal" disabled><i class="${Icons.CMD_DOWNLOAD}"></i></button>
+            <button id="query-help-button" class="ui icon button la-modern-button" data-href="#queryHelpModal" data-ui="modal" disabled><i class="${Icons.HELP}"></i></button>
         </div>
     </div>
 </div>

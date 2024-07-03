@@ -208,7 +208,7 @@
                         <g:if test="${surveyConfigProperties && surveyConfigProperties.mandatoryProperty}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                   data-content="${message(code: 'default.mandatory.tooltip')}">
-                                <i class="info circle icon"></i>
+                                <i class="${Icons.INFO_TOOLTIP}"></i>
                             </span>
                         </g:if>
 
