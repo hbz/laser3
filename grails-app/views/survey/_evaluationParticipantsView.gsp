@@ -346,7 +346,7 @@
                                     <span data-position="right center"
                                           class="la-popup-tooltip la-delay"
                                           data-content="Mail senden an Hauptkontakte">
-                                        <i class="ui icon envelope outline la-list-icon"></i>
+                                        <i class="icon envelope outline la-list-icon"></i>
                                     </span>
                                 </a>
                             </g:if>
@@ -566,7 +566,7 @@
                                                tab           : 'selectedIEs']}"
                                     class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                     data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
-                                    target="_blank"><i class="download icon"></i></g:link>
+                                    target="_blank"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>
                         </td>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyPackages')}">
@@ -929,7 +929,7 @@
                                     <span data-position="right center"
                                           class="la-popup-tooltip la-delay"
                                           data-content="Mail senden an Hauptkontakte">
-                                        <i class="ui icon envelope outline la-list-icon"></i>
+                                        <i class="icon envelope outline la-list-icon"></i>
                                     </span>
                                 </a>
                             </g:if>
@@ -1149,7 +1149,7 @@
                                                tab           : 'selectedIEs']}"
                                     class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                     data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
-                                    target="_blank"><i class="download icon"></i></g:link>
+                                    target="_blank"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>
                         </td>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyPackages')}">

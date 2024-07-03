@@ -123,17 +123,17 @@
                         <%
                             def accessStatistics = OrgSetting.get(org, OrgSetting.KEYS.NATSTAT_SERVER_ACCESS)
                             if (accessStatistics != OrgSetting.SETTING_NOT_FOUND && accessStatistics.getValue()?.value == 'Yes') {
-                                println '<div><i class="ui icon lock open"></i> Statistikserver</div>'
+                                println '<div><i class="icon lock open"></i> Statistikserver</div>'
                             }
 
                             def accessOA = OrgSetting.get(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS)
                             if (accessOA!= OrgSetting.SETTING_NOT_FOUND && accessOA.getValue()?.value == 'Yes') {
-                                println '<div><i class="ui icon lock open"></i> OAMonitor</div>'
+                                println '<div><i class="icon lock open"></i> OAMonitor</div>'
                             }
 
                             def accessEZB = OrgSetting.get(org, OrgSetting.KEYS.EZB_SERVER_ACCESS)
                             if (accessEZB!= OrgSetting.SETTING_NOT_FOUND && accessEZB.getValue()?.value == 'Yes') {
-                                println '<div><i class="ui icon lock open"></i> EZB</div>'
+                                println '<div><i class="icon lock open"></i> EZB</div>'
                             }
                         %>
                     </td>
@@ -142,19 +142,19 @@
                         <g:if test="${org.createdBy && org.legallyObligedBy}">
                             <span class="la-popup-tooltip la-delay" data-position="top right"
                                   data-content="${message(code:'org.legalInformation.1.tooltip', args:[org.createdBy, org.legallyObligedBy])}" >
-                                <i class="ui icon green check circle"></i>
+                                <i class="icon green check circle"></i>
                             </span>
                         </g:if>
                         <g:elseif test="${org.createdBy}">
                             <span class="la-popup-tooltip la-delay" data-position="top right"
                                   data-content="${message(code:'org.legalInformation.2.tooltip', args:[org.createdBy])}" >
-                                <i class="ui icon grey outline circle"></i>
+                                <i class="icon grey outline circle"></i>
                             </span>
                         </g:elseif>
                         <g:elseif test="${org.legallyObligedBy}">
                             <span class="la-popup-tooltip la-delay" data-position="top right"
                                   data-content="${message(code:'org.legalInformation.3.tooltip', args:[org.legallyObligedBy])}" >
-                                <i class="ui icon red question mark"></i>
+                                <i class="icon red question mark"></i>
                             </span>
                         </g:elseif>
                     </td>

@@ -371,7 +371,7 @@
                                 <tr>
                                     <td>
                                         <div class="la-flexbox">
-                                            <i class="ui icon tasks la-list-icon"></i>
+                                            <i class="${Icons.WORKFLOW} la-list-icon"></i>
                                             <g:link controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}"
                                                     params="${[info: '' + clistInfo.target.class.name + ':' + clistLinkParamPart]}">
                                                 <strong>${clist.title}</strong>
@@ -380,7 +380,7 @@
                                     </td>
                                     <td>
                                         <div class="la-flexbox">
-                                            <i class="ui icon ${clistInfo.targetIcon} la-list-icon"></i>
+                                            <i class="icon ${clistInfo.targetIcon} la-list-icon"></i>
                                             <g:link controller="${clistInfo.targetController}" action="show" params="${[id: clistInfo.target.id]}">
                                                 ${clistInfo.targetName}
                                                 <g:if test="${clistInfo.target instanceof Subscription || clistInfo.target instanceof License}">
