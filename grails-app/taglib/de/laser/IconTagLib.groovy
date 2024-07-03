@@ -49,7 +49,7 @@ class IconTagLib {
                 icon = 'bordered inverted teal euro sign la-object-extended'
                 break
             case 'help':
-                icon = Icons.HELP + ' bordered inverted la-object-extended'
+                icon = Icons.HELP + ' bordered inverted grey la-object-extended'
                 break
             case 'journal':
             case 'serial':
