@@ -13,7 +13,7 @@
 
 
 <div class="ui icon message">
-    <i class="info icon"></i>
+    <i class="${Icons.INFO}"></i>
     ${message(code: 'allSubscriptions.info')}
 </div>
 

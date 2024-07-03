@@ -334,7 +334,7 @@
     <g:if test="${showPackage}">
         <g:if test="${tipp.pkg.id}">
             <div class="item">
-                <i class="grey icon gift scale la-popup-tooltip la-delay"
+                <i class="grey ${Icons.PACKAGE} la-popup-tooltip la-delay"
                    data-content="${message(code: 'package.label')}"></i>
 
                 <div class="content">

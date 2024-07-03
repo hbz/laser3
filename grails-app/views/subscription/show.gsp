@@ -44,7 +44,7 @@
 
 <g:if test="${permanentTitlesProcessRunning}">
     <div class="ui icon warning message">
-        <i class="info icon"></i>
+        <i class="${Icons.INFO}"></i>
         <div class="content">
             <div class="header">Info</div>
 
@@ -497,7 +497,7 @@
                                             <td>${reportMetric}
                                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                       data-html="${message(code: 'default.usage.reportUpToInfo')}: ${lastUsagePeriodForReportType[reportMetric.split(':')[0]]}">
-                                                    <i class="info icon small circular la-popup"></i>
+                                                    <i class="${Icons.INFO_TOOLTIP} small la-popup"></i>
                                                 </span>
                                             </td>
                                             <g:each in="${v}" status="i" var="v2">

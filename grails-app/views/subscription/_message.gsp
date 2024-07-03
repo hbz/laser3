@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.interfaces.CalculatedType;" %>
 <g:set var="checkCons" value="${contextOrg.id == subscription.getConsortia()?.id && subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}" />
 
 <g:if test="${checkCons}">
@@ -34,7 +34,7 @@
 
     <g:if test="${subscription.comment}">
         <div class="ui icon info message">
-            <i class="info icon"></i>
+            <i class="${Icons.INFO}"></i>
             <div class="content">
                 <div class="header">
                     ${message(code: 'subscription.details.internalComment')}

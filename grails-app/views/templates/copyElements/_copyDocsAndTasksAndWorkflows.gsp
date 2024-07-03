@@ -351,7 +351,7 @@
                 %{--WORKFLOWS:--}%
                     <tr data-element="copyObject.takeWorkflows">
                         <td data-element="source">
-                            <div class="la-min-height"><strong><i class="tasks icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeWorkflows")}:</strong></div>
+                            <div class="la-min-height"><strong><i class="${Icons.WORKFLOW}"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeWorkflows")}:</strong></div>
                             <g:each in="${sourceWorkflows}" var="wf">
                                 <div data-id="${wf.id}" class="la-element la-min-height">
                                     <label>
@@ -383,7 +383,7 @@
                         </g:if>
                         <g:if test="${!copyObject && targetObject}">
                             <td data-element="target">
-                                <div class="la-min-height"><strong><i class="tasks icon"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeWorkflows")}:</strong></div>
+                                <div class="la-min-height"><strong><i class="${Icons.WORKFLOW}"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeWorkflows")}:</strong></div>
                                 <g:each in="${targetWorkflows}" var="wf">
                                     <div data-id="${wf.id}" class="la-element la-min-height">
                                         <strong>${wf.title}</strong>

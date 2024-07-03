@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.Org" %>
+<%@ page import="de.laser.helper.Icons; de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.Org" %>
 <laser:htmlStart text="${surveyInfo.type.getI10n('value')}" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -24,7 +24,7 @@
 <br/>
 <g:if test="${surveyConfig.isResultsSetFinishByOrg(institution)}">
     <div class="ui icon positive message">
-        <i class="info icon"></i>
+        <i class="${Icons.INFO}"></i>
 
         <div class="content">
             <div class="header"></div>

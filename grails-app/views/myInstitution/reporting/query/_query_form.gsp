@@ -57,7 +57,7 @@
         <div class="field" style="text-align: right">
             <label for="query-export-button">&nbsp;</label>
             <button id="query-export-button" class="ui icon button la-modern-button" data-href="#queryExportModal" data-ui="modal" disabled><i class="${Icons.CMD_DOWNLOAD}"></i></button>
-            <button id="query-help-button" class="ui icon button la-modern-button" data-href="#queryHelpModal" data-ui="modal" disabled><i class="icon question"></i></button>
+            <button id="query-help-button" class="ui icon button la-modern-button" data-href="#queryHelpModal" data-ui="modal" disabled><i class="${Icons.HELP}"></i></button>
         </div>
     </div>
 </div>

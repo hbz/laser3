@@ -13,7 +13,7 @@
 <ui:messages data="${flash}"/>
 
 <div class="ui icon positive message">
-    <i class="info icon"></i>
+    <i class="${Icons.INFO}"></i>
     <div class="content">
         <div class="header"></div>
         <p>

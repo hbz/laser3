@@ -605,7 +605,7 @@
                                         <g:if test="${s.discountScale.note}">
                                             <span data-position="top left" class="la-popup-tooltip la-delay"
                                                   data-content="${s.discountScale.note}">
-                                                <i class="info circle icon blue"></i>
+                                                <i class="${Icons.INFO_TOOLTIP} blue"></i>
                                             </span>
                                         </g:if>
                                     </g:if>

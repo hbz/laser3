@@ -49,7 +49,7 @@ class Icons {
 
     public static String SUBSCRIPTION_IS_MULTIYEAR  = 'forward icon'
 
-    public static String TIPP_COVERAGE_DEPTH        = 'file alternate icon' // ? right
+    public static String TIPP_COVERAGE_DEPTH        = 'file alternate icon'
 
     // please do not touch during refactoring ..
     // properties
@@ -62,16 +62,22 @@ class Icons {
 
     public static String PROPERTY_MANDATORY         = 'star icon'               // todo: duplicate: survey/renew? > Icons.MY_OBJECT
 
-    public static String PROPERTY_MULTIPLE          = 'redo icon orange'        // COLOR !!  todo: duplicate: currentSubscriptionsTransfer
+    public static String PROPERTY_MULTIPLE          = 'redo icon orange'        // COLOR !! todo: duplicate: currentSubscriptionsTransfer
 
-    public static String PROPERTY_USED              = 'info circle icon blue'   // COLOR !! todo: duplicate: discountScale.note
+    public static String PROPERTY_USED              = 'info circle icon blue'   // COLOR !! todo: duplicate: Icons.INFO
 
     // please do not touch during refactoring ..
     // generic
 
     public static String DATE                       = 'calendar alternate outline icon'
 
-    public static String HELP_TOOLTIP               = 'grey question circle icon'    // COLOR !!
+    public static String HELP                       = 'question icon'
+    
+    public static String HELP_TOOLTIP               = 'grey question circle icon'   // COLOR !!
+
+    public static String INFO                       = 'info icon'
+
+    public static String INFO_TOOLTIP               = 'info circle icon'            // todo: duplicate: Icons.PROPERTY_USED
 
     public static String MY_OBJECT                  = 'star icon'                   // todo: duplicate: survey/renew? > Icons.MANDATORY_PROPERTY
 
