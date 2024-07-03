@@ -114,7 +114,7 @@
                               <g:if test="${(contextCustomerType == CustomerTypeService.ORG_INST_PRO && l._getCalculatedType() == License.TYPE_LOCAL) || (customerTypeService.isConsortium( contextCustomerType ) && l._getCalculatedType() == License.TYPE_CONSORTIAL)}">
                                   <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.copy.tooltip')}">
                                       <g:link controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(l), copyObject: true]}" class="ui icon button blue la-modern-button">
-                                          <i class="copy icon"></i>
+                                          <i class="${Icons.CMD_COPY}"></i>
                                       </g:link>
                                   </span>
                               </g:if>

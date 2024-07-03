@@ -38,8 +38,8 @@
             <div class="content"> Anbieter (${Icons.PROVIDER})</div>
         </div>
         <div class="item">
-            <i class="icon large boxes"></i>
-            <div class="content"> Lieferanten (boxes)</div>
+            <i class="${Icons.VENDOR} large"></i>
+            <div class="content"> Lieferanten (${Icons.VENDOR})</div>
         </div>
         <div class="item">
             <i class="${Icons.ORG} large"></i>
