@@ -423,11 +423,6 @@
       allOf:
         - $ref: "#/components/schemas/OrganisationStub"
       properties:
-        addresses:
-          type: array
-          description: The contact addresses of the given organisation.
-          items:
-            $ref: "#/components/schemas/Address"
         altnames:
           type: array
           description: A set of alternative names of the organisation.
@@ -480,11 +475,21 @@
           description: Contacts of the given organisation.
           items:
             $ref: "#/components/schemas/Person" # resolved PersonRole
+        privateAddresses:
+          type: array
+          description: The private contact addresses of the given organisation, coming from the context org's private addressbook
+          items:
+            $ref: "#/components/schemas/Address"
         properties: # mapping attr customProperties and privateProperties
           type: array
           description: Set of public and private properties of the calling institution.
           items:
             $ref: "#/components/schemas/Property"
+        publicAddresses:
+          type: array
+          description: The public contact addresses of the given organisation.
+          items:
+            $ref: "#/components/schemas/Address"
         region:
           type: string
           description: In which German-speaking region/county is the institution seated? Maps to the RefdataCategory "${RDConstants.REGIONS_DE}", "${RDConstants.REGIONS_AT}" and "${RDConstants.REGIONS_CH}".
@@ -516,11 +521,6 @@
       allOf:
         - $ref: "#/components/schemas/ProviderStub"
       properties:
-        addresses:
-          type: array
-          description: The contact addresses of the given provider.
-          items:
-            $ref: "#/components/schemas/Address"
         altnames:
           type: array
           description: A set of alternative names of the provider.
@@ -602,6 +602,16 @@
           description: Set of public and private properties of the calling institution.
           items:
             $ref: "#/components/schemas/Property"
+        publicAddresses:
+          type: array
+          description: The public contact addresses of the given provider.
+          items:
+            $ref: "#/components/schemas/Address"
+        privateAddresses:
+          type: array
+          description: The private contact addresses of the given provider, coming from the context org's addressbook
+          items:
+            $ref: "#/components/schemas/Address"
         retirementDate:
           type: string
           description: Timestamp when the provider has ceased to be active.
@@ -1765,7 +1775,7 @@
         status:
           type: string
           description: Status of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_STATUS}".
-          enum: <% printRefdataEnum(RDConstants.ORG_STATUS+Constants.PERMANENTLY_DELETED, 12) %>
+          enum: <% printRefdataEnum(RDConstants.ORG_STATUS, 12) %>
           example: ${RDStore.ORG_STATUS_CURRENT.value}
         type:
           type: array
