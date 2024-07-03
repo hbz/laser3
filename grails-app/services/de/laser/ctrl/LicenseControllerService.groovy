@@ -3,11 +3,14 @@ package de.laser.ctrl
 import de.laser.*
 import de.laser.auth.User
 import de.laser.storage.RDStore
+import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.interfaces.CalculatedType
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+
+import java.text.SimpleDateFormat
 
 /**
  * This class is a service mirror for {@link LicenseController} to capsule the complex data manipulation
@@ -108,6 +111,7 @@ class LicenseControllerService {
         if(!clone.license){
             clone.license = result.license.id
         }
+        Map notNeededOnlySetCloneParams = setSubscriptionFilterData(clone)
         List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(clone)
         result.subsCount   = result.license ? Subscription.executeQuery( "select count(*) " + tmpQ[0].split('order by')[0] , tmpQ[1] )[0] : 0
 
@@ -153,5 +157,31 @@ class LicenseControllerService {
      */
     boolean showConsortiaFunctions(Org contextOrg, License license) {
         return license.getLicensingConsortium()?.id == contextOrg.id && license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
+    }
+
+    /**
+     * this is very ugly and should be subject of refactor - - but unfortunately, the
+     * {@link SubscriptionsQueryService#myInstitutionCurrentSubscriptionsBaseQuery(java.lang.Object)}
+     * requires the {@link GrailsParameterMap} as parameter.
+     * @return validOn and defaultSet-parameters of the filter
+     */
+    Map<String,Object> setSubscriptionFilterData(GrailsParameterMap params) {
+        Map<String, Object> result = [:]
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        Date dateRestriction = null
+        if (params.validOn == null || params.validOn.trim() == '') {
+            result.validOn = ""
+        } else {
+            result.validOn = params.validOn
+            dateRestriction = sdf.parse(params.validOn)
+        }
+        result.dateRestriction = dateRestriction
+        if (! params.status) {
+            if (!params.filterSet) {
+                params.status = RDStore.SUBSCRIPTION_CURRENT.id
+                result.defaultSet = true
+            }
+        }
+        result
     }
 }
