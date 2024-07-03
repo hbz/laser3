@@ -36,7 +36,7 @@ abstract class AbstractBase {
      */
     protected void beforeInsertHandler() {
 
-        log.debug("beforeInsertHandler()")
+//        log.debug("beforeInsertHandler()")
 
         if (! globalUID) {
             setGlobalUID()
