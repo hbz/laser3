@@ -3622,9 +3622,9 @@ join sub.orgRelations or_sub where
         ( or_pa.roleType in (:paRoleTypes) ) and sub.instanceOf is null'''
 
         if (params.subStatus) {
-            queryProviders +=  " and (sub.status = :subStatus)"
-            querySubs +=  " and (sub.status = :subStatus)"
-            RefdataValue subStatus = RefdataValue.get(params.subStatus)
+            queryProviders +=  " and (sub.status in (:subStatus))"
+            querySubs +=  " and (sub.status in (:subStatus))"
+            List<RefdataValue> subStatus = Params.getRefdataList(params, 'subStatus')
             queryParamsProviders << [subStatus: subStatus]
             queryParamsSubs << [subStatus: subStatus]
         }
