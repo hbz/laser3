@@ -597,7 +597,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      * @return a {@link List} of matching property definitions
      */
     static List<PropertyDefinition> findAllPublicAndPrivateProp(List propertyDefinitionList, Org contextOrg){
-        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
+        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in (:defList) and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
                         defList: propertyDefinitionList,
                         tenant: contextOrg
                     ])

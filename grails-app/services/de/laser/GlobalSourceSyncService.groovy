@@ -853,7 +853,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
         Set<TitleInstancePackagePlatform> newTitles = []
         records.eachWithIndex { Map tipp, int idx ->
-            log.debug("now processing entry #${idx}, total entry #${offset+idx} with uuid ${tipp.uuid}")
+//            log.debug("now processing entry #${idx}, total entry #${offset+idx} with uuid ${tipp.uuid}")
             try {
                 Map<String,Object> updatedTIPP = [
                     titleType: tipp.titleType,

@@ -50,10 +50,6 @@
 
     <ui:messages data="${flash}"/>
 
-    <g:if test="${vendorNotice}">
-        <ui:msg icon="${Icons.INFO}" class="info" message="myinst.currentSubscriptions.vendorNotice" noClose="true"/>
-    </g:if>
-
     <laser:render template="${customerTypeService.getSubscriptionFilterTemplatePath()}"/>
 
     <laser:render template="/templates/subscription/subscriptionTable"/>

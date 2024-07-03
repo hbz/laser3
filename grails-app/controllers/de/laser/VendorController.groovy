@@ -7,10 +7,8 @@ import de.laser.cache.EhcacheWrapper
 import de.laser.helper.Params
 import de.laser.helper.Profiler
 import de.laser.properties.PropertyDefinition
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
-import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
 import grails.gorm.transactions.Transactional
@@ -30,6 +28,7 @@ class VendorController {
     GenericOIDService genericOIDService
     GokbService gokbService
     LinksGenerationService linksGenerationService
+    PropertyService propertyService
     TaskService taskService
     UserService userService
     VendorService vendorService
@@ -56,6 +55,7 @@ class VendorController {
         prf.startSimpleBench()
         Map<String, Object> result = vendorService.getResultGenerics(params), queryParams = [:]
         result.flagContentGokb = true // vendorService.getWekbVendorRecords()
+        result.propList    = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.VEN_PROP], result.institution)
         prf.setBenchmark("get curatory groups")
         Map queryCuratoryGroups = gokbService.executeQuery(result.wekbApi.baseUrl + result.wekbApi.fixToken + '/groups', [:])
         prf.setBenchmark("get we:kb vendors")
@@ -108,10 +108,18 @@ class VendorController {
             queryArgs << "v.gokbId in (:wekbIds)"
             queryParams.wekbIds = result.wekbRecords.keySet()
         }
+
         String vendorQuery = 'select v from Vendor v'
         if(queryArgs) {
             vendorQuery += ' where '+queryArgs.join(' and ')
         }
+
+        if (params.filterPropDef) {
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, vendorQuery, 'v', queryParams)
+            vendorQuery = efq.query
+            queryParams = efq.queryParams as Map<String, Object>
+        }
+
         if(params.containsKey('sort')) {
             vendorQuery += " order by ${params.sort} ${params.order ?: 'asc'}, v.name ${params.order ?: 'asc'} "
         }
@@ -211,23 +219,21 @@ class VendorController {
             result.editable = vendor.gokbId ? false : userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.institution, 'INST_EDITOR')
             result.subEditable = userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.institution, 'INST_EDITOR')
             result.isMyVendor = vendorService.isMyVendor(vendor, result.institution)
-            /* unused because vendors may differ on member level
             String subscriptionConsortiumFilter = '', licenseConsortiumFilter = ''
             if(result.institution.isCustomerType_Consortium()) {
                 subscriptionConsortiumFilter = 'and s.instanceOf = null'
                 licenseConsortiumFilter = 'and l.instanceOf = null'
             }
-            */
             Set<Package> allPackages = vendor.packages?.pkg
             result.allPackages = allPackages
             result.providers = allPackages.provider.toSet()
             result.packages = Package.executeQuery('select pkg from PackageVendor pv join pv.pkg pkg, VendorRole vr, OrgRole oo join oo.sub s where pv.vendor = vr.vendor and vr.subscription = s and vr.vendor = :vendor and s.status = :current and oo.org = :context ', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Package>
             result.platforms = Platform.executeQuery('select pkg.nominalPlatform from PackageVendor pv join pv.pkg pkg, VendorRole vr, OrgRole oo join oo.sub s where pkg.provider = :vendor and vr.subscription = s and s.status = :current and oo.org = :context ', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Platform>
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, vendor)
-            result.currentSubscriptionsCount = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and s.status = :current and oo.org = :context ', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])[0]
-            result.currentLicensesCount  = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and l.status = :current and oo.org = :context ', [vendor: vendor, current: RDStore.LICENSE_CURRENT, context: result.institution])[0]
-            result.subLinks = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and oo.org = :context ', [vendor: vendor, context: result.institution])[0]
-            result.licLinks = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and oo.org = :context ', [vendor: vendor, context: result.institution])[0]
+            result.currentSubscriptionsCount = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])[0]
+            result.currentLicensesCount  = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and l.status = :current and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, current: RDStore.LICENSE_CURRENT, context: result.institution])[0]
+            result.subLinks = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, context: result.institution])[0]
+            result.licLinks = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, context: result.institution])[0]
 
             workflowService.executeCmdAndUpdateResult(result, params)
             if (result.vendor.createdBy) {

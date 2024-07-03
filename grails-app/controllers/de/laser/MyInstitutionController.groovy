@@ -1108,17 +1108,12 @@ class MyInstitutionController  {
         }
          */
 
-        //result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
+        result.propList    = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.VEN_PROP], result.institution)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         result.filterSet = params.filterSet ? true : false
         /*
-        if (params.filterPropDef) {
-            Map<String, Object> efq = propertyService.evalFilterQuery(tmpParams, fsr.query, 'o', fsr.queryParams)
-            fsr.query = efq.query
-            fsr.queryParams = efq.queryParams as Map<String, Object>
-        }
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
         if(queryCuratoryGroups.code == 404) {
@@ -1144,6 +1139,11 @@ class MyInstitutionController  {
         String query = "select v from VendorRole vr join vr.vendor v, OrgRole oo join oo.sub s where vr.subscription = s and oo.org = :contextOrg"
 
         Map<String, Object> queryParams = [contextOrg: result.institution]
+        if (params.filterPropDef) {
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, query, 'v', queryParams)
+            query = efq.query
+            queryParams = efq.queryParams as Map<String, Object>
+        }
 
         if(params.containsKey('subStatus')) {
             query += ' and (s.status in (:status) '
@@ -1314,9 +1314,6 @@ class MyInstitutionController  {
         String filename = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions")
 
         Map<String, Object> selectedFields = [:]
-
-        if((params.identifier?.startsWith('vendor:') || params.q) && result.institution.isCustomerType_Consortium())
-            result.vendorNotice = true
 
         if(params.fileformat) {
             if (params.filename) {
