@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org;de.laser.Person;de.laser.PersonRole;de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.storage.RDConstants;de.laser.ReaderNumber;de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Org;de.laser.Person;de.laser.PersonRole;de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.storage.RDConstants;de.laser.ReaderNumber;de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
 <laser:htmlStart message="menu.institutions.readerNumbers" serviceInjection="true"/>
 
         <g:set var="entityName" value="${message(code: 'org.label')}"/>
@@ -82,7 +82,7 @@
                                             data-confirm-term-how="ok" params="${[semester:numbersInstance.getKey().id,org:params.id]}"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate outline icon"></i>
+                                        <i class="${Icons.CMD_DELETE} icon"></i>
                                     </g:link>
                                     <laser:render template="/readerNumber/formModal" model="[formId: 'newForSemester'+numbersInstance.getKey().id,semester:numbersInstance.getKey().id,withSemester: true,title:message(code: 'readerNumber.createForUni.label')]"/>
                                 </g:if>
@@ -127,7 +127,7 @@
                                                 data-confirm-term-how="ok" params="${[dueDate:numbersInstance.getKey(),org:params.id]}"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="trash alternate outline icon"></i>
+                                            <i class="${Icons.CMD_DELETE} icon"></i>
                                         </g:link>
                                     </g:if>
                                 </td>

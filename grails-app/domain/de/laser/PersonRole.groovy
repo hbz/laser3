@@ -154,18 +154,24 @@ class PersonRole implements Comparable<PersonRole>{
     }
 
     /**
-     * Gets the first person-org link between the given {@link Person} and {@link Org} matching the given responsibility type
+     * Gets the first person-org link between the given {@link Person} and {@link Org}/{@link Provider}/{@link Vendor} matching the given responsibility type
      * @param prs the {@link Person} from which the link points to
-     * @param org the {@link Org} to which the link points to
+     * @param org the {@link Org}, {@link Provider} or {@link Vendor} to which the link points to
      * @param resp the responsibility type (one of the {@link RDConstants#PERSON_RESPONSIBILITY} reference value strings) which exists between the person and the organisation
      * @return a {@link PersonRole} matching the given responsibility type and linking the given person with the organisation
      */
-    static PersonRole getByPersonAndOrgAndRespValue(Person prs, Org org, String resp) {
-        List<PersonRole> result = PersonRole.findAllWhere(
-            prs: prs,
-            org: org,
-            responsibilityType: RefdataValue.getByValueAndCategory(resp, RDConstants.PERSON_RESPONSIBILITY)
-        )
+    static PersonRole getByPersonAndOrgAndRespValue(Person prs, def org, String resp) {
+        Map<String, Object> configMap = [prs: prs, responsibilityType: RefdataValue.getByValueAndCategory(resp, RDConstants.PERSON_RESPONSIBILITY)]
+        if(org instanceof Org) {
+            configMap.org = org
+        }
+        else if(org instanceof Provider) {
+            configMap.provider = org
+        }
+        else if(org instanceof Vendor) {
+            configMap.vendor = org
+        }
+        List<PersonRole> result = PersonRole.findAllWhere(configMap)
 
         result.first()
     }

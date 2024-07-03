@@ -5,7 +5,7 @@
 
 <ui:subNav actionName="${actionName}">
     <ui:subNavItem controller="license" action="show" params="${[id:params.id]}" message="license.nav.details" />
-    <ui:subNavItem controller="license" action="linkedSubs" params="${[id:params.id]}" message="subscription.plural"/>
+    <ui:subNavItem controller="license" action="linkedSubs" params="${[id:params.id]}" message="subscription.plural" counts="${subsCount}"/>
     <g:if test="${license._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_CONSORTIAL}">
         <ui:subNavItem controller="license" action="members" params="${[id:params.id]}" text="${message(code:'license.details.incoming.childs')}"/>
     </g:if>

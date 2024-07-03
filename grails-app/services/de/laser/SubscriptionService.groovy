@@ -66,11 +66,9 @@ class SubscriptionService {
     PropertyService propertyService
     ProviderService providerService
     RefdataService refdataService
-    StatsSyncService statsSyncService
     SubscriptionsQueryService subscriptionsQueryService
     SurveyService surveyService
     UserService userService
-    OrgTypeService orgTypeService
 
 
     /**
@@ -520,8 +518,12 @@ class SubscriptionService {
             prf.setBenchmark('costs init')
 
             if (params.filterPvd) {
-                query = query + " and exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.sub.id = subT.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select orgRole from OrgRole orgRole where orgRole.sub = sub and orgRole.org.id in (:filterPvd))) "
+                query = query + " and exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.sub.id = subT.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select provRole from ProviderRole provRole where provRole.subscription = sub and provRole.provider.id in (:filterPvd))) "
                 qarams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextOrg, filterPvd: Params.getLongList(params, 'filterPvd')]
+            }
+            if (params.filterVen) {
+                query = query + " and exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.sub.id = subT.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select venRole from VendorRole venRole where venRole.subscription = sub and venRole.vendor.id in (:filterVen))) "
+                qarams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextOrg, filterVen: Params.getLongList(params, 'filterVen')]
             }
 
 
@@ -530,11 +532,11 @@ class SubscriptionService {
             //post filter; HQL cannot filter that parameter out
             result.costs = costs
 
-            Map queryParamsProviders = [subs: costs.sub]
-
-            String queryProviders = 'select pvr.provider from ProviderRole pvr where pvr.subscription in (:subs)'
-
+            Map queryParamsProviders = [context: contextOrg]
+            String queryProviders = 'select p from ProviderRole pvr join pvr.provider p where pvr.subscription in (select oo.sub from OrgRole oo where oo.org = :context) order by p.sortname, p.name',
+            queryVendors = 'select v from VendorRole vr join vr.vendor v where vr.subscription in (select oo.sub from OrgRole oo where oo.org = :context) order by v.sortname, v.name'
             result.providers = Provider.executeQuery(queryProviders, queryParamsProviders) as Set<Provider>
+            result.vendors = Vendor.executeQuery(queryVendors, queryParamsProviders) as Set<Vendor>
             result.totalCount = costs.size()
             Set<Subscription> uniqueSubs = []
             uniqueSubs.addAll(costs.sub)

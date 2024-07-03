@@ -1,4 +1,4 @@
-<%@page import="de.laser.utils.DateUtils; de.laser.ReportingFilter;de.laser.reporting.export.GlobalExportHelper;de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.reporting.report.ReportingCache;" %>
+<%@page import="de.laser.helper.Icons; de.laser.utils.DateUtils; de.laser.ReportingFilter;de.laser.reporting.export.GlobalExportHelper;de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.reporting.report.ReportingCache;" %>
 <laser:serviceInjection/>
 
 <g:if test="${filterHistory}">
@@ -36,7 +36,7 @@
                             <g:if test="${ReportingFilter.findByToken(fhRCache.token)}">
                             %{--
                             <g:link controller="ajaxHtml" action="reporting" params="${[context: BaseConfig.KEY_MYINST, cmd: 'deleteBookmark', token: "${fhRCache.token}", tab: 'history']}"
-                                    class="ui small icon negative la-modern-button button right floated"><i class="icon trash alternate outline"></i></g:link>
+                                    class="ui small icon negative la-modern-button button right floated"><i class="${Icons.CMD_DELETE} icon"></i></g:link>
                                     --}%
                             </g:if>
                             <g:else>
@@ -87,7 +87,7 @@
                         </td>
                         <td>
                             <g:link controller="ajaxHtml" action="reporting" params="${[context: BaseConfig.KEY_MYINST, cmd: 'deleteBookmark', token: "${fav.token}", tab: 'bookmark']}"
-                                    class="ui small icon negative la-modern-button button right floated"><i class="icon trash alternate outline"></i></g:link>
+                                    class="ui small icon negative la-modern-button button right floated"><i class="${Icons.CMD_DELETE} icon"></i></g:link>
                         </td>
                     </tr>
                 </g:each>

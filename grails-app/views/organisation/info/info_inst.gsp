@@ -151,7 +151,7 @@
                                     <tr data-id="${subId}" data-referenceYear="${sub.referenceYear}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="icon clipboard la-list-icon"></i>
+                                                <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                                             </div>
                                         </td>
@@ -265,7 +265,7 @@
                                     <tr data-id="${subId}" data-referenceYear="${sub.referenceYear}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="icon clipboard la-list-icon"></i>
+                                                <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                                             </div>
                                         </td>
@@ -350,7 +350,7 @@
                                 <tr data-id="${surveyInfo.id}">
                                     <td>
                                         <div class="la-flexbox la-minor-object">
-                                            <i class="icon pie chart la-list-icon"></i>
+                                            <i class="${Icons.SURVEY} icon la-list-icon"></i>
                                             <g:link controller="survey" action="show" id="${surveyInfo.id}" target="_blank">${surveyInfo.name}</g:link>
                                         </div>
                                     </td>

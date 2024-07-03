@@ -1,4 +1,4 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; de.laser.*; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.helper.Icons; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.*; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 <%
     List<DocContext> baseItems = []
@@ -149,7 +149,7 @@
                                         params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
+                                    <i class="${Icons.CMD_DELETE} icon"></i>
                                 </g:link>
                             </g:if>
                             <g:elseif test="${docctx.shareConf != RDStore.SHARE_CONF_UPLOADER_AND_TARGET}">
@@ -181,7 +181,7 @@
 %{--                                            params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'--}%
 %{--                                            role="button"--}%
 %{--                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">--}%
-%{--                                        <i class="trash alternate outline icon"></i>--}%
+%{--                                        <i class="${Icons.CMD_DELETE} icon"></i>--}%
 %{--                                    </g:link>--}%
 %{--                                </g:if>--}%
 %{--                                <g:else>--}%

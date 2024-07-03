@@ -1,4 +1,4 @@
-<%@ page import="de.laser.oap.OrgAccessPoint; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.helper.Icons; de.laser.oap.OrgAccessPoint; de.laser.storage.RDConstants" %>
 
 <g:set var="entityName" value="${message(code: 'accessPoint.label')}"/>
 <laser:htmlStart text="${message(code: "default.edit.label", args: [entityName])}" serviceInjection="true"/>
@@ -94,7 +94,7 @@
                                 class="ui negative icon button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="trash very alternate icon"></i>
+                            <i class="${Icons.CMD_DELETE} icon"></i>
                         </g:link>
                     </g:if>
                 </td>
@@ -159,7 +159,7 @@
                             class="ui negative icon button"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                        <i class="trash very alternate icon"></i>
+                        <i class="${Icons.CMD_DELETE} icon"></i>
                     </g:link>
                 </g:if>
             </td>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Combo; de.laser.CustomerIdentifier; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting" %>
+<%@ page import="de.laser.helper.Icons; de.laser.Combo; de.laser.CustomerIdentifier; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <laser:htmlStart message="${isProviderOrAgency ? 'org.nav.ids' : 'org.nav.idsCids.shy'}" serviceInjection="true" />
@@ -159,7 +159,7 @@
                                                 data-confirm-term-how="delete"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="trash alternate outline icon"></i>
+                                            <i class="${Icons.CMD_DELETE} icon"></i>
                                         </g:link>
                                     </g:if>
                                 </td>
