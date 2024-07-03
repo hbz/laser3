@@ -39,22 +39,22 @@
     </div>
 </div>
 
-<g:if test="${exception && params.debug}">
-    <div class="ui segment">
-        <h3 class="ui red header">
-            <i class="bug icon"></i> DEBUG-INFORMATION
-        </h3>
-        <div class="content">
-            ${exception.printStackTrace(new java.io.PrintWriter(out))}
-        </div>
-    </div>
-</g:if>
+<sec:ifLoggedIn>
+    <g:if test="${exception}">
 
-<g:if test="${AppUtils.getCurrentServer() == AppUtils.DEV}">
-    <g:renderException exception="${exception}"/>
-</g:if>
-<g:elseif env="development">
-    <g:renderException exception="${exception}"/>
-</g:elseif>
+        <g:if test="${AppUtils.getCurrentServer() in [AppUtils.LOCAL, AppUtils.DEV]}">
+            <g:renderException exception="${exception}"/>
+        </g:if>
+        <g:else>
+            <sec:ifAnyGranted roles="ROLE_YODA">
+               <h3 class="ui red center aligned header">
+                   **// YODA //**
+               </h3>
+                <g:renderException exception="${exception}"/>
+            </sec:ifAnyGranted>
+        </g:else>
+
+    </g:if>
+</sec:ifLoggedIn>
 
 <laser:htmlEnd />
