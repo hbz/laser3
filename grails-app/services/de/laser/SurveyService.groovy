@@ -2491,7 +2491,7 @@ class SurveyService {
                 switch (params.actionsForSurveyVendors) {
                     case "addSurveyVendor":
                         Vendor vendor = Vendor.findById(params.vendorId)
-                        if (SurveyConfigVendor.findBySurveyConfigAndVendor(result.surveyConfig, vendor) && !SurveyVendorResult.findBySurveyConfigAndParticipantAndVendor(result.surveyConfig, participant, vendor)) {
+                        if (SurveyConfigVendor.findBySurveyConfigAndVendor(result.surveyConfig, vendor) && !SurveyVendorResult.findBySurveyConfigAndParticipant(result.surveyConfig, participant)) {
                             SurveyVendorResult surveyVendorResult = new SurveyVendorResult(surveyConfig: result.surveyConfig, participant: participant, vendor: vendor, owner: result.surveyInfo.owner)
                             surveyVendorResult.save()
                         }
@@ -2500,7 +2500,7 @@ class SurveyService {
                     case "removeSurveyVendor":
                         Vendor vendor = Vendor.findById(params.vendorId)
                         SurveyVendorResult surveyVendorResult = SurveyVendorResult.findBySurveyConfigAndParticipantAndVendor(result.surveyConfig, participant, vendor)
-                        if (SurveyConfigVendor.findBySurveyConfigAndVendor(result.surveyConfig, vendor) && surveyVendorResult) {
+                        if (surveyVendorResult) {
                             surveyVendorResult.delete()
                         }
                         break
@@ -2509,28 +2509,25 @@ class SurveyService {
 
             params.subTab = params.subTab ?: 'allVendors'
 
-            if (result.surveyConfig.surveyVendors) {
-                List configVendorIds
-                if (params.subTab == 'allVendors') {
-                    result.selectedVendorIdList = SurveyVendorResult.executeQuery("select svr.vendor.id from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
-                    configVendorIds = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
-                } else if (params.subTab == 'selectVendors') {
-                    List<Long> ids = SurveyVendorResult.executeQuery("select svr.vendor.id from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
-                    if (ids.size() > 0) {
-                        configVendorIds = ids
-                    } else {
-                        //Fallback with fake ID
-                        configVendorIds = [0]
-                    }
-                    result.selectedVendorIdList = configVendorIds
-                }
 
-                params.ids = configVendorIds
-                result.putAll(vendorService.getWekbVendors(params))
-            } else {
-                result.vendorList = []
-                result.vendorListTotal = 0
+            List configVendorIds
+            if (params.subTab == 'allVendors') {
+                result.selectedVendorIdList = SurveyVendorResult.executeQuery("select svr.vendor.id from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
+                configVendorIds = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
+            } else if (params.subTab == 'selectVendors') {
+                List<Long> ids = SurveyVendorResult.executeQuery("select svr.vendor.id from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
+                if (ids.size() > 0) {
+                    configVendorIds = ids
+                } else {
+                    //Fallback with fake ID
+                    configVendorIds = [0]
+                }
+                result.selectedVendorIdList = configVendorIds
             }
+
+            params.ids = configVendorIds
+            result.putAll(vendorService.getWekbVendors(params))
+
         }
 
         return result
