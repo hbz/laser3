@@ -168,17 +168,29 @@
                     <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">
                         <option value="">${message(code: 'default.select.choose.label')}</option>
 
-                        <g:each in="${providers.sort { it.name }}" var="provider">
+                        <g:each in="${providers}" var="provider">
                             <option <%=Params.getLongList(params, 'filterPvd').contains(provider.id) ? 'selected="selected"' : ''%>
                                     value="${provider.id}">
                                 ${provider.name}
                             </option>
                         </g:each>
                     </select>
-
                 </g:if>
             </div>
             <div class="field">
+                <g:if test="${'withCostItems' in tableConfig}">
+                    <label for="filterVen">${message(code: 'menu.my.vendors')}</label>
+                    <select id="filterVen" name="filterVen" multiple="" class="ui search selection fluid dropdown">
+                        <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                        <g:each in="${vendors}" var="vendor">
+                            <option <%=Params.getLongList(params, 'filterVen').contains(vendor.id) ? 'selected="selected"' : ''%>
+                                    value="${vendor.id}">
+                                ${vendor.name}
+                            </option>
+                        </g:each>
+                    </select>
+                </g:if>
             </div>
         </div>
             <div class="field la-field-right-aligned">
