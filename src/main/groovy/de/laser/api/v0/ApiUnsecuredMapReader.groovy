@@ -3,6 +3,7 @@ package de.laser.api.v0
 import de.laser.Address
 import de.laser.Combo
 import de.laser.ElectronicBilling
+import de.laser.ElectronicDeliveryDelayNotification
 import de.laser.InvoiceDispatch
 import de.laser.LibrarySystem
 import de.laser.License
@@ -511,6 +512,7 @@ class ApiUnsecuredMapReader {
 
         result.supportedLibrarySystems = vendor.supportedLibrarySystems?.collect { LibrarySystem ls -> ls.librarySystem.value }
         result.electronicBillings = vendor.electronicBillings?.collect { ElectronicBilling eb -> eb.invoicingFormat.value }
+        result.electronicDeliveryDelayNotifications = vendor.electronicDeliveryDelays?.collect { ElectronicDeliveryDelayNotification eddn -> eddn.delayNotification.value }
         result.invoiceDispatchs   = vendor.invoiceDispatchs?.collect { InvoiceDispatch idi -> idi.invoiceDispatch.value }
         result.status         = vendor.status?.value
 
