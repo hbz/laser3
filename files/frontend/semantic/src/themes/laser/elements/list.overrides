@@ -12,7 +12,7 @@
     clear: unset;
     visibility: unset;
   }
-  .button:not(.editable-submit):not(.editable-cancel) {
+  .button:not(.editable-submit):not(.editable-cancel):not(.la-show-button) {
     opacity: 0;
     -webkit-transition: opacity 1s; /* For Safari 3.1 to 6.0 */
     transition: opacity 1s;
