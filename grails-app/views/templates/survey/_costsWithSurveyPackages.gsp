@@ -15,9 +15,9 @@
            value="${surveyOrg && surveyPackages ? CostItem.findAllBySurveyOrgAndPkgInList(surveyOrg, surveyPackages) : null}"/>
 
     <g:set var="costItemsSubsc"
-           value="${CostItem.executeQuery('select ci from CostItem as ci left join ci.costItemElement cie where ci.owner in :owner and ci.sub = :sub and ci.isVisibleForSubscriber = true and ci.surveyOrg = null and ci.costItemStatus != :deleted and ci.pkg in (:pkgs)' +
+           value="${subscription ? CostItem.executeQuery('select ci from CostItem as ci left join ci.costItemElement cie where ci.owner in :owner and ci.sub = :sub and ci.isVisibleForSubscriber = true and ci.surveyOrg = null and ci.costItemStatus != :deleted and ci.pkg in (:pkgs)' +
                    ' order by cie.value_' + LocaleUtils.getCurrentLang(),
-                   [owner: [subscription.getConsortia()], sub: subscription, deleted: RDStore.COST_ITEM_DELETED, pkgs: surveyPackages])}"/>
+                   [owner: [subscription.getConsortia()], sub: subscription, deleted: RDStore.COST_ITEM_DELETED, pkgs: surveyPackages] : null}"/>
 
     <% Set<RefdataValue> costItemElementsNotInSurveyCostItems = [] %>
 
