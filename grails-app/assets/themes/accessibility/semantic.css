@@ -44302,19 +44302,19 @@ ol.ui.suffixed.list li::before,
   visibility: unset;
 }
 
-.ui.divided.middle.la-flex-list .item .button {
+.ui.divided.middle.la-flex-list .item .button:not(.editable-submit):not(.editable-cancel) {
   opacity: 0;
   /* For Safari 3.1 to 6.0 */
   transition: opacity 1s;
 }
 
-.ui.divided.middle.la-flex-list .item .button.disabled {
+.ui.divided.middle.la-flex-list .item .button:not(.editable-submit):not(.editable-cancel).disabled {
   opacity: 0!important;
   /* For Safari 3.1 to 6.0 */
   transition: opacity 1s;
 }
 
-.ui.divided.middle.la-flex-list .item:hover .button {
+.ui.divided.middle.la-flex-list .item:hover .button:not(.editable-submit):not(.editable-cancel) {
   opacity: 1;
 }
 
