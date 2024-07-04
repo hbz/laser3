@@ -249,7 +249,7 @@
           example: "2022-01-01T00:00:00"
         sub:
           $ref: "#/components/schemas/SubscriptionStub"
-        subPkg:
+        pkg:
           $ref: "#/components/schemas/Package_in_CostItem"
         taxCode:
           type: string
@@ -423,11 +423,6 @@
       allOf:
         - $ref: "#/components/schemas/OrganisationStub"
       properties:
-        addresses:
-          type: array
-          description: The contact addresses of the given organisation.
-          items:
-            $ref: "#/components/schemas/Address"
         altnames:
           type: array
           description: A set of alternative names of the organisation.
@@ -480,11 +475,21 @@
           description: Contacts of the given organisation.
           items:
             $ref: "#/components/schemas/Person" # resolved PersonRole
+        privateAddresses:
+          type: array
+          description: The private contact addresses of the given organisation, coming from the context org's private addressbook
+          items:
+            $ref: "#/components/schemas/Address"
         properties: # mapping attr customProperties and privateProperties
           type: array
           description: Set of public and private properties of the calling institution.
           items:
             $ref: "#/components/schemas/Property"
+        publicAddresses:
+          type: array
+          description: The public contact addresses of the given organisation.
+          items:
+            $ref: "#/components/schemas/Address"
         region:
           type: string
           description: In which German-speaking region/county is the institution seated? Maps to the RefdataCategory "${RDConstants.REGIONS_DE}", "${RDConstants.REGIONS_AT}" and "${RDConstants.REGIONS_CH}".
@@ -516,11 +521,6 @@
       allOf:
         - $ref: "#/components/schemas/ProviderStub"
       properties:
-        addresses:
-          type: array
-          description: The contact addresses of the given provider.
-          items:
-            $ref: "#/components/schemas/Address"
         altnames:
           type: array
           description: A set of alternative names of the provider.
@@ -602,6 +602,16 @@
           description: Set of public and private properties of the calling institution.
           items:
             $ref: "#/components/schemas/Property"
+        publicAddresses:
+          type: array
+          description: The public contact addresses of the given provider.
+          items:
+            $ref: "#/components/schemas/Address"
+        privateAddresses:
+          type: array
+          description: The private contact addresses of the given provider, coming from the context org's addressbook
+          items:
+            $ref: "#/components/schemas/Address"
         retirementDate:
           type: string
           description: Timestamp when the provider has ceased to be active.
@@ -957,11 +967,6 @@
       allOf:
         - $ref: "#/components/schemas/VendorStub"
       properties:
-        addresses:
-          type: array
-          description: The contact addresses of the given vendor.
-          items:
-            $ref: "#/components/schemas/Address"
         altnames:
           type: array
           description: A set of alternative names of the vendor.
@@ -990,14 +995,6 @@
           example: ["E-Mail", "Peppol"]
           items:
             type: string
-        invoicingVendors:
-          type: array
-          description: A set of vendors performing invoicing for the given vendor.
-          items:
-            $ref: "#/components/schemas/VendorStub" # resolved InvoicingVendor
-        kbartDownloaderURL:
-          type: string
-          description: Web site of the vendor where KBART files of the packages may be downloaded.
         lastUpdated:
           type: string
           description: Timestamp when the vendor record has been most recently updated.
@@ -1012,9 +1009,6 @@
           type: string #mapped to boolean
           description: Does a management of credits take place? Maps to the RefdataCategory "${RDConstants.Y_N}".
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
-        metadataDownloaderURL:
-          type: string
-          description: Web site of the vendor where metadata information may be downloaded.
         paperInvoice:
           type: string #mapped to boolean
           description: Does the vendor issue invoices on paper print? Maps to the RefdataCategory "${RDConstants.Y_N}".
@@ -1029,6 +1023,11 @@
           description: Contacts of the given vendor.
           items:
             $ref: "#/components/schemas/Person" # resolved PersonRole
+        privateAddresses:
+          type: array
+          description: The private contact addresses of the given vendor, belonging to the context organisation.
+          items:
+            $ref: "#/components/schemas/Address"
         processingOfCompensationPayments:
           type: string
           description: Are compensation payments (i.e. credits/subsequent debts) being processed? Maps to the RefdataCategory "${RDConstants.Y_N}".
@@ -1038,6 +1037,11 @@
           description: Set of public and private properties of the calling institution.
           items:
             $ref: "#/components/schemas/Property"
+        publicAddresses:
+          type: array
+          description: The public contact addresses of the given vendor.
+          items:
+            $ref: "#/components/schemas/Address"
         retirementDate:
           type: string
           description: Timestamp when the vendor has ceased to be active.
@@ -1765,7 +1769,7 @@
         status:
           type: string
           description: Status of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_STATUS}".
-          enum: <% printRefdataEnum(RDConstants.ORG_STATUS+Constants.PERMANENTLY_DELETED, 12) %>
+          enum: <% printRefdataEnum(RDConstants.ORG_STATUS, 12) %>
           example: ${RDStore.ORG_STATUS_CURRENT.value}
         type:
           type: array

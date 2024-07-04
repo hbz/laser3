@@ -11,6 +11,7 @@ import de.laser.IssueEntitlement
 import de.laser.Language
 import de.laser.Org
 import de.laser.OrgRole
+import de.laser.Person
 import de.laser.PersonRole
 import de.laser.Platform
 import de.laser.Provider
@@ -706,7 +707,7 @@ class ApiCollectionReader {
                     person = ApiMapReader.getPersonMap(it.prs, allowedAddressTypes, allowedContactTypes, context) // de.laser.Person
 
                     // export public
-                    if("No" != person.isPublic?.value?.toString()) {
+                    if(it.prs.isPublic) {
                         tmp << person
                     }
                     // or private if tenant = context
