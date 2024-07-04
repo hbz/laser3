@@ -666,6 +666,11 @@
             description: The title stock of this package.
             items:
               $ref: "#/components/schemas/TitleInstancePackagePlatform_in_Package"
+          vendors:
+            type: array
+            description: A set of linked vendors to this package.
+            items:
+              $ref: "#/components/schemas/VendorStub" #resolved PackageVendor
 
 
     Person:
@@ -967,27 +972,45 @@
       allOf:
         - $ref: "#/components/schemas/VendorStub"
       properties:
+        activationForNewReleases:
+          type: string
+          description: Does the vendor notify the customers about new releases? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         altnames:
           type: array
           description: A set of alternative names of the vendor.
           items:
             type: string
+        ediOrders:
+          type: string
+          description: Are orders possible via XML file? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         electronicBillings:
           type: array
           description: A set of electronic invoicing formats which are supported by the given vendor. The values map to the RefdataCategory ${RDConstants.VENDOR_INVOICING_FORMAT}.
           example: ["EDI", "PDF"]
           items:
             type: string
+        electronicDeliveryDelayNotifications:
+          type: array
+          description: A set of notification channels supported by the vendor. The values map to the RefdataCategory ${RDConstants.VENDOR_ELECTRONIC_DELIVERY_DELAY}.
+          example: ["E-Mail", "EDI"]
+          items:
+            type: string
+        exchangeOfIndividualTitles:
+          type: string
+          description: Are single titles being exchanged in the package? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        forwardingUsageStatisticsFromPublisher:
+          type: string
+          description: Are usage statistics being forwarded from the provider? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         homepage:
           type: string
           description: Web site of the vendor.
         individualInvoiceDesign:
           type: string #mapped to boolean
           description: Does the vendor design an individual invoice for the customer? Maps to the RefdataCategory "${RDConstants.Y_N}".
-          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
-        inhouseInvoicing:
-          type: string #mapped to boolean
-          description: Does the vendor invoicing himself? Maps to the RefdataCategory "${RDConstants.Y_N}".
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         invoiceDispatchs:
           type: array
@@ -1042,11 +1065,39 @@
           description: The public contact addresses of the given vendor.
           items:
             $ref: "#/components/schemas/Address"
+        prequalificationVOLInfo:
+          type: string
+          description: URL of a research platform for e-books.
+        researchPlatformForEbooks:
+          type: string
+          description: URL of a research platform for e-books.
         retirementDate:
           type: string
           description: Timestamp when the vendor has ceased to be active.
           format: <% print ApiToolkit.DATE_TIME_PATTERN %>
           example: "2021-06-30T11:36:44"
+        shippingMetadata:
+          type: string
+          description: Is metadata being shipped by the vendor? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        supportedLibrarySystems:
+          type: array
+          description: A set of library systems supported by the vendor. The values map to the RefdataCategory ${RDConstants.VENDOR_SUPPORTED_LIBRARY_SYSTEM}.
+          example: ["Alma", "Folio", "Sisis"]
+          items:
+            type: string
+        technicalSupport:
+          type: string
+          description: Is a technical support being offered on behalf of the vendor? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        webShopOrders:
+          type: string
+          description: Are orders possible via web shop? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        xmlOrders:
+          type: string
+          description: Are orders possible via XML file? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
 
 <%-- virtual objects --%>
     CostItemCollection:
