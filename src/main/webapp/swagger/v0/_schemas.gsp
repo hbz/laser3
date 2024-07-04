@@ -967,11 +967,6 @@
       allOf:
         - $ref: "#/components/schemas/VendorStub"
       properties:
-        addresses:
-          type: array
-          description: The contact addresses of the given vendor.
-          items:
-            $ref: "#/components/schemas/Address"
         altnames:
           type: array
           description: A set of alternative names of the vendor.
@@ -1000,14 +995,6 @@
           example: ["E-Mail", "Peppol"]
           items:
             type: string
-        invoicingVendors:
-          type: array
-          description: A set of vendors performing invoicing for the given vendor.
-          items:
-            $ref: "#/components/schemas/VendorStub" # resolved InvoicingVendor
-        kbartDownloaderURL:
-          type: string
-          description: Web site of the vendor where KBART files of the packages may be downloaded.
         lastUpdated:
           type: string
           description: Timestamp when the vendor record has been most recently updated.
@@ -1022,9 +1009,6 @@
           type: string #mapped to boolean
           description: Does a management of credits take place? Maps to the RefdataCategory "${RDConstants.Y_N}".
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
-        metadataDownloaderURL:
-          type: string
-          description: Web site of the vendor where metadata information may be downloaded.
         paperInvoice:
           type: string #mapped to boolean
           description: Does the vendor issue invoices on paper print? Maps to the RefdataCategory "${RDConstants.Y_N}".
@@ -1039,6 +1023,11 @@
           description: Contacts of the given vendor.
           items:
             $ref: "#/components/schemas/Person" # resolved PersonRole
+        privateAddresses:
+          type: array
+          description: The private contact addresses of the given vendor, belonging to the context organisation.
+          items:
+            $ref: "#/components/schemas/Address"
         processingOfCompensationPayments:
           type: string
           description: Are compensation payments (i.e. credits/subsequent debts) being processed? Maps to the RefdataCategory "${RDConstants.Y_N}".
@@ -1048,6 +1037,11 @@
           description: Set of public and private properties of the calling institution.
           items:
             $ref: "#/components/schemas/Property"
+        publicAddresses:
+          type: array
+          description: The public contact addresses of the given vendor.
+          items:
+            $ref: "#/components/schemas/Address"
         retirementDate:
           type: string
           description: Timestamp when the vendor has ceased to be active.
