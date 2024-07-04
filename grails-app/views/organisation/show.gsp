@@ -83,7 +83,7 @@
                             <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion la-accordion-showMore">
                                 <g:if test="${orgInstance.altnames}">
                                     <div class="item title" id="altname_title">
-                                        <div data-objId="${genericOIDService.getOID(orgInstance.altnames[0])}">
+                                        <div class="item" data-objId="${genericOIDService.getOID(orgInstance.altnames[0])}">
                                             <ui:xEditable owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable}"/>
                                             <g:if test="${editable}">
                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
