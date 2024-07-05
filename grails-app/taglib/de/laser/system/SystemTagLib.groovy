@@ -76,4 +76,22 @@ class SystemTagLib {
     def htmlEnd = { attrs, body ->
         out << '</body></html>'
     }
+
+    def serverCodeMessage = { attrs, body ->
+        out << '<div class="ui segment piled">'
+        out << '  <div class="content">'
+        out << '    <div> <span class="ui orange label huge">' + attrs.status + '</span> </div>'
+        out << '    <h2 class="ui header"> ' + attrs.header + ' </h2>'
+        out << '    <div>'
+        if (attrs.subheader) {
+            out << '  <p> ' + attrs.subheader + ' </p>'
+        }
+        out << body()
+        out << '      <br />'
+        out << '      <p> <button class="ui button" onclick="JSPC.helper.goBack()">' + message(code: 'default.button.back') + '</button> </p>'
+        out << '    </div>'
+        out << '  </div>'
+        out << '</div>'
+    }
+
 }
