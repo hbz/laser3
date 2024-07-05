@@ -310,7 +310,7 @@ class FilterService {
         }
 
         if (params.filterPvd) {
-            String subQuery = " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select orgRole from OrgRole orgRole where orgRole.sub = sub and orgRole.org.id in (:filterPvd)) "
+            String subQuery = " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select pvr from ProviderRole pvr where pvr.subscription = sub and pvr.provider.id in (:filterPvd)) "
             queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg(), filterPvd: Params.getLongList(params, 'filterPvd')]
 
             if (params.subStatus) {
@@ -332,7 +332,13 @@ class FilterService {
                 }
             }
 
-            query << subQuery+")"
+            subQuery+=")"
+
+            if(params.subStatus && RDStore.GENERIC_NULL_VALUE in Params.getRefdataList(params, 'subStatus')) {
+                subQuery += "or not exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf = :sub)"
+                queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg(), sub: params.sub]
+            }
+            query << subQuery
             // params.filterSet = true // ERMS-5516
             isFilterSet = true
         }
@@ -642,7 +648,7 @@ class FilterService {
         }
 
         if (params.filterPvd) {
-            query += " and exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
+            query += " and exists (select pvr from ProviderRole pvr where pvr.subscription = surConfig.subscription and pvr.provider.id in (:filterPvd))"
             queryParams << [filterPvd : Params.getLongList(params, 'filterPvd')]
             isFilterSet = true
         }
@@ -798,7 +804,7 @@ class FilterService {
         }
 
         if (params.filterPvd) {
-            query << "exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
+            query << "exists (select pvr from ProviderRole pvr where pvr.subscription = surConfig.subscription and prv.provider.id in (:filterPvd))"
             queryParams << [filterPvd: Params.getLongList(params, 'filterPvd')]
             isFilterSet = true
         }

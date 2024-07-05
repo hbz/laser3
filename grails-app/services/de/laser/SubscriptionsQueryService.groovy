@@ -75,7 +75,7 @@ class SubscriptionsQueryService {
                             " AND s.instanceOf is not null "
                 qry_params << ['roleType':role_sub_consortia, 'activeInst':contextOrg]
             } else {
-                if (params.showParentsAndChildsSubs || params.identifier?.startsWith('vendor:') || params.q) {
+                if (params.showParentsAndChildsSubs) {
                     base_qry =  " from Subscription as s ${joinQuery} where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) "
                     qry_params << ['roleType':role_sub_consortia, 'activeInst':contextOrg]
                 } else {//nur Parents
@@ -176,7 +176,7 @@ class SubscriptionsQueryService {
         }
 
         if (params.providers && params.providers != "") {
-            base_qry += (" and ( exists ( select pr from ProviderRole as pr where pr.subscription = s and pr.provider.id in (:providers)) or exists ( select vr from VendorRole as vr where vr.subscription = s and vr.vendor.id in (:provider)) )")
+            base_qry += (" and ( exists ( select pr from ProviderRole as pr where pr.subscription = s and pr.provider.id in (:providers)) or exists ( select vr from VendorRole as vr where vr.subscription = s and vr.vendor.id in (:providers)) )")
             qry_params.put('providers', Params.getLongList(params, 'providers'))
             filterSet = true
         }

@@ -597,12 +597,12 @@ class CopyElementsService {
                 }
 
                 //targetObject = targetObject.refresh()
-                ProviderRole.findAllBySubscription(targetObject).each { ProviderRole newSubProvRole ->
+                ProviderRole.executeQuery('select pvr from ProviderRole pvr where pvr.subscription = :target or pvr.license = :target', [target: targetObject]).each { ProviderRole newProvRole ->
 
-                    if (newSubProvRole.provider in toggleShareProviderRoles.provider) {
-                        newSubProvRole.isShared = true
-                        newSubProvRole.save()
-                        ((ShareSupport) targetObject).updateShare(newSubProvRole)
+                    if (newProvRole.provider in toggleShareProviderRoles.provider) {
+                        newProvRole.isShared = true
+                        newProvRole.save()
+                        ((ShareSupport) targetObject).updateShare(newProvRole)
                     }
                 }
             }
@@ -622,12 +622,12 @@ class CopyElementsService {
                 }
 
                 //targetObject = targetObject.refresh()
-                VendorRole.findAllBySubscription(targetObject).each { VendorRole newSubVenRole ->
+                VendorRole.executeQuery('select vr from VendorRole vr where vr.subscription = :target or vr.license = :target', [target: targetObject]).each { VendorRole newVenRole ->
 
-                    if (newSubVenRole.vendor in toggleShareVendorRoles.vendor) {
-                        newSubVenRole.isShared = true
-                        newSubVenRole.save()
-                        ((ShareSupport) targetObject).updateShare(newSubVenRole)
+                    if (newVenRole.vendor in toggleShareVendorRoles.vendor) {
+                        newVenRole.isShared = true
+                        newVenRole.save()
+                        ((ShareSupport) targetObject).updateShare(newVenRole)
                     }
                 }
             }
