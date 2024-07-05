@@ -66,7 +66,6 @@ JSPC = {
     Locale localeEn = de.laser.utils.LocaleUtils.getLocaleEN()
 
     List<String> translations = [
-            'confirm.dialog.clearUp',
             'confirm.dialog.concludeBinding',
             'confirm.dialog.delete',
             'confirm.dialog.inherit',

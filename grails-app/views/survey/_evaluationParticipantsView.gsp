@@ -346,7 +346,7 @@
                                     <span data-position="right center"
                                           class="la-popup-tooltip la-delay"
                                           data-content="Mail senden an Hauptkontakte">
-                                        <i class="icon envelope outline la-list-icon"></i>
+                                        <i class="${Icons.EMAIL} la-list-icon"></i>
                                     </span>
                                 </a>
                             </g:if>
@@ -929,7 +929,7 @@
                                     <span data-position="right center"
                                           class="la-popup-tooltip la-delay"
                                           data-content="Mail senden an Hauptkontakte">
-                                        <i class="icon envelope outline la-list-icon"></i>
+                                        <i class="${Icons.EMAIL} la-list-icon"></i>
                                     </span>
                                 </a>
                             </g:if>

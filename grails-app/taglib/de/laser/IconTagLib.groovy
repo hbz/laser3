@@ -217,7 +217,7 @@ class IconTagLib {
         switch (attrs.type) {
             case [ 'E-Mail', 'Mail' ]: // 'Mail' -> Deprecated
                 msg = message(code: 'contact.icon.label.email')
-                icon = 'icon envelope outline la-list-icon  la-js-copyTriggerIcon'
+                icon = Icons.EMAIL + ' la-list-icon la-js-copyTriggerIcon'
                 break
             case 'Fax':
                 msg = message(code: 'contact.icon.label.fax')

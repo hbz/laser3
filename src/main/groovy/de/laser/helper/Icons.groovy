@@ -71,8 +71,10 @@ class Icons {
 
     public static String DATE                       = 'calendar alternate outline icon'
 
+    public static String EMAIL                      = 'envelope outline icon'
+
     public static String HELP                       = 'question icon'
-    
+
     public static String HELP_TOOLTIP               = 'grey question circle icon'   // COLOR !!
 
     public static String INFO                       = 'info icon'
@@ -91,6 +93,8 @@ class Icons {
     public static String CMD_DOWNLOAD               = 'download icon'
 
     public static String CMD_EDIT                   = 'write icon'
+
+    public static String CMD_ERASE                  = 'eraser icon'
 
     public static String CMD_UNLINK                 = 'unlink icon'
 
