@@ -48,10 +48,10 @@
                     <dl>
                         <dt><g:message code="org.altname.label" /></dt>
                         <dd>
-                            <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion">
+                            <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion la-accordion-showMore">
                                 <g:if test="${vendor.altnames}">
-                                    <div class="title" id="altname_title">
-                                        <div data-objId="${genericOIDService.getOID(vendor.altnames[0])}">
+                                    <div class="item title" id="altname_title">
+                                        <div class="item" data-objId="${genericOIDService.getOID(vendor.altnames[0])}">
                                             <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                                           data_confirm_term_how="ok"
                                                           class="js-open-confirm-modal-xEditable"
@@ -64,7 +64,10 @@
                                                 </ui:remoteLink>
                                             </g:if>
                                         </div>
-                                        <i class="dropdown icon"></i>
+                                        <div class="ui icon blue button la-show-button la-modern-button la-popup-tooltip la-delay"
+                                             data-content="${message(code: 'org.altname.show')}">
+                                            <i class="ui angle double down icon"></i>
+                                        </div>
                                     </div>
                                     <div class="content">
                                         <g:each in="${vendor.altnames.drop(1)}" var="altname">
@@ -345,6 +348,37 @@
                                           owner="${vendor}" type="url" field="researchPlatformForEbooks" overwriteEditable="${editable && !vendor.gokbId}"/>
                             <g:if test="${vendor.researchPlatformForEbooks}">
                                 <ui:linkWithIcon href="${vendor.researchPlatformForEbooks}"/>
+                            </g:if>
+                        </dd>
+                    </dl>
+                </div>
+            </div><!-- .card -->
+
+            <div class="ui card">
+                <div class="content">
+                    <h2 class="ui header"><g:message code="vendor.supplier.header"/></h2>
+                    <dl>
+                        <dt>
+                            <g:message code="vendor.supplier.prequalificationVol.label" />
+                        </dt>
+                        <dd>
+                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                 data_confirm_term_how="ok"
+                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                 owner="${vendor}" field="prequalificationVOL"  overwriteEditable="${editable && !vendor.gokbId}"/>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt>
+                            <g:message code="vendor.supplier.infoPrequalificationVol.label" />
+                        </dt>
+                        <dd>
+                            <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                          data_confirm_term_how="ok"
+                                          class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                          owner="${vendor}" field="prequalificationVOLInfo"  overwriteEditable="${editable && !vendor.gokbId}"/>
+                            <g:if test="${vendor.prequalificationVOLInfo}">
+                                <ui:linkWithIcon href="${vendor.prequalificationVOLInfo}"/>
                             </g:if>
                         </dd>
                     </dl>

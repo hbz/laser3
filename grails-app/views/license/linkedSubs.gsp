@@ -131,6 +131,9 @@
                 </span>
             </th>
             <th>${message(code:'default.status.label')}</th>
+            <g:if test="${institution.isCustomerType_Consortium()}">
+                <th>${message(code:'org.institution.label')}</th>
+            </g:if>
             <th class="la-no-uppercase">
                 <ui:multiYearIcon isConsortial="true" />
             </th>
@@ -212,9 +215,26 @@
                 <td>
                     ${sub.status.getI10n("value")}
                 </td>
+                <g:if test="${institution.isCustomerType_Consortium()}">
+                    <g:set var="childSubCount" value="${Subscription.executeQuery('select count(*) from Subscription s where s.instanceOf = :parent',[parent:sub])[0]}"/>
+                    <td>
+                        <g:if test="${childSubCount > 0}">
+                            <g:link controller="subscription" action="members" params="${[id:sub.id]}">
+                                <div class="ui blue circular label">${childSubCount}</div>
+                            </g:link>
+                        </g:if>
+                        <g:else>
+                            <g:link controller="subscription" action="addMembers" params="${[id:sub.id]}">
+                                <div class="ui blue circular label">
+                                    ${childSubCount}
+                                </div>
+                            </g:link>
+                        </g:else>
+                    </td>
+                </g:if>
                 <td>
                     <g:if test="${sub.isMultiYear}">
-                        <ui:multiYearIcon isConsortial="true" color="orange" />
+                        <ui:multiYearIcon isConsortial="${sub.instanceOf}" color="orange" />
                     </g:if>
                 </td>
             </tr>
