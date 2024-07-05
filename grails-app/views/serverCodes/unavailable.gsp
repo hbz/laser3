@@ -4,27 +4,11 @@
 
     <ui:messages data="${flash}"/>
 
-    <div class="ui segment piled">
-        <div class="content">
-            <div>
-                <span class="ui orange label huge">${status}</span>
-            </div>
+    <laser:serverCodeMessage status="${status}"
+                             header="${message(code: 'serverCode.unavailable.message1')}"
+                             subheader="${message(code: 'serverCode.unavailable.message2')}">
 
-            <h2 class="ui header">
-                ${message(code: 'serverCode.unavailable.message1')}
-            </h2>
-
-            <div>
-                    <p>${message(code: 'serverCode.unavailable.message2')}</p>
-                    <br />
-
-                    <p>
-                        <button class="ui button" onclick="JSPC.helper.goBack()">${message(code: 'default.button.back')}</button>
-                    </p>
-            </div>
-
-        </div>
-    </div>
+    </laser:serverCodeMessage>
 
 <laser:htmlEnd />
 

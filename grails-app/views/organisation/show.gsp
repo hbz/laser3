@@ -80,10 +80,10 @@
                     <dl>
                         <dt><g:message code="org.altname.label" /></dt>
                         <dd>
-                            <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion">
+                            <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion la-accordion-showMore">
                                 <g:if test="${orgInstance.altnames}">
-                                    <div class="title" id="altname_title">
-                                        <div data-objId="${genericOIDService.getOID(orgInstance.altnames[0])}">
+                                    <div class="item title" id="altname_title">
+                                        <div class="item" data-objId="${genericOIDService.getOID(orgInstance.altnames[0])}">
                                             <ui:xEditable owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable}"/>
                                             <g:if test="${editable}">
                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
@@ -93,7 +93,10 @@
                                                 </ui:remoteLink>
                                             </g:if>
                                         </div>
-                                        <i class="dropdown icon"></i>
+                                        <div class="ui icon blue button la-show-button la-modern-button la-popup-tooltip la-delay"
+                                             data-content="${message(code: 'org.altname.show')}">
+                                            <i class="ui angle double down icon"></i>
+                                        </div>
                                     </div>
                                     <div class="content">
                                         <g:each in="${orgInstance.altnames.drop(1)}" var="altname">
