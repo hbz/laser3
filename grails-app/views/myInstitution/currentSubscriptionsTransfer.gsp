@@ -479,14 +479,14 @@
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                             class="ui icon blue tiny button la-modern-button"
-                                                            target="_blank"><i class="download small icon"></i></g:link>
+                                                            target="_blank"><i class="${Icons.CMD_DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                                 class="ui icon blue tiny button la-modern-button"
-                                                                target="_blank"><i class="download small icon"></i></g:link>
+                                                                target="_blank"><i class="${Icons.CMD_DOWNLOAD} small"></i></g:link>
 
                                                     <%-- 2 --%>
                                                         <laser:render template="/templates/documents/modal"
@@ -681,14 +681,14 @@
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                             class="ui icon blue tiny button la-modern-button"
-                                                            target="_blank"><i class="download small icon"></i></g:link>
+                                                            target="_blank"><i class="${Icons.CMD_DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                                 class="ui icon blue tiny button la-modern-button"
-                                                                target="_blank"><i class="download small icon"></i></g:link>
+                                                                target="_blank"><i class="${Icons.CMD_DOWNLOAD} small"></i></g:link>
 
                                                     <%-- 2 --%>
                                                         <laser:render template="/templates/documents/modal"
