@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5794    03.07.2024  rc-3.4  3.4.1       David   Feature     Öffentliche Fehlermeldungen unterbinden
+
 5789    02.07.2024  rc-3.4  3.4.1       Andreas Bug         verschiedene Verbesserungen in der Lieferantenverwaltung
 
 5785    01.07.2024  rc-3.4  3.4.1       Andreas Bug         verschiedene Ausbesserungen
