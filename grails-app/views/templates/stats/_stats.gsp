@@ -174,7 +174,7 @@
     <laser:serviceInjection/>
     <ui:tabs>
         <g:each in="${platformInstanceRecords.values()}" var="platform">
-            <ui:tabsItem controller=" $controllerName" action=" $actionName" tab="${platform.id.toString()}"
+            <ui:tabsItem controller="${controllerName}" action="${actionName}" tab="${platform.id.toString()}"
                          params="${params + [tab: platform.id]}" text="${platform.name}"/>
         </g:each>
     </ui:tabs>

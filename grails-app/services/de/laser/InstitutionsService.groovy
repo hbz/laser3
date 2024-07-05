@@ -158,9 +158,15 @@ class InstitutionsService {
             else {
                 new OrgRole(lic: licenseInstance, org: org, roleType: RDStore.OR_LICENSEE).save()
             }
-            OrgRole.findAllByLicAndRoleTypeAndIsShared(base,RDStore.OR_LICENSOR,true).each { OrgRole licRole ->
-                new OrgRole(lic: licenseInstance, org: licRole.org, roleType: RDStore.OR_LICENSOR, isShared: true).save()
+            ProviderRole.findAllByLicenseAndIsShared(base, true).each { ProviderRole providerRole ->
+                new ProviderRole(license: licenseInstance, provider: providerRole.provider, isShared: true).save()
             }
+            VendorRole.findAllByLicenseAndIsShared(base, true).each { VendorRole vendorRole ->
+                new VendorRole(license: licenseInstance, vendor: vendorRole.vendor, isShared: true).save()
+            }
+            /*OrgRole.findAllByLicAndRoleTypeAndIsShared(base,RDStore.OR_LICENSOR,true).each { OrgRole licRole ->
+                new OrgRole(lic: licenseInstance, org: licRole.org, roleType: RDStore.OR_LICENSOR, isShared: true).save()
+            }*/
 
             return licenseInstance
         }
