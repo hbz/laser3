@@ -7,9 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-5698    4.07.2024   rc-3.4  3.4.1       Ingrid  bug         Design der Buttons anpassen
+5698    04.07.2024  rc-3.4  3.4.1       Ingrid  Bug         Design der Buttons anpassen
 
 5468    04.07.2024  rc-3.4  3.4.1       Ingrid  Feature     Akkordeon für Alternativnamen an Laser-Optik anpassen
+
+5794    03.07.2024  rc-3.4  3.4.1       David   Feature     Öffentliche Fehlermeldungen unterbinden
 
 5789    02.07.2024  rc-3.4  3.4.1       Andreas Bug         verschiedene Verbesserungen in der Lieferantenverwaltung
 
