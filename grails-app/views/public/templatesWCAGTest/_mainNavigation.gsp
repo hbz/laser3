@@ -65,7 +65,7 @@
                         Ingrid Bluoss
                         <i class="dropdown icon"></i>
                         <div class="menu" role="menu">
-                            <a  id="23" href="#" class="item" role="menuitem" >DWI -
+                            <a id="23" href="#" class="item" role="menuitem" >DWI -
                             Leibniz-Institut f&uuml;r Interaktive Materialien (DWI)</a>
                             <a id="24" href="#" class="item active">hbz
                             Konsortialstelle Digitale Inhalte</a>

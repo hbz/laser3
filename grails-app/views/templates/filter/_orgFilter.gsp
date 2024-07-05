@@ -103,7 +103,7 @@
                     <label for="osServerAccess">
                         <g:message code="org.serverAccess.label"/>
                     </label>
-                    <select id="osServerAccess" name="osServerAccess" multiple="multiple"  class="ui dropdown multiple">
+                    <select id="osServerAccess" name="osServerAccess" multiple="multiple" class="ui dropdown multiple">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${[OrgSetting.KEYS.NATSTAT_SERVER_ACCESS, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS, OrgSetting.KEYS.EZB_SERVER_ACCESS]}" var="saf">
                             <option <%=(params.list('osServerAccess').contains(saf.toString())) ? 'selected="selected"' : '' %> value="${saf}">
