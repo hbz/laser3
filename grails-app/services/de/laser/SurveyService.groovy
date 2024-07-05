@@ -101,10 +101,10 @@ class SurveyService {
         if (contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
             SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
 
-            if (surveyOrg.finishDate) {
-                return false
-            } else {
+            if (surveyOrg && surveyOrg.finishDate == null) {
                 return true
+            } else {
+                return false
             }
         }else{
             return false
