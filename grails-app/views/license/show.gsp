@@ -69,10 +69,10 @@
                                 <dl>
                                     <dt class="control-label"><g:message code="org.altname.label" /></dt>
                                     <dd>
-                                        <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion">
+                                        <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion la-accordion-showMore">
                                             <g:if test="${license.altnames}">
-                                                <div class="title" id="altname_title">
-                                                    <div data-objId="${genericOIDService.getOID(license.altnames[0])}">
+                                                <div class="item title" id="altname_title">
+                                                    <div class="item" data-objId="${genericOIDService.getOID(license.altnames[0])}">
                                                         <div class="content la-space-right">
                                                             <g:if test="${!license.altnames[0].instanceOf}">
                                                                 <ui:xEditable owner="${license.altnames[0]}" field="name"/>
@@ -149,7 +149,10 @@
                                                             </g:else>
                                                         </g:if>
                                                     </div>
-                                                    <i class="dropdown icon"></i>
+                                                    <div class="ui icon blue button la-show-button la-modern-button la-popup-tooltip la-delay"
+                                                         data-content="${message(code: 'org.altname.show')}">
+                                                        <i class="ui angle double down icon"></i>
+                                                    </div>
                                                 </div>
                                                 <div class="content">
                                                     <g:each in="${license.altnames.drop(1)}" var="altname">
@@ -243,6 +246,7 @@
                                 </dl>
                                 <g:if test="${editable}">
                                     <dl>
+                                        <dt></dt>
                                         <dd><input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}"></dd>
                                     </dl>
                                 </g:if>
