@@ -41,7 +41,7 @@
 </g:if>
 
 <g:if test="${enrichmentProcess}">
-    <ui:msg class="positive" header="${message(code: 'subscription.details.issueEntitlementEnrichment.label')}">
+    <ui:msg class="success" header="${message(code: 'subscription.details.issueEntitlementEnrichment.label')}">
         <g:message code="subscription.details.issueEntitlementEnrichment.enrichmentProcess"
                    args="[enrichmentProcess.countIes, enrichmentProcess.processCount, enrichmentProcess.processCountChangesCoverageDates, enrichmentProcess.processCountChangesPrice]"/>
     </ui:msg>

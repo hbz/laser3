@@ -1,9 +1,9 @@
 <%@ page import="de.laser.helper.Icons" %>
 <g:if test="${success}">
-    <ui:msg icon="ui check icon" class="success" message="subscription.details.addEntitlements.matchingSuccessful" args="[processCount, processRows, countSelectTipps, countNotSelectTipps, g.createLink(controller: 'subscription', action: 'index', params: [id: subscription.id])]"/>
+    <ui:msg class="success" icon="check" message="subscription.details.addEntitlements.matchingSuccessful" args="[processCount, processRows, countSelectTipps, countNotSelectTipps, g.createLink(controller: 'subscription', action: 'index', params: [id: subscription.id])]"/>
 </g:if>
 <g:if test="${tippSelectForSurveySuccess}">
-    <ui:msg class="positive" header="${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.label')}">
+    <ui:msg class="success" header="${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.label')}">
         <g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.selectProcess"
                    args="[processCount, processRows, countSelectTipps, countNotSelectTipps, g.createLink(controller: 'subscription', action: 'renewEntitlementsWithSurvey', params: [id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs'])]"/>
     </ui:msg>

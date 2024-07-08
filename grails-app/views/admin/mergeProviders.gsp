@@ -4,7 +4,7 @@
 
     <g:if test="${mergeResult}">
         <g:if test="${mergeResult.status == providerService.RESULT_SUCCESS}">
-            <ui:msg class="positive" message="deletion.success.msg" />
+            <ui:msg class="success" message="deletion.success.msg" />
         </g:if>
         <g:else>
             <g:if test="${mergeResult.status == providerService.RESULT_BLOCKED}">

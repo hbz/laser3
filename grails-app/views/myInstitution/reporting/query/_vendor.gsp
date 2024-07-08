@@ -5,7 +5,7 @@
     <g:set var="validFilterResult" value="${filterResult.data.vendorIdList}" />
 
     <g:if test="${validFilterResult}">
-        <ui:msg class="positive" noClose="true">
+        <ui:msg class="success" noClose="true">
                 <laser:render template="/myInstitution/reporting/query/query_filterResult" model="${[filter: filter, filterResult: filterResult]}" />
         </ui:msg>
     </g:if>
