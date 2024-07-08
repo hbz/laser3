@@ -173,7 +173,7 @@
                         <div class="four wide column wf-centered">
                             <g:if test="${checkedEditable}"><!-- TODO: workflows-permissions -->
                                 <g:if test="${ti == 1 && cpoints.size() == 2}">%{-- override layout --}%
-                                    <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                                    <div class="ui icon button compact la-hidden"><i class="${Icons._PLACEHOLDER}"></i></div>
                                     <div class="ui icon blue button compact la-modern-button"
                                          data-cmd="moveUp:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="icon arrow up"></i>
                                     </div>
@@ -185,7 +185,7 @@
                                         </div>
                                     </g:if>
                                     <g:else>
-                                        <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                                        <div class="ui icon button compact la-hidden"><i class="${Icons._PLACEHOLDER}"></i></div>
                                     </g:else>
                                     <g:if test="${ti < cpoints.size()-1}">
                                         <div class="ui icon blue button compact la-modern-button"
@@ -193,7 +193,7 @@
                                         </div>
                                     </g:if>
                                     <g:else>
-                                        <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                                        <div class="ui icon button compact la-hidden"><i class="${Icons._PLACEHOLDER}"></i></div>
                                     </g:else>
                                 </g:else>
                             </g:if>
@@ -255,8 +255,8 @@
                         </div>
 
                         <div class="four wide column wf-centered">
-                            <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
-                            <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                            <div class="ui icon button compact la-hidden"><i class="${Icons._PLACEHOLDER}"></i></div>
+                            <div class="ui icon button compact la-hidden"><i class="${Icons._PLACEHOLDER}"></i></div>
 
                             <div class="ui icon blue button compact la-modern-button" id="cpFormToggle"><i class="icon plus"></i></div>
                         </div>

@@ -5,7 +5,12 @@ import de.laser.annotations.UnstableFeature
 @UnstableFeature
 class Icons {
 
+    public static String _PLACEHOLDER               = 'coffee icon'
+
     class Auth {
+
+        // please do not touch during refactoring ..
+        // roles / perms / customer types
 
         public static String INST_USER              = 'user icon'
         public static String INST_EDITOR            = 'user edit icon'
@@ -109,7 +114,7 @@ class Icons {
 
     public static String INFO_TOOLTIP               = 'info circle icon'            // todo: duplicate: Icons.PROPERTY_USED
 
-    public static String MY_OBJECT                  = 'star icon'                   // todo: duplicate: survey/renew? > Icons.MANDATORY_PROPERTY
+    public static String MY_OBJECT                  = 'star icon'                   // todo: duplicate: survey/renew? > Icons.PROPERTY_MANDATORY
 
     public static String WARNING                    = 'exclamation icon'
 
