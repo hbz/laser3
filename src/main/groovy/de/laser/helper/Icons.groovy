@@ -10,6 +10,9 @@ class Icons {
 
     public static String ANNOUNCEMENT               = 'flag icon'
 
+    public static String COSTS                      = 'money bill icon'             // todo
+    public static String COSTS_CONFIG               = 'money bill alternate icon'   // todo
+
     public static String DOCUMENT                   = 'file alternate icon' // todo: duplicate > tipp.coverageDepth > Icons.TIPP_COVERAGE_DEPTH
 
     public static String GASCO                      = 'layer group icon'

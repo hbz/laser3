@@ -61,7 +61,7 @@
                             </th>
                             <th scope="col" rowspan="2" class="center aligned">
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
-                                    <i class="money bill large icon"></i>
+                                    <i class="${Icons.COSTS} large"></i>
                                 </span>
                             </th>
                         </g:if>

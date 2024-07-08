@@ -46,7 +46,7 @@
         <th scope="col" rowspan="2">
             <a href="#" class="la-popup-tooltip la-delay" data-content="Einrichtungskosten" data-position="top center"
                aria-label="Einrichtungskosten" data-why-id="why-725">
-                <i class="money bill large icon" aria-hidden="true"></i>
+                <i class="${Icons.COSTS} large" aria-hidden="true"></i>
             </a>
         </th>
         <th scope="col" rowspan="2" class="two">Trend</th>
@@ -544,7 +544,7 @@
         <th scope="col" rowspan="2">
             <a href="#" class="la-popup-tooltip la-delay" data-content="Einrichtungskosten" data-position="top center"
                aria-label="Einrichtungskosten" data-why-id="why-725">
-                <i class="money bill large icon" aria-hidden="true"></i>
+                <i class="${Icons.COSTS} large" aria-hidden="true"></i>
             </a>
         </th>
         <th scope="col" rowspan="2" class="two">Trend</th>

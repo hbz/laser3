@@ -631,7 +631,7 @@
                                                             <hr>
                                                             <g:if test="${editable}">
                                                                 <button class="ui tiny button addObject" data-objType="priceItem" data-ie="${ie.id}">
-                                                                    <i class="money icon"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
+                                                                    <i class="${Icons.COSTS_CONFIG}"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
                                                                 </button>
                                                             </g:if>
 

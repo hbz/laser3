@@ -17,7 +17,7 @@
                 <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="[ownSort: true]" scope="col" rowspan="2"/>
                 <g:sortableColumn property="ci.sub.name" title="${message(code:'default.subscription.label')}" params="[ownSort: true]" scope="col" class="la-smaller-table-head"/>
                 <th class="la-no-uppercase" scope="col" rowspan="2">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span>
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="${Icons.COSTS_CONFIG}"></i></span>
                 </th>
                 <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[ownSort: true]" scope="col" rowspan="2"/>
                 <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[ownSort: true]" scope="col" rowspan="2"/>
@@ -28,7 +28,7 @@
             <g:else>
                 <g:sortableColumn property="costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance" scope="col" rowspan="2"/>
                 <th class="la-no-uppercase" scope="col" rowspan="2">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span>
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="${Icons.COSTS_CONFIG}"></i></span>
                 </th>
                 <g:sortableColumn property="costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance" scope="col" rowspan="2"/>
                 <g:sortableColumn property="costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance" scope="col" rowspan="2"/>

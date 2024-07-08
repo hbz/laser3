@@ -235,7 +235,7 @@
 
             <th scope="col" rowspan="2">
                 <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyCostItems.label')}" data-position="top center">
-                    <i class="money bill large icon"></i>
+                    <i class="${Icons.COSTS} large"></i>
                 </a>
             </th>
 
