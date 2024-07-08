@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.storage.RDConstants; de.laser.utils.DateUtils; de.laser.Org; de.laser.Package; de.laser.Platform; de.laser.RefdataValue; java.text.SimpleDateFormat" %>
+<%@ page import="de.laser.helper.Icons; de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.storage.RDConstants; de.laser.utils.DateUtils; de.laser.Org; de.laser.Package; de.laser.Platform; de.laser.RefdataValue; java.text.SimpleDateFormat" %>
 <laser:htmlStart message="package.show.all" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -19,7 +19,7 @@
 
 <g:if test="${error}">
     <div class="ui icon error message">
-        <i class="exclamation triangle icon"></i>
+        <i class="${Icons.ERROR}"></i>
         <i class="close icon"></i>
         <div class="content">
             <div class="header">

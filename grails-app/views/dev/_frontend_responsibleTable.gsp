@@ -3,7 +3,7 @@
 <h4 class="ui header">Responsive Tabellen</h4>
 
 <div class="ui icon negative message">
-    <i aria-hidden="true" class="exclamation triangle icon"></i>
+    <i aria-hidden="true" class="${Icons.ERROR}"></i>
 
     <div class="content">
         <div class="header">

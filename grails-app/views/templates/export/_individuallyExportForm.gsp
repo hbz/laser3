@@ -14,7 +14,7 @@
 
     <%-- if commanded by Micha, that the notice gets moved into the form: ui.form info.msg has display:none, contact Ingrid in that case! --%>
    %{-- <g:if test="${formFields.keySet().contains('participantAccessPoints')}">
-        <ui:msg icon="ui exclamation icon" class="warning" message="exportClickMe.exportCSV.noAccessPoints" noClose="true"/>
+        <ui:msg icon="${Icons.WARNING}" class="warning" message="exportClickMe.exportCSV.noAccessPoints" noClose="true"/>
     </g:if>--}%
     <div class="ui form">
 

@@ -17,10 +17,10 @@
             <ui:msg class="info" message="license.delete.info" />
 
             <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
-                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.license" />
+                <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.license" />
             </g:if>
             <g:if test="${delResult.status == deletionService.RESULT_ERROR}">
-                <ui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
+                <ui:msg class="error" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
             <g:link controller="myInstitution" action="currentLicenses" class="ui button">${message(code:'menu.my.licenses')}</g:link>

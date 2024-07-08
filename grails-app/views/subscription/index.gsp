@@ -47,18 +47,18 @@
     </ui:msg>
 
     <g:if test="${truncatedRows}">
-        <ui:msg icon="ui exclamation icon" class="error" message="subscription.details.addEntitlements.truncatedRows" args="[truncatedRows]"/>
+        <ui:msg icon="${Icons.ERROR}" class="error" message="subscription.details.addEntitlements.truncatedRows" args="[truncatedRows]"/>
     </g:if>
     <g:if test="${errorKBART}">
-        <ui:msg icon="ui exclamation icon" class="error" message="subscription.details.addEntitlements.titleNotMatched" args="[errorCount]"/>
+        <ui:msg icon="${Icons.ERROR}" class="error" message="subscription.details.addEntitlements.titleNotMatched" args="[errorCount]"/>
         <g:link class="ui icon button la-modern-button" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>
     </g:if>
 
 </g:if>
 
 <g:if test="${deletedSPs}">
-    <div class="ui exclamation icon negative message">
-        <i class="exclamation icon"></i>
+    <div class="ui icon negative message">
+        <i class="${Icons.ERROR}"></i>
         <ul class="list">
             <g:each in="${deletedSPs}" var="sp">
                 <li><g:message code="subscription.details.packagesDeleted.header"
@@ -69,8 +69,8 @@
 </g:if>
 
 <g:if test="${frozenHoldings}">
-    <div class="ui exclamation icon negative message">
-        <i class="exclamation icon"></i>
+    <div class="ui icon negative message">
+        <i class="${Icons.ERROR}"></i>
         <ul class="list">
             <g:each in="${frozenHoldings}" var="sp">
                 <li><g:message code="subscription.details.frozenHoldings.header"

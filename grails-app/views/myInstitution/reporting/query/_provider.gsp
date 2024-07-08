@@ -10,7 +10,7 @@
         </ui:msg>
     </g:if>
     <g:else>
-        <ui:msg class="negative" noClose="true" message="reporting.filter.result.x.empty" />
+        <ui:msg class="error" noClose="true" message="reporting.filter.result.x.empty" />
     </g:else>
 
     <laser:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterResult.labels]}" />

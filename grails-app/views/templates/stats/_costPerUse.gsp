@@ -1,8 +1,8 @@
-<%@ page import="de.laser.utils.DateUtils;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.utils.DateUtils;" %>
 
 <div class="ui segment" id="costPerUse">
     <g:if test="${selectedPeriodNotCovered}">
-        <ui:msg icon="ui exclamation icon" class="info">${selectedPeriodNotCovered}</ui:msg>
+        <ui:msg icon="${Icons.INFO}" class="info">${selectedPeriodNotCovered}</ui:msg>
     </g:if>
     <div id="chartWrapper" style="width:100%; min-height:500px"></div>
     <%--

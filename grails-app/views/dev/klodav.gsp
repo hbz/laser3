@@ -1,9 +1,6 @@
 <%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:htmlStart text="Playground" serviceInjection="true" />
 
-<br />
-<br />
-
 
 <h1 class="ui header center aligned">
     Playground
@@ -113,6 +110,21 @@
             <div class="content"> functional link</div>
         </div>
     </div>
+</div>
+
+<div class="ui icon info message">
+    <i class="${Icons.INFO}"></i>
+    <div class="content"> INFO </div>
+</div>
+
+<div class="ui icon warning message">
+    <i class="${Icons.WARNING}"></i>
+    <div class="content"> WARNING / IMPORTANT </div>
+</div>
+
+<div class="ui icon error message">
+    <i class="${Icons.ERROR}"></i>
+    <div class="content"> ERROR </div>
 </div>
 
 <pre>

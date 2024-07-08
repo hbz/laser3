@@ -73,15 +73,21 @@ class Icons {
 
     public static String EMAIL                      = 'envelope outline icon'
 
+    public static String ERROR                      = 'exclamation triangle icon'
+
     public static String HELP                       = 'question icon'
 
     public static String HELP_TOOLTIP               = 'grey question circle icon'   // COLOR !!
+
+    public static String IMPORTANT_TOOLTIP          = 'exclamation circle icon'
 
     public static String INFO                       = 'info icon'
 
     public static String INFO_TOOLTIP               = 'info circle icon'            // todo: duplicate: Icons.PROPERTY_USED
 
     public static String MY_OBJECT                  = 'star icon'                   // todo: duplicate: survey/renew? > Icons.MANDATORY_PROPERTY
+
+    public static String WARNING                    = 'exclamation icon'
 
     // please do not touch during refactoring ..
     // cmds, functions

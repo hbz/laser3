@@ -122,7 +122,7 @@ class UiTagLib {
             out << '<i aria-hidden="true" class="close icon"></i>'
         }
         if (attrs.icon) {
-            out << '<i class="icon ' + attrs.icon + '"></i>'
+            out << '<i class="icon ' + attrs.icon + '"></i>' // TODO erms-5784 doubles 'icon'
         }
         if (attrs.header) {
             out << '<div class="header">'
@@ -449,7 +449,7 @@ class UiTagLib {
     def flagDeprecated = { attrs, body ->
 
         out << '<div class="ui icon message error">'
-        out << '<i class="icon exclamation triangle"></i>'
+        out << '<i class="' + Icons.ERROR + '"></i>'
         out << '<div class="content">'
         out << 'Diese Funktionalität wird demnächst entfernt.<br/>Bitte nicht mehr verwenden und ggfs. Daten migrieren.'
         out << '</div>'

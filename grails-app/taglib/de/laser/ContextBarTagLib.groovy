@@ -22,7 +22,7 @@ class ContextBarTagLib {
         Org org = attrs.org as Org
 
         if (!org) {
-            icon  = 'exclamation circle'
+            icon  = Icons.ERROR // TODO erms-5784 doubles 'icon'
             color = 'red'
             text  = message(code: 'profile.membership.error1')
         }
@@ -84,7 +84,7 @@ class ContextBarTagLib {
             }
         }
         else {
-            icon  = 'exclamation circle'
+            icon  = Icons.ERROR // TODO erms-5784 doubles 'icon'
             color = 'red'
             text  = message(code: 'profile.membership.error2')
         }

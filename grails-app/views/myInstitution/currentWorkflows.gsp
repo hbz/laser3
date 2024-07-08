@@ -60,10 +60,10 @@
 </g:if>
 <g:elseif test="${status == workflowService.OP_STATUS_ERROR}">
     <g:if test="${cmd == 'delete'}">
-        <ui:msg class="negative" message="workflow.delete.error" />
+        <ui:msg class="error" message="workflow.delete.error" />
     </g:if>
     <g:else>
-        <ui:msg class="negative" message="workflow.edit.error" />
+        <ui:msg class="error" message="workflow.edit.error" />
     </g:else>
 </g:elseif>
 

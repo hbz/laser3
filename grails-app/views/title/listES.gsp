@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue;de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue;de.laser.storage.RDConstants" %>
 <laser:htmlStart message="menu.public.all_titles" />
 
     <ui:breadcrumbs>
@@ -34,7 +34,7 @@
                <ui:messages data="${flash}" />
 
                <div class="ui icon info message">
-                 <i class="exclamation triangle icon"></i>
+                 <i class="${Icons.INFO}"></i>
                  <i class="close icon"></i>
                  <div class="content">
                    <div class="header">

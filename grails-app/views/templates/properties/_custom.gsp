@@ -326,6 +326,6 @@
     </g:if>
 </table>
 <g:if test="${error}">
-    <ui:msg class="negative" header="${message(code: 'myinst.message.attention')}" text="${error}"/>
+    <ui:msg class="error" header="${message(code: 'myinst.message.attention')}" text="${error}"/>
 </g:if>
 <!-- O: templates/properties/_custom -->
