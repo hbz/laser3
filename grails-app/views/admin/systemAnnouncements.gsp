@@ -75,7 +75,7 @@ ${currentAnnouncement?.getCleanContent()}
             <div class="ui segment">
                 <h3 class="ui header"><% print sa.title; /* avoid auto encodeAsHTML() */ %></h3>
                 <g:if test="${sa.isPublished}">
-                    <div class="ui green ribbon label"><i class="ui icon exclamation circle"></i>${message(code:'announcement.published')}</div>
+                    <div class="ui green ribbon label"><i class="ui icon check circle"></i>${message(code:'announcement.published')}</div>
                 </g:if>
 
                 <div class="ui divider"></div>

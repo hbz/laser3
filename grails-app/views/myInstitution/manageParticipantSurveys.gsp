@@ -268,7 +268,7 @@
                         <g:if test="${surveyInfo.isMandatory}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
-                                <i class="yellow icon exclamation triangle"></i>
+                                <i class="${Icons.IMPORTANT_TOOLTIP2} yellow"></i>
                             </span>
                         </g:if>
                     </td>

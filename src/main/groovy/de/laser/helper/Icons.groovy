@@ -79,7 +79,8 @@ class Icons {
 
     public static String HELP_TOOLTIP               = 'grey question circle icon'   // COLOR !!
 
-    public static String IMPORTANT_TOOLTIP          = 'exclamation circle icon'
+    public static String IMPORTANT_TOOLTIP          = 'exclamation circle icon'     // TODO: merge
+    public static String IMPORTANT_TOOLTIP2         = 'exclamation triangle icon'   // TODO: merge
 
     public static String INFO                       = 'info icon'
 

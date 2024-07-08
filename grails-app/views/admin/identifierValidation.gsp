@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IdentifierNamespace" %>
+<%@ page import="de.laser.helper.Icons; de.laser.IdentifierNamespace" %>
 <laser:htmlStart message="menu.admin.identifierValidation" />
 
 <ui:breadcrumbs>
@@ -33,7 +33,7 @@
                             <g:if test="${isCore}">
                                 ${ns.ns}
                                 <strong data-position="top left" class="la-popup-tooltip la-delay" data-content="Core Namespace">
-                                    <i class="exclamation circle orange icon" aria-hidden="true"></i>
+                                    <i class="${Icons.IMPORTANT_TOOLTIP} orange" aria-hidden="true"></i>
                                 </strong>
                             </g:if>
                             <g:else>

@@ -321,7 +321,7 @@
                             <g:if test="${propertiesChangedByParticipant && participant.id in propertiesChangedByParticipant.id}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
-                                    <i class="exclamation triangle yellow large icon"></i>
+                                    <i class="${Icons.IMPORTANT_TOOLTIP2} yellow"></i>
                                 </span>
                             </g:if>
 
@@ -905,7 +905,7 @@
                             <g:if test="${propertiesChangedByParticipant && participant.id in propertiesChangedByParticipant.id}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
-                                    <i class="exclamation triangle yellow large icon"></i>
+                                    <i class="${Icons.IMPORTANT_TOOLTIP2} yellow"></i>
                                 </span>
                             </g:if>
 

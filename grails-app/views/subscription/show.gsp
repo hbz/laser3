@@ -466,7 +466,7 @@
                                                     <g:if test="${missingSubMonths}">
                                                         <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                               data-html="${message(code: 'default.usage.missingUsageInfo')}: ${missingSubMonths.join(',')}">
-                                                            <i class="exclamation triangle icon la-popup small"></i>
+                                                            <i class="${Icons.IMPORTANT_TOOLTIP2} la-popup small"></i>
                                                         </span>
                                                     </g:if>
                                                 </td>
@@ -529,7 +529,7 @@
                                                 <g:if test="${missing}">
                                                     <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                           data-html="${message(code: 'default.usage.missingUsageInfo')}: ${missing.join(',')}">
-                                                        <i class="exclamation triangle icon la-popup small"></i>
+                                                        <i class="${Icons.IMPORTANT_TOOLTIP2} la-popup small"></i>
                                                     </span>
                                                 </g:if>
                                             </td>

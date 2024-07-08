@@ -29,7 +29,7 @@
         <ui:msg class="error" noClose="true" message="reporting.filter.result.x.empty" />
 
         <g:if test="${filterResult.get(ElasticSearchHelper.ELASTICSEARCH_IS_NOT_REACHABLE)}">
-            <ui:msg class="error" icon="${Icons.ERROR} large" message="reporting.filter.result.x.elasticSearchIsNotReachable" noClose="true" />
+            <ui:msg class="error" icon="${Icons.ERROR}" message="reporting.filter.result.x.elasticSearchIsNotReachable" noClose="true" />
         </g:if>
     </g:else>
 

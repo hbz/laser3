@@ -46,7 +46,7 @@
                             data-content="${message(code: 'subscription.participantTransferWithSurvey.label')}"
                             data-position="top center">
                         <i class="large icons">
-                            <i class="chart pie icon"></i>
+                            <i class="${Icons.SURVEY}"></i>
                             <i class="top right corner redo icon"></i>
                         </i>
                     </span>
