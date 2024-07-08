@@ -5,6 +5,24 @@ import de.laser.annotations.UnstableFeature
 @UnstableFeature
 class Icons {
 
+    class Auth {
+
+        public static String INST_USER              = 'user icon'
+        public static String INST_EDITOR            = 'user edit icon'
+        public static String INST_ADM               = 'user shield icon'
+
+        public static String ORG_INST_BASIC         = 'user circle icon'    // grey
+        public static String ORG_INST_PRO           = 'trophy icon'         // grey
+        public static String ORG_CONSORTIUM_BASIC   = 'user circle icon'    // teal
+        public static String ORG_CONSORTIUM_PRO     = 'trophy icon'         // teal
+        public static String ORG_SUPPORT            = 'theater masks icon'  // red
+
+        public static String ROLE_ADMIN             = 'tools icon'          // orange
+        public static String ROLE_USER              = 'user icon'
+        public static String ROLE_YODA              = 'star of life icon'   // red
+    }
+
+
     // please do not touch during refactoring ..
     // domain classes / main objects
 
@@ -30,6 +48,8 @@ class Icons {
     public static String PROVIDER                   = 'handshake icon'      // todo: duplicate > org.legalInformation > Icons.ORG_LEGAL_INFORMATION
 
     public static String REPORTING                  = 'chartline icon'
+
+    public static String STATS                      = 'chart bar icon'
 
     public static String SUBSCRIPTION               = 'clipboard icon'      // todo: duplicate license.licenseCategory, tipp.accessStartDate/tipp.accessEndDate
 

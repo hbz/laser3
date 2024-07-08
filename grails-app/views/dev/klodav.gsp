@@ -69,23 +69,17 @@
             <i class="${Icons.SUBSCRIPTION_IS_MULTIYEAR} large"></i>
             <div class="content"> Mehrjahreslaufzeit (${Icons.SUBSCRIPTION_IS_MULTIYEAR})</div>
         </div>
-    </div>
-</div>
-
-<div class="ui segment">
-    <p class="ui header">...</p>
-    <div class="ui list">
         <div class="item">
-            <i class="edit icon large"></i>
-            <div class="content">edit</div>
+            <i class="${Icons.COSTS} large"></i>
+            <div class="content"> Kosten (${Icons.COSTS})</div>
         </div>
         <div class="item">
-            <i class="pencil icon large"></i>
-            <div class="content">pencil</div>
+            <i class="${Icons.COSTS_CONFIG} large"></i>
+            <div class="content"> Kosten (Konfiguration) (${Icons.COSTS_CONFIG})</div>
         </div>
         <div class="item">
-            <i class="write icon large"></i>
-            <div class="content">write</div>
+            <i class="euro sign icon large"></i>
+            <div class="content"> euro sign icon large </div>
         </div>
     </div>
 </div>
@@ -142,19 +136,19 @@
     <div class="ui list">
         <div class="item">
             <div class="ui label">
-                <i class="icon user"></i>
+                <i class="${Icons.Auth.INST_USER}"></i>
                 <g:message code="cv.roles.INST_USER"/>
             </div>
         </div>
         <div class="item">
             <div class="ui label">
-                <i class="icon user edit"></i>
+                <i class="${Icons.Auth.INST_EDITOR}"></i>
                 <g:message code="cv.roles.INST_EDITOR"/>
             </div>
         </div>
         <div class="item">
             <div class="ui label">
-                <i class="icon user shield"></i>
+                <i class="${Icons.Auth.INST_ADM}"></i>
                 <g:message code="cv.roles.INST_ADM"/>
             </div>
         </div>
@@ -162,26 +156,26 @@
     <div class="ui list">
         <div class="item">
             <div class="ui label yellow">
-                <i class="icon user circle"></i>
+                <i class="${Icons.Auth.ORG_CONSORTIUM_BASIC}"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')}
             </div>
         </div>
         <div class="item">
             <div class="ui label yellow">
-                <i class="icon trophy"></i>
+                <i class="${Icons.Auth.ORG_INST_PRO}"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')}
             </div>
         </div>
 
         <div class="item">
             <div class="ui label teal">
-                <i class="icon user circle"></i>
+                <i class="${Icons.Auth.ORG_CONSORTIUM_BASIC}"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')}
             </div>
         </div>
         <div class="item">
             <div class="ui label teal">
-                <i class="icon trophy"></i>
+                <i class="${Icons.Auth.ORG_CONSORTIUM_PRO}"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')}
             </div>
         </div>

@@ -92,7 +92,7 @@
                     <div class="ui card">
                         <div class="ui content">
                             <h2 class="ui dividing orange header">
-                                <i class="tools small icon"></i>
+                                <i class="${Icons.Auth.ROLE_ADMIN} small"></i>
                                 <span class="content">${message(code: 'default.adminsOnly.label')}</span>
                             </h2>
                             <div class="ui form">

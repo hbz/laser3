@@ -16,45 +16,45 @@ class ContextBarTagLib {
     // <ui:cbItemCustomerType org="${contextService.getOrg()}" />
 
     def cbItemCustomerType = {attrs, body ->
-        String icon  = 'question'
+        String icon  = 'question icon'
         String color = 'grey'
         String text  = '?'
         Org org = attrs.org as Org
 
         if (!org) {
-            icon  = Icons.ERROR // TODO erms-5784 doubles 'icon'
+            icon  = Icons.ERROR
             color = 'red'
             text  = message(code: 'profile.membership.error1')
         }
         else if (org.isCustomerType_Consortium_Pro()) {
-            icon  = 'trophy'
+            icon  = Icons.Auth.ORG_CONSORTIUM_PRO
             color = 'teal'
             text  = Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')
         }
         else if (org.isCustomerType_Consortium_Basic()) {
-            icon  = 'user circle'
+            icon  = Icons.Auth.ORG_CONSORTIUM_BASIC
             color = 'teal'
             text  = Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')
         }
         else if (org.isCustomerType_Inst_Pro()) {
-            icon  = 'trophy'
+            icon  = Icons.Auth.ORG_INST_PRO
             color = 'grey'
             text  = Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')
         }
         else if (org.isCustomerType_Inst()) {
-            icon  = 'user circle'
+            icon  = Icons.Auth.ORG_INST_BASIC
             color = 'grey'
             text  = Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')
         }
         else if (org.isCustomerType_Support()) {
-            icon = 'theater masks'
+            icon = Icons.Auth.ORG_SUPPORT
             color = 'red'
             text  = Role.findByAuthority(CustomerTypeService.ORG_SUPPORT).getI10n('authority')
         }
 
         out << '<div class="item la-cb-context">'
         out <<     '<span class="ui label" data-display="' + text + '">'
-        out <<         '<i class="icon ' + icon + ' ' + color + '"></i>'
+        out <<         '<i class="' + icon + ' ' + color + '"></i>'
         out <<     '</span>'
         out << '</div>'
     }
@@ -62,36 +62,36 @@ class ContextBarTagLib {
     // <ui:cbItemUserAffiliation user="${contextService.getUser()}" showGlobalRole="true|false" />
 
     def cbItemUserAffiliation = {attrs, body ->
-        String icon = 'user slash'
-        String color = 'grey'
-        String text = '?'
+        String icon     = 'user slash icon'
+        String color    = 'grey'
+        String text     = '?'
 
         User user = attrs.user as User
         Role fr = user.formalRole
 
         if (fr) {
             if (fr.authority == Role.INST_USER) {
-                icon = 'user'
+                icon = Icons.Auth.INST_USER
                 text = message(code: 'cv.roles.INST_USER')
             }
             else if (fr.authority == Role.INST_EDITOR) {
-                icon = 'user edit'
+                icon = Icons.Auth.INST_EDITOR
                 text = message(code: 'cv.roles.INST_EDITOR')
             }
             else if (fr.authority == Role.INST_ADM) {
-                icon = 'user shield'
+                icon = Icons.Auth.INST_ADM
                 text = message(code: 'cv.roles.INST_ADM')
             }
         }
         else {
-            icon  = Icons.ERROR // TODO erms-5784 doubles 'icon'
+            icon  = Icons.ERROR
             color = 'red'
             text  = message(code: 'profile.membership.error2')
         }
 
         out << '<div class="item la-cb-context">'
         out <<     '<span class="ui label" data-display="' + text + '">'
-        out <<         '<i class="icon ' + icon + ' ' + color + '"></i>'
+        out <<         '<i class="' + icon + ' ' + color + '"></i>'
         out <<     '</span>'
         out << '</div>'
     }
@@ -99,7 +99,7 @@ class ContextBarTagLib {
     // <ui:cbItemUserSysRole user="${contextService.getUser()}" showGlobalRole="true|false" />
 
     def cbItemUserSysRole = {attrs, body ->
-        String icon = ''
+        String icon = 'question icon'
         String color = 'grey'
         String text = '?'
 
@@ -107,17 +107,17 @@ class ContextBarTagLib {
 
         if (user.isYoda()) {
             text = 'Systemberechtigung: YODA'
-            icon = 'star of life'
+            icon = Icons.Auth.ROLE_YODA
         }
         else if (user.isAdmin()) {
             text = 'Systemberechtigung: ADMIN'
-            icon = 'tools'
+            icon = Icons.Auth.ROLE_ADMIN
         }
 
         if (icon) {
             out << '<div class="item la-cb-context">'
             out <<     '<span class="ui label" data-display="' + text + '">'
-            out <<         '<i class="icon ' + icon + ' ' + color + '"></i>'
+            out <<         '<i class="' + icon + ' ' + color + '"></i>'
             out <<     '</span>'
             out << '</div>'
         }

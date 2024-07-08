@@ -23,7 +23,7 @@ class IconTagLib {
                 icon = Icons.ADDRESS_PUBLIC + ' bordered inverted teal la-object-extended'
                 break
             case 'admin':
-                icon = 'la-object tools'
+                icon = Icons.Auth.ROLE_ADMIN + ' la-object'
                 break
             case 'affiliation':
                 Role fr = contextService.getUser().formalRole
@@ -80,13 +80,13 @@ class IconTagLib {
                 icon = Icons.TASK + ' bordered inverted green la-object-extended'
                 break
             case 'user':
-                icon = 'user bordered inverted grey la-object-extended'
+                icon = Icons.Auth.ROLE_USER + ' bordered inverted grey la-object-extended'
                 break
             case 'workflow':
                 icon = Icons.WORKFLOW + ' bordered inverted brown la-object-extended'
                 break
             case 'yoda':
-                icon = 'la-object star of life'
+                icon = Icons.Auth.ROLE_YODA + ' la-object'
                 break
         }
         }
