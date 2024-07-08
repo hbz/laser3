@@ -486,7 +486,7 @@ making obsolete package/actions
                                                               institutions: statsWibid
                                                      ]"
                                                      title="${message(code: 'default.jumpToNatStat')}">
-                                        <i class="chart bar outline icon"></i>
+                                        <i class="${Icons.STATS}"></i>
                                     </ui:statsLink>
                                 </dd>
                             </dl>

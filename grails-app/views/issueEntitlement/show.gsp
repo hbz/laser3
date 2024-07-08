@@ -232,7 +232,7 @@
                                               institutions: statsWibid
                                      ]"
                                      title="Springe zu Statistik im Nationalen Statistikserver">
-                        <i class="chart bar outline icon"></i>
+                        <i class="${Icons.STATS}"></i>
                     </ui:statsLink>
                 </span>
 
