@@ -16,15 +16,15 @@ class Icons {
         public static String INST_EDITOR            = 'user edit icon'
         public static String INST_ADM               = 'user shield icon'
 
-        public static String ORG_INST_BASIC         = 'user circle icon'    // grey
-        public static String ORG_INST_PRO           = 'trophy icon'         // grey
-        public static String ORG_CONSORTIUM_BASIC   = 'user circle icon'    // teal
-        public static String ORG_CONSORTIUM_PRO     = 'trophy icon'         // teal
-        public static String ORG_SUPPORT            = 'theater masks icon'  // red
+        public static String ORG_INST_BASIC         = 'user circle icon grey'   // COLOR INCLUDED !!
+        public static String ORG_INST_PRO           = 'trophy icon grey'        // COLOR INCLUDED !!
+        public static String ORG_CONSORTIUM_BASIC   = 'user circle icon teal'   // COLOR INCLUDED !!
+        public static String ORG_CONSORTIUM_PRO     = 'trophy icon teal'        // COLOR INCLUDED !!
+        public static String ORG_SUPPORT            = 'theater masks icon red'  // COLOR INCLUDED !!
 
-        public static String ROLE_ADMIN             = 'tools icon'          // orange
+        public static String ROLE_ADMIN             = 'tools icon'              // orange
         public static String ROLE_USER              = 'user icon'
-        public static String ROLE_YODA              = 'star of life icon'   // red
+        public static String ROLE_YODA              = 'star of life icon'       // red
     }
 
 
@@ -84,15 +84,15 @@ class Icons {
 
     public static String PRIVATE_PROPERTY           = 'shield alternate icon'
 
-    public static String PROPERTY_HARDDATA          = 'check circle icon green' // COLOR !!
+    public static String PROPERTY_HARDDATA          = 'check circle icon green' // COLOR INCLUDED !!
 
-    public static String PROPERTY_LOGIC             = 'cube icon red'           // COLOR !!
+    public static String PROPERTY_LOGIC             = 'cube icon red'           // COLOR INCLUDED !!
 
     public static String PROPERTY_MANDATORY         = 'star icon'               // todo: duplicate: survey/renew? > Icons.MY_OBJECT
 
-    public static String PROPERTY_MULTIPLE          = 'redo icon orange'        // COLOR !! todo: duplicate: currentSubscriptionsTransfer
+    public static String PROPERTY_MULTIPLE          = 'redo icon orange'        // COLOR INCLUDED !! todo: duplicate: currentSubscriptionsTransfer
 
-    public static String PROPERTY_USED              = 'info circle icon blue'   // COLOR !! todo: duplicate: Icons.INFO
+    public static String PROPERTY_USED              = 'info circle icon blue'   // COLOR INCLUDED !! todo: duplicate: Icons.INFO
 
     // please do not touch during refactoring ..
     // generic
@@ -105,7 +105,7 @@ class Icons {
 
     public static String HELP                       = 'question icon'
 
-    public static String HELP_TOOLTIP               = 'grey question circle icon'   // COLOR !!
+    public static String HELP_TOOLTIP               = 'grey question circle icon'   // COLOR INCLUDED !!
 
     public static String IMPORTANT_TOOLTIP          = 'exclamation circle icon'     // TODO: merge
     public static String IMPORTANT_TOOLTIP2         = 'exclamation triangle icon'   // TODO: merge

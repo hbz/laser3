@@ -10,7 +10,7 @@
 
 <nav class="ui secondary menu">
     <g:link controller="dev" action="klodav" class="item">Various</g:link>
-    <g:link controller="dev" action="icons" class="item active">New Icons</g:link>
+    <g:link controller="dev" action="icons" class="item active"><i class="certificate icon red"></i> New Icons</g:link>
 </nav>
 
 <div class="ui basic segment">

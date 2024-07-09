@@ -10,7 +10,7 @@
 
 <nav class="ui secondary menu">
     <g:link controller="dev" action="klodav" class="item active">Various</g:link>
-    <g:link controller="dev" action="icons" class="item">New Icons</g:link>
+    <g:link controller="dev" action="icons" class="item"><i class="certificate icon red"></i> New Icons</g:link>
 </nav>
 
 <div class="ui segment">
@@ -120,7 +120,7 @@
 
 <div class="ui icon warning message">
     <i class="${Icons.WARNING}"></i>
-    <div class="content"> WARNING / IMPORTANT </div>
+    <div class="content"> WARNING </div>
 </div>
 
 <div class="ui icon error message">
@@ -163,26 +163,26 @@
     <div class="ui list">
         <div class="item">
             <div class="ui label yellow">
-                <i class="${Icons.Auth.ORG_CONSORTIUM_BASIC}"></i>
+                <i class="${Icons.Auth.ORG_INST_BASIC}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')}
             </div>
         </div>
         <div class="item">
             <div class="ui label yellow">
-                <i class="${Icons.Auth.ORG_INST_PRO}"></i>
+                <i class="${Icons.Auth.ORG_INST_PRO}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')}
             </div>
         </div>
 
         <div class="item">
             <div class="ui label teal">
-                <i class="${Icons.Auth.ORG_CONSORTIUM_BASIC}"></i>
+                <i class="${Icons.Auth.ORG_CONSORTIUM_BASIC}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')}
             </div>
         </div>
         <div class="item">
             <div class="ui label teal">
-                <i class="${Icons.Auth.ORG_CONSORTIUM_PRO}"></i>
+                <i class="${Icons.Auth.ORG_CONSORTIUM_PRO}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')}
             </div>
         </div>

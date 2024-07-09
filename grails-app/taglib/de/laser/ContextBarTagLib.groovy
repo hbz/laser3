@@ -16,45 +16,38 @@ class ContextBarTagLib {
     // <ui:cbItemCustomerType org="${contextService.getOrg()}" />
 
     def cbItemCustomerType = {attrs, body ->
-        String icon  = 'question icon'
-        String color = 'grey'
+        String icon  = 'question icon grey'
         String text  = '?'
         Org org = attrs.org as Org
 
         if (!org) {
-            icon  = Icons.ERROR
-            color = 'red'
+            icon  = Icons.ERROR + ' red'
             text  = message(code: 'profile.membership.error1')
         }
         else if (org.isCustomerType_Consortium_Pro()) {
             icon  = Icons.Auth.ORG_CONSORTIUM_PRO
-            color = 'teal'
             text  = Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')
         }
         else if (org.isCustomerType_Consortium_Basic()) {
             icon  = Icons.Auth.ORG_CONSORTIUM_BASIC
-            color = 'teal'
             text  = Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')
         }
         else if (org.isCustomerType_Inst_Pro()) {
             icon  = Icons.Auth.ORG_INST_PRO
-            color = 'grey'
             text  = Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')
         }
         else if (org.isCustomerType_Inst()) {
             icon  = Icons.Auth.ORG_INST_BASIC
-            color = 'grey'
             text  = Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')
         }
         else if (org.isCustomerType_Support()) {
             icon = Icons.Auth.ORG_SUPPORT
-            color = 'red'
             text  = Role.findByAuthority(CustomerTypeService.ORG_SUPPORT).getI10n('authority')
         }
 
         out << '<div class="item la-cb-context">'
         out <<     '<span class="ui label" data-display="' + text + '">'
-        out <<         '<i class="' + icon + ' ' + color + '"></i>'
+        out <<         '<i class="' + icon + '"></i>'
         out <<     '</span>'
         out << '</div>'
     }
