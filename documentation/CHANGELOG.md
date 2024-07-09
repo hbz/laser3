@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5804    09.07.2024  rc-3.4  3.4.1       Andreas Bug         Umfragekopie: Pflichtsetzung von Merkmalen wurde nicht mit übertragen
+
+5803    09.07.2024  rc-3.4  3.4.1       Andreas Bug         E-Mail-Betreff führt auch den Namen der Umfrage mit auf
+
 5793    05.07.2024  rc-3.4  3.4.1       Andreas Bug         inkorrekte Verarbeitung des Anbieterfilters
 
 5698    04.07.2024  rc-3.4  3.4.1       Ingrid  Bug         Design der Buttons anpassen

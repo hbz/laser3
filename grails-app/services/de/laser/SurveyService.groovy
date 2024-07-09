@@ -1169,7 +1169,8 @@ class SurveyService {
                 new SurveyConfigProperties(
                         surveyProperty: surveyConfigProperty.surveyProperty,
                         surveyConfig: newSurveyConfig,
-                        propertyOrder: surveyConfigProperty.propertyOrder).save()
+                        propertyOrder: surveyConfigProperty.propertyOrder,
+                        mandatoryProperty: surveyConfigProperty.mandatoryProperty).save()
             }
         }
     }
