@@ -81,10 +81,10 @@ class MailSendService {
         Object[] args
         result.mailSubject = subjectSystemPraefix
         if(reminderMail) {
-            result.mailSubject = result.mailSubject + ' ' + messageSource.getMessage('email.subject.surveysReminder', args, language)
+            result.mailSubject = result.mailSubject + ' ' + messageSource.getMessage('email.subject.surveysReminder', args, language) + ' ' + surveys[0].name
         }
 
-        result.mailSubject = result.mailSubject + ' ' + messageSource.getMessage('survey.plural', args, language)
+        result.mailSubject = result.mailSubject + ' ' + messageSource.getMessage('survey.plural', args, language) + ' ' + surveys[0].name
         result.mailSubject = escapeService.replaceUmlaute(result.mailSubject)
 
         result.mailText = surveyService.surveysMailTextAsString(surveys, reminderMail)

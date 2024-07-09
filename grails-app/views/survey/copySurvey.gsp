@@ -122,7 +122,7 @@
                     <td>
                         <g:if test="${surveyInfo.license}">
                             <g:link controller="license" action="show" id="${surveyInfo.license.id}">
-                                ${surveyInfo.license.reference} (${surveyInfo.license.status.getI10n("value")})
+                                ${surveyInfo.license.reference} (${surveyInfo.license.status?.getI10n("value")})
                             </g:link>
                         </g:if>
                     </td>
