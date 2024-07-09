@@ -25,7 +25,7 @@
 </div>
 <h3>Icons in einem Button, der eine Bezeichnung hat</h3>
 <button class="ui   button la-inline-labeled la-js-filterButton la-clearfix blue"> Filter <i
-        aria-hidden="true" class="${Icons.LINK_FILTERED} icon"></i> <span
+        aria-hidden="true" class="${Icons.LNK.FILTERED} icon"></i> <span
         class="ui circular label la-js-filter-total hidden">0</span>
 </button>
 <h3>Icons in einem Link ohne zusätzlichen Text</h3>

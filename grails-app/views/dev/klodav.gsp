@@ -99,12 +99,12 @@
             <div class="content"> internal link</div>
         </div>
         <div class="item">
-            <i class="${Icons.LINK_FILTERED} large"></i>
+            <i class="${Icons.LNK.FILTERED} large"></i>
             <div class="content"> internal link (redirect to list view with filter)</div>
         </div>
         <div class="item">
-            <i class="${Icons.LINK_EXTERNAL} large"></i>
-            <div class="content"> external link (${Icons.LINK_EXTERNAL})</div>
+            <i class="${Icons.LNK.EXTERNAL} large"></i>
+            <div class="content"> external link (${Icons.LNK.EXTERNAL})</div>
         </div>
         <div class="item">
             <i class="icon large fake"></i>
@@ -143,19 +143,19 @@
     <div class="ui list">
         <div class="item">
             <div class="ui label">
-                <i class="${Icons.Auth.INST_USER}"></i>
+                <i class="${Icons.AUTH.INST_USER}"></i>
                 <g:message code="cv.roles.INST_USER"/>
             </div>
         </div>
         <div class="item">
             <div class="ui label">
-                <i class="${Icons.Auth.INST_EDITOR}"></i>
+                <i class="${Icons.AUTH.INST_EDITOR}"></i>
                 <g:message code="cv.roles.INST_EDITOR"/>
             </div>
         </div>
         <div class="item">
             <div class="ui label">
-                <i class="${Icons.Auth.INST_ADM}"></i>
+                <i class="${Icons.AUTH.INST_ADM}"></i>
                 <g:message code="cv.roles.INST_ADM"/>
             </div>
         </div>
@@ -163,26 +163,26 @@
     <div class="ui list">
         <div class="item">
             <div class="ui label yellow">
-                <i class="${Icons.Auth.ORG_INST_BASIC}" style="color:#FFFFFF;"></i>
+                <i class="${Icons.AUTH.ORG_INST_BASIC}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')}
             </div>
         </div>
         <div class="item">
             <div class="ui label yellow">
-                <i class="${Icons.Auth.ORG_INST_PRO}" style="color:#FFFFFF;"></i>
+                <i class="${Icons.AUTH.ORG_INST_PRO}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')}
             </div>
         </div>
 
         <div class="item">
             <div class="ui label teal">
-                <i class="${Icons.Auth.ORG_CONSORTIUM_BASIC}" style="color:#FFFFFF;"></i>
+                <i class="${Icons.AUTH.ORG_CONSORTIUM_BASIC}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')}
             </div>
         </div>
         <div class="item">
             <div class="ui label teal">
-                <i class="${Icons.Auth.ORG_CONSORTIUM_PRO}" style="color:#FFFFFF;"></i>
+                <i class="${Icons.AUTH.ORG_CONSORTIUM_PRO}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')}
             </div>
         </div>

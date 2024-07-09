@@ -48,7 +48,7 @@
             <div class="field">
                 <h2 class="ui header">
                     <g:if test="${filterPropDef.tenant != null}">
-                        <i class="${Icons.PRIVATE_PROPERTY}"></i>
+                        <i class="${Icons.PROPERTY_PRIVATE}"></i>
                     </g:if>
                     <g:message code="property.manageProperties.add" args="[filterPropDef.getI10n('name')]"/>
                 </h2>
@@ -287,7 +287,7 @@
             <div class="field">
                 <h2 class="ui header">
                     <g:if test="${filterPropDef.tenant != null}">
-                        <i class="${Icons.PRIVATE_PROPERTY}"></i>
+                        <i class="${Icons.PROPERTY_PRIVATE}"></i>
                     </g:if>
                     <g:message code="property.manageProperties.edit" args="[filterPropDef.getI10n('name')]"/>
                 </h2>

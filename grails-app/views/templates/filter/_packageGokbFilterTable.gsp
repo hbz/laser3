@@ -293,7 +293,7 @@
                                     <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}" />
                                     ${curatoryGroup.name}
                                 %{--<g:link url="${editUrl.endsWith('/') ? editUrl : editUrl+'/'}resource/show/${curatoryGroup.curatoryGroup}" target="_blank">--}%
-                                %{--    <i class="${Icons.LINK_EXTERNAL}"></i>--}%
+                                %{--    <i class="${Icons.LNK.EXTERNAL}"></i>--}%
                                 %{--</g:link>--}%
                                     <br />
                                 </g:each>

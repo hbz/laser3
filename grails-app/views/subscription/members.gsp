@@ -122,7 +122,7 @@
                 <th class="center aligned">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                           data-content="${message(code: 'default.previous.label')}">
-                        <i class="${Icons.LINK_PREV}"></i>
+                        <i class="${Icons.LNK.PREV}"></i>
                     </span>
                 </th>
                 <g:sortableColumn params="${params}" property="sub.startDate" title="${message(code:'default.startDate.label.shy')}"/>
@@ -130,7 +130,7 @@
                 <th class="center aligned">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                           data-content="${message(code: 'default.next.label')}">
-                        <i class="${Icons.LINK_NEXT}"></i>
+                        <i class="${Icons.LNK.NEXT}"></i>
                     </span>
                 </th>
                 <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()}">
@@ -213,7 +213,7 @@
                     %>
                     <td class="center aligned">
                         <g:if test="${navPrevSubMember}">
-                            <g:link controller="subscription" action="show" id="${navPrevSubMember}"><i class="${Icons.LINK_PREV}"></i></g:link>
+                            <g:link controller="subscription" action="show" id="${navPrevSubMember}"><i class="${Icons.LNK.PREV}"></i></g:link>
                         </g:if>
                         <g:elseif test="${(navPrevSubscription?.size() > 0) && Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.org = :subscriber',[parent:navPrevSubscription[0],subscriber:subscr])}">
                             <g:link controller="subscription" class="ui icon js-open-confirm-modal"
@@ -221,14 +221,14 @@
                                     data-confirm-term-how="ok"
                                     action="linkNextPrevMemberSub"
                                     id="${subscription.id}"
-                                    params="[prev: true, memberOrg: subscr.id, memberSubID: sub.id]"><i class="${Icons.LINK_PREV} grey"></i></g:link>
+                                    params="[prev: true, memberOrg: subscr.id, memberSubID: sub.id]"><i class="${Icons.LNK.PREV} grey"></i></g:link>
                         </g:elseif>
                     </td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
                     <td class="center aligned">
                         <g:if test="${navNextSubMember}">
-                            <g:link controller="subscription" action="show" id="${navNextSubMember}"><i class="${Icons.LINK_NEXT}"></i></g:link>
+                            <g:link controller="subscription" action="show" id="${navNextSubMember}"><i class="${Icons.LNK.NEXT}"></i></g:link>
                         </g:if>
                         <g:elseif test="${(navNextSubscription?.size() > 0) && Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.org = :subscriber',[parent:navNextSubscription[0],subscriber:subscr])}">
                             <g:link controller="subscription" class="ui icon js-open-confirm-modal"
@@ -236,7 +236,7 @@
                                     data-confirm-term-how="ok"
                                     action="linkNextPrevMemberSub"
                                     id="${subscription.id}"
-                                    params="[next: true, memberOrg: subscr.id, memberSubID: sub.id]"><i class="${Icons.LINK_NEXT} grey"></i></g:link>
+                                    params="[next: true, memberOrg: subscr.id, memberSubID: sub.id]"><i class="${Icons.LNK.NEXT} grey"></i></g:link>
                         </g:elseif>
                     </td>
                     <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()}">

@@ -41,7 +41,7 @@
                             <a href="${wekb.baseUrl + '/resource/show/' + vendor.gokbId}" target="_blank">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.chart.result.link.unchecked.label')}"
                                         data-position="top right">
-                                    <i class="${Icons.LINK_EXTERNAL} grey"></i>
+                                    <i class="${Icons.LNK.EXTERNAL} grey"></i>
                                 </span>
                             </a>
                         </g:if>

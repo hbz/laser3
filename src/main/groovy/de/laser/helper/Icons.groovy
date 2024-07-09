@@ -7,8 +7,7 @@ class Icons {
 
     public static String _PLACEHOLDER               = 'coffee icon'
 
-    class Auth {
-
+    class AUTH {
         // please do not touch during refactoring ..
         // roles / perms / customer types
 
@@ -27,6 +26,40 @@ class Icons {
         public static String ROLE_YODA              = 'star of life icon'       // red
     }
 
+    class CMD {
+        // please do not touch during refactoring ..
+        // cmds, functions
+
+        public static String COPY           = 'copy icon'
+        public static String DELETE         = 'trash alternate outline icon'
+        public static String DOWNLOAD       = 'download icon'
+        public static String EDIT           = 'write icon'
+        public static String ERASE          = 'eraser icon'
+        public static String UNLINK         = 'unlink icon'
+    }
+
+    class LNK {
+        // please do not touch during refactoring ..
+        // links
+
+        public static String EXTERNAL       = 'external alternate icon'
+        public static String FILTERED       = 'filter icon'
+        public static String NEXT           = 'arrow right icon'     // todo: duplicate: ui:anualRings, ui:statusWithRings
+        public static String PREV           = 'arrow left icon'      // todo: duplicate: ui:anualRings, ui:statusWithRings
+    }
+
+    class PROP {
+        // please do not touch during refactoring ..
+        // properties
+
+        public static String HARDDATA       = 'check circle icon green' // COLOR INCLUDED !!
+        public static String IN_USE         = 'info circle icon blue'   // COLOR INCLUDED !! todo: duplicate: Icons.INFO
+        public static String IS_PRIVATE     = 'shield alternate icon'
+        public static String LOGIC          = 'cube icon red'           // COLOR INCLUDED !!
+        public static String MANDATORY      = 'star icon'               // todo: duplicate: survey/renew? > Icons.MY_OBJECT
+        public static String MULTIPLE       = 'redo icon orange'        // COLOR INCLUDED !! todo: duplicate: currentSubscriptionsTransfer
+
+    }
 
     // please do not touch during refactoring ..
     // domain classes / main objects
@@ -82,8 +115,6 @@ class Icons {
     // please do not touch during refactoring ..
     // properties
 
-    public static String PRIVATE_PROPERTY           = 'shield alternate icon'
-
     public static String PROPERTY_HARDDATA          = 'check circle icon green' // COLOR INCLUDED !!
 
     public static String PROPERTY_LOGIC             = 'cube icon red'           // COLOR INCLUDED !!
@@ -91,6 +122,8 @@ class Icons {
     public static String PROPERTY_MANDATORY         = 'star icon'               // todo: duplicate: survey/renew? > Icons.MY_OBJECT
 
     public static String PROPERTY_MULTIPLE          = 'redo icon orange'        // COLOR INCLUDED !! todo: duplicate: currentSubscriptionsTransfer
+
+    public static String PROPERTY_PRIVATE           = 'shield alternate icon'
 
     public static String PROPERTY_USED              = 'info circle icon blue'   // COLOR INCLUDED !! todo: duplicate: Icons.INFO
 
@@ -133,14 +166,4 @@ class Icons {
 
     public static String CMD_UNLINK                 = 'unlink icon'
 
-    // please do not touch during refactoring ..
-    // links
-
-    public static String LINK_EXTERNAL              = 'external alternate icon'
-
-    public static String LINK_FILTERED              = 'filter icon'
-
-    public static String LINK_NEXT                  = 'arrow right icon'     // todo: duplicate: ui:anualRings, ui:statusWithRings
-
-    public static String LINK_PREV                  = 'arrow left icon'      // todo: duplicate: ui:anualRings, ui:statusWithRings
 }

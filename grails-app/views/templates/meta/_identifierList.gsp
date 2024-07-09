@@ -40,7 +40,7 @@
                         </g:else>
                         %{--
                         <g:if test="${ident.ns.urlPrefix}">
-                            <a target="_blank" href="${ident.ns.urlPrefix}${ident.value}"><i title="${ident.ns.getI10n('name')} Link" class="${Icons.LINK_EXTERNAL}"></i></a>
+                            <a target="_blank" href="${ident.ns.urlPrefix}${ident.value}"><i title="${ident.ns.getI10n('name')} Link" class="${Icons.LNK.EXTERNAL}"></i></a>
                         </g:if>
                         --}%
                         <g:if test="${ident.getURL()}">

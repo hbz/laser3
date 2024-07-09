@@ -19,11 +19,11 @@
 <g:if test="${params.referenceYears}">
     <div class="ui large label la-annual-rings"><g:link action="currentSubscriptionsTransfer"
                                                         params="${[referenceYears: (Integer.parseInt(params.referenceYears).value - 1).toString()]}"
-                                                        class="item"><i class="${Icons.LINK_PREV}"
+                                                        class="item"><i class="${Icons.LNK.PREV}"
                                                                         aria-hidden="true"></i></g:link><span
             class="la-annual-rings-text">${params.referenceYears}</span><g:link action="currentSubscriptionsTransfer"
                                                                                 params="${[referenceYears: (Integer.parseInt(params.referenceYears).value + 1).toString()]}"
-                                                                                class="item"><i class="${Icons.LINK_NEXT}"
+                                                                                class="item"><i class="${Icons.LNK.NEXT}"
                                                                                                 aria-hidden="true"></i></g:link>
     </div>
 </g:if>

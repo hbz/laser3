@@ -6,14 +6,14 @@
     <label for="filterPropDef">${label}
         <i class="${Icons.HELP_TOOLTIP} la-popup"></i>
         <span class="ui popup">
-            <i class="${Icons.PRIVATE_PROPERTY}"></i> = ${message(code: 'subscription.properties.my')}
+            <i class="${Icons.PROPERTY_PRIVATE}"></i> = ${message(code: 'subscription.properties.my')}
         </span>
     </label>
     <%-- value="${params.filterPropDef}" --%>
     <ui:dropdown id="filterPropDef" name="${newfilterPropDefName ?: 'filterPropDef'}"
                  class="la-filterPropDef"
                  from="${propList}"
-                 iconWhich="${Icons.PRIVATE_PROPERTY}"
+                 iconWhich="${Icons.PROPERTY_PRIVATE}"
                  optionKey="${{
                      it.refdataCategory ?
                              "${it}\" data-rdc=\"${it.refdataCategory}" :

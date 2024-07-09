@@ -200,7 +200,7 @@ class ReportingTagLib {
 
             if (prop.type.tenant?.id == tenant.id) {
                 tmp.tooltips.add( message(code: 'reporting.details.property.own') as String )
-                tmp.icons.add( '<i class="' + Icons.PRIVATE_PROPERTY + ' la-light-grey"></i>' )
+                tmp.icons.add( '<i class="' + Icons.PROPERTY_PRIVATE + ' la-light-grey"></i>' )
             }
             if (!prop.isPublic && (prop.tenant && prop.tenant.id == tenant.id)) {
                 tmp.tooltips.add( message(code: 'reporting.details.property.private') as String )

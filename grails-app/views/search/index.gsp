@@ -409,7 +409,7 @@
                                             <g:if test="${object.visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PRIVATE_PROPERTY} grey large"></i>
+                                                    <i class="${Icons.PROPERTY_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -479,7 +479,7 @@
                                             <g:if test="${object.visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PRIVATE_PROPERTY} grey large"></i>
+                                                    <i class="${Icons.PROPERTY_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -543,7 +543,7 @@
                                             <g:if test="${object.visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PRIVATE_PROPERTY} grey large"></i>
+                                                    <i class="${Icons.PROPERTY_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -583,7 +583,7 @@
                                             <g:if test="${object.visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PRIVATE_PROPERTY} grey large"></i>
+                                                    <i class="${Icons.PROPERTY_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -616,7 +616,7 @@
                                             <g:if test="${object.visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PRIVATE_PROPERTY} grey large"></i>
+                                                    <i class="${Icons.PROPERTY_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -685,7 +685,7 @@
                                             <g:if test="${object.visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PRIVATE_PROPERTY} grey large"></i>
+                                                    <i class="${Icons.PROPERTY_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -714,7 +714,7 @@
                                             <g:if test="${object.visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PRIVATE_PROPERTY} grey large"></i>
+                                                    <i class="${Icons.PROPERTY_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -741,7 +741,7 @@
                                             <g:if test="${object.visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PRIVATE_PROPERTY} grey large"></i>
+                                                    <i class="${Icons.PROPERTY_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -768,7 +768,7 @@
                                             <g:if test="${object.visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PRIVATE_PROPERTY} grey large"></i>
+                                                    <i class="${Icons.PROPERTY_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -795,7 +795,7 @@
                                             <g:if test="${object.visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PRIVATE_PROPERTY} grey large"></i>
+                                                    <i class="${Icons.PROPERTY_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
