@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5784    08.07.2024  dev     3.5         David   Feature     Icon-Handling verbessern
+
 5793    05.07.2024  rc-3.4  3.4.1       Andreas Bug         inkorrekte Verarbeitung des Anbieterfilters
 
 5698    04.07.2024  rc-3.4  3.4.1       Ingrid  Bug         Design der Buttons anpassen
@@ -845,7 +847,7 @@
 
 5168    27.07.2023  dev     3.3         David   Feature     Wekb-News in Laser anzeigen
 
---      26.07.2023  rc-3.2  3.2       Andreas Bug         Falschanzeige des Menüeintrages "Meine Lizenzübertragungen" behoben
+--      26.07.2023  rc-3.2  3.2         Andreas Bug         Falschanzeige des Menüeintrages "Meine Lizenzübertragungen" behoben
 
 5208    26.07.2023  rc-3.2  3.2         Andreas Feature     Export einer einzelnen Lizenz in PDF
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.utils.DateUtils; java.text.SimpleDateFormat; java.text.DateFormat; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.SubscriptionPackage; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.Platform; de.laser.SubscriptionPackage; de.laser.Org" %>
+<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.utils.DateUtils; java.text.SimpleDateFormat; java.text.DateFormat; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.SubscriptionPackage; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.Platform; de.laser.SubscriptionPackage; de.laser.Org" %>
 <laser:serviceInjection/>
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
@@ -303,7 +303,7 @@
                                 <i class="ui angle double down icon"></i>
                             </div>
 
-                            <i aria-hidden="true" class="circular chart bar green outline inverted icon"></i>
+                            <i aria-hidden="true" class="${Icons.STATS} circular green inverted"></i>
 
                             <h2 class="ui icon header la-clear-before la-noMargin-top">
                                 <g:link controller="subscription" action="stats" target="_blank"

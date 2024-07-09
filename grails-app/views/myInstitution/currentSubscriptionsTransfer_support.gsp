@@ -319,7 +319,7 @@
                     <th scope="col" rowspan="3" class="center aligned sortable ${params.sort == 'participantTransferWithSurvey' ? ('sorted '+(params.order == 'asc' ? 'desc' : 'asc')) : ''}">
                         <g:link action="currentSubscriptionsTransfer" params="${params+[sort: 'participantTransferWithSurvey', order: params.order == 'asc' ? 'desc' : 'asc']}" class="la-popup-tooltip la-delay " data-content="${message(code: 'subscription.participantTransferWithSurvey.label')}" data-position="top center">
                             <i class="large icons">
-                                <i class="chart pie icon"></i>
+                                <i class="${Icons.SURVEY}"></i>
                                 <i class="top right corner redo icon"></i>
                             </i>
                         </g:link>
@@ -454,14 +454,14 @@
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                             class="ui icon blue tiny button la-modern-button"
-                                                            target="_blank"><i class="download small icon"></i></g:link>
+                                                            target="_blank"><i class="${Icons.CMD_DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                                 class="ui icon blue tiny button la-modern-button"
-                                                                target="_blank"><i class="download small icon"></i></g:link>
+                                                                target="_blank"><i class="${Icons.CMD_DOWNLOAD} small"></i></g:link>
 
                                                     <%-- 2 --%>
                                                         <laser:render template="/templates/documents/modal"
@@ -644,14 +644,14 @@
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                             class="ui icon blue tiny button la-modern-button"
-                                                            target="_blank"><i class="download small icon"></i></g:link>
+                                                            target="_blank"><i class="${Icons.CMD_DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                                 class="ui icon blue tiny button la-modern-button"
-                                                                target="_blank"><i class="download small icon"></i></g:link>
+                                                                target="_blank"><i class="${Icons.CMD_DOWNLOAD} small"></i></g:link>
 
                                                     <%-- 2 --%>
                                                         <laser:render template="/templates/documents/modal"

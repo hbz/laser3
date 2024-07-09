@@ -415,7 +415,7 @@
                             <th scope="col" class="la-smaller-table-head">${message(code:'default.subscription.label')}</th>
                             <th scope="col" rowspan="2" class="la-no-uppercase">
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center">
-                                    <i class="money bill alternate icon"></i>
+                                    <i class="${Icons.COSTS_CONFIG}"></i>
                                 </span>
                             </th>
                             <th scope="col" rowspan="2">${message(code:'default.currency.label')}</th>

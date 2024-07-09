@@ -293,7 +293,7 @@
 
                                 <div class="ui icon"
                                      data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
-                                    <i class="bordered colored chart pie icon"></i>
+                                    <i class="${Icons.SURVEY} bordered colored"></i>
                                 </div>
                             </g:if>
                         </td>

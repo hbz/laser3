@@ -11,7 +11,7 @@
 
     <g:if test="${delResult}">
         <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
-            <ui:msg class="positive" message="deletion.success.msg" />
+            <ui:msg class="success" message="deletion.success.msg" />
             <g:link controller="myInstitution" action="currentSubscriptions" class="ui button">${message(code:'menu.my.subscriptions')}</g:link>
             <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                 <g:link controller="subscription" action="members" id="${parentId}" class="ui button">${message(code:"subscription.details.consortiaMembers.label")}</g:link>
@@ -21,10 +21,10 @@
             <%--<ui:msg class="info" message="subscription.delete.info" /> deleted as of ERMS-4710 and December 16th, '22--%>
 
             <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
-                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.subscription" />
+                <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.subscription" />
             </g:if>
             <g:if test="${delResult.status == deletionService.RESULT_ERROR}">
-                <ui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
+                <ui:msg class="error" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
             <g:link controller="myInstitution" action="currentSubscriptions" class="ui button">${message(code:'menu.my.subscriptions')}</g:link>

@@ -20,12 +20,17 @@ class DevController  {
         result
     }
 
-
     /**
      * @return the frontend view with sample area for frontend developing and showcase
      */
     @Secured(['ROLE_ADMIN'])
     def klodav() {
+        Map<String, Object> result = [user: contextService.getUser(), institution: contextService.getOrg()]
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def icons() {
         Map<String, Object> result = [user: contextService.getUser(), institution: contextService.getOrg()]
         result
     }

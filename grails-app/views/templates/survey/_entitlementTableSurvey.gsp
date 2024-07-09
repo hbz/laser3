@@ -276,7 +276,7 @@
 
                                                                     <g:each in="${ie.priceItems}" var="priceItem" status="i">
                                                                         <div class="item">
-                                                                            <i class="money grey icon la-popup-tooltip la-delay"></i>
+                                                                            <i class="${Icons.COSTS_CONFIG} grey la-popup-tooltip la-delay"></i>
 
                                                                             <div class="content">
                                                                                 <div class="header"><g:message
@@ -310,7 +310,7 @@
                                                                         <g:link action="addEmptyPriceItem"
                                                                                 class="ui tiny button"
                                                                                 params="${[ieid: ie.id, id: subscription.id]}">
-                                                                            <i class="money icon"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
+                                                                            <i class="${Icons.COSTS_CONFIG}"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
                                                                         </g:link>
                                                                     </g:if>
 

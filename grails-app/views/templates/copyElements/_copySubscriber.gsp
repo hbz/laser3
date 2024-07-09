@@ -14,7 +14,7 @@
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <g:if test="${targetObject instanceof Subscription && SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(targetObject, true)}">
-            <ui:msg class="negative" message="copyElementsIntoObject.surveyExist"/>
+            <ui:msg class="error" message="copyElementsIntoObject.surveyExist"/>
         </g:if>
         <g:else>
 

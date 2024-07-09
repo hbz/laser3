@@ -496,7 +496,7 @@
                                         <i class="ui angle double down icon"></i>
                                     </div>
 
-                                    <i aria-hidden="true" class="circular chart bar green outline inverted icon"></i>
+                                    <i aria-hidden="true" class="${Icons.STATS} circular green inverted"></i>
 
                                     <h2 class="ui icon header la-clear-before la-noMargin-top">
                                         <g:link controller="subscription" action="stats" target="_blank"

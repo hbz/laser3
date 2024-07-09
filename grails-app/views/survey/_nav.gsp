@@ -103,7 +103,7 @@
 
             <g:if test="${surveyConfig.packageSurvey}">
                 <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyPackages"
-                               params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${surveyPackagesCount}"  class="${(actionName in ['surveyPackages', 'linkSurveyPackage'] ? 'active' : '')}"
+                               params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${surveyPackagesCount}" class="${(actionName in ['surveyPackages', 'linkSurveyPackage'] ? 'active' : '')}"
                                message="surveyPackages.label"/>
              </g:if>
 

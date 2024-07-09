@@ -453,14 +453,14 @@
                                                 <g:if test="${target_role.isShared}">
                                                     <span data-position="top left" class="la-popup-tooltip la-delay"
                                                           data-content="${message(code: 'property.share.tooltip.on')}">
-                                                        <i class="la-share icon la-js-editmode-icon"></i>
+                                                        <i class="la-share icon"></i>
                                                     </span>
 
                                                 </g:if>
                                                 <g:else>
                                                     <span data-position="top left" class="la-popup-tooltip la-delay"
                                                           data-content="${message(code: 'property.share.tooltip.off')}">
-                                                        <i class="la-share slash icon la-js-editmode-icon"></i>
+                                                        <i class="la-share slash icon"></i>
                                                     </span>
                                                 </g:else>
                                             </div>

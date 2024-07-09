@@ -1,10 +1,11 @@
+<%@ page import="de.laser.helper.Icons" %>
 %{--
 <h1>Offene Fragen in Bezug auf WCAG</h1>
 <h2>Icons</h2>
 <h3>Dekorative Icon mit einer Dopplung der Semantik durch Text, der daneben steht.</h3>
 
 <div class="ui icon info message">
-    <i aria-hidden="true" class="exclamation triangle icon"></i>
+    <i aria-hidden="true" class="${Icons.INFO}"></i>
     <div class="content">
         <div class="header">
             Achtung

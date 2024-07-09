@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.config.ConfigMapper; de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat; de.laser.PersonRole; de.laser.Contact" %>
+<%@ page import="de.laser.helper.Icons; de.laser.utils.DateUtils; de.laser.config.ConfigMapper; de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat; de.laser.PersonRole; de.laser.Contact" %>
 <laser:htmlStart message="package.details" serviceInjection="true"/>
 
 <ui:debugInfo>
@@ -486,7 +486,7 @@ making obsolete package/actions
                                                               institutions: statsWibid
                                                      ]"
                                                      title="${message(code: 'default.jumpToNatStat')}">
-                                        <i class="chart bar outline icon"></i>
+                                        <i class="${Icons.STATS}"></i>
                                     </ui:statsLink>
                                 </dd>
                             </dl>
@@ -562,7 +562,7 @@ making obsolete package/actions
                                                                                         overwriteEditable   : false
                                                                                 ]}" />
                                                                             <%--<div class="js-copyTriggerParent">
-                                                                                <i class="ui icon envelope outline la-list-icon js-copyTrigger"></i>
+                                                                                <i class="${Icons.EMAIL} la-list-icon js-copyTrigger"></i>
                                                                                 <span class="la-popup-tooltip la-delay" data-position="right center " data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
                                                                                     <a class="la-break-all js-copyTopic" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
                                                                                 </span>

@@ -245,7 +245,7 @@
 
                 <th scope="col" rowspan="2">
                     <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyCostItems.label')}" data-position="top center">
-                        <i class="money bill large icon"></i>
+                        <i class="${Icons.COSTS} large"></i>
                     </a>
                 </th>
 
@@ -295,7 +295,7 @@
                         <g:if test="${surveyInfo.isMandatory}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
-                                <i class="yellow icon exclamation triangle"></i>
+                                <i class="${Icons.IMPORTANT_TOOLTIP2} yellow"></i>
                             </span>
                         </g:if>
                     </td>

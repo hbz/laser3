@@ -52,18 +52,18 @@
 
 <g:if test="${status == workflowService.OP_STATUS_DONE}">
     <g:if test="${cmd == 'delete'}">
-        <ui:msg class="positive" message="workflow.delete.ok" />
+        <ui:msg class="success" message="workflow.delete.ok" />
     </g:if>
     <g:else>
-        <ui:msg class="positive" message="workflow.edit.ok" />
+        <ui:msg class="success" message="workflow.edit.ok" />
     </g:else>
 </g:if>
 <g:elseif test="${status == workflowService.OP_STATUS_ERROR}">
     <g:if test="${cmd == 'delete'}">
-        <ui:msg class="negative" message="workflow.delete.error" />
+        <ui:msg class="error" message="workflow.delete.error" />
     </g:if>
     <g:else>
-        <ui:msg class="negative" message="workflow.edit.error" />
+        <ui:msg class="error" message="workflow.edit.error" />
     </g:else>
 </g:elseif>
 

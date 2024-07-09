@@ -1,12 +1,17 @@
 <%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
-<laser:htmlStart text="Playground" serviceInjection="true" />
+<laser:htmlStart text="Playground: Various" serviceInjection="true" />
 
-<br />
-<br />
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb text="Playground" class="active"/>
+</ui:breadcrumbs>
 
-<h1 class="ui header center aligned">
-    Playground
-</h1>
+<ui:h1HeaderWithIcon text="Playground" type="admin"/>
+
+<nav class="ui secondary menu">
+    <g:link controller="dev" action="klodav" class="item active">Various</g:link>
+    <g:link controller="dev" action="icons" class="item"><i class="certificate icon red"></i> New Icons</g:link>
+</nav>
 
 <div class="ui segment">
     <p class="ui header">Icons #1</p>
@@ -71,23 +76,17 @@
             <i class="${Icons.SUBSCRIPTION_IS_MULTIYEAR} large"></i>
             <div class="content"> Mehrjahreslaufzeit (${Icons.SUBSCRIPTION_IS_MULTIYEAR})</div>
         </div>
-    </div>
-</div>
-
-<div class="ui segment">
-    <p class="ui header">...</p>
-    <div class="ui list">
         <div class="item">
-            <i class="edit icon large"></i>
-            <div class="content">edit</div>
+            <i class="${Icons.COSTS} large"></i>
+            <div class="content"> Kosten (${Icons.COSTS})</div>
         </div>
         <div class="item">
-            <i class="pencil icon large"></i>
-            <div class="content">pencil</div>
+            <i class="${Icons.COSTS_CONFIG} large"></i>
+            <div class="content"> Kosten (Konfiguration) (${Icons.COSTS_CONFIG})</div>
         </div>
         <div class="item">
-            <i class="write icon large"></i>
-            <div class="content">write</div>
+            <i class="euro sign icon large"></i>
+            <div class="content"> euro sign icon large </div>
         </div>
     </div>
 </div>
@@ -114,6 +113,21 @@
     </div>
 </div>
 
+<div class="ui icon info message">
+    <i class="${Icons.INFO}"></i>
+    <div class="content"> INFO </div>
+</div>
+
+<div class="ui icon warning message">
+    <i class="${Icons.WARNING}"></i>
+    <div class="content"> WARNING </div>
+</div>
+
+<div class="ui icon error message">
+    <i class="${Icons.ERROR}"></i>
+    <div class="content"> ERROR </div>
+</div>
+
 <pre>
     springSecurity.errors.login.expired             ${message(code:'springSecurity.errors.login.expired')}
     springSecurity.errors.login.passwordExpired     ${message(code:'springSecurity.errors.login.passwordExpired')}
@@ -129,19 +143,19 @@
     <div class="ui list">
         <div class="item">
             <div class="ui label">
-                <i class="icon user"></i>
+                <i class="${Icons.Auth.INST_USER}"></i>
                 <g:message code="cv.roles.INST_USER"/>
             </div>
         </div>
         <div class="item">
             <div class="ui label">
-                <i class="icon user edit"></i>
+                <i class="${Icons.Auth.INST_EDITOR}"></i>
                 <g:message code="cv.roles.INST_EDITOR"/>
             </div>
         </div>
         <div class="item">
             <div class="ui label">
-                <i class="icon user shield"></i>
+                <i class="${Icons.Auth.INST_ADM}"></i>
                 <g:message code="cv.roles.INST_ADM"/>
             </div>
         </div>
@@ -149,26 +163,26 @@
     <div class="ui list">
         <div class="item">
             <div class="ui label yellow">
-                <i class="icon user circle"></i>
+                <i class="${Icons.Auth.ORG_INST_BASIC}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')}
             </div>
         </div>
         <div class="item">
             <div class="ui label yellow">
-                <i class="icon trophy"></i>
+                <i class="${Icons.Auth.ORG_INST_PRO}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')}
             </div>
         </div>
 
         <div class="item">
             <div class="ui label teal">
-                <i class="icon user circle"></i>
+                <i class="${Icons.Auth.ORG_CONSORTIUM_BASIC}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')}
             </div>
         </div>
         <div class="item">
             <div class="ui label teal">
-                <i class="icon trophy"></i>
+                <i class="${Icons.Auth.ORG_CONSORTIUM_PRO}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')}
             </div>
         </div>

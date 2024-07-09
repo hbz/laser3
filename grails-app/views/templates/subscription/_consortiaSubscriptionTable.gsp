@@ -62,7 +62,7 @@
                 <th rowspan="2">${message(code:'financials.amountFinal')}</th>
                 <th rowspan="2" class="la-no-uppercase center aligned">
                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center">
-                        <i class="money bill alternate icon"></i>
+                        <i class="${Icons.COSTS_CONFIG}"></i>
                     </span>&nbsp;/&nbsp;
                     <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                         <i class="icon eye"></i>

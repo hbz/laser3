@@ -1,9 +1,9 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.Contact; de.laser.storage.RDConstants; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore; de.laser.Contact; de.laser.storage.RDConstants; de.laser.RefdataCategory;" %>
 
 
 <div class="three fields contactField">
     <div class="field one wide la-contactIconField">
-        <i class="icon large envelope outline la-js-contactIcon"></i>
+        <i class="${Icons.EMAIL} large la-js-contactIcon"></i>
     </div>
     <div class="field wide four">
         <ui:select class="ui dropdown contentType" name="contentType.id"
@@ -27,8 +27,8 @@
         <g:textField class="la-js-contactContent" data-validate="contactContent" id="content" name="content" value="${contactInstance?.content}"/>
     </div>
     <div class="field one wide">
-        <button type="button"  class="ui icon negative button la-modern-button removeContactElement">
-            <i class="trash alternate outline icon"></i>
+        <button type="button" class="ui icon negative button la-modern-button removeContactElement">
+            <i class="${Icons.CMD_DELETE}"></i>
         </button>
     </div>
 </div>

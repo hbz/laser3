@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.SqlDateUtils; de.laser.utils.DateUtils; java.text.SimpleDateFormat; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.helper.Icons; de.laser.utils.SqlDateUtils; de.laser.utils.DateUtils; java.text.SimpleDateFormat; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
     <g:if test="${ ! dueDates}">
         <ui:msg class="info" message="profile.noDashboardReminderDates" args="${[createLink(controller:'profile', action:'index')]}"/>
@@ -7,8 +7,8 @@
     <g:if test="${dashboard_last_update != null}" >
         <g:set var="message_lastUpdated" value="${message(code:'myinst.dash.due_dates.lastUpdate')}" />
             <g:if test="${ ! SqlDateUtils.isYesterdayOrToday(dashboard_last_update)}">
-                <ui:msg class="negative" header="${message(code: 'myinst.message.attention')}" text="${message_lastUpdated} ${DateUtils.getLocalizedSDF_noTime().format(dashboard_last_update)}" >
-                    <i class="exclamation alternate triangle icon"  id="noData" data-content="${message(code:'myinst.dash.due_dates.tooltip')}"></i>
+                <ui:msg class="error" header="${message(code: 'myinst.message.attention')}" text="${message_lastUpdated} ${DateUtils.getLocalizedSDF_noTime().format(dashboard_last_update)}" >
+                    <i class="${Icons.ERROR}" id="noData" data-content="${message(code:'myinst.dash.due_dates.tooltip')}"></i>
                 </ui:msg>
             </g:if>
 

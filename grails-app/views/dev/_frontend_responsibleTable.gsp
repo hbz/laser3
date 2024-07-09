@@ -3,7 +3,7 @@
 <h4 class="ui header">Responsive Tabellen</h4>
 
 <div class="ui icon negative message">
-    <i aria-hidden="true" class="exclamation triangle icon"></i>
+    <i aria-hidden="true" class="${Icons.ERROR}"></i>
 
     <div class="content">
         <div class="header">
@@ -46,7 +46,7 @@
         <th scope="col" rowspan="2">
             <a href="#" class="la-popup-tooltip la-delay" data-content="Einrichtungskosten" data-position="top center"
                aria-label="Einrichtungskosten" data-why-id="why-725">
-                <i class="money bill large icon" aria-hidden="true"></i>
+                <i class="${Icons.COSTS} large" aria-hidden="true"></i>
             </a>
         </th>
         <th scope="col" rowspan="2" class="two">Trend</th>
@@ -544,7 +544,7 @@
         <th scope="col" rowspan="2">
             <a href="#" class="la-popup-tooltip la-delay" data-content="Einrichtungskosten" data-position="top center"
                aria-label="Einrichtungskosten" data-why-id="why-725">
-                <i class="money bill large icon" aria-hidden="true"></i>
+                <i class="${Icons.COSTS} large" aria-hidden="true"></i>
             </a>
         </th>
         <th scope="col" rowspan="2" class="two">Trend</th>

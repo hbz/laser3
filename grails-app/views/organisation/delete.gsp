@@ -12,7 +12,7 @@
 
     <g:if test="${delResult}">
         <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
-            <ui:msg class="positive" message="deletion.success.msg" />
+            <ui:msg class="success" message="deletion.success.msg" />
             <g:link controller="organisation" action="listInstitution" class="ui button">${message(code:'menu.public.all_insts')}</g:link>
         </g:if>
         <g:else>
@@ -24,10 +24,10 @@
             </g:else>
 
             <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
-                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.org" />
+                <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.org" />
             </g:if>
             <g:if test="${delResult.status == deletionService.RESULT_ERROR}">
-                <ui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
+                <ui:msg class="error" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
             <g:link controller="organisation" action="listInstitution" class="ui button">${message(code:'menu.public.all_insts')}</g:link>

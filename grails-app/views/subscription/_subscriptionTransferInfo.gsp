@@ -46,7 +46,7 @@
                             data-content="${message(code: 'subscription.participantTransferWithSurvey.label')}"
                             data-position="top center">
                         <i class="large icons">
-                            <i class="chart pie icon"></i>
+                            <i class="${Icons.SURVEY}"></i>
                             <i class="top right corner redo icon"></i>
                         </i>
                     </span>
@@ -161,7 +161,7 @@
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                     class="ui icon blue tiny button la-modern-button"
                                                     target="_blank">
-                                                <i class="download small icon"></i>
+                                                <i class="${Icons.CMD_DOWNLOAD} small"></i>
                                             </g:link>
                                         </div>
                                     </div>
@@ -285,7 +285,7 @@
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                     class="ui icon blue tiny button la-modern-button"
                                                     target="_blank">
-                                                <i class="download small icon"></i>
+                                                <i class="${Icons.CMD_DOWNLOAD} small"></i>
                                             </g:link>
                                         </div>
                                     </div>

@@ -186,7 +186,7 @@
                             <a href="#" class="la-popup-tooltip la-delay"
                                data-content="${message(code: 'subscription.numberOfCostItems.label')}"
                                data-position="top center">
-                                <i class="money bill large icon"></i>
+                                <i class="${Icons.COSTS} large"></i>
                             </a>
                         </th>
                         <th rowspan="2">

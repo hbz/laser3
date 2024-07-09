@@ -12,7 +12,7 @@
 
     <g:if test="${delResult}">
         <g:if test="${delResult.status == DeletionService.RESULT_SUCCESS}">
-            <ui:msg class="positive" message="deletion.success.msg" />
+            <ui:msg class="success" message="deletion.success.msg" />
 
             <g:if test="${controllerName == 'myInstitution'}">
                 <g:link action="users" class="ui button"><g:message code="org.nav.users"/></g:link>
@@ -34,13 +34,13 @@
             </g:else>
 
             <g:if test="${delResult.status == DeletionService.RESULT_CUSTOM}">
-                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.custom.msg.user" />
+                <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="deletion.custom.msg.user" />
             </g:if>
             <g:if test="${delResult.status == DeletionService.RESULT_BLOCKED}">
-                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.user" />
+                <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.user" />
             </g:if>
             <g:if test="${delResult.status == DeletionService.RESULT_ERROR}">
-                <ui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
+                <ui:msg class="error" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
             <%
@@ -85,7 +85,7 @@
                             </g:if>
                             <g:else>
                                 <input disabled type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
-                                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="user.delete.substitute.missing" />
+                                <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="user.delete.substitute.missing" />
                             </g:else>
                         </g:if>
                         <g:elseif test="${delResult.status != DeletionService.RESULT_ERROR}">

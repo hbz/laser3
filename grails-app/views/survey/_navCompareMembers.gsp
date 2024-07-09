@@ -233,7 +233,7 @@
                 </div>
 
                 <div class="description">
-                    <i class="money bill alternate outline icon"></i>${message(code: 'copySurveyCostItems.surveyCostItem')}
+                    <i class="${Icons.COSTS} alternate outline"></i>${message(code: 'copySurveyCostItems.surveyCostItem')}
                 </div>
             </div>
 
@@ -266,7 +266,7 @@
                 </div>
 
                 <div class="description">
-                    <i class="money bill alternate outline icon"></i>${message(code: 'surveyCostItemsPackages.label')}
+                    <i class="${Icons.COSTS} alternate outline"></i>${message(code: 'surveyCostItemsPackages.label')}
                 </div>
             </div>
 

@@ -51,7 +51,7 @@
                                     data-confirm-term-how="unset"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="eraser icon"></i>
+                                <i class="${Icons.CMD_ERASE}"></i>
                             </g:link>
                         </g:if>
                     </td>
@@ -64,7 +64,7 @@
     <g:if test="${reportTypes}">
         <g:if test="${revision == AbstractReport.COUNTER_4}">
         <%-- taglib not displaying properly
-        <ui:msg icon="ui info" class="info"
+        <ui:msg icon="${Icons.INFO}" class="info"
                 header="${message(code: 'default.usage.counter4reportInfo.header')}"
                 message="default.usage.counter4reportInfo.text" noClose="true"/>
         --%>
@@ -150,7 +150,7 @@
         <div id="reportWrapper"></div>
     </g:if>
     <g:elseif test="${error}">
-        <ui:msg icon="ui times icon" class="error" noClose="true">
+        <ui:msg class="error" icon="times" noClose="true">
             <g:if test="${error == 'noCustomerId'}">
                 <g:message code="default.stats.error.${error}.local" args="${errorArgs}"/>
 

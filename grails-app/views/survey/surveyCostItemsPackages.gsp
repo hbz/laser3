@@ -136,7 +136,7 @@
 
                 <div id="bulkCostItems" class="hidden">
                     <g:if test="${countCostItems == 0}">
-                        <ui:msg icon="info" message="surveyCostItems.bulkOption.info"/>
+                        <ui:msg icon="${Icons.INFO}" message="surveyCostItems.bulkOption.info"/>
                     </g:if>
                     <g:else>
                         <h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip la-delay"

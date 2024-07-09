@@ -23,7 +23,7 @@ class IconTagLib {
                 icon = Icons.ADDRESS_PUBLIC + ' bordered inverted teal la-object-extended'
                 break
             case 'admin':
-                icon = 'la-object tools'
+                icon = Icons.Auth.ROLE_ADMIN + ' la-object'
                 break
             case 'affiliation':
                 Role fr = contextService.getUser().formalRole
@@ -80,13 +80,13 @@ class IconTagLib {
                 icon = Icons.TASK + ' bordered inverted green la-object-extended'
                 break
             case 'user':
-                icon = 'user bordered inverted grey la-object-extended'
+                icon = Icons.Auth.ROLE_USER + ' bordered inverted grey la-object-extended'
                 break
             case 'workflow':
                 icon = Icons.WORKFLOW + ' bordered inverted brown la-object-extended'
                 break
             case 'yoda':
-                icon = 'la-object star of life'
+                icon = Icons.Auth.ROLE_YODA + ' la-object'
                 break
         }
         }
@@ -217,7 +217,7 @@ class IconTagLib {
         switch (attrs.type) {
             case [ 'E-Mail', 'Mail' ]: // 'Mail' -> Deprecated
                 msg = message(code: 'contact.icon.label.email')
-                icon = 'icon envelope outline la-list-icon  la-js-copyTriggerIcon'
+                icon = Icons.EMAIL + ' la-list-icon la-js-copyTriggerIcon'
                 break
             case 'Fax':
                 msg = message(code: 'contact.icon.label.fax')
@@ -354,7 +354,7 @@ class IconTagLib {
 
         out << '<span class="la-long-tooltip la-popup-tooltip la-delay"'
         out << ' data-position="bottom center" data-content="' + tt +'">'
-        out << '<i class="chart bar icon' + color + '"></i>'
+        out << '<i class="' + Icons.STATS + ' ' + color + '"></i>'
         out << '</span>'
     }
 
