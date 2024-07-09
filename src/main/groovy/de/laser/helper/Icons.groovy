@@ -53,17 +53,16 @@ class Icons {
         // properties
 
         public static String HARDDATA       = 'check circle icon green' // COLOR INCLUDED !!
-        public static String IN_USE         = 'info circle icon blue'   // COLOR INCLUDED !! todo: duplicate: Icons.SYM.MSG_INFO
+        public static String IN_USE         = 'info circle icon blue'   // COLOR INCLUDED !! todo: duplicate: Icons.UI.INFO
         public static String IS_PRIVATE     = 'shield alternate icon'
         public static String LOGIC          = 'cube icon red'           // COLOR INCLUDED !!
         public static String MANDATORY      = 'star icon'               // todo: duplicate: survey/renew? > Icons.MY_OBJECT
         public static String MULTIPLE       = 'redo icon orange'        // COLOR INCLUDED !! todo: duplicate: currentSubscriptionsTransfer
-
     }
 
-    class SYM {
+    class UI {
         // please do not touch during refactoring ..
-        // symbolic / generic
+        // generic / dialog ui
 
         public static String ERROR          = 'exclamation triangle icon'
         public static String INFO           = 'info icon'

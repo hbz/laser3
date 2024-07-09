@@ -170,7 +170,7 @@
                                 <div class="ui content">
                                     <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
 
-                                    <ui:msg class="warning" icon="${Icons.SYM.WARNING}" noClose="true">
+                                    <ui:msg class="warning" icon="${Icons.UI.WARNING}" noClose="true">
                                         Dieser Nutzer ist noch keiner Einrichtung zugewiesen.
                                     </ui:msg>
 

@@ -104,7 +104,7 @@ class UiTagLib {
         }
 
         if (flash && flash.error) {
-            out << '<div class="ui negative message la-clear-before">'
+            out << '<div class="ui error message la-clear-before">'
             out << '<i aria-hidden="true" class="close icon"></i>'
             out << '<p>' + flash.error + '</p>'
             out << '</div>'
@@ -152,7 +152,7 @@ class UiTagLib {
     def errors = { attrs, body ->
 
         if (attrs.bean?.errors?.allErrors) {
-            out << '<div class="ui negative message">'
+            out << '<div class="ui error message">'
             out << '<i aria-hidden="true" class="close icon"></i>'
             out << '<ul class="list">'
             attrs.bean.errors.allErrors.each { e ->
@@ -447,8 +447,8 @@ class UiTagLib {
 
     def flagDeprecated = { attrs, body ->
 
-        out << '<div class="ui icon message error">'
-        out << '<i class="' + Icons.SYM.ERROR + '"></i>'
+        out << '<div class="ui icon error message">'
+        out << '<i class="' + Icons.UI.ERROR + '"></i>'
         out << '<div class="content">'
         out << 'Diese Funktionalität wird demnächst entfernt.<br/>Bitte nicht mehr verwenden und ggfs. Daten migrieren.'
         out << '</div>'

@@ -25,7 +25,7 @@
         <g:set var="dcSize" value="${LocalExportHelper.getDetailsCache(token).idList?.size() ?: 0}" />
         <g:if test="${dcSize > 50}">
             <div class="ui info message">
-                <i class="${Icons.SYM.INFO}"></i> ${message(code: 'reporting.modal.export.todoTime')}
+                <i class="${Icons.UI.INFO}"></i> ${message(code: 'reporting.modal.export.todoTime')}
             </div>
         </g:if>
 

@@ -27,7 +27,7 @@
 
 <g:if test="${permanentTitlesProcessRunning}">
     <div class="ui icon warning message">
-        <i class="${Icons.SYM.WARNING}"></i>
+        <i class="${Icons.UI.WARNING}"></i>
         <div class="content">
             <div class="header">Info</div>
 
@@ -47,10 +47,10 @@
     </ui:msg>
 
     <g:if test="${truncatedRows}">
-        <ui:msg icon="${Icons.SYM.ERROR}" class="error" message="subscription.details.addEntitlements.truncatedRows" args="[truncatedRows]"/>
+        <ui:msg icon="${Icons.UI.ERROR}" class="error" message="subscription.details.addEntitlements.truncatedRows" args="[truncatedRows]"/>
     </g:if>
     <g:if test="${errorKBART}">
-        <ui:msg icon="${Icons.SYM.ERROR}" class="error" message="subscription.details.addEntitlements.titleNotMatched" args="[errorCount]"/>
+        <ui:msg icon="${Icons.UI.ERROR}" class="error" message="subscription.details.addEntitlements.titleNotMatched" args="[errorCount]"/>
         <g:link class="ui icon button la-modern-button" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icons.CMD.DOWNLOAD}"></i></g:link>
     </g:if>
 
@@ -58,7 +58,7 @@
 
 <g:if test="${deletedSPs}">
     <div class="ui icon error message">
-        <i class="${Icons.SYM.ERROR}"></i>
+        <i class="${Icons.UI.ERROR}"></i>
         <ul class="list">
             <g:each in="${deletedSPs}" var="sp">
                 <li><g:message code="subscription.details.packagesDeleted.header"
@@ -70,7 +70,7 @@
 
 <g:if test="${frozenHoldings}">
     <div class="ui icon error message">
-        <i class="${Icons.SYM.ERROR}"></i>
+        <i class="${Icons.UI.ERROR}"></i>
         <ul class="list">
             <g:each in="${frozenHoldings}" var="sp">
                 <li><g:message code="subscription.details.frozenHoldings.header"

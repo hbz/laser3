@@ -55,7 +55,7 @@
 
 <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
     <div class="ui icon success message">
-        <i class="${Icons.SYM.SUCCESS}"></i>
+        <i class="${Icons.UI.SUCCESS}"></i>
         <div class="content">
             <div class="header"></div>
             <p>

@@ -3,7 +3,7 @@
 <h4 class="ui header">Responsive Tabellen</h4>
 
 <div class="ui icon error message">
-    <i aria-hidden="true" class="${Icons.SYM.ERROR}"></i>
+    <i aria-hidden="true" class="${Icons.UI.ERROR}"></i>
 
     <div class="content">
         <div class="header">

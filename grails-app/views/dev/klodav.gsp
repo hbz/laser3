@@ -16,26 +16,59 @@
 <div class="ui four column grid">
     <div class="column">
         <div class="ui icon info message">
-            <i class="${Icons.SYM.INFO}"></i>
+            <i class="${Icons.UI.INFO}"></i>
             <div class="content"> INFO </div>
         </div>
     </div>
     <div class="column">
         <div class="ui icon warning message">
-            <i class="${Icons.SYM.WARNING}"></i>
+            <i class="${Icons.UI.WARNING}"></i>
             <div class="content"> WARNING </div>
         </div>
     </div>
     <div class="column">
         <div class="ui icon success message">
-            <i class="${Icons.SYM.SUCCESS}"></i>
+            <i class="${Icons.UI.SUCCESS}"></i>
             <div class="content"> SUCCESS </div>
         </div>
     </div>
     <div class="column">
         <div class="ui icon error message">
-            <i class="${Icons.SYM.ERROR}"></i>
+            <i class="${Icons.UI.ERROR}"></i>
             <div class="content"> ERROR </div>
+        </div>
+    </div>
+</div>
+
+<div class="ui six column grid">
+    <div class="column">
+        <div class="ui info message">
+            <div class="content"> INFO </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui warning message">
+            <div class="content"> WARNING </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui success message">
+            <div class="content"> SUCCESS </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui error message">
+            <div class="content"> ERROR </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui positive message">
+            <div class="content"> <del>POSITIVE</del> </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui negative message">
+            <div class="content"> <del>NEGATIVE</del> </div>
         </div>
     </div>
 </div>

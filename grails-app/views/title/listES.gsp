@@ -34,7 +34,7 @@
                <ui:messages data="${flash}" />
 
                <div class="ui icon info message">
-                 <i class="${Icons.SYM.INFO}"></i>
+                 <i class="${Icons.UI.INFO}"></i>
                  <i class="close icon"></i>
                  <div class="content">
                    <div class="header">

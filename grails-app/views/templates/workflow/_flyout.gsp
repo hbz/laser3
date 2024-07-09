@@ -13,12 +13,12 @@
 
         <g:if test="${checkedEditable}">
             <g:if test="${status == WorkflowService.OP_STATUS_DONE}">
-                <div class="ui message positive" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
+                <div class="ui success message" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
                     ${message(code: 'workflow.edit.ok')}
                 </div>
             </g:if>
             <g:elseif test="${status == WorkflowService.OP_STATUS_ERROR}">
-                <div class="ui message negative" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
+                <div class="ui error message" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
                     ${message(code: 'workflow.edit.error')}
                 </div>
             </g:elseif>

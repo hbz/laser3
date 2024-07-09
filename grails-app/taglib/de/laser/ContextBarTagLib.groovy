@@ -21,7 +21,7 @@ class ContextBarTagLib {
         Org org = attrs.org as Org
 
         if (!org) {
-            icon  = Icons.SYM.ERROR + ' red'
+            icon  = Icons.UI.ERROR + ' red'
             text  = message(code: 'profile.membership.error1')
         }
         else if (org.isCustomerType_Consortium_Pro()) {
@@ -77,7 +77,7 @@ class ContextBarTagLib {
             }
         }
         else {
-            icon  = Icons.SYM.ERROR
+            icon  = Icons.UI.ERROR
             color = 'red'
             text  = message(code: 'profile.membership.error2')
         }

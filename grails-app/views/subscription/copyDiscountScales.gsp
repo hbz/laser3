@@ -141,7 +141,7 @@
 
 
     <div class="ui icon message">
-        <i class="${Icons.SYM.INFO}"></i>
+        <i class="${Icons.UI.INFO}"></i>
          <div class="content">
     <div class="header">
         ${message(code: 'subscription.details.copyDiscountScales.process.info')}

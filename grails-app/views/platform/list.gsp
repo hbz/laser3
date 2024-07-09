@@ -11,7 +11,7 @@
 
 			<g:if test="${error}">
 				<div class="ui icon error message">
-					<i class="${Icons.SYM.ERROR}"></i>
+					<i class="${Icons.UI.ERROR}"></i>
 					<i class="close icon"></i>
 					<div class="content">
 						<div class="header">

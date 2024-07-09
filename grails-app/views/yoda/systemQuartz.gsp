@@ -9,9 +9,9 @@
 <ui:h1HeaderWithIcon message="menu.yoda.systemQuartz" type="yoda" />
 
 <ui:msg class="info" noClose="true">
-    <i class="${Icons.SYM.SUCCESS} icon"></i> Job is active <br />
+    <i class="${Icons.UI.SUCCESS} icon"></i> Job is active <br />
     <i class="stop icon"></i> Job is NOT active <br />
-    <i class="${Icons.SYM.ERROR}"></i> Job is NOT available - due deactivation oder missing configuration <br />
+    <i class="${Icons.UI.ERROR}"></i> Job is NOT available - due deactivation oder missing configuration <br />
 </ui:msg>
 
 <g:each in="${quartz}" var="groupKey, group">

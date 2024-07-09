@@ -64,12 +64,12 @@
     <g:if test="${reportTypes}">
         <g:if test="${revision == AbstractReport.COUNTER_4}">
         <%-- taglib not displaying properly
-        <ui:msg icon="${Icons.SYM.MSG_INFO}" class="info"
+        <ui:msg icon="${Icons.UI.INFO}" class="info"
                 header="${message(code: 'default.usage.counter4reportInfo.header')}"
                 message="default.usage.counter4reportInfo.text" noClose="true"/>
         --%>
             <div class="ui icon info message">
-                <i class="${Icons.SYM.INFO}"></i>
+                <i class="${Icons.UI.INFO}"></i>
                 <div class="content">
                     <div class="header">${message(code: 'default.usage.counter4reportInfo.header')}</div>
 

@@ -227,7 +227,7 @@
 
         <g:if test="${controllerName == 'subscription' && showStatsFilter}">
             <g:if test="${revision == AbstractReport.COUNTER_4}">
-                <ui:msg icon="${Icons.SYM.INFO}" class="info" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" noClose="true"/>
+                <ui:msg icon="${Icons.UI.INFO}" class="info" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" noClose="true"/>
             </g:if>
             <div class="five fields" id="filterDropdownWrapper">
                 <div class="field">

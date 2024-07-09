@@ -52,7 +52,7 @@
     <div class="la-inline-lists">
         <g:if test="${!titlesList}">
             <div class="ui icon info message">
-                <i class="${Icons.SYM.INFO}"></i>
+                <i class="${Icons.UI.INFO}"></i>
 
                 <div class="content">
                     <div class="header"></div>

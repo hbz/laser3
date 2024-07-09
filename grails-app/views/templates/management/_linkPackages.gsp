@@ -29,7 +29,7 @@
 
     <g:if test="${isLinkingRunning || isUnlinkingRunning}">
         <div class="ui icon warning message">
-            <i class="${Icons.SYM.WARNING}"></i>
+            <i class="${Icons.UI.WARNING}"></i>
             <div class="content">
                 <div class="header">Info</div>
 

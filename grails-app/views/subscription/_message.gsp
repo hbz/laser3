@@ -3,7 +3,7 @@
 
 <g:if test="${checkCons}">
 
-<div class="ui negative message">
+<div class="ui error message">
     <div class="header">
         <g:message code="myinst.message.attention" />
         <g:message code="myinst.subscriptionDetails.message.ChildView" />
@@ -34,7 +34,7 @@
 
     <g:if test="${subscription.comment}">
         <div class="ui icon info message">
-            <i class="${Icons.SYM.INFO}"></i>
+            <i class="${Icons.UI.INFO}"></i>
             <div class="content">
                 <div class="header">
                     ${message(code: 'subscription.details.internalComment')}
