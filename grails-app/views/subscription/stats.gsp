@@ -23,12 +23,12 @@
 
         <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">
             <g:each in="${platformInstanceRecords.values()}" var="platform">
-                <g:if test="${platform.statisticsFormat.contains('COUNTER')}">
-                    <%
-                        Map<String, Object> platformSushiConfig = exportService.prepareSushiCall(platform, 'stats')
-                    %>
-                    <div class="ui segment">
-                        <laser:render template="/platform/platformStatsDetails" model="[wekbServerUnavailable: wekbServerUnavailable, platformInstanceRecord: platform]"/>
+                <div class="ui segment">
+                    <laser:render template="/platform/platformStatsDetails" model="[wekbServerUnavailable: wekbServerUnavailable, platformInstanceRecord: platform]"/>
+                    <g:if test="${platform.statisticsFormat.contains('COUNTER')}">
+                        <%
+                            Map<String, Object> platformSushiConfig = exportService.prepareSushiCall(platform, 'stats')
+                        %>
                         <table class="ui celled table">
                             <tr>
                                 <th><g:message code="default.institution"/></th>
@@ -57,8 +57,8 @@
                                 </tr>
                             </g:each>
                         </table>
-                    </div>
-                </g:if>
+                    </g:if>
+                </div>
             </g:each>
         </g:if>
         <g:else>
