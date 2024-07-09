@@ -30,11 +30,13 @@ class Icons {
         // please do not touch during refactoring ..
         // cmds, functions
 
+        public static String ATTACHMENT     = 'attach icon'
         public static String COPY           = 'copy icon'
         public static String DELETE         = 'trash alternate outline icon'
         public static String DOWNLOAD       = 'download icon'
         public static String EDIT           = 'write icon'
         public static String ERASE          = 'eraser icon'
+        public static String REPLACE        = 'retweet icon'
         public static String UNLINK         = 'unlink icon'
     }
 
