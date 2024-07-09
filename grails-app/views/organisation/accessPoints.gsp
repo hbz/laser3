@@ -159,7 +159,7 @@
                                     id="${accessPoint.id}" class="ui icon button blue la-modern-button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                             </g:link>
 
                             <g:if test="${accessPointItem['platformLinkCount'] == 0 && accessPointItem['subscriptionLinkCount'] == 0}">
@@ -169,13 +169,13 @@
                                         data-confirm-term-how="delete"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE}"></i>
+                                    <i class="${Icons.CMD.DELETE}"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                                       data-content="${message(code: 'accessPoint.list.deleteDisabledInfo', args: [accessPointItem['platformLinkCount'], accessPointItem['subscriptionLinkCount']])}">
-                                    <span class="ui negative icon button la-modern-button disabled"><i class="${Icons.CMD_DELETE}"></i>
+                                    <span class="ui negative icon button la-modern-button disabled"><i class="${Icons.CMD.DELETE}"></i>
                                     </span>
                                 </span>
                             </g:else>

@@ -8,7 +8,7 @@
         <g:set var="message_lastUpdated" value="${message(code:'myinst.dash.due_dates.lastUpdate')}" />
             <g:if test="${ ! SqlDateUtils.isYesterdayOrToday(dashboard_last_update)}">
                 <ui:msg class="error" header="${message(code: 'myinst.message.attention')}" text="${message_lastUpdated} ${DateUtils.getLocalizedSDF_noTime().format(dashboard_last_update)}" >
-                    <i class="${Icons.ERROR}" id="noData" data-content="${message(code:'myinst.dash.due_dates.tooltip')}"></i>
+                    <i class="${Icons.UI.ERROR}" id="noData" data-content="${message(code:'myinst.dash.due_dates.tooltip')}"></i>
                 </ui:msg>
             </g:if>
 

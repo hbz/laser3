@@ -17,7 +17,7 @@ class DropdownTagLib {
     def exportDropdown = { attrs, body ->
 
         out << '<div class="ui simple dropdown button">'
-        out <<     '<i class="' + Icons.CMD_DOWNLOAD + '"></i>'
+        out <<     '<i class="' + Icons.CMD.DOWNLOAD + '"></i>'
         out <<     '<div class="menu">'
         out <<         body()
         out <<     '</div>'

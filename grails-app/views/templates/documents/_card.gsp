@@ -88,12 +88,12 @@
 
                         <g:if test="${! (editable || editable2)}">
                             <%-- 1 --%>
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icons.CMD.DOWNLOAD}"></i></g:link>
                         </g:if>
                         <g:else>
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                 <%-- 1 --%>
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icons.CMD.DOWNLOAD}"></i></g:link>
 
                                 <%-- 2 --%>
                                 <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
@@ -101,12 +101,12 @@
                                         data-ui="modal"
                                         data-href="#modalEditDocument_${docctx.id}"
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                    <i class="${Icons.CMD_EDIT}"></i>
+                                    <i class="${Icons.CMD.EDIT}"></i>
                                 </button>
                             </g:if>
                             <g:elseif test="${docctx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET}">
                                 <%-- 1 --%>
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icons.CMD.DOWNLOAD}"></i></g:link>
                             </g:elseif>
 
                             <%-- 3 --%>
@@ -149,7 +149,7 @@
                                         params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE}"></i>
+                                    <i class="${Icons.CMD.DELETE}"></i>
                                 </g:link>
                             </g:if>
                             <g:elseif test="${docctx.shareConf != RDStore.SHARE_CONF_UPLOADER_AND_TARGET}">
@@ -163,7 +163,7 @@
                                 %{-- old --}%
 
 %{--                            <g:if test="${docctx.owner.owner?.id == contextOrg.id}">--}%
-%{--                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>--}%
+%{--                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icons.CMD.DOWNLOAD}"></i></g:link>--}%
 
 %{--                                <%-- START First Button --%>--}%
 %{--                                <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />--}%
@@ -171,7 +171,7 @@
 %{--                                        data-ui="modal"--}%
 %{--                                        data-href="#modalEditDocument_${docctx.id}"--}%
 %{--                                        aria-label="${message(code: 'ariaLabel.change.universal')}">--}%
-%{--                                    <i class="${Icons.CMD_EDIT}"></i></button>--}%
+%{--                                    <i class="${Icons.CMD.EDIT}"></i></button>--}%
 
 %{--                                <%-- START Second Button --%>--}%
 %{--                                <g:if test="${!docctx.isShared}">--}%
@@ -181,7 +181,7 @@
 %{--                                            params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'--}%
 %{--                                            role="button"--}%
 %{--                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">--}%
-%{--                                        <i class="${Icons.CMD_DELETE}"></i>--}%
+%{--                                        <i class="${Icons.CMD.DELETE}"></i>--}%
 %{--                                    </g:link>--}%
 %{--                                </g:if>--}%
 %{--                                <g:else>--}%
@@ -260,7 +260,7 @@
                         </div>
 
                         <div class="five wide right aligned column">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icons.CMD.DOWNLOAD}"></i></g:link>
 
                             %{--
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
@@ -268,7 +268,7 @@
                                 <button type="button" class="ui icon blue button la-modern-button" data-ui="modal"
                                         data-href="#modalEditDocument_${docctx.id}"
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                <i class="${Icons.CMD_EDIT}"></i></button>
+                                <i class="${Icons.CMD.EDIT}"></i></button>
                             </g:if>
                             --}%
                         </div>

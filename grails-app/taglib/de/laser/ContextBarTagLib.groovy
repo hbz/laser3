@@ -21,27 +21,27 @@ class ContextBarTagLib {
         Org org = attrs.org as Org
 
         if (!org) {
-            icon  = Icons.ERROR + ' red'
+            icon  = Icons.UI.ERROR + ' red'
             text  = message(code: 'profile.membership.error1')
         }
         else if (org.isCustomerType_Consortium_Pro()) {
-            icon  = Icons.Auth.ORG_CONSORTIUM_PRO
+            icon  = Icons.AUTH.ORG_CONSORTIUM_PRO
             text  = Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')
         }
         else if (org.isCustomerType_Consortium_Basic()) {
-            icon  = Icons.Auth.ORG_CONSORTIUM_BASIC
+            icon  = Icons.AUTH.ORG_CONSORTIUM_BASIC
             text  = Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')
         }
         else if (org.isCustomerType_Inst_Pro()) {
-            icon  = Icons.Auth.ORG_INST_PRO
+            icon  = Icons.AUTH.ORG_INST_PRO
             text  = Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')
         }
         else if (org.isCustomerType_Inst()) {
-            icon  = Icons.Auth.ORG_INST_BASIC
+            icon  = Icons.AUTH.ORG_INST_BASIC
             text  = Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')
         }
         else if (org.isCustomerType_Support()) {
-            icon = Icons.Auth.ORG_SUPPORT
+            icon = Icons.AUTH.ORG_SUPPORT
             text  = Role.findByAuthority(CustomerTypeService.ORG_SUPPORT).getI10n('authority')
         }
 
@@ -64,20 +64,20 @@ class ContextBarTagLib {
 
         if (fr) {
             if (fr.authority == Role.INST_USER) {
-                icon = Icons.Auth.INST_USER
+                icon = Icons.AUTH.INST_USER
                 text = message(code: 'cv.roles.INST_USER')
             }
             else if (fr.authority == Role.INST_EDITOR) {
-                icon = Icons.Auth.INST_EDITOR
+                icon = Icons.AUTH.INST_EDITOR
                 text = message(code: 'cv.roles.INST_EDITOR')
             }
             else if (fr.authority == Role.INST_ADM) {
-                icon = Icons.Auth.INST_ADM
+                icon = Icons.AUTH.INST_ADM
                 text = message(code: 'cv.roles.INST_ADM')
             }
         }
         else {
-            icon  = Icons.ERROR
+            icon  = Icons.UI.ERROR
             color = 'red'
             text  = message(code: 'profile.membership.error2')
         }
@@ -100,11 +100,11 @@ class ContextBarTagLib {
 
         if (user.isYoda()) {
             text = 'Systemberechtigung: YODA'
-            icon = Icons.Auth.ROLE_YODA
+            icon = Icons.AUTH.ROLE_YODA
         }
         else if (user.isAdmin()) {
             text = 'Systemberechtigung: ADMIN'
-            icon = Icons.Auth.ROLE_ADMIN
+            icon = Icons.AUTH.ROLE_ADMIN
         }
 
         if (icon) {

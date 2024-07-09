@@ -33,7 +33,7 @@
 
 <g:if test="${missing.size() > 0}">
     <div class="ui icon message warning">
-        <i class="${Icons.INFO}"></i>
+        <i class="${Icons.UI.WARNING}"></i>
         <div class="content">
             <div class="header">${message(code: 'org.eInvoice.info.header')}</div>
             ${message(code: 'org.eInvoice.info.text')}
@@ -89,7 +89,7 @@
                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [orgInstance.altnames[0].name])}"
                                                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(orgInstance.altnames[0])}')">
-                                                    <i class="${Icons.CMD_DELETE}"></i>
+                                                    <i class="${Icons.CMD.DELETE}"></i>
                                                 </ui:remoteLink>
                                             </g:if>
                                         </div>
@@ -110,7 +110,7 @@
                                                             <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                            data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                <i class="${Icons.CMD_DELETE}"></i>
+                                                                <i class="${Icons.CMD.DELETE}"></i>
                                                             </ui:remoteLink>
                                                         </div>
                                                     </div>
@@ -281,7 +281,7 @@
                                                             action="unlinkOrg" params="[id: orgInstance.id, combo: row.id]"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                        <i class="${Icons.CMD_UNLINK}"></i>
+                                                        <i class="${Icons.CMD.UNLINK}"></i>
                                                     </g:link>
                                                 </span>
                                             </g:if>

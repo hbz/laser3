@@ -90,7 +90,7 @@
                                     <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="ui icon button blue la-modern-button trigger-modal"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                        <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                                        <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                                     </g:link>
                                     <g:link controller="myInstitution"
                                             action="managePropertyGroups"
@@ -100,7 +100,7 @@
                                             class="ui icon negative button la-modern-button js-open-confirm-modal"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="${Icons.CMD_DELETE}"></i>
+                                        <i class="${Icons.CMD.DELETE}"></i>
                                     </g:link>
                                 </td>
                             </g:if>

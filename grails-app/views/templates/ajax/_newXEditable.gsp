@@ -55,7 +55,7 @@
                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: ownObj.id]"
                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.${wrapper}", args: [ownObj.name])}"
                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${objOID}')">
-                    <i class="${Icons.CMD_DELETE}"></i>
+                    <i class="${Icons.CMD.DELETE}"></i>
                 </ui:remoteLink>
             </div>
         </div>
@@ -71,7 +71,7 @@
                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: wrapper, objId: ownObj.id]"
                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.${wrapper}", args: [ownObj[field].getI10n('value')])}"
                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${objOID}')">
-                    <i class="${Icons.CMD_DELETE}"></i>
+                    <i class="${Icons.CMD.DELETE}"></i>
                 </ui:remoteLink>
             </div>
         </div>

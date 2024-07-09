@@ -95,7 +95,7 @@
                                         class="ui icon button blue la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                                    <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                                 </g:link>
                             </span>
                     </g:if>
@@ -107,7 +107,7 @@
                                         class="ui icon button blue la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                                    <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                                 </g:link>
                             </span>
                     </g:else>

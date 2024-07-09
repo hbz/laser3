@@ -119,7 +119,7 @@
             <th>
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.previous.label')}">
-                    <i class="${Icons.LINK_PREV}"></i>
+                    <i class="${Icons.LNK.PREV}"></i>
                 </span>
             </th>
             <th>${message(code:'default.startDate.label.shy')}</th>
@@ -127,7 +127,7 @@
             <th>
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.next.label')}">
-                    <i class="${Icons.LINK_NEXT}"></i>
+                    <i class="${Icons.LNK.NEXT}"></i>
                 </span>
             </th>
             <th>${message(code:'default.status.label')}</th>
@@ -202,14 +202,14 @@
                 </td>
                 <td class="center aligned">
                     <g:if test="${navPrevSubscription}">
-                        <g:link controller="subscription" action="show" id="${navPrevSubscription.id}"><i class="${Icons.LINK_PREV}"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${navPrevSubscription.id}"><i class="${Icons.LNK.PREV}"></i></g:link>
                     </g:if>
                 </td>
                 <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                 <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
                 <td class="center aligned">
                     <g:if test="${navNextSubscription}">
-                        <g:link controller="subscription" action="show" id="${navNextSubscription.id}"><i class="${Icons.LINK_NEXT}"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${navNextSubscription.id}"><i class="${Icons.LNK.NEXT}"></i></g:link>
                     </g:if>
                 </td>
                 <td>

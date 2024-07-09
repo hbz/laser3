@@ -82,7 +82,7 @@
                     data-confirm-term-how="unlink"
                     role="button"
                     aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                <i class="${Icons.CMD_UNLINK}"></i> ${message(code: 'default.button.unlink.label')}
+                <i class="${Icons.CMD.UNLINK}"></i> ${message(code: 'default.button.unlink.label')}
             </button>
         </g:if>
 

@@ -2,8 +2,8 @@
 <h2 class="ui dividing header">Tabellen<a class="anchor" id="icons"></a></h2>
 <h4 class="ui header">Responsive Tabellen</h4>
 
-<div class="ui icon negative message">
-    <i aria-hidden="true" class="${Icons.ERROR}"></i>
+<div class="ui icon error message">
+    <i aria-hidden="true" class="${Icons.UI.ERROR}"></i>
 
     <div class="content">
         <div class="header">

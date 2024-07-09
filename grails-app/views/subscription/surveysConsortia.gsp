@@ -165,7 +165,7 @@
                                 class="ui icon button blue la-modern-button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                            <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                         </g:link>
                     </span>
 
@@ -173,7 +173,7 @@
                     <g:link controller="survey" action="copySurvey" id="${surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id, q: surveyConfig?.subscription?.providers ? surveyConfig.subscription.providers[0].name : '']"
                             class="ui icon button blue la-modern-button">
-                        <i aria-hidden="true" class="${Icons.CMD_COPY}"></i>
+                        <i aria-hidden="true" class="${Icons.CMD.COPY}"></i>
                     </g:link>
                 </td>
             </tr>

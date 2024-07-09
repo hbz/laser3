@@ -197,7 +197,7 @@
                     <td class="center aligned">
                         <g:if test="${flyoutCheckList.contains(sub.id)}">
                             <g:link class="flyoutLink ui icon button blue la-modern-button" controller="public" action="gascoFlyout" data-key="${sub.id}">
-                                <i class="${Icons.INFO}"></i>
+                                <i class="${Icons.UI.INFO}"></i>
                             </g:link>
                         </g:if>
                         <g:else>
@@ -213,7 +213,7 @@
 
     <div id="gascoFlyout" class="ui eight wide flyout" style="padding:50px 0 10px 0;overflow:scroll">
         <div class="ui header">
-            <i class="${Icons.INFO}"></i>
+            <i class="${Icons.UI.INFO}"></i>
             <div class="content"></div>
         </div>
         <div class="content">

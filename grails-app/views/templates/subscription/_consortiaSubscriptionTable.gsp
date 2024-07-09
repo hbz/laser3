@@ -38,14 +38,14 @@
             <th class="center aligned la-smaller-table-head"  rowspan="2" >
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.previous.label')}">
-                    <i class="${Icons.LINK_PREV}"></i>
+                    <i class="${Icons.LNK.PREV}"></i>
                 </span>
             </th>
             <g:sortableColumn property="subT.name" params="${params}" title="${message(code:'default.subscription.label')}" class="la-smaller-table-head" />
             <th class="center aligned la-smaller-table-head" rowspan="2" >
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.next.label')}">
-                    <i class="${Icons.LINK_NEXT}"></i>
+                    <i class="${Icons.LNK.NEXT}"></i>
                 </span>
             </th>
             <g:if test="${'showPackages' in tableConfig}">
@@ -125,7 +125,7 @@
                 %>
                 <td class="center aligned">
                     <g:if test="${navPrevSubMember}">
-                        <g:link controller="subscription" action="show" id="${navPrevSubMember}"><i class="${Icons.LINK_PREV}"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${navPrevSubMember}"><i class="${Icons.LNK.PREV}"></i></g:link>
                     </g:if>
                 </td>
                 <th scope="row" class="la-th-column">
@@ -142,7 +142,7 @@
                 </th>
                 <td class="center aligned">
                     <g:if test="${navNextSubMember}">
-                        <g:link controller="subscription" action="show" id="${navNextSubMember}"><i class="${Icons.LINK_NEXT}"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${navNextSubMember}"><i class="${Icons.LNK.NEXT}"></i></g:link>
                     </g:if>
                 </td>
                 <g:if test="${'showPackages' in tableConfig}">

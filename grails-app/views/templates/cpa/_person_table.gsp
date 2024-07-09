@@ -337,7 +337,7 @@
                     <button type="button" onclick="JSPC.app.editPerson(${person.id})" class="ui icon button blue la-modern-button"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                        <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                        <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                     </button>
 
                     <g:form style="display:inline" controller="person" action="delete" data-confirm-id="${person.id.toString() + '_form'}">
@@ -348,7 +348,7 @@
                              data-confirm-id="${person.id}"
                              role="button"
                              aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="${Icons.CMD_DELETE}"></i>
+                            <i class="${Icons.CMD.DELETE}"></i>
                         </div>
                     </g:form>
                 </g:if>

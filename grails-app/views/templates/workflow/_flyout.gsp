@@ -13,12 +13,12 @@
 
         <g:if test="${checkedEditable}">
             <g:if test="${status == WorkflowService.OP_STATUS_DONE}">
-                <div class="ui message positive" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
+                <div class="ui success message" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
                     ${message(code: 'workflow.edit.ok')}
                 </div>
             </g:if>
             <g:elseif test="${status == WorkflowService.OP_STATUS_ERROR}">
-                <div class="ui message negative" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
+                <div class="ui error message" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
                     ${message(code: 'workflow.edit.error')}
                 </div>
             </g:elseif>
@@ -200,7 +200,7 @@
 
                             <g:if test="${checkedEditable}"><!-- TODO: workflows-permissions -->
 %{--                                <div class="ui icon negative button la-modern-button"--}%
-%{--                                     data-cmd="delete:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icons.CMD_DELETE}"></i>--}%
+%{--                                     data-cmd="delete:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icons.CMD.DELETE}"></i>--}%
 %{--                                </div>--}%
                                 <div class="ui icon negative button la-modern-button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.checkpoint", args: [cpoint.title])}"
@@ -210,7 +210,7 @@
                                         data-key="${WfChecklist.KEY}:${clist.id}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE}"></i>
+                                    <i class="${Icons.CMD.DELETE}"></i>
                                 </div>
                             </g:if>
 

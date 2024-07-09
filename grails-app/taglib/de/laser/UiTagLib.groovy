@@ -5,7 +5,6 @@ import de.laser.cache.SessionCacheWrapper
 import de.laser.helper.Icons
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
-import de.laser.utils.AppUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
@@ -105,7 +104,7 @@ class UiTagLib {
         }
 
         if (flash && flash.error) {
-            out << '<div class="ui negative message la-clear-before">'
+            out << '<div class="ui error message la-clear-before">'
             out << '<i aria-hidden="true" class="close icon"></i>'
             out << '<p>' + flash.error + '</p>'
             out << '</div>'
@@ -153,7 +152,7 @@ class UiTagLib {
     def errors = { attrs, body ->
 
         if (attrs.bean?.errors?.allErrors) {
-            out << '<div class="ui negative message">'
+            out << '<div class="ui error message">'
             out << '<i aria-hidden="true" class="close icon"></i>'
             out << '<ul class="list">'
             attrs.bean.errors.allErrors.each { e ->
@@ -412,7 +411,7 @@ class UiTagLib {
             if (! simpleFilter) {
                 out << '<button aria-expanded="' + (extended ? 'true':'false') + '" class="ui right floated button la-inline-labeled la-js-filterButton la-clearfix' + (extended ? '':' blue') + '">'
                 out << '    Filter'
-                out << '    <i aria-hidden="true" class="' + Icons.LINK_FILTERED + '"></i>'
+                out << '    <i aria-hidden="true" class="' + Icons.LNK.FILTERED + '"></i>'
                 out << '   <span class="ui circular label la-js-filter-total hidden">0</span>'
                 out << '</button>'
 
@@ -448,8 +447,8 @@ class UiTagLib {
 
     def flagDeprecated = { attrs, body ->
 
-        out << '<div class="ui icon message error">'
-        out << '<i class="' + Icons.ERROR + '"></i>'
+        out << '<div class="ui icon error message">'
+        out << '<i class="' + Icons.UI.ERROR + '"></i>'
         out << '<div class="content">'
         out << 'Diese Funktionalität wird demnächst entfernt.<br/>Bitte nicht mehr verwenden und ggfs. Daten migrieren.'
         out << '</div>'

@@ -416,7 +416,7 @@
                                     data-id_suffix="edit_${costItemParticipantSub.id}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                             </g:link>
                         </g:each>
                     </td>

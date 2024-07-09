@@ -4,15 +4,15 @@
         <input type="hidden" name="cmd" value="replacePropertyDefinition"/>
         <input type="hidden" name="xcgPdFrom" value=""/>
 
-        <div class="ui icon negative message">
-            <i class="${Icons.ERROR}"></i>
+        <div class="ui icon error message">
+            <i class="${Icons.UI.ERROR}"></i>
             <div class="content">
                 <div class="header"><g:message code="default.warning.emph" /></div>
                 <p><g:message code="menu.institutions.replace_prop.header"/></p>
             </div>
         </div>
 
-        <ui:msg class="info" icon="${Icons.INFO}" header="${message(code:'default.notice')}" noClose="true">
+        <ui:msg class="info" icon="${Icons.UI.INFO}" header="${message(code:'default.notice')}" noClose="true">
             <g:message code="menu.institutions.replace_prop.refdata"/>
             <br />
             <g:message code="menu.institutions.replace_prop.setting"/>

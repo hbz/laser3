@@ -17,7 +17,7 @@
                     <button class="ui icon button blue la-modern-button" type="button" onclick="JSPC.app.editPerson(${person.id})"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                        <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                        <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                     </button>
                 </div>
             </g:if>
@@ -97,7 +97,7 @@
                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                        <i class="${Icons.CMD_UNLINK}"></i>
+                        <i class="${Icons.CMD.UNLINK}"></i>
                     </g:link>
                 </g:if>
             </div>

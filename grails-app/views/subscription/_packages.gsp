@@ -14,7 +14,7 @@
             <div class="ui raised segments la-accordion-segments">
                 <div class="ui fluid segment title">
                     <g:if test="${subscriptionService.checkThreadRunning('PackageUnlink_'+subscription.id)}">
-                        <ui:msg icon="${Icons.INFO}" class="info"><g:message code="subscriptionsManagement.unlinkInfo.unlinkingInProgress" args="${[sp.pkg.name]}"/></ui:msg>
+                        <ui:msg icon="${Icons.UI.INFO}" class="info"><g:message code="subscriptionsManagement.unlinkInfo.unlinkingInProgress" args="${[sp.pkg.name]}"/></ui:msg>
                     </g:if>
                     <g:else>
                         <div class="ui stackable equal width grid">
@@ -105,7 +105,7 @@
                                             </div>
                                             <div class="or" data-text="|"></div>
                                             <div class="ui simple dropdown negative icon button la-modern-button ${unlinkDisabled}" data-content="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}">
-                                                <i aria-hidden="true" class="${Icons.CMD_ERASE}"></i>
+                                                <i aria-hidden="true" class="${Icons.CMD.ERASE}"></i>
                                                 <div class="menu">
                                                     <g:link controller="subscription" action="unlinkPackage" class="${btnClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'onlyIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name])}"
                                                             data-confirm-term-how="delete" role="button" aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
@@ -159,7 +159,7 @@
                                                             class="ui icon negative button la-modern-button js-open-confirm-modal ${unlinkDisabled}"
                                                             role="button"
                                                             aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
-                                                        <i aria-hidden="true" class="${Icons.CMD_ERASE}"></i>
+                                                        <i aria-hidden="true" class="${Icons.CMD.ERASE}"></i>
                                                     </g:link>
                                                 </span>
                                             </g:if>
@@ -173,7 +173,7 @@
                                                         class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip"
                                                         role="button"
                                                         aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
-                                                    <i aria-hidden="true" class="${Icons.CMD_ERASE}"></i>
+                                                    <i aria-hidden="true" class="${Icons.CMD.ERASE}"></i>
                                                 </g:link>
                                             </g:else>
                                         </div>

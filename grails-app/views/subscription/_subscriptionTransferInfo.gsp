@@ -55,7 +55,7 @@
                     <span class="la-popup-tooltip la-delay"
                        data-content="${message(code: 'renewalEvaluation.exportRenewal')}"
                        data-position="top center">
-                        <i class="${Icons.CMD_DOWNLOAD}"></i>
+                        <i class="${Icons.CMD.DOWNLOAD}"></i>
                     </span>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned"></th>
@@ -161,7 +161,7 @@
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                     class="ui icon blue tiny button la-modern-button"
                                                     target="_blank">
-                                                <i class="${Icons.CMD_DOWNLOAD} small"></i>
+                                                <i class="${Icons.CMD.DOWNLOAD} small"></i>
                                             </g:link>
                                         </div>
                                     </div>
@@ -285,7 +285,7 @@
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                     class="ui icon blue tiny button la-modern-button"
                                                     target="_blank">
-                                                <i class="${Icons.CMD_DOWNLOAD} small"></i>
+                                                <i class="${Icons.CMD.DOWNLOAD} small"></i>
                                             </g:link>
                                         </div>
                                     </div>
@@ -300,7 +300,7 @@
                         <g:if test="${countModificationToCostInformationAfterRenewalDoc > 0}">
                             <g:link class="ui label triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
                                     params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]">
-                                <i class="${Icons.CMD_DOWNLOAD}"></i> ${countModificationToCostInformationAfterRenewalDoc}
+                                <i class="${Icons.CMD.DOWNLOAD}"></i> ${countModificationToCostInformationAfterRenewalDoc}
                             </g:link>
                         </g:if>
                         <g:else>
@@ -328,7 +328,7 @@
                                 class="ui icon button blue la-modern-button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                            <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                         </g:link>
                     </td>
                 </tr>

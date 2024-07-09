@@ -138,11 +138,11 @@
                                     <td>
                                         ${idNs.ns}
                                         <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataId.tooltip', args:[idNs.id])}">
-                                            <i class="${Icons.PROPERTY_USED}"></i>
+                                            <i class="${Icons.PROP.IN_USE}"></i>
                                         </span>
                                         <g:if test="${idNs.isHardData}">
                                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="${Icons.PROPERTY_HARDDATA}"></i>
+                                                <i class="${Icons.PROP.HARDDATA}"></i>
                                             </span>
                                         </g:if>
                                     </td>
@@ -197,7 +197,7 @@
                                                     params="${[cmd: 'deleteNamespace', oid: IdentifierNamespace.class.name + ':' + idNs.id]}" class="ui icon negative button  la-modern-button"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="${Icons.CMD_DELETE}"></i>
+                                                <i class="${Icons.CMD.DELETE}"></i>
                                             </g:link>
                                         </g:if>
                                     </td>
@@ -206,11 +206,11 @@
                                     <td>
                                         ${idNs.ns}
                                         <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataId.tooltip', args:[idNs.id])}">
-                                            <i class="${Icons.PROPERTY_USED}"></i>
+                                            <i class="${Icons.PROP.IN_USE}"></i>
                                         </span>
                                         <g:if test="${idNs.isHardData}">
                                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="${Icons.PROPERTY_HARDDATA}"></i>
+                                                <i class="${Icons.PROP.HARDDATA}"></i>
                                             </span>
                                         </g:if>
                                     </td>

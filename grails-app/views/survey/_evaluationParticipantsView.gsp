@@ -523,7 +523,7 @@
                                                                 data-ui="modal"
                                                                 data-href="#modalEditDocument_${docctx.id}"
                                                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                                            <i class="${Icons.CMD_EDIT} small"></i>
+                                                            <i class="${Icons.CMD.EDIT} small"></i>
                                                         </button>
                                                     </g:if>
 
@@ -537,7 +537,7 @@
                                                                 params='[instanceId: "${subParticipant.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="${Icons.CMD_DELETE} small"></i>
+                                                            <i class="${Icons.CMD.DELETE} small"></i>
                                                         </g:link>
                                                     </g:if>
                                                 </g:else>%{-- (editable || editable2) --}%
@@ -566,7 +566,7 @@
                                                tab           : 'selectedIEs']}"
                                     class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                     data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
-                                    target="_blank"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>
+                                    target="_blank"><i class="${Icons.CMD.DOWNLOAD}"></i></g:link>
                         </td>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyPackages')}">
@@ -1088,7 +1088,7 @@
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                             class="ui icon blue tiny button la-modern-button"
-                                                            target="_blank"><i class="${Icons.CMD_DOWNLOAD} small"></i></g:link>
+                                                            target="_blank"><i class="${Icons.CMD.DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
@@ -1096,7 +1096,7 @@
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                                 class="ui icon blue tiny button la-modern-button"
                                                                 target="_blank"><i
-                                                                class="${Icons.CMD_DOWNLOAD} small"></i></g:link>
+                                                                class="${Icons.CMD.DOWNLOAD} small"></i></g:link>
 
                                                     <%-- 2 --%>
                                                         <laser:render template="/templates/documents/modal"
@@ -1106,7 +1106,7 @@
                                                                 data-ui="modal"
                                                                 data-href="#modalEditDocument_${docctx.id}"
                                                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                                            <i class="${Icons.CMD_EDIT} small"></i>
+                                                            <i class="${Icons.CMD.EDIT} small"></i>
                                                         </button>
                                                     </g:if>
 
@@ -1120,7 +1120,7 @@
                                                                 params='[instanceId: "${subParticipant.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="${Icons.CMD_DELETE} small"></i>
+                                                            <i class="${Icons.CMD.DELETE} small"></i>
                                                         </g:link>
                                                     </g:if>
                                                 </g:else>%{-- (editable || editable2) --}%
@@ -1149,7 +1149,7 @@
                                                tab           : 'selectedIEs']}"
                                     class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                     data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
-                                    target="_blank"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>
+                                    target="_blank"><i class="${Icons.CMD.DOWNLOAD}"></i></g:link>
                         </td>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyPackages')}">

@@ -83,7 +83,7 @@
                                     <g:if test="${countModificationToCostInformationAfterRenewalDoc > 0}">
                                         <g:link class="ui label triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
                                                 params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyUseForTransfer.surveyInfo.id, surveyConfigID: surveyUseForTransfer.id]">
-                                            <i class="${Icons.CMD_DOWNLOAD}"></i> ${countModificationToCostInformationAfterRenewalDoc}
+                                            <i class="${Icons.CMD.DOWNLOAD}"></i> ${countModificationToCostInformationAfterRenewalDoc}
                                         </g:link>
                                     </g:if>
                                     <g:else>
@@ -237,14 +237,14 @@
                                         <%-- 1 --%>
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                     class="ui icon blue button la-modern-button"
-                                                    target="_blank"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>
+                                                    target="_blank"><i class="${Icons.CMD.DOWNLOAD}"></i></g:link>
                                         </g:if>
                                         <g:else>
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                             <%-- 1 --%>
                                                 <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                         class="ui icon blue button la-modern-button"
-                                                        target="_blank"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>
+                                                        target="_blank"><i class="${Icons.CMD.DOWNLOAD}"></i></g:link>
 
                                             <%-- 2 --%>
                                                 <laser:render template="/templates/documents/modal"
@@ -253,7 +253,7 @@
                                                         data-ui="modal"
                                                         data-href="#modalEditDocument_${docctx.id}"
                                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                                    <i class="${Icons.CMD_EDIT}"></i>
+                                                    <i class="${Icons.CMD.EDIT}"></i>
                                                 </button>
                                             </g:if>
 
@@ -267,7 +267,7 @@
                                                         params='[instanceId: "${subscription.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                         role="button"
                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                    <i class="${Icons.CMD_DELETE}"></i>
+                                                    <i class="${Icons.CMD.DELETE}"></i>
                                                 </g:link>
                                             </g:if>
                                             <g:else>
@@ -315,14 +315,14 @@
                                         <%-- 1 --%>
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                     class="ui icon blue button la-modern-button"
-                                                    target="_blank"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>
+                                                    target="_blank"><i class="${Icons.CMD.DOWNLOAD}"></i></g:link>
                                         </g:if>
                                         <g:else>
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                             <%-- 1 --%>
                                                 <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                         class="ui icon blue button la-modern-button"
-                                                        target="_blank"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>
+                                                        target="_blank"><i class="${Icons.CMD.DOWNLOAD}"></i></g:link>
 
                                             <%-- 2 --%>
                                                 <laser:render template="/templates/documents/modal"
@@ -331,7 +331,7 @@
                                                         data-ui="modal"
                                                         data-href="#modalEditDocument_${docctx.id}"
                                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                                    <i class="${Icons.CMD_EDIT}"></i>
+                                                    <i class="${Icons.CMD.EDIT}"></i>
                                                 </button>
                                             </g:if>
 
@@ -345,7 +345,7 @@
                                                         params='[instanceId: "${subscription.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                         role="button"
                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                    <i class="${Icons.CMD_DELETE}"></i>
+                                                    <i class="${Icons.CMD.DELETE}"></i>
                                                 </g:link>
                                             </g:if>
                                             <g:else>

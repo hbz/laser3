@@ -177,7 +177,7 @@
                                         ${surveyProperty.surveyProperty.getI10n('name')}
 
                                         <g:if test="${surveyProperty.surveyProperty.tenant?.id == institution.id}">
-                                            <i class='${Icons.PRIVATE_PROPERTY}'></i>
+                                            <i class='${Icons.PROP.IS_PRIVATE}'></i>
                                         </g:if>
 
                                         <g:if test="${surveyProperty.surveyProperty.getI10n('expl')}">
@@ -313,8 +313,8 @@
 </g:if>
 
 <g:if test="${workFlow == "1"}">
-    <div class="ui icon message">
-        <i class="${Icons.INFO}"></i>
+    <div class="ui icon info message">
+        <i class="${Icons.UI.INFO}"></i>
         ${message(code: 'copySurvey.subscription.info')}
     </div>
 

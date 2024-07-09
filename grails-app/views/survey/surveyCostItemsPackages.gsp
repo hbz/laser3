@@ -136,7 +136,7 @@
 
                 <div id="bulkCostItems" class="hidden">
                     <g:if test="${countCostItems == 0}">
-                        <ui:msg icon="${Icons.INFO}" message="surveyCostItems.bulkOption.info"/>
+                        <ui:msg icon="${Icons.UI.INFO}" message="surveyCostItems.bulkOption.info"/>
                     </g:if>
                     <g:else>
                         <h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip la-delay"
@@ -328,7 +328,7 @@
                         data-confirm-id="processSurveyCostItemsBulk"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="${Icons.CMD_DELETE}"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
+                    <i class="${Icons.CMD.DELETE}"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
                 </button>
 
             </g:form>

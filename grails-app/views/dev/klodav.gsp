@@ -13,6 +13,66 @@
     <g:link controller="dev" action="icons" class="item"><i class="certificate icon red"></i> New Icons</g:link>
 </nav>
 
+<div class="ui four column grid">
+    <div class="column">
+        <div class="ui icon info message">
+            <i class="${Icons.UI.INFO}"></i>
+            <div class="content"> INFO </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui icon warning message">
+            <i class="${Icons.UI.WARNING}"></i>
+            <div class="content"> WARNING </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui icon success message">
+            <i class="${Icons.UI.SUCCESS}"></i>
+            <div class="content"> SUCCESS </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui icon error message">
+            <i class="${Icons.UI.ERROR}"></i>
+            <div class="content"> ERROR </div>
+        </div>
+    </div>
+</div>
+
+<div class="ui six column grid">
+    <div class="column">
+        <div class="ui info message">
+            <div class="content"> INFO </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui warning message">
+            <div class="content"> WARNING </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui success message">
+            <div class="content"> SUCCESS </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui error message">
+            <div class="content"> ERROR </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui positive message">
+            <div class="content"> <del>POSITIVE</del> </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui negative message">
+            <div class="content"> <del>NEGATIVE</del> </div>
+        </div>
+    </div>
+</div>
+
 <div class="ui segment">
     <p class="ui header">Icons #1</p>
     <div class="ui list">
@@ -99,33 +159,18 @@
             <div class="content"> internal link</div>
         </div>
         <div class="item">
-            <i class="${Icons.LINK_FILTERED} large"></i>
+            <i class="${Icons.LNK.FILTERED} large"></i>
             <div class="content"> internal link (redirect to list view with filter)</div>
         </div>
         <div class="item">
-            <i class="${Icons.LINK_EXTERNAL} large"></i>
-            <div class="content"> external link (${Icons.LINK_EXTERNAL})</div>
+            <i class="${Icons.LNK.EXTERNAL} large"></i>
+            <div class="content"> external link (${Icons.LNK.EXTERNAL})</div>
         </div>
         <div class="item">
             <i class="icon large fake"></i>
             <div class="content"> functional link</div>
         </div>
     </div>
-</div>
-
-<div class="ui icon info message">
-    <i class="${Icons.INFO}"></i>
-    <div class="content"> INFO </div>
-</div>
-
-<div class="ui icon warning message">
-    <i class="${Icons.WARNING}"></i>
-    <div class="content"> WARNING </div>
-</div>
-
-<div class="ui icon error message">
-    <i class="${Icons.ERROR}"></i>
-    <div class="content"> ERROR </div>
 </div>
 
 <pre>
@@ -143,19 +188,19 @@
     <div class="ui list">
         <div class="item">
             <div class="ui label">
-                <i class="${Icons.Auth.INST_USER}"></i>
+                <i class="${Icons.AUTH.INST_USER}"></i>
                 <g:message code="cv.roles.INST_USER"/>
             </div>
         </div>
         <div class="item">
             <div class="ui label">
-                <i class="${Icons.Auth.INST_EDITOR}"></i>
+                <i class="${Icons.AUTH.INST_EDITOR}"></i>
                 <g:message code="cv.roles.INST_EDITOR"/>
             </div>
         </div>
         <div class="item">
             <div class="ui label">
-                <i class="${Icons.Auth.INST_ADM}"></i>
+                <i class="${Icons.AUTH.INST_ADM}"></i>
                 <g:message code="cv.roles.INST_ADM"/>
             </div>
         </div>
@@ -163,26 +208,26 @@
     <div class="ui list">
         <div class="item">
             <div class="ui label yellow">
-                <i class="${Icons.Auth.ORG_INST_BASIC}" style="color:#FFFFFF;"></i>
+                <i class="${Icons.AUTH.ORG_INST_BASIC}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')}
             </div>
         </div>
         <div class="item">
             <div class="ui label yellow">
-                <i class="${Icons.Auth.ORG_INST_PRO}" style="color:#FFFFFF;"></i>
+                <i class="${Icons.AUTH.ORG_INST_PRO}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')}
             </div>
         </div>
 
         <div class="item">
             <div class="ui label teal">
-                <i class="${Icons.Auth.ORG_CONSORTIUM_BASIC}" style="color:#FFFFFF;"></i>
+                <i class="${Icons.AUTH.ORG_CONSORTIUM_BASIC}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')}
             </div>
         </div>
         <div class="item">
             <div class="ui label teal">
-                <i class="${Icons.Auth.ORG_CONSORTIUM_PRO}" style="color:#FFFFFF;"></i>
+                <i class="${Icons.AUTH.ORG_CONSORTIUM_PRO}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')}
             </div>
         </div>

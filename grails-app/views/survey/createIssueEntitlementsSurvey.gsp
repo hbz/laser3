@@ -12,8 +12,8 @@
 
 <ui:messages data="${flash}"/>
 
-<div class="ui icon positive message">
-    <i class="${Icons.INFO}"></i>
+<div class="ui icon info message">
+    <i class="${Icons.UI.INFO}"></i>
     <div class="content">
         <div class="header"></div>
         <p>

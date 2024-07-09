@@ -237,7 +237,7 @@
                     <a role="button" class="ui icon mini blue button la-modern-button la-popup-tooltip la-delay"
                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
                        href="${tipp.platform.primaryUrl?.contains('http') ? tipp.platform.primaryUrl : 'http://' + tipp.platform.primaryUrl}"
-                       target="_blank"><i class="${Icons.LINK_EXTERNAL}"></i></a>
+                       target="_blank"><i class="${Icons.LNK.EXTERNAL}"></i></a>
                 </g:if>
             </div>
             <br/>

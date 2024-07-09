@@ -154,11 +154,11 @@
                                 <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", showView:"own", offset: params.offset]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="edit_${ci.id}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                                    <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                                 </g:link>
                                 <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
                                     <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", showView:"own", offset: params.offset]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="copy_${ci.id}">
-                                        <i class="${Icons.CMD_COPY}"></i>
+                                        <i class="${Icons.CMD.COPY}"></i>
                                     </g:link>
                                 </span>
                             </g:if>
@@ -166,11 +166,11 @@
                                 <g:link controller="finance" action="editCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"own", offset: params.offset]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="edit_${ci.id}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                                    <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                                 </g:link>
                                 <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
                                     <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"own", offset: params.offset]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="copy_${ci.id}">
-                                        <i class="${Icons.CMD_COPY}"></i>
+                                        <i class="${Icons.CMD.COPY}"></i>
                                     </g:link>
                                 </span>
                             </g:else>
@@ -181,7 +181,7 @@
                                         data-confirm-term-how="delete"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="${Icons.CMD_DELETE}"></i>
+                                <i class="${Icons.CMD.DELETE}"></i>
                             </g:link>
                         </g:if>
                     </td>

@@ -64,7 +64,7 @@
                         </g:else>
                         <g:if test="${prop.type.multipleOccurrence}">
                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                <i class="${Icons.PROPERTY_MULTIPLE}"></i>
+                                <i class="${Icons.PROP.MULTIPLE}"></i>
                             </span>
                         </g:if>
                     </td>
@@ -233,7 +233,7 @@
                                                   data-update="${custom_props_div}"
                                                   role="button"
                                                   ariaLabel="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE}"></i>
+                                    <i class="${Icons.CMD.DELETE}"></i>
                                 </ui:remoteLink>
                             </g:if>
                             <g:else>

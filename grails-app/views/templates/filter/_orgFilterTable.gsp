@@ -381,7 +381,7 @@
                         <g:set var="precedents" value="${Org.executeQuery('select c.toOrg from Combo c where c.fromOrg = :org and c.type = :follows',[org: org, follows: RDStore.COMBO_TYPE_FOLLOWS])}"/>
                         <g:each in="${precedents}" var="precedent">
                             <span class="la-popup-tooltip" data-position="top right" data-content="<g:message code="org.succeedsTo.label" args="${[precedent.sortname ?: precedent.name]}"/>">
-                                <g:link controller="org" action="show" id="${precedent.id}"><i class="${Icons.LINK_PREV}"></i></g:link>
+                                <g:link controller="org" action="show" id="${precedent.id}"><i class="${Icons.LNK.PREV}"></i></g:link>
                             </span>
                         </g:each>
                         <span class="la-popup-tooltip la-delay" data-position="top right">
@@ -395,7 +395,7 @@
                         <g:set var="successors" value="${Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :org and c.type = :follows',[org: org, follows: RDStore.COMBO_TYPE_FOLLOWS])}"/>
                         <g:each in="${successors}" var="successor">
                             <span class="la-popup-tooltip" data-position="top right" data-content="<g:message code="org.succeededBy.label" args="${[successor.sortname ?: successor.name]}"/>">
-                                <g:link controller="org" action="show" id="${successor.id}"><i class="${Icons.LINK_NEXT}"></i></g:link>
+                                <g:link controller="org" action="show" id="${successor.id}"><i class="${Icons.LNK.NEXT}"></i></g:link>
                             </span>
                         </g:each>
                     </g:if>
@@ -854,7 +854,7 @@
                                                                                                                 selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                                <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                                             </button>
                                         </td>
                                         <td>
@@ -881,7 +881,7 @@
                                                                                                 selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                             </button>
                         </g:else>
 
@@ -951,7 +951,7 @@
                                                                                                                 selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                                <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                                             </button>
                                         </td>
                                         <td>
@@ -978,7 +978,7 @@
                                                                                                 selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                             </button>
                         </g:else>
                     </g:if>

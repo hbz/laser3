@@ -164,7 +164,7 @@
 
             <laser:render template="/myInstitution/reporting/query/${filter}" />
 
-            <div id="reporting-chart-nodata" class="ui message negative">${message(code:'reporting.modal.nodata')}</div>
+            <div id="reporting-chart-nodata" class="ui error message">${message(code:'reporting.modal.nodata')}</div>
 
             <div id="chart-wrapper"></div>
             <div id="chart-details"></div>
@@ -420,6 +420,6 @@
         </laser:script>
 
         <ui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
-            <p><i class="${Icons.ERROR} large orange"></i> ${message(code:'reporting.modal.error')}</p>
+            <p><i class="${Icons.UI.ERROR} large orange"></i> ${message(code:'reporting.modal.error')}</p>
         </ui:modal>
 <laser:htmlEnd />

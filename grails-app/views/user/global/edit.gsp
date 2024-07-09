@@ -92,7 +92,7 @@
                     <div class="ui card">
                         <div class="ui content">
                             <h2 class="ui dividing orange header">
-                                <i class="${Icons.Auth.ROLE_ADMIN} small"></i>
+                                <i class="${Icons.AUTH.ROLE_ADMIN} small"></i>
                                 <span class="content">${message(code: 'default.adminsOnly.label')}</span>
                             </h2>
                             <div class="ui form">
@@ -170,7 +170,7 @@
                                 <div class="ui content">
                                     <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
 
-                                    <ui:msg class="warning" icon="${Icons.WARNING}" noClose="true">
+                                    <ui:msg class="warning" icon="${Icons.UI.WARNING}" noClose="true">
                                         Dieser Nutzer ist noch keiner Einrichtung zugewiesen.
                                     </ui:msg>
 
@@ -243,7 +243,7 @@
                                                                 data-confirm-tokenMsg="${message(code:'confirm.dialog.unlink.user.role')}"
                                                                 data-confirm-term-how="unlink"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="${Icons.CMD_DELETE}"></i>
+                                                            <i class="${Icons.CMD.DELETE}"></i>
                                                         </g:link>
                                                     </g:if>
                                                 </td>

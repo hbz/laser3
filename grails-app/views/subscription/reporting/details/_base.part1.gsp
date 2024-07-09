@@ -3,7 +3,7 @@
 
 <div style="text-align: right">
     <button id="details-export-button" class="ui icon button" data-href="#detailsExportModal" data-ui="modal">
-        <i class="${Icons.CMD_DOWNLOAD}"></i>
+        <i class="${Icons.CMD.DOWNLOAD}"></i>
     </button>
 </div>
 

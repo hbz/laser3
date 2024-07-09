@@ -7,8 +7,7 @@ class Icons {
 
     public static String _PLACEHOLDER               = 'coffee icon'
 
-    class Auth {
-
+    class AUTH {
         // please do not touch during refactoring ..
         // roles / perms / customer types
 
@@ -27,6 +26,49 @@ class Icons {
         public static String ROLE_YODA              = 'star of life icon'       // red
     }
 
+    class CMD {
+        // please do not touch during refactoring ..
+        // cmds, functions
+
+        public static String COPY           = 'copy icon'
+        public static String DELETE         = 'trash alternate outline icon'
+        public static String DOWNLOAD       = 'download icon'
+        public static String EDIT           = 'write icon'
+        public static String ERASE          = 'eraser icon'
+        public static String UNLINK         = 'unlink icon'
+    }
+
+    class LNK {
+        // please do not touch during refactoring ..
+        // links
+
+        public static String EXTERNAL       = 'external alternate icon'
+        public static String FILTERED       = 'filter icon'
+        public static String NEXT           = 'arrow right icon'     // todo: duplicate: ui:anualRings, ui:statusWithRings
+        public static String PREV           = 'arrow left icon'      // todo: duplicate: ui:anualRings, ui:statusWithRings
+    }
+
+    class PROP {
+        // please do not touch during refactoring ..
+        // properties
+
+        public static String HARDDATA       = 'check circle icon green' // COLOR INCLUDED !!
+        public static String IN_USE         = 'info circle icon blue'   // COLOR INCLUDED !! todo: duplicate: Icons.UI.INFO
+        public static String IS_PRIVATE     = 'shield alternate icon'
+        public static String LOGIC          = 'cube icon red'           // COLOR INCLUDED !!
+        public static String MANDATORY      = 'star icon'               // todo: duplicate: survey/renew? > Icons.MY_OBJECT
+        public static String MULTIPLE       = 'redo icon orange'        // COLOR INCLUDED !! todo: duplicate: currentSubscriptionsTransfer
+    }
+
+    class UI {
+        // please do not touch during refactoring ..
+        // generic / dialog ui
+
+        public static String ERROR          = 'exclamation triangle icon'
+        public static String INFO           = 'info icon'
+        public static String SUCCESS        = 'check icon'
+        public static String WARNING        = 'exclamation icon'
+    }
 
     // please do not touch during refactoring ..
     // domain classes / main objects
@@ -80,28 +122,11 @@ class Icons {
     public static String TIPP_COVERAGE_DEPTH        = 'file alternate icon'
 
     // please do not touch during refactoring ..
-    // properties
-
-    public static String PRIVATE_PROPERTY           = 'shield alternate icon'
-
-    public static String PROPERTY_HARDDATA          = 'check circle icon green' // COLOR INCLUDED !!
-
-    public static String PROPERTY_LOGIC             = 'cube icon red'           // COLOR INCLUDED !!
-
-    public static String PROPERTY_MANDATORY         = 'star icon'               // todo: duplicate: survey/renew? > Icons.MY_OBJECT
-
-    public static String PROPERTY_MULTIPLE          = 'redo icon orange'        // COLOR INCLUDED !! todo: duplicate: currentSubscriptionsTransfer
-
-    public static String PROPERTY_USED              = 'info circle icon blue'   // COLOR INCLUDED !! todo: duplicate: Icons.INFO
-
-    // please do not touch during refactoring ..
     // generic
 
     public static String DATE                       = 'calendar alternate outline icon'
 
     public static String EMAIL                      = 'envelope outline icon'
-
-    public static String ERROR                      = 'exclamation triangle icon'
 
     public static String HELP                       = 'question icon'
 
@@ -110,37 +135,8 @@ class Icons {
     public static String IMPORTANT_TOOLTIP          = 'exclamation circle icon'     // TODO: merge
     public static String IMPORTANT_TOOLTIP2         = 'exclamation triangle icon'   // TODO: merge
 
-    public static String INFO                       = 'info icon'
+    public static String INFO_TOOLTIP               = 'info circle icon'            // todo: duplicate: Icons.PROP.IN_USE
 
-    public static String INFO_TOOLTIP               = 'info circle icon'            // todo: duplicate: Icons.PROPERTY_USED
+    public static String MY_OBJECT                  = 'star icon'                   // todo: duplicate: survey/renew? > Icons.PROP.MANDATORY
 
-    public static String MY_OBJECT                  = 'star icon'                   // todo: duplicate: survey/renew? > Icons.PROPERTY_MANDATORY
-
-    public static String WARNING                    = 'exclamation icon'
-
-    // please do not touch during refactoring ..
-    // cmds, functions
-
-    public static String CMD_COPY                   = 'copy icon'
-
-    public static String CMD_DELETE                 = 'trash alternate outline icon'
-
-    public static String CMD_DOWNLOAD               = 'download icon'
-
-    public static String CMD_EDIT                   = 'write icon'
-
-    public static String CMD_ERASE                  = 'eraser icon'
-
-    public static String CMD_UNLINK                 = 'unlink icon'
-
-    // please do not touch during refactoring ..
-    // links
-
-    public static String LINK_EXTERNAL              = 'external alternate icon'
-
-    public static String LINK_FILTERED              = 'filter icon'
-
-    public static String LINK_NEXT                  = 'arrow right icon'     // todo: duplicate: ui:anualRings, ui:statusWithRings
-
-    public static String LINK_PREV                  = 'arrow left icon'      // todo: duplicate: ui:anualRings, ui:statusWithRings
 }

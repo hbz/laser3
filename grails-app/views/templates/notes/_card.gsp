@@ -95,7 +95,7 @@
                                         params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE}"></i>
+                                    <i class="${Icons.CMD.DELETE}"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
@@ -139,7 +139,7 @@
                             <div class="four wide column">
 %{--                                <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id}">--}%
 %{--                                    <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />--}%
-%{--                                    <button type="button" class="ui icon blue button la-modern-button" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="${Icons.CMD_EDIT}"></i></button>--}%
+%{--                                    <button type="button" class="ui icon blue button la-modern-button" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="${Icons.CMD.EDIT}"></i></button>--}%
 %{--                                </g:if>--}%
                             </div>
                         </div>

@@ -18,7 +18,7 @@
 
         <ui:messages data="${flash}"/>
 
-        <ui:msg icon="${Icons.INFO}" class="warning" message="costConfiguration.preset" noClose="true" />
+        <ui:msg icon="${Icons.UI.WARNING}" class="warning" message="costConfiguration.preset" noClose="true" />
 
         <div class="ui styled fluid">
             <table class="ui celled la-js-responsive-table la-table compact table">
@@ -58,7 +58,7 @@
                                             params="${[ciec: ciec.id]}"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="${Icons.CMD_DELETE}"></i>
+                                        <i class="${Icons.CMD.DELETE}"></i>
                                     </g:link>
                                 </td>
                             </g:if>

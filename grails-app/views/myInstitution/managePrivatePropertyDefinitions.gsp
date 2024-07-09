@@ -57,18 +57,18 @@
                                         <td>
                                             <g:if test="${pd.isHardData}">
                                                 <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
-                                                    <i class="${Icons.PROPERTY_HARDDATA}"></i>
+                                                    <i class="${Icons.PROP.HARDDATA}"></i>
                                                 </span>
                                             </g:if>
                                             <g:if test="${pd.multipleOccurrence}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                                    <i class="${Icons.PROPERTY_MULTIPLE}"></i>
+                                                    <i class="${Icons.PROP.MULTIPLE}"></i>
                                                 </span>
                                             </g:if>
 
                                             <g:if test="${pd.isUsedForLogic}">
                                                 <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
-                                                    <i class="${Icons.PROPERTY_LOGIC}"></i>
+                                                    <i class="${Icons.PROP.LOGIC}"></i>
                                                 </span>
                                             </g:if>
                                         </td>
@@ -121,7 +121,7 @@
                                                 <g:if test="${pd.mandatory}">
                                                     <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="left center"
                                                             params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="ui icon yellow button la-modern-button la-popup-tooltip la-delay">
-                                                        <i class="${Icons.PROPERTY_MANDATORY}"></i>
+                                                        <i class="${Icons.PROP.MANDATORY}"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
@@ -152,7 +152,7 @@
                                                             class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                        <i class="${Icons.CMD_DELETE}"></i>
+                                                        <i class="${Icons.CMD.DELETE}"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>

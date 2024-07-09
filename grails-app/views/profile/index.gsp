@@ -9,7 +9,7 @@
 <ui:controlButtons>
     <ui:actionsDropdown>
         <g:link class="ui item" controller="profile" action="delete">
-            <i class="${Icons.CMD_DELETE}"></i>${message(code:'profile.account.delete.button')}
+            <i class="${Icons.CMD.DELETE}"></i>${message(code:'profile.account.delete.button')}
         </g:link>
     </ui:actionsDropdown>
 </ui:controlButtons>
@@ -401,11 +401,11 @@
                                 <div class="content">
                                     <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
 
-                                    <ui:msg class="info" icon="${Icons.INFO}" noClose="true">
+                                    <ui:msg class="info" icon="${Icons.UI.INFO}" noClose="true">
                                         Diese Funktion ist nur für Administratoren verfügbar.
                                     </ui:msg>
 
-                                    <ui:msg class="warning" icon="${Icons.WARNING}" noClose="true">
+                                    <ui:msg class="warning" icon="${Icons.UI.WARNING}" noClose="true">
                                         Dieser Nutzer ist noch keiner Einrichtung zugewiesen.
                                     </ui:msg>
 
