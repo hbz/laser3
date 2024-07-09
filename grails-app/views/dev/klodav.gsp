@@ -13,6 +13,33 @@
     <g:link controller="dev" action="icons" class="item"><i class="certificate icon red"></i> New Icons</g:link>
 </nav>
 
+<div class="ui four column grid">
+    <div class="column">
+        <div class="ui icon info message">
+            <i class="${Icons.INFO}"></i>
+            <div class="content"> INFO </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui icon warning message">
+            <i class="${Icons.WARNING}"></i>
+            <div class="content"> WARNING </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui icon success message">
+            <i class="${Icons.SUCCESS}"></i>
+            <div class="content"> SUCCESS </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui icon error message">
+            <i class="${Icons.ERROR}"></i>
+            <div class="content"> ERROR </div>
+        </div>
+    </div>
+</div>
+
 <div class="ui segment">
     <p class="ui header">Icons #1</p>
     <div class="ui list">
@@ -111,21 +138,6 @@
             <div class="content"> functional link</div>
         </div>
     </div>
-</div>
-
-<div class="ui icon info message">
-    <i class="${Icons.INFO}"></i>
-    <div class="content"> INFO </div>
-</div>
-
-<div class="ui icon warning message">
-    <i class="${Icons.WARNING}"></i>
-    <div class="content"> WARNING </div>
-</div>
-
-<div class="ui icon error message">
-    <i class="${Icons.ERROR}"></i>
-    <div class="content"> ERROR </div>
 </div>
 
 <pre>

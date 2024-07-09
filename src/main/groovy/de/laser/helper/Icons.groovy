@@ -134,6 +134,8 @@ class Icons {
 
     public static String MY_OBJECT                  = 'star icon'                   // todo: duplicate: survey/renew? > Icons.PROP.MANDATORY
 
+    public static String SUCCESS                    = 'check icon'
+
     public static String WARNING                    = 'exclamation icon'
 
 }

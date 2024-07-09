@@ -139,7 +139,7 @@
 <br />
 
 <g:if test="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, subscriber).finishDate != null}">
-    <ui:msg class="success" icon="${Icons.INFO}" noClose="true">
+    <ui:msg class="success" icon="${Icons.SUCCESS}" noClose="true">
         <g:message code="renewEntitlementsWithSurvey.finish.info"/>.
     </ui:msg>
 </g:if>
