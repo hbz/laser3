@@ -101,10 +101,10 @@ class SurveyService {
         if (contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
             SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
 
-            if (surveyOrg.finishDate) {
-                return false
-            } else {
+            if (surveyOrg && surveyOrg.finishDate == null) {
                 return true
+            } else {
+                return false
             }
         }else{
             return false
@@ -1169,7 +1169,8 @@ class SurveyService {
                 new SurveyConfigProperties(
                         surveyProperty: surveyConfigProperty.surveyProperty,
                         surveyConfig: newSurveyConfig,
-                        propertyOrder: surveyConfigProperty.propertyOrder).save()
+                        propertyOrder: surveyConfigProperty.propertyOrder,
+                        mandatoryProperty: surveyConfigProperty.mandatoryProperty).save()
             }
         }
     }
@@ -2189,7 +2190,7 @@ class SurveyService {
                 chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.stringValue is not null or sr.stringValue != '') and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
             }
             else if (prop.isBigDecimalType()) {
-                chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.decValue is not null or sr.decValue != '') and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
+                chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.decValue is not null) and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
             }
             else if (prop.isDateType()) {
                 chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.dateValue is not null or sr.dateValue != '') and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
