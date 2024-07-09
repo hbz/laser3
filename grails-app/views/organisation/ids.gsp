@@ -148,7 +148,7 @@
                                     <g:if test="${editable_customeridentifier && editable_this_ci}">
                                         %{--}<button class="ui icon button blue la-modern-button" onclick="JSPC.app.IdContoller.editCustomerIdentifier(${ci.id});"
                                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                            <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                                            <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                                         </button>--}%
                                         <g:link controller="organisation"
                                                 action="deleteCustomerIdentifier"
@@ -159,7 +159,7 @@
                                                 data-confirm-term-how="delete"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="${Icons.CMD_DELETE}"></i>
+                                            <i class="${Icons.CMD.DELETE}"></i>
                                         </g:link>
                                     </g:if>
                                 </td>

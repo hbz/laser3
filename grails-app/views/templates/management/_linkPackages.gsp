@@ -14,7 +14,7 @@
                             <div class="right floated content">
                                 <button class="ui negative button la-modern-button la-selectable-button unlinkPackages" ${!editable || isUnlinkingRunning ? 'disabled="disabled"' : ''}
                                         data-package="${subPkg.pkg.id}" data-subscription="${subPkg.subscription.id}">
-                                    <i class="${Icons.CMD_UNLINK}"></i>
+                                    <i class="${Icons.CMD.UNLINK}"></i>
                                 </button>
                             </div>
                         </div>
@@ -231,7 +231,7 @@
                                     class="ui icon button blue la-modern-button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                             </g:link>
                         </td>
                     </tr>

@@ -124,7 +124,7 @@
                     <g:link controller="license" action="show" id="${lic.id}" class="ui icon button blue la-modern-button"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                        <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i></g:link>
+                        <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i></g:link>
                 </td>
                 <td>
                     <g:if test="${row.subs > 0}">

@@ -138,7 +138,7 @@
                             id="${surveyInfo.id}"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                        <i class="${Icons.CMD_DELETE}"></i> ${message(code:'deletion.survey')}
+                        <i class="${Icons.CMD.DELETE}"></i> ${message(code:'deletion.survey')}
                     </g:link>
                 </g:if>
             </g:else>

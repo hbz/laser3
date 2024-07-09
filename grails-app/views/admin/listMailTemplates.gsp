@@ -49,7 +49,7 @@
                                 data-mailTemplateLanguage="${template.language.id}"
                                 data-ui="modal"
                                 data-href="#editMailTemplate"
-                                data-content="Mail Template ändern" data-position="top left"><i class="${Icons.CMD_EDIT}"></i></button>
+                                data-content="Mail Template ändern" data-position="top left"><i class="${Icons.CMD.EDIT}"></i></button>
                     </td>
                 </tr>
             </g:each>

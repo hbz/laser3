@@ -200,7 +200,7 @@
 
                             <g:if test="${checkedEditable}"><!-- TODO: workflows-permissions -->
 %{--                                <div class="ui icon negative button la-modern-button"--}%
-%{--                                     data-cmd="delete:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icons.CMD_DELETE}"></i>--}%
+%{--                                     data-cmd="delete:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icons.CMD.DELETE}"></i>--}%
 %{--                                </div>--}%
                                 <div class="ui icon negative button la-modern-button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.checkpoint", args: [cpoint.title])}"
@@ -210,7 +210,7 @@
                                         data-key="${WfChecklist.KEY}:${clist.id}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE}"></i>
+                                    <i class="${Icons.CMD.DELETE}"></i>
                                 </div>
                             </g:if>
 

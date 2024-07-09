@@ -407,7 +407,7 @@
                                     </td>
                                     <td class="center aligned">
                                         <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                                            <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="${Icons.CMD_EDIT}"></i></button>
+                                            <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="${Icons.CMD.EDIT}"></i></button>
 
                                             <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [clist.title])}"
@@ -415,7 +415,7 @@
                                                     controller="myInstitution" action="dashboard" id="${clistInfo.target.id}" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}", view:'Workflows']}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="${Icons.CMD_DELETE}"></i>
+                                                <i class="${Icons.CMD.DELETE}"></i>
                                             </g:link>
                                         </g:if>
                                     </td>

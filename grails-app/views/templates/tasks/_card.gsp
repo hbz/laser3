@@ -30,7 +30,7 @@
                                 params='[deleteId:tsk.id, id: params.id, returnToShow: controllerName]'
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="${Icons.CMD_DELETE}"></i>
+                            <i class="${Icons.CMD.DELETE}"></i>
                         </g:link>
                     </div>
                 </g:if>
@@ -71,7 +71,7 @@
                         params='[deleteId:tsk.id, id: params.id, returnToShow: controllerName]'
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="${Icons.CMD_DELETE}"></i>
+                    <i class="${Icons.CMD.DELETE}"></i>
                 </g:link>
             </div>
         </div>--}%

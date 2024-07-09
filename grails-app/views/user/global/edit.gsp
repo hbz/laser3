@@ -243,7 +243,7 @@
                                                                 data-confirm-tokenMsg="${message(code:'confirm.dialog.unlink.user.role')}"
                                                                 data-confirm-term-how="unlink"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="${Icons.CMD_DELETE}"></i>
+                                                            <i class="${Icons.CMD.DELETE}"></i>
                                                         </g:link>
                                                     </g:if>
                                                 </td>

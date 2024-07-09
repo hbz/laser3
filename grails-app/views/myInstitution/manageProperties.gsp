@@ -266,7 +266,7 @@
                                 <g:link controller="${objWithoutProp.displayController}" action="show" id="${objWithoutProp.id}" class="ui icon button blue la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                                    <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                                 </g:link>
                             </td>
                         </tr>
@@ -511,7 +511,7 @@
                                 <g:link controller="${row.displayController}" action="${row.displayAction}" id="${row.id}" class="ui icon button blue la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                                    <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                                 </g:link>
                                 <g:if test="${row.manageChildren}">
                                     <g:link controller="${row.displayController}" action="${row.manageChildren}" params="${row.manageChildrenParams}" class="ui icon button"><i class="users icon"></i></g:link>

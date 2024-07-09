@@ -55,7 +55,7 @@
                             params="[titleGroup: titleGroup.id]"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.change.universal')}">
-                        <i class="${Icons.CMD_EDIT}"></i>
+                        <i class="${Icons.CMD.EDIT}"></i>
                     </g:link>
                     <g:if test="${editable}">
                         <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.issueEntitlementGroup = :titleGroup',[titleGroup:titleGroup])}"/>
@@ -64,7 +64,7 @@
                                     params="${[titleGroup: titleGroup.id, sub: subscription.id]}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="${Icons.CMD_DELETE}"></i>
+                                <i class="${Icons.CMD.DELETE}"></i>
                             </g:link>
                         </g:if>
                         <g:else>
@@ -72,7 +72,7 @@
                                 <button class="ui disabled button la-modern-button  la-selectable-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE}"></i>
+                                    <i class="${Icons.CMD.DELETE}"></i>
                                 </button>
                             </div>
                         </g:else>

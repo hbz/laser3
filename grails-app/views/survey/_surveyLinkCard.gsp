@@ -44,7 +44,7 @@
                                                         params="${[unlinkSurveyLink: surveyLink.id, surveyConfigID: surveyConfig.id, id: surveyInfo.id]}"
                                                         role="button"
                                                         aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                    <i class="${Icons.CMD_UNLINK}"></i>
+                                                    <i class="${Icons.CMD.UNLINK}"></i>
                                                 </g:link>
                                             </span>
                                         </g:if>

@@ -279,7 +279,7 @@
                         <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button blue la-modern-button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                            <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                         </g:link>
 
                         <g:if test="${contextService.getUser().isYoda()}">
@@ -302,7 +302,7 @@
                                 <g:link class="ui icon negative button la-modern-button" controller="subscription" action="delete" params="${[id:sub.id]}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE}"></i>
+                                    <i class="${Icons.CMD.DELETE}"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
@@ -310,7 +310,7 @@
                                     <button class="ui disabled icon negative button la-modern-button"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="${Icons.CMD_DELETE}"></i>
+                                        <i class="${Icons.CMD.DELETE}"></i>
                                     </button>
                                 </span>
                             </g:else>

@@ -44,7 +44,7 @@
 %{--                                </td>--}%
                                 <td class="x">
                                     <g:link controller="user" action="edit" id="${user.id}" class="ui icon button">
-                                        <i class="${Icons.CMD_EDIT}"></i>
+                                        <i class="${Icons.CMD.EDIT}"></i>
                                     </g:link>
                                 </td>
                             </tr>

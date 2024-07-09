@@ -36,7 +36,7 @@
                         controller="ajax" action="delete" params="[cmd: 'deleteContact', oid: genericOIDService.getOID(contact)]"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-					<i class="${Icons.CMD_DELETE}"></i>
+					<i class="${Icons.CMD.DELETE}"></i>
 				</g:link>
             </g:if>
         </div><!-- .content -->

@@ -152,7 +152,7 @@
                                                             class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                        <i class="${Icons.CMD_DELETE}"></i>
+                                                        <i class="${Icons.CMD.DELETE}"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>

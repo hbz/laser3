@@ -153,7 +153,7 @@
                                         <g:if test="${(pd.descr == PropertyDefinition.SUB_PROP) && !PropertyDefinition.findByNameAndDescrAndTenant(pd.name, PropertyDefinition.SVY_PROP, null)}">
                                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}">
                                                 <g:link class="ui icon button blue la-modern-button" action="transferSubPropToSurProp" params="[propertyDefinition: pd.id]">
-                                                    <i class="${Icons.CMD_COPY}"></i>
+                                                    <i class="${Icons.CMD.COPY}"></i>
                                                 </g:link>
                                             </span>
                                         </g:if>
@@ -176,7 +176,7 @@
                                                     params="${[cmd: 'deletePropertyDefinition', pd: pd.id]}" class="ui icon negative button la-modern-button"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="${Icons.CMD_DELETE}"></i>
+                                                <i class="${Icons.CMD.DELETE}"></i>
                                             </g:link>
                                         </g:if>
                                     </td>

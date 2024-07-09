@@ -854,7 +854,7 @@
                                                                                                                 selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                                <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                                             </button>
                                         </td>
                                         <td>
@@ -881,7 +881,7 @@
                                                                                                 selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                             </button>
                         </g:else>
 
@@ -951,7 +951,7 @@
                                                                                                                 selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                                <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                                             </button>
                                         </td>
                                         <td>
@@ -978,7 +978,7 @@
                                                                                                 selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                             </button>
                         </g:else>
                     </g:if>

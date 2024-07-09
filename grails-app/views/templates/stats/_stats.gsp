@@ -51,7 +51,7 @@
                                     data-confirm-term-how="unset"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="${Icons.CMD_ERASE}"></i>
+                                <i class="${Icons.CMD.ERASE}"></i>
                             </g:link>
                         </g:if>
                     </td>

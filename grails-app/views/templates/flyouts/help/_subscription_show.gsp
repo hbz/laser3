@@ -23,7 +23,7 @@
         </tr>
         <tr>
             <td>
-                <i class="${Icons.CMD_EDIT} green" aria-hidden="true"></i>
+                <i class="${Icons.CMD.EDIT} green" aria-hidden="true"></i>
             </td>
             <td>
                 Aktuell: Inhalte editierbar
@@ -31,7 +31,7 @@
         </tr>
         <tr>
             <td>
-                <i class="${Icons.CMD_EDIT} slash" aria-hidden="true"></i>
+                <i class="${Icons.CMD.EDIT} slash" aria-hidden="true"></i>
             </td>
             <td>
                 Aktuell: Inhalte nicht editierbar
@@ -39,7 +39,7 @@
         </tr>
         <tr>
             <td>
-                <i class="${Icons.CMD_EDIT} blue" aria-hidden="true"></i>
+                <i class="${Icons.CMD.EDIT} blue" aria-hidden="true"></i>
             </td>
             <td>
                 Verknüpfung bearbeiten
@@ -72,7 +72,7 @@
 
         <tr>
             <td>
-                <i class="${Icons.CMD_UNLINK}"></i>
+                <i class="${Icons.CMD.UNLINK}"></i>
             </td>
             <td>
                 Objekt wird entknüpft

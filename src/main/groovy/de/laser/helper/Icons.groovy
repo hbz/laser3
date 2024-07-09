@@ -151,19 +151,4 @@ class Icons {
 
     public static String WARNING                    = 'exclamation icon'
 
-    // please do not touch during refactoring ..
-    // cmds, functions
-
-    public static String CMD_COPY                   = 'copy icon'
-
-    public static String CMD_DELETE                 = 'trash alternate outline icon'
-
-    public static String CMD_DOWNLOAD               = 'download icon'
-
-    public static String CMD_EDIT                   = 'write icon'
-
-    public static String CMD_ERASE                  = 'eraser icon'
-
-    public static String CMD_UNLINK                 = 'unlink icon'
-
 }

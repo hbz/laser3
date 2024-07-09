@@ -94,7 +94,7 @@
                                 class="ui negative icon button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="${Icons.CMD_DELETE}"></i>
+                            <i class="${Icons.CMD.DELETE}"></i>
                         </g:link>
                     </g:if>
                 </td>
@@ -159,7 +159,7 @@
                             class="ui negative icon button"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                        <i class="${Icons.CMD_DELETE}"></i>
+                        <i class="${Icons.CMD.DELETE}"></i>
                     </g:link>
                 </g:if>
             </td>

@@ -64,7 +64,7 @@
                         <g:if test="${userService.hasFormalAffiliation(contextService.getUser(), contextService.getOrg(), 'INST_EDITOR')}">
                             <a onclick="JSPC.app.editNote(${docctx.owner.id});" class="ui icon button blue la-modern-button" role="button"
                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i>
+                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
                             </a>
                             <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.notes", args: [docctx.owner.title])}"
@@ -72,7 +72,7 @@
                                     params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="${Icons.CMD_DELETE}"></i>
+                                <i class="${Icons.CMD.DELETE}"></i>
                             </g:link>
                         </g:if>
                         <g:else>

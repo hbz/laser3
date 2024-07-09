@@ -24,7 +24,7 @@
                        onclick="JSPC.app.editAddress(${address.id});"
                        role="button"
                        aria-label="${message(code: 'ariaLabel.change.universal')}">
-                        <i class="${Icons.CMD_EDIT}"></i>
+                        <i class="${Icons.CMD.EDIT}"></i>
                     </a>
 
                     <g:set var="oid" value="${address.class.name}:${address.id}" />
@@ -34,7 +34,7 @@
                             controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: oid]"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                        <i class="${Icons.CMD_DELETE}"></i>
+                        <i class="${Icons.CMD.DELETE}"></i>
                     </g:link>
                 </div>
             </g:if>

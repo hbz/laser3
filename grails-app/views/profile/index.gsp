@@ -9,7 +9,7 @@
 <ui:controlButtons>
     <ui:actionsDropdown>
         <g:link class="ui item" controller="profile" action="delete">
-            <i class="${Icons.CMD_DELETE}"></i>${message(code:'profile.account.delete.button')}
+            <i class="${Icons.CMD.DELETE}"></i>${message(code:'profile.account.delete.button')}
         </g:link>
     </ui:actionsDropdown>
 </ui:controlButtons>

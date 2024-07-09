@@ -77,17 +77,17 @@
             <tr>
                 <th class="five wide">${message(code: 'accessPoint.ip.format.input')}
                     &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv4Inputs()">
-                    <i class="${Icons.CMD_COPY}"></i>
+                    <i class="${Icons.CMD.COPY}"></i>
                     </button>
                 </th>
                 <th class="five wide">${message(code: 'accessPoint.ip.format.range')}
                     &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv4Ranges()">
-                        <i class="${Icons.CMD_COPY}"></i>
+                        <i class="${Icons.CMD.COPY}"></i>
                     </button>
                 </th>
                 <th class="five wide">${message(code: 'accessPoint.ip.format.cidr')}
                     &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv4Cidrs()">
-                        <i class="${Icons.CMD_COPY}"></i>
+                        <i class="${Icons.CMD.COPY}"></i>
                     </button>
                 </th>
                 <th class="one wide">${message(code: 'default.actions.label')}</th>
@@ -108,7 +108,7 @@
                                     data-confirm-term-how="delete"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="${Icons.CMD_DELETE}"></i>
+                                <i class="${Icons.CMD.DELETE}"></i>
                             </g:link>
                         </g:if>
                     </td>
@@ -157,17 +157,17 @@
         <tr>
             <th class="five wide">${message(code: 'accessPoint.ip.format.input')}
                 &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv6Inputs()">
-                    <i class="${Icons.CMD_COPY}"></i>
+                    <i class="${Icons.CMD.COPY}"></i>
                 </button>
             </th>
             <th class="five wide">${message(code: 'accessPoint.ip.format.range')}
                 &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv6Ranges()">
-                    <i class="${Icons.CMD_COPY}"></i>
+                    <i class="${Icons.CMD.COPY}"></i>
                 </button>
             </th>
             <th class="five wide">${message(code: 'accessPoint.ip.format.cidr')}
                 &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv6Cidrs()">
-                    <i class="${Icons.CMD_COPY}"></i>
+                    <i class="${Icons.CMD.COPY}"></i>
                 </button>
             </th>
             <th class="one wide">${message(code: 'default.actions.label')}</th>
@@ -191,7 +191,7 @@
                                 data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint.ip', args: [accessPointData.ipInput])}"
                                 data-confirm-term-how="delete"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="${Icons.CMD_DELETE}"></i>
+                            <i class="${Icons.CMD.DELETE}"></i>
                         </g:link>
                     </g:if>
                 </td>

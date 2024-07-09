@@ -51,7 +51,7 @@
     </g:if>
     <g:if test="${errorKBART}">
         <ui:msg icon="${Icons.ERROR}" class="error" message="subscription.details.addEntitlements.titleNotMatched" args="[errorCount]"/>
-        <g:link class="ui icon button la-modern-button" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icons.CMD_DOWNLOAD}"></i></g:link>
+        <g:link class="ui icon button la-modern-button" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icons.CMD.DOWNLOAD}"></i></g:link>
     </g:if>
 
 </g:if>
@@ -502,7 +502,7 @@
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.tipp.name])}"
                                                                         data-confirm-term-how="delete"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="${Icons.CMD_DELETE}"></i>
+                                                                    <i class="${Icons.CMD.DELETE}"></i>
                                                                 </g:link>
                                                             </g:if>
                                                             <g:else>
@@ -513,7 +513,7 @@
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.tipp.name])}"
                                                                         data-confirm-term-how="delete"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="${Icons.CMD_DELETE}"></i>
+                                                                    <i class="${Icons.CMD.DELETE}"></i>
                                                                 </g:link>
                                                             </g:else>
                                                         </g:if>
@@ -612,7 +612,7 @@
                                                         <div class="ui list">
                                                             <g:if test="${ie}">
                                                                 <div class="item">
-                                                                    <i class="grey ${Icons.CMD_EDIT} la-popup-tooltip la-delay"
+                                                                    <i class="grey ${Icons.CMD.EDIT} la-popup-tooltip la-delay"
                                                                        data-content="${message(code: 'issueEntitlement.myNotes')}"></i>
                                                                     <div class="content">
                                                                         <div class="header"><g:message code="issueEntitlement.myNotes"/></div>

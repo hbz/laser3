@@ -357,7 +357,7 @@
                         </div>
                         <div class="field one wide">
                             <button type="button" class="ui icon negative button la-modern-button removeContactElement">
-                                <i class="${Icons.CMD_DELETE}"></i>
+                                <i class="${Icons.CMD.DELETE}"></i>
                             </button>
                         </div>
                     </div>

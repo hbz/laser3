@@ -11,7 +11,7 @@
     <ui:h1HeaderWithIcon text="Private Properties (mandatory) without existing values" type="yoda" />
 
     <g:link controller="yoda" action="dbmFixPrivateProperties" params="[cmd:'doIt']" class="ui button negative">
-        <i class="${Icons.CMD_DELETE}"></i> &nbsp;  Delete all</g:link>
+        <i class="${Icons.CMD.DELETE}"></i> &nbsp;  Delete all</g:link>
 
     <br />
 

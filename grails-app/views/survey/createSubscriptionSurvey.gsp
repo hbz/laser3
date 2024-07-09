@@ -238,7 +238,7 @@
                                             data-content="${message(code: 'survey.toggleSurveySub.add.label', args:[SurveyConfig.countBySubscriptionAndSubSurveyUseForTransfer(s, true), SurveyConfig.countBySubscriptionAndSubSurveyUseForTransfer(s, false)])}"
                                             controller="survey" action="addSubtoSubscriptionSurvey"
                                             params="[sub: s.id]">
-                                        <i class="${Icons.CMD_EDIT}"></i>
+                                        <i class="${Icons.CMD.EDIT}"></i>
                                     </g:link>
 
                             </g:if>

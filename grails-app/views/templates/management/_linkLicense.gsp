@@ -191,7 +191,7 @@
                                     class="ui icon button blue la-modern-button"
                                     data-position="left center"
                                     role="button">
-                                <i aria-hidden="true" class="${Icons.CMD_EDIT}"></i></g:link>
+                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i></g:link>
                         </td>
                     </tr>
                 </g:each>

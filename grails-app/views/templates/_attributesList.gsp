@@ -22,7 +22,7 @@
                                         controller="${controllerName}" action="${deleteAction}" params="[id: ownObj.id, field: field, removeObjectOID: genericOIDService.getOID(attribute)]"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE}"></i>
+                                    <i class="${Icons.CMD.DELETE}"></i>
                                 </g:link>
                             </div>
                         </div>
