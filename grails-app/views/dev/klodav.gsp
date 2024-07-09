@@ -16,25 +16,25 @@
 <div class="ui four column grid">
     <div class="column">
         <div class="ui icon info message">
-            <i class="${Icons.INFO}"></i>
+            <i class="${Icons.SYM.INFO}"></i>
             <div class="content"> INFO </div>
         </div>
     </div>
     <div class="column">
         <div class="ui icon warning message">
-            <i class="${Icons.WARNING}"></i>
+            <i class="${Icons.SYM.WARNING}"></i>
             <div class="content"> WARNING </div>
         </div>
     </div>
     <div class="column">
         <div class="ui icon success message">
-            <i class="${Icons.SUCCESS}"></i>
+            <i class="${Icons.SYM.SUCCESS}"></i>
             <div class="content"> SUCCESS </div>
         </div>
     </div>
     <div class="column">
         <div class="ui icon error message">
-            <i class="${Icons.ERROR}"></i>
+            <i class="${Icons.SYM.ERROR}"></i>
             <div class="content"> ERROR </div>
         </div>
     </div>

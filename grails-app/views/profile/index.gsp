@@ -401,11 +401,11 @@
                                 <div class="content">
                                     <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
 
-                                    <ui:msg class="info" icon="${Icons.INFO}" noClose="true">
+                                    <ui:msg class="info" icon="${Icons.SYM.INFO}" noClose="true">
                                         Diese Funktion ist nur für Administratoren verfügbar.
                                     </ui:msg>
 
-                                    <ui:msg class="warning" icon="${Icons.WARNING}" noClose="true">
+                                    <ui:msg class="warning" icon="${Icons.SYM.WARNING}" noClose="true">
                                         Dieser Nutzer ist noch keiner Einrichtung zugewiesen.
                                     </ui:msg>
 

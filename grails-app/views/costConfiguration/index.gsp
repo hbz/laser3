@@ -18,7 +18,7 @@
 
         <ui:messages data="${flash}"/>
 
-        <ui:msg icon="${Icons.WARNING}" class="warning" message="costConfiguration.preset" noClose="true" />
+        <ui:msg icon="${Icons.SYM.WARNING}" class="warning" message="costConfiguration.preset" noClose="true" />
 
         <div class="ui styled fluid">
             <table class="ui celled la-js-responsive-table la-table compact table">

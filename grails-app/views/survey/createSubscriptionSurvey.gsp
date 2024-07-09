@@ -12,8 +12,8 @@
 <ui:messages data="${flash}"/>
 
 
-<div class="ui icon message">
-    <i class="${Icons.INFO}"></i>
+<div class="ui icon info message">
+    <i class="${Icons.SYM.INFO}"></i>
     ${message(code: 'allSubscriptions.info')}
 </div>
 

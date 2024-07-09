@@ -33,7 +33,7 @@
 
 <g:if test="${missing.size() > 0}">
     <div class="ui icon message warning">
-        <i class="${Icons.INFO}"></i>
+        <i class="${Icons.SYM.WARNING}"></i>
         <div class="content">
             <div class="header">${message(code: 'org.eInvoice.info.header')}</div>
             ${message(code: 'org.eInvoice.info.text')}

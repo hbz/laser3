@@ -53,12 +53,22 @@ class Icons {
         // properties
 
         public static String HARDDATA       = 'check circle icon green' // COLOR INCLUDED !!
-        public static String IN_USE         = 'info circle icon blue'   // COLOR INCLUDED !! todo: duplicate: Icons.INFO
+        public static String IN_USE         = 'info circle icon blue'   // COLOR INCLUDED !! todo: duplicate: Icons.SYM.MSG_INFO
         public static String IS_PRIVATE     = 'shield alternate icon'
         public static String LOGIC          = 'cube icon red'           // COLOR INCLUDED !!
         public static String MANDATORY      = 'star icon'               // todo: duplicate: survey/renew? > Icons.MY_OBJECT
         public static String MULTIPLE       = 'redo icon orange'        // COLOR INCLUDED !! todo: duplicate: currentSubscriptionsTransfer
 
+    }
+
+    class SYM {
+        // please do not touch during refactoring ..
+        // symbolic / generic
+
+        public static String ERROR          = 'exclamation triangle icon'
+        public static String INFO           = 'info icon'
+        public static String SUCCESS        = 'check icon'
+        public static String WARNING        = 'exclamation icon'
     }
 
     // please do not touch during refactoring ..
@@ -119,8 +129,6 @@ class Icons {
 
     public static String EMAIL                      = 'envelope outline icon'
 
-    public static String ERROR                      = 'exclamation triangle icon'
-
     public static String HELP                       = 'question icon'
 
     public static String HELP_TOOLTIP               = 'grey question circle icon'   // COLOR INCLUDED !!
@@ -128,14 +136,8 @@ class Icons {
     public static String IMPORTANT_TOOLTIP          = 'exclamation circle icon'     // TODO: merge
     public static String IMPORTANT_TOOLTIP2         = 'exclamation triangle icon'   // TODO: merge
 
-    public static String INFO                       = 'info icon'
-
     public static String INFO_TOOLTIP               = 'info circle icon'            // todo: duplicate: Icons.PROP.IN_USE
 
     public static String MY_OBJECT                  = 'star icon'                   // todo: duplicate: survey/renew? > Icons.PROP.MANDATORY
-
-    public static String SUCCESS                    = 'check icon'
-
-    public static String WARNING                    = 'exclamation icon'
 
 }

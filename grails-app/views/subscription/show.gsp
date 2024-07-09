@@ -44,7 +44,7 @@
 
 <g:if test="${permanentTitlesProcessRunning}">
     <div class="ui icon warning message">
-        <i class="${Icons.INFO}"></i>
+        <i class="${Icons.SYM.WARNING}"></i>
         <div class="content">
             <div class="header">Info</div>
 

@@ -34,7 +34,7 @@
 
     <g:if test="${subscription.comment}">
         <div class="ui icon info message">
-            <i class="${Icons.INFO}"></i>
+            <i class="${Icons.SYM.INFO}"></i>
             <div class="content">
                 <div class="header">
                     ${message(code: 'subscription.details.internalComment')}

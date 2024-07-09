@@ -313,8 +313,8 @@
 </g:if>
 
 <g:if test="${workFlow == "1"}">
-    <div class="ui icon message">
-        <i class="${Icons.INFO}"></i>
+    <div class="ui icon info message">
+        <i class="${Icons.SYM.INFO}"></i>
         ${message(code: 'copySurvey.subscription.info')}
     </div>
 

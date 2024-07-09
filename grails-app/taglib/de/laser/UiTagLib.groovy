@@ -5,7 +5,6 @@ import de.laser.cache.SessionCacheWrapper
 import de.laser.helper.Icons
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
-import de.laser.utils.AppUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
@@ -449,7 +448,7 @@ class UiTagLib {
     def flagDeprecated = { attrs, body ->
 
         out << '<div class="ui icon message error">'
-        out << '<i class="' + Icons.ERROR + '"></i>'
+        out << '<i class="' + Icons.SYM.ERROR + '"></i>'
         out << '<div class="content">'
         out << 'Diese Funktionalität wird demnächst entfernt.<br/>Bitte nicht mehr verwenden und ggfs. Daten migrieren.'
         out << '</div>'
