@@ -1,10 +1,17 @@
 <%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
-<laser:htmlStart text="Playground" serviceInjection="true" />
+<laser:htmlStart text="Playground: Various" serviceInjection="true" />
 
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb text="Playground" class="active"/>
+</ui:breadcrumbs>
 
-<h1 class="ui header center aligned">
-    Playground
-</h1>
+<ui:h1HeaderWithIcon text="Playground" type="admin"/>
+
+<nav class="ui secondary menu">
+    <g:link controller="dev" action="klodav" class="item active">Various</g:link>
+    <g:link controller="dev" action="icons" class="item">New Icons</g:link>
+</nav>
 
 <div class="ui segment">
     <p class="ui header">Icons #1</p>
