@@ -2586,6 +2586,11 @@ class MyInstitutionController  {
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
         result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.long('surveyConfigID')) : result.surveyInfo.surveyConfigs[0]
         result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, result.surveyConfig)
+
+        if(!result.surveyOrg){
+            response.sendError(401); return
+        }
+
         result.ownerId = result.surveyInfo.owner?.id
 
         result.surveyResults = []
