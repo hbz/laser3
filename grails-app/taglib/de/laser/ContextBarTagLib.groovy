@@ -24,25 +24,12 @@ class ContextBarTagLib {
             icon  = Icons.UI.ERROR + ' red'
             text  = message(code: 'profile.membership.error1')
         }
-        else if (org.isCustomerType_Consortium_Pro()) {
-            icon  = Icons.AUTH.ORG_CONSORTIUM_PRO
-            text  = Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')
-        }
-        else if (org.isCustomerType_Consortium_Basic()) {
-            icon  = Icons.AUTH.ORG_CONSORTIUM_BASIC
-            text  = Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')
-        }
-        else if (org.isCustomerType_Inst_Pro()) {
-            icon  = Icons.AUTH.ORG_INST_PRO
-            text  = Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')
-        }
-        else if (org.isCustomerType_Inst_Basic()) {
-            icon  = Icons.AUTH.ORG_INST_BASIC
-            text  = Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')
-        }
-        else if (org.isCustomerType_Support()) {
-            icon = Icons.AUTH.ORG_SUPPORT
-            text  = Role.findByAuthority(CustomerTypeService.ORG_SUPPORT).getI10n('authority')
+        else {
+            Map ctm = org.getCustomerTypeInfo()
+            if (ctm.icon && ctm.text) {
+                icon = ctm.icon
+                text = ctm.text
+            }
         }
 
         out << '<div class="item la-cb-context">'
