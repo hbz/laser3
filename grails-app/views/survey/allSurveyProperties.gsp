@@ -32,7 +32,7 @@
         <i class="${Icons.HELP_TOOLTIP} la-popup"></i>
 
         <div class="ui popup">
-            <i class="${Icons.PROPERTY_PRIVATE}"></i> = ${message(code: 'subscription.properties.my')}
+            <i class="${Icons.PROP.IS_PRIVATE}"></i> = ${message(code: 'subscription.properties.my')}
         </div>
         <ui:totalNumber total="${properties.size()}"/>
 
@@ -65,7 +65,7 @@
                 <td>
                     <g:if test="${property?.tenant && property?.tenant.id == institution.id}">
                         <ui:xEditable owner="${property}" field="name_${SUBSTITUTE}" type="textarea"/>
-                        <i class='${Icons.PROPERTY_PRIVATE}'></i>
+                        <i class='${Icons.PROP.IS_PRIVATE}'></i>
                     </g:if>
                     <g:else>
                         ${property?.getI10n('name')}

@@ -177,7 +177,7 @@
                                         ${surveyProperty.surveyProperty.getI10n('name')}
 
                                         <g:if test="${surveyProperty.surveyProperty.tenant?.id == institution.id}">
-                                            <i class='${Icons.PROPERTY_PRIVATE}'></i>
+                                            <i class='${Icons.PROP.IS_PRIVATE}'></i>
                                         </g:if>
 
                                         <g:if test="${surveyProperty.surveyProperty.getI10n('expl')}">

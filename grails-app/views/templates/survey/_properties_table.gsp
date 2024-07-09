@@ -28,7 +28,7 @@
                     ${surveyPropertyConfig.surveyProperty.getI10n('name')}
 
                     <g:if test="${surveyPropertyConfig.surveyProperty.tenant?.id == contextService.getOrg().id}">
-                        <i class='${Icons.PROPERTY_PRIVATE}'></i>
+                        <i class='${Icons.PROP.IS_PRIVATE}'></i>
                     </g:if>
 
                     <g:if test="${surveyPropertyConfig.surveyProperty.getI10n('expl')}">
@@ -129,7 +129,7 @@
                                 <ui:dropdown name="selectedProperty"
                                              class="la-filterPropDef"
                                              from="${selectableProperties.sort{it.getI10n('name')}}"
-                                             iconWhich="${Icons.PROPERTY_PRIVATE}"
+                                             iconWhich="${Icons.PROP.IS_PRIVATE}"
                                              optionKey="${{ "${it.id}" }}"
                                              optionValue="${{ it.getI10n('name') }}"
                                              noSelection="${message(code: 'default.search_for.label', args: [message(code: 'surveyProperty.label')])}"

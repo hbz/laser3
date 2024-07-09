@@ -113,21 +113,6 @@ class Icons {
     public static String TIPP_COVERAGE_DEPTH        = 'file alternate icon'
 
     // please do not touch during refactoring ..
-    // properties
-
-    public static String PROPERTY_HARDDATA          = 'check circle icon green' // COLOR INCLUDED !!
-
-    public static String PROPERTY_LOGIC             = 'cube icon red'           // COLOR INCLUDED !!
-
-    public static String PROPERTY_MANDATORY         = 'star icon'               // todo: duplicate: survey/renew? > Icons.MY_OBJECT
-
-    public static String PROPERTY_MULTIPLE          = 'redo icon orange'        // COLOR INCLUDED !! todo: duplicate: currentSubscriptionsTransfer
-
-    public static String PROPERTY_PRIVATE           = 'shield alternate icon'
-
-    public static String PROPERTY_USED              = 'info circle icon blue'   // COLOR INCLUDED !! todo: duplicate: Icons.INFO
-
-    // please do not touch during refactoring ..
     // generic
 
     public static String DATE                       = 'calendar alternate outline icon'
@@ -145,9 +130,9 @@ class Icons {
 
     public static String INFO                       = 'info icon'
 
-    public static String INFO_TOOLTIP               = 'info circle icon'            // todo: duplicate: Icons.PROPERTY_USED
+    public static String INFO_TOOLTIP               = 'info circle icon'            // todo: duplicate: Icons.PROP.IN_USE
 
-    public static String MY_OBJECT                  = 'star icon'                   // todo: duplicate: survey/renew? > Icons.PROPERTY_MANDATORY
+    public static String MY_OBJECT                  = 'star icon'                   // todo: duplicate: survey/renew? > Icons.PROP.MANDATORY
 
     public static String WARNING                    = 'exclamation icon'
 
