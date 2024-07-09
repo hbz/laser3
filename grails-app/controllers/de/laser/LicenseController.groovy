@@ -348,6 +348,7 @@ class LicenseController {
         result.putAll(licenseControllerService.setSubscriptionFilterData(params))
 
         if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
+            result.subscriptionsForFilter = []
             Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
             Map<String,Object> queryParams = [lic:result.license, subscriberRoleTypes:subscriberRoleTypes, linkType:RDStore.LINKTYPE_LICENSE]
             String whereClause = ""
@@ -380,18 +381,22 @@ class LicenseController {
                             if (params.subRunTimeMultiYear && !params.subRunTime) {
                                 if(sub.isMultiYear) {
                                     result.subscriptions << [sub: sub, orgs: filteredSubscr]
+                                    result.subscriptionsForFilter << sub
                                 }
                             }else if (!params.subRunTimeMultiYear && params.subRunTime){
                                 if(!sub.isMultiYear) {
                                     result.subscriptions << [sub: sub, orgs: filteredSubscr]
+                                    result.subscriptionsForFilter << sub
                                 }
                             }
                             else {
                                 result.subscriptions << [sub: sub, orgs: filteredSubscr]
+                                result.subscriptionsForFilter << sub
                             }
                         }
                         else {
                             result.subscriptions << [sub: sub, orgs: filteredSubscr]
+                            result.subscriptionsForFilter << sub
                         }
                     }
                 }
@@ -411,10 +416,11 @@ class LicenseController {
             }
             else result.subscriptions = subscriptions
 
+            result.subscriptionsForFilter = result.subscriptions
             result.consAtMember = false
         }
 
-        result.subscriptionsForFilter = result.subscriptions
+
         result
     }
 
