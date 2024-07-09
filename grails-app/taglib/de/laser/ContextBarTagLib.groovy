@@ -36,7 +36,7 @@ class ContextBarTagLib {
             icon  = Icons.AUTH.ORG_INST_PRO
             text  = Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')
         }
-        else if (org.isCustomerType_Inst()) {
+        else if (org.isCustomerType_Inst_Basic()) {
             icon  = Icons.AUTH.ORG_INST_BASIC
             text  = Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')
         }

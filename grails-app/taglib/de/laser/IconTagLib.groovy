@@ -238,6 +238,37 @@ class IconTagLib {
         out << '</span>'
     }
 
+    // <ui:customerTypeIcon org="${org}" showTooltip />
+
+    def customerTypeIcon = { attrs, body ->
+        if (attrs.org) {
+            Org org     = attrs.org as Org
+            String text = org.getCustomerTypeI10n()
+            String icon = ''
+
+            if (text) {
+                     if (org.isCustomerType_Inst_Basic())       { icon = Icons.AUTH.ORG_INST_BASIC }
+                else if (org.isCustomerType_Inst_Pro())         { icon = Icons.AUTH.ORG_INST_PRO }
+                else if (org.isCustomerType_Consortium_Basic()) { icon = Icons.AUTH.ORG_CONSORTIUM_BASIC }
+                else if (org.isCustomerType_Consortium_Pro())   { icon = Icons.AUTH.ORG_CONSORTIUM_PRO }
+                else if (org.isCustomerType_Support())          { icon = Icons.AUTH.ORG_SUPPORT }
+            }
+            if (text && icon) {
+                if (attrs.showTooltip) {
+                    out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right" data-content="' + text + '">'
+                    out << '<i class="' + icon + '"></i>'
+                    out << '</span>'
+                } else {
+                    out << '<span>'
+                    out << '<i class="' + icon + ' la-list-icon"></i>' + text
+                    out << '</span>'
+                }
+            }
+        }
+    }
+
+    // <ui:customerTypeProIcon org="${org}" cssClass="${css}" />
+
     def customerTypeProIcon = { attrs, body ->
         if (attrs.org) {
 //            if (attrs.org.isCustomerType_Inst_Pro()) {
