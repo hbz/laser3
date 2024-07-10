@@ -16,14 +16,21 @@
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="admin" action="appInfo">${message(code:'menu.admin.appInfo')}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</ui:link>
-
-                <div class="divider"></div>
-                <ui:link addItemAttributes="true" controller="admin" action="testMailSending">Test Mail Sending</ui:link>
             </div>
         </div>
 
         <ui:link addItemAttributes="true" controller="admin" action="systemMessages"><i class="icon exclamation circle"></i>${message(code: 'menu.admin.systemMessage')}</ui:link>
         <ui:link addItemAttributes="true" controller="admin" action="systemAnnouncements"><i class="${Icons.ANNOUNCEMENT}"></i>${message(code:'menu.admin.announcements')}</ui:link>
+
+        <div class="item" role="menuitem" aria-haspopup="true">
+            <div class="title">
+                <i class="${Icons.EMAIL}"></i> ${message(code:'menu.yoda.mail.label')} <i class="dropdown icon"></i>
+            </div>
+            <div class="menu" role="menu">
+                <ui:link addItemAttributes="true" controller="admin" action="listMailTemplates">${message(code:'menu.admin.manageMailTemplates')}</ui:link>
+                <ui:link addItemAttributes="true" controller="admin" action="sendMail">${message(code:'menu.admin.sendMail')}</ui:link>
+            </div>
+        </div>
 
         <div class="divider"></div>
 
@@ -50,7 +57,6 @@
         <!-- TODO: workflows-permissions -->
         %{-- <ui:link addItemAttributes="true" controller="admin" action="manageWorkflows">${message(code:'menu.admin.manageWorkflows')}</ui:link> --}%
         <ui:link addItemAttributes="true" controller="usage">${message(code:'menu.admin.manageUsageStats')}</ui:link>
-        <ui:link addItemAttributes="true" controller="admin" action="listMailTemplates">${message(code:'menu.admin.manageMailTemplates')}</ui:link>
 
         <div class="divider"></div>
         <ui:link addItemAttributes="true" controller="admin" action="missingPermantTitlesInSubs">${message(code:'menu.admin.missingPermantTitlesInSubs')}</ui:link>
