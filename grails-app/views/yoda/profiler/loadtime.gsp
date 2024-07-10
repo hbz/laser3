@@ -20,8 +20,8 @@
                       from="${allArchives}" optionKey="${{it[0].toString()}}" optionValue="${{it[0].toString() + ' (' + it[1].toString() + ')'}}" value="${archive}"/>
             <laser:script file="${this.getGroovyPageFileName()}">
                 $('#archive').on('change', function() {
-                    var selection = $(this).val()
-                    var link = "${g.createLink(absolute: true, controller: 'yoda', action: 'profilerLoadtime')}?archive=" + selection
+                    let selection = $(this).val()
+                    let link = "${g.createLink(absolute: true, controller: 'yoda', action: 'profilerLoadtime')}?archive=" + selection
                     window.location.href = link
                 })
             </laser:script>

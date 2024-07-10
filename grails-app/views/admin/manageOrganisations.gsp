@@ -76,6 +76,18 @@
                                 (${fieldValue(bean: org, field: "sortname")})
                             </g:if>
                         </g:link>
+
+                        <%
+                            def gascoEntry = OrgSetting.get(org, OrgSetting.KEYS.GASCO_ENTRY)
+                            if (gascoEntry != OrgSetting.SETTING_NOT_FOUND && gascoEntry.getValue()?.value == 'Yes') {
+                                println ' <span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + message(code:'org.gascoEntry.label') + '">'
+                                println ' <i class="' + Icons.GASCO + ' blue"></i>'
+                                println ' </span>'
+                                gascoEntry = gascoEntry.getValue()
+                            } else {
+                                gascoEntry = RDStore.YN_NO
+                            }
+                        %>
                     </td>
 
                     <td>
@@ -85,6 +97,8 @@
                     </td>
 
                     <td>
+%{--                        <ui:customerTypeIcon org="${org}" />--}%
+
                         <%
                             def customerType = OrgSetting.get(org, OrgSetting.KEYS.CUSTOMER_TYPE)
                             if (customerType != OrgSetting.SETTING_NOT_FOUND) {
@@ -93,16 +107,6 @@
                             }
                             else {
                                 customerType = null
-                            }
-
-                            def gascoEntry = OrgSetting.get(org, OrgSetting.KEYS.GASCO_ENTRY)
-                            if (gascoEntry != OrgSetting.SETTING_NOT_FOUND && gascoEntry.getValue()?.value == 'Yes') {
-                                println ' <span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + message(code:'org.gascoEntry.label') + '">'
-                                println ' <i class="' + Icons.GASCO + ' blue"></i>'
-                                println ' </span>'
-                                gascoEntry = gascoEntry.getValue()
-                            } else {
-                                gascoEntry = RDStore.YN_NO
                             }
                         %>
                     </td>

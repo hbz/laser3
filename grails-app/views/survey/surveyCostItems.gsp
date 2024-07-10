@@ -72,7 +72,7 @@
                     <input type="file" name="costItemsFile" accept="text/tab-separated-values,.txt,.csv"
                            style="display: none;">
                     <div class="ui icon button">
-                        <i class="attach icon"></i>
+                        <i class="${Icons.CMD.ATTACHMENT}"></i>
                     </div>
                 </div>
             </div>

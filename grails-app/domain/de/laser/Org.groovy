@@ -6,6 +6,7 @@ import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.convenience.Marker
 import de.laser.finance.CostItem
+import de.laser.helper.Icons
 import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.MarkerSupport
 import de.laser.oap.OrgAccessPoint
@@ -282,6 +283,25 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
             return true
         }
         false
+    }
+
+    Map<String, String> getCustomerTypeInfo() {
+        Map<String, String> result = [ id: '', text: '', icon: '' ]
+
+        def oss  = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
+        if (oss != OrgSetting.SETTING_NOT_FOUND) {
+            result.id   = oss.roleValue?.authority
+            result.text = oss.roleValue?.getI10n('authority')
+        }
+
+             if (result.id == CustomerTypeService.ORG_INST_BASIC)       { result.icon = Icons.AUTH.ORG_INST_BASIC }
+        else if (result.id == CustomerTypeService.ORG_INST_PRO)         { result.icon = Icons.AUTH.ORG_INST_PRO }
+        else if (result.id == CustomerTypeService.ORG_CONSORTIUM_BASIC) { result.icon = Icons.AUTH.ORG_CONSORTIUM_BASIC }
+        else if (result.id == CustomerTypeService.ORG_CONSORTIUM_PRO)   { result.icon = Icons.AUTH.ORG_CONSORTIUM_PRO }
+        else if (result.id == CustomerTypeService.ORG_SUPPORT)          { result.icon = Icons.AUTH.ORG_SUPPORT }
+
+//        println result
+        result
     }
 
     /**

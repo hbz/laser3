@@ -120,7 +120,7 @@
                                                style="display: none;">
 
                                         <div class="ui icon button">
-                                            <i class="attach icon"></i>
+                                            <i class="${Icons.CMD.ATTACHMENT}"></i>
                                         </div>
                                     </div>
                                 </div>

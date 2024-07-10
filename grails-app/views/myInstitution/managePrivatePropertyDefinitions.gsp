@@ -162,7 +162,7 @@
                                                                 data-xcg-type="${pd.type}"
                                                                 data-xcg-rdc="${pd.refdataCategory}"
                                                                 data-xcg-debug="${pd.getI10n('name')}">
-                                                            <i class="exchange icon"></i>
+                                                            <i class="${Icons.CMD.REPLACE}"></i>
                                                         </button>
                                                     </span>
                                                 </g:else>
@@ -174,7 +174,7 @@
                                                             data-xcg-type="${pd.type}"
                                                             data-xcg-rdc="${pd.refdataCategory}"
                                                             data-xcg-debug="${pd.getI10n('name')}"
-                                                    ><i class="exchange icon"></i></button>
+                                                    ><i class="${Icons.CMD.REPLACE}"></i></button>
                                                 </span>
                                             </g:elseif>
                                         </td>

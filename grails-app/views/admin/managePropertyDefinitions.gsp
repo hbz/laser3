@@ -166,7 +166,7 @@
                                                             data-xcg-type="${pd.type}"
                                                             data-xcg-rdc="${pd.refdataCategory}"
                                                             data-xcg-debug="${pd.getI10n('name')} (${pd.name})"
-                                                    ><i class="exchange icon"></i></button>
+                                                    ><i class="${Icons.CMD.REPLACE}"></i></button>
                                                 </span>
                                             </g:if>
                                         </sec:ifAnyGranted>

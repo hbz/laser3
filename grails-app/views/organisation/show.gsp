@@ -139,6 +139,7 @@
                             <dt><g:message code="org.customerType.label"/></dt>
                             <dd>
                                 ${orgInstance.getCustomerTypeI10n()}
+%{--                                <ui:customerTypeIcon org="${orgInstance}" />--}%
                             </dd>
                         </dl>
                     </g:if>

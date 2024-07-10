@@ -32,7 +32,7 @@
                 <input type="file" id="upload_file" name="upload_file" style="display: none;">
 
                 <div class="ui icon button" style="padding-left:30px; padding-right:30px">
-                    <i class="attach icon"></i>
+                    <i class="${Icons.CMD.ATTACHMENT}"></i>
                 </div>
             </div>
         </div>

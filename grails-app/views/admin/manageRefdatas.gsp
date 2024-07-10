@@ -112,7 +112,7 @@
                                                             data-xcg-rdv="${rdv.class.name}:${rdv.id}"
                                                             data-xcg-rdc="${rdc.class.name}:${rdc.id}"
                                                             data-xcg-debug="${rdv.getI10n('value')} (${rdv.value})"
-                                                    ><i class="exchange icon"></i></button>
+                                                    ><i class="${Icons.CMD.REPLACE}"></i></button>
                                                 </span>
                                             </g:if>
                                         </sec:ifAnyGranted>

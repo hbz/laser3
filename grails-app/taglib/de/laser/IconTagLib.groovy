@@ -15,7 +15,7 @@ class IconTagLib {
     }
 
     def headerTitleIcon = { attrs, body ->
-        String icon = 'la-object'
+        String icon = 'icon la-object'
 
         if (attrs.type) {
         switch (attrs.type.toLowerCase()) {
@@ -28,32 +28,32 @@ class IconTagLib {
             case 'affiliation':
                 Role fr = contextService.getUser().formalRole
                 if (fr) {
-                    if (fr.authority == Role.INST_USER)   { icon = 'user bordered inverted grey la-object-extended' }
-                    if (fr.authority == Role.INST_EDITOR) { icon = 'user edit bordered inverted grey la-object-extended' }
-                    if (fr.authority == Role.INST_ADM)    { icon = 'user shield bordered inverted grey la-object-extended' }
+                    if (fr.authority == Role.INST_USER)   { icon = Icons.AUTH.INST_USER + ' bordered inverted grey la-object-extended' }
+                    if (fr.authority == Role.INST_EDITOR) { icon = Icons.AUTH.INST_EDITOR + ' bordered inverted grey la-object-extended' }
+                    if (fr.authority == Role.INST_ADM)    { icon = Icons.AUTH.INST_ADM + ' bordered inverted grey la-object-extended' }
                 } else {
-                    icon = 'user slash bordered inverted grey la-object-extended'
+                    icon = 'icon user slash bordered inverted grey la-object-extended'
                 }
                 break
             case 'database':
-                icon = 'bordered la-object-database'
+                icon = 'icon bordered la-object-database'
                 break
             case 'ebook':
             case 'monograph':
-                icon = 'bordered la-object-ebook'
+                icon = 'icon bordered la-object-ebook'
                 break
             case 'file':
                 icon = Icons.DOCUMENT + ' bordered inverted blue la-object-extended'
                 break
             case 'finance':
-                icon = 'bordered inverted teal euro sign la-object-extended'
+                icon = 'icon euro sign bordered inverted teal la-object-extended'
                 break
             case 'help':
                 icon = Icons.HELP + ' bordered inverted grey la-object-extended'
                 break
             case 'journal':
             case 'serial':
-                icon = 'bordered la-object-journal'
+                icon = 'icon bordered la-object-journal'
                 break
             case 'gasco':
                 icon = Icons.GASCO +' bordered inverted grey la-object-extended'
@@ -62,10 +62,10 @@ class IconTagLib {
                 icon = Icons.MARKER + ' bordered inverted purple la-object-extended'
                 break
             case 'package':
-                icon = 'bordered la-package la-object-extended'
+                icon = 'icon bordered la-package la-object-extended'
                 break
             case 'search':
-                icon = 'search'
+                icon = 'icon search'
                 break
             case 'reporting':
                 icon = Icons.REPORTING + ' bordered inverted teal la-object-extended'
@@ -90,7 +90,7 @@ class IconTagLib {
                 break
         }
         }
-        out << '<i aria-hidden="true" class="icon ' + icon + '"></i> ' // TODO erms-5784 doubles 'icon'
+        out << '<i aria-hidden="true" class="' + icon + '"></i> '
     }
 
     def propertyIcon = { attrs, body ->
@@ -102,7 +102,7 @@ class IconTagLib {
         boolean showToolTipp = attrs.showToolTipp ?: false
         String icon = ''
 
-        if(showToolTipp) {
+        if (showToolTipp) {
             out << '<span class="la-popup-tooltip la-delay" data-content="' + toolTippContent + '" data-position="left center" data-variation="tiny">'
         }
 
@@ -159,7 +159,7 @@ class IconTagLib {
 
         out << '<i aria-hidden="true" class="' + cssClass + ' icon ' + icon + '"></i> ' // TODO erms-5784 doubles 'icon'
 
-        if(showToolTipp) {
+        if (showToolTipp) {
             out << '</span>'
         }
     }
@@ -237,6 +237,29 @@ class IconTagLib {
         out << '<i aria-hidden="true" class="' + icon + '"></i>'
         out << '</span>'
     }
+
+    // <ui:customerTypeIcon org="${org}" showTooltip />
+
+    def customerTypeIcon = { attrs, body ->
+        if (attrs.org) {
+            Org org = attrs.org as Org
+            Map ctm = org.getCustomerTypeInfo()
+
+            if (ctm.text && ctm.icon) {
+                if (attrs.showTooltip) {
+                    out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right" data-content="' + ctm.text + '">'
+                    out << '<i class="' + ctm.icon + '"></i>'
+                    out << '</span>'
+                } else {
+                    out << '<span>'
+                    out << '<i class="' + ctm.icon + ' la-list-icon"></i>' + ctm.text
+                    out << '</span>'
+                }
+            }
+        }
+    }
+
+    // <ui:customerTypeProIcon org="${org}" cssClass="${css}" />
 
     def customerTypeProIcon = { attrs, body ->
         if (attrs.org) {
