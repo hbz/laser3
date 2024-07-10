@@ -831,7 +831,7 @@ class SurveyControllerService {
                             if (params.percentOnOldPrice) {
                                 Double percentOnOldPrice = params.double('percentOnOldPrice', 0.00)
                                 Subscription orgSub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyCostItem.surveyOrg.org)
-                                CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(orgSub, surveyCostItem.owner, RDStore.COST_ITEM_DELETED, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE)
+                                CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(orgSub, surveyCostItem.owner, RDStore.COST_ITEM_DELETED, surveyCostItem.costItemElement)
                                 surveyCostItem.costInBillingCurrency = costItem ? (costItem.costInBillingCurrency * (1 + (percentOnOldPrice / 100))).round(2) : surveyCostItem.costInBillingCurrency
 
                                 int taxRate = 0 //fallback
