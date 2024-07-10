@@ -1950,7 +1950,7 @@ class MyInstitutionController  {
             }
         }
         qryString += orderByClause
-        log.debug(qryString.replace(':subIds', subIds.join(',')))
+        //log.debug(qryString.replace(':subIds', subIds.join(',')))
 
         Map<String, Object> selectedFields = [:]
         Set<Long> allTitles = subCache.get("titleIDs") ?: []

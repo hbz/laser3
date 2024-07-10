@@ -504,32 +504,6 @@ class LicenseController {
     }
 
     /**
-     * this is very ugly and should be subject of refactor - - but unfortunately, the
-     * {@link SubscriptionsQueryService#myInstitutionCurrentSubscriptionsBaseQuery(java.util.Map)}
-     * requires the {@link GrailsParameterMap} as parameter.
-     * @return validOn and defaultSet-parameters of the filter
-     */
-    private Map<String,Object> _setSubscriptionFilterData() {
-        Map<String, Object> result = [:]
-        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-        Date dateRestriction = null
-        if (params.validOn == null || params.validOn.trim() == '') {
-            result.validOn = ""
-        } else {
-            result.validOn = params.validOn
-            dateRestriction = sdf.parse(params.validOn)
-        }
-        result.dateRestriction = dateRestriction
-        if (! params.status) {
-            if (!params.filterSet) {
-                params.status = RDStore.SUBSCRIPTION_CURRENT.id
-                result.defaultSet = true
-            }
-        }
-        result
-    }
-
-    /**
      * Gets the linked consortia member institution IDs for filter views
      * @return a {@link List} of institution IDs
      */
