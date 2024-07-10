@@ -1,4 +1,4 @@
-<%@ page import="java.lang.management.ManagementFactory" %>
+<%@ page import="de.laser.helper.Icons; java.lang.management.ManagementFactory" %>
 <laser:htmlStart message="menu.yoda.systemThreads" serviceInjection="true"/>
 
     <ui:breadcrumbs>
