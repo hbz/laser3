@@ -14,6 +14,38 @@
         <g:link controller="yoda" action="profilerLoadtime" class="item">Ladezeiten</g:link>
         <g:link controller="yoda" action="profilerActivity" class="item">Nutzerzahlen</g:link>
         <g:link controller="yoda" action="profilerTimeline" class="item active">Seitenaufrufe</g:link>
+
+        <div style="position:absolute; right:0">
+            <div class="ui toggle checkbox">
+                <input type="checkbox" id="chartToggle" name="chartToggle">
+            </div>
+
+            <laser:script file="${this.getGroovyPageFileName()}">
+                JSPC.app.chartToggler = $('#chartToggle').parent()
+                JSPC.app.chartToggler.checkbox('check')
+
+                JSPC.app.chartToggler.on('change', function() {
+                    if (JSPC.app.chartToggler.checkbox('is checked')) {
+                        $('.echarts-wrapper').show()
+                    } else {
+                        $('.echarts-wrapper').hide()
+                    }
+                })
+
+                $('table tr[data-cat]').hover(
+                    function() {
+                        if (JSPC.app.chartToggler.checkbox('is unchecked')) {
+                            $('table tr[data-cat=' + $(this).attr('data-cat') + ']').addClass('warning')
+                        }
+                    },
+                    function() {
+                        if (JSPC.app.chartToggler.checkbox('is unchecked')) {
+                            $('table tr[data-cat]').removeClass('warning')
+                        }
+                    }
+                );
+            </laser:script>
+        </div>
     </nav>
 
     <table class="ui celled la-js-responsive-table la-table compact table">
@@ -26,9 +58,9 @@
             <g:each in="${globalTimelineOrder}" var="ik,iv" status="index">
                 <g:set var="itemValue" value="${globalTimeline[ik]}" />
 
-                <tr>
+                <tr data-cat="${ik.split('/')[1]}">
                     <td>
-                        <strong>${ik}</strong> (${iv}) <br />
+                        <p><strong>${ik}</strong> (${iv})</p>
 
                         <div id="ct-chart-${index}" class="echarts-wrapper"></div>
 
@@ -74,6 +106,9 @@
         </tbody>
     </table>
     <style>
+    table tbody tr td p {
+        margin: 0;
+    }
     .echarts-wrapper {
         width: 100%;
         height: 150px;
