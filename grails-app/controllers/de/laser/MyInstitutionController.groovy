@@ -1862,9 +1862,9 @@ class MyInstitutionController  {
             subQryParams.selVen = filterVen
         }
         Set<Long> subIds = Subscription.executeQuery("select sub.id from Subscription sub join sub.orgRelations oo "+pkgJoin+" where oo.org = :institution and "+subscriptionQueryFilter.join(" and "), subQryParams)
+        qryParams.subIds = subIds
         List<String> countQueryFilter = queryFilter.clone()
         Map<String, Object> countQueryParams = qryParams.clone()
-        countQueryParams.subIds = subIds
         prf.setBenchmark('before sub IDs')
 
         if (params.status) {
@@ -1890,6 +1890,8 @@ class MyInstitutionController  {
 
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256")
         Map<String, Object> cachingKeys = params.clone()
+        cachingKeys.remove("controller")
+        cachingKeys.remove("action")
         cachingKeys.remove("offset")
         cachingKeys.remove("max")
         String checksum = "${result.user.id}_${cachingKeys.entrySet().join('_')}"

@@ -1,6 +1,5 @@
 <%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.License; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Org" %>
 <laser:serviceInjection />
-<g:set var="actionStart" value="${System.currentTimeMillis()}"/>
 <g:if test="${actionName == 'show'}">
     <ui:exportDropdown>
         <ui:exportDropdownItem>
@@ -8,11 +7,9 @@
         </ui:exportDropdownItem>
     </ui:exportDropdown>
 </g:if>
-${System.currentTimeMillis()-actionStart} msecs at start
 <g:if test="${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')}">
     <ui:actionsDropdown>
         <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
-        ${System.currentTimeMillis()-actionStart} msecs after dropdown items
         <g:if test="${editable}">
             <g:if test="${license.getLicensingConsortium()?.id == institution.id}">
                 <g:if test="${!( license.instanceOf )}">
@@ -39,7 +36,6 @@ ${System.currentTimeMillis()-actionStart} msecs at start
             </g:if>
 
         </g:if>
-        ${System.currentTimeMillis()-actionStart} msecs after copy license items
         <g:if test="${actionName == 'show'}">
             <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>
             <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC) && !(institution.id == license.getLicensingConsortium()?.id && license.instanceOf)}">
@@ -66,7 +62,5 @@ ${System.currentTimeMillis()-actionStart} msecs at start
 </g:if>
 
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
-    ${System.currentTimeMillis()-actionStart} msecs before modals
     <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: license, owntp: 'license', inContextOrg: inContextOrg]]}" />
-    ${System.currentTimeMillis()-actionStart} msecs after modals
 </g:if>
