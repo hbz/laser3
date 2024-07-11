@@ -28,7 +28,7 @@
         <tr>
             <th class="one wide">Datum</th>
             <th class="one wide">Uhrzeit</th>
-            <th class="two wide">Host</th>
+            <th class="two wide"> </th>
             <th class="five wide">URL</th>
             <th class="two wide">Remote</th>
             <th class="five wide">User-Agent</th>
@@ -47,23 +47,39 @@
                     ${d.x_date}
                 </span>
             </td>
-            <td>${d.x_time}</td>
+            <td>
+                ${d.x_time}
+            </td>
             <td>
                 <g:if test="${d.host.startsWith('host: ')}">
-                    <i class="server icon green"></i> ${d.host.replaceFirst('host: ', '')}
+                    <span class="la-popup-tooltip la-delay" data-content="${d.host.replaceFirst('host: ', '')}" data-position="top right">
+                        <i class="server icon grey"></i>
+                    </span>
                 </g:if>
                 <g:elseif test="${d.host.startsWith('cookie: ')}">
                     <span class="la-popup-tooltip la-delay" data-content="${d.host.replaceFirst('cookie: ', '')}" data-position="top right">
-                        <i class="cookie bite icon orange"></i>
+                        <i class="cookie icon orange"></i>
                     </span>
                 </g:elseif>
                 <g:else>
-                    ${d.host}
+                    <span class="la-popup-tooltip la-delay" data-content="${d.host}" data-position="top right">
+                        <i class="question icon red"></i>
+                    </span>
                 </g:else>
             </td>
-            <td>${d.url}</td>
+            <td>
+                <g:each in="${d.url.split(';')}" var="url">
+                    <%
+                        while (! (url.size() <= 80)) {
+                            println url.take(80)
+                            url = url.drop(80)
+                        }
+                        println url
+                    %>
+                </g:each>
+            </td>
             <td data-remote="${d.remote}">
-                <i class="laptop icon"></i> ${d.remote}
+                ${d.remote}
             </td>
             <td>
                 <g:if test="${d.useragent.startsWith('user-agent: ')}">
@@ -92,7 +108,7 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
-    JSPC.app.selw = {
+    JSPC.app.xes = {
         config: {
             tooltip: {
                 trigger: 'item'
@@ -114,7 +130,7 @@
                 type: 'category',
                 axisLabel: {
                     formatter: function(id, idx) {
-                        return JSPC.app.selw.config.series[1].data[idx].name
+                        return JSPC.app.xes.config.series[1].data[idx].name
                     }
                 },
             },
@@ -123,32 +139,32 @@
         }
     };
 
-let calc_remote = $('td[data-remote]').map (function () { return $(this).attr('data-remote') }).toArray();
-let calc_remote_counts = calc_remote.reduce (function (all, curr) {
-  const currCount = all[curr] ?? 0;
-  return {
-    ...all,
-    [curr]: currCount + 1,
-  };
-}, {});
-for (let key in calc_remote_counts) {
-    JSPC.app.selw.config.series[0].data.push ({ name: key, value: calc_remote_counts[key] })
-}
+    let calc_remote = $('td[data-remote]').map (function () { return $(this).attr('data-remote') }).toArray();
+    let calc_remote_counts = calc_remote.reduce (function (all, curr) {
+      const currCount = all[curr] ?? 0;
+      return {
+        ...all,
+        [curr]: currCount + 1,
+      };
+    }, {});
+    for (let key in calc_remote_counts) {
+        JSPC.app.xes.config.series[0].data.push ({ name: key, value: calc_remote_counts[key] })
+    }
 
-let calc_date = $('td[data-date]').map (function () { return $(this).attr('data-date') }).toArray().reverse();
-let calc_date_counts = calc_date.reduce (function (all, curr) {
-  const currCount = all[curr] ?? 0;
-  return {
-    ...all,
-    [curr]: currCount + 1,
-  };
-}, {});
-for (let key in calc_date_counts) {
-    JSPC.app.selw.config.series[1].data.push ({ name: key, value: calc_date_counts[key] })
-}
+    let calc_date = $('td[data-date]').map (function () { return $(this).attr('data-date') }).toArray().reverse();
+    let calc_date_counts = calc_date.reduce (function (all, curr) {
+      const currCount = all[curr] ?? 0;
+      return {
+        ...all,
+        [curr]: currCount + 1,
+      };
+    }, {});
+    for (let key in calc_date_counts) {
+        JSPC.app.xes.config.series[1].data.push ({ name: key, value: calc_date_counts[key] })
+    }
 
-let echart = echarts.init ($('#chartWrapper')[0]);
-echart.setOption (JSPC.app.selw.config);
+    let echart = echarts.init ($('#chartWrapper')[0]);
+    echart.setOption (JSPC.app.xes.config);
 </laser:script>
 
 <laser:htmlEnd />

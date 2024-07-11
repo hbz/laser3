@@ -173,13 +173,21 @@
     </div>
 </div>
 
-<pre>
+<div class="ui segment">
+    <p class="ui header">[..]</p>
+
+    <g:link controller="admin" action="systemEventsX" class="ui button">
+        <i class="shoe prints icon"></i> System Events X
+    </g:link>
+
+    <pre>
     springSecurity.errors.login.expired             ${message(code:'springSecurity.errors.login.expired')}
     springSecurity.errors.login.passwordExpired     ${message(code:'springSecurity.errors.login.passwordExpired')}
     springSecurity.errors.login.locked              ${message(code:'springSecurity.errors.login.locked')}
     springSecurity.errors.login.disabled            ${message(code:'springSecurity.errors.login.disabled')}
     springSecurity.errors.login.fail                ${message(code:'springSecurity.errors.login.fail')}
-</pre>
+    </pre>
+</div>
 
 <div class="ui segment">
     <p class="ui header">

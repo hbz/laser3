@@ -156,9 +156,6 @@
                 <ui:link addItemAttributes="true" controller="admin" action="databaseCollations">${message(code: "menu.admin.databaseCollations")}</ui:link>
                 <div class="divider"></div>
 
-                <ui:link addItemAttributes="true" controller="stats" action="statsHome">${message(code:'menu.admin.statistics')}</ui:link>
-                <div class="divider"></div>
-
                 <ui:link addItemAttributes="true" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="identifierValidation">${message(code: "menu.admin.identifierValidation")}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="fileConsistency">${message(code: "menu.admin.fileConsistency")}</ui:link>
