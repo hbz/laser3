@@ -10,16 +10,9 @@
 			<ui:messages data="${flash}" />
 
 			<g:if test="${error}">
-				<div class="ui icon error message">
-					<i class="${Icons.UI.ERROR}"></i>
-					<i class="close icon"></i>
-					<div class="content">
-						<div class="header">
-							${message(code: 'message.attention')}
-						</div>
-						<p>${error}</p>
-					</div>
-				</div>
+				<ui:msg class="error" showIcon="true" header="${message(code: 'message.attention')}">
+					{error}
+				</ui:msg>
 			</g:if>
 			<g:else>
 				<laser:render template="/templates/filter/platformFilter"/>

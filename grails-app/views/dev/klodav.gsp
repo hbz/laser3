@@ -13,50 +13,6 @@
     <g:link controller="dev" action="icons" class="item"><i class="certificate icon red"></i> New Icons</g:link>
 </nav>
 
-<ui:msg class="negative">
-    <div class="ui bulleted list">
-        xxxxxxx
-    </div>
-</ui:msg>
-
-<ui:msg class="error">
-    <div class="ui bulleted list">
-        xxxxxxx
-    </div>
-</ui:msg>
-
-
-<ui:msg class="info" icon="user astronaut" hideClose="true">
-    {info}
-</ui:msg>
-
-<ui:msg class="error" icon="sad tear outline" hideClose="true">
-    {error}
-</ui:msg>
-
-##
-
-<ui:msg text="{clickMeConfig.note}" header="${g.message(code: 'default.note.label')}"/>
-<ui:msg showIcon="true" text="{clickMeConfig.note}" header="${g.message(code: 'default.note.label')}"/>
-
-##########
-
-<ui:flagDeprecated/>
-
-<ui:msg class="info" showIcon="true" hideClose="true" message="profile.noDashboardReminderDates" args="${[createLink(controller:'profile', action:'index')]}"/>
-
-<ui:msg class="info" showClose="true" message="profile.noDashboardReminderDates" args="${[createLink(controller:'profile', action:'index')]}"/>
-
----
-
-<ui:msg class="info" showIcon="true" message="profile.noDashboardReminderDates" args="${[createLink(controller:'profile', action:'index')]}"/>
-
----
-
-<ui:msg class="info" message="profile.noDashboardReminderDates" args="${[createLink(controller:'profile', action:'index')]}"/>
-
-<ui:msg class="info" message="profile.noDashboardReminderDates" args="${[createLink(controller:'profile', action:'index')]}"/>
-
 <div class="ui four column grid">
     <div class="column">
         <div class="ui icon info message">
