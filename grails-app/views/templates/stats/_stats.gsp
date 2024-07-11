@@ -64,9 +64,9 @@
     <g:if test="${reportTypes}">
         <g:if test="${revision == AbstractReport.COUNTER_4}">
         <%-- taglib not displaying properly
-        <ui:msg icon="${Icons.UI.INFO}" class="info"
+        <ui:msg class="info" showIcon="true"
                 header="${message(code: 'default.usage.counter4reportInfo.header')}"
-                message="default.usage.counter4reportInfo.text" noClose="true"/>
+                message="default.usage.counter4reportInfo.text" hideClose="true"/>
         --%>
             <div class="ui icon info message">
                 <i class="${Icons.UI.INFO}"></i>
@@ -150,7 +150,7 @@
         <div id="reportWrapper"></div>
     </g:if>
     <g:elseif test="${error}">
-        <ui:msg class="error" icon="times" noClose="true">
+        <ui:msg class="error" showIcon="true" hideClose="true">
             <g:if test="${error == 'noCustomerId'}">
                 <g:message code="default.stats.error.${error}.local" args="${errorArgs}"/>
 

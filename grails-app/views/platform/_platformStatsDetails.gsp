@@ -1,6 +1,6 @@
 <%@ page import="de.laser.helper.Icons; de.laser.config.ConfigMapper; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.storage.RDConstants" %>
     <g:if test="${wekbServerUnavailable}">
-        <ui:msg class="error" icon="${Icons.UI.ERROR}" text="${wekbServerUnavailable}" />
+        <ui:msg class="error" showIcon="true" text="${wekbServerUnavailable}" />
     </g:if>
     <g:else>
         <h2 class="ui header">

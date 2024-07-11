@@ -137,7 +137,7 @@
 
     <div class="ui accordion la-accordion-showMore" id="surveyEntitlements">
         <g:if test="${allPerpetuallyBought}">
-            <ui:msg message="${message(code: allPerpetuallyBought)}" noClose="true"/>
+            <ui:msg message="${message(code: allPerpetuallyBought)}" hideClose="true"/>
         </g:if>
         <g:if test="${tipps}">
             <g:if test="${editable && !allPerpetuallyBought}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>

@@ -11,7 +11,7 @@
     <g:set var="threads" value="${Thread.getAllStackTraces().keySet().sort{ it.id }}" />
     <g:set var="tmxBean" value="${ManagementFactory.getThreadMXBean()}" />
 
-    <ui:msg class="info" noClose="true">
+    <ui:msg class="info" hideClose="true">
             <strong>Anzahl gefundener Threads: ${threads.size()}</strong>
             <br />
             <br />

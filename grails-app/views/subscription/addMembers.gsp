@@ -355,7 +355,7 @@
 
         <div class="ui divider"></div>
 
-        <ui:msg header="${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.info')}" noClose="true">
+        <ui:msg header="${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.info')}" hideClose="true">
 
             ${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.text')}
 
@@ -390,7 +390,7 @@
     <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <hr />
 
-            <ui:msg class="info" header="${message(code: 'myinst.noMembers.cons.header')}" noClose="true">
+            <ui:msg class="info" header="${message(code: 'myinst.noMembers.cons.header')}" hideClose="true">
                 <g:message code="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'consortium.member.plural')]}"/>
             </ui:msg>
     </g:if>

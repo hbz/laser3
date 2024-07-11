@@ -27,10 +27,10 @@
         </g:if>
         <g:else>
             <g:if test="${delResult.status == DeletionService.RESULT_SUBSTITUTE_NEEDED}">
-                <ui:msg noClose="true" class="warning" message="user.delete.info2" />
+                <ui:msg class="warning" hideClose="true" message="user.delete.info2" />
             </g:if>
             <g:else>
-                <ui:msg noClose="true" class="warning" message="user.delete.info" />
+                <ui:msg class="warning" hideClose="true" message="user.delete.info" />
             </g:else>
 
             <g:if test="${delResult.status == DeletionService.RESULT_CUSTOM}">

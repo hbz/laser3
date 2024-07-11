@@ -32,7 +32,7 @@
         <laser:render template="/templates/user/filter" model="${filterConfig}"/>
 
         <g:if test="${multipleAffiliationsWarning}">
-            <ui:msg class="info" noClose="true" message="user.edit.info" />
+            <ui:msg class="info" hideClose="true" message="user.edit.info" />
         </g:if>
 
         <ui:messages data="${flash}" />

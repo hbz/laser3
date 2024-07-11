@@ -47,10 +47,10 @@
     </ui:msg>
 
     <g:if test="${truncatedRows}">
-        <ui:msg icon="${Icons.UI.ERROR}" class="error" message="subscription.details.addEntitlements.truncatedRows" args="[truncatedRows]"/>
+        <ui:msg class="error" showIcon="true" message="subscription.details.addEntitlements.truncatedRows" args="[truncatedRows]"/>
     </g:if>
     <g:if test="${errorKBART}">
-        <ui:msg icon="${Icons.UI.ERROR}" class="error" message="subscription.details.addEntitlements.titleNotMatched" args="[errorCount]"/>
+        <ui:msg class="error" showIcon="true" message="subscription.details.addEntitlements.titleNotMatched" args="[errorCount]"/>
         <g:link class="ui icon button la-modern-button" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icons.CMD.DOWNLOAD}"></i></g:link>
     </g:if>
 

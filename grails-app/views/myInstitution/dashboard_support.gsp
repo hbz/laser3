@@ -257,7 +257,7 @@
 
                 <g:if test="${allChecklists}">
                     <g:if test="${allChecklistsCount > user.getPageSizeOrDefault()}">
-                        <ui:msg class="info" noClose="true">
+                        <ui:msg class="info" hideClose="true">
 
                             ${message(code:'workflow.dashboard.msg.more', args:[user.getPageSizeOrDefault(), allChecklistsCount,
                                                                                 g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[filter:'reset', max:500]) ])}

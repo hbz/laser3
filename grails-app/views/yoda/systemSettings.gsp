@@ -12,7 +12,7 @@
     <g:set var="maintenanceModeEnabled" value="${SystemSetting.findByName('MaintenanceMode').value == 'true'}" />
     <g:set var="systemInsightEnabled" value="${SystemSetting.findByName('SystemInsight').value == 'true'}" />
 
-    <ui:msg class="info" noClose="true">
+    <ui:msg class="info" hideClose="true">
         <i class="ui icon hand point right"></i> ${message(code: 'system.maintenanceMode.info.TMP', args: [HeartbeatJob.HEARTBEAT_IN_SECONDS])}
     </ui:msg>
 

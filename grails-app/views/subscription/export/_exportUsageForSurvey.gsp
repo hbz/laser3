@@ -48,7 +48,7 @@
 <ui:modal id="individuallyExportModal" modalSize="large" text="${message(code: 'renewEntitlementsWithSurvey.selectableTitles')} + ${message(code: 'default.stats.label')}" refreshModal="true" hideSubmitButton="true">
     <g:if test="${reportTypes}">
         <g:if test="${revision == AbstractReport.COUNTER_4}">
-            <ui:msg icon="${Icons.UI.INFO}" class="info" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" noClose="true"/>
+            <ui:msg class="info" showIcon="true" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" hideClose="true"/>
         </g:if>
         <g:form action="renewEntitlementsWithSurvey" name="stats" class="ui form" method="get">
             <g:hiddenField name="revision" value="${revision}"/>

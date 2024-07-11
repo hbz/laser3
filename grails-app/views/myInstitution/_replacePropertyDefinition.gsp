@@ -12,7 +12,7 @@
             </div>
         </div>
 
-        <ui:msg class="info" icon="${Icons.UI.INFO}" header="${message(code:'default.notice')}" noClose="true">
+        <ui:msg class="info" showIcon="true" header="${message(code:'default.notice')}" hideClose="true">
             <g:message code="menu.institutions.replace_prop.refdata"/>
             <br />
             <g:message code="menu.institutions.replace_prop.setting"/>
