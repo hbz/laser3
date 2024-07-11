@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5809    11.07.2024  rc-3.4  3.4.2       Andreas Bug         Umfragekosten wurden nicht dargestellt, wenn es keine Lizenzkosten gibt 
+
 5807    11.07.2024  rc-3.4  3.4.2       Andreas Bug         verschiedene PostgreSQL-Bugs behoben
 
 5805    10.07.2024  rc-3.4  3.4.2       Andreas Bug         Umfragekosten: inkorrekte Zuordnung bei anderen Kostenelementen, als Konsortialpreis
