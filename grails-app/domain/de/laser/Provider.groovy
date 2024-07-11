@@ -302,7 +302,33 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         PropertyDefinition.executeUpdate('delete from PropertyDefinition pd where pd.tenant = :provider', [provider: provider])
         OrgProperty.findAllByOwner(provider).each { OrgProperty op ->
             PropertyDefinition type = PropertyDefinition.findByNameAndDescrAndTenant(op.type.name, PropertyDefinition.PRV_PROP, op.type.tenant)
-            if(!ProviderProperty.findByOwnerAndTypeAndTenant(p, type, op.tenant)) {
+            Map<String, Object> propParams = [owner: p, type: type, tenant: op.tenant]
+            String valueFilter = ''
+            if(op.dateValue) {
+                propParams.value = op.dateValue
+                valueFilter = 'and pp.dateValue = :value'
+            }
+            if(op.decValue) {
+                propParams.value = op.decValue
+                valueFilter = 'and pp.decValue = :value'
+            }
+            if(op.intValue) {
+                propParams.value = op.intValue
+                valueFilter = 'and pp.intValue = :value'
+            }
+            if(op.refValue) {
+                propParams.value = op.refValue
+                valueFilter = 'and pp.refValue = :value'
+            }
+            if(op.stringValue) {
+                propParams.value = op.stringValue
+                valueFilter = 'and pp.stringValue = :value'
+            }
+            if(op.urlValue) {
+                propParams.value = op.urlValue
+                valueFilter = 'and pp.urlValue = :value'
+            }
+            if(!ProviderProperty.executeQuery('select pp from ProviderProperty pp where pp.owner = :owner and pp.type = :type and pp.tenant = :tenant '+valueFilter, propParams)) {
                 ProviderProperty pp = new ProviderProperty(owner: p, type: type)
                 if (op.dateValue)
                     pp.dateValue = op.dateValue
