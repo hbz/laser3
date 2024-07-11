@@ -28,14 +28,7 @@
     </g:if>
 
     <g:if test="${isLinkingRunning || isUnlinkingRunning}">
-        <div class="ui icon warning message">
-            <i class="${Icons.UI.WARNING}"></i>
-            <div class="content">
-                <div class="header">Info</div>
-
-                <p>${message(code: 'subscriptionsManagement.isLinkingRunning.info')}</p>
-            </div>
-        </div>
+        <ui:msg class="warning" showIcon="true" hideClose="true" header="Info" message="subscriptionsManagement.isLinkingRunning.info" />
     </g:if>
 
     <h3 class="ui header">${message(code: 'subscriptionsManagement.info.package')}</h3>

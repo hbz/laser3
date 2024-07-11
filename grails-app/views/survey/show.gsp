@@ -33,7 +33,7 @@
 <ui:messages data="${flash}"/>
 
 <g:if test="${surveyLinksMessage}">
-    <ui:msg class="negative">
+    <ui:msg class="error">
         <div class="ui bulleted list">
         <g:each in="${surveyLinksMessage}" var="msg">
             <div class="item">${msg}</div>

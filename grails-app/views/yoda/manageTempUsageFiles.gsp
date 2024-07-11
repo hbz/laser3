@@ -1,9 +1,9 @@
 <%@ page import="de.laser.helper.Icons; java.nio.file.Files" %>
-<laser:htmlStart message="menu.admin.stats.cache"/>
+<laser:htmlStart message="menu.yoda.stats.cache"/>
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
-    <ui:crumb message="menu.admin.stats.cache" class="active"/>
+    <ui:crumb message="menu.yoda.stats.cache" class="active"/>
 </ui:breadcrumbs>
 
 <div class="ui grid">

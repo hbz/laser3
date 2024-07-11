@@ -62,7 +62,7 @@ data-confirm-term-how="concludeBinding":
         controller="costConfiguration" action="deleteCostConfiguration"
         params="${[ciec: ciec.id]}"
         role="button">
-    <i class="trash alternate outline icon"></i>
+    <i class="${Icons.CMD.DELETE}"></i>
 </g:link>
 
 ```
@@ -87,7 +87,7 @@ Mind the convention of data-confirm-id in form element and inner button element
              data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact.addressbook", args: [person?.toString()])}"
              data-confirm-term-how="delete"
              data-confirm-id="${person?.id}" >
-            <i class="trash alternate outline icon"></i>
+            <i class="${Icons.CMD.DELETE}"></i>
         </div>
 </g:form>
 ```
@@ -138,7 +138,7 @@ Mind the convention of data-confirm-id in form element and inner button element
                   role="button"
                   ariaLabel="Löschen"
 >
-    <i class="trash alternate outline icon"></i>
+    <i class="${Icons.CMD.DELETE}"></i>
 </ui:remoteLink>
 
 ```

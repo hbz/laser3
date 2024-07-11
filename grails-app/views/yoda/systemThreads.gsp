@@ -1,4 +1,4 @@
-<%@ page import="java.lang.management.ManagementFactory" %>
+<%@ page import="de.laser.helper.Icons; java.lang.management.ManagementFactory" %>
 <laser:htmlStart message="menu.yoda.systemThreads" serviceInjection="true"/>
 
     <ui:breadcrumbs>
@@ -11,7 +11,7 @@
     <g:set var="threads" value="${Thread.getAllStackTraces().keySet().sort{ it.id }}" />
     <g:set var="tmxBean" value="${ManagementFactory.getThreadMXBean()}" />
 
-    <ui:msg class="info" noClose="true">
+    <ui:msg class="info" hideClose="true">
             <strong>Anzahl gefundener Threads: ${threads.size()}</strong>
             <br />
             <br />

@@ -313,10 +313,8 @@
 </g:if>
 
 <g:if test="${workFlow == "1"}">
-    <div class="ui icon info message">
-        <i class="${Icons.UI.INFO}"></i>
-        ${message(code: 'copySurvey.subscription.info')}
-    </div>
+
+    <ui:msg class="info" showIcon="true" hideClose="true" message="copySurvey.subscription.info" />
 
     <ui:h1HeaderWithIcon message="myinst.currentSubscriptions.label" total="${num_sub_rows}" floated="true" />
 

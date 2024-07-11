@@ -41,7 +41,7 @@
         <%--<ui:objectStatus object="${license}" status="${license.status}" />--%>
 
         <g:if test="${license.instanceOf && (institution.id == license.getLicensingConsortium()?.id)}">
-                <ui:msg class="negative" header="${message(code:'myinst.message.attention')}" noClose="true">
+                <ui:msg class="error" header="${message(code:'myinst.message.attention')}" hideClose="true">
                     <g:message code="myinst.licenseDetails.message.ChildView" />
                     <g:message code="myinst.licenseDetails.message.ConsortialView" />
                     <g:link controller="license" action="show" id="${license.instanceOf.id}">

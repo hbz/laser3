@@ -38,14 +38,7 @@
     <g:render template="multiYearsSubs"/>
 
     <g:if test="${isLinkingRunning}">
-        <div class="ui icon warning message">
-            <i class="${Icons.UI.WARNING}"></i>
-            <div class="content">
-                <div class="header">Info</div>
-
-                <p>${message(code: 'subscriptionsManagement.isLinkingRunning.info')}</p>
-            </div>
-        </div>
+        <ui:msg class="warning" showIcon="true" hideClose="true" header="Info" message="subscriptionsManagement.isLinkingRunning.info" />
     </g:if>
 
     <g:render template="navCompareMembers"/>

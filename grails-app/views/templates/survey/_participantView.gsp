@@ -145,7 +145,7 @@
 
                 <div class="ui bottom attached tab segment" data-tab="xRechnung">
 
-                    <ui:msg message="surveyOrg.eInvoice.expl" icon="${Icons.UI.INFO}" noClose="true"/>
+                    <ui:msg message="surveyOrg.eInvoice.expl" class="info" showIcon="true" hideClose="true"/>
 
                     <div class="la-inline-lists">
                         <div class="ui card">

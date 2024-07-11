@@ -54,15 +54,9 @@
 <ui:messages data="${flash}"/>
 
 <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
-    <div class="ui icon success message">
-        <i class="${Icons.UI.SUCCESS}"></i>
-        <div class="content">
-            <div class="header"></div>
-            <p>
-                <g:message code="surveyResult.finish.info.consortia"/>.
-            </p>
-        </div>
-    </div>
+    <ui:msg class="success" showIcon="true" hideClose="true">
+        <g:message code="surveyResult.finish.info.consortia"/>.
+    </ui:msg>
 </g:if>
 
 <g:if test="${participant}">

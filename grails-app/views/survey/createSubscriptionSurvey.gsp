@@ -11,11 +11,7 @@
 
 <ui:messages data="${flash}"/>
 
-
-<div class="ui icon info message">
-    <i class="${Icons.UI.INFO}"></i>
-    ${message(code: 'allSubscriptions.info')}
-</div>
+<ui:msg class="info" showIcon="true" hideClose="true" message="allSubscriptions.info" />
 
 <ui:h1HeaderWithIcon message="myinst.currentSubscriptions.label" total="${num_sub_rows}" floated="true" />
 

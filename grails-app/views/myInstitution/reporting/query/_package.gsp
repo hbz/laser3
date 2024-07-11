@@ -26,10 +26,10 @@
         </div>
     </g:if>
     <g:else>
-        <ui:msg class="error" noClose="true" message="reporting.filter.result.x.empty" />
+        <ui:msg class="error" hideClose="true" message="reporting.filter.result.x.empty" />
 
         <g:if test="${filterResult.get(ElasticSearchHelper.ELASTICSEARCH_IS_NOT_REACHABLE)}">
-            <ui:msg class="error" icon="${Icons.UI.ERROR}" message="reporting.filter.result.x.elasticSearchIsNotReachable" noClose="true" />
+            <ui:msg class="error" showIcon="true" message="reporting.filter.result.x.elasticSearchIsNotReachable" hideClose="true" />
         </g:if>
     </g:else>
 

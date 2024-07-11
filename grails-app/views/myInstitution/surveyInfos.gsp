@@ -23,19 +23,11 @@
 
 <br/>
 <g:if test="${surveyConfig.isResultsSetFinishByOrg(institution)}">
-    <div class="ui icon success message">
-        <i class="${Icons.UI.SUCCESS}"></i>
-
-        <div class="content">
-            <div class="header"></div>
-
-            <p>
+    <ui:msg class="success" showIcon="true" hideClose="true">
                 <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
                 <g:message
                         code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info' : 'surveyResult.finish.info'}"/>.
-            </p>
-        </div>
-    </div>
+    </ui:msg>
 </g:if>
 
 <g:if test="${ownerId}">

@@ -33,16 +33,7 @@
              <g:if test="${hits && resultsTotal > 0}" >
                <ui:messages data="${flash}" />
 
-               <div class="ui icon info message">
-                 <i class="${Icons.UI.INFO}"></i>
-                 <i class="close icon"></i>
-                 <div class="content">
-                   <div class="header">
-                     ${message(code: 'message.attention')}
-                   </div>
-                   <p>${message(code: 'message.attention.needTime')}</p>
-                 </div>
-               </div>
+                 <ui:msg class="info" showIcon="true" header="${message(code: 'message.attention')}" message="message.attention.needTime" />
 
                 <div id="resultsarea" class="la-clear-before">
                   <table class="ui sortable celled la-js-responsive-table la-table table">

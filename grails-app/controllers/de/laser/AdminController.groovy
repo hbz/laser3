@@ -146,7 +146,7 @@ class AdminController  {
      */
     @Secured(['ROLE_ADMIN'])
     @Transactional
-    def testMailSending() {
+    def sendMail() {
         Map<String, Object> result = [:]
 
         result.mailDisabled = ConfigMapper.getConfig('grails.mail.disabled', Boolean)

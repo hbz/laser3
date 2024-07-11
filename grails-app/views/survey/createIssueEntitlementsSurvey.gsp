@@ -12,15 +12,7 @@
 
 <ui:messages data="${flash}"/>
 
-<div class="ui icon info message">
-    <i class="${Icons.UI.INFO}"></i>
-    <div class="content">
-        <div class="header"></div>
-        <p>
-            ${message(code: 'allSubscriptions.info2')}
-        </p>
-    </div>
-</div>
+<ui:msg class="info" showIcon="true" hideClose="true" message="allSubscriptions.info2" />
 
 <h2 class="ui left floated aligned icon header la-clear-before"><ui:headerIcon/>${message(code: 'myinst.currentSubscriptions.label')}
 <ui:totalNumber total="${num_sub_rows}"/>

@@ -111,22 +111,38 @@ class UiTagLib {
         }
     }
 
-    // <ui:msg class="negative|positive|warning|.." icon="${icon}" header="${text}" text="${text}" message="18n.token" noClose="true" />
+    // <ui:msg class="error|info|success|warning" header="${text}" text="${text}" message="18n.token" showIcon="true" hideClose="true" />
 
     def msg = { attrs, body ->
 
-        out << '<div class="ui ' + attrs.class + ' message ' + (attrs.icon ? 'icon ' : '') + 'la-clear-before">'
+        String clss = ''
+        String icon = ''
 
-        if (! attrs.noClose) {
+        if (attrs.class) {
+            clss = attrs.class.toString()
+
+            if (attrs.showIcon) {
+                if (clss.toLowerCase() in ['error', 'info', 'success', 'warning']) {
+                    icon = Icons.UI[clss.toUpperCase()]
+                }
+                else {
+                    icon = 'poo icon'
+                }
+            }
+        }
+//        println '> ' + clss + ', ' + attrs.showIcon + ' = ' +  icon
+
+        out << '<div class="ui ' + clss + ' message ' + (icon ? 'icon ' : '') + 'la-clear-before">'
+
+        if (! attrs.hideClose) {
             out << '<i aria-hidden="true" class="close icon"></i>'
         }
-        if (attrs.icon) {
-            out << '<i class="icon ' + attrs.icon + '"></i>' // TODO erms-5784 doubles 'icon'
+        if (icon) {
+            out << '<i class="' + icon + '"></i>'
+            out << '<div class="content">'
         }
         if (attrs.header) {
-            out << '<div class="header">'
-            out << attrs.header
-            out << '</div>'
+            out << '<div class="header">' + attrs.header + '</div>'
         }
 
         out << '<p>'
@@ -136,14 +152,18 @@ class UiTagLib {
         }
         if (attrs.message) {
             SwissKnife.checkMessageKey(attrs.message as String)
-
             out << "${message(code: attrs.message, args: attrs.args)}"
         }
-        if ( body ) {
+        if (body) {
             out << body()
         }
 
         out << '</p>'
+
+        if (icon) {
+            out << '</div>' //.content
+        }
+
         out << '</div>'
     }
 
@@ -447,12 +467,7 @@ class UiTagLib {
 
     def flagDeprecated = { attrs, body ->
 
-        out << '<div class="ui icon error message">'
-        out << '<i class="' + Icons.UI.ERROR + '"></i>'
-        out << '<div class="content">'
-        out << 'Diese Funktionalität wird demnächst entfernt.<br/>Bitte nicht mehr verwenden und ggfs. Daten migrieren.'
-        out << '</div>'
-        out << '</div>'
+        out << ui.msg(class: 'error', showIcon: 'true', text: 'Diese Funktionalität wird demnächst entfernt.<br/>Bitte nicht mehr verwenden und ggfs. Daten migrieren.')
     }
 
     /**

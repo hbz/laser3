@@ -50,7 +50,7 @@
         <br/>
         <g:if test="${surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]}">
 
-            <ui:msg header="${message(code: 'surveyParticipants.addParticipants.option.selectMembersWithFile.info')}" noClose="true">
+            <ui:msg header="${message(code: 'surveyParticipants.addParticipants.option.selectMembersWithFile.info')}" hideClose="true">
 
                 ${message(code: 'surveyParticipants.addParticipants.option.selectMembersWithFile.text')}
 
