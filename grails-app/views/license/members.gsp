@@ -21,6 +21,7 @@
 <ui:filter>
     <g:form action="members" controller="license" params="${[id:params.id]}" method="get" class="ui form">
         <div class="three fields">
+            <%--
             <div class="field">
                 <label for="subscription">${message(code:'subscription')}</label>
                 <select id="subscription" name="subscription" multiple="" class="ui selection fluid dropdown">
@@ -30,6 +31,7 @@
                     </g:each>
                 </select>
             </div>
+            --%>
             <div class="field">
                 <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
