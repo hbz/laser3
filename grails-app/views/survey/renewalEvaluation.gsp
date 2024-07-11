@@ -54,7 +54,7 @@
 </g:if>
 <g:else>
 
-    <ui:messages data="${[message: message(code: 'renewalEvaluation.dynamicSite')]}"/>
+    <ui:msg class="info" message="renewalEvaluation.dynamicSite" />
 
     <ui:greySegment>
 
