@@ -1447,9 +1447,11 @@ class ControlledListService {
                 results.addAll(Provider.executeQuery(qryString, qryParams))
             }
             else {
+                if(providerNameFilter)
+                    providerNameFilter = "and ${providerNameFilter}"
                 qryParams.context = institution
-                String qryString1 = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name,p.sortname as sortname) from SubscriptionPackage sp join sp.pkg pkg join pkg.provider p where sp.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) and ${providerNameFilter} group by p.id order by p.sortname asc",
-                qryString2 = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name,p.sortname as sortname) from Provider p where p.createdBy = :context and ${providerNameFilter} order by p.sortname"
+                String qryString1 = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name,p.sortname as sortname) from SubscriptionPackage sp join sp.pkg pkg join pkg.provider p where sp.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${providerNameFilter} group by p.id order by p.sortname asc",
+                qryString2 = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name,p.sortname as sortname) from Provider p where p.createdBy = :context ${providerNameFilter} order by p.sortname"
                 results.addAll(Provider.executeQuery(qryString1, qryParams))
                 results.addAll(Provider.executeQuery(qryString2, qryParams))
                 results.sort { Map row -> row.sortname }
@@ -1499,9 +1501,11 @@ class ControlledListService {
                 results.addAll(Vendor.executeQuery(qryString, qryParams))
             }
             else {
+                if(vendorNameFilter)
+                    vendorNameFilter = "and ${vendorNameFilter}"
                 qryParams.context = institution
-                String qryString1 = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,vendor.name as name,vendor.sortname as sortname) from PackageVendor pv join pv.vendor vendor, SubscriptionPackage sp join sp.pkg pkg where sp.pkg = pv.pkg and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) and ${vendorNameFilter} group by vendor.id order by vendor.sortname asc",
-                qryString2 = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,vendor.name as name,vendor.sortname as sortname) from Vendor vendor where vendor.createdBy = :context and ${vendorNameFilter} order by vendor.sortname asc"
+                String qryString1 = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,vendor.name as name,vendor.sortname as sortname) from PackageVendor pv join pv.vendor vendor, SubscriptionPackage sp join sp.pkg pkg where sp.pkg = pv.pkg and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) ${vendorNameFilter} group by vendor.id order by vendor.sortname asc",
+                qryString2 = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,vendor.name as name,vendor.sortname as sortname) from Vendor vendor where vendor.createdBy = :context ${vendorNameFilter} order by vendor.sortname asc"
                 results.addAll(Vendor.executeQuery(qryString1, qryParams))
                 results.addAll(Vendor.executeQuery(qryString2, qryParams))
                 results.sort { Map row -> row.sortname }
