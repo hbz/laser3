@@ -68,14 +68,9 @@
                 header="${message(code: 'default.usage.counter4reportInfo.header')}"
                 message="default.usage.counter4reportInfo.text" hideClose="true"/>
         --%>
-            <div class="ui icon info message">
-                <i class="${Icons.UI.INFO}"></i>
-                <div class="content">
-                    <div class="header">${message(code: 'default.usage.counter4reportInfo.header')}</div>
-
-                    <p>${message(code: 'default.usage.counter4reportInfo.text')}</p>
-                </div>
-            </div>
+            <ui:msg class="info" showIcon="true" hideClose="true"
+                    header="${message(code: 'default.usage.counter4reportInfo.header')}"
+                    message="default.usage.counter4reportInfo.text" />
         </g:if>
         <g:form controller="subscription" action="generateReport" name="stats" class="ui form" method="get">
             <g:hiddenField name="id" value="${subscription.id}"/>

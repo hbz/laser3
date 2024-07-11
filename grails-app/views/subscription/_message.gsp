@@ -33,18 +33,11 @@
 </div>
 
     <g:if test="${subscription.comment}">
-        <div class="ui icon info message">
-            <i class="${Icons.UI.INFO}"></i>
-            <div class="content">
-                <div class="header">
-                    ${message(code: 'subscription.details.internalComment')}
-                </div>
 
-                <p>
-                    ${subscription.comment}
-                </p>
-            </div>
-        </div>
+        <ui:msg class="info" showIcon="true" hideClose="true" header="${message(code: 'subscription.details.internalComment')}">
+            ${subscription.comment}
+        </ui:msg>
+
     </g:if>
 
 </g:if>
