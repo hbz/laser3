@@ -275,7 +275,7 @@ class AdminController  {
      * @see SystemEvent
      */
     @Secured(['ROLE_ADMIN'])
-    def systemEventsLW() {
+    def systemEventsX() {
         Map<String, Object> result = [:]
 
         result.limit = params.long('limit') ?: 30

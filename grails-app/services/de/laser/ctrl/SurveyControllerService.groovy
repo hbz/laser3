@@ -26,7 +26,6 @@ import de.laser.Links
 import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.OrgRole
-import de.laser.OrgTypeService
 import de.laser.Package
 import de.laser.PackageService
 import de.laser.PendingChange
@@ -123,7 +122,6 @@ class SurveyControllerService {
     FinanceControllerService financeControllerService
     FinanceService financeService
     LinksGenerationService linksGenerationService
-    OrgTypeService orgTypeService
     PackageService packageService
     PropertyService propertyService
     ProviderService providerService

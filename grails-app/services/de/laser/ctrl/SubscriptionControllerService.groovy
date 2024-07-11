@@ -93,7 +93,6 @@ class SubscriptionControllerService {
     PendingChangeService pendingChangeService
     PropertyService propertyService
     ProviderService providerService
-    OrgTypeService orgTypeService
     StatsSyncService statsSyncService
     SubscriptionService subscriptionService
     SubscriptionsQueryService subscriptionsQueryService
