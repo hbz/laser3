@@ -522,7 +522,7 @@
                             <div class="ui small feed content">
                                 <div class="ui grid summary">
                                     <div class="sixteen wide column">
-                                        <ui:xEditable owner="${s}" field="offerNote"/>
+                                        <ui:xEditable owner="${s}" field="offerNote" validation="maxlength" maxlength="255"/>
                                     </div>
                                 </div>
                             </div>

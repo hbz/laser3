@@ -44,8 +44,8 @@
 
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.offerNote.label')}</dt>
-                            <dd><ui:xEditable owner="${subscription}" field="offerNote"
-                                              type="textarea"/></dd>
+                            <dd><ui:xEditable owner="${subscription}" field="offerNote" type="textarea"
+                                              validation="maxlength" maxlength="255"/></dd>
                         </dl>
 
                         <dl>
