@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.annotations.Fixed_DoNotModify
+import de.laser.annotations.FixedFeature_DoNotModify
 import de.laser.auth.User
 import de.laser.cache.SessionCacheWrapper
 import de.laser.helper.Icons
@@ -94,7 +94,7 @@ class UiTagLib {
 
     // <ui:messages data="${flash}" />
 
-    @Fixed_DoNotModify
+    @FixedFeature_DoNotModify
     def messages = { attrs, body ->
 
         def flash = attrs.data
@@ -118,7 +118,7 @@ class UiTagLib {
 
     // <ui:msg class="error|info|success|warning" header="${text}" text="${text}" message="18n.token" showIcon="true" hideClose="true" />
 
-    @Fixed_DoNotModify
+    @FixedFeature_DoNotModify
     def msg = { attrs, body ->
 
         String clss = ''

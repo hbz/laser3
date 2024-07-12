@@ -6,5 +6,5 @@ import java.lang.annotation.*
 @Target([ElementType.FIELD, ElementType.METHOD])
 @Retention(RetentionPolicy.RUNTIME)
 
-@interface Fixed_DoNotModify {
+@interface FixedFeature_DoNotModify {
 }
