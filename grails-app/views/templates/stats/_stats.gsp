@@ -145,6 +145,7 @@
         <div id="reportWrapper"></div>
     </g:if>
     <g:elseif test="${error}">
+
         <ui:msg class="error" showIcon="true" hideClose="true">
             <g:if test="${error == 'noCustomerId'}">
                 <g:message code="default.stats.error.${error}.local" args="${errorArgs}"/>

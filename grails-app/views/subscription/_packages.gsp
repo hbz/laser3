@@ -14,7 +14,7 @@
             <div class="ui raised segments la-accordion-segments">
                 <div class="ui fluid segment title">
                     <g:if test="${subscriptionService.checkThreadRunning('PackageUnlink_'+subscription.id)}">
-                        <ui:msg class="info" showIcon="true"><g:message code="subscriptionsManagement.unlinkInfo.unlinkingInProgress" args="${[sp.pkg.name]}"/></ui:msg>
+                        <ui:msg class="info" showIcon="true" message="subscriptionsManagement.unlinkInfo.unlinkingInProgress" args="${[sp.pkg.name]}" />
                     </g:if>
                     <g:else>
                         <div class="ui stackable equal width grid">

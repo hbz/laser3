@@ -401,13 +401,9 @@
                                 <div class="content">
                                     <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
 
-                                    <ui:msg class="info" showIcon="true" hideClose="true">
-                                        Diese Funktion ist nur für Administratoren verfügbar.
-                                    </ui:msg>
+                                    <ui:msg class="info" showIcon="true" hideClose="true" text="Diese Funktion ist nur für Administratoren verfügbar." />
 
-                                    <ui:msg class="warning" showIcon="true" hideClose="true">
-                                        Dieser Nutzer ist noch keiner Einrichtung zugewiesen.
-                                    </ui:msg>
+                                    <ui:msg class="warning" showIcon="true" hideClose="true" text="Dieser Nutzer ist noch keiner Einrichtung zugewiesen." />
 
                                     <ui:form controller="profile" action="setAffiliation" hideWrapper="true">
 

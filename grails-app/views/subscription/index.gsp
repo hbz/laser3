@@ -100,6 +100,7 @@
 
                         <ui:msg class="warning" header="${message(code: "message.attention")}"
                                 message="subscription.details.addEntitlements.warning"/>
+
                         <g:form class="ui form" controller="subscription" action="index"
                                 params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscription.id]}"
                                 method="post" enctype="multipart/form-data">

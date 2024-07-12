@@ -146,25 +146,19 @@ class UiTagLib {
             out << '<div class="header">' + attrs.header + '</div>'
         }
 
-        out << '<p>'
-
         if (attrs.text) {
-            out << attrs.text
+            out << '<p> ' + attrs.text + ' </p>'
         }
         if (attrs.message) {
             SwissKnife.checkMessageKey(attrs.message as String)
-            out << "${message(code: attrs.message, args: attrs.args)}"
+            out << '<p> ' + message(code: attrs.message, args: attrs.args)  + ' </p>'
         }
         if (body) {
-            out << body()
+            out << '<p> ' + body() + ' </p>'
         }
-
-        out << '</p>'
-
         if (icon) {
             out << '</div>' //.content
         }
-
         out << '</div>'
     }
 
@@ -182,7 +176,7 @@ class UiTagLib {
                     out << BeanStore.getMessageSource().getMessage(e, LocaleUtils.getCurrentLocale())
                     out << '</li>'
                 } else {
-                    out << '<li>' + g.message(error: "${e}") + '</li>'
+                    out << '<li>' + message(error: "${e}") + '</li>'
                 }
             }
             out << '</ul>'

@@ -5,17 +5,16 @@
     </g:if>
     <g:set var="dashboard_last_update" value="${DashboardDueDate.executeQuery("select max(lastUpdated) from DashboardDueDate ")[0]}" />
     <g:if test="${dashboard_last_update != null}" >
-        <g:set var="message_lastUpdated" value="${message(code:'myinst.dash.due_dates.lastUpdate')}" />
+
             <g:if test="${ ! SqlDateUtils.isYesterdayOrToday(dashboard_last_update)}">
-                <ui:msg class="error" header="${message(code: 'myinst.message.attention')}" text="${message_lastUpdated} ${DateUtils.getLocalizedSDF_noTime().format(dashboard_last_update)}" >
-                    <i class="${Icons.UI.ERROR}" id="noData" data-content="${message(code:'myinst.dash.due_dates.tooltip')}"></i>
+                <ui:msg class="warning" showIcon="true" header="${message(code: 'myinst.message.attention')}">
+                    ${message(code:'myinst.dash.due_dates.lastUpdate')} ${DateUtils.getLocalizedSDF_noTime().format(dashboard_last_update)}
+                    <br />
+                    ${message(code:'myinst.dash.due_dates.tooltip')}
                 </ui:msg>
             </g:if>
 
     </g:if>
-<laser:script file="${this.getGroovyPageFileName()}">
-    $('#noData').popup();
-</laser:script>
 
     <g:if test="${dueDates}">
         <div id="container-table">
