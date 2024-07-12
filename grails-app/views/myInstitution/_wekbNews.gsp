@@ -6,7 +6,7 @@
     <div id="wekb-menu" style="margin:1em 0 2em 0">
         <div style="margin:1em 0;padding:0 1em; text-align:right">
             <div class="ui large labels">
-                <a href="#" id="wekb-menu-trigger" class="ui label"><i class="icon blue la-gokb"></i>&nbsp;We:kb-News</a>
+                <a href="#" id="wekb-menu-trigger" class="ui label"><i class="${Icons.LNK.WEKB} blue"></i>&nbsp;We:kb-News</a>
                     <a href="#" class="ui icon label la-popup-tooltip la-delay wekb-flyout-trigger" data-preset="all,my"
                        data-content="${message(code: 'menu.my')}" data-position="top right">
                             <i class="${Icons.MY_OBJECT} yellow"></i> ${wekbNews.counts.my}
@@ -223,7 +223,7 @@
             Änderungen der letzten <strong>${wekbNews.query.days}</strong> Tage: <strong>${wekbNews.counts.all}</strong> Datensätze.<br />
             Letzter Datenabgleich: <strong>${wekbNews.query.call}</strong>
             <span style="float:right">
-                <a href="${apiSource.baseUrl}" target="_blank"><i class="icon large la-gokb"></i></a>
+                <a href="${apiSource.baseUrl}" target="_blank"><i class="${Icons.LNK.WEKB} large"></i></a>
             </span>
         </p>
         <div class="filter" style="margin:0 2em 0.5em; text-align:right;">

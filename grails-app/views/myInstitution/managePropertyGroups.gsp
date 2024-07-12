@@ -49,14 +49,14 @@
                                     <div class="ui icon button compact la-hidden"><i class="${Icons._PLACEHOLDER}"></i></div>
                                     <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveUp', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
                                             role="button">
-                                        <i class="icon arrow up"></i>
+                                        <i class="${Icons.GENERIC.MOVE_UP}"></i>
                                     </g:link>
                                 </g:if>
                                 <g:elseif test="${typeEntry.value.size() > 1}">
                                     <g:if test="${i > 0}">
                                         <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveUp', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
                                                 role="button">
-                                            <i class="icon arrow up"></i>
+                                            <i class="${Icons.GENERIC.MOVE_UP}"></i>
                                         </g:link>
                                     </g:if>
                                     <g:else>
@@ -65,7 +65,7 @@
                                     <g:if test="${i < typeEntry.value.size()-1}">
                                         <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveDown', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
                                                 role="button">
-                                            <i class="icon arrow down"></i>
+                                            <i class="${Icons.GENERIC.MOVE_DOWN}"></i>
                                         </g:link>
                                     </g:if>
                                     <g:else>

@@ -5,7 +5,16 @@ import de.laser.annotations.UnstableFeature
 @UnstableFeature
 class Icons {
 
-    public static String _PLACEHOLDER               = 'coffee icon'
+    public static String _PLACEHOLDER       = 'coffee icon'
+
+    class GENERIC {
+        // please do not touch during refactoring ..
+        // roles / perms / customer types
+
+        public static String MOVE_UP        = 'arrow up icon'
+        public static String MOVE_DOWN      = 'arrow down icon'
+        public static String SQUARE         = 'square icon'
+    }
 
     class AUTH {
         // please do not touch during refactoring ..
@@ -48,6 +57,7 @@ class Icons {
         public static String FILTERED       = 'filter icon'
         public static String NEXT           = 'arrow right icon'     // todo: duplicate: ui:anualRings, ui:statusWithRings
         public static String PREV           = 'arrow left icon'      // todo: duplicate: ui:anualRings, ui:statusWithRings
+        public static String WEKB           = 'la-gokb icon'
     }
 
     class PROP {

@@ -175,13 +175,13 @@
                                 <g:if test="${ti == 1 && cpoints.size() == 2}">%{-- override layout --}%
                                     <div class="ui icon button compact la-hidden"><i class="${Icons._PLACEHOLDER}"></i></div>
                                     <div class="ui icon blue button compact la-modern-button"
-                                         data-cmd="moveUp:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="icon arrow up"></i>
+                                         data-cmd="moveUp:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icons.GENERIC.MOVE_UP}"></i>
                                     </div>
                                 </g:if>
                                 <g:else>
                                     <g:if test="${ti > 0}">
                                         <div class="ui icon blue button compact la-modern-button"
-                                             data-cmd="moveUp:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="icon arrow up"></i>
+                                             data-cmd="moveUp:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icons.GENERIC.MOVE_UP}"></i>
                                         </div>
                                     </g:if>
                                     <g:else>
@@ -189,7 +189,7 @@
                                     </g:else>
                                     <g:if test="${ti < cpoints.size()-1}">
                                         <div class="ui icon blue button compact la-modern-button"
-                                             data-cmd="moveDown:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="icon arrow down"></i>
+                                             data-cmd="moveDown:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icons.GENERIC.MOVE_DOWN}"></i>
                                         </div>
                                     </g:if>
                                     <g:else>

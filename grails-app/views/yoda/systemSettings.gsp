@@ -1,4 +1,4 @@
-<%@ page import="de.laser.config.ConfigMapper; de.laser.system.SystemSetting; de.laser.jobs.HeartbeatJob" %>
+<%@ page import="de.laser.helper.Icons; de.laser.config.ConfigMapper; de.laser.system.SystemSetting; de.laser.jobs.HeartbeatJob" %>
 <laser:htmlStart message="menu.yoda.systemSettings" />
 
 <ui:breadcrumbs>
@@ -31,10 +31,10 @@
             </td>
             <td>
                 <g:if test="${configMailDisabled}">
-                    <i class="icon square full red"></i>${message(code: 'default.deactivated.label')}
+                    <i class="${Icons.GENERIC.SQUARE} red"></i>${message(code: 'default.deactivated.label')}
                 </g:if>
                 <g:else>
-                    <i class="icon square full green"></i> ${message(code: 'default.activated.label')}
+                    <i class="${Icons.GENERIC.SQUARE} green"></i> ${message(code: 'default.activated.label')}
                 </g:else>
             </td>
             <td>
@@ -56,10 +56,10 @@
             </td>
             <td>
                 <g:if test="${! maintenanceModeEnabled}">
-                    <i class="icon square full red"></i> ${message(code: 'default.deactivated.label')}
+                    <i class="${Icons.GENERIC.SQUARE} red"></i> ${message(code: 'default.deactivated.label')}
                 </g:if>
                 <g:else>
-                    <i class="icon square full green"></i> ${message(code: 'default.activated.label')}
+                    <i class="${Icons.GENERIC.SQUARE} green"></i> ${message(code: 'default.activated.label')}
                 </g:else>
             </td>
             <td>
@@ -84,10 +84,10 @@
             </td>
             <td>
                 <g:if test="${! systemInsightEnabled}">
-                    <i class="icon square full red"></i> ${message(code: 'default.deactivated.label')}
+                    <i class="${Icons.GENERIC.SQUARE} red"></i> ${message(code: 'default.deactivated.label')}
                 </g:if>
                 <g:else>
-                    <i class="icon square full green"></i> ${message(code: 'default.activated.label')}
+                    <i class="${Icons.GENERIC.SQUARE} green"></i> ${message(code: 'default.activated.label')}
                 </g:else>
             </td>
             <td>
