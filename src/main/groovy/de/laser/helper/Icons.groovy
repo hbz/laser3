@@ -7,7 +7,7 @@ class Icons {
 
     class DFT {
         // please do not touch during refactoring ..
-        // default / non fixed symbols
+        // basic / placeholders
 
         public static String PLACEHOLDER    = 'coffee icon'
 
@@ -29,9 +29,9 @@ class Icons {
         public static String ORG_CONSORTIUM_PRO     = 'trophy icon teal'        // COLOR INCLUDED !!
         public static String ORG_SUPPORT            = 'theater masks icon red'  // COLOR INCLUDED !!
 
-        public static String ROLE_ADMIN             = 'tools icon'              // orange
+        public static String ROLE_ADMIN             = 'tools icon'              // default: orange
         public static String ROLE_USER              = 'user icon'
-        public static String ROLE_YODA              = 'star of life icon'       // red
+        public static String ROLE_YODA              = 'star of life icon'       // default: red
     }
 
     class CMD {
@@ -58,9 +58,9 @@ class Icons {
         public static String COST           = 'money bill icon'
         public static String COST_CONFIG    = 'money bill alternate icon'
 
-        public static String COST_POSITIVE  = 'circle plus green icon'
-        public static String COST_NEGATIVE  = 'circle minus red icon'
-        public static String COST_NEUTRAL   = 'circle yellow icon'
+        public static String COST_POSITIVE  = 'circle plus icon green'  // COLOR INCLUDED !!
+        public static String COST_NEGATIVE  = 'circle minus icon red'   // COLOR INCLUDED !!
+        public static String COST_NEUTRAL   = 'circle icon yellow'      // COLOR INCLUDED !!
     }
 
     class LNK {
@@ -86,14 +86,24 @@ class Icons {
         public static String MULTIPLE       = 'redo icon orange'        // COLOR INCLUDED !! todo: duplicate: currentSubscriptionsTransfer
     }
 
+    class SYM {
+        // please do not touch during refactoring ..
+        // convenient symbols
+
+        public static String DATE           = 'calendar alternate outline icon'
+        public static String EMAIL          = 'envelope outline icon'
+    }
+
     class UI {
         // please do not touch during refactoring ..
-        // dialog ui / unique symbols
+        // dialogs / unique symbols
 
         public static String ERROR          = 'exclamation triangle icon'
         public static String INFO           = 'info icon'
         public static String SUCCESS        = 'check icon'
         public static String WARNING        = 'exclamation icon'
+
+        public static String HELP           = 'question icon'
     }
 
     // please do not touch during refactoring ..
@@ -126,6 +136,8 @@ class Icons {
     public static String SURVEY                     = 'chart pie icon'
 
     public static String TASK                       = 'calendar check outline icon'
+
+    public static String UNKOWN                     = 'question icon'
 
     public static String VENDOR                     = 'boxes icon'
 

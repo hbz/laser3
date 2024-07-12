@@ -16,7 +16,7 @@
                         <td>
                             <g:link controller="myInstitution" action="reporting" class="ui large icon button blue la-modern-button reporting-callLink"
                                     params="${[filter: meta.filter /*, token: fhRCache.token*/ ] + filterCache.map}">
-                                <i class="ui icon ${BaseConfig.getIcon(meta.filter)}" aria-hidden="true"></i>
+                                <i class="${BaseConfig.getIcon(meta.filter)}" aria-hidden="true"></i>
                             </g:link>
                         </td>
                         <td>
@@ -66,7 +66,7 @@
                         <td>
                             <g:link controller="myInstitution" action="reporting" class="ui large icon button blue la-modern-button reporting-callLink"
                                 params="${[filter: fav.filter /*, token: fhRCache.token*/ ] + fav.getParsedFilterMap()}">
-                                <i class="ui icon ${BaseConfig.getIcon(fav.filter)}" aria-hidden="true"></i>
+                                <i class="${BaseConfig.getIcon(fav.filter)}" aria-hidden="true"></i>
                             </g:link>
                         </td>
                         <td>

@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.annotations.FixedFeature_DoNotModify
 import de.laser.auth.Role
 import de.laser.helper.Icons
 import de.laser.storage.RDStore
@@ -381,18 +382,19 @@ class IconTagLib {
         out << '</span>'
     }
 
+    @FixedFeature_DoNotModify
     def booleanIcon = { attrs, body ->
-        String icon = 'question circle yellow'
+        String icon = Icons.UNKOWN
 
         if (attrs.value === true) {
-            icon = 'check circle green'
+            icon = Icons.DFT.CIRCLE + ' green'
         }
         else if(attrs.value === false) {
-            icon = 'minus circle red'
+            icon = Icons.DFT.CIRCLE + ' red'
         }
         else if (attrs.value === null) {
-            'minus circle orange'
+            icon = Icons.DFT.CIRCLE + ' outline grey'
         }
-        out << '<i class="icon ' + icon + '"></i>'
+        out << '<i class="' + icon + '"></i>'
     }
 }

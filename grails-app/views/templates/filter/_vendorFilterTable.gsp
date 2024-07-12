@@ -121,12 +121,12 @@
                     <td class="center aligned">
                         <g:if test="${vendor.status == RDStore.VENDOR_STATUS_CURRENT}">
                             <span class="la-popup-tooltip la-delay" data-position="top right">
-                                <i class="ui icon green circle"></i>
+                                <i class="${Icons.DFT.CIRCLE} green"></i>
                             </span>
                         </g:if>
                         <g:if test="${vendor.status == RDStore.VENDOR_STATUS_RETIRED}">
                             <span class="la-popup-tooltip la-delay" data-position="top right" <g:if test="${vendor.retirementDate}">data-content="<g:message code="org.retirementDate.label"/>: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${vendor.retirementDate}"/>"</g:if>>
-                                <i class="ui icon yellow circle"></i>
+                                <i class="${Icons.DFT.CIRCLE} yellow"></i>
                             </span>
                         </g:if>
                     </td>

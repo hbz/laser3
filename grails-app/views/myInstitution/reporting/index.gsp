@@ -134,7 +134,7 @@
                             <div class="menu">
                                 <g:each in="${cfgFilterList}" var="cfg">
                                     <div class="item" data-value="${cfg}">
-                                        <i class="${BaseConfig.getIcon(cfg)} icon grey"></i> ${BaseConfig.getFilterLabel(cfg)}
+                                        <i class="${BaseConfig.getIcon(cfg)} grey"></i> ${BaseConfig.getFilterLabel(cfg)}
                                     </div>
                                 </g:each>
                             </div>
