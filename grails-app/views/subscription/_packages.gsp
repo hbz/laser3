@@ -65,7 +65,7 @@
                                 <g:if test="${editmode}">
                                     <div class="ui icon blue button la-modern-button ${buttonColor} la-popup-tooltip la-delay"
                                          data-content="${message(code:'subscription.packages.config.header')}">
-                                        <i class="ui angle double down icon"></i>
+                                        <i class="${Icons.CMD.SHOW_MORE}"></i>
                                     </div>
                                     <%
                                         String unlinkDisabled = '', unlinkDisabledTooltip = null

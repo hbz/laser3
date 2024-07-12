@@ -47,6 +47,7 @@ class Icons {
         public static String MOVE_UP        = 'arrow up icon'
         public static String MOVE_DOWN      = 'arrow down icon'
         public static String REPLACE        = 'retweet icon'
+        public static String SHOW_MORE      = 'angle double down icon'
         public static String UNLINK         = 'unlink icon'
     }
 

@@ -209,7 +209,7 @@ making obsolete package/actions
                                         ${packageInstanceRecord.source.name}
                                         <div class="ui icon blue button la-modern-button ${buttonColor} la-popup-tooltip la-delay"
                                              data-content="${message(code: 'platform.details')}">
-                                            <i class="ui angle double down icon"></i>
+                                            <i class="${Icons.CMD.SHOW_MORE}"></i>
                                         </div>
                                     </div>
                                     <div class="ui fluid segment content">
@@ -265,7 +265,7 @@ making obsolete package/actions
                                                 <div class="right aligned column">
                                                     <div class="ui icon blue button la-modern-button ${buttonColor} la-popup-tooltip la-delay"
                                                          data-content="${message(code: 'platform.details')}">
-                                                        <i class="ui angle double down icon"></i>
+                                                        <i class="${Icons.CMD.SHOW_MORE}"></i>
                                                     </div>
                                                 </div>
                                             </div>

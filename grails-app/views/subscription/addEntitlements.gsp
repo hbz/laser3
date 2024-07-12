@@ -229,7 +229,7 @@
                                     </div>
 
                                     <div class="ui icon blue button la-modern-button">
-                                        <i class="ui angle double down icon"></i>
+                                        <i class="${Icons.CMD.SHOW_MORE}"></i>
                                     </div>
                                     <g:if test="${editable && participantPerpetualAccessToTitle.size() == 0}">
                                         <g:if test="${!blockSubmit}">

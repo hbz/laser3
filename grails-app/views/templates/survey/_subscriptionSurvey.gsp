@@ -10,9 +10,9 @@
                 <div class="item">
                     <div class="title">
                         <div
-                                class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated "
+                                class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated"
                                 data-content="<g:message code="survey.subscription.propertiesChange.show"/>">
-                            <i class="ui angle double down icon"></i>
+                            <i class="${Icons.CMD.SHOW_MORE}"></i>
                         </div>
                         <laser:script file="${this.getGroovyPageFileName()}">
                             $('.js-propertiesCompareInfo-accordion')
@@ -70,7 +70,7 @@
                     <div class="title">
                         <div
                                 class="ui button icon blue la-modern-button la-delay right floated">
-                            <i class="ui angle double down icon"></i>
+                            <i class="${Icons.CMD.SHOW_MORE}"></i>
                         </div>
                         <laser:script file="${this.getGroovyPageFileName()}">
                             $('.js-subscription-info-accordion')
@@ -248,7 +248,7 @@
                                                         <div id="derived-license-properties-toggle${link.id}"
                                                              class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                                              data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
-                                                            <i class="ui angle double down icon"></i>
+                                                            <i class="${Icons.CMD.SHOW_MORE}"></i>
                                                         </div>
                                                         <laser:script file="${this.getGroovyPageFileName()}">
                                                             $("#derived-license-properties-toggle${link.id}").on('click', function() {
@@ -300,7 +300,7 @@
                     <div class="item">
                         <div class="title">
                             <div class="ui button icon blue la-modern-button la-delay right floated ">
-                                <i class="ui angle double down icon"></i>
+                                <i class="${Icons.CMD.SHOW_MORE}"></i>
                             </div>
 
                             <i aria-hidden="true" class="${Icons.STATS} circular green inverted"></i>

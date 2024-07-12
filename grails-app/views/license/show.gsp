@@ -151,7 +151,7 @@
                                                     </div>
                                                     <div class="ui icon blue button la-show-button la-modern-button la-popup-tooltip la-delay"
                                                          data-content="${message(code: 'org.altname.show')}">
-                                                        <i class="ui angle double down icon"></i>
+                                                        <i class="${Icons.CMD.SHOW_MORE}"></i>
                                                     </div>
                                                 </div>
                                                 <div class="content">

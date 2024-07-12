@@ -95,7 +95,7 @@
                                                 <div id="derived-license-properties-toggle${link.id}"
                                                         class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                                         data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
-                                                    <i class="ui angle double down icon"></i>
+                                                    <i class="${Icons.CMD.SHOW_MORE}"></i>
                                                 </div>
                                             </g:if>
                                         </g:else>

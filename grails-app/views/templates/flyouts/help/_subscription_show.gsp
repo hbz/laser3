@@ -97,7 +97,7 @@
 
         <tr>
             <td>
-                <i class="ui angle double down icon" aria-hidden="true"></i>
+                <i class="${Icons.CMD.SHOW_MORE}" aria-hidden="true"></i>
             </td>
             <td>
                 Anzeige der Vertragsmerkmale

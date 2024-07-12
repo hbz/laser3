@@ -485,7 +485,7 @@
                                                         <div class="right aligned wide column">
                                                         </div>
                                                         <div class="ui icon blue button la-modern-button">
-                                                            <i class="ui angle double down icon"></i>
+                                                            <i class="${Icons.CMD.SHOW_MORE}"></i>
                                                         </div>
                                                         <g:if test="${editable}">
                                                             <g:if test="${subscription.ieGroups.size() > 0}">

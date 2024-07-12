@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.helper.Icons; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.storage.RDStore" %>
 <laser:htmlStart message="mail.sendMail.label" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -61,7 +61,7 @@
                                 <div class="sixteen wide right aligned  column">
                                     <div class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                          data-content="${message(code: 'mail.sendMail.additional')}">
-                                        <i class="ui angle double down icon"></i>
+                                        <i class="${Icons.CMD.SHOW_MORE}"></i>
                                     </div>
                                 </div>
                             </div>
