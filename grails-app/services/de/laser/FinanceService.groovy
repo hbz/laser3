@@ -1189,6 +1189,8 @@ class FinanceService {
         Map<Integer,String> budgetCodes = [:]
         Map<String,Integer> colMap = [:]
         Map<String,Map> result = [headerRow: headerRow]
+        //in order to catch dates like 1012024 where dots are missing and parsed as 1.1.1012024 ... let's consider The Long Now's work as well with five-digit years!
+        Date absurdDate = new SimpleDateFormat('yyyyy').parse('10000')
         headerRow.eachWithIndex { String headerCol, int c ->
             if(headerCol.startsWith("\uFEFF"))
                 headerCol = headerCol.substring(1)
@@ -1611,14 +1613,18 @@ class FinanceService {
             //startDate(nullable: true, blank: false) -> to date from
             if(colMap.dateFrom != null) {
                 Date startDate = DateUtils.parseDateGeneric(cols[colMap.dateFrom])
-                if(startDate)
+                if(startDate && startDate < absurdDate)
                     costItem.startDate = startDate
+                else if(startDate > absurdDate)
+                    mappingErrorBag.invalidDate = true
             }
             //endDate(nullable: true, blank: false) -> to date to
             if(colMap.dateTo != null) {
                 Date endDate = DateUtils.parseDateGeneric(cols[colMap.dateTo])
-                if(endDate)
+                if(endDate && endDate < absurdDate)
                     costItem.endDate = endDate
+                else if(endDate > absurdDate)
+                    mappingErrorBag.invalidDate = true
             }
             //isVisibleForSubscriber(nullable: true, blank: false) -> in second configuration step, see ticket #1204
             //costItem.save() MUST NOT be executed here, ONLY AFTER postprocessing!
