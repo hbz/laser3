@@ -77,18 +77,18 @@
                     <g:if test="${editable}">
                         <g:if test="${i == 1 && surveyProperties.size() == 2}">
                             <g:link class="ui icon blue button compact la-modern-button" action="actionsForSurveyProperty" id="${params.id}"
-                                    params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="icon arrow up"></i>
+                                    params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icons.GENERIC.MOVE_UP}"></i>
                             </g:link>
                         </g:if>
                         <g:else>
                             <g:if test="${i > 0}">
                                 <g:link class="ui icon blue button compact la-modern-button" action="actionsForSurveyProperty" id="${params.id}"
-                                        params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="icon arrow up"></i>
+                                        params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icons.GENERIC.MOVE_UP}"></i>
                                 </g:link>
                             </g:if>
                             <g:if test="${i < surveyProperties.size()-1}">
                                 <g:link class="ui icon blue button compact la-modern-button" action="actionsForSurveyProperty" id="${params.id}"
-                                        params="[actionForSurveyProperty: 'moveDown', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="icon arrow down"></i>
+                                        params="[actionForSurveyProperty: 'moveDown', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icons.GENERIC.MOVE_DOWN}"></i>
                                 </g:link>
                             </g:if>
                         </g:else>

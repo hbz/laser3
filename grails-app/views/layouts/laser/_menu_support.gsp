@@ -13,7 +13,7 @@
         <div class="divider"></div>
 
         <ui:link addItemAttributes="true" target="_blank" onclick="JSPC.app.workaround_targetBlank(event)" controller="gasco"><i class="${Icons.GASCO}"></i> ${message(code:'menu.public.gasco_monitor')}</ui:link>
-        <a href="${message(code:'url.wekb.' + currentServer)}" id="wekb" class="item" role="menuitem" target="_blank" onclick="JSPC.app.workaround_targetBlank(event)"><i class="ui icon la-gokb"></i> we:kb</a>
+        <a href="${message(code:'url.wekb.' + currentServer)}" id="wekb" class="item" role="menuitem" target="_blank" onclick="JSPC.app.workaround_targetBlank(event)"><i class="${Icons.LNK.WEKB}"></i> we:kb</a>
     </div>
 </div>
 
