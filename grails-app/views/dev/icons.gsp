@@ -32,7 +32,7 @@
 
 <g:each in="${Icons.getDeclaredClasses().findAll{ true }}" var="ic">
     <div class="ui basic segment">
-        <p class="ui header">${ic.name}</p>
+        <p class="ui header">${ic.name.replace(Icons.name + '$', 'Icons.')}</p>
         <div class="ui five cards">
             <g:each in="${ic.getDeclaredFields().findAll{ ! it.isSynthetic() }}" var="f">
                 <div class="ui mini card" data-cat="${f.name.split('\\.').last().split('_').first()}">
