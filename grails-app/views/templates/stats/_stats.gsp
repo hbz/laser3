@@ -69,8 +69,8 @@
                 message="default.usage.counter4reportInfo.text" hideClose="true"/>
         --%>
             <ui:msg class="info" showIcon="true" hideClose="true"
-                    header="${message(code: 'default.usage.counter4reportInfo.header')}"
-                    message="default.usage.counter4reportInfo.text" />
+                        header="${message(code: 'default.usage.counter4reportInfo.header')}"
+                        message="default.usage.counter4reportInfo.text" />
         </g:if>
         <g:form controller="subscription" action="generateReport" name="stats" class="ui form" method="get">
             <g:hiddenField name="id" value="${subscription.id}"/>

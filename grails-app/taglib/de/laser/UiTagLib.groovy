@@ -146,16 +146,20 @@ class UiTagLib {
             out << '<div class="header">' + attrs.header + '</div>'
         }
 
+        out << '<p> ' // only phrasing content allowed
+
         if (attrs.text) {
-            out << '<p> ' + attrs.text + ' </p>'
+            out << attrs.text
         }
         if (attrs.message) {
             SwissKnife.checkMessageKey(attrs.message as String)
-            out << '<p> ' + message(code: attrs.message, args: attrs.args)  + ' </p>'
+            out << message(code: attrs.message, args: attrs.args)
         }
         if (body) {
-            out << '<p> ' + body() + ' </p>'
+            out << body()
         }
+        out << ' </p>'
+
         if (icon) {
             out << '</div>' //.content
         }

@@ -29,19 +29,15 @@
 
 <ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
-
 <ui:messages data="${flash}"/>
 
 <g:if test="${surveyLinksMessage}">
-    <ui:msg class="error">
-        <div class="ui bulleted list">
+    <ui:msg class="error" showIcon="true">
         <g:each in="${surveyLinksMessage}" var="msg">
-            <div class="item">${msg}</div>
+            &bullet; ${msg} <br/>
         </g:each>
-        </div>
     </ui:msg>
 </g:if>
-
 
 <div class="ui stackable grid">
     <div class="sixteen wide column">
