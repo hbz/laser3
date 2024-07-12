@@ -48,7 +48,7 @@
                             ${message(code: 'surveyResult.commentParticipant')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentParticipant.info')}">
-                                <i class="${Icons.HELP_TOOLTIP}"></i>
+                                <i class="${Icons.TOOLTIP.HELP}"></i>
                             </span>
                         </g:else>
                     </th>
@@ -57,14 +57,14 @@
                             ${message(code: 'surveyResult.commentOnlyForOwner')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                                <i class="${Icons.HELP_TOOLTIP}"></i>
+                                <i class="${Icons.TOOLTIP.HELP}"></i>
                             </span>
                         </g:if>
                         <g:else>
                             ${message(code: 'surveyResult.commentOnlyForParticipant')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
-                                <i class="${Icons.HELP_TOOLTIP}"></i>
+                                <i class="${Icons.TOOLTIP.HELP}"></i>
                             </span>
                         </g:else>
                     </th>
@@ -176,7 +176,7 @@
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('isMyX')}">
                     <td class="center aligned">
                         <g:if test="${currentVendorIdList && (vendor.id in currentVendorIdList)}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.vendors')}"><i class="${Icons.MY_OBJECT} yellow"></i></span>
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.vendors')}"><i class="${Icons.SYM.MY_OBJECT} yellow"></i></span>
                         </g:if>
                     </td>
                 </g:if>

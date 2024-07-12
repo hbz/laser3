@@ -23,16 +23,16 @@
             %{-- my object indicator --}%
 
             <g:if test="${isMyPlatform}">
-                <ui:cbItemInfo display="${message(code: 'license.relationship.platform')}" icon="${Icons.MY_OBJECT}" color="yellow" />
+                <ui:cbItemInfo display="${message(code: 'license.relationship.platform')}" icon="${Icons.SYM.MY_OBJECT}" color="yellow" />
             </g:if>
             <g:elseif test="${isMyPkg}">
-                <ui:cbItemInfo display="${message(code: 'license.relationship.pkg')}" icon="${Icons.MY_OBJECT}" color="violet" />
+                <ui:cbItemInfo display="${message(code: 'license.relationship.pkg')}" icon="${Icons.SYM.MY_OBJECT}" color="violet" />
             </g:elseif>
             <g:elseif test="${isMyOrg}">
-                <ui:cbItemInfo display="${message(code: 'license.relationship.org')}" icon="${Icons.MY_OBJECT}" color="teal" />
+                <ui:cbItemInfo display="${message(code: 'license.relationship.org')}" icon="${Icons.SYM.MY_OBJECT}" color="teal" />
             </g:elseif>
             <g:elseif test="${isMyVendor}">
-                <ui:cbItemInfo display="${message(code: 'license.relationship.vendor')}" icon="${Icons.MY_OBJECT}" color="teal" />
+                <ui:cbItemInfo display="${message(code: 'license.relationship.vendor')}" icon="${Icons.SYM.MY_OBJECT}" color="teal" />
             </g:elseif>
 
             %{-- child indicator --}%

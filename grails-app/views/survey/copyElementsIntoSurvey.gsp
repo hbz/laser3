@@ -26,7 +26,7 @@
                         ${message(code: 'copyElementsIntoObject.general_data.label')}
                     </div>
                     <div class="description">
-                        <i class="${Icons.DATE}"></i> ${message(code: 'subscription.periodOfValidity.label')}
+                        <i class="${Icons.SYM.DATE}"></i> ${message(code: 'subscription.periodOfValidity.label')}
                     </div>
                 </div>
             </ui:complexSubNavItem>

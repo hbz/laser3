@@ -59,7 +59,7 @@ class LinkTagLib {
         }
         out << '<span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + label + '" >&nbsp;'
         out << '<a href="' + href + '" target="_blank" aria-label="' + label + '">'
-        out << '<i class="' + Icons.LNK.WEKB + ' small" aria-hidden="true"></i>'
+        out << '<i class="' + Icons.WEKB + ' small" aria-hidden="true"></i>'
         out << '</a>'
         out << '</span>'
     }
@@ -87,7 +87,7 @@ class LinkTagLib {
         out << 'data-position="top right" data-content="' + label + '" '
         out << 'role="button">'
 
-        out << '<i class="' + Icons.LNK.WEKB + '" aria-hidden="true"></i>'
+        out << '<i class="' + Icons.WEKB + '" aria-hidden="true"></i>'
         out << '</a>'
     }
 

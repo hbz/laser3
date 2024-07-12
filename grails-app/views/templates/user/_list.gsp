@@ -50,12 +50,12 @@
                     <td class="center aligned">
                         <g:if test="${us.accountExpired}">
                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.accountExpired.label')}">
-                                <i class="${Icons.IMPORTANT_TOOLTIP} large red"></i>
+                                <i class="${Icons.TOOLTIP.IMPORTANT} large red"></i>
                             </span>
                         </g:if>
                         <g:if test="${us.accountLocked}">
                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.accountLocked.label')}">
-                                <i class="${Icons.IMPORTANT_TOOLTIP} large yellow"></i>
+                                <i class="${Icons.TOOLTIP.IMPORTANT} large yellow"></i>
                             </span>
                         </g:if>
                     </td>

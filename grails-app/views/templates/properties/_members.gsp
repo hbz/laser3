@@ -26,7 +26,7 @@
                                 ${propType.getI10n('name')}
                                 <g:if test="${propType.getI10n('expl')}">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${propType.getI10n('expl')}">
-                                        <i class="${Icons.HELP_TOOLTIP}"></i>
+                                        <i class="${Icons.TOOLTIP.HELP}"></i>
                                     </span>
                                 </g:if>
                             </g:if>
@@ -50,7 +50,7 @@
                             ${propType.getI10n('name')}
                             <g:if test="${propType.getI10n('expl')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${propType.getI10n('expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icons.TOOLTIP.HELP}"></i>
                                 </span>
                             </g:if>
                         </g:if>

@@ -3,7 +3,7 @@
 
         <div class="menu ui top attached tabular la-tab-with-js">
             <a class="active item" data-tab="vendor-filter-tab-1">${message(code:'vendor.plural')}</a>
-            <a class="item" data-tab="vendor-filter-tab-help"> ? %{--<i class="${Icons.HELP}"></i>--}%</a>
+            <a class="item" data-tab="vendor-filter-tab-help"> ? %{--<i class="${Icons.UI.HELP}"></i>--}%</a>
         </div><!-- .menu -->
 
         <div class="ui bottom attached active tab segment" data-tab="vendor-filter-tab-1">

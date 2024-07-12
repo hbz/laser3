@@ -155,7 +155,7 @@
                                         <g:message code="surveyOrg.eInvoicePortal.label"/>
                                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                               data-content="${message(code: 'surveyOrg.eInvoicePortal.expl')}">
-                                            <i class="${Icons.HELP_TOOLTIP}"></i>
+                                            <i class="${Icons.TOOLTIP.HELP}"></i>
                                         </span>
                                     </dt>
                                     <dd>
@@ -170,7 +170,7 @@
                                         <g:message code="surveyOrg.eInvoiceLeitwegId.label"/>
                                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                               data-content="${message(code: 'surveyOrg.eInvoiceLeitwegId.expl')}">
-                                            <i class="${Icons.HELP_TOOLTIP}"></i>
+                                            <i class="${Icons.TOOLTIP.HELP}"></i>
                                         </span>
                                     </dt>
                                     <dd>
@@ -185,7 +185,7 @@
                                         <g:message code="surveyOrg.eInvoiceLeitkriterium.label"/>
                                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                               data-content="${message(code: 'surveyOrg.eInvoiceLeitkriterium.expl')}">
-                                            <i class="${Icons.HELP_TOOLTIP}"></i>
+                                            <i class="${Icons.TOOLTIP.HELP}"></i>
                                         </span>
                                     </dt>
                                     <dd>

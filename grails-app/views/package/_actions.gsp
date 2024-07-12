@@ -33,7 +33,7 @@
             <br/>
             <br/>
             <div class="field holdingSelection">
-                <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="${Icons.HELP_TOOLTIP} la-popup"></i></span></label>
+                <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="${Icons.TOOLTIP.HELP} la-popup"></i></span></label>
             </div>
             <div class="two fields holdingSelection">
                 <div class="field">

@@ -8,7 +8,7 @@
                 <div class="row">
                     <div class="six wide column">
                         ${message(code: 'surveyLinks.link.info')} <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'surveyLinks.link.info.tooltip')}">
-                        <i class="${Icons.INFO_TOOLTIP} blue"></i>
+                        <i class="${Icons.TOOLTIP.INFO} blue"></i>
                     </span>
                     </div>
                     <div class="ten wide column">

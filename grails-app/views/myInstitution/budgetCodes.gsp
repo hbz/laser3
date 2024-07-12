@@ -30,7 +30,7 @@
                     ${message(code: 'financials.budgetCode.usage')}
                     <span data-position="right center" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'financials.budgetCode.usage.explanation')}">
-                        <i class="${Icons.HELP_TOOLTIP}"></i>
+                        <i class="${Icons.TOOLTIP.HELP}"></i>
                     </span>
                 </th>
                 <g:if test="${editable}">

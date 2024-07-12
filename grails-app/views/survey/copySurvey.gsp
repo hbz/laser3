@@ -184,7 +184,7 @@
                                             <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                   data-position="right center"
                                                   data-content="${surveyProperty.surveyProperty.getI10n('expl')}">
-                                                <i class="${Icons.HELP_TOOLTIP}"></i>
+                                                <i class="${Icons.TOOLTIP.HELP}"></i>
                                             </span>
                                         </g:if>
 
@@ -330,7 +330,7 @@
                         <span data-position="right center" data-variation="tiny"
                               class="la-popup-tooltip la-delay"
                               data-content="${message(code: 'default.search.tooltip.subscription')}">
-                            <i class="${Icons.HELP_TOOLTIP}"></i>
+                            <i class="${Icons.TOOLTIP.HELP}"></i>
                         </span>
                     </label>
 

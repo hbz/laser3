@@ -11,7 +11,7 @@
                         <g:if test="${editable}">
                             <ui:xEditable owner="${ie}" type="date"
                                           field="accessStartDate"/>
-                            <i class="${Icons.HELP_TOOLTIP} la-popup-tooltip la-delay"
+                            <i class="${Icons.TOOLTIP.HELP} la-popup-tooltip la-delay"
                                data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                         </g:if>
                         <g:else>
@@ -28,7 +28,7 @@
                         <g:if test="${editable}">
                             <ui:xEditable owner="${ie}" type="date"
                                           field="accessEndDate"/>
-                            <i class="${Icons.HELP_TOOLTIP} la-popup-tooltip la-delay"
+                            <i class="${Icons.TOOLTIP.HELP} la-popup-tooltip la-delay"
                                data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                         </g:if>
                         <g:else>
@@ -101,7 +101,7 @@
                             <g:if test="${editable}">
                                 <ui:xEditable owner="${ie}" type="date"
                                               field="accessStartDate"/>
-                                <i class="${Icons.HELP_TOOLTIP} icon la-popup-tooltip la-delay"
+                                <i class="${Icons.TOOLTIP.HELP} icon la-popup-tooltip la-delay"
                                    data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                             </g:if>
                             <g:else>
@@ -119,7 +119,7 @@
                             <g:if test="${editable}">
                                 <ui:xEditable owner="${ie}" type="date"
                                               field="accessEndDate"/>
-                                <i class="${Icons.HELP_TOOLTIP} icon la-popup-tooltip la-delay"
+                                <i class="${Icons.TOOLTIP.HELP} icon la-popup-tooltip la-delay"
                                    data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                             </g:if>
                             <g:else>
@@ -163,7 +163,7 @@
                     <g:if test="${editable}">
                         <ui:xEditable owner="${ie}" type="date"
                                       field="accessStartDate"/>
-                        <i class="${Icons.HELP_TOOLTIP} la-popup-tooltip la-delay"
+                        <i class="${Icons.TOOLTIP.HELP} la-popup-tooltip la-delay"
                            data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                     </g:if>
                     <g:else>
@@ -180,7 +180,7 @@
                     <g:if test="${editable}">
                         <ui:xEditable owner="${ie}" type="date"
                                       field="accessEndDate"/>
-                        <i class="${Icons.HELP_TOOLTIP} la-popup-tooltip la-delay"
+                        <i class="${Icons.TOOLTIP.HELP} la-popup-tooltip la-delay"
                            data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                     </g:if>
                     <g:else>

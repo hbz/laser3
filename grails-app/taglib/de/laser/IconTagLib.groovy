@@ -50,7 +50,7 @@ class IconTagLib {
                 icon = 'icon euro sign bordered inverted teal la-object-extended'
                 break
             case 'help':
-                icon = Icons.HELP + ' bordered inverted grey la-object-extended'
+                icon = Icons.UI.HELP + ' bordered inverted grey la-object-extended'
                 break
             case 'journal':
             case 'serial':
@@ -133,19 +133,19 @@ class IconTagLib {
                 icon = 'pizza slice'
                 break
             case 'startDate':
-                icon = Icons.DATE
+                icon = Icons.SYM.DATE
                 break
             case 'endDate':
-                icon = Icons.DATE
+                icon = Icons.SYM.DATE
                 break
             case 'type':
                 icon = 'image outline'
                 break
             case 'manualCancellationDate':
-                icon = Icons.DATE
+                icon = Icons.SYM.DATE
                 break
             case 'referenceYear':
-                icon = Icons.DATE
+                icon = Icons.SYM.DATE
                 break
             case 'licenseUrl':
                 icon = 'cloud'
@@ -218,7 +218,7 @@ class IconTagLib {
         switch (attrs.type) {
             case [ 'E-Mail', 'Mail' ]: // 'Mail' -> Deprecated
                 msg = message(code: 'contact.icon.label.email')
-                icon = Icons.EMAIL + ' la-list-icon la-js-copyTriggerIcon'
+                icon = Icons.SYM.EMAIL + ' la-list-icon la-js-copyTriggerIcon'
                 break
             case 'Fax':
                 msg = message(code: 'contact.icon.label.fax')
@@ -384,7 +384,7 @@ class IconTagLib {
 
     @FixedFeature_DoNotModify
     def booleanIcon = { attrs, body ->
-        String icon = Icons.UNKOWN
+        String icon = Icons.SYM.UNKOWN
 
         if (attrs.value === true) {
             icon = Icons.DFT.CIRCLE + ' green'
@@ -393,7 +393,7 @@ class IconTagLib {
             icon = Icons.DFT.CIRCLE + ' red'
         }
         else if (attrs.value === null) {
-            icon = Icons.DFT.CIRCLE + ' outline grey'
+            icon = Icons.DFT.CIRCLE + ' grey'
         }
         out << '<i class="' + icon + '"></i>'
     }

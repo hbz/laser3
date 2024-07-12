@@ -21,7 +21,7 @@
                 <div class="ui icon la-popup-tooltip la-delay"
                      data-content="${message(code: "surveyconfig.internalComment.comment")}">
                     ${message(code: 'surveyconfig.internalComment.label')}
-                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                    <i class="${Icons.TOOLTIP.HELP}"></i>
                 </div>
             </dt>
             <dd><ui:xEditable owner="${surveyConfig}" field="internalComment" type="textarea"/></dd>
@@ -84,7 +84,7 @@
                         <div class="ui icon la-popup-tooltip la-delay"
                              data-content="${message(code: "surveyconfig.comment.comment")}">
                             ${message(code: 'surveyconfig.comment.label')}
-                            <i class="${Icons.HELP_TOOLTIP}"></i>
+                            <i class="${Icons.TOOLTIP.HELP}"></i>
                         </div>
                     </a>
                 </div>

@@ -71,7 +71,6 @@ class Icons {
         public static String FILTERED       = 'filter icon'
         public static String NEXT           = 'arrow right icon'     // todo: duplicate: ui:anualRings, ui:statusWithRings
         public static String PREV           = 'arrow left icon'      // todo: duplicate: ui:anualRings, ui:statusWithRings
-        public static String WEKB           = 'la-gokb icon'
     }
 
     class PROP {
@@ -82,7 +81,7 @@ class Icons {
         public static String IN_USE         = 'info circle icon blue'   // COLOR INCLUDED !! todo: duplicate: Icons.UI.INFO
         public static String IS_PRIVATE     = 'shield alternate icon'
         public static String LOGIC          = 'cube icon red'           // COLOR INCLUDED !!
-        public static String MANDATORY      = 'star icon'               // todo: duplicate: survey/renew? > Icons.MY_OBJECT
+        public static String MANDATORY      = 'star icon'               // todo: duplicate: survey/renew? > Icons.SYM.MY_OBJECT
         public static String MULTIPLE       = 'redo icon orange'        // COLOR INCLUDED !! todo: duplicate: currentSubscriptionsTransfer
     }
 
@@ -92,6 +91,9 @@ class Icons {
 
         public static String DATE           = 'calendar alternate outline icon'
         public static String EMAIL          = 'envelope outline icon'
+
+        public static String MY_OBJECT      = 'star icon'                   // todo: duplicate: survey/renew? > Icons.PROP.MANDATORY
+        public static String UNKOWN         = 'question icon'
     }
 
     class UI {
@@ -104,6 +106,16 @@ class Icons {
         public static String WARNING        = 'exclamation icon'
 
         public static String HELP           = 'question icon'
+    }
+
+    class TOOLTIP {
+        // please do not touch during refactoring ..
+        // tooltips
+
+        public static String HELP           = 'grey question circle icon'   // COLOR INCLUDED !!
+        public static String IMPORTANT      = 'exclamation circle icon'     // TODO: merge with Icons.TOOLTIP.SERIOUS
+        public static String INFO           = 'info circle icon'            // todo: duplicate: Icons.PROP.IN_USE
+        public static String SERIOUS        = 'exclamation triangle icon'   // TODO: merge with Icons.TOOLTIP.IMPORTANT
     }
 
     // please do not touch during refactoring ..
@@ -137,9 +149,9 @@ class Icons {
 
     public static String TASK                       = 'calendar check outline icon'
 
-    public static String UNKOWN                     = 'question icon'
-
     public static String VENDOR                     = 'boxes icon'
+
+    public static String WEKB                       = 'la-gokb icon'
 
     public static String WORKFLOW                   = 'tasks icon'
 
@@ -155,23 +167,5 @@ class Icons {
     public static String SUBSCRIPTION_IS_MULTIYEAR  = 'forward icon'
 
     public static String TIPP_COVERAGE_DEPTH        = 'file alternate icon'
-
-    // please do not touch during refactoring ..
-    // generic
-
-    public static String DATE                       = 'calendar alternate outline icon'
-
-    public static String EMAIL                      = 'envelope outline icon'
-
-    public static String HELP                       = 'question icon'
-
-    public static String HELP_TOOLTIP               = 'grey question circle icon'   // COLOR INCLUDED !!
-
-    public static String IMPORTANT_TOOLTIP          = 'exclamation circle icon'     // TODO: merge
-    public static String IMPORTANT_TOOLTIP2         = 'exclamation triangle icon'   // TODO: merge
-
-    public static String INFO_TOOLTIP               = 'info circle icon'            // todo: duplicate: Icons.PROP.IN_USE
-
-    public static String MY_OBJECT                  = 'star icon'                   // todo: duplicate: survey/renew? > Icons.PROP.MANDATORY
 
 }

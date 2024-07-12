@@ -28,7 +28,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                 ${message(code: 'copyElementsIntoObject.general_data.label')}
             </div>
             <div class="description">
-                <i class="${Icons.DATE}"></i>                   ${message(code: 'subscription.periodOfValidity.label')} <br />
+                <i class="${Icons.SYM.DATE}"></i>               ${message(code: 'subscription.periodOfValidity.label')} <br />
                 <i class="ellipsis vertical icon"></i>          ${message(code: 'license.status.label')} <br />
                 <i class="cloud icon"></i>                      ${message(code: 'default.url.label')} <br />
                 <i class="clipboard list icon"></i>             ${message(code: 'license.licenseCategory.label')} <br />

@@ -39,7 +39,7 @@
                                 <div class="ui icon la-popup-tooltip la-delay"
                                      data-content="${message(code: "surveyconfig.scheduledStartDate.comment")}">
                                     ${message(code: 'surveyconfig.scheduledStartDate.label')}
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icons.TOOLTIP.HELP}"></i>
                                 </div>
                             </dt>
                             <dd><ui:xEditable owner="${surveyConfig}" field="scheduledStartDate" type="date"/>
@@ -50,7 +50,7 @@
                                 <div class="ui icon la-popup-tooltip la-delay"
                                      data-content="${message(code: "surveyconfig.scheduledEndDate.comment")}">
                                     ${message(code: 'surveyconfig.scheduledEndDate.label')}
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icons.TOOLTIP.HELP}"></i>
                                 </div>
                             </dt>
                             <dd><ui:xEditable owner="${surveyConfig}" field="scheduledEndDate" type="date"/></dd>
@@ -62,7 +62,7 @@
                             <div class="ui icon la-popup-tooltip la-delay"
                                  data-content="${message(code: "surveyconfig.internalComment.comment")}">
                                 ${message(code: 'surveyconfig.internalComment.label')}
-                                <i class="${Icons.HELP_TOOLTIP}"></i>
+                                <i class="${Icons.TOOLTIP.HELP}"></i>
                             </div>
                         </dt>
                         <dd><ui:xEditable owner="${surveyConfig}" field="internalComment" type="textarea"/></dd>
@@ -124,14 +124,14 @@
                                     <div class="ui icon la-popup-tooltip la-delay"
                                          data-content="${message(code: "surveyconfig.comment.comment")}">
                                         ${message(code: 'surveyconfig.comment.label')}
-                                        <i class="${Icons.HELP_TOOLTIP}"></i>
+                                        <i class="${Icons.TOOLTIP.HELP}"></i>
                                     </div>
                                 </a>
                                 <a class="item ${commentTab == 'commentForNewParticipants' ? 'active' : ''}" data-tab="commentForNewParticipants">
                                     <div class="ui icon la-popup-tooltip la-delay"
                                          data-content="${message(code: "surveyconfig.commentForNewParticipants.comment")}">
                                         ${message(code: 'surveyconfig.commentForNewParticipants.label')}
-                                        <i class="${Icons.HELP_TOOLTIP}"></i>
+                                        <i class="${Icons.TOOLTIP.HELP}"></i>
                                     </div>
                                 </a>
                             </div>

@@ -191,7 +191,7 @@
                            class="ui icon tiny blue button la-popup-tooltip la-delay"
                            data-content="${message(code: 'wekb')}"
                            href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/packageContent/?id=' + tipp.pkg.gokbId : '#'}"
-                           target="_blank"><i class="${Icons.LNK.WEKB}"></i>
+                           target="_blank"><i class="${Icons.WEKB}"></i>
                         </a>
                     </g:if>
                 </g:each>
@@ -248,7 +248,7 @@
                        class="ui icon tiny blue button la-popup-tooltip la-delay"
                        data-content="${message(code: 'wekb')}"
                        href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/platformContent/?id=' + tipp.platform.gokbId : '#'}"
-                       target="_blank"><i class="${Icons.LNK.WEKB}"></i>
+                       target="_blank"><i class="${Icons.WEKB}"></i>
                     </a>
                 </g:if>
             </g:each>

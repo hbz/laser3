@@ -31,7 +31,7 @@
     <a class="item" data-tab="currentTitles"><g:message code="renewEntitlementsWithSurvey.currentTitles"/>
         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
               data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitles.mouseover')}">
-            <i class="${Icons.HELP_TOOLTIP}"></i>
+            <i class="${Icons.TOOLTIP.HELP}"></i>
         </span>
     </a>
 

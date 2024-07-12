@@ -68,7 +68,7 @@
                                                 </div>
                                             </g:elseif>
                                             <div class="item">
-                                                <i aria-hidden="true" class="grey ${Icons.DATE}"></i>
+                                                <i aria-hidden="true" class="grey ${Icons.SYM.DATE}"></i>
 
                                                 <div class="content">
                                                     <div class="header">

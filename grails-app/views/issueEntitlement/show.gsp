@@ -128,12 +128,12 @@
 
                 <div class="la-icon-list">
                     <div class="item">
-                        <i class="grey ${Icons.DATE} la-popup-tooltip la-delay"
+                        <i class="grey ${Icons.SYM.DATE} la-popup-tooltip la-delay"
                            data-content="${message(code: 'subscription.details.access_start')}"></i>
                         <g:if test="${editable}">
                             <ui:xEditable owner="${issueEntitlementInstance}" type="date"
                                              field="accessStartDate"/>
-                            <i class="${Icons.HELP_TOOLTIP} la-popup-tooltip la-delay"
+                            <i class="${Icons.TOOLTIP.HELP} la-popup-tooltip la-delay"
                                data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                         </g:if>
                         <g:else>
@@ -143,11 +143,11 @@
                     </div>
 
                     <div class="item">
-                        <i class="grey ${Icons.DATE} la-popup-tooltip la-delay"
+                        <i class="grey ${Icons.SYM.DATE} la-popup-tooltip la-delay"
                            data-content="${message(code: 'subscription.details.access_end')}"></i>
                         <g:if test="${editable}">
                             <ui:xEditable owner="${issueEntitlementInstance}" type="date" field="accessEndDate"/>
-                            <i class="${Icons.HELP_TOOLTIP} la-popup-tooltip la-delay"
+                            <i class="${Icons.TOOLTIP.HELP} la-popup-tooltip la-delay"
                                data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                         </g:if>
                         <g:else>

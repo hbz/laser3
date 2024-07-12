@@ -147,7 +147,7 @@ class ModalTagLib {
         out << '<div role="dialog" class="ui modal ' + modalSize + '"' + id + ' aria-label="Modal">'
         out <<    '<div class="content ui items">'
         out <<       '<div class="item">'
-        out <<          '<div class="image"><i class="' + Icons.HELP + ' circular huge"></i></div>'
+        out <<          '<div class="image"><i class="' + Icons.UI.HELP + ' circular huge"></i></div>'
         out <<          '<div class="content">'
         out << body()
         out <<          '</div>'

@@ -149,7 +149,7 @@
                                 <g:message code="org.legalPatronName.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.legalPatronName.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icons.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -161,7 +161,7 @@
                                 <g:message code="org.urlGov.label"/>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.urlGov.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icons.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -183,7 +183,7 @@
                                 <g:message code="org.linkResolverBase.label"/>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.linkResolverBase.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icons.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -195,7 +195,7 @@
                                 <g:message code="org.eInvoice.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.eInvoice.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icons.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -207,7 +207,7 @@
                                 <g:message code="org.eInvoicePortal.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.eInvoicePortal.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icons.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -338,7 +338,7 @@
                                 <g:message code="org.libraryType.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.libraryType.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icons.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -386,7 +386,7 @@
                                 <g:message code="org.libraryNetwork.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.libraryNetwork.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icons.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -399,7 +399,7 @@
                                 <g:message code="org.funderType.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.funderType.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icons.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -411,7 +411,7 @@
                                 <g:message code="org.funderHSK.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.funderHSK.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icons.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -423,7 +423,7 @@
                                 <g:message code="address.country.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.country.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icons.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -434,7 +434,7 @@
                                 <g:message code="org.region.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.region.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icons.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>

@@ -39,8 +39,8 @@ class WorkflowTagLib {
         List<String> fields = []
 
         fields.add( (cpoint.date ?
-                '<i class="' + Icons.DATE + '"></i> ' + message(code:'workflow.checkpoint.date') + ': <strong>' + DateUtils.getLocalizedSDF_noTime().format(cpoint.date) + '</strong>' :
-                '<i class="' + Icons.DATE + ' la-light-grey"></i> ' + message(code:'workflow.checkpoint.noDate')
+                '<i class="' + Icons.SYM.DATE + '"></i> ' + message(code:'workflow.checkpoint.date') + ': <strong>' + DateUtils.getLocalizedSDF_noTime().format(cpoint.date) + '</strong>' :
+                '<i class="' + Icons.SYM.DATE + ' la-light-grey"></i> ' + message(code:'workflow.checkpoint.noDate')
         ))
         fields.add( (cpoint.done == true ?
                 '<i class="ui icon check square outline"></i> ' + message(code:'workflow.checkpoint.done') :

@@ -4,7 +4,7 @@
 <%--params.filterProp: ${params.filterProp}--%>
 <div class="field">
     <label for="filterPropDef">${label}
-        <i class="${Icons.HELP_TOOLTIP} la-popup"></i>
+        <i class="${Icons.TOOLTIP.HELP} la-popup"></i>
         <span class="ui popup">
             <i class="${Icons.PROP.IS_PRIVATE}"></i> = ${message(code: 'subscription.properties.my')}
         </span>

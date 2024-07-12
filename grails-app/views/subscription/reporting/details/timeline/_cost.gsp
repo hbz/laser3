@@ -137,7 +137,7 @@
                                 print '<i class="' + Icons.FNC.COST_NEUTRAL + '"></i>'
                                 break
                             default:
-                                print'<i class="' + Icons.HELP_TOOLTIP + '"></i>'
+                                print'<i class="' + Icons.TOOLTIP.HELP + '"></i>'
                                 break
                         }
                     %>
@@ -236,7 +236,7 @@
                                     print '<i class="' + Icons.FNC.COST_NEUTRAL + '"></i>'
                                     break
                                 default:
-                                    print'<i class="' + Icons.HELP_TOOLTIP + '"></i>'
+                                    print'<i class="' + Icons.TOOLTIP.HELP + '"></i>'
                                     break
                             }
                         %>

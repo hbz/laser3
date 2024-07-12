@@ -16,7 +16,7 @@
                                 <g:if test="${surveyUrl.urlComment}">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                           data-content="${surveyUrl.urlComment}">
-                                        <i class="${Icons.INFO_TOOLTIP}"></i>
+                                        <i class="${Icons.TOOLTIP.INFO}"></i>
                                     </span>
                                 </g:if>
                                 <ui:linkWithIcon href="${surveyUrl.url}"/>

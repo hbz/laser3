@@ -29,7 +29,7 @@
 
     <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyProperty.all.label')}
 
-        <i class="${Icons.HELP_TOOLTIP} la-popup"></i>
+        <i class="${Icons.TOOLTIP.HELP} la-popup"></i>
 
         <div class="ui popup">
             <i class="${Icons.PROP.IS_PRIVATE}"></i> = ${message(code: 'subscription.properties.my')}

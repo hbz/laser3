@@ -22,7 +22,7 @@
                     ${namespace}
                     <g:if test="${ident instanceof Identifier && ident.ns.getI10n('description')}">
                         <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${ident.ns.getI10n('description')}">
-                            <i class="${Icons.HELP_TOOLTIP}"></i>
+                            <i class="${Icons.TOOLTIP.HELP}"></i>
                         </span>
                     </g:if>
                 </td>

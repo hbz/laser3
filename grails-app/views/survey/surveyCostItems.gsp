@@ -183,7 +183,7 @@
                                                     data-position="right center"
                                                     data-content="${message(code: 'surveyCostItems.bulkOption.info')}">
                             ${message(code: 'surveyCostItems.bulkOption.label')}
-                            <i class="${Icons.HELP_TOOLTIP}"></i>
+                            <i class="${Icons.TOOLTIP.HELP}"></i>
                         </span></h3>
 
                         <div class="ui basic segment">

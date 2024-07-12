@@ -16,7 +16,7 @@ class ContextBarTagLib {
     // <ui:cbItemCustomerType org="${contextService.getOrg()}" />
 
     def cbItemCustomerType = {attrs, body ->
-        String icon  = Icons.UNKOWN + ' grey'
+        String icon  = Icons.SYM.UNKOWN + ' grey'
         String text  = '?'
         Org org = attrs.org as Org
 
@@ -79,7 +79,7 @@ class ContextBarTagLib {
     // <ui:cbItemUserSysRole user="${contextService.getUser()}" showGlobalRole="true|false" />
 
     def cbItemUserSysRole = {attrs, body ->
-        String icon     = Icons.UNKOWN
+        String icon     = Icons.SYM.UNKOWN
         String color    = 'grey'
         String text     = '?'
 

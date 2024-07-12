@@ -193,7 +193,7 @@
 
             <h4 class="ui dividing header"><g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.label"/>
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'renewEntitlementsWithSurvey.issueEntitlementSelect.info')}">
-                <i class="${Icons.HELP_TOOLTIP}"></i>
+                <i class="${Icons.TOOLTIP.HELP}"></i>
             </span></h4>
 
             <div class="two fields">
@@ -268,7 +268,7 @@
         <g:message code="renewEntitlementsWithSurvey.currentTitles"/>
             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                   data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitles.mouseover')}">
-                <i class="${Icons.HELP_TOOLTIP}"></i>
+                <i class="${Icons.TOOLTIP.HELP}"></i>
             </span>
         <div class="ui circular label">${countCurrentPermanentTitles}</div>
     </g:link>

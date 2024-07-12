@@ -362,7 +362,7 @@
                                         <a role="button" class="ui icon tiny blue button la-popup-tooltip la-delay"
                                            data-content="${message(code: 'wekb')}"
                                            href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/orgContent/?id=' + provider.gokbId : '#'}"
-                                           target="_blank"><i class="${Icons.LNK.WEKB}"></i>
+                                           target="_blank"><i class="${Icons.WEKB}"></i>
                                         </a>
                                     </g:if>
                                 </g:each>--}%

@@ -587,7 +587,7 @@ class BaseConfig {
     }
 
     static String getIcon(String objKey) {
-        String icon = Icons.UNKOWN
+        String icon = Icons.SYM.UNKOWN
 
              if (objKey == KEY_ISSUEENTITLEMENT){ icon = 'book icon' }
         else if (objKey == KEY_LICENSE)         { icon = Icons.LICENSE }

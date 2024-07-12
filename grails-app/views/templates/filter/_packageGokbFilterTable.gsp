@@ -73,7 +73,7 @@
                             ${message(code: 'surveyResult.commentParticipant')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentParticipant.info')}">
-                                <i class="${Icons.HELP_TOOLTIP}"></i>
+                                <i class="${Icons.TOOLTIP.HELP}"></i>
                             </span>
                         </g:else>
                     </th>
@@ -82,14 +82,14 @@
                             ${message(code: 'surveyResult.commentOnlyForOwner')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                                <i class="${Icons.HELP_TOOLTIP}"></i>
+                                <i class="${Icons.TOOLTIP.HELP}"></i>
                             </span>
                         </g:if>
                         <g:else>
                             ${message(code: 'surveyResult.commentOnlyForParticipant')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
-                                <i class="${Icons.HELP_TOOLTIP}"></i>
+                                <i class="${Icons.TOOLTIP.HELP}"></i>
                             </span>
                         </g:else>
                     </th>
@@ -306,7 +306,7 @@
                                 <g:message code="package.index.result.automaticUpdates"/>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${record.source.frequency}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icons.TOOLTIP.HELP}"></i>
                                 </span>
                             </g:if>
                             <g:else>
@@ -396,7 +396,7 @@
                         <td class="center aligned">
                             <g:if test="${pkg && pkg.id in currentPackageIdSet}">
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.packages')}">
-                                    <i class="${Icons.MY_OBJECT} yellow"></i>
+                                    <i class="${Icons.SYM.MY_OBJECT} yellow"></i>
                                 </span>
                             </g:if>
                         </td>

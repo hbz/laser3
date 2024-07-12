@@ -268,7 +268,7 @@
                                             <span data-content="Verwendet für ${tooltip.join(', ')}" data-position="left center"
                                                   class="la-long-tooltip la-popup-tooltip la-delay">
                                                 <g:link class="ui button icon" controller="admin" action="manageNamespaces"
-                                                        params="${[cmd: 'details', oid: IdentifierNamespace.class.name + ':' + idNs.id]}"><i class="${Icons.HELP_TOOLTIP}"></i></g:link>
+                                                        params="${[cmd: 'details', oid: IdentifierNamespace.class.name + ':' + idNs.id]}"><i class="${Icons.TOOLTIP.HELP}"></i></g:link>
                                             </span>
                                         </g:if>
                                     </td>

@@ -3,7 +3,7 @@
 
 <div class="three fields contactField">
     <div class="field one wide la-contactIconField">
-        <i class="${Icons.EMAIL} large la-js-contactIcon"></i>
+        <i class="${Icons.SYM.EMAIL} large la-js-contactIcon"></i>
     </div>
     <div class="field wide four">
         <ui:select class="ui dropdown contentType" name="contentType.id"

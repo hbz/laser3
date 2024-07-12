@@ -41,7 +41,7 @@
                 <label for="search-title">${message(code: 'default.search.text')}
                     <span data-position="right center" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.subscription')}">
-                        <i class="${Icons.HELP_TOOLTIP}"></i>
+                        <i class="${Icons.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
 
@@ -56,7 +56,7 @@
                 <label for="identifier">${message(code: 'default.search.identifier')}
                     <span data-position="right center" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.subscription.identifier')}">
-                        <i class="${Icons.HELP_TOOLTIP}"></i>
+                        <i class="${Icons.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
 
@@ -605,7 +605,7 @@
                                         <g:if test="${s.discountScale.note}">
                                             <span data-position="top left" class="la-popup-tooltip la-delay"
                                                   data-content="${s.discountScale.note}">
-                                                <i class="${Icons.INFO_TOOLTIP} blue"></i>
+                                                <i class="${Icons.TOOLTIP.INFO} blue"></i>
                                             </span>
                                         </g:if>
                                     </g:if>

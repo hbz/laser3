@@ -57,7 +57,7 @@
                                         break
                                     default:
                                         dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                        icon = '<i class="' + Icons.HELP_TOOLTIP + '"></i>'
+                                        icon = '<i class="' + Icons.TOOLTIP.HELP + '"></i>'
                                         break
                                 }
                             %>
@@ -110,7 +110,7 @@
                                      data-position="right center"
                                      data-variation="tiny"
                                      data-content="${costItemSurvey.costDescription}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icons.TOOLTIP.HELP}"></i>
                                 </div>
                             </g:if>
                         </td>

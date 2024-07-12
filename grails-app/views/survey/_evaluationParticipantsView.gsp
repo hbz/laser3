@@ -189,7 +189,7 @@
                             <g:if test="${surveyProperty.getI10n('expl')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${surveyProperty.getI10n('expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icons.TOOLTIP.HELP}"></i>
                                 </span>
                             </g:if>
                         </th>
@@ -199,7 +199,7 @@
                     <th>${message(code: 'surveyResult.commentOnlyForOwner')}
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                            <i class="${Icons.HELP_TOOLTIP}"></i>
+                            <i class="${Icons.TOOLTIP.HELP}"></i>
                         </span>
                     </th>
                 </g:if>
@@ -321,7 +321,7 @@
                             <g:if test="${propertiesChangedByParticipant && participant.id in propertiesChangedByParticipant.id}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
-                                    <i class="${Icons.IMPORTANT_TOOLTIP2} yellow"></i>
+                                    <i class="${Icons.TOOLTIP.SERIOUS} yellow"></i>
                                 </span>
                             </g:if>
 
@@ -346,7 +346,7 @@
                                     <span data-position="right center"
                                           class="la-popup-tooltip la-delay"
                                           data-content="Mail senden an Hauptkontakte">
-                                        <i class="${Icons.EMAIL} la-list-icon"></i>
+                                        <i class="${Icons.SYM.EMAIL} la-list-icon"></i>
                                     </span>
                                 </a>
                             </g:if>
@@ -771,7 +771,7 @@
                             <g:if test="${surveyProperty.getI10n('expl')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${surveyProperty.getI10n('expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icons.TOOLTIP.HELP}"></i>
                                 </span>
                             </g:if>
                         </th>
@@ -781,7 +781,7 @@
                     <th>${message(code: 'surveyResult.commentOnlyForOwner')}
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                            <i class="${Icons.HELP_TOOLTIP}"></i>
+                            <i class="${Icons.TOOLTIP.HELP}"></i>
                         </span>
                     </th>
                 </g:if>
@@ -905,7 +905,7 @@
                             <g:if test="${propertiesChangedByParticipant && participant.id in propertiesChangedByParticipant.id}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
-                                    <i class="${Icons.IMPORTANT_TOOLTIP2} yellow"></i>
+                                    <i class="${Icons.TOOLTIP.SERIOUS} yellow"></i>
                                 </span>
                             </g:if>
 
@@ -929,7 +929,7 @@
                                     <span data-position="right center"
                                           class="la-popup-tooltip la-delay"
                                           data-content="Mail senden an Hauptkontakte">
-                                        <i class="${Icons.EMAIL} la-list-icon"></i>
+                                        <i class="${Icons.SYM.EMAIL} la-list-icon"></i>
                                     </span>
                                 </a>
                             </g:if>

@@ -20,7 +20,7 @@
             <div class="field">
                 <label for="search-title">${message(code: 'default.search.text')}
                     <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
-                        <i class="${Icons.HELP_TOOLTIP}"></i>
+                        <i class="${Icons.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
 
@@ -34,7 +34,7 @@
             <div class="field">
                 <label for="identifier">${message(code: 'default.search.identifier')}
                     <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription.identifier')}">
-                        <i class="${Icons.HELP_TOOLTIP}"></i>
+                        <i class="${Icons.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
 

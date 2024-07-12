@@ -3,7 +3,7 @@
 <div class="content">
     <div class="la-card-column">
         <div class="la-card-flexRow">
-            <i class="grey fitted ${Icons.DATE} la-popup-tooltip la-delay" data-content="${message(code: 'tipp.startDate.tooltip')}"></i>
+            <i class="grey fitted ${Icons.SYM.DATE} la-popup-tooltip la-delay" data-content="${message(code: 'tipp.startDate.tooltip')}"></i>
             <ui:xEditable owner="${covStmt}" type="date" field="startDate" overwriteEditable="${overwriteEditable}"/>
         </div>
         <div class="la-card-flexRow">
@@ -17,7 +17,7 @@
         <ui:dateDevider/>
         <!-- bis -->
         <div class="la-card-flexRow">
-            <i class="grey fitted ${Icons.DATE} la-popup-tooltip la-delay" data-content="${message(code: 'tipp.endDate.tooltip')}"></i>
+            <i class="grey fitted ${Icons.SYM.DATE} la-popup-tooltip la-delay" data-content="${message(code: 'tipp.endDate.tooltip')}"></i>
             <ui:xEditable owner="${covStmt}" type="date" field="endDate" overwriteEditable="${overwriteEditable}"/>
         </div>
         <div class="la-card-flexRow">

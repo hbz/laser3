@@ -34,13 +34,13 @@
                 <th>
                     ${message(code:'org.apiLevel.label')}
                     <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.apiLevel.tooltip')}">
-                        <i class="${Icons.HELP_TOOLTIP} icon popup"></i>
+                        <i class="${Icons.TOOLTIP.HELP} icon popup"></i>
                     </span>
                 </th>
                 <th>
                     ${message(code:'org.serverAccess.label')}
                     <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.serverAccess.tooltip')}">
-                        <i class="${Icons.HELP_TOOLTIP} icon popup"></i>
+                        <i class="${Icons.TOOLTIP.HELP} icon popup"></i>
                     </span>
                 </th>
                 <th class="la-no-uppercase">

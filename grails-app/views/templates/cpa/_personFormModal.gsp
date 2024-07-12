@@ -189,7 +189,7 @@
                             <g:message code="person.last_name.label"/> <g:message code="messageRequiredField" />
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'person.last_name.info')}">
-                                <i class="${Icons.HELP_TOOLTIP}"></i>
+                                <i class="${Icons.TOOLTIP.HELP}"></i>
                             </span>
                         </label>
                         <g:textField name="last_name"  value="${personInstance?.last_name}"/>
@@ -303,7 +303,7 @@
                 </label>
                 %{-- Buttons for selection of kind of contact START --}%
                 <div class="ui wrapping spaced buttons">
-                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_EMAIL.id}"><i class="${Icons.EMAIL}"></i><g:message code="contact.addEmail"/></a>
+                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_EMAIL.id}"><i class="${Icons.SYM.EMAIL}"></i><g:message code="contact.addEmail"/></a>
                     <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_FAX.id}"><i class="tty circle icon"></i><g:message code="contact.addTty"/></a>
                     <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_MOBILE.id}"><i class="mobile alternate circle icon"></i><g:message code="contact.addMobil"/></a>
                     <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_PHONE.id}"><i class="phone circle icon"></i><g:message code="contact.addPhone"/></a>
@@ -318,7 +318,7 @@
                     <div class="three fields contactField" id="contactFields${i}">
                         <div class="field one wide la-contactIconField">
                             <g:if test="${contact.contentType.id == RDStore.CCT_EMAIL.id}">
-                                <i class="${Icons.EMAIL} large la-js-contactIcon"></i>
+                                <i class="${Icons.SYM.EMAIL} large la-js-contactIcon"></i>
                             </g:if>
                             <g:elseif test="${contact.contentType.id == RDStore.CCT_FAX.id}">
                                 <i class="icon large tty la-js-contactIcon"></i>
@@ -333,7 +333,7 @@
                                 <i class="icon large globe la-js-contactIcon"></i>
                             </g:elseif>
                             <g:else>
-                                <i class="${Icons.EMAIL} large la-js-contactIcon"></i>
+                                <i class="${Icons.SYM.EMAIL} large la-js-contactIcon"></i>
                             </g:else>
 
 
@@ -367,7 +367,7 @@
                 <div class="field">
                     <div class="three fields contactField" id="contactFields${personInstance?.contacts ? personInstance.contacts.size()+1 : 1}">
                         <div class="field one wide la-contactIconField">
-                            <i class="${Icons.EMAIL} large la-js-contactIcon"></i>
+                            <i class="${Icons.SYM.EMAIL} large la-js-contactIcon"></i>
                         </div>
 
                         <div class="field wide four">
@@ -639,7 +639,7 @@
        JSPC.app.deleteIconClass(icon);
        switch (value) {
         case "${RDStore.CCT_EMAIL.id}":
-          icon.addClass("${Icons.EMAIL} large la-js-contactIcon");
+          icon.addClass("${Icons.SYM.EMAIL} large la-js-contactIcon");
           break;
         case "${RDStore.CCT_FAX.id}":
           icon.addClass("icon large la-js-contactIcon tty");

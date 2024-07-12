@@ -459,7 +459,7 @@
                                                     <g:if test="${missingSubMonths}">
                                                         <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                               data-html="${message(code: 'default.usage.missingUsageInfo')}: ${missingSubMonths.join(',')}">
-                                                            <i class="${Icons.IMPORTANT_TOOLTIP2} la-popup small"></i>
+                                                            <i class="${Icons.TOOLTIP.SERIOUS} la-popup small"></i>
                                                         </span>
                                                     </g:if>
                                                 </td>
@@ -494,7 +494,7 @@
                                             <td>${reportMetric}
                                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                       data-html="${message(code: 'default.usage.reportUpToInfo')}: ${lastUsagePeriodForReportType[reportMetric.split(':')[0]]}">
-                                                    <i class="${Icons.INFO_TOOLTIP} small la-popup"></i>
+                                                    <i class="${Icons.TOOLTIP.INFO} small la-popup"></i>
                                                 </span>
                                             </td>
                                             <g:each in="${v}" status="i" var="v2">
@@ -522,7 +522,7 @@
                                                 <g:if test="${missing}">
                                                     <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                           data-html="${message(code: 'default.usage.missingUsageInfo')}: ${missing.join(',')}">
-                                                        <i class="${Icons.IMPORTANT_TOOLTIP2} la-popup small"></i>
+                                                        <i class="${Icons.TOOLTIP.SERIOUS} la-popup small"></i>
                                                     </span>
                                                 </g:if>
                                             </td>

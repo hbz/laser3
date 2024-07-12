@@ -110,7 +110,7 @@
 
         <div class="item" role="menuitem" aria-haspopup="true">
             <div class="title">
-                <i class="${Icons.EMAIL}"></i> ${message(code:'menu.yoda.mail.label')} <i class="dropdown icon"></i>
+                <i class="${Icons.SYM.EMAIL}"></i> ${message(code:'menu.yoda.mail.label')} <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="mailAsync" action="index">${message(code:'menu.yoda.mailAysnc.list')}</ui:link>
