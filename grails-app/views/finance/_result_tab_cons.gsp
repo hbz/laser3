@@ -63,7 +63,7 @@
                 <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="${sorting}" scope="col" rowspan="2"/>
                 <g:sortableColumn property="sub.name" title="${message(code:'default.subscription.label')}" params="${sorting}" scope="col" class="la-smaller-table-head"/>
                 <th class="la-no-uppercase" scope="col" rowspan="2">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="${Icons.COSTS_CONFIG}"></i></span>
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="${Icons.FNC.COST_CONFIG}"></i></span>
                 </th>
                 <g:sortableColumn property="ci.billingCurrency" title="${message(code:'default.currency.label')}" params="${sorting}" scope="col" rowspan="2"/>
                 <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="${sorting}" scope="col" rowspan="2"/>
@@ -84,7 +84,7 @@
                 </g:if>
                 <g:sortableColumn property="costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
                 <th class="la-no-uppercase" scope="col" rowspan="2">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="${Icons.COSTS_CONFIG}"></i></span>
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="${Icons.FNC.COST_CONFIG}"></i></span>
                 </th>
                 <g:sortableColumn property="billingCurrency" title="${message(code:'default.currency.label')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
                 <g:sortableColumn property="costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
@@ -134,15 +134,15 @@
                     switch (ci.costItemElementConfiguration) {
                         case RDStore.CIEC_POSITIVE:
                             dataTooltip = message(code:'financials.costItemConfiguration.positive')
-                            icon = '<i class="plus green circle icon"></i>'
+                            icon = '<i class="' + Icons.FNC.COST_POSITIVE + '"></i>'
                             break
                         case RDStore.CIEC_NEGATIVE:
                             dataTooltip = message(code:'financials.costItemConfiguration.negative')
-                            icon = '<i class="minus red circle icon"></i>'
+                            icon = '<i class="' + Icons.FNC.COST_NEGATIVE + '"></i>'
                             break
                         case RDStore.CIEC_NEUTRAL:
                             dataTooltip = message(code:'financials.costItemConfiguration.neutral')
-                            icon = '<i class="circle yellow icon"></i>'
+                            icon = '<i class="' + Icons.FNC.COST_NEUTRAL + '"></i>'
                             break
                     }
                 %>

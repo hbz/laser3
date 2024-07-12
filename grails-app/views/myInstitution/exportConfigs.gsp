@@ -54,18 +54,18 @@
                             <g:if test="${editable}">
                                 <g:if test="${i == 1 && clickMeConfigs.size() == 2}">
                                     <g:link class="ui icon blue button compact la-modern-button" action="exportConfigsActions"
-                                         params="[cmd: 'moveUp', id: clickMeConfig.id, tab: params.tab]"><i class="${Icons.GENERIC.MOVE_UP}"></i>
+                                         params="[cmd: 'moveUp', id: clickMeConfig.id, tab: params.tab]"><i class="${Icons.CMD.MOVE_UP}"></i>
                                     </g:link>
                                 </g:if>
                                 <g:else>
                                     <g:if test="${i > 0}">
                                         <g:link class="ui icon blue button compact la-modern-button" action="exportConfigsActions"
-                                                params="[cmd: 'moveUp', id: clickMeConfig.id, tab: params.tab]"><i class="${Icons.GENERIC.MOVE_UP}"></i>
+                                                params="[cmd: 'moveUp', id: clickMeConfig.id, tab: params.tab]"><i class="${Icons.CMD.MOVE_UP}"></i>
                                         </g:link>
                                     </g:if>
                                     <g:if test="${i < clickMeConfigs.size()-1}">
                                         <g:link class="ui icon blue button compact la-modern-button" action="exportConfigsActions"
-                                                params="[cmd: 'moveDown', id: clickMeConfig.id, tab: params.tab]"><i class="${Icons.GENERIC.MOVE_DOWN}"></i>
+                                                params="[cmd: 'moveDown', id: clickMeConfig.id, tab: params.tab]"><i class="${Icons.CMD.MOVE_DOWN}"></i>
                                         </g:link>
                                     </g:if>
                                 </g:else>

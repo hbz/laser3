@@ -14,7 +14,7 @@
                 <g:set var="iconCurrency" value="pound sign icon" />
             </g:elseif>
             <g:else>
-                <g:set var="iconCurrency" value="${Icons.COSTS_CONFIG}" />
+                <g:set var="iconCurrency" value="${Icons.FNC.COST_CONFIG}" />
             </g:else>
 
             <g:if test="${entry.currency != RDStore.CURRENCY_EUR.value}">

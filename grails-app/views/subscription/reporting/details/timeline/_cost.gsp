@@ -128,13 +128,13 @@
                     <%
                         switch (ci.costItemElementConfiguration) {
                             case RDStore.CIEC_POSITIVE:
-                                print '<i class="plus green circle icon"></i>'
+                                print '<i class="' + Icons.FNC.COST_POSITIVE + '"></i>'
                                 break
                             case RDStore.CIEC_NEGATIVE:
-                                print '<i class="minus red circle icon"></i>'
+                                print '<i class="' + Icons.FNC.COST_NEGATIVE + '"></i>'
                                 break
                             case RDStore.CIEC_NEUTRAL:
-                                print '<i class="circle yellow icon"></i>'
+                                print '<i class="' + Icons.FNC.COST_NEUTRAL + '"></i>'
                                 break
                             default:
                                 print'<i class="' + Icons.HELP_TOOLTIP + '"></i>'
@@ -227,13 +227,13 @@
                         <%
                             switch (ci.costItemElementConfiguration) {
                                 case RDStore.CIEC_POSITIVE:
-                                    print '<i class="plus green circle icon"></i>'
+                                    print '<i class="' + Icons.FNC.COST_POSITIVE + '"></i>'
                                     break
                                 case RDStore.CIEC_NEGATIVE:
-                                    print '<i class="minus red circle icon"></i>'
+                                    print '<i class="' + Icons.FNC.COST_NEGATIVE + '"></i>'
                                     break
                                 case RDStore.CIEC_NEUTRAL:
-                                    print '<i class="circle yellow icon"></i>'
+                                    print '<i class="' + Icons.FNC.COST_NEUTRAL + '"></i>'
                                     break
                                 default:
                                     print'<i class="' + Icons.HELP_TOOLTIP + '"></i>'

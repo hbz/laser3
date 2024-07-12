@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.Subscription; de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:htmlStart text="Playground: Various" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -12,15 +12,6 @@
     <g:link controller="dev" action="klodav" class="item active">Various</g:link>
     <g:link controller="dev" action="icons" class="item"><i class="certificate icon red"></i> New Icons</g:link>
 </nav>
-
--- Reminder --
-
-<ui:messages data="${[message: message(code: 'renewalEvaluation.dynamicSite')]}"/>
-
-<ui:msg class="success" message="renewalEvaluation.dynamicSite" />
-<ui:msg class="info" message="renewalEvaluation.dynamicSite" />
-
--- Reminder --
 
 <div class="ui four column grid">
     <div class="column">
@@ -146,12 +137,12 @@
             <div class="content"> Mehrjahreslaufzeit (${Icons.SUBSCRIPTION_IS_MULTIYEAR})</div>
         </div>
         <div class="item">
-            <i class="${Icons.COSTS} large"></i>
-            <div class="content"> Kosten (${Icons.COSTS})</div>
+            <i class="${Icons.FNC.COST} large"></i>
+            <div class="content"> Kosten (${Icons.FNC.COST})</div>
         </div>
         <div class="item">
-            <i class="${Icons.COSTS_CONFIG} large"></i>
-            <div class="content"> Kosten (Konfiguration) (${Icons.COSTS_CONFIG})</div>
+            <i class="${Icons.FNC.COST_CONFIG} large"></i>
+            <div class="content"> Kosten (Konfiguration) (${Icons.FNC.COST_CONFIG})</div>
         </div>
         <div class="item">
             <i class="euro sign icon large"></i>
@@ -318,25 +309,25 @@
         <i class="icon large kiwi bird"></i> simple color helper
     </p>
     <p>
-        <i class="icon large stop red"></i> fomantic red <br/>
-        <i class="icon large stop sc_red"></i> fallback <br/>
+        <i class="${Icons.DFT.SQUARE} large red"></i> fomantic red <br/>
+        <i class="${Icons.DFT.SQUARE} large sc_red"></i> fallback <br/>
 
-        <i class="icon large stop blue"></i> fomantic blue <br/>
-        <i class="icon large stop sc_blue"></i> fallback <br/>
+        <i class="${Icons.DFT.SQUARE} large blue"></i> fomantic blue <br/>
+        <i class="${Icons.DFT.SQUARE} large sc_blue"></i> fallback <br/>
 
-        <i class="icon large stop yellow"></i> fomantic yellow <br/>
-        <i class="icon large stop sc_yellow"></i> fallback <br/>
+        <i class="${Icons.DFT.SQUARE} large yellow"></i> fomantic yellow <br/>
+        <i class="${Icons.DFT.SQUARE} large sc_yellow"></i> fallback <br/>
 
-        <i class="icon large stop green"></i> fomantic green <br/>
-        <i class="icon large stop olive"></i> fomantic olive <br/>
-        <i class="icon large stop sc_green"></i> fallback <br/>
+        <i class="${Icons.DFT.SQUARE} large green"></i> fomantic green <br/>
+        <i class="${Icons.DFT.SQUARE} large olive"></i> fomantic olive <br/>
+        <i class="${Icons.DFT.SQUARE} large sc_green"></i> fallback <br/>
 
-        <i class="icon large stop orange"></i> fomantic orange <br/>
-        <i class="icon large stop sc_orange"></i> fallback <br/>
+        <i class="${Icons.DFT.SQUARE} large orange"></i> fomantic orange <br/>
+        <i class="${Icons.DFT.SQUARE} large sc_orange"></i> fallback <br/>
 
-        <i class="icon large stop sc_grey"></i> fallback <br/>
+        <i class="${Icons.DFT.SQUARE} large sc_grey"></i> fallback <br/>
 
-        <i class="icon large stop sc_darkgrey"></i> fallback <br/>
+        <i class="${Icons.DFT.SQUARE} large sc_darkgrey"></i> fallback <br/>
     </p>
 
     <p>

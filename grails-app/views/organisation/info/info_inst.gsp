@@ -415,7 +415,7 @@
                             <th scope="col" class="la-smaller-table-head">${message(code:'default.subscription.label')}</th>
                             <th scope="col" rowspan="2" class="la-no-uppercase">
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center">
-                                    <i class="${Icons.COSTS_CONFIG}"></i>
+                                    <i class="${Icons.FNC.COST_CONFIG}"></i>
                                 </span>
                             </th>
                             <th scope="col" rowspan="2">${message(code:'default.currency.label')}</th>
@@ -440,15 +440,15 @@
                                 switch (ci.costItemElementConfiguration) {
                                     case RDStore.CIEC_POSITIVE:
                                         dataTooltip = message(code:'financials.costItemConfiguration.positive')
-                                        icon = '<i class="plus green circle icon"></i>'
+                                        icon = '<i class="' + Icons.FNC.COST_POSITIVE + '"></i>'
                                         break
                                     case RDStore.CIEC_NEGATIVE:
                                         dataTooltip = message(code:'financials.costItemConfiguration.negative')
-                                        icon = '<i class="minus red circle icon"></i>'
+                                        icon = '<i class="' + Icons.FNC.COST_NEGATIVE + '"></i>'
                                         break
                                     case RDStore.CIEC_NEUTRAL:
                                         dataTooltip = message(code:'financials.costItemConfiguration.neutral')
-                                        icon = '<i class="circle yellow icon"></i>'
+                                        icon = '<i class="' + Icons.FNC.COST_NEUTRAL + '"></i>'
                                         break
                                 }
                             %>

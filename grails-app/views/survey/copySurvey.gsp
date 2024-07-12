@@ -443,7 +443,7 @@
                             <a href="#" class="la-popup-tooltip la-delay"
                                data-content="${message(code: 'subscription.numberOfCostItems.label')}"
                                data-position="top center">
-                                <i class="${Icons.COSTS} large"></i>
+                                <i class="${Icons.FNC.COST} large"></i>
                             </a>
                         </th>
                         <th rowspan="2" class="two wide"></th>

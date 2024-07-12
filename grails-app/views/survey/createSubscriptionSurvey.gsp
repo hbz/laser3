@@ -134,7 +134,7 @@
                 </th>
                 <th scope="col" rowspan="2">
                     <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
-                        <i class="${Icons.COSTS} large"></i>
+                        <i class="${Icons.FNC.COST} large"></i>
                     </a>
                 </th>
 

@@ -5,14 +5,13 @@ import de.laser.annotations.UnstableFeature
 @UnstableFeature
 class Icons {
 
-    public static String _PLACEHOLDER       = 'coffee icon'
-
-    class GENERIC {
+    class DFT {
         // please do not touch during refactoring ..
-        // roles / perms / customer types
+        // default / non fixed symbols
 
-        public static String MOVE_UP        = 'arrow up icon'
-        public static String MOVE_DOWN      = 'arrow down icon'
+        public static String PLACEHOLDER    = 'coffee icon'
+
+        public static String CIRCLE         = 'circle icon'
         public static String SQUARE         = 'square icon'
     }
 
@@ -45,8 +44,22 @@ class Icons {
         public static String DOWNLOAD       = 'download icon'
         public static String EDIT           = 'write icon'
         public static String ERASE          = 'eraser icon'
+        public static String MOVE_UP        = 'arrow up icon'
+        public static String MOVE_DOWN      = 'arrow down icon'
         public static String REPLACE        = 'retweet icon'
         public static String UNLINK         = 'unlink icon'
+    }
+
+    class FNC {
+        // please do not touch during refactoring ..
+        // finance, costs
+
+        public static String COST           = 'money bill icon'
+        public static String COST_CONFIG    = 'money bill alternate icon'
+
+        public static String COST_POSITIVE  = 'circle plus green icon'
+        public static String COST_NEGATIVE  = 'circle minus red icon'
+        public static String COST_NEUTRAL   = 'circle yellow icon'
     }
 
     class LNK {
@@ -74,7 +87,7 @@ class Icons {
 
     class UI {
         // please do not touch during refactoring ..
-        // generic / dialog ui
+        // dialog ui / unique symbols
 
         public static String ERROR          = 'exclamation triangle icon'
         public static String INFO           = 'info icon'
@@ -86,9 +99,6 @@ class Icons {
     // domain classes / main objects
 
     public static String ANNOUNCEMENT               = 'flag icon'
-
-    public static String COSTS                      = 'money bill icon'             // todo
-    public static String COSTS_CONFIG               = 'money bill alternate icon'   // todo
 
     public static String DOCUMENT                   = 'file alternate icon' // todo: duplicate > tipp.coverageDepth > Icons.TIPP_COVERAGE_DEPTH
 

@@ -214,7 +214,7 @@
                                 <g:else>
                                     <!-- Hidden Fake Button To hold the other Botton in Place -->
                                     <div class="ui icon button la-hidden">
-                                        <i class="${Icons._PLACEHOLDER}"></i>
+                                        <i class="${Icons.DFT.PLACEHOLDER}"></i>
                                     </div>
                                 </g:else>
                             </g:if>
