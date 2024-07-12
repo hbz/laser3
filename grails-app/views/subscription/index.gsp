@@ -99,7 +99,8 @@
                         <h4 class="ui header"><g:message code="subscription.details.issueEntitlementEnrichment.label"/></h4>
 
                         <ui:msg class="warning" header="${message(code: "message.attention")}"
-                                message="subscription.details.addEntitlements.warning"/>
+                                    message="subscription.details.addEntitlements.warning"/>
+
                         <g:form class="ui form" controller="subscription" action="index"
                                 params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscription.id]}"
                                 method="post" enctype="multipart/form-data">

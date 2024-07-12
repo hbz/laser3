@@ -14,6 +14,7 @@ import org.grails.encoder.Encoder
 import org.grails.taglib.TagLibraryLookup
 import org.grails.taglib.TagOutput
 import org.grails.taglib.encoder.OutputContextLookupHelper
+import org.grails.web.servlet.GrailsFlashScope
 import org.springframework.context.MessageSource
 import org.springframework.web.servlet.support.RequestContextUtils
 
@@ -95,19 +96,19 @@ class UiTagLib {
     def messages = { attrs, body ->
 
         def flash = attrs.data
-
-        if (flash && flash.message) {
-            out << '<div class="ui success message la-clear-before">'
-            out << '<i aria-hidden="true" class="close icon"></i>'
-            out << '<p>' + flash.message + '</p>'
-            out << '</div>'
+        if (flash && flash instanceof GrailsFlashScope) {
+            if (flash.message) {
+                out << ui.msg(class: 'success', text: flash.message)
+            }
+            if (flash.error) {
+                out << ui.msg(class: 'error', text: flash.error)
+            }
+            if (flash.invalidToken) {
+                out << ui.msg(class: 'error', text: flash.invalidToken)
+            }
         }
-
-        if (flash && flash.error) {
-            out << '<div class="ui error message la-clear-before">'
-            out << '<i aria-hidden="true" class="close icon"></i>'
-            out << '<p>' + flash.error + '</p>'
-            out << '</div>'
+        else {
+            log.warn '<ui:messages/> only accepts GrailsFlashScope'
         }
     }
 
@@ -145,25 +146,23 @@ class UiTagLib {
             out << '<div class="header">' + attrs.header + '</div>'
         }
 
-        out << '<p>'
+        out << '<p> ' // only phrasing content allowed
 
         if (attrs.text) {
             out << attrs.text
         }
         if (attrs.message) {
             SwissKnife.checkMessageKey(attrs.message as String)
-            out << "${message(code: attrs.message, args: attrs.args)}"
+            out << message(code: attrs.message, args: attrs.args)
         }
         if (body) {
             out << body()
         }
-
-        out << '</p>'
+        out << ' </p>'
 
         if (icon) {
             out << '</div>' //.content
         }
-
         out << '</div>'
     }
 
@@ -181,7 +180,7 @@ class UiTagLib {
                     out << BeanStore.getMessageSource().getMessage(e, LocaleUtils.getCurrentLocale())
                     out << '</li>'
                 } else {
-                    out << '<li>' + g.message(error: "${e}") + '</li>'
+                    out << '<li>' + message(error: "${e}") + '</li>'
                 }
             }
             out << '</ul>'

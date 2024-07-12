@@ -13,6 +13,15 @@
     <g:link controller="dev" action="icons" class="item"><i class="certificate icon red"></i> New Icons</g:link>
 </nav>
 
+-- Reminder --
+
+<ui:messages data="${[message: message(code: 'renewalEvaluation.dynamicSite')]}"/>
+
+<ui:msg class="success" message="renewalEvaluation.dynamicSite" />
+<ui:msg class="info" message="renewalEvaluation.dynamicSite" />
+
+-- Reminder --
+
 <div class="ui four column grid">
     <div class="column">
         <div class="ui icon info message">

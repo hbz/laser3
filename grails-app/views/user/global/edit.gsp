@@ -170,9 +170,7 @@
                                 <div class="ui content">
                                     <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
 
-                                    <ui:msg class="warning" showIcon="true" hideClose="true">
-                                        Dieser Nutzer ist noch keiner Einrichtung zugewiesen.
-                                    </ui:msg>
+                                    <ui:msg class="warning" showIcon="true" hideClose="true" text="Dieser Nutzer ist noch keiner Einrichtung zugewiesen." />
 
                                     <div class="ui form">
                                         <g:form controller="${controllerName}" action="setAffiliation" class="ui form" method="get">

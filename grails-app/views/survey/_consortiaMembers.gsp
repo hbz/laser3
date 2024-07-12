@@ -50,8 +50,10 @@
         <br/>
         <g:if test="${surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]}">
 
-            <ui:msg header="${message(code: 'surveyParticipants.addParticipants.option.selectMembersWithFile.info')}" hideClose="true">
+            <div class="ui message">
+                <div class="header">${message(code: 'surveyParticipants.addParticipants.option.selectMembersWithFile.info')}</div>
 
+                <br>
                 ${message(code: 'surveyParticipants.addParticipants.option.selectMembersWithFile.text')}
 
                 <br>
@@ -71,7 +73,7 @@
                         <i class="${Icons.CMD.ATTACHMENT}"></i>
                     </div>
                 </div>
-            </ui:msg>
+            </div><!-- .message -->
 
 
             <input type="submit" class="ui button" value="${message(code: 'default.button.add.label')}"/>

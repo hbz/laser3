@@ -355,8 +355,10 @@
 
         <div class="ui divider"></div>
 
-        <ui:msg header="${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.info')}" hideClose="true">
+        <div class="ui message">
+            <div class="header">${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.info')}</div>
 
+            <br>
             ${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.text')}
 
             <br>
@@ -376,7 +378,7 @@
                     <i class="${Icons.CMD.ATTACHMENT}"></i>
                 </div>
             </div>
-        </ui:msg>
+        </div><!-- .message -->
 
 
         <g:if test="${members}">

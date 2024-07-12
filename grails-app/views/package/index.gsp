@@ -18,9 +18,7 @@
 </g:if>
 
 <g:if test="${error}">
-    <ui:msg class="error" showIcon="true" header="${message(code: 'message.attention')}">
-        {error}
-    </ui:msg>
+    <ui:msg class="error" showIcon="true" header="${message(code: 'message.attention')}" text="${error}" />
 </g:if>
 
 <div class="twelve wide column la-clear-before">

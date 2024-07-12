@@ -2,7 +2,7 @@
 
 <div class="ui segment" id="costPerUse">
     <g:if test="${selectedPeriodNotCovered}">
-        <ui:msg class="info" showIcon="true">${selectedPeriodNotCovered}</ui:msg>
+        <ui:msg class="info" showIcon="true" text="${selectedPeriodNotCovered}" />
     </g:if>
     <div id="chartWrapper" style="width:100%; min-height:500px"></div>
     <%--

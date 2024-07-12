@@ -69,8 +69,8 @@
                 message="default.usage.counter4reportInfo.text" hideClose="true"/>
         --%>
             <ui:msg class="info" showIcon="true" hideClose="true"
-                    header="${message(code: 'default.usage.counter4reportInfo.header')}"
-                    message="default.usage.counter4reportInfo.text" />
+                        header="${message(code: 'default.usage.counter4reportInfo.header')}"
+                        message="default.usage.counter4reportInfo.text" />
         </g:if>
         <g:form controller="subscription" action="generateReport" name="stats" class="ui form" method="get">
             <g:hiddenField name="id" value="${subscription.id}"/>
@@ -145,6 +145,7 @@
         <div id="reportWrapper"></div>
     </g:if>
     <g:elseif test="${error}">
+
         <ui:msg class="error" showIcon="true" hideClose="true">
             <g:if test="${error == 'noCustomerId'}">
                 <g:message code="default.stats.error.${error}.local" args="${errorArgs}"/>
