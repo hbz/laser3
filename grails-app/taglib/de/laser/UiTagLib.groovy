@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.annotations.FixedFeature_DoNotModify
 import de.laser.auth.User
 import de.laser.cache.SessionCacheWrapper
 import de.laser.helper.Icons
@@ -93,27 +94,31 @@ class UiTagLib {
 
     // <ui:messages data="${flash}" />
 
+    @FixedFeature_DoNotModify
     def messages = { attrs, body ->
 
         def flash = attrs.data
-        if (flash && flash instanceof GrailsFlashScope) {
-            if (flash.message) {
-                out << ui.msg(class: 'success', text: flash.message)
+        if (flash) {
+            if (flash instanceof GrailsFlashScope) {
+                if (flash.message) {
+                    out << ui.msg(class: 'success', text: flash.message)
+                }
+                if (flash.error) {
+                    out << ui.msg(class: 'error', text: flash.error)
+                }
+                if (flash.invalidToken) {
+                    out << ui.msg(class: 'error', text: flash.invalidToken)
+                }
             }
-            if (flash.error) {
-                out << ui.msg(class: 'error', text: flash.error)
+            else {
+                log.warn 'INVALID USAGE: <ui:messages/> only accepts GrailsFlashScope: ' + flash.getClass()
             }
-            if (flash.invalidToken) {
-                out << ui.msg(class: 'error', text: flash.invalidToken)
-            }
-        }
-        else {
-            log.warn '<ui:messages/> only accepts GrailsFlashScope'
         }
     }
 
     // <ui:msg class="error|info|success|warning" header="${text}" text="${text}" message="18n.token" showIcon="true" hideClose="true" />
 
+    @FixedFeature_DoNotModify
     def msg = { attrs, body ->
 
         String clss = ''
@@ -156,7 +161,19 @@ class UiTagLib {
             out << message(code: attrs.message, args: attrs.args)
         }
         if (body) {
-            out << body()
+            String content = body()
+            out << content
+
+            boolean phraseCheck = true
+            for (String bad : ['</div>', '<input', '</li>']) {
+                if (phraseCheck && content.contains(bad)) {
+                    phraseCheck = false
+                    break
+                }
+            }
+            if (!phraseCheck) {
+                log.warn 'INVALID USAGE: <ui:msg/> only accepts phrasing content'
+            }
         }
         out << ' </p>'
 
@@ -173,6 +190,7 @@ class UiTagLib {
         if (attrs.bean?.errors?.allErrors) {
             out << '<div class="ui error message">'
             out << '<i aria-hidden="true" class="close icon"></i>'
+//            out << '<i class="exclamation triangle icon" aria-hidden="true"></i>'
             out << '<ul class="list">'
             attrs.bean.errors.allErrors.each { e ->
                 if (e in org.springframework.validation.FieldError) {
