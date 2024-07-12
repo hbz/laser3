@@ -1831,9 +1831,8 @@ class MyInstitutionController  {
         }*/
 
         if ((params.filter) && (params.filter.length() > 0)) {
-            //genfunc_filter_matcher needs rework because it causes memory leak
-            queryFilter << "( lower(tipp.name) like lower(:titlestr) or lower(tipp.firstAuthor) like lower(:titlestr) or lower(tipp.firstEditor) like lower(:titlestr) )"
-            qryParams.titlestr = "%${params.get('filter').toString()}%"
+            queryFilter << "ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where genfunc_filter_matcher(tipp.name, :titlestr) = true or genfunc_filter_matcher(tipp.firstAuthor, :titlestr) = true or genfunc_filter_matcher(tipp.firstEditor, :titlestr) = true )"
+            qryParams.titlestr = params.filter
         }
 
         if (filterSub) {
@@ -1862,10 +1861,11 @@ class MyInstitutionController  {
             subscriptionQueryFilter << "pkg in (select pv.pkg from PackageVendor pv where pv.vendor in (:selVen))"
             subQryParams.selVen = filterVen
         }
-        qryParams.subIds = Subscription.executeQuery("select sub.id from Subscription sub join sub.orgRelations oo "+pkgJoin+" where oo.org = :institution and "+subscriptionQueryFilter.join(" and "), subQryParams)
-        prf.setBenchmark('before sub IDs')
+        Set<Long> subIds = Subscription.executeQuery("select sub.id from Subscription sub join sub.orgRelations oo "+pkgJoin+" where oo.org = :institution and "+subscriptionQueryFilter.join(" and "), subQryParams)
+        qryParams.subIds = subIds
         List<String> countQueryFilter = queryFilter.clone()
         Map<String, Object> countQueryParams = qryParams.clone()
+        prf.setBenchmark('before sub IDs')
 
         if (params.status) {
             queryFilter << "ie.status in (:status)"
@@ -1880,7 +1880,7 @@ class MyInstitutionController  {
         String qryString = "from IssueEntitlement ie join ie.tipp tipp where ie.subscription.id in (:subIds) "
         //String qryString = "from TitleInstancePackagePlatform tipp where exists (select ie.id from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo join sub.packages sp join sp.pkg pkg where ie.tipp = tipp and oo.org = :institution "
 
-        String countQueryString = qryString
+        String countQueryString = " from IssueEntitlement ie where ie.subscription.id in (:subIds) "
         if(queryFilter) {
             qryString += ' and ' + queryFilter.join(' and ')
         }
@@ -1890,6 +1890,8 @@ class MyInstitutionController  {
 
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256")
         Map<String, Object> cachingKeys = params.clone()
+        cachingKeys.remove("controller")
+        cachingKeys.remove("action")
         cachingKeys.remove("offset")
         cachingKeys.remove("max")
         String checksum = "${result.user.id}_${cachingKeys.entrySet().join('_')}"
@@ -1948,11 +1950,11 @@ class MyInstitutionController  {
             }
         }
         qryString += orderByClause
-        //log.debug(qryString)
+        //log.debug(qryString.replace(':subIds', subIds.join(',')))
 
         Map<String, Object> selectedFields = [:]
         Set<Long> allTitles = subCache.get("titleIDs") ?: []
-        if(qryParams.containsKey("subIds")) {
+        if(subIds) {
             if(params.containsKey('fileformat') && params.fileformat != 'kbart') {
                 Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
                 selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }

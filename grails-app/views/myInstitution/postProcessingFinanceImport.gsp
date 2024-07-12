@@ -129,8 +129,12 @@
                                                 errMess = message(code:"myinst.financeImport.post.error.invalidYearFormat",args:[errors.get('invalidYearFormat')])
                                             break
                                         case ["datum von", "date from"]: tableCell = formatDate(format: message(code:'default.date.format.notime'), date: ci.startDate)
+                                            if(errors.containsKey('invalidDate'))
+                                                errMess = message(code:"myinst.financeImport.post.error.invalidDate")
                                             break
                                         case ["datum bis", "date to"]: tableCell = formatDate(format: message(code:'default.date.format.notime'), date: ci.endDate)
+                                            if(errors.containsKey('invalidDate'))
+                                                errMess = message(code:"myinst.financeImport.post.error.invalidDate")
                                             break
                                         case ["rechnungsdatum", "invoice date"]: tableCell = formatDate(format: message(code:'default.date.format.notime'), date: ci.invoiceDate)
                                             break

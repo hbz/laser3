@@ -472,7 +472,8 @@ class LicenseController {
             //}
             //}
         }
-
+        /*
+        if used, we should move it to AJAX ==> ControlledListService!
         if(validMemberLicenses) {
             String subQuery = "select l.destinationSubscription from Links l join l.destinationSubscription s where l.sourceLicense in (:licenses) and l.linkType = :linkType "
             if (params.status) {
@@ -481,6 +482,7 @@ class LicenseController {
                 result.subscriptionsForFilter = Subscription.executeQuery(subQuery, [linkType:RDStore.LINKTYPE_LICENSE, licenses:validMemberLicenses])
             }
         }
+        */
         result.validMemberLicenses = filteredMemberLicenses
         result
     }
