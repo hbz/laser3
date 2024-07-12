@@ -165,7 +165,7 @@ class UiTagLib {
             out << content
 
             boolean phraseCheck = true
-            for (String bad : ['</div>', '<input', '</li>', ]) {
+            for (String bad : ['</div>', '<input', '</li>']) {
                 if (phraseCheck && content.contains(bad)) {
                     phraseCheck = false
                     break
@@ -190,6 +190,7 @@ class UiTagLib {
         if (attrs.bean?.errors?.allErrors) {
             out << '<div class="ui error message">'
             out << '<i aria-hidden="true" class="close icon"></i>'
+//            out << '<i class="exclamation triangle icon" aria-hidden="true"></i>'
             out << '<ul class="list">'
             attrs.bean.errors.allErrors.each { e ->
                 if (e in org.springframework.validation.FieldError) {
