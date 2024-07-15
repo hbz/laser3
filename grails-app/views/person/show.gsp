@@ -272,7 +272,7 @@
                                                 </g:if>
                                                 <g:if test="${link.tipp}">
                                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'title.label')}" data-position="top right" data-variation="tiny">
-                                                        <i class="ui icon book la-list-icon"></i>
+                                                        <i class="${Icons.TIPP} la-list-icon"></i>
                                                     </span>
                                                 </g:if>
 

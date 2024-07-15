@@ -1,4 +1,4 @@
-<%@ page import="org.springframework.web.servlet.support.RequestContextUtils; de.laser.config.ConfigMapper; de.laser.CustomerTypeService; de.laser.helper.Profiler; de.laser.utils.AppUtils; grails.util.Environment; de.laser.system.SystemActivityProfiler; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage; org.grails.orm.hibernate.cfg.GrailsHibernateUtil" %>
+<%@ page import="de.laser.helper.Icons; org.springframework.web.servlet.support.RequestContextUtils; de.laser.config.ConfigMapper; de.laser.CustomerTypeService; de.laser.helper.Profiler; de.laser.utils.AppUtils; grails.util.Environment; de.laser.system.SystemActivityProfiler; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage; org.grails.orm.hibernate.cfg.GrailsHibernateUtil" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -107,7 +107,7 @@
                             <div class="ui icon input">
                                 <input id="spotlightSearch" class="prompt" type="search" placeholder="${message(code:'spotlight.search.placeholder')}"
                                        aria-label="${message(code:'spotlight.search.placeholder')}">
-                                <i class="search icon" id="btn-search"></i>
+                                <i class="${Icons.SYM.SEARCH}" id="btn-search"></i>
                             </div>
                             <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
                         </div>
@@ -115,7 +115,7 @@
                         <ui:link addItemAttributes="true" class="la-search-advanced la-popup-tooltip la-delay" controller="search" action="index"
                                  data-content="${message(code: 'search.advancedSearch.tooltip')}">
                             <i class="large icons">
-                                <i class="search icon"></i>
+                                <i class="${Icons.SYM.SEARCH}"></i>
                                 <i class="top right grey corner plus icon"></i>
                             </i>
                         </ui:link>

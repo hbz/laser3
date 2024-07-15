@@ -55,7 +55,7 @@
                             target="_blank"
                             controller="tipp" action="show"
                             id="${tipp.id}">
-                        <i class="book icon"></i>
+                        <i class="${Icons.TIPP}"></i>
                     </g:link>
 
                     <g:each in="${apisources}" var="gokbAPI">

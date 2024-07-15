@@ -81,7 +81,7 @@ class Icons {
 
     class SYM {
         // please do not touch during refactoring ..
-        // convenient symbols => given semantics
+        // convenient symbols
 
         public static String DATE           = 'calendar alternate outline icon'
         public static String EMAIL          = 'envelope outline icon'
@@ -90,6 +90,7 @@ class Icons {
         public static String PHONE          = 'phone icon'
         public static String URL            = 'globe icon'
 
+        public static String SEARCH         = 'search icon'
         public static String PROPERTIES     = 'tags icon'
 
         public static String UNKOWN         = 'question icon'
@@ -121,7 +122,7 @@ class Icons {
 
     class X {
         // please do not touch during refactoring ..
-        // basic / generic => lower semantics
+        // basic / generic => none semantics
 
         public static String PLACEHOLDER    = 'coffee icon'
         public static String CIRCLE         = 'circle icon'
@@ -158,6 +159,8 @@ class Icons {
     public static String SURVEY                     = 'chart pie icon'
 
     public static String TASK                       = 'calendar check outline icon'
+
+    public static String TIPP                       = 'book icon'
 
     public static String VENDOR                     = 'boxes icon'
 

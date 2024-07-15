@@ -59,7 +59,7 @@
                             <i class="${Icons.VENDOR} grey la-list-icon"></i> ${message(code:'vendor')}
                         </g:elseif>
                         <g:elseif test="${objCat.value.first() instanceof TitleInstancePackagePlatform}">
-                            <i class="icon grey book la-list-icon"></i> ${message(code:'title')}
+                            <i class="${Icons.TIPP} grey la-list-icon"></i> ${message(code:'title')}
                         </g:elseif>
                     </th>
                     <th class="three wide"></th>

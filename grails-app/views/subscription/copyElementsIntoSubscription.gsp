@@ -111,8 +111,8 @@
                         </g:link>
                     </div>
                     <div class="description">
-                        <i class="${Icons.PACKAGE}"></i>   ${message(code: 'package.label')} <br />
-                        <i class="book icon"></i>           ${message(code: 'title')} <br />
+                        <i class="${Icons.PACKAGE}"></i>    ${message(code: 'package.label')} <br />
+                        <i class="${Icons.TIPP}"></i>       ${message(code: 'title')} <br />
                         <i class="icon object group"></i>   ${message(code: 'subscription.details.ieGroups')}
                     </div>
                 </div>
@@ -190,8 +190,8 @@
                         ${message(code: 'copyElementsIntoObject.inventory.label')}
                     </div>
                     <div class="description">
-                        <i class="${Icons.PACKAGE}"></i>   ${message(code: 'package.label')} <br />
-                        <i class="book icon"></i>           ${message(code: 'title')} <br />
+                        <i class="${Icons.PACKAGE}"></i>    ${message(code: 'package.label')} <br />
+                        <i class="${Icons.TIPP}"></i>       ${message(code: 'title')} <br />
                         <i class="icon object group"></i>   ${message(code: 'subscription.details.ieGroups')}
                     </div>
                 </div>
