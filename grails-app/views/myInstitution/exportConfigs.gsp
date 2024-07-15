@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Icon" %>
 <laser:htmlStart message="menu.institutions.clickMeConfig" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -54,18 +54,18 @@
                             <g:if test="${editable}">
                                 <g:if test="${i == 1 && clickMeConfigs.size() == 2}">
                                     <g:link class="ui icon blue button compact la-modern-button" action="exportConfigsActions"
-                                         params="[cmd: 'moveUp', id: clickMeConfig.id, tab: params.tab]"><i class="${Icons.CMD.MOVE_UP}"></i>
+                                         params="[cmd: 'moveUp', id: clickMeConfig.id, tab: params.tab]"><i class="${Icon.CMD.MOVE_UP}"></i>
                                     </g:link>
                                 </g:if>
                                 <g:else>
                                     <g:if test="${i > 0}">
                                         <g:link class="ui icon blue button compact la-modern-button" action="exportConfigsActions"
-                                                params="[cmd: 'moveUp', id: clickMeConfig.id, tab: params.tab]"><i class="${Icons.CMD.MOVE_UP}"></i>
+                                                params="[cmd: 'moveUp', id: clickMeConfig.id, tab: params.tab]"><i class="${Icon.CMD.MOVE_UP}"></i>
                                         </g:link>
                                     </g:if>
                                     <g:if test="${i < clickMeConfigs.size()-1}">
                                         <g:link class="ui icon blue button compact la-modern-button" action="exportConfigsActions"
-                                                params="[cmd: 'moveDown', id: clickMeConfig.id, tab: params.tab]"><i class="${Icons.CMD.MOVE_DOWN}"></i>
+                                                params="[cmd: 'moveDown', id: clickMeConfig.id, tab: params.tab]"><i class="${Icon.CMD.MOVE_DOWN}"></i>
                                         </g:link>
                                     </g:if>
                                 </g:else>
@@ -78,7 +78,7 @@
                                         params="${[cmd: 'delete', id: clickMeConfig.id, tab: params.tab]}" class="ui icon negative button  la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD.DELETE}"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </g:link>
                             </td>
                         </g:if>

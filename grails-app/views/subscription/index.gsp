@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.IssueEntitlementCoverage; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Icon; de.laser.IssueEntitlementCoverage; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart message="subscription.details.current_ent" serviceInjection="true"/>
 
@@ -44,14 +44,14 @@
     </g:if>
     <g:if test="${errorKBART}">
         <ui:msg class="error" showIcon="true" message="subscription.details.addEntitlements.titleNotMatched" args="[errorCount]"/>
-        <g:link class="ui icon button la-modern-button" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icons.CMD.DOWNLOAD}"></i></g:link>
+        <g:link class="ui icon button la-modern-button" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
     </g:if>
 
 </g:if>
 
 <g:if test="${deletedSPs}">
     <div class="ui icon error message">
-        <i class="${Icons.UI.ERROR}"></i>
+        <i class="${Icon.UI.ERROR}"></i>
         <ul class="list">
             <g:each in="${deletedSPs}" var="sp">
                 <li><g:message code="subscription.details.packagesDeleted.header"
@@ -63,7 +63,7 @@
 
 <g:if test="${frozenHoldings}">
     <div class="ui icon error message">
-        <i class="${Icons.UI.ERROR}"></i>
+        <i class="${Icon.UI.ERROR}"></i>
         <ul class="list">
             <g:each in="${frozenHoldings}" var="sp">
                 <li><g:message code="subscription.details.frozenHoldings.header"
@@ -114,7 +114,7 @@
                                                style="display: none;">
 
                                         <div class="ui icon button">
-                                            <i class="${Icons.CMD.ATTACHMENT}"></i>
+                                            <i class="${Icon.CMD.ATTACHMENT}"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -485,7 +485,7 @@
                                                         <div class="right aligned wide column">
                                                         </div>
                                                         <div class="ui icon blue button la-modern-button">
-                                                            <i class="${Icons.CMD.SHOW_MORE}"></i>
+                                                            <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                         </div>
                                                         <g:if test="${editable}">
                                                             <g:if test="${subscription.ieGroups.size() > 0}">
@@ -496,7 +496,7 @@
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.tipp.name])}"
                                                                         data-confirm-term-how="delete"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="${Icons.CMD.DELETE}"></i>
+                                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                                 </g:link>
                                                             </g:if>
                                                             <g:else>
@@ -507,7 +507,7 @@
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.tipp.name])}"
                                                                         data-confirm-term-how="delete"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="${Icons.CMD.DELETE}"></i>
+                                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                                 </g:link>
                                                             </g:else>
                                                         </g:if>
@@ -565,7 +565,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.coverageDepth}">
                                                                 <div class="item">
-                                                                    <i class="grey ${Icons.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>
+                                                                    <i class="grey ${Icon.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>
                                                                     <div class="content">
                                                                         <div class="header">
                                                                             ${message(code: 'tipp.coverageDepth')}
@@ -606,7 +606,7 @@
                                                         <div class="ui list">
                                                             <g:if test="${ie}">
                                                                 <div class="item">
-                                                                    <i class="grey ${Icons.CMD.EDIT} la-popup-tooltip la-delay"
+                                                                    <i class="grey ${Icon.CMD.EDIT} la-popup-tooltip la-delay"
                                                                        data-content="${message(code: 'issueEntitlement.myNotes')}"></i>
                                                                     <div class="content">
                                                                         <div class="header"><g:message code="issueEntitlement.myNotes"/></div>
@@ -625,7 +625,7 @@
                                                             <hr>
                                                             <g:if test="${editable}">
                                                                 <button class="ui tiny button addObject" data-objType="priceItem" data-ie="${ie.id}">
-                                                                    <i class="${Icons.FNC.COST_CONFIG}"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
+                                                                    <i class="${Icon.FNC.COST_CONFIG}"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
                                                                 </button>
                                                             </g:if>
 

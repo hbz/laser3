@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.config.ConfigMapper" %>
+<%@ page import="de.laser.ui.Icon; de.laser.config.ConfigMapper" %>
 <laser:htmlStart message="default.usage.adminPage.mainHeader" />
 
 <ui:breadcrumbs>
@@ -140,7 +140,7 @@
     <g:if test="${statsError.size()!=0}">
       <td class="x">
         <button class="ui icon button" data-target="stats-error-content-${i}">
-          <i class="${Icons.UI.INFO}"></i>
+          <i class="${Icon.UI.INFO}"></i>
         </button>
       </td>
     </g:if>

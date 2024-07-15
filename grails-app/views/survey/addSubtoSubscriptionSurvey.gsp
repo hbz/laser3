@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 
 <laser:htmlStart message="createSubscriptionSurvey.label" serviceInjection="true" />
 
@@ -38,7 +38,7 @@
 
         <div class="field">
             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'surveyconfig.subSurveyUseForTransfer.label.info3')}">
-            <label>${message(code: 'surveyconfig.subSurveyUseForTransfer.label.info')} <i class="${Icons.TOOLTIP.HELP}"></i></label>
+            <label>${message(code: 'surveyconfig.subSurveyUseForTransfer.label.info')} <i class="${Icon.TOOLTIP.HELP}"></i></label>
             </span>
             <div class="field disabled">
                 <input type="checkbox" name="subSurveyUseForTransfer">

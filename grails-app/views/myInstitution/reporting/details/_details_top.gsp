@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Icon" %>
 <h3 class="ui header">${message(code:'reporting.ui.global.step3')}</h3>
 
 <g:set var="queryPart" value="${query.split('-')[0]}" />
@@ -6,7 +6,7 @@
 <div style="text-align:right; margin-right:0.5em">
     <g:if test="${!(queryPart in ['issueEntitlement'])}">
         <button id="details-export-button" class="ui icon button la-modern-button" data-href="#detailsExportModal" data-ui="modal">
-            <i class="${Icons.CMD.DOWNLOAD}"></i>
+            <i class="${Icon.CMD.DOWNLOAD}"></i>
         </button>
     </g:if>
 

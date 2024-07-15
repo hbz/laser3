@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.RefdataCategory; grails.plugins.orm.auditable.Auditable; de.laser.AuditConfig" %>
+<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.RefdataCategory; grails.plugins.orm.auditable.Auditable; de.laser.AuditConfig" %>
 <laser:htmlStart message="menu.institutions.manage_props" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -48,7 +48,7 @@
             <div class="field">
                 <h2 class="ui header">
                     <g:if test="${filterPropDef.tenant != null}">
-                        <i class="${Icons.PROP.IS_PRIVATE}"></i>
+                        <i class="${Icon.PROP.IS_PRIVATE}"></i>
                     </g:if>
                     <g:message code="property.manageProperties.add" args="[filterPropDef.getI10n('name')]"/>
                 </h2>
@@ -266,7 +266,7 @@
                                 <g:link controller="${objWithoutProp.displayController}" action="show" id="${objWithoutProp.id}" class="ui icon button blue la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                 </g:link>
                             </td>
                         </tr>
@@ -287,7 +287,7 @@
             <div class="field">
                 <h2 class="ui header">
                     <g:if test="${filterPropDef.tenant != null}">
-                        <i class="${Icons.PROP.IS_PRIVATE}"></i>
+                        <i class="${Icon.PROP.IS_PRIVATE}"></i>
                     </g:if>
                     <g:message code="property.manageProperties.edit" args="[filterPropDef.getI10n('name')]"/>
                 </h2>
@@ -511,7 +511,7 @@
                                 <g:link controller="${row.displayController}" action="${row.displayAction}" id="${row.id}" class="ui icon button blue la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                 </g:link>
                                 <g:if test="${row.manageChildren}">
                                     <g:link controller="${row.displayController}" action="${row.manageChildren}" params="${row.manageChildrenParams}" class="ui icon button"><i class="users icon"></i></g:link>

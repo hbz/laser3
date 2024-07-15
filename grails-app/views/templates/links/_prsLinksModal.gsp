@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Icon" %>
 <ui:modal id="prsLinksModal" text="Neue Kontaktperson hinzufügen" hideSubmitButton="true">
 
     <p>${message(code:'myinst.addressBook.visibleOnly')}</p>
@@ -22,12 +22,12 @@
                             <td>
                                 <g:if test="${! p.isPublic}">
                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
-                                        <i class="${Icons.ADDRESS_PRIVATE}"></i>
+                                        <i class="${Icon.ADDRESS_PRIVATE}"></i>
                                     </span>
                                 </g:if>
                                 <g:else>
                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
-                                        <i class="${Icons.ADDRESS_PUBLIC}"></i>
+                                        <i class="${Icon.ADDRESS_PUBLIC}"></i>
                                     </span>
                                 </g:else>
                                 ${p}

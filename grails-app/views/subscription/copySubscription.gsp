@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService;de.laser.storage.RDStore;de.laser.PendingChangeConfiguration;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService;de.laser.storage.RDStore;de.laser.PendingChangeConfiguration;" %>
 <laser:htmlStart message="myinst.copySubscription" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -34,9 +34,9 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                     <i class="lock open icon"></i>      ${message(code:'subscription.isPublicForApi.label')} <br />
                     <i class="flag outline icon"></i>   ${message(code:'subscription.hasPerpetualAccess.label')} <br />
                     <i class="comment icon"></i>        ${message(code:'subscription.hasPublishComponent.label')} <br />
-                    <i class="${Icons.LICENSE}"></i>    ${message(code: 'license.label')} <br />
-                    <i class="${Icons.ORG}"></i>        ${message(code: 'subscription.organisations.label')} <br />
-                    <i class="${Icons.ADDRESS_PUBLIC}"></i>   ${message(code: 'subscription.specificSubscriptionEditors')} <br />
+                    <i class="${Icon.LICENSE}"></i>    ${message(code: 'license.label')} <br />
+                    <i class="${Icon.ORG}"></i>        ${message(code: 'subscription.organisations.label')} <br />
+                    <i class="${Icon.ADDRESS_PUBLIC}"></i>   ${message(code: 'subscription.specificSubscriptionEditors')} <br />
                     <i class="barcode icon"></i>        ${message(code: 'default.identifiers.label')} <br />
                     <i class="exchange icon"></i>       ${message(code: 'subscription.linkedObjects')}
                 </div>
@@ -50,9 +50,9 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
             </div>
             <div class="description">
                 <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
-                <i class="${Icons.TASK}"></i>          ${message(code: 'menu.institutions.tasks')} <br />
-                <i class="${Icons.DOCUMENT}"></i>      ${message(code: 'default.documents.label')} <br />
-                <i class="${Icons.WORKFLOW}"></i>      ${message(code: 'workflow.plural')}
+                <i class="${Icon.TASK}"></i>          ${message(code: 'menu.institutions.tasks')} <br />
+                <i class="${Icon.DOCUMENT}"></i>      ${message(code: 'default.documents.label')} <br />
+                <i class="${Icon.WORKFLOW}"></i>      ${message(code: 'workflow.plural')}
             </div>
         </div>
     </div>
@@ -64,7 +64,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                     ${message(code: 'consortium.subscriber')}
                 </div>
                 <div class="description">
-                    <i class="${Icons.ORG}"></i> ${message(code: 'consortium.subscriber')}
+                    <i class="${Icon.ORG}"></i> ${message(code: 'consortium.subscriber')}
                 </div>
             </div>
         </div>
@@ -74,8 +74,8 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
         <div class="content" >
             <div class="title">${message(code: 'copyElementsIntoObject.inventory.label')}</div>
             <div class="description">
-                <i class="${Icons.PACKAGE}"></i>    ${message(code: 'package.label')} <br />
-                <i class="${Icons.TIPP}"></i>       ${message(code: 'title')} <br />
+                <i class="${Icon.PACKAGE}"></i>    ${message(code: 'package.label')} <br />
+                <i class="${Icon.TIPP}"></i>       ${message(code: 'title')} <br />
                 <i class="icon object group"></i>   ${message(code: 'subscription.details.ieGroups')}
             </div>
         </div>
@@ -87,7 +87,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                 ${message(code: 'properties')}
             </div>
             <div class="description">
-                <i class="${Icons.SYM.PROPERTIES}"></i> ${message(code: 'properties')}
+                <i class="${Icon.SYM.PROPERTIES}"></i> ${message(code: 'properties')}
             </div>
         </div>
     </div>

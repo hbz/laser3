@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 <div class="la-icon-list">
 <ui:listIcon type="${tipp.titleType}"/>
@@ -150,7 +150,7 @@
 
     <g:if test="${(tipp.titleType == 'monograph') && (tipp.editionStatement || showEmptyFields)}">
         <div class="item">
-            <i class="grey ${Icons.CMD.COPY} la-popup-tooltip la-delay"
+            <i class="grey ${Icon.CMD.COPY} la-popup-tooltip la-delay"
                data-content="${message(code: 'title.editionStatement.label')}"></i>
 
             <div class="content">
@@ -161,7 +161,7 @@
 
     <g:if test="${(tipp.titleType == 'monograph') && (tipp.editionNumber || showEmptyFields)}">
         <div class="item">
-            <i class="grey ${Icons.CMD.COPY} la-popup-tooltip la-delay"
+            <i class="grey ${Icon.CMD.COPY} la-popup-tooltip la-delay"
                data-content="${message(code: 'tipp.editionNumber.tooltip')}"></i>
 
             <div class="content">
@@ -293,7 +293,7 @@
 
 
     <div class="item">
-        <i class="${Icons.PROVIDER} grey la-popup-tooltip la-delay"
+        <i class="${Icon.PROVIDER} grey la-popup-tooltip la-delay"
            data-content="${message(code: 'tipp.provider')}"></i>
 
         <div class="content">
@@ -308,7 +308,7 @@
                         <a role="button" class="ui icon tiny blue button la-popup-tooltip la-delay"
                            data-content="${message(code: 'wekb')}"
                            href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/tippContent/?id=' + tipp.gokbId : '#'}"
-                           target="_blank"><i class="${Icons.WEKB}"></i>
+                           target="_blank"><i class="${Icon.WEKB}"></i>
                         </a>
                     </g:if>
                 </g:each>
@@ -334,7 +334,7 @@
     <g:if test="${showPackage}">
         <g:if test="${tipp.pkg.id}">
             <div class="item">
-                <i class="grey ${Icons.PACKAGE} la-popup-tooltip la-delay"
+                <i class="grey ${Icon.PACKAGE} la-popup-tooltip la-delay"
                    data-content="${message(code: 'package.label')}"></i>
 
                 <div class="content">
@@ -347,7 +347,7 @@
     <g:if test="${showPlattform}">
         <g:if test="${tipp.platform.name}">
             <div class="item">
-                <i class="${Icons.PLATFORM} grey la-popup-tooltip la-delay" data-content="${message(code: 'tipp.platform')}"></i>
+                <i class="${Icon.PLATFORM} grey la-popup-tooltip la-delay" data-content="${message(code: 'tipp.platform')}"></i>
 
                 <div class="content">
                     <g:if test="${tipp.platform.name}">
@@ -371,7 +371,7 @@
                 target="_blank"
                 controller="tipp" action="show"
                 id="${tipp.id}">
-            <i class="${Icons.TIPP}"></i>
+            <i class="${Icon.TIPP}"></i>
         </g:link>
     </g:if>
 
@@ -380,7 +380,7 @@
             <a role="button" class="ui icon tiny blue button la-popup-tooltip la-delay"
                data-content="${message(code: 'wekb')}"
                href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/tippContent/?id=' + tipp.gokbId : '#'}"
-               target="_blank"><i class="${Icons.WEKB}"></i>
+               target="_blank"><i class="${Icon.WEKB}"></i>
             </a>
         </g:if>
     </g:each>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Icon" %>
 <g:if test="${(tipp.titleType == 'monograph')}">
     <div class="ui card">
         <div class="content">
@@ -36,7 +36,7 @@
             <g:if test="${editable}">
                 <br/>
                 <g:link action="addCoverage" params="${paramData+[issueEntitlement: ie.id]}"
-                        class="ui compact icon button positive tiny"><i class="${Icons.CMD.ADD}"
+                        class="ui compact icon button positive tiny"><i class="${Icon.CMD.ADD}"
                                                                         data-content="${message(code: 'subscription.details.addCoverage')}"></i></g:link>
             </g:if>
         </div>

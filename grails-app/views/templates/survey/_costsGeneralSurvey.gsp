@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.utils.LocaleUtils" %>
+<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.utils.LocaleUtils" %>
 <laser:serviceInjection/>
 <g:set var="costItemsSurvey"
        value="${surveyOrg ? CostItem.findAllBySurveyOrgAndPkgIsNull(surveyOrg) : null}"/>
@@ -45,19 +45,19 @@
                                 switch (elementSign) {
                                     case RDStore.CIEC_POSITIVE:
                                         dataTooltip = message(code: 'financials.costItemConfiguration.positive')
-                                        icon = '<i class="' + Icons.FNC.COST_POSITIVE + '"></i>'
+                                        icon = '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
                                         break
                                     case RDStore.CIEC_NEGATIVE:
                                         dataTooltip = message(code: 'financials.costItemConfiguration.negative')
-                                        icon = '<i class="' + Icons.FNC.COST_NEGATIVE + '"></i>'
+                                        icon = '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
                                         break
                                     case RDStore.CIEC_NEUTRAL:
                                         dataTooltip = message(code: 'financials.costItemConfiguration.neutral')
-                                        icon = '<i class="' + Icons.FNC.COST_NEUTRAL + '"></i>'
+                                        icon = '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
                                         break
                                     default:
                                         dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                        icon = '<i class="' + Icons.FNC.COST_NO + '"></i>'
+                                        icon = '<i class="' + Icon.FNC.COST_NO + '"></i>'
                                         break
                                 }
                             %>
@@ -110,7 +110,7 @@
                                      data-position="right center"
                                      data-variation="tiny"
                                      data-content="${costItemSurvey.costDescription}">
-                                    <i class="${Icons.TOOLTIP.HELP}"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </div>
                             </g:if>
                         </td>

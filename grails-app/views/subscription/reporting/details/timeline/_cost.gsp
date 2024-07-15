@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.Org;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.Org;" %>
 <laser:serviceInjection />
 
 <laser:render template="/subscription/reporting/details/timeline/base.part1" />
@@ -128,16 +128,16 @@
                     <%
                         switch (ci.costItemElementConfiguration) {
                             case RDStore.CIEC_POSITIVE:
-                                print '<i class="' + Icons.FNC.COST_POSITIVE + '"></i>'
+                                print '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
                                 break
                             case RDStore.CIEC_NEGATIVE:
-                                print '<i class="' + Icons.FNC.COST_NEGATIVE + '"></i>'
+                                print '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
                                 break
                             case RDStore.CIEC_NEUTRAL:
-                                print '<i class="' + Icons.FNC.COST_NEUTRAL + '"></i>'
+                                print '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
                                 break
                             default:
-                                print'<i class="' + Icons.FNC.COST_NO + '"></i>'
+                                print'<i class="' + Icon.FNC.COST_NO + '"></i>'
                                 break
                         }
                     %>
@@ -227,16 +227,16 @@
                         <%
                             switch (ci.costItemElementConfiguration) {
                                 case RDStore.CIEC_POSITIVE:
-                                    print '<i class="' + Icons.FNC.COST_POSITIVE + '"></i>'
+                                    print '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
                                     break
                                 case RDStore.CIEC_NEGATIVE:
-                                    print '<i class="' + Icons.FNC.COST_NEGATIVE + '"></i>'
+                                    print '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
                                     break
                                 case RDStore.CIEC_NEUTRAL:
-                                    print '<i class="' + Icons.FNC.COST_NEUTRAL + '"></i>'
+                                    print '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
                                     break
                                 default:
-                                    print'<i class="' + Icons.FNC.COST_NO + '"></i>'
+                                    print'<i class="' + Icon.FNC.COST_NO + '"></i>'
                                     break
                             }
                         %>

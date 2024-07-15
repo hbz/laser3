@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.*; de.laser.AuditConfig;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.*; de.laser.AuditConfig;" %>
 <laser:serviceInjection/>
 
 <g:set var="overwriteEditable" value="${false}"/>
@@ -24,7 +24,7 @@
                             <g:if test="${propKey.multipleOccurrence}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'default.multipleOccurrence.tooltip')}">
-                                    <i class="${Icons.PROP.MULTIPLE}"></i>
+                                    <i class="${Icon.PROP.MULTIPLE}"></i>
                                 </span>
                             </g:if>
                         </td>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Icon" %>
 <laser:serviceInjection />
 
 <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
@@ -20,11 +20,11 @@
         </div>
 
         <ui:link addItemAttributes="true" controller="admin" action="systemMessages"><i class="icon exclamation circle"></i>${message(code: 'menu.admin.systemMessage')}</ui:link>
-        <ui:link addItemAttributes="true" controller="admin" action="systemAnnouncements"><i class="${Icons.ANNOUNCEMENT}"></i>${message(code:'menu.admin.announcements')}</ui:link>
+        <ui:link addItemAttributes="true" controller="admin" action="systemAnnouncements"><i class="${Icon.ANNOUNCEMENT}"></i>${message(code:'menu.admin.announcements')}</ui:link>
 
         <div class="item" role="menuitem" aria-haspopup="true">
             <div class="title">
-                <i class="${Icons.SYM.EMAIL}"></i> ${message(code:'menu.yoda.mail.label')} <i class="dropdown icon"></i>
+                <i class="${Icon.SYM.EMAIL}"></i> ${message(code:'menu.yoda.mail.label')} <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="admin" action="listMailTemplates">${message(code:'menu.admin.manageMailTemplates')}</ui:link>

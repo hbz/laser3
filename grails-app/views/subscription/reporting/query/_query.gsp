@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.local.SubscriptionReport" %>
+<%@ page import="de.laser.ui.Icon; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.local.SubscriptionReport" %>
 <div class="ui segment form">
 
     <div class="fields <uiReporting:numberToString number="${cfgTimelineList.size() + 2}" min="2"/>">
@@ -46,8 +46,8 @@
         </div>
         <div class="field" style="text-align: right">
             <label for="query-export-button">&nbsp;</label>
-            <button id="query-export-button" class="ui icon button" data-href="#queryExportModal" data-ui="modal" disabled><i class="${Icons.CMD.DOWNLOAD}"></i></button>
-            <button id="query-help-button" class="ui icon button" data-href="#queryHelpModal" data-ui="modal" disabled><i class="${Icons.UI.HELP}"></i></button>
+            <button id="query-export-button" class="ui icon button" data-href="#queryExportModal" data-ui="modal" disabled><i class="${Icon.CMD.DOWNLOAD}"></i></button>
+            <button id="query-help-button" class="ui icon button" data-href="#queryHelpModal" data-ui="modal" disabled><i class="${Icon.UI.HELP}"></i></button>
         </div>
     </div>
 

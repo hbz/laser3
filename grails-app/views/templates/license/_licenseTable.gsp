@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
 <laser:serviceInjection />
 
 <g:form action="compareLicenses" controller="compare" method="post">
@@ -18,7 +18,7 @@
                       <g:if test="${'memberLicenses' in licenseFilterTable}">
                           <th rowspan="2" class="center aligned">
                               <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.incoming.childs')}" data-position="top right">
-                                  <i class="${Icons.LICENSE} large"></i>
+                                  <i class="${Icon.LICENSE} large"></i>
                               </span>
                           </th>
                       </g:if>
@@ -59,7 +59,7 @@
                               </g:link>
                               <g:each in="${allLinkedSubscriptions.get(l)}" var="sub">
                                   <div class="la-flexbox la-minor-object">
-                                      <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
+                                      <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                       <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br />
                                   </div>
                               </g:each>
@@ -68,7 +68,7 @@
                               <td>
                                   <g:each in="${l.derivedLicenses}" var="lChild">
                                       <g:link controller="license" action="show" id="${lChild.id}">
-                                          <p><i class="${Icons.LICENSE} la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'license.member')}"></i> ${lChild}</p>
+                                          <p><i class="${Icon.LICENSE} la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'license.member')}"></i> ${lChild}</p>
                                       </g:link>
                                   </g:each>
                               </td>
@@ -114,7 +114,7 @@
                               <g:if test="${(contextCustomerType == CustomerTypeService.ORG_INST_PRO && l._getCalculatedType() == License.TYPE_LOCAL) || (customerTypeService.isConsortium( contextCustomerType ) && l._getCalculatedType() == License.TYPE_CONSORTIAL)}">
                                   <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.copy.tooltip')}">
                                       <g:link controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(l), copyObject: true]}" class="ui icon button blue la-modern-button">
-                                          <i class="${Icons.CMD.COPY}"></i>
+                                          <i class="${Icon.CMD.COPY}"></i>
                                       </g:link>
                                   </span>
                               </g:if>

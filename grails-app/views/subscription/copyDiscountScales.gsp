@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Doc; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.survey.SurveyConfig" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Doc; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.survey.SurveyConfig" %>
 <laser:htmlStart message="subscription.details.copyDiscountScales.label" />
 
 <laser:serviceInjection/>
@@ -36,7 +36,7 @@
                     <span data-position="right center" data-variation="tiny"
                           class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.subscription')}">
-                        <i class="${Icons.TOOLTIP.HELP}"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
 
@@ -141,7 +141,7 @@
 
 
     <div class="ui icon message">
-        <i class="${Icons.UI.INFO}"></i>
+        <i class="${Icon.UI.INFO}"></i>
          <div class="content">
     <div class="header">
         ${message(code: 'subscription.details.copyDiscountScales.process.info')}
@@ -179,14 +179,14 @@
                             <a href="#" class="la-popup-tooltip la-delay"
                                data-content="${message(code: 'subscription.numberOfLicenses.label')}"
                                data-position="top center">
-                                <i class="${Icons.ORG} large"></i>
+                                <i class="${Icon.ORG} large"></i>
                             </a>
                         </th>
                         <th scope="col" rowspan="2">
                             <a href="#" class="la-popup-tooltip la-delay"
                                data-content="${message(code: 'subscription.numberOfCostItems.label')}"
                                data-position="top center">
-                                <i class="${Icons.FNC.COST} large"></i>
+                                <i class="${Icon.FNC.COST} large"></i>
                             </a>
                         </th>
                         <th rowspan="2">
@@ -227,7 +227,7 @@
                                         <g:if test="${s == row.destinationSubscription}">
                                             <g:set var="license" value="${row.sourceLicense}"/>
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="${Icons.LICENSE} la-list-icon"></i>
+                                                <i class="${Icon.LICENSE} la-list-icon"></i>
                                                 <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br />
                                             </div>
                                         </g:if>
@@ -238,7 +238,7 @@
                                     <g:each in="${s.packages.sort { it.pkg.name }}" var="sp" status="ind">
                                         <g:if test="${ind < 10}">
                                             <div class="la-flexbox">
-                                                <i class="${Icons.PACKAGE} la-list-icon"></i>
+                                                <i class="${Icon.PACKAGE} la-list-icon"></i>
                                                 <g:link controller="subscription" action="index" id="${s.id}"
                                                         params="[pkgfilter: sp.pkg.id]"
                                                         title="${sp.pkg.provider?.name}">

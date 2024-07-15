@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.Icons; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.reporting.report.myInstitution.base.BaseConfig" %>
+<%@page import="de.laser.ui.Icon; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.reporting.report.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 
         <div class="menu ui top attached tabular la-tab-with-js">
@@ -10,7 +10,7 @@
 %{--                <a class="item" data-tab="package-filter-tab-3">${message(code:'platform.label')}</a>--}%
 %{--            </g:if>--}%
 
-            <a class="item" data-tab="package-filter-tab-help"> ? %{--<i class="${Icons.UI.HELP}"></i>--}%</a>
+            <a class="item" data-tab="package-filter-tab-help"> ? %{--<i class="${Icon.UI.HELP}"></i>--}%</a>
         </div><!-- .menu -->
 
         <div class="ui bottom attached active tab segment" data-tab="package-filter-tab-1">

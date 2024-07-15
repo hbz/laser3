@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue; de.laser.survey.SurveyOrg; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition; de.laser.RefdataCategory; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.survey.SurveyOrg; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition; de.laser.RefdataCategory; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties;" %>
 <laser:serviceInjection/>
 
 <g:if test="${controllerName == 'survey' && actionName == 'show'}">
@@ -28,13 +28,13 @@
                     ${surveyPropertyConfig.surveyProperty.getI10n('name')}
 
                     <g:if test="${surveyPropertyConfig.surveyProperty.tenant?.id == contextService.getOrg().id}">
-                        <i class='${Icons.PROP.IS_PRIVATE}'></i>
+                        <i class='${Icon.PROP.IS_PRIVATE}'></i>
                     </g:if>
 
                     <g:if test="${surveyPropertyConfig.surveyProperty.getI10n('expl')}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${surveyPropertyConfig.surveyProperty.getI10n('expl')}">
-                            <i class="${Icons.TOOLTIP.HELP}"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </g:if>
 
@@ -77,18 +77,18 @@
                     <g:if test="${editable}">
                         <g:if test="${i == 1 && surveyProperties.size() == 2}">
                             <g:link class="ui icon blue button compact la-modern-button" action="actionsForSurveyProperty" id="${params.id}"
-                                    params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icons.CMD.MOVE_UP}"></i>
+                                    params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icon.CMD.MOVE_UP}"></i>
                             </g:link>
                         </g:if>
                         <g:else>
                             <g:if test="${i > 0}">
                                 <g:link class="ui icon blue button compact la-modern-button" action="actionsForSurveyProperty" id="${params.id}"
-                                        params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icons.CMD.MOVE_UP}"></i>
+                                        params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icon.CMD.MOVE_UP}"></i>
                                 </g:link>
                             </g:if>
                             <g:if test="${i < surveyProperties.size()-1}">
                                 <g:link class="ui icon blue button compact la-modern-button" action="actionsForSurveyProperty" id="${params.id}"
-                                        params="[actionForSurveyProperty: 'moveDown', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icons.CMD.MOVE_DOWN}"></i>
+                                        params="[actionForSurveyProperty: 'moveDown', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icon.CMD.MOVE_DOWN}"></i>
                                 </g:link>
                             </g:if>
                         </g:else>
@@ -107,7 +107,7 @@
                                 params="[actionForSurveyProperty: 'deleteSurveyPropFromConfig', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id]"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="${Icons.CMD.DELETE}"></i>
+                            <i class="${Icon.CMD.DELETE}"></i>
                         </g:link>
                     </td>
                 </g:if>
@@ -129,7 +129,7 @@
                                 <ui:dropdown name="selectedProperty"
                                              class="la-filterPropDef"
                                              from="${selectableProperties.sort{it.getI10n('name')}}"
-                                             iconWhich="${Icons.PROP.IS_PRIVATE}"
+                                             iconWhich="${Icon.PROP.IS_PRIVATE}"
                                              optionKey="${{ "${it.id}" }}"
                                              optionValue="${{ it.getI10n('name') }}"
                                              noSelection="${message(code: 'default.search_for.label', args: [message(code: 'surveyProperty.label')])}"
@@ -165,7 +165,7 @@
                         ${message(code: 'surveyResult.commentParticipant')}
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentParticipant.info')}">
-                            <i class="${Icons.TOOLTIP.HELP}"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </g:else>
                 </th>
@@ -174,14 +174,14 @@
                         ${message(code: 'surveyResult.commentOnlyForOwner')}
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                            <i class="${Icons.TOOLTIP.HELP}"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </g:if>
                     <g:else>
                         ${message(code: 'surveyResult.commentOnlyForParticipant')}
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
-                            <i class="${Icons.TOOLTIP.HELP}"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </g:else>
                 </th>
@@ -199,7 +199,7 @@
                         <g:if test="${surveyResult.type.getI10n('expl')}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                   data-content="${surveyResult.type.getI10n('expl')}">
-                                <i class="${Icons.TOOLTIP.HELP}"></i>
+                                <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
                         </g:if>
 
@@ -208,7 +208,7 @@
                         <g:if test="${surveyConfigProperties && surveyConfigProperties.mandatoryProperty}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                   data-content="${message(code: 'default.mandatory.tooltip')}">
-                                <i class="${Icons.TOOLTIP.INFO}"></i>
+                                <i class="${Icon.TOOLTIP.INFO}"></i>
                             </span>
                         </g:if>
 

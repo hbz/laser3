@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.Package; de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.Vendor; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.Package; de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.Vendor; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
 <laser:serviceInjection/>
 <g:if test="${'surveySubCostItem' in tmplConfigShow}">
     <g:set var="oldCostItem" value="${0.0}"/>
@@ -56,7 +56,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('legalInformation')}">
                 <th class="la-no-uppercase">
                     <span class="la-popup-tooltip la-delay" data-content="${message(code: 'org.legalInformation.tooltip')}">
-                        <i class="${Icons.ORG_LEGAL_INFORMATION}"></i>
+                        <i class="${Icon.ORG_LEGAL_INFORMATION}"></i>
                     </span>
                 </th>
             </g:if>
@@ -347,7 +347,7 @@
                                 )}" var="telNr">
                                     <div class="item">
                                         <span data-position="right center">
-                                            <i class="${Icons.SYM.PHONE}"></i>
+                                            <i class="${Icon.SYM.PHONE}"></i>
                                             ${telNr.content}
                                         </span><br />
                                     </div>
@@ -381,21 +381,21 @@
                         <g:set var="precedents" value="${Org.executeQuery('select c.toOrg from Combo c where c.fromOrg = :org and c.type = :follows',[org: org, follows: RDStore.COMBO_TYPE_FOLLOWS])}"/>
                         <g:each in="${precedents}" var="precedent">
                             <span class="la-popup-tooltip" data-position="top right" data-content="<g:message code="org.succeedsTo.label" args="${[precedent.sortname ?: precedent.name]}"/>">
-                                <g:link controller="org" action="show" id="${precedent.id}"><i class="${Icons.LNK.PREV}"></i></g:link>
+                                <g:link controller="org" action="show" id="${precedent.id}"><i class="${Icon.LNK.PREV}"></i></g:link>
                             </span>
                         </g:each>
                         <span class="la-popup-tooltip la-delay" data-position="top right">
-                            <i class="${Icons.X.CIRCLE} green"></i>
+                            <i class="${Icon.X.CIRCLE} green"></i>
                         </span>
                     </g:if>
                     <g:if test="${org.status == RDStore.ORG_STATUS_RETIRED}">
                         <span class="la-popup-tooltip la-delay" data-position="top right" <g:if test="${org.retirementDate}">data-content="<g:message code="org.retirementDate.label"/>: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${org.retirementDate}"/>"</g:if>>
-                            <i class="${Icons.X.CIRCLE} yellow"></i>
+                            <i class="${Icon.X.CIRCLE} yellow"></i>
                         </span>
                         <g:set var="successors" value="${Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :org and c.type = :follows',[org: org, follows: RDStore.COMBO_TYPE_FOLLOWS])}"/>
                         <g:each in="${successors}" var="successor">
                             <span class="la-popup-tooltip" data-position="top right" data-content="<g:message code="org.succeededBy.label" args="${[successor.sortname ?: successor.name]}"/>">
-                                <g:link controller="org" action="show" id="${successor.id}"><i class="${Icons.LNK.NEXT}"></i></g:link>
+                                <g:link controller="org" action="show" id="${successor.id}"><i class="${Icon.LNK.NEXT}"></i></g:link>
                             </span>
                         </g:each>
                     </g:if>
@@ -854,7 +854,7 @@
                                                                                                                 selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                             </button>
                                         </td>
                                         <td>
@@ -881,7 +881,7 @@
                                                                                                 selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </button>
                         </g:else>
 
@@ -951,7 +951,7 @@
                                                                                                                 selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                             </button>
                                         </td>
                                         <td>
@@ -978,7 +978,7 @@
                                                                                                 selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </button>
                         </g:else>
                     </g:if>
@@ -1003,17 +1003,17 @@
                 <td class="center aligned">
                     <g:if test="${actionName == 'listProvider'}">
                         <g:if test="${currentProviderIdList && (org.id in currentProviderIdList)}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.providers')}"><i class="${Icons.UI.MY_OBJECT} yellow"></i></span>
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.providers')}"><i class="${Icon.UI.MY_OBJECT} yellow"></i></span>
                         </g:if>
                     </g:if>
                     <g:if test="${actionName == 'listInstitution'}">
                         <g:if test="${currentConsortiaMemberIdList && (org.id in currentConsortiaMemberIdList)}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.insts')}"><i class="${Icons.UI.MY_OBJECT} yellow"></i></span>
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.insts')}"><i class="${Icon.UI.MY_OBJECT} yellow"></i></span>
                         </g:if>
                     </g:if>
                     <g:if test="${actionName == 'listConsortia'}">
                         <g:if test="${currentConsortiaIdList && (org.id in currentConsortiaIdList)}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.consortia')}"><i class="${Icons.UI.MY_OBJECT} yellow"></i></span>
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.consortia')}"><i class="${Icon.UI.MY_OBJECT} yellow"></i></span>
                         </g:if>
                     </g:if>
                 </td>

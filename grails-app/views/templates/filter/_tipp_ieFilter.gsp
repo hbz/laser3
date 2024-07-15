@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.helper.Params; de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.base.AbstractReport" %>
+<%@ page import="de.laser.ui.Icon; de.laser.helper.Params; de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.base.AbstractReport" %>
 <laser:serviceInjection />
 <g:set var="action" value="${action ?: actionName}"/>
 <g:set var="forTitles" value="${forTitles ?: actionName}"/>
@@ -25,7 +25,7 @@
                 <label for="filter">${message(code: 'default.search.text')}
                     <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.tipp')}">
-                        <i class="${Icons.TOOLTIP.HELP}"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
                 <input name="filter" id="filter" value="${params.filter}"/>
@@ -34,7 +34,7 @@
                 <label for="identifier">${message(code: 'default.search.identifier')}
                     <span data-position="right center" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.identifier')}">
-                        <i class="${Icons.TOOLTIP.HELP}"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
                 <input name="identifier" id="identifier" value="${params.identifier}"/>
@@ -169,7 +169,7 @@
                 <label for="title_types">${message(code: 'default.search.titleTyp')}
                     <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.titleTyp')}">
-                        <i class="${Icons.TOOLTIP.HELP}"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
                 <div class="ui search selection fluid multiple dropdown" id="title_types">

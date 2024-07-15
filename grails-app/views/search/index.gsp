@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
 
 <laser:htmlStart message="search.advancedSearch" serviceInjection="true"/>
 
@@ -409,7 +409,7 @@
                                             <g:if test="${object.visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PROP.IS_PRIVATE} grey large"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -479,7 +479,7 @@
                                             <g:if test="${object.visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PROP.IS_PRIVATE} grey large"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -531,7 +531,7 @@
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
-                                        <i class="${Icons.SURVEY} circular inverted pink"></i>
+                                        <i class="${Icon.SURVEY} circular inverted pink"></i>
                                     </span>
 
                                     <g:link controller="survey" action="show"
@@ -543,7 +543,7 @@
                                             <g:if test="${object.visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PROP.IS_PRIVATE} grey large"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -572,7 +572,7 @@
 
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
-                                        <i class="${Icons.SURVEY} circular inverted pink"></i>
+                                        <i class="${Icon.SURVEY} circular inverted pink"></i>
                                     </span>
 
                                     <g:link controller="myInstitution" action="currentSurveys"
@@ -583,7 +583,7 @@
                                             <g:if test="${object.visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PROP.IS_PRIVATE} grey large"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -606,7 +606,7 @@
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
-                                        <i class="${Icons.TASK} circular inverted green"></i>
+                                        <i class="${Icon.TASK} circular inverted green"></i>
                                     </span>
 
                                     <g:link controller="myInstitution" action="tasks" params="[taskName: object.name]">${object.name}</g:link>
@@ -616,7 +616,7 @@
                                             <g:if test="${object.visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PROP.IS_PRIVATE} grey large"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -685,7 +685,7 @@
                                             <g:if test="${object.visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PROP.IS_PRIVATE} grey large"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -704,7 +704,7 @@
                                     <g:set var="docContext" value="${DocContext.get(object.dbId)}"/>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
-                                        <i class="${Icons.DOCUMENT} circular inverted grey"></i>
+                                        <i class="${Icon.DOCUMENT} circular inverted grey"></i>
                                     </span>
 
                                     <g:link controller="${object.objectClassName}" action="documents" id="${object.objectId}">${object.name}</g:link>
@@ -714,7 +714,7 @@
                                             <g:if test="${object.visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PROP.IS_PRIVATE} grey large"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -741,7 +741,7 @@
                                             <g:if test="${object.visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PROP.IS_PRIVATE} grey large"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -768,7 +768,7 @@
                                             <g:if test="${object.visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PROP.IS_PRIVATE} grey large"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -795,7 +795,7 @@
                                             <g:if test="${object.visible == 'Private'}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PROP.IS_PRIVATE} grey large"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>

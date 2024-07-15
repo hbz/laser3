@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowService; de.laser.utils.AppUtils; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Icon; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowService; de.laser.utils.AppUtils; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <laser:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
@@ -45,7 +45,7 @@
                 </td>
                 <td class="center aligned">
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="${Icons.CMD.EDIT}"></i></button>
+                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="${Icon.CMD.EDIT}"></i></button>
                     </g:if>
                     <g:elseif test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
                         <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon search"></i></button>
@@ -57,7 +57,7 @@
                                 controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}"]}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="${Icons.CMD.DELETE}"></i>
+                            <i class="${Icon.CMD.DELETE}"></i>
                         </g:link>
                     </g:if>
                 </td>

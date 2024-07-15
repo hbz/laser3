@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Icon" %>
 <g:if test="${orgTypes}">
     <div class="ui divided middle aligned selection list la-flex-list">
         <% List availableOrgTypeIds = availableOrgTypes.collect{ it.id } %>
@@ -17,7 +17,7 @@
                                         controller="organisation" action="deleteOrgType" params="[org: org.id, removeOrgType: type.id]"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD.DELETE}"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </g:link>
                             </div>
                         </div>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
@@ -59,7 +59,7 @@
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.disable.allInstUsers")}" data-confirm-term-how="ok">
                     <i class="user lock icon"></i> ${message(code:'org.disableAllUsers.label')}
                 </g:link>
-                <g:link class="item" action="delete" id="${params.id}"><i class="${Icons.CMD.DELETE}"></i> ${message(code:'deletion.org')}</g:link>
+                <g:link class="item" action="delete" id="${params.id}"><i class="${Icon.CMD.DELETE}"></i> ${message(code:'deletion.org')}</g:link>
             </g:if>
         </sec:ifAnyGranted>
     </ui:actionsDropdown>

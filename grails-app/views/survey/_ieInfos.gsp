@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
 <laser:serviceInjection/>
 
 <div class="ui card">
@@ -7,7 +7,7 @@
                 <div class="item">
                     <div class="title">
                        <div class="ui button icon blue la-modern-button la-delay right floated">
-                            <i class="${Icons.CMD.SHOW_MORE}"></i>
+                            <i class="${Icon.CMD.SHOW_MORE}"></i>
                         </div>
                         <laser:script file="${this.getGroovyPageFileName()}">
                             $('.js-ie-info-accordion')

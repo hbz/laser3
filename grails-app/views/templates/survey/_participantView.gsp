@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyPackageResult; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyConfigPackage; de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyPackageResult; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyConfigPackage; de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition;" %>
 
 
 <div class="ui stackable grid">
@@ -155,7 +155,7 @@
                                         <g:message code="surveyOrg.eInvoicePortal.label"/>
                                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                               data-content="${message(code: 'surveyOrg.eInvoicePortal.expl')}">
-                                            <i class="${Icons.TOOLTIP.HELP}"></i>
+                                            <i class="${Icon.TOOLTIP.HELP}"></i>
                                         </span>
                                     </dt>
                                     <dd>
@@ -170,7 +170,7 @@
                                         <g:message code="surveyOrg.eInvoiceLeitwegId.label"/>
                                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                               data-content="${message(code: 'surveyOrg.eInvoiceLeitwegId.expl')}">
-                                            <i class="${Icons.TOOLTIP.HELP}"></i>
+                                            <i class="${Icon.TOOLTIP.HELP}"></i>
                                         </span>
                                     </dt>
                                     <dd>
@@ -185,7 +185,7 @@
                                         <g:message code="surveyOrg.eInvoiceLeitkriterium.label"/>
                                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                               data-content="${message(code: 'surveyOrg.eInvoiceLeitkriterium.expl')}">
-                                            <i class="${Icons.TOOLTIP.HELP}"></i>
+                                            <i class="${Icon.TOOLTIP.HELP}"></i>
                                         </span>
                                     </dt>
                                     <dd>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Icon" %>
 <div class="ui fluid segment title" data-ajaxTippId="${tipp.id}" data-ajaxIeId="${ie ? ie.id : null}">
     <div class="ui stackable equal width grid">
 
@@ -80,7 +80,7 @@
                 <div class="right aligned wide column">
                 </div>
                 <div class="ui icon blue button la-modern-button">
-                    <i class="${Icons.CMD.SHOW_MORE}"></i>
+                    <i class="${Icon.CMD.SHOW_MORE}"></i>
                 </div>
             </div>
         </div>

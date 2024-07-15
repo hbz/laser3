@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.properties.PropertyDefinition; de.laser.RefdataValue"  %>
+<%@ page import="de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.properties.PropertyDefinition; de.laser.RefdataValue"  %>
 <laser:htmlStart message="menu.user.properties" />
 
 <ui:breadcrumbs>
@@ -65,7 +65,7 @@
                             <td>
                                 <g:if test="${pd.multipleOccurrence}">
                                     <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                        <i class="${Icons.PROP.MULTIPLE}"></i>
+                                        <i class="${Icon.PROP.MULTIPLE}"></i>
                                     </span>
                                 </g:if>
                             </td>

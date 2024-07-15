@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.oap.OrgAccessPoint; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Icon; de.laser.oap.OrgAccessPoint; de.laser.storage.RDConstants" %>
 
 <g:set var="entityName" value="${message(code: 'accessPoint.label')}"/>
 <laser:htmlStart text="${message(code: "default.edit.label", args: [entityName])}" serviceInjection="true"/>
@@ -77,17 +77,17 @@
             <tr>
                 <th class="five wide">${message(code: 'accessPoint.ip.format.input')}
                     &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv4Inputs()">
-                    <i class="${Icons.CMD.COPY}"></i>
+                    <i class="${Icon.CMD.COPY}"></i>
                     </button>
                 </th>
                 <th class="five wide">${message(code: 'accessPoint.ip.format.range')}
                     &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv4Ranges()">
-                        <i class="${Icons.CMD.COPY}"></i>
+                        <i class="${Icon.CMD.COPY}"></i>
                     </button>
                 </th>
                 <th class="five wide">${message(code: 'accessPoint.ip.format.cidr')}
                     &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv4Cidrs()">
-                        <i class="${Icons.CMD.COPY}"></i>
+                        <i class="${Icon.CMD.COPY}"></i>
                     </button>
                 </th>
                 <th class="one wide">${message(code: 'default.actions.label')}</th>
@@ -108,7 +108,7 @@
                                     data-confirm-term-how="delete"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="${Icons.CMD.DELETE}"></i>
+                                <i class="${Icon.CMD.DELETE}"></i>
                             </g:link>
                         </g:if>
                     </td>
@@ -131,7 +131,7 @@
                             <label for="ipv4_ip">${message(code: 'accessPoint.ip.data')}
                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                                       data-content="${message(code: "accessPoint.ip.input")}">
-                                    <i class="${Icons.TOOLTIP.HELP} la-popup"></i></span>
+                                    <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span>
                             </label>
 
                             <g:if test="${autofocus == true}">
@@ -157,17 +157,17 @@
         <tr>
             <th class="five wide">${message(code: 'accessPoint.ip.format.input')}
                 &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv6Inputs()">
-                    <i class="${Icons.CMD.COPY}"></i>
+                    <i class="${Icon.CMD.COPY}"></i>
                 </button>
             </th>
             <th class="five wide">${message(code: 'accessPoint.ip.format.range')}
                 &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv6Ranges()">
-                    <i class="${Icons.CMD.COPY}"></i>
+                    <i class="${Icon.CMD.COPY}"></i>
                 </button>
             </th>
             <th class="five wide">${message(code: 'accessPoint.ip.format.cidr')}
                 &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv6Cidrs()">
-                    <i class="${Icons.CMD.COPY}"></i>
+                    <i class="${Icon.CMD.COPY}"></i>
                 </button>
             </th>
             <th class="one wide">${message(code: 'default.actions.label')}</th>
@@ -191,7 +191,7 @@
                                 data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint.ip', args: [accessPointData.ipInput])}"
                                 data-confirm-term-how="delete"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="${Icons.CMD.DELETE}"></i>
+                            <i class="${Icon.CMD.DELETE}"></i>
                         </g:link>
                     </g:if>
                 </td>
@@ -214,7 +214,7 @@
                         <label for="ipv6_ip">${message(code: 'accessPoint.ip.data')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay"
                                   data-content="${message(code: "accessPoint.ip.input")}">
-                                <i class="${Icons.TOOLTIP.HELP} la-popup"></i></span>
+                                <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span>
                         </label>
 
                         <g:if test="${autofocus == true}">

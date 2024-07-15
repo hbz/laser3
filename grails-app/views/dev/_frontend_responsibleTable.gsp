@@ -1,9 +1,9 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Icon" %>
 <h2 class="ui dividing header">Tabellen<a class="anchor" id="icons"></a></h2>
 <h4 class="ui header">Responsive Tabellen</h4>
 
 <div class="ui icon error message">
-    <i aria-hidden="true" class="${Icons.UI.ERROR}"></i>
+    <i aria-hidden="true" class="${Icon.UI.ERROR}"></i>
 
     <div class="content">
         <div class="header">
@@ -46,7 +46,7 @@
         <th scope="col" rowspan="2">
             <a href="#" class="la-popup-tooltip la-delay" data-content="Einrichtungskosten" data-position="top center"
                aria-label="Einrichtungskosten" data-why-id="why-725">
-                <i class="${Icons.FNC.COST} large" aria-hidden="true"></i>
+                <i class="${Icon.FNC.COST} large" aria-hidden="true"></i>
             </a>
         </th>
         <th scope="col" rowspan="2" class="two">Trend</th>
@@ -75,7 +75,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="${Icons.LICENSE} la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.LICENSE} la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -86,7 +86,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="${Icons.PACKAGE} la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.PACKAGE} la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -132,7 +132,7 @@
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="${Icons.SURVEY}" aria-hidden="true"></i>
+                    <i class="${Icon.SURVEY}" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -153,7 +153,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="${Icons.LICENSE} la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.LICENSE} la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -164,7 +164,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="${Icons.PACKAGE} la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.PACKAGE} la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -210,7 +210,7 @@
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="${Icons.SURVEY}" aria-hidden="true"></i>
+                    <i class="${Icon.SURVEY}" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -231,7 +231,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="${Icons.LICENSE} la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.LICENSE} la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -242,7 +242,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="${Icons.PACKAGE} la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.PACKAGE} la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -288,7 +288,7 @@
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="${Icons.SURVEY}" aria-hidden="true"></i>
+                    <i class="${Icon.SURVEY}" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -309,7 +309,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="${Icons.LICENSE} la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.LICENSE} la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -320,7 +320,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="${Icons.PACKAGE} la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.PACKAGE} la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -366,7 +366,7 @@
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="${Icons.SURVEY}" aria-hidden="true"></i>
+                    <i class="${Icon.SURVEY}" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -387,7 +387,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="${Icons.LICENSE} la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.LICENSE} la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -398,7 +398,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="${Icons.PACKAGE} la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.PACKAGE} la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -444,7 +444,7 @@
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="${Icons.SURVEY}" aria-hidden="true"></i>
+                    <i class="${Icon.SURVEY}" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -544,7 +544,7 @@
         <th scope="col" rowspan="2">
             <a href="#" class="la-popup-tooltip la-delay" data-content="Einrichtungskosten" data-position="top center"
                aria-label="Einrichtungskosten" data-why-id="why-725">
-                <i class="${Icons.FNC.COST} large" aria-hidden="true"></i>
+                <i class="${Icon.FNC.COST} large" aria-hidden="true"></i>
             </a>
         </th>
         <th scope="col" rowspan="2" class="two">Trend</th>
@@ -573,7 +573,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="${Icons.LICENSE} la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.LICENSE} la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -584,7 +584,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="${Icons.PACKAGE} la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.PACKAGE} la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -630,7 +630,7 @@
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="${Icons.SURVEY}" aria-hidden="true"></i>
+                    <i class="${Icon.SURVEY}" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -651,7 +651,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="${Icons.LICENSE} la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.LICENSE} la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -662,7 +662,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="${Icons.PACKAGE} la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.PACKAGE} la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -708,7 +708,7 @@
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="${Icons.SURVEY}" aria-hidden="true"></i>
+                    <i class="${Icon.SURVEY}" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -729,7 +729,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="${Icons.LICENSE} la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.LICENSE} la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -740,7 +740,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="${Icons.PACKAGE} la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.PACKAGE} la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -786,7 +786,7 @@
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="${Icons.SURVEY}" aria-hidden="true"></i>
+                    <i class="${Icon.SURVEY}" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -807,7 +807,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="${Icons.LICENSE} la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.LICENSE} la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -818,7 +818,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="${Icons.PACKAGE} la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.PACKAGE} la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -864,7 +864,7 @@
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="${Icons.SURVEY}" aria-hidden="true"></i>
+                    <i class="${Icon.SURVEY}" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -885,7 +885,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="${Icons.LICENSE} la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.LICENSE} la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -896,7 +896,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="${Icons.PACKAGE} la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.PACKAGE} la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -942,7 +942,7 @@
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="${Icons.SURVEY}" aria-hidden="true"></i>
+                    <i class="${Icon.SURVEY}" aria-hidden="true"></i>
                 </span>
             </a>
 

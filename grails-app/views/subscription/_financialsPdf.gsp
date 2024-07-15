@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.Icons; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore" %>
+<%@page import="de.laser.ui.Icon; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore" %>
 
 
 <g:if test="${data.billingSums}">
@@ -14,7 +14,7 @@
                 <g:set var="iconCurrency" value="pound sign icon" />
             </g:elseif>
             <g:else>
-                <g:set var="iconCurrency" value="${Icons.FNC.COST_CONFIG}" />
+                <g:set var="iconCurrency" value="${Icon.FNC.COST_CONFIG}" />
             </g:else>
 
             <g:if test="${entry.currency != RDStore.CURRENCY_EUR.value}">

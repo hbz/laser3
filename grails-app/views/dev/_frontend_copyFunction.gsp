@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Icon" %>
 <h2 class="ui dividing header">Kopierfunktion<a class="anchor" id="copy"></a>
 </h2>
 
@@ -7,7 +7,7 @@
     <div class="item js-copyTriggerParent">
         <span class="js-copyTrigger js-copyTopic la-popup-tooltip la-delay"
               data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
-            <i class="${Icons.SYM.EMAIL} la-list-icon la-js-copyTriggerIcon"></i>
+            <i class="${Icon.SYM.EMAIL} la-list-icon la-js-copyTriggerIcon"></i>
             mailto:example@example.de
         </span>
     </div>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.License; de.laser.Subscription; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*; de.laser.AuditConfig" %>
+<%@ page import="de.laser.ui.Icon; de.laser.License; de.laser.Subscription; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*; de.laser.AuditConfig" %>
 <laser:serviceInjection />
 <!-- _licProp -->
 
@@ -87,7 +87,7 @@
             <g:if test="${filteredOrphanedProperties}">
                 <div>
                     <h5 class="ui header">
-                        <g:link controller="license" action="show" id="${license.id}"><i class="${Icons.LICENSE}"></i>${license}</g:link>
+                        <g:link controller="license" action="show" id="${license.id}"><i class="${Icon.LICENSE}"></i>${license}</g:link>
                         (${message(code:'subscription.properties')})
                     </h5>
 

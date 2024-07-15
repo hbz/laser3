@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CopyElementsService;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CopyElementsService;" %>
 <laser:htmlStart message="myinst.copyLicense" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -27,7 +27,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                 ${message(code: 'copyElementsIntoObject.general_data.label')}
             </div>
             <div class="description">
-                <i class="${Icons.SYM.DATE}"></i>               ${message(code: 'subscription.periodOfValidity.label')} <br />
+                <i class="${Icon.SYM.DATE}"></i>               ${message(code: 'subscription.periodOfValidity.label')} <br />
                 <i class="ellipsis vertical icon"></i>          ${message(code: 'license.status.label')} <br />
 %{--                <i class="cloud icon"></i>                      ${message(code: 'default.url.label')} <br />--}%
                 <i class="clipboard list icon"></i>             ${message(code: 'license.licenseCategory.label')} <br />
@@ -45,9 +45,9 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
             </div>
             <div class="description">
                 <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
-                <i class="${Icons.TASK}"></i>          ${message(code: 'menu.institutions.tasks')} <br />
-                <i class="${Icons.DOCUMENT}"></i>      ${message(code: 'default.documents.label')} <br />
-                <i class="${Icons.WORKFLOW}"></i>      ${message(code: 'workflow.plural')}
+                <i class="${Icon.TASK}"></i>          ${message(code: 'menu.institutions.tasks')} <br />
+                <i class="${Icon.DOCUMENT}"></i>      ${message(code: 'default.documents.label')} <br />
+                <i class="${Icon.WORKFLOW}"></i>      ${message(code: 'workflow.plural')}
             </div>
         </div>
     </div>
@@ -57,7 +57,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                 ${message(code: 'properties')}
             </div>
             <div class="description">
-                <i class="${Icons.SYM.PROPERTIES}"></i> ${message(code: 'properties')}
+                <i class="${Icon.SYM.PROPERTIES}"></i> ${message(code: 'properties')}
             </div>
         </div>
     </div>

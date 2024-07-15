@@ -1,5 +1,5 @@
-<%@ page import="de.laser.helper.Icons" %>
-<button aria-expanded="true" class="ui button la-inline-labeled la-js-filterButton la-clearfix">    Filter    <i aria-hidden="true" class="${Icons.LNK.FILTERED}"></i>   <span class="ui circular label la-js-filter-total hidden">0</span></button>
+<%@ page import="de.laser.ui.Icon" %>
+<button aria-expanded="true" class="ui button la-inline-labeled la-js-filterButton la-clearfix">    Filter    <i aria-hidden="true" class="${Icon.LNK.FILTERED}"></i>   <span class="ui circular label la-js-filter-total hidden">0</span></button>
 
 
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.MailTemplate; de.laser.storage.RDConstants;de.laser.RefdataCategory" %>
+<%@ page import="de.laser.ui.Icon; de.laser.MailTemplate; de.laser.storage.RDConstants;de.laser.RefdataCategory" %>
 <laser:htmlStart message="menu.admin.manageMailTemplates" />
 
 <ui:breadcrumbs>
@@ -49,7 +49,7 @@
                                 data-mailTemplateLanguage="${template.language.id}"
                                 data-ui="modal"
                                 data-href="#editMailTemplate"
-                                data-content="Mail Template ändern" data-position="top left"><i class="${Icons.CMD.EDIT}"></i></button>
+                                data-content="Mail Template ändern" data-position="top left"><i class="${Icon.CMD.EDIT}"></i></button>
                     </td>
                 </tr>
             </g:each>

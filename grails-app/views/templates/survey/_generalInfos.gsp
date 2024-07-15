@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.utils.DateUtils;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.utils.DateUtils;" %>
 
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
@@ -49,7 +49,7 @@
                                 <g:if test="${surveyUrl.urlComment}">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                           data-content="${surveyUrl.urlComment}">
-                                        <i class="${Icons.TOOLTIP.INFO}"></i>
+                                        <i class="${Icon.TOOLTIP.INFO}"></i>
                                     </span>
                                 </g:if>
                                 <ui:linkWithIcon href="${surveyUrl.url}"/>

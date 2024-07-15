@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.IssueEntitlementCoverage" %>
+<%@ page import="de.laser.ui.Icon; de.laser.IssueEntitlementCoverage" %>
 <g:set var="overwriteEditable" value="${(overwriteEditable == null) ? editable : overwriteEditable}"/>
 
 
@@ -13,7 +13,7 @@
     <div class="la-onliner">
         <g:if test="${covStmt.startDate || objectTypeIsIE}">
             <span class="la-online-wrap">
-                <i class="grey fitted ${Icons.SYM.DATE} la-popup-tooltip la-delay"
+                <i class="grey fitted ${Icon.SYM.DATE} la-popup-tooltip la-delay"
                    data-content="${message(code: 'tipp.startDate.tooltip')}"></i>
                 <ui:xEditable owner="${covStmt}" type="date" field="startDate"
                               overwriteEditable="${overwriteEditable}"/>
@@ -50,7 +50,7 @@
 
         <g:if test="${covStmt.endDate || objectTypeIsIE}">
             <span class="la-online-wrap">
-                <i class="grey fitted ${Icons.SYM.DATE} la-popup-tooltip la-delay"
+                <i class="grey fitted ${Icon.SYM.DATE} la-popup-tooltip la-delay"
                    data-content="${message(code: 'tipp.endDate.tooltip')}"></i>
                 <ui:xEditable owner="${covStmt}" type="date" field="endDate"
                               overwriteEditable="${overwriteEditable}"/>
@@ -94,7 +94,7 @@
         <span class="right floated">
             <g:link controller="subscription" action="removeCoverage"
                     params="${paramData + [ieCoverage: covStmt.id, id: subscription.id]}"
-                    class="ui compact icon button negative tiny removeCoverage"><i class="${Icons.CMD.REMOVE}"
+                    class="ui compact icon button negative tiny removeCoverage"><i class="${Icon.CMD.REMOVE}"
                                                                                    data-content="Abdeckung entfernen"></i></g:link>
         </span>
     </g:if>--}%

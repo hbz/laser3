@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.survey.SurveyOrg; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.RefdataValue" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.survey.SurveyOrg; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.RefdataValue" %>
 
 <div class="ui stackable grid">
     <div class="eleven wide column">
@@ -21,7 +21,7 @@
                 <div class="ui icon la-popup-tooltip la-delay"
                      data-content="${message(code: "surveyconfig.internalComment.comment")}">
                     ${message(code: 'surveyconfig.internalComment.label')}
-                    <i class="${Icons.TOOLTIP.HELP}"></i>
+                    <i class="${Icon.TOOLTIP.HELP}"></i>
                 </div>
             </dt>
             <dd><ui:xEditable owner="${surveyConfig}" field="internalComment" type="textarea"/></dd>
@@ -59,7 +59,7 @@
                                         params="${[deleteSurveyUrl: surveyUrl.id, surveyConfigID: surveyConfig.id, id: surveyInfo.id]}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD.DELETE}"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </g:link>
                             </span>
                         </g:if>
@@ -84,7 +84,7 @@
                         <div class="ui icon la-popup-tooltip la-delay"
                              data-content="${message(code: "surveyconfig.comment.comment")}">
                             ${message(code: 'surveyconfig.comment.label')}
-                            <i class="${Icons.TOOLTIP.HELP}"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </div>
                     </a>
                 </div>

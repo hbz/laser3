@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.Provider; java.time.Year; de.laser.finance.CostItem; de.laser.RefdataValue; de.laser.survey.SurveyInfo; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.ui.Icon; de.laser.Provider; java.time.Year; de.laser.finance.CostItem; de.laser.RefdataValue; de.laser.survey.SurveyInfo; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
 <laser:htmlStart message="menu.institutions.org.info" serviceInjection="true">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
@@ -161,7 +161,7 @@
                                     <tr data-id="${subId}" data-referenceYear="${sub.referenceYear}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
+                                                <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
 
                                                 <g:if test="${OrgRole.findBySubAndOrgAndRoleType(sub, orgInstance, RDStore.OR_SUBSCRIBER_CONS_HIDDEN)}">
@@ -220,7 +220,7 @@
                                     <tr data-id="${licId}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="${Icons.LICENSE} la-list-icon"></i>
+                                                <i class="${Icon.LICENSE} la-list-icon"></i>
                                                 <g:link controller="license" action="show" id="${lic.id}" target="_blank">${lic.reference}</g:link>
                                             </div>
                                         </td>
@@ -261,7 +261,7 @@
                                     <tr data-id="${subId}" data-referenceYear="${sub.referenceYear}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
+                                                <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                                             </div>
                                         </td>
@@ -337,7 +337,7 @@
                                 <tr data-id="${surveyInfo.id}">
                                     <td>
                                         <div class="la-flexbox la-minor-object">
-                                            <i class="${Icons.SURVEY} la-list-icon"></i>
+                                            <i class="${Icon.SURVEY} la-list-icon"></i>
                                             <g:link controller="survey" action="show" id="${surveyInfo.id}" target="_blank">${surveyInfo.name}</g:link>
                                         </div>
                                     </td>
@@ -367,7 +367,7 @@
                                     <tr data-id="${surveyInfo.id}" data-ctype="survey-subsciption" class="hidden sub">
                                         <td style="padding-left:2rem;">
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
+                                                <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                                             </div>
                                         </td>
@@ -399,7 +399,7 @@
                             <th scope="col" class="la-smaller-table-head">${message(code:'default.subscription.label')}</th>
                             <th scope="col" rowspan="2" class="la-no-uppercase">
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center">
-                                    <i class="${Icons.FNC.COST_CONFIG}"></i>
+                                    <i class="${Icon.FNC.COST_CONFIG}"></i>
                                 </span>
                             </th>
                             <th scope="col" rowspan="2">${message(code:'default.currency.label')}</th>
@@ -418,21 +418,21 @@
                     <tbody>
                         <g:each in="${costs.costItems}" var="ci" status="jj">
                             <%
-                                String icon         = '<i class="' + Icons.FNC.COST_NO + '"></i>'
+                                String icon         = '<i class="' + Icon.FNC.COST_NO + '"></i>'
                                 String dataTooltip  = message(code:'financials.costItemConfiguration.notSet')
 
                                 switch (ci.costItemElementConfiguration) {
                                     case RDStore.CIEC_POSITIVE:
                                         dataTooltip = message(code:'financials.costItemConfiguration.positive')
-                                        icon = '<i class="' + Icons.FNC.COST_POSITIVE + '"></i>'
+                                        icon = '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
                                         break
                                     case RDStore.CIEC_NEGATIVE:
                                         dataTooltip = message(code:'financials.costItemConfiguration.negative')
-                                        icon = '<i class="' + Icons.FNC.COST_NEGATIVE + '"></i>'
+                                        icon = '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
                                         break
                                     case RDStore.CIEC_NEUTRAL:
                                         dataTooltip = message(code:'financials.costItemConfiguration.neutral')
-                                        icon = '<i class="' + Icons.FNC.COST_NEUTRAL + '"></i>'
+                                        icon = '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
                                         break
                                 }
                             %>

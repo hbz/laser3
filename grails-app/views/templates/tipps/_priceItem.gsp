@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Icon" %>
 <laser:serviceInjection/>
 <div class="item" data-object="${genericOIDService.getOID(priceItem)}">
     <i class="money grey icon la-popup-tooltip la-delay"></i>
@@ -17,7 +17,7 @@
             <g:if test="${editable}">
                 <span class="right floated">
                     <button class="ui compact icon button tiny removeObject" data-objType="priceItem" data-objId="${priceItem.id}" data-trigger="${genericOIDService.getOID(priceItem)}">
-                        <i class="${Icons.CMD.REMOVE}" data-content="Preis entfernen"></i>
+                        <i class="${Icon.CMD.REMOVE}" data-content="Preis entfernen"></i>
                     </button>
                 </span>
             </g:if>

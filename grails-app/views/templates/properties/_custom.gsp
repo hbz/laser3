@@ -3,7 +3,7 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
-<%@ page import="de.laser.helper.Icons; de.laser.Subscription; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.AuditConfig; de.laser.FormService" %>
+<%@ page import="de.laser.ui.Icon; de.laser.Subscription; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection/>
 <g:if test="${newProp}">
     <ui:errors bean="${newProp}" />
@@ -45,7 +45,7 @@
                                 ${prop.type.getI10n('name')}
                                 <g:if test="${prop.type.getI10n('expl')}">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${prop.type.getI10n('expl')}">
-                                        <i class="${Icons.TOOLTIP.HELP}"></i>
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
                                     </span>
                                 </g:if>
                             </g:if>
@@ -54,7 +54,7 @@
                             </g:else>
                             <g:if test="${prop.type.multipleOccurrence}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                    <i class="${Icons.PROP.MULTIPLE}"></i>
+                                    <i class="${Icon.PROP.MULTIPLE}"></i>
                                 </span>
                             </g:if>
                         </td>
@@ -208,13 +208,13 @@
                                                       data-update="${custom_props_div}"
                                                       role="button"
                                                       ariaLabel="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="${Icons.CMD.DELETE}"></i>
+                                        <i class="${Icon.CMD.DELETE}"></i>
                                     </ui:remoteLink>
                                 </g:if>
                                 <g:else>
                                     <!-- Hidden Fake Button To hold the other Botton in Place -->
                                     <div class="ui icon button la-hidden">
-                                        <i class="${Icons.X.PLACEHOLDER}"></i>
+                                        <i class="${Icon.X.PLACEHOLDER}"></i>
                                     </div>
                                 </g:else>
                             </g:if>
@@ -255,7 +255,7 @@
                                                   data-update="${custom_props_div}"
                                                   role="button"
                                                   ariaLabel="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD.DELETE}"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </ui:remoteLink>
                             </g:elseif>
                             <g:else>

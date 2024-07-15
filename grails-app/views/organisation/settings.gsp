@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.OrgSetting; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Icon; de.laser.OrgSetting; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 <%@ page import="de.laser.CustomerTypeService; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <laser:htmlStart message="org.nav.dataTransfer" serviceInjection="true" />
@@ -97,17 +97,17 @@
                                             ${message(code:"org.setting.${os.key}", default: "${os.key}")}
                                             <g:if test="${OrgSetting.KEYS.NATSTAT_SERVER_ACCESS == os.key}">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.NATSTAT_SERVER_ACCESS.tooltip')}">
-                                                    <i class="${Icons.TOOLTIP.HELP}"></i>
+                                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                                 </span>
                                             </g:if>
                                             <g:elseif test="${OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.OAMONITOR_SERVER_ACCESS.tooltip')}">
-                                                    <i class="${Icons.TOOLTIP.HELP}"></i>
+                                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                                 </span>
                                             </g:elseif>
                                             <g:elseif test="${OrgSetting.KEYS.EZB_SERVER_ACCESS == os.key}">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.EZB.tooltip')}">
-                                                    <i class="${Icons.TOOLTIP.HELP}"></i>
+                                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                                 </span>
                                             </g:elseif>
                                         </td>

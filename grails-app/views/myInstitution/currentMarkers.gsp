@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.Vendor;de.laser.Package;de.laser.Platform;de.laser.Provider;de.laser.TitleInstancePackagePlatform" %>
+<%@ page import="de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.Vendor;de.laser.Package;de.laser.Platform;de.laser.Provider;de.laser.TitleInstancePackagePlatform" %>
 
 <laser:htmlStart message="menu.my.markers" serviceInjection="true"/>
 
@@ -44,22 +44,22 @@
                     <th class="one wide">${message(code:'sidewide.number')}</th>
                     <th class="ten wide">
                         <g:if test="${objCat.value.first() instanceof Org}">
-                            <i class="${Icons.ORG} grey la-list-icon"></i> ???
+                            <i class="${Icon.ORG} grey la-list-icon"></i> ???
                         </g:if>
                         <g:elseif test="${objCat.value.first() instanceof Package}">
-                            <i class="${Icons.PACKAGE} grey la-list-icon"></i> ${message(code:'package.label')}
+                            <i class="${Icon.PACKAGE} grey la-list-icon"></i> ${message(code:'package.label')}
                         </g:elseif>
                         <g:elseif test="${objCat.value.first() instanceof Platform}">
-                            <i class="${Icons.PLATFORM} grey la-list-icon"></i> ${message(code:'platform.label')}
+                            <i class="${Icon.PLATFORM} grey la-list-icon"></i> ${message(code:'platform.label')}
                         </g:elseif>
                         <g:if test="${objCat.value.first() instanceof Provider}">
-                            <i class="${Icons.PROVIDER} grey la-list-icon"></i> ${message(code:'provider.label')}
+                            <i class="${Icon.PROVIDER} grey la-list-icon"></i> ${message(code:'provider.label')}
                         </g:if>
                         <g:elseif test="${objCat.value.first() instanceof Vendor}">
-                            <i class="${Icons.VENDOR} grey la-list-icon"></i> ${message(code:'vendor')}
+                            <i class="${Icon.VENDOR} grey la-list-icon"></i> ${message(code:'vendor')}
                         </g:elseif>
                         <g:elseif test="${objCat.value.first() instanceof TitleInstancePackagePlatform}">
-                            <i class="${Icons.TIPP} grey la-list-icon"></i> ${message(code:'title')}
+                            <i class="${Icon.TIPP} grey la-list-icon"></i> ${message(code:'title')}
                         </g:elseif>
                     </th>
                     <th class="three wide"></th>

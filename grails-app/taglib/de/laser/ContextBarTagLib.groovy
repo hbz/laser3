@@ -3,7 +3,7 @@ package de.laser
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.convenience.Marker
-import de.laser.helper.Icons
+import de.laser.ui.Icon
 import de.laser.interfaces.MarkerSupport
 
 class ContextBarTagLib {
@@ -16,12 +16,12 @@ class ContextBarTagLib {
     // <ui:cbItemCustomerType org="${contextService.getOrg()}" />
 
     def cbItemCustomerType = {attrs, body ->
-        String icon  = Icons.SYM.UNKOWN + ' grey'
+        String icon  = Icon.SYM.UNKOWN + ' grey'
         String text  = '?'
         Org org = attrs.org as Org
 
         if (!org) {
-            icon  = Icons.UI.ERROR + ' red'
+            icon  = Icon.UI.ERROR + ' red'
             text  = message(code: 'profile.membership.error1')
         }
         else {
@@ -51,20 +51,20 @@ class ContextBarTagLib {
 
         if (fr) {
             if (fr.authority == Role.INST_USER) {
-                icon = Icons.AUTH.INST_USER
+                icon = Icon.AUTH.INST_USER
                 text = message(code: 'cv.roles.INST_USER')
             }
             else if (fr.authority == Role.INST_EDITOR) {
-                icon = Icons.AUTH.INST_EDITOR
+                icon = Icon.AUTH.INST_EDITOR
                 text = message(code: 'cv.roles.INST_EDITOR')
             }
             else if (fr.authority == Role.INST_ADM) {
-                icon = Icons.AUTH.INST_ADM
+                icon = Icon.AUTH.INST_ADM
                 text = message(code: 'cv.roles.INST_ADM')
             }
         }
         else {
-            icon  = Icons.UI.ERROR
+            icon  = Icon.UI.ERROR
             color = 'red'
             text  = message(code: 'profile.membership.error2')
         }
@@ -79,7 +79,7 @@ class ContextBarTagLib {
     // <ui:cbItemUserSysRole user="${contextService.getUser()}" showGlobalRole="true|false" />
 
     def cbItemUserSysRole = {attrs, body ->
-        String icon     = Icons.SYM.UNKOWN
+        String icon     = Icon.SYM.UNKOWN
         String color    = 'grey'
         String text     = '?'
 
@@ -87,11 +87,11 @@ class ContextBarTagLib {
 
         if (user.isYoda()) {
             text = 'Systemberechtigung: YODA'
-            icon = Icons.AUTH.ROLE_YODA
+            icon = Icon.AUTH.ROLE_YODA
         }
         else if (user.isAdmin()) {
             text = 'Systemberechtigung: ADMIN'
-            icon = Icons.AUTH.ROLE_ADMIN
+            icon = Icon.AUTH.ROLE_ADMIN
         }
 
         if (icon) {
@@ -198,7 +198,7 @@ class ContextBarTagLib {
 
                 out <<      '<a class="ui icon label la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
                 out <<          'data-content="' + tt + '" data-position="top right">'
-                out <<              '<i class="' + Icons.MARKER + ' purple' + (isMarked ? '' : ' outline') + '"></i>'
+                out <<              '<i class="' + Icon.MARKER + ' purple' + (isMarked ? '' : ' outline') + '"></i>'
                 out <<      '</a>'
 
                 if (! attrs.ajax) {
@@ -214,7 +214,7 @@ class ContextBarTagLib {
 
                 out <<      '<div class="ui icon button purple ' + (isMarked ? 'active' : ' inactive ') + ' la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
                 out <<          'data-content="' + tt + '" data-position="top right">'
-                out <<              '<i class="' + (isMarked ? Icons.MARKER : 'la-bookmark slash icon' ) + '"></i>'
+                out <<              '<i class="' + (isMarked ? Icon.MARKER : 'la-bookmark slash icon' ) + '"></i>'
                 out <<      '</div>'
 
                 if (! attrs.ajax) {

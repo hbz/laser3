@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.helper.Icons
+import de.laser.ui.Icon
 import de.laser.remote.ApiSource
 
 class LinkTagLib {
@@ -10,7 +10,7 @@ class LinkTagLib {
     static namespace = 'ui'
 
     def linkWithIcon = { attrs, body ->
-        String icon = attrs.icon ?: Icons.LNK.EXTERNAL // TODO erms-5784 doubles 'icon'
+        String icon = attrs.icon ?: Icon.LNK.EXTERNAL // TODO erms-5784 doubles 'icon'
 
         out << '<span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + message(code: 'tooltip.callUrl') + '" style="bottom:-3px">&nbsp;'
         out << '<a href="' + attrs.href + '" target="_blank" aria-label="' + attrs.href + '">'
@@ -59,7 +59,7 @@ class LinkTagLib {
         }
         out << '<span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + label + '" >&nbsp;'
         out << '<a href="' + href + '" target="_blank" aria-label="' + label + '">'
-        out << '<i class="' + Icons.WEKB + ' small" aria-hidden="true"></i>'
+        out << '<i class="' + Icon.WEKB + ' small" aria-hidden="true"></i>'
         out << '</a>'
         out << '</span>'
     }
@@ -87,7 +87,7 @@ class LinkTagLib {
         out << 'data-position="top right" data-content="' + label + '" '
         out << 'role="button">'
 
-        out << '<i class="' + Icons.WEKB + '" aria-hidden="true"></i>'
+        out << '<i class="' + Icon.WEKB + '" aria-hidden="true"></i>'
         out << '</a>'
     }
 

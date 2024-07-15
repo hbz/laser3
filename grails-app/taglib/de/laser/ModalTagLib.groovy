@@ -3,7 +3,7 @@ package de.laser
 import de.laser.ContextService
 import de.laser.SystemService
 import de.laser.YodaService
-import de.laser.helper.Icons
+import de.laser.ui.Icon
 import de.laser.utils.SwissKnife
 
 class ModalTagLib {
@@ -147,7 +147,7 @@ class ModalTagLib {
         out << '<div role="dialog" class="ui modal ' + modalSize + '"' + id + ' aria-label="Modal">'
         out <<    '<div class="content ui items">'
         out <<       '<div class="item">'
-        out <<          '<div class="image"><i class="' + Icons.UI.HELP + ' circular huge"></i></div>'
+        out <<          '<div class="image"><i class="' + Icon.UI.HELP + ' circular huge"></i></div>'
         out <<          '<div class="content">'
         out << body()
         out <<          '</div>'
@@ -183,7 +183,7 @@ class ModalTagLib {
         out << '<div class="actions">'
         out << '<button class="ui deny button">' + msgCancel + '</button>'
         out << '<button id="js-confirmation-button" class="ui positive right labeled icon button">' + msgDelete
-        out << '    <i aria-hidden="true" class="' + Icons.CMD.DELETE + '"></i>'
+        out << '    <i aria-hidden="true" class="' + Icon.CMD.DELETE + '"></i>'
         out << '</button>'
         out << '</div>'
         out << '</div>'

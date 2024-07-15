@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.convenience.Marker; de.laser.Subscription; de.laser.GenericOIDService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.UserSetting; de.laser.auth.User; de.laser.auth.Role; de.laser.Org" %>
+<%@ page import="de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.convenience.Marker; de.laser.Subscription; de.laser.GenericOIDService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.UserSetting; de.laser.auth.User; de.laser.auth.Role; de.laser.Org" %>
 <laser:serviceInjection />
 
 <nav id="contextBar" class="ui fixed menu" aria-label="${message(code:'wcag.label.modeNavigation')}">
@@ -23,16 +23,16 @@
             %{-- my object indicator --}%
 
             <g:if test="${isMyPlatform}">
-                <ui:cbItemInfo display="${message(code: 'license.relationship.platform')}" icon="${Icons.UI.MY_OBJECT}" color="yellow" />
+                <ui:cbItemInfo display="${message(code: 'license.relationship.platform')}" icon="${Icon.UI.MY_OBJECT}" color="yellow" />
             </g:if>
             <g:elseif test="${isMyPkg}">
-                <ui:cbItemInfo display="${message(code: 'license.relationship.pkg')}" icon="${Icons.UI.MY_OBJECT}" color="violet" />
+                <ui:cbItemInfo display="${message(code: 'license.relationship.pkg')}" icon="${Icon.UI.MY_OBJECT}" color="violet" />
             </g:elseif>
             <g:elseif test="${isMyOrg}">
-                <ui:cbItemInfo display="${message(code: 'license.relationship.org')}" icon="${Icons.UI.MY_OBJECT}" color="teal" />
+                <ui:cbItemInfo display="${message(code: 'license.relationship.org')}" icon="${Icon.UI.MY_OBJECT}" color="teal" />
             </g:elseif>
             <g:elseif test="${isMyVendor}">
-                <ui:cbItemInfo display="${message(code: 'license.relationship.vendor')}" icon="${Icons.UI.MY_OBJECT}" color="teal" />
+                <ui:cbItemInfo display="${message(code: 'license.relationship.vendor')}" icon="${Icon.UI.MY_OBJECT}" color="teal" />
             </g:elseif>
 
             %{-- child indicator --}%
@@ -65,7 +65,7 @@
 
             <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='myInstitution' && actionName=='financeImport') || (controllerName=='myInstitution' && actionName=='subscriptionImport') || (controllerName=='dev' && actionName=='frontend')}">
                 <div class="item la-cb-action">
-                    <button class="ui icon button la-toggle-ui" id="help-toggle"><i class="${Icons.UI.HELP}"></i></button>
+                    <button class="ui icon button la-toggle-ui" id="help-toggle"><i class="${Icon.UI.HELP}"></i></button>
                 </div>
             </g:if>
 
@@ -78,7 +78,7 @@
                     <div class="item la-cb-action">
                         <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionTransfer-toggle"
                                 data-content="${message(code:'statusbar.showSubscriptionTransfer.tooltip')}" data-position="bottom left">
-                            <i class="${Icons.SUBSCRIPTION}"></i>
+                            <i class="${Icon.SUBSCRIPTION}"></i>
                         </button>
                     </div>
                 </g:if>
@@ -91,10 +91,10 @@
                     <div class="item la-cb-action">
 %{--                        <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionMembers-toggle"--}%
 %{--                                data-content="${message(code:'consortium.member.plural')} ${message(code:'default.and')} ${message(code:'subscription.member.plural')}" data-position="bottom left">--}%
-%{--                            <i class="${Icons.ORG}"></i>--}%
+%{--                            <i class="${Icon.ORG}"></i>--}%
 %{--                        </button>--}%
                         <button class="ui icon button la-toggle-ui" id="subscriptionMembers-toggle">
-                            <i class="${Icons.ORG}"></i>
+                            <i class="${Icon.ORG}"></i>
                         </button>
                     </div>
                 </g:if>
@@ -200,7 +200,7 @@
                                                         <i class="icon arrow ${linkPrio == 1 ? 'right' : 'left'} la-list-icon"></i>
                                                     </g:if>
                                                     <g:else>
-                                                        <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
+                                                        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                     </g:else>
                                                     ${linkType}
                                                 </span>
@@ -214,7 +214,7 @@
                                                     (<g:formatDate formatName="default.date.format.notime" date="${linkTarget.startDate}"/> - <g:formatDate formatName="default.date.format.notime" date="${linkTarget.endDate}"/>)
                                                 </span>
                                                 <span class="description">
-                                                    <i class="${Icons.LICENSE} la-list-icon"></i>
+                                                    <i class="${Icon.LICENSE} la-list-icon"></i>
                                                     ${linkType}
                                                 </span>
                                             </g:link>
@@ -260,7 +260,7 @@
                                                     (<g:formatDate formatName="default.date.format.notime" date="${linkTarget.startDate}"/> - <g:formatDate formatName="default.date.format.notime" date="${linkTarget.endDate}"/>)
                                                 </span>
                                                 <span class="description">
-                                                    <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
+                                                    <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                     ${linkType}
                                                 </span>
                                             </g:link>
@@ -277,7 +277,7 @@
                                                         <i class="icon arrow ${linkPrio == 1 ? 'right' : 'left'} la-list-icon"></i>
                                                     </g:if>
                                                     <g:else>
-                                                        <i class="${Icons.LICENSE} la-list-icon"></i>
+                                                        <i class="${Icon.LICENSE} la-list-icon"></i>
                                                     </g:else>
                                                     ${linkType}
                                                 </span>

@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.Icons; de.laser.storage.RDStore" %>
+<%@page import="de.laser.ui.Icon; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <%--OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')} @ ${institution}--%>
@@ -30,7 +30,7 @@
                                 params='[deleteId:tsk.id, id: params.id, returnToShow: controllerName]'
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="${Icons.CMD.DELETE}"></i>
+                            <i class="${Icon.CMD.DELETE}"></i>
                         </g:link>
                     </div>
                 </g:if>
@@ -71,7 +71,7 @@
                         params='[deleteId:tsk.id, id: params.id, returnToShow: controllerName]'
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="${Icons.CMD.DELETE}"></i>
+                    <i class="${Icon.CMD.DELETE}"></i>
                 </g:link>
             </div>
         </div>--}%

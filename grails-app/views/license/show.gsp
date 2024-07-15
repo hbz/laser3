@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons;de.laser.Subscription;de.laser.License;de.laser.OrgRole;de.laser.DocContext;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.interfaces.CalculatedType;de.laser.AuditConfig;de.laser.FormService" %>
+<%@ page import="de.laser.ui.Icon;de.laser.Subscription;de.laser.License;de.laser.OrgRole;de.laser.DocContext;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.interfaces.CalculatedType;de.laser.AuditConfig;de.laser.FormService" %>
 <laser:htmlStart message="license.details.label" serviceInjection="true"/>
 
         <ui:debugInfo>
@@ -105,7 +105,7 @@
                                                                             <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: license.altnames[0].id]"
                                                                                      data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [license.altnames[0].name])}"
                                                                                      data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                                <i class="${Icons.CMD.DELETE}"></i>
+                                                                                <i class="${Icon.CMD.DELETE}"></i>
                                                                             </ui:remoteLink>
                                                                         </div>
                                                                     </g:if>
@@ -132,7 +132,7 @@
                                                                         <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: license.altnames[0].id]"
                                                                                  data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [license.altnames[0].name])}"
                                                                                  data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(license.altnames[0])}')">
-                                                                            <i class="${Icons.CMD.DELETE}"></i>
+                                                                            <i class="${Icon.CMD.DELETE}"></i>
                                                                         </ui:remoteLink>
                                                                     </div>
                                                                 </g:else>
@@ -144,14 +144,14 @@
                                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: license.altnames[0].id]"
                                                                          data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [license.altnames[0].name])}"
                                                                          data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(license.altnames[0])}')">
-                                                                    <i class="${Icons.CMD.DELETE}"></i>
+                                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                                 </ui:remoteLink>
                                                             </g:else>
                                                         </g:if>
                                                     </div>
                                                     <div class="ui icon blue button la-show-button la-modern-button la-popup-tooltip la-delay"
                                                          data-content="${message(code: 'org.altname.show')}">
-                                                        <i class="${Icons.CMD.SHOW_MORE}"></i>
+                                                        <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                     </div>
                                                 </div>
                                                 <div class="content">
@@ -189,7 +189,7 @@
                                                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                                          data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                                          data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                                    <i class="${Icons.CMD.DELETE}"></i>
+                                                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                                                 </ui:remoteLink>
                                                                             </div>
                                                                         </g:if>
@@ -216,7 +216,7 @@
                                                                             <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                                      data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                                      data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                                <i class="${Icons.CMD.DELETE}"></i>
+                                                                                <i class="${Icon.CMD.DELETE}"></i>
                                                                             </ui:remoteLink>
                                                                         </div>
                                                                     </g:else>
@@ -229,7 +229,7 @@
                                                                         <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                                  data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                                  data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                            <i class="${Icons.CMD.DELETE}"></i>
+                                                                            <i class="${Icon.CMD.DELETE}"></i>
                                                                         </ui:remoteLink>
                                                                     </div>
                                                                 </g:else>

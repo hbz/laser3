@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.GenericOIDService; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.auth.Role;de.laser.auth.UserRole;de.laser.UserSetting" %>
+<%@ page import="de.laser.ui.Icon; de.laser.GenericOIDService; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.auth.Role;de.laser.auth.UserRole;de.laser.UserSetting" %>
 <laser:serviceInjection/>
 
 <table class="ui sortable celled la-js-responsive-table la-table compact table">
@@ -50,12 +50,12 @@
                     <td class="center aligned">
                         <g:if test="${us.accountExpired}">
                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.accountExpired.label')}">
-                                <i class="${Icons.TOOLTIP.IMPORTANT} large red"></i>
+                                <i class="${Icon.TOOLTIP.IMPORTANT} large red"></i>
                             </span>
                         </g:if>
                         <g:if test="${us.accountLocked}">
                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.accountLocked.label')}">
-                                <i class="${Icons.TOOLTIP.IMPORTANT} large yellow"></i>
+                                <i class="${Icon.TOOLTIP.IMPORTANT} large yellow"></i>
                             </span>
                         </g:if>
                     </td>
@@ -86,21 +86,21 @@
                             <g:link controller="${controllerName}" action="${editLink}" params="${[id: us.id]}" class="ui icon button blue la-modern-button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </g:link>
                         </g:if>
                         <g:if test="${controllerName == 'myInstitution'}">
                             <g:link controller="${controllerName}" action="${editLink}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon button blue la-modern-button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </g:link>
                         </g:if>
                         <g:if test="${controllerName == 'organisation'}">
                             <g:link controller="${controllerName}" action="${editLink}" id="${orgInstance.id}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon button blue la-modern-button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </g:link>
                         </g:if>
 
@@ -119,25 +119,25 @@
                                 <g:link controller="profile" action="delete" class="ui icon negative button la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="${Icons.CMD.DELETE}"></i></g:link>
+                                <i class="${Icon.CMD.DELETE}"></i></g:link>
                             </g:if>
                             <g:elseif test="${controllerName == 'user'}">
                                 <g:link controller="${controllerName}" action="${deleteLink}" params="${[id: us.id]}" class="ui icon negative button la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="${Icons.CMD.DELETE}"></i></g:link>
+                                <i class="${Icon.CMD.DELETE}"></i></g:link>
                             </g:elseif>
                             <g:elseif test="${controllerName == 'myInstitution'}">
                                 <g:link controller="${controllerName}" action="${deleteLink}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon negative button la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="${Icons.CMD.DELETE}"></i></g:link>
+                                <i class="${Icon.CMD.DELETE}"></i></g:link>
                             </g:elseif>
                             <g:elseif test="${controllerName == 'organisation'}">
                                 <g:link controller="${controllerName}" action="${deleteLink}" id="${orgInstance.id}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon negative button la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="${Icons.CMD.DELETE}"></i></g:link>
+                                <i class="${Icon.CMD.DELETE}"></i></g:link>
                             </g:elseif>
 
                         </g:if>
@@ -146,7 +146,7 @@
                                 <button class="ui icon negative button la-modern-button" disabled="disabled"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD.DELETE}"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </button>
                             </span>
                         </g:else>

@@ -3,7 +3,7 @@ package de.laser
 import de.laser.annotations.FixedFeature_DoNotModify
 import de.laser.auth.User
 import de.laser.cache.SessionCacheWrapper
-import de.laser.helper.Icons
+import de.laser.ui.Icon
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
@@ -129,7 +129,7 @@ class UiTagLib {
 
             if (attrs.showIcon) {
                 if (clss.toLowerCase() in ['error', 'info', 'success', 'warning']) {
-                    icon = Icons.UI[clss.toUpperCase()]
+                    icon = Icon.UI[clss.toUpperCase()]
                 }
                 else {
                     icon = 'poo icon'
@@ -236,7 +236,7 @@ class UiTagLib {
             out << '            </div>'
             if (attrs.editable && attrs.href) {
                 out << '        <div class="right aligned four wide column">'
-                out << '            <button type="button" class="ui icon button blue la-modern-button" data-ui="modal" data-href="' + attrs.href + '" ><i aria-hidden="true" class="' + Icons.CMD.ADD + '"></i></button>'
+                out << '            <button type="button" class="ui icon button blue la-modern-button" data-ui="modal" data-href="' + attrs.href + '" ><i aria-hidden="true" class="' + Icon.CMD.ADD + '"></i></button>'
                 out << '        </div>'
             }
             out << '        </div>'
@@ -448,7 +448,7 @@ class UiTagLib {
             if (! simpleFilter) {
                 out << '<button aria-expanded="' + (extended ? 'true':'false') + '" class="ui right floated button la-inline-labeled la-js-filterButton la-clearfix' + (extended ? '':' blue') + '">'
                 out << '    Filter'
-                out << '    <i aria-hidden="true" class="' + Icons.LNK.FILTERED + '"></i>'
+                out << '    <i aria-hidden="true" class="' + Icon.LNK.FILTERED + '"></i>'
                 out << '   <span class="ui circular label la-js-filter-total hidden">0</span>'
                 out << '</button>'
 
@@ -607,7 +607,7 @@ class UiTagLib {
         String type = attrs.type == 'year' ? 'yearpicker' : 'datepicker'
         out <<   '<div class="ui calendar '+type+'">'
         out <<     '<div class="ui input left icon">'
-        out <<       '<i aria-hidden="true" class="' + Icons.SYM.DATE + '"></i>'
+        out <<       '<i aria-hidden="true" class="' + Icon.SYM.DATE + '"></i>'
         out <<       '<input class="' + inputCssClass + '" name="' + name +  '" id="' + id +'" type="text" placeholder="' + placeholder + '" value="' + value + '" ' + required + '>'
         out <<     '</div>'
         out <<   '</div>'

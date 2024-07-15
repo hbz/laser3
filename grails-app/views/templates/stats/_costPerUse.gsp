@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.utils.DateUtils;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.utils.DateUtils;" %>
 
 <div class="ui segment" id="costPerUse">
     <g:if test="${selectedPeriodNotCovered}">
@@ -122,7 +122,7 @@
                                     <g:message code="default.usage.costPerUse.result" args="${[formatNumber(number: costs.get(datePoint), type:"currency", currencySymbol:"EUR"), sums.(metricType).get(datePoint)]}"/>
                                 </g:if>
                                 <g:else>
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-tooltip="${message(code: 'default.usage.missingUsageInfo')}"><i class="${Icons.TOOLTIP.SERIOUS} la-popup small"></i></span>
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-tooltip="${message(code: 'default.usage.missingUsageInfo')}"><i class="${Icon.TOOLTIP.SERIOUS} la-popup small"></i></span>
                                 </g:else>
                             </td>
                         </g:each>

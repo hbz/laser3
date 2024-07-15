@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.License; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Org" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.License; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Org" %>
 <laser:serviceInjection />
 <g:if test="${actionName == 'show'}">
     <ui:exportDropdown>
@@ -45,7 +45,7 @@
 
             <g:if test="${editable}">
                 <div class="divider"></div>
-                <g:link class="item" action="delete" id="${params.id}"><i class="${Icons.CMD.DELETE}"></i> ${message(code:'deletion.license')}</g:link>
+                <g:link class="item" action="delete" id="${params.id}"><i class="${Icon.CMD.DELETE}"></i> ${message(code:'deletion.license')}</g:link>
             </g:if>
         </g:if>
 

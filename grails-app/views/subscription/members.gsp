@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.ExportClickMeService; de.laser.CustomerTypeService; de.laser.storage.BeanStore; de.laser.finance.CostItem; de.laser.Links; de.laser.Person; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Subscription" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.CustomerTypeService; de.laser.storage.BeanStore; de.laser.finance.CostItem; de.laser.Links; de.laser.Person; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Subscription" %>
 
 <laser:htmlStart text="${BeanStore.getContextService().getOrg().isCustomerType_Consortium() ? message(code:'subscription.details.consortiaMembers.label') : ''}" serviceInjection="true" />
 
@@ -122,7 +122,7 @@
                 <th class="center aligned">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                           data-content="${message(code: 'default.previous.label')}">
-                        <i class="${Icons.LNK.PREV}"></i>
+                        <i class="${Icon.LNK.PREV}"></i>
                     </span>
                 </th>
                 <g:sortableColumn params="${params}" property="sub.startDate" title="${message(code:'default.startDate.label.shy')}"/>
@@ -130,20 +130,20 @@
                 <th class="center aligned">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                           data-content="${message(code: 'default.next.label')}">
-                        <i class="${Icons.LNK.NEXT}"></i>
+                        <i class="${Icon.LNK.NEXT}"></i>
                     </span>
                 </th>
                 <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()}">
                     <th class="center aligned la-no-uppercase">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="${message(code: 'subscription.linktoLicense')}">
-                            <i class="${Icons.LICENSE}"></i>
+                            <i class="${Icon.LICENSE}"></i>
                         </span>
                     </th>
                 </g:if>
                 <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                     <th class="center aligned la-no-uppercase">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="${message(code: 'subscription.packages.label')}">
-                            <i class="${Icons.PACKAGE}"></i>
+                            <i class="${Icon.PACKAGE}"></i>
                         </span>
                     </th>
                 </g:if>
@@ -184,7 +184,7 @@
                                 <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(subscr, 'General contact person', contextService.getOrg())}" var="gcp">
                                     <div class="item">
                                         ${gcp}
-                                        (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')} <i class="${Icons.ADDRESS_PRIVATE}" style="display:inline-block"></i>)
+                                        (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')} <i class="${Icon.ADDRESS_PRIVATE}" style="display:inline-block"></i>)
                                     </div>
                                 </g:each>
                                 <g:each in="${Person.getPublicByOrgAndObjectResp(subscr, sub, 'Specific subscription editor')}" var="sse">
@@ -196,7 +196,7 @@
                                 <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(subscr, sub, 'Specific subscription editor', contextService.getOrg())}" var="sse">
                                     <div class="item">
                                         ${sse}
-                                        (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')} <i class="${Icons.ADDRESS_PRIVATE}" style="display:inline-block"></i>)
+                                        (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')} <i class="${Icon.ADDRESS_PRIVATE}" style="display:inline-block"></i>)
                                     </div>
                                 </g:each>
                             </div>
@@ -213,7 +213,7 @@
                     %>
                     <td class="center aligned">
                         <g:if test="${navPrevSubMember}">
-                            <g:link controller="subscription" action="show" id="${navPrevSubMember}"><i class="${Icons.LNK.PREV}"></i></g:link>
+                            <g:link controller="subscription" action="show" id="${navPrevSubMember}"><i class="${Icon.LNK.PREV}"></i></g:link>
                         </g:if>
                         <g:elseif test="${(navPrevSubscription?.size() > 0) && Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.org = :subscriber',[parent:navPrevSubscription[0],subscriber:subscr])}">
                             <g:link controller="subscription" class="ui icon js-open-confirm-modal"
@@ -221,14 +221,14 @@
                                     data-confirm-term-how="ok"
                                     action="linkNextPrevMemberSub"
                                     id="${subscription.id}"
-                                    params="[prev: true, memberOrg: subscr.id, memberSubID: sub.id]"><i class="${Icons.LNK.PREV} grey"></i></g:link>
+                                    params="[prev: true, memberOrg: subscr.id, memberSubID: sub.id]"><i class="${Icon.LNK.PREV} grey"></i></g:link>
                         </g:elseif>
                     </td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
                     <td class="center aligned">
                         <g:if test="${navNextSubMember}">
-                            <g:link controller="subscription" action="show" id="${navNextSubMember}"><i class="${Icons.LNK.NEXT}"></i></g:link>
+                            <g:link controller="subscription" action="show" id="${navNextSubMember}"><i class="${Icon.LNK.NEXT}"></i></g:link>
                         </g:if>
                         <g:elseif test="${(navNextSubscription?.size() > 0) && Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.org = :subscriber',[parent:navNextSubscription[0],subscriber:subscr])}">
                             <g:link controller="subscription" class="ui icon js-open-confirm-modal"
@@ -236,7 +236,7 @@
                                     data-confirm-term-how="ok"
                                     action="linkNextPrevMemberSub"
                                     id="${subscription.id}"
-                                    params="[next: true, memberOrg: subscr.id, memberSubID: sub.id]"><i class="${Icons.LNK.NEXT} grey"></i></g:link>
+                                    params="[next: true, memberOrg: subscr.id, memberSubID: sub.id]"><i class="${Icon.LNK.NEXT} grey"></i></g:link>
                         </g:elseif>
                     </td>
                     <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()}">
@@ -279,7 +279,7 @@
                         <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button blue la-modern-button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                            <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                         </g:link>
 
                         <g:if test="${contextService.getUser().isYoda()}">
@@ -302,7 +302,7 @@
                                 <g:link class="ui icon negative button la-modern-button" controller="subscription" action="delete" params="${[id:sub.id]}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD.DELETE}"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
@@ -310,7 +310,7 @@
                                     <button class="ui disabled icon negative button la-modern-button"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="${Icons.CMD.DELETE}"></i>
+                                        <i class="${Icon.CMD.DELETE}"></i>
                                     </button>
                                 </span>
                             </g:else>

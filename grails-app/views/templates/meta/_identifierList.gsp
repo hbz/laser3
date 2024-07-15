@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.remote.ApiSource; de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.Vendor; de.laser.Provider; de.laser.storage.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.Platform; de.laser.AuditConfig; de.laser.FormService" %>
+<%@ page import="de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.Vendor; de.laser.Provider; de.laser.storage.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.Platform; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection />
 
 <table class="ui table">
@@ -22,7 +22,7 @@
                     ${namespace}
                     <g:if test="${ident instanceof Identifier && ident.ns.getI10n('description')}">
                         <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${ident.ns.getI10n('description')}">
-                            <i class="${Icons.TOOLTIP.HELP}"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </g:if>
                 </td>
@@ -40,7 +40,7 @@
                         </g:else>
                         %{--
                         <g:if test="${ident.ns.urlPrefix}">
-                            <a target="_blank" href="${ident.ns.urlPrefix}${ident.value}"><i title="${ident.ns.getI10n('name')} Link" class="${Icons.LNK.EXTERNAL}"></i></a>
+                            <a target="_blank" href="${ident.ns.urlPrefix}${ident.value}"><i title="${ident.ns.getI10n('name')} Link" class="${Icon.LNK.EXTERNAL}"></i></a>
                         </g:if>
                         --}%
                         <g:if test="${ident.getURL()}">
@@ -111,7 +111,7 @@
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="${Icons.CMD.DELETE} outline"></i>
+                                                <i class="${Icon.CMD.DELETE} outline"></i>
                                             </g:link>
                                         </g:if>
                                         <g:else>
@@ -139,7 +139,7 @@
                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="${Icons.CMD.DELETE} outline"></i>
+                                            <i class="${Icon.CMD.DELETE} outline"></i>
                                         </g:link>
                                     </g:else>
                                 </g:if>
@@ -152,7 +152,7 @@
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="${Icons.CMD.DELETE} outline"></i>
+                                        <i class="${Icon.CMD.DELETE} outline"></i>
                                     </g:link>
                                 </g:else>
                             </g:if>

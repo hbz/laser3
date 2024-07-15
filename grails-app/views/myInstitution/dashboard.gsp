@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.utils.AppUtils; de.laser.CustomerTypeService; de.laser.workflow.WfChecklist; de.laser.workflow.WfCheckpoint; de.laser.storage.RDStore; de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.CustomerTypeService; de.laser.workflow.WfChecklist; de.laser.workflow.WfCheckpoint; de.laser.storage.RDStore; de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
 
 <laser:htmlStart message="menu.institutions.dash" serviceInjection="true"/>
 
@@ -13,25 +13,25 @@
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
-                            <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
+                            <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                             <div class="content">
                                 <g:link controller="myInstitution" action="currentSubscriptions">${message(code:'menu.my.subscriptions')}</g:link>
                             </div>
                         </div>
                         <div class="item">
-                            <i class="${Icons.LICENSE} la-list-icon"></i>
+                            <i class="${Icon.LICENSE} la-list-icon"></i>
                             <div class="content">
                                 <g:link controller="myInstitution" action="currentLicenses">${message(code:'menu.my.licenses')}</g:link>
                             </div>
                         </div>
                         <div class="item">
-                            <i class="${Icons.PROVIDER} la-list-icon"></i>
+                            <i class="${Icon.PROVIDER} la-list-icon"></i>
                             <div class="content">
                                 <g:link controller="myInstitution" action="currentProviders">${message(code:'menu.my.providers')}</g:link>
                             </div>
                         </div>
 %{--                        <div class="item">--}%
-%{--                            <i class="${Icons.VENDOR} icon la-list-icon"></i>--}%
+%{--                            <i class="${Icon.VENDOR} icon la-list-icon"></i>--}%
 %{--                            <div class="content">--}%
 %{--                                <g:link controller="myInstitution" action="currentVendors">${message(code:'menu.my.vendors')}</g:link>--}%
 %{--                            </div>--}%
@@ -41,25 +41,25 @@
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
-                            <i class="${Icons.TASK} la-list-icon"></i>
+                            <i class="${Icon.TASK} la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="tasks" message="menu.my.tasks" />
                             </div>
                         </div>
                         <div class="item">
-                            <i class="${Icons.WORKFLOW} la-list-icon"></i>
+                            <i class="${Icon.WORKFLOW} la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
                             </div>
                         </div>
 %{--                        <div class="item">--}%
-%{--                            <i class="${Icons.DOCUMENT} icon la-list-icon"></i>--}%
+%{--                            <i class="${Icon.DOCUMENT} icon la-list-icon"></i>--}%
 %{--                            <div class="content">--}%
 %{--                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="documents" message="menu.my.documents" />--}%
 %{--                            </div>--}%
 %{--                        </div>--}%
                         <div class="item">
-                            <i class="${Icons.SURVEY} la-list-icon"></i>
+                            <i class="${Icon.SURVEY} la-list-icon"></i>
                             <div class="content">
                                 <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
                                     <g:link controller="myInstitution" action="currentSurveys">${message(code:'menu.my.surveys')}</g:link>
@@ -74,13 +74,13 @@
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
-                            <i class="${Icons.ORG} la-list-icon"></i>
+                            <i class="${Icon.ORG} la-list-icon"></i>
                             <div class="content">
                                 <g:link controller="org" action="show" id="${institution.id}">${message(code: 'menu.institutions.org.show')}</g:link>
                             </div>
                         </div>
                         <div class="item">
-                            <i class="${Icons.ADDRESS_PUBLIC} la-list-icon"></i>
+                            <i class="${Icon.ADDRESS_PUBLIC} la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
                             </div>
@@ -96,7 +96,7 @@
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
-                            <i class="${Icons.ORG} la-list-icon"></i>
+                            <i class="${Icon.ORG} la-list-icon"></i>
                             <div class="content">
                                 <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                                     <ui:securedMainNavItem addItemAttributes="true" specRole="ROLE_ADMIN" controller="myInstitution" action="manageMembers" message="menu.my.insts" />
@@ -107,13 +107,13 @@
                             </div>
                         </div>
                         <div class="item">
-                            <i class="${Icons.REPORTING} la-list-icon"></i>
+                            <i class="${Icon.REPORTING} la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="reporting" message="myinst.reporting" />
                             </div>
                         </div>
                         <div class="item">
-                            <i class="${Icons.TOOLTIP.HELP} la-list-icon"></i>
+                            <i class="${Icon.TOOLTIP.HELP} la-list-icon"></i>
                             <div class="content">
                                 <g:link controller="profile" action="help">${message(code:'menu.user.help')}</g:link>
                             </div>
@@ -167,27 +167,27 @@
         </a>
 
         <a class="${us_dashboard_tab.value == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
-            <i class="${Icons.ANNOUNCEMENT} large"></i>
+            <i class="${Icon.ANNOUNCEMENT} large"></i>
             ${systemAnnouncements.size()} ${message(code:'announcement.plural')}
         </a>
 
         <g:if test="${(contextService.getOrg().isCustomerType_Inst() || contextService.getOrg().isCustomerType_Consortium_Pro())}">
             <a class="${us_dashboard_tab.value == 'Surveys' ? 'active item' : 'item'}" data-tab="surveys">
-                <i class="${Icons.SURVEY} large"></i>
+                <i class="${Icon.SURVEY} large"></i>
                 <span id="surveyCount">${message(code: 'myinst.dash.survey.label', args: [message(code: 'myinst.loadPending')])}</span>
             </a>
         </g:if>
 
         <g:if test="${contextService.getOrg().isCustomerType_Pro()}">
             <a class="${us_dashboard_tab.value == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
-                <i class="${Icons.TASK} large"></i>
+                <i class="${Icon.TASK} large"></i>
                 ${tasksCount} ${message(code:'myinst.dash.task.label')}
             </a>
         </g:if>
 
         <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
             <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
-                <i class="${Icons.WORKFLOW} large"></i>
+                <i class="${Icon.WORKFLOW} large"></i>
                 ${allChecklistsCount} ${message(code:'workflow.plural')}
             </a>
         </g:if>
@@ -276,25 +276,25 @@
                                     <div class="item">
                                         <span class="la-popup-tooltip la-delay" data-content="${message(code: 'task.' + tskObj.controller)}" data-position="left center" data-variation="tiny">
                                             <g:if test="${tskObj.controller == 'organisation'}">
-                                                <i class="${Icons.ORG}"></i>
+                                                <i class="${Icon.ORG}"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller == 'provider'}">
-                                                <i class="${Icons.PROVIDER}"></i>
+                                                <i class="${Icon.PROVIDER}"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller == 'vendor'}">
-                                                <i class="${Icons.VENDOR}"></i>
+                                                <i class="${Icon.VENDOR}"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('subscription')}">
-                                                <i class="${Icons.SUBSCRIPTION}"></i>
+                                                <i class="${Icon.SUBSCRIPTION}"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('package')}">
-                                                <i class="${Icons.PACKAGE}"></i>
+                                                <i class="${Icon.PACKAGE}"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('license')}">
-                                                <i class="${Icons.LICENSE}"></i>
+                                                <i class="${Icon.LICENSE}"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('survey')}">
-                                                <i class="${Icons.SURVEY}"></i>
+                                                <i class="${Icon.SURVEY}"></i>
                                             </g:if>
                                         </span>
                                         <g:if test="${tskObj.controller.contains('survey')}">
@@ -307,7 +307,7 @@
                                 </g:each>
                             </g:if>
                             <g:else>
-                                <i class="${Icons.TASK}"></i> ${message(code: 'task.general')}
+                                <i class="${Icon.TASK}"></i> ${message(code: 'task.general')}
                             </g:else>
                         </div>
                     </div>
@@ -371,7 +371,7 @@
                                 <tr>
                                     <td>
                                         <div class="la-flexbox">
-                                            <i class="${Icons.WORKFLOW} la-list-icon"></i>
+                                            <i class="${Icon.WORKFLOW} la-list-icon"></i>
                                             <g:link controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}"
                                                     params="${[info: '' + clistInfo.target.class.name + ':' + clistLinkParamPart]}">
                                                 <strong>${clist.title}</strong>
@@ -407,7 +407,7 @@
                                     </td>
                                     <td class="center aligned">
                                         <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                                            <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="${Icons.CMD.EDIT}"></i></button>
+                                            <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="${Icon.CMD.EDIT}"></i></button>
 
                                             <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [clist.title])}"
@@ -415,7 +415,7 @@
                                                     controller="myInstitution" action="dashboard" id="${clistInfo.target.id}" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}", view:'Workflows']}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="${Icons.CMD.DELETE}"></i>
+                                                <i class="${Icon.CMD.DELETE}"></i>
                                             </g:link>
                                         </g:if>
                                     </td>

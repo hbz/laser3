@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.RefdataValue; de.laser.survey.SurveyConfig" %>
+<%@ page import="de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.RefdataValue; de.laser.survey.SurveyConfig" %>
 
 <laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true"/>
 
@@ -29,10 +29,10 @@
 
     <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyProperty.all.label')}
 
-        <i class="${Icons.TOOLTIP.HELP} la-popup"></i>
+        <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
 
         <div class="ui popup">
-            <i class="${Icons.PROP.IS_PRIVATE}"></i> = ${message(code: 'subscription.properties.my')}
+            <i class="${Icon.PROP.IS_PRIVATE}"></i> = ${message(code: 'subscription.properties.my')}
         </div>
         <ui:totalNumber total="${properties.size()}"/>
 
@@ -65,7 +65,7 @@
                 <td>
                     <g:if test="${property?.tenant && property?.tenant.id == institution.id}">
                         <ui:xEditable owner="${property}" field="name_${SUBSTITUTE}" type="textarea"/>
-                        <i class='${Icons.PROP.IS_PRIVATE}'></i>
+                        <i class='${Icon.PROP.IS_PRIVATE}'></i>
                     </g:if>
                     <g:else>
                         ${property?.getI10n('name')}
@@ -104,7 +104,7 @@
                                 data-confirm-term-how="delete"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="${Icons.CMD.DELETE}"></i>
+                            <i class="${Icon.CMD.DELETE}"></i>
                         </g:link>
                     </g:if>
                 </td>
