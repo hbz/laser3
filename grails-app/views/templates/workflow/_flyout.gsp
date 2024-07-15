@@ -258,7 +258,7 @@
                             <div class="ui icon button compact la-hidden"><i class="${Icons.X.PLACEHOLDER}"></i></div>
                             <div class="ui icon button compact la-hidden"><i class="${Icons.X.PLACEHOLDER}"></i></div>
 
-                            <div class="ui icon blue button compact la-modern-button" id="cpFormToggle"><i class="icon plus"></i></div>
+                            <div class="ui icon blue button compact la-modern-button" id="cpFormToggle"><i class="${Icons.CMD.ADD}"></i></div>
                         </div>
                     </div><!-- .row -->
 

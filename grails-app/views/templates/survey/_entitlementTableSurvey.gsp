@@ -295,7 +295,7 @@
                                                                                                     action="removePriceItem"
                                                                                                     params="${[priceItem: priceItem.id, id: subscription.id]}"
                                                                                                     class="ui compact icon button tiny"><i
-                                                                                                    class="ui icon minus"
+                                                                                                    class="${Icons.CMD.REMOVE}"
                                                                                                     data-content="Preis entfernen"></i></g:link>
                                                                                         </span>
                                                                                     </g:if>

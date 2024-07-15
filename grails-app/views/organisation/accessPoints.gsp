@@ -58,7 +58,7 @@
 
         <g:if test="${editable}">
         <g:link action="create" controller="accessPoint" class="ui right floated icon button" params="[id: orgInstance.id, accessMethod: accessPointType.value]">
-            <i class="plus icon"></i>
+            <i class="${Icons.CMD.ADD}"></i>
         </g:link>
         <br>
         <br>

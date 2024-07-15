@@ -128,7 +128,7 @@
         <g:else>
             <g:each in="${data.costItems}" var="ci" status="jj">
                 <%
-                    String icon = '<i class="' + Icons.TOOLTIP.HELP + '"></i>'
+                    String icon = '<i class="' + Icons.FNC.COST_NO + '"></i>'
                     String dataTooltip = message(code:'financials.costItemConfiguration.notSet')
 
                     switch (ci.costItemElementConfiguration) {

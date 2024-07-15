@@ -223,7 +223,7 @@
                             break
                         default:
                             dataTooltip = message(code:'financials.costItemConfiguration.notSet')
-                            icon = '<i class="' + Icons.TOOLTIP.HELP + '"></i>'
+                            icon = '<i class="' + Icons.FNC.COST_NO + '"></i>'
                             break
                     }
                     %>
@@ -260,12 +260,12 @@
                     <td>
                         <g:if test="${subCons in linkedSubscriptions}">
                             <g:link class="ui icon negative button la-modern-button la-popup-tooltip" action="linkToSubscription" data-content="${message(code: 'default.button.unlink.label')}" params="${params+[id:license.id,unlink:true,subscription:subCons.id,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">
-                                <i class="ui minus icon"></i>
+                                <i class="${Icons.CMD.REMOVE}"></i>
                             </g:link>
                         </g:if>
                         <g:else>
                             <g:link class="ui icon positive button la-modern-button la-popup-tooltip" action="linkToSubscription" data-content="${message(code: 'default.button.link.label')}" params="${params+[id:license.id,subscription:subCons.id,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">
-                                <i class="ui plus icon"></i>
+                                <i class="${Icons.CMD.ADD}"></i>
                             </g:link>
                         </g:else>
                     </td>

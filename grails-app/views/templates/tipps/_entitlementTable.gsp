@@ -1,4 +1,4 @@
-<%@page import="de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@page import="de.laser.helper.Icons; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <div class="eight wide column">
     <g:set var="counter" value="${1}"/>
     <g:set var="sumlistPriceEuro" value="${0}"/>
@@ -122,14 +122,14 @@
                                     <g:link class="ui icon negative button la-popup-tooltip la-delay" action="processRemoveEntitlements"
                                             params="${[id: subscription.id, singleTitle: tipp.gokbId, packageId: packageId]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
-                                        <i class="minus icon"></i>
+                                        <i class="${Icons.CMD.REMOVE}"></i>
                                     </g:link>
                                 </g:if>
                                 <g:elseif test="${side == 'source' && !isContainedByTarget && editable}">
                                     <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay" action="processAddEntitlements"
                                             params="${[id: subscription.id, singleTitle: tipp.gokbId]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
-                                        <i class="plus icon"></i>
+                                        <i class="${Icons.CMD.ADD}"></i>
                                     </g:link>
                                 </g:elseif>
 

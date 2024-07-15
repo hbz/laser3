@@ -237,7 +237,7 @@
                                                     action="processAddEntitlements"
                                                     params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}"
                                                     data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
-                                                <i class="plus icon"></i>
+                                                <i class="${Icons.CMD.ADD}"></i>
                                             </g:link>
                                         </g:if>
                                         <g:else>
@@ -246,7 +246,7 @@
                                                 <g:link class="ui icon disabled button la-popup-tooltip la-delay"
                                                         action="processAddEntitlements"
                                                         params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}">
-                                                    <i class="plus icon"></i>
+                                                    <i class="${Icons.CMD.ADD}"></i>
                                                 </g:link>
                                             </div>
                                         </g:else>

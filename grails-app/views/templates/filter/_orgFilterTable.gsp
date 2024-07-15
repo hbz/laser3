@@ -347,7 +347,7 @@
                                 )}" var="telNr">
                                     <div class="item">
                                         <span data-position="right center">
-                                            <i class="icon phone"></i>
+                                            <i class="${Icons.SYM.PHONE}"></i>
                                             ${telNr.content}
                                         </span><br />
                                     </div>

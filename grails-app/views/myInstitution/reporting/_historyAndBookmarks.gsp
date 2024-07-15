@@ -41,7 +41,7 @@
                             </g:if>
                             <g:else>
                                 <g:link controller="ajaxHtml" action="reporting" params="${[context: BaseConfig.KEY_MYINST, cmd: 'addBookmark', token: "${fhRCache.token}", tab: 'history']}"
-                                        class="ui small icon positive la-modern-button button right floated"><i class="icon plus"></i></g:link>
+                                        class="ui small icon positive la-modern-button button right floated"><i class="${Icons.CMD.ADD}"></i></g:link>
                             </g:else>
                         </td>
                     </tr>

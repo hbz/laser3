@@ -52,7 +52,7 @@
 
                         <g:if test="${showPersons}">
                                 <button class="ui icon button blue la-modern-button la-selectable-button la-popup-tooltip la-delay" data-ui="modal" data-href="#${cssId}" data-content="${message(code:'subscription.details.addNewContact')}">
-                                    <i class="address plus icon"></i>
+                                    <i class="${Icons.CMD.ADD}"></i>
                                 </button>
 
                         <laser:render template="/templates/links/orgLinksAsListAddPrsModal"

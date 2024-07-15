@@ -84,7 +84,7 @@
                             break
                         default:
                             dataTooltip = message(code:'financials.costItemConfiguration.notSet')
-                            icon = '<i class="' + Icons.TOOLTIP.HELP + '"></i>'
+                            icon = '<i class="' + Icons.FNC.COST_NO + '"></i>'
                             break
                     }
                 %>

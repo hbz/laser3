@@ -304,10 +304,10 @@
                 %{-- Buttons for selection of kind of contact START --}%
                 <div class="ui wrapping spaced buttons">
                     <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_EMAIL.id}"><i class="${Icons.SYM.EMAIL}"></i><g:message code="contact.addEmail"/></a>
-                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_FAX.id}"><i class="tty circle icon"></i><g:message code="contact.addTty"/></a>
-                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_MOBILE.id}"><i class="mobile alternate circle icon"></i><g:message code="contact.addMobil"/></a>
-                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_PHONE.id}"><i class="phone circle icon"></i><g:message code="contact.addPhone"/></a>
-                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_URL.id}"><i class="globe circle icon"></i><g:message code="contact.addUrl"/></a>
+                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_FAX.id}"><i class="${Icons.SYM.FAX}"></i><g:message code="contact.addTty"/></a>
+                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_MOBILE.id}"><i class="${Icons.SYM.MOBILE}"></i><g:message code="contact.addMobil"/></a>
+                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_PHONE.id}"><i class="${Icons.SYM.PHONE}"></i><g:message code="contact.addPhone"/></a>
+                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_URL.id}"><i class="${Icons.SYM.URL}"></i><g:message code="contact.addUrl"/></a>
                 </div>
                 %{-- Buttons for selection of kind of contact END --}%
             </div>
@@ -321,22 +321,20 @@
                                 <i class="${Icons.SYM.EMAIL} large la-js-contactIcon"></i>
                             </g:if>
                             <g:elseif test="${contact.contentType.id == RDStore.CCT_FAX.id}">
-                                <i class="icon large tty la-js-contactIcon"></i>
+                                <i class="${Icons.SYM.FAX} la-js-contactIcon"></i>
                             </g:elseif>
                             <g:elseif test="${contact.contentType.id == RDStore.CCT_MOBILE.id}">
-                                <i class="icon large mobile alternate la-js-contactIcon"></i>
+                                <i class="${Icons.SYM.MOBILE} large la-js-contactIcon"></i>
                             </g:elseif>
                             <g:elseif test="${contact.contentType.id == RDStore.CCT_PHONE.id}">
-                                <i class="icon large phone la-js-contactIcon"></i>
+                                <i class="${Icons.SYM.PHONE} large la-js-contactIcon"></i>
                             </g:elseif>
                             <g:elseif test="${contact.contentType.id == RDStore.CCT_URL.id}">
-                                <i class="icon large globe la-js-contactIcon"></i>
+                                <i class="${Icons.SYM.URL} large la-js-contactIcon"></i>
                             </g:elseif>
                             <g:else>
                                 <i class="${Icons.SYM.EMAIL} large la-js-contactIcon"></i>
                             </g:else>
-
-
 
                         </div>
                         <div class="field wide four">
@@ -642,19 +640,16 @@
           icon.addClass("${Icons.SYM.EMAIL} large la-js-contactIcon");
           break;
         case "${RDStore.CCT_FAX.id}":
-          icon.addClass("icon large la-js-contactIcon tty");
+          icon.addClass("${Icons.SYM.FAX} large la-js-contactIcon");
           break;
         case "${RDStore.CCT_MOBILE.id}":
-          icon.addClass("icon large la-js-contactIcon mobile alternate");
+          icon.addClass("${Icons.SYM.MOBILE} large la-js-contactIcon");
           break;
         case "${RDStore.CCT_PHONE.id}":
-          icon.addClass("icon large la-js-contactIcon phone");
-          break;
-        case "${RDStore.CCT_PHONE.id}":
-          icon.addClass("icon large la-js-contactIcon phone");
+          icon.addClass("${Icons.SYM.PHONE} large la-js-contactIcon");
           break;
         case "${RDStore.CCT_URL.id}":
-          icon.addClass("icon large la-js-contactIcon globe");
+          icon.addClass("${Icons.SYM.URL} large la-js-contactIcon");
           break;
       }
     }

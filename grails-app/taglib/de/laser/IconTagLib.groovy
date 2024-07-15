@@ -222,7 +222,7 @@ class IconTagLib {
                 break
             case 'Fax':
                 msg = message(code: 'contact.icon.label.fax')
-                icon = 'icon tty la-list-icon'
+                icon = Icons.SYM.FAX + ' la-list-icon'
                 break
             case 'Phone':
                 msg = message(code: 'contact.icon.label.phone')
@@ -230,7 +230,7 @@ class IconTagLib {
                 break
             case 'Url':
                 msg = message(code: 'contact.icon.label.url')
-                icon = 'icon globe la-list-icon'
+                icon = Icons.SYM.URL + ' la-list-icon'
                 break
         }
 

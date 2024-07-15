@@ -177,7 +177,7 @@
                                 value="${itm.id}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="trash icon"></i></button>
+                            <i class="${Icons.CMD.DELETE}"></i></button>
                     </g:if>
                     </td>
                     </tr>

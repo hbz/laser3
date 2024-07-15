@@ -28,6 +28,7 @@ class Icons {
         // please do not touch during refactoring ..
         // cmds, functions
 
+        public static String ADD            = 'plus icon'
         public static String ATTACHMENT     = 'attach icon'
         public static String COPY           = 'copy icon'
         public static String DELETE         = 'trash alternate outline icon'
@@ -36,6 +37,7 @@ class Icons {
         public static String ERASE          = 'eraser icon'
         public static String MOVE_UP        = 'arrow up icon'
         public static String MOVE_DOWN      = 'arrow down icon'
+        public static String REMOVE         = 'minus icon'
         public static String REPLACE        = 'retweet icon'
         public static String SHOW_MORE      = 'angle double down icon'
         public static String UNLINK         = 'unlink icon'
@@ -48,9 +50,11 @@ class Icons {
         public static String COST           = 'money bill icon'
         public static String COST_CONFIG    = 'money bill alternate icon'
 
-        public static String COST_POSITIVE  = 'circle plus icon green'  // COLOR INCLUDED !!
-        public static String COST_NEGATIVE  = 'circle minus icon red'   // COLOR INCLUDED !!
-        public static String COST_NEUTRAL   = 'circle icon yellow'      // COLOR INCLUDED !!
+        public static String COST_POSITIVE  = 'circle plus icon green'      // COLOR INCLUDED !!
+        public static String COST_NEGATIVE  = 'circle minus icon red'       // COLOR INCLUDED !!
+        public static String COST_NEUTRAL   = 'circle icon yellow'          // COLOR INCLUDED !!
+
+        public static String COST_NO        = 'grey question circle icon'   // COLOR INCLUDED !!
     }
 
     class LNK {
@@ -93,6 +97,13 @@ class Icons {
 
         public static String DATE           = 'calendar alternate outline icon'
         public static String EMAIL          = 'envelope outline icon'
+        public static String FAX            = 'fax icon'
+        public static String MOBILE         = 'mobile alternate icon'
+        public static String PHONE          = 'phone icon'
+        public static String URL            = 'globe icon'
+
+        public static String PROPERTIES     = 'tags icon'
+
         public static String UNKOWN         = 'question icon'
 
         public static String MY_OBJECT      = 'star icon'                   // todo: duplicate: survey/renew? > Icons.PROP.MANDATORY
@@ -106,13 +117,6 @@ class Icons {
         public static String IMPORTANT      = 'exclamation circle icon'     // TODO: merge with Icons.TOOLTIP.SERIOUS
         public static String INFO           = 'info circle icon'            // todo: duplicate: Icons.PROP.IN_USE
         public static String SERIOUS        = 'exclamation triangle icon'   // TODO: merge with Icons.TOOLTIP.IMPORTANT
-    }
-
-    class UI {
-        // please do not touch during refactoring ..
-        // basic / generic => lower semantics
-
-        public static String MENU_DROPDOWN  = 'dropdown icon'
     }
 
     class X {

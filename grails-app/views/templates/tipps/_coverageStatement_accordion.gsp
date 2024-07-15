@@ -94,7 +94,7 @@
         <span class="right floated">
             <g:link controller="subscription" action="removeCoverage"
                     params="${paramData + [ieCoverage: covStmt.id, id: subscription.id]}"
-                    class="ui compact icon button negative tiny removeCoverage"><i class="ui icon minus"
+                    class="ui compact icon button negative tiny removeCoverage"><i class="${Icons.CMD.REMOVE}"
                                                                                    data-content="Abdeckung entfernen"></i></g:link>
         </span>
     </g:if>--}%

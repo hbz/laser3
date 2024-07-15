@@ -12,7 +12,7 @@
     <div class="content">
         <g:if test="${contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC(inContextOrg)}">
             <a class="ui icon right floated button" data-ui="modal" href="#linkPlatformModal">
-                <i class="plus icon"></i>
+                <i class="${Icons.CMD.ADD}"></i>
             </a>
 
             <ui:modal formID="linkPlatform" id="linkPlatformModal"

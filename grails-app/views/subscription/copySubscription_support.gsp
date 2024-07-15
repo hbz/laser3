@@ -74,7 +74,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                 ${message(code: 'properties')}
             </div>
             <div class="description">
-                <i class="tags icon"></i> ${message(code: 'properties')}
+                <i class="${Icons.SYM.PROPERTIES}"></i> ${message(code: 'properties')}
             </div>
         </div>
     </div>

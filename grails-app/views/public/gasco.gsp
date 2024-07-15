@@ -174,7 +174,7 @@
                                         </div>
                                         <g:each in="${Contact.findAllByPrsAndContentType( person, RDStore.CCT_URL )}" var="prsContact">
                                             <div class="description">
-                                                <i class="icon globe la-list-icon"></i>
+                                                <i class="${Icons.SYM.URL} la-list-icon"></i>
                                                 <span class="la-popup-tooltip la-delay " data-position="right center" data-content="Diese URL aufrufen:  ${prsContact?.content}">
                                                     <a class="la-break-all" href="${prsContact?.content}" target="_blank">Webseite</a>
                                                 </span>
