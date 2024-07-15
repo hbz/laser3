@@ -177,7 +177,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isMyX')}">
                 <td class="center aligned">
                     <g:if test="${currentProviderIdList && (provider.id in currentProviderIdList)}">
-                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.providers')}"><i class="${Icons.SYM.MY_OBJECT} yellow"></i></span>
+                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.providers')}"><i class="${Icons.UI.MY_OBJECT} yellow"></i></span>
                     </g:if>
                 </td>
             </g:if>

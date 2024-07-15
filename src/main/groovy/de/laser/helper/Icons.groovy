@@ -67,27 +67,15 @@ class Icons {
         public static String PREV           = 'arrow left icon'      // todo: duplicate: ui:anualRings, ui:statusWithRings
     }
 
-    class MSG {
-        // please do not touch during refactoring ..
-        // dialogs / system wide messages
-
-        // e.g. <ui:msg />
-        public static String ERROR          = 'exclamation triangle icon'
-        public static String HELP           = 'question icon'
-        public static String INFO           = 'info icon'
-        public static String SUCCESS        = 'check icon'
-        public static String WARNING        = 'exclamation icon'
-    }
-
     class PROP {
         // please do not touch during refactoring ..
         // properties only
 
         public static String HARDDATA       = 'check circle icon green' // COLOR INCLUDED !!
-        public static String IN_USE         = 'info circle icon blue'   // COLOR INCLUDED !! todo: duplicate: Icons.MSG.INFO
+        public static String IN_USE         = 'info circle icon blue'   // COLOR INCLUDED !! todo: duplicate: Icons.UI.INFO
         public static String IS_PRIVATE     = 'shield alternate icon'
         public static String LOGIC          = 'cube icon red'           // COLOR INCLUDED !!
-        public static String MANDATORY      = 'star icon'               // todo: duplicate: survey/renew? > Icons.SYM.MY_OBJECT
+        public static String MANDATORY      = 'star icon'               // todo: duplicate: survey/renew? > Icons.UI.MY_OBJECT
         public static String MULTIPLE       = 'redo icon orange'        // COLOR INCLUDED !! todo: duplicate: currentSubscriptionsTransfer
     }
 
@@ -105,8 +93,6 @@ class Icons {
         public static String PROPERTIES     = 'tags icon'
 
         public static String UNKOWN         = 'question icon'
-
-        public static String MY_OBJECT      = 'star icon'                   // todo: duplicate: survey/renew? > Icons.PROP.MANDATORY
     }
 
     class TOOLTIP {
@@ -117,6 +103,20 @@ class Icons {
         public static String IMPORTANT      = 'exclamation circle icon'     // TODO: merge with Icons.TOOLTIP.SERIOUS
         public static String INFO           = 'info circle icon'            // todo: duplicate: Icons.PROP.IN_USE
         public static String SERIOUS        = 'exclamation triangle icon'   // TODO: merge with Icons.TOOLTIP.IMPORTANT
+    }
+
+    class UI {
+        // please do not touch during refactoring ..
+        // dialogs / system wide messages
+
+        // e.g. <ui:msg />
+        public static String ERROR          = 'exclamation triangle icon'
+        public static String HELP           = 'question icon'
+        public static String INFO           = 'info icon'
+        public static String SUCCESS        = 'check icon'
+        public static String WARNING        = 'exclamation icon'
+
+        public static String MY_OBJECT      = 'star icon'                   // todo: duplicate: survey/renew? > Icons.PROP.MANDATORY
     }
 
     class X {

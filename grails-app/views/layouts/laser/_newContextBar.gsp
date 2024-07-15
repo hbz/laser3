@@ -23,16 +23,16 @@
             %{-- my object indicator --}%
 
             <g:if test="${isMyPlatform}">
-                <ui:cbItemInfo display="${message(code: 'license.relationship.platform')}" icon="${Icons.SYM.MY_OBJECT}" color="yellow" />
+                <ui:cbItemInfo display="${message(code: 'license.relationship.platform')}" icon="${Icons.UI.MY_OBJECT}" color="yellow" />
             </g:if>
             <g:elseif test="${isMyPkg}">
-                <ui:cbItemInfo display="${message(code: 'license.relationship.pkg')}" icon="${Icons.SYM.MY_OBJECT}" color="violet" />
+                <ui:cbItemInfo display="${message(code: 'license.relationship.pkg')}" icon="${Icons.UI.MY_OBJECT}" color="violet" />
             </g:elseif>
             <g:elseif test="${isMyOrg}">
-                <ui:cbItemInfo display="${message(code: 'license.relationship.org')}" icon="${Icons.SYM.MY_OBJECT}" color="teal" />
+                <ui:cbItemInfo display="${message(code: 'license.relationship.org')}" icon="${Icons.UI.MY_OBJECT}" color="teal" />
             </g:elseif>
             <g:elseif test="${isMyVendor}">
-                <ui:cbItemInfo display="${message(code: 'license.relationship.vendor')}" icon="${Icons.SYM.MY_OBJECT}" color="teal" />
+                <ui:cbItemInfo display="${message(code: 'license.relationship.vendor')}" icon="${Icons.UI.MY_OBJECT}" color="teal" />
             </g:elseif>
 
             %{-- child indicator --}%
@@ -65,7 +65,7 @@
 
             <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='myInstitution' && actionName=='financeImport') || (controllerName=='myInstitution' && actionName=='subscriptionImport') || (controllerName=='dev' && actionName=='frontend')}">
                 <div class="item la-cb-action">
-                    <button class="ui icon button la-toggle-ui" id="help-toggle"><i class="${Icons.MSG.HELP}"></i></button>
+                    <button class="ui icon button la-toggle-ui" id="help-toggle"><i class="${Icons.UI.HELP}"></i></button>
                 </div>
             </g:if>
 

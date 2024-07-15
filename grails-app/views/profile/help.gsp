@@ -8,7 +8,7 @@
 <ui:h1HeaderWithIcon message="menu.user.help" type="help"/>
 <br />
 <br />
-<h2 class="ui icon header la-clear-before la-noMargin-top"><i class="${Icons.MSG.HELP} circle outline"></i> <g:message code="help.contentHelp"/></h2>
+<h2 class="ui icon header la-clear-before la-noMargin-top"><i class="${Icons.UI.HELP} circle outline"></i> <g:message code="help.contentHelp"/></h2>
 
 <style>
 .segment > p.header {
@@ -38,7 +38,7 @@
 <br />
 <br />
 
-<h2 class="ui icon header la-clear-before la-noMargin-top"><i class="${Icons.MSG.HELP} circle outline"></i> <g:message code="help.technicalHelp"/></h2>
+<h2 class="ui icon header la-clear-before la-noMargin-top"><i class="${Icons.UI.HELP} circle outline"></i> <g:message code="help.technicalHelp"/></h2>
 
 <div class="ui segment">
     <p class="ui header">

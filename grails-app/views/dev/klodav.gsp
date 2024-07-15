@@ -309,25 +309,25 @@
         <i class="icon large kiwi bird"></i> simple color helper
     </p>
     <p>
-        <i class="${Icons.DFT.SQUARE} large red"></i> fomantic red <br/>
-        <i class="${Icons.DFT.SQUARE} large sc_red"></i> fallback <br/>
+        <i class="${Icons.X.SQUARE} large red"></i> fomantic red <br/>
+        <i class="${Icons.X.SQUARE} large sc_red"></i> fallback <br/>
 
-        <i class="${Icons.DFT.SQUARE} large blue"></i> fomantic blue <br/>
-        <i class="${Icons.DFT.SQUARE} large sc_blue"></i> fallback <br/>
+        <i class="${Icons.X.SQUARE} large blue"></i> fomantic blue <br/>
+        <i class="${Icons.X.SQUARE} large sc_blue"></i> fallback <br/>
 
-        <i class="${Icons.DFT.SQUARE} large yellow"></i> fomantic yellow <br/>
-        <i class="${Icons.DFT.SQUARE} large sc_yellow"></i> fallback <br/>
+        <i class="${Icons.X.SQUARE} large yellow"></i> fomantic yellow <br/>
+        <i class="${Icons.X.SQUARE} large sc_yellow"></i> fallback <br/>
 
-        <i class="${Icons.DFT.SQUARE} large green"></i> fomantic green <br/>
-        <i class="${Icons.DFT.SQUARE} large olive"></i> fomantic olive <br/>
-        <i class="${Icons.DFT.SQUARE} large sc_green"></i> fallback <br/>
+        <i class="${Icons.X.SQUARE} large green"></i> fomantic green <br/>
+        <i class="${Icons.X.SQUARE} large olive"></i> fomantic olive <br/>
+        <i class="${Icons.X.SQUARE} large sc_green"></i> fallback <br/>
 
-        <i class="${Icons.DFT.SQUARE} large orange"></i> fomantic orange <br/>
-        <i class="${Icons.DFT.SQUARE} large sc_orange"></i> fallback <br/>
+        <i class="${Icons.X.SQUARE} large orange"></i> fomantic orange <br/>
+        <i class="${Icons.X.SQUARE} large sc_orange"></i> fallback <br/>
 
-        <i class="${Icons.DFT.SQUARE} large sc_grey"></i> fallback <br/>
+        <i class="${Icons.X.SQUARE} large sc_grey"></i> fallback <br/>
 
-        <i class="${Icons.DFT.SQUARE} large sc_darkgrey"></i> fallback <br/>
+        <i class="${Icons.X.SQUARE} large sc_darkgrey"></i> fallback <br/>
     </p>
 
     <p>

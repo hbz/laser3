@@ -22,7 +22,7 @@
                     <i class="icon history"></i>
             </div>
             <div id="info-toggle" class="ui icon button right floated">
-                <i class="${Icons.MSG.HELP}"></i>
+                <i class="${Icons.UI.HELP}"></i>
             </div>
         </div>
 
@@ -32,7 +32,7 @@
 
             <div class="ui segment">
                 <span class="ui top attached label" style="text-align:center;">
-                    <i class="${Icons.MSG.HELP} large"></i>${message(code:'reporting.ui.global.help')}
+                    <i class="${Icons.UI.HELP} large"></i>${message(code:'reporting.ui.global.help')}
                 </span>
                 <div style="margin: 3.5em 2em 0.5em !important">
                     <p>
@@ -56,7 +56,7 @@
                         ${message(code:'reporting.ui.global.infoBookmarks')}
                     </p>
                     <p>
-                        <i class="${Icons.MSG.HELP} blue"></i><strong>${message(code:'reporting.ui.global.help')}</strong> <br />
+                        <i class="${Icons.UI.HELP} blue"></i><strong>${message(code:'reporting.ui.global.help')}</strong> <br />
                         ${message(code:'reporting.ui.global.infoHelp')}
                     </p>
                     <p>
@@ -420,6 +420,6 @@
         </laser:script>
 
         <ui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
-            <p><i class="${Icons.MSG.ERROR} large orange"></i> ${message(code:'reporting.modal.error')}</p>
+            <p><i class="${Icons.UI.ERROR} large orange"></i> ${message(code:'reporting.modal.error')}</p>
         </ui:modal>
 <laser:htmlEnd />

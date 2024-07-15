@@ -129,7 +129,7 @@ class UiTagLib {
 
             if (attrs.showIcon) {
                 if (clss.toLowerCase() in ['error', 'info', 'success', 'warning']) {
-                    icon = Icons.MSG[clss.toUpperCase()]
+                    icon = Icons.UI[clss.toUpperCase()]
                 }
                 else {
                     icon = 'poo icon'
