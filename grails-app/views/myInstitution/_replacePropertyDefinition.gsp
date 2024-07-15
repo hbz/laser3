@@ -5,7 +5,7 @@
         <input type="hidden" name="xcgPdFrom" value=""/>
 
         <div class="ui icon error message">
-            <i class="${Icons.UI.ERROR}"></i>
+            <i class="${Icons.MSG.ERROR}"></i>
             <div class="content">
                 <div class="header"><g:message code="default.warning.emph" /></div>
                 <p><g:message code="menu.institutions.replace_prop.header"/></p>

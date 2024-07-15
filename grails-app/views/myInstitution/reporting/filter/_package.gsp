@@ -10,7 +10,7 @@
 %{--                <a class="item" data-tab="package-filter-tab-3">${message(code:'platform.label')}</a>--}%
 %{--            </g:if>--}%
 
-            <a class="item" data-tab="package-filter-tab-help"> ? %{--<i class="${Icons.UI.HELP}"></i>--}%</a>
+            <a class="item" data-tab="package-filter-tab-help"> ? %{--<i class="${Icons.MSG.HELP}"></i>--}%</a>
         </div><!-- .menu -->
 
         <div class="ui bottom attached active tab segment" data-tab="package-filter-tab-1">

@@ -63,9 +63,9 @@ class Icons {
         public static String PREV           = 'arrow left icon'      // todo: duplicate: ui:anualRings, ui:statusWithRings
     }
 
-    class UI {
+    class MSG {
         // please do not touch during refactoring ..
-        // dialogs / system wide
+        // dialogs / system wide messages
 
         // e.g. <ui:msg />
         public static String ERROR          = 'exclamation triangle icon'
@@ -80,7 +80,7 @@ class Icons {
         // properties only
 
         public static String HARDDATA       = 'check circle icon green' // COLOR INCLUDED !!
-        public static String IN_USE         = 'info circle icon blue'   // COLOR INCLUDED !! todo: duplicate: Icons.UI.INFO
+        public static String IN_USE         = 'info circle icon blue'   // COLOR INCLUDED !! todo: duplicate: Icons.MSG.INFO
         public static String IS_PRIVATE     = 'shield alternate icon'
         public static String LOGIC          = 'cube icon red'           // COLOR INCLUDED !!
         public static String MANDATORY      = 'star icon'               // todo: duplicate: survey/renew? > Icons.SYM.MY_OBJECT
@@ -106,6 +106,13 @@ class Icons {
         public static String IMPORTANT      = 'exclamation circle icon'     // TODO: merge with Icons.TOOLTIP.SERIOUS
         public static String INFO           = 'info circle icon'            // todo: duplicate: Icons.PROP.IN_USE
         public static String SERIOUS        = 'exclamation triangle icon'   // TODO: merge with Icons.TOOLTIP.IMPORTANT
+    }
+
+    class UI {
+        // please do not touch during refactoring ..
+        // basic / generic => lower semantics
+
+        public static String MENU_DROPDOWN  = 'dropdown icon'
     }
 
     class X {

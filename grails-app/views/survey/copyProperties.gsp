@@ -94,7 +94,7 @@
     </ui:greySegment>
 
 %{--<div class="ui icon positive message">
-    <i class="${Icons.UI.INFO}"></i>
+    <i class="${Icons.MSG.INFO}"></i>
 
     <div class="content">
         <div class="header"></div>

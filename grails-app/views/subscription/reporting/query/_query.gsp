@@ -47,7 +47,7 @@
         <div class="field" style="text-align: right">
             <label for="query-export-button">&nbsp;</label>
             <button id="query-export-button" class="ui icon button" data-href="#queryExportModal" data-ui="modal" disabled><i class="${Icons.CMD.DOWNLOAD}"></i></button>
-            <button id="query-help-button" class="ui icon button" data-href="#queryHelpModal" data-ui="modal" disabled><i class="${Icons.UI.HELP}"></i></button>
+            <button id="query-help-button" class="ui icon button" data-href="#queryHelpModal" data-ui="modal" disabled><i class="${Icons.MSG.HELP}"></i></button>
         </div>
     </div>
 

@@ -22,7 +22,7 @@
                 <a class="item" data-tab="sub-filter-tab-6">${message(code:'default.vendor.export.label')}</a>
             </g:if>
             <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).memberSubscription}">
-                <a class="item" data-tab="sub-filter-tab-help"> ? %{--<i class="${Icons.UI.HELP}"></i>--}%</a>
+                <a class="item" data-tab="sub-filter-tab-help"> ? %{--<i class="${Icons.MSG.HELP}"></i>--}%</a>
             </g:if>
         </div><!-- .menu -->
 

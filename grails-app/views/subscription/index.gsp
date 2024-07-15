@@ -51,7 +51,7 @@
 
 <g:if test="${deletedSPs}">
     <div class="ui icon error message">
-        <i class="${Icons.UI.ERROR}"></i>
+        <i class="${Icons.MSG.ERROR}"></i>
         <ul class="list">
             <g:each in="${deletedSPs}" var="sp">
                 <li><g:message code="subscription.details.packagesDeleted.header"
@@ -63,7 +63,7 @@
 
 <g:if test="${frozenHoldings}">
     <div class="ui icon error message">
-        <i class="${Icons.UI.ERROR}"></i>
+        <i class="${Icons.MSG.ERROR}"></i>
         <ul class="list">
             <g:each in="${frozenHoldings}" var="sp">
                 <li><g:message code="subscription.details.frozenHoldings.header"
