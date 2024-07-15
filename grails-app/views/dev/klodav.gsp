@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.Subscription; de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.ui.Button; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:htmlStart text="Playground: Various" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -12,6 +12,36 @@
     <g:link controller="dev" action="klodav" class="item active">Various</g:link>
     <g:link controller="dev" action="icons" class="item"><i class="certificate icon red"></i> New Icons</g:link>
 </nav>
+
+<div class="ui segment">
+
+    <p class="ui header">de.laser.ui.Button</p>
+
+    <p>
+        <button class="${Button.PRIMARY}">PRIMARY</button>
+        <button class="${Button.SECONDARY}">SECONDARY</button>
+        <button class="${Button.POSITIVE}">POSITIVE</button>
+        <button class="${Button.NEGATIVE}">NEGATIVE</button>
+    </p>
+    <p>
+        <button class="${Button.PRIMARY_ICON}"><i class="${Icons.X.SQUARE}"></i></button>
+        <button class="${Button.SECONDARY_ICON}"><i class="${Icons.X.SQUARE}"></i></button>
+        <button class="${Button.POSITIVE_ICON}"><i class="${Icons.CMD.ADD}"></i></button>
+        <button class="${Button.NEGATIVE_ICON}"><i class="${Icons.CMD.REMOVE}"></i></button>
+    </p>
+    <p>
+        <button class="${Button.MODERN.PRIMARY}">PRIMARY</button>
+        <button class="${Button.MODERN.SECONDARY}">SECONDARY</button>
+        <button class="${Button.MODERN.POSITIVE}">POSITIVE</button>
+        <button class="${Button.MODERN.NEGATIVE}">NEGATIVE</button>
+    </p>
+    <p>
+        <button class="${Button.MODERN.PRIMARY_ICON}"><i class="${Icons.X.SQUARE}"></i></button>
+        <button class="${Button.MODERN.SECONDARY_ICON}"><i class="${Icons.X.SQUARE}"></i></button>
+        <button class="${Button.MODERN.POSITIVE_ICON}"><i class="${Icons.CMD.ADD}"></i></button>
+        <button class="${Button.MODERN.NEGATIVE_ICON}"><i class="${Icons.CMD.REMOVE}"></i></button>
+    </p>
+</div>
 
 <div class="ui four column grid">
     <div class="column">

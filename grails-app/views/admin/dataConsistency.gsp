@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Button; de.laser.helper.Icons" %>
 <laser:htmlStart message="menu.admin.dataConsistency" />
 
 <ui:breadcrumbs>
@@ -118,12 +118,12 @@
                 if (mergeables.length > 0) {
                     var mergeUrl = "<g:createLink controller="admin" action="dataConsistency" />?task=merge&objType=Org";
                     mergeUrl += '&objId=' + mergeables.join('&objId=')
-                    $html.append( '<a href="' + mergeUrl + '" class="ui button positive"><i class="icon recycle"></i> Zusammenführen</a>' )
+                    $html.append( '<a href="' + mergeUrl + '" class="${Button.POSITIVE}"><i class="icon recycle"></i> Zusammenführen</a>' )
                 }
                 if (deletables.length > 0) {
                     var deleteUrl = "<g:createLink controller="admin" action="dataConsistency" />?task=delete&objType=Org";
                     deleteUrl += '&objId=' + deletables.join('&objId=')
-                    $html.append( '<a href="' + deleteUrl + '" class="ui button negative"><i class="${Icons.CMD.DELETE}"></i> Löschen</a>' )
+                    $html.append( '<a href="' + deleteUrl + '" class="${Button.NEGATIVE}"><i class="${Icons.CMD.DELETE}"></i> Löschen</a>' )
                 }
                 $('#modalConsistencyCheck').modal('show')
             }
