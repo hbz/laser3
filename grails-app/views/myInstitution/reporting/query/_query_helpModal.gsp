@@ -4,11 +4,11 @@
 <%
     String lang = (LocaleUtils.getCurrentLang() == 'en') ? 'en' : 'de'
 
-    String icon_blue   = '<i class="' + Icons.DFT.CIRCLE + ' blue"></i>'
-    String icon_green  = '<i class="' + Icons.DFT.CIRCLE + ' green"></i>'
-    String icon_yellow = '<i class="' + Icons.DFT.CIRCLE + ' yellow"></i>'
-    String icon_pink   = '<i class="' + Icons.DFT.CIRCLE + ' pink"></i>'
-    String icon_teal   = '<i class="' + Icons.DFT.CIRCLE + ' teal"></i>'
+    String icon_blue   = '<i class="' + Icons.X.CIRCLE + ' blue"></i>'
+    String icon_green  = '<i class="' + Icons.X.CIRCLE + ' green"></i>'
+    String icon_yellow = '<i class="' + Icons.X.CIRCLE + ' yellow"></i>'
+    String icon_pink   = '<i class="' + Icons.X.CIRCLE + ' pink"></i>'
+    String icon_teal   = '<i class="' + Icons.X.CIRCLE + ' teal"></i>'
 
     Closure hh_header = { de, en ->
         println """<p class="ui header"> ${lang == 'de' ? de : en} </p>"""
@@ -16,9 +16,9 @@
 
     Closure hh_no_x = { de, en ->
         if (lang == 'de') {
-            println """<p> ${de[0]} ohne ${de[1]} werden in der Gruppe <i class="${Icons.DFT.CIRCLE} pink"></i><strong>* ohne ${de[2]}</strong> zusammmen gefasst. </p>"""
+            println """<p> ${de[0]} ohne ${de[1]} werden in der Gruppe <i class="${Icons.X.CIRCLE} pink"></i><strong>* ohne ${de[2]}</strong> zusammmen gefasst. </p>"""
         } else {
-            println """<p> ${en[0]} without ${en[1]} are summarized in the group <i class="${Icons.DFT.CIRCLE} pink"></i><strong>* no ${en[2]}</strong>. </p>"""
+            println """<p> ${en[0]} without ${en[1]} are summarized in the group <i class="${Icons.X.CIRCLE} pink"></i><strong>* no ${en[2]}</strong>. </p>"""
         }
     }
 
@@ -284,8 +284,8 @@
             </p>
             <p>
                 Dabei sind folgende Varianten möglich: <br />
-                <i class="${Icons.DFT.CIRCLE} blue"></i> Die Lizenz verweist direkt auf den Anbieter, <br />
-                <i class="${Icons.DFT.CIRCLE} green"></i> Der Anbieter kann über ein referenziertes Paket ermittelt werden <br />
+                <i class="${Icons.X.CIRCLE} blue"></i> Die Lizenz verweist direkt auf den Anbieter, <br />
+                <i class="${Icons.X.CIRCLE} green"></i> Der Anbieter kann über ein referenziertes Paket ermittelt werden <br />
             </p>
         </g:if>
         <g:else>
@@ -295,8 +295,8 @@
             </p>
             <p>
                 The following variants are possible: <br />
-                <i class="${Icons.DFT.CIRCLE} blue"></i> The subscription refers directly to the provider, <br />
-                <i class="${Icons.DFT.CIRCLE} green"></i> The provider can be identified via a referenced package <br />
+                <i class="${Icons.X.CIRCLE} blue"></i> The subscription refers directly to the provider, <br />
+                <i class="${Icons.X.CIRCLE} green"></i> The provider can be identified via a referenced package <br />
             </p>
         </g:else>
         ${hh_no_x( ['Lizenzen', 'ermittelbare Anbieter', 'Anbieter'], ['Subscriptions', 'assignable providers', 'Provider'] )}
@@ -312,7 +312,7 @@
                 Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen, Einrichtungslizenzen und Anbieter.
             </p>
             <p>
-                Einrichtungslizenzen ohne ausgewiesenen Anbieter oder ohne passende Übereinstimmung werden in der Gruppe <i class="${Icons.DFT.CIRCLE} pink"></i><strong>* keine Übereinstimmung</strong> zusammmen gefasst.
+                Einrichtungslizenzen ohne ausgewiesenen Anbieter oder ohne passende Übereinstimmung werden in der Gruppe <i class="${Icons.X.CIRCLE} pink"></i><strong>* keine Übereinstimmung</strong> zusammmen gefasst.
             </p>
         </g:if>
         <g:else>
@@ -322,7 +322,7 @@
                 The basic search determines the number of subscriptions, participant subscriptions and providers considered.
             </p>
             <p>
-                Participant subscriptions without a designated provider or without a suitable match are grouped together in the <i class="${Icons.DFT.CIRCLE} pink"></i><strong>* no Match</strong>.
+                Participant subscriptions without a designated provider or without a suitable match are grouped together in the <i class="${Icons.X.CIRCLE} pink"></i><strong>* no Match</strong>.
             </p>
         </g:else>
     </div>
@@ -337,8 +337,8 @@
             </p>
             <p>
                 Dabei sind folgende Varianten möglich: <br />
-                <i class="${Icons.DFT.CIRCLE} blue"></i> Die Plattform kann direkt über eine Referenz aus dem Lizenz-Bestand ermittelt werden, <br />
-                <i class="${Icons.DFT.CIRCLE} green"></i> Der einer Lizenz zugeordnete Anbieter verweist auf eine Plattform <br />
+                <i class="${Icons.X.CIRCLE} blue"></i> Die Plattform kann direkt über eine Referenz aus dem Lizenz-Bestand ermittelt werden, <br />
+                <i class="${Icons.X.CIRCLE} green"></i> Der einer Lizenz zugeordnete Anbieter verweist auf eine Plattform <br />
             </p>
         </g:if>
         <g:else>
@@ -348,8 +348,8 @@
             </p>
             <p>
                 The following variants are possible: <br />
-                <i class="${Icons.DFT.CIRCLE} blue"></i> The platform can be determined directly by a reference from the subscription entitlements, <br />
-                <i class="${Icons.DFT.CIRCLE} green"></i> The provider assigned to a subscription refers to a platform <br />
+                <i class="${Icons.X.CIRCLE} blue"></i> The platform can be determined directly by a reference from the subscription entitlements, <br />
+                <i class="${Icons.X.CIRCLE} green"></i> The provider assigned to a subscription refers to a platform <br />
             </p>
         </g:else>
         ${hh_no_x( ['Lizenzen', 'ermittelbare Plattformen', 'Plattform'], ['Subscriptions', 'assignable platforms', 'Platform'] )}
@@ -403,8 +403,8 @@
             </p>
             <p>
                 Dabei sind folgende Varianten möglich: <br />
-                <i class="${Icons.DFT.CIRCLE} blue"></i> Die Lizenz verweist direkt auf den Lieferanten, <br />
-                <i class="${Icons.DFT.CIRCLE} green"></i> Der Lieferant kann über ein referenziertes Paket ermittelt werden <br />
+                <i class="${Icons.X.CIRCLE} blue"></i> Die Lizenz verweist direkt auf den Lieferanten, <br />
+                <i class="${Icons.X.CIRCLE} green"></i> Der Lieferant kann über ein referenziertes Paket ermittelt werden <br />
             </p>
         </g:if>
         <g:else>
@@ -414,8 +414,8 @@
             </p>
             <p>
                 The following variants are possible: <br />
-                <i class="${Icons.DFT.CIRCLE} blue"></i> The subscription refers directly to the vendor, <br />
-                <i class="${Icons.DFT.CIRCLE} green"></i> The vendor can be identified via a referenced package <br />
+                <i class="${Icons.X.CIRCLE} blue"></i> The subscription refers directly to the vendor, <br />
+                <i class="${Icons.X.CIRCLE} green"></i> The vendor can be identified via a referenced package <br />
             </p>
         </g:else>
         ${hh_no_x( ['Lizenzen', 'ermittelbare Lieferanten', 'Lieferant'], ['Subscriptions', 'assignable vendors', 'Vendor'] )}
@@ -648,8 +648,8 @@
                 </ol>
             </p>
             <p>
-                Pakete ohne entsprechende Merkmale werden in der Gruppe <i class="${Icons.DFT.CIRCLE} pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
-                Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="${Icons.DFT.CIRCLE} teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
+                Pakete ohne entsprechende Merkmale werden in der Gruppe <i class="${Icons.X.CIRCLE} pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
+                Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="${Icons.X.CIRCLE} teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
             </p>
         </g:if>
         <g:else>
@@ -663,8 +663,8 @@
                 </ol>
             </p>
             <p>
-                Packages without corresponding properties are summarized in the group <i class="${Icons.DFT.CIRCLE} pink"></i><strong>* no Information</strong>. <br />
-                Relevant data is missing without a <strong>we:kb</strong> counterpart - such packages are listed under <i class="${Icons.DFT.CIRCLE} teal"></i><strong>* no web:kb object</strong>. <br />
+                Packages without corresponding properties are summarized in the group <i class="${Icons.X.CIRCLE} pink"></i><strong>* no Information</strong>. <br />
+                Relevant data is missing without a <strong>we:kb</strong> counterpart - such packages are listed under <i class="${Icons.X.CIRCLE} teal"></i><strong>* no web:kb object</strong>. <br />
             </p>
         </g:else>
     </div>

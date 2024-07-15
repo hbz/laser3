@@ -5,16 +5,6 @@ import de.laser.annotations.UnstableFeature
 @UnstableFeature
 class Icons {
 
-    class DFT {
-        // please do not touch during refactoring ..
-        // basic / placeholders
-
-        public static String PLACEHOLDER    = 'coffee icon'
-
-        public static String CIRCLE         = 'circle icon'
-        public static String SQUARE         = 'square icon'
-    }
-
     class AUTH {
         // please do not touch during refactoring ..
         // roles / perms / customer types
@@ -73,9 +63,21 @@ class Icons {
         public static String PREV           = 'arrow left icon'      // todo: duplicate: ui:anualRings, ui:statusWithRings
     }
 
+    class UI {
+        // please do not touch during refactoring ..
+        // dialogs / system wide
+
+        // e.g. <ui:msg />
+        public static String ERROR          = 'exclamation triangle icon'
+        public static String HELP           = 'question icon'
+        public static String INFO           = 'info icon'
+        public static String SUCCESS        = 'check icon'
+        public static String WARNING        = 'exclamation icon'
+    }
+
     class PROP {
         // please do not touch during refactoring ..
-        // properties
+        // properties only
 
         public static String HARDDATA       = 'check circle icon green' // COLOR INCLUDED !!
         public static String IN_USE         = 'info circle icon blue'   // COLOR INCLUDED !! todo: duplicate: Icons.UI.INFO
@@ -87,25 +89,13 @@ class Icons {
 
     class SYM {
         // please do not touch during refactoring ..
-        // convenient symbols
+        // convenient symbols => given semantics
 
         public static String DATE           = 'calendar alternate outline icon'
         public static String EMAIL          = 'envelope outline icon'
+        public static String UNKOWN         = 'question icon'
 
         public static String MY_OBJECT      = 'star icon'                   // todo: duplicate: survey/renew? > Icons.PROP.MANDATORY
-        public static String UNKOWN         = 'question icon'
-    }
-
-    class UI {
-        // please do not touch during refactoring ..
-        // dialogs / unique symbols
-
-        public static String ERROR          = 'exclamation triangle icon'
-        public static String INFO           = 'info icon'
-        public static String SUCCESS        = 'check icon'
-        public static String WARNING        = 'exclamation icon'
-
-        public static String HELP           = 'question icon'
     }
 
     class TOOLTIP {
@@ -118,8 +108,17 @@ class Icons {
         public static String SERIOUS        = 'exclamation triangle icon'   // TODO: merge with Icons.TOOLTIP.IMPORTANT
     }
 
+    class X {
+        // please do not touch during refactoring ..
+        // basic / generic => lower semantics
+
+        public static String PLACEHOLDER    = 'coffee icon'
+        public static String CIRCLE         = 'circle icon'
+        public static String SQUARE         = 'square icon'
+    }
+
     // please do not touch during refactoring ..
-    // domain classes / main objects
+    // domain classes / top level objects
 
     public static String ANNOUNCEMENT               = 'flag icon'
 

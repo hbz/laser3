@@ -387,13 +387,13 @@ class IconTagLib {
         String icon = Icons.SYM.UNKOWN
 
         if (attrs.value === true) {
-            icon = Icons.DFT.CIRCLE + ' green'
+            icon = Icons.X.CIRCLE + ' green'
         }
         else if(attrs.value === false) {
-            icon = Icons.DFT.CIRCLE + ' red'
+            icon = Icons.X.CIRCLE + ' red'
         }
         else if (attrs.value === null) {
-            icon = Icons.DFT.CIRCLE + ' grey'
+            icon = Icons.X.CIRCLE + ' grey'
         }
         out << '<i class="' + icon + '"></i>'
     }

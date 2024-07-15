@@ -154,7 +154,7 @@
                             </g:if>
                             <g:elseif test="${docctx.shareConf != RDStore.SHARE_CONF_UPLOADER_AND_TARGET}">
                                 <div class="ui icon button la-hidden">
-                                    <i class="fake icon"></i><%-- Hidden Fake Button --%>
+                                    <i class="${Icons.X.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>
                                 </div>
                             </g:elseif>
                         </g:else>%{-- (editable || editable2) --}%
@@ -186,17 +186,17 @@
 %{--                                </g:if>--}%
 %{--                                <g:else>--}%
 %{--                                    <div class="ui icon button la-hidden">--}%
-%{--                                        <i class="fake icon"></i><%-- Hidden Fake Button --%>--}%
+%{--                                        <i class="${Icons.X.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>--}%
 %{--                                    </div>--}%
 %{--                                </g:else>--}%
 %{--                                <%-- STOP Second Button --%>--}%
 %{--                            </g:if>--}%
 %{--                            <g:else>--}%
 %{--                                <div class="ui icon button la-hidden">--}%
-%{--                                    <i class="fake icon"></i><%-- Hidden Fake Button --%>--}%
+%{--                                    <i class="${Icons.X.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>--}%
 %{--                                </div>--}%
 %{--                                <div class="ui icon button la-hidden">--}%
-%{--                                    <i class="fake icon"></i><%-- Hidden Fake Button --%>--}%
+%{--                                    <i class="${Icons.X.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>--}%
 %{--                                </div>--}%
 %{--                            </g:else>--}%
 %{--                            <%-- START Third Button --%>--}%
