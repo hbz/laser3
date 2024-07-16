@@ -49,15 +49,9 @@ class WekbNewsService {
 
         ['package', 'platform', 'provider', 'vendor'].each { type ->
             ['all', 'created', 'deleted'].each { lst -> // ensure lists
-                if (! result[type][lst] && result[type][lst] != []) {
+                if (result[type][lst] == null) {
                     result[type][lst] = []
                     log.debug('wekbNews: missing ' + type + '.' + lst + ' > set default to []')
-                }
-            }
-            ['count', 'countInLaser', 'countUpdated'].each { cnt -> // ensure counts
-                if (! result[type][cnt] && result[type][cnt] != 0) {
-                    result[type][cnt] = 0
-                    log.debug('wekbNews: missing ' + type + '.' + cnt + ' > set default to 0')
                 }
             }
         }
@@ -69,36 +63,45 @@ class WekbNewsService {
 
         Map<String, List> myXMap = markerService.getMyCurrentXMap()
 
-        result.package.my       = myXMap.currentPackageIdList.intersect(pkgList)
-        result.platform.my      = myXMap.currentPlatformIdList.intersect(pltList)
-        result.provider.my      = myXMap.currentProviderIdList.intersect(prvList)
-        result.vendor.my        = myXMap.currentVendorIdList.intersect(venList)
+        result.package.my       = myXMap.currentPackageIdList.intersect(pkgList)    ?: []
+        result.platform.my      = myXMap.currentPlatformIdList.intersect(pltList)   ?: []
+        result.provider.my      = myXMap.currentProviderIdList.intersect(prvList)   ?: []
+        result.vendor.my        = myXMap.currentVendorIdList.intersect(venList)     ?: []
 
-        result.package.marker   = markerService.getMyObjectsByClassAndType(Package.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(pkgList)
-        result.platform.marker  = markerService.getMyObjectsByClassAndType(Platform.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(pltList)
-        result.provider.marker  = markerService.getMyObjectsByClassAndType(Provider.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(prvList)
-        result.vendor.marker    = markerService.getMyObjectsByClassAndType(Vendor.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(venList)
+        result.package.marker   = markerService.getMyObjectsByClassAndType(Package.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(pkgList)    ?: []
+        result.platform.marker  = markerService.getMyObjectsByClassAndType(Platform.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(pltList)   ?: []
+        result.provider.marker  = markerService.getMyObjectsByClassAndType(Provider.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(prvList)   ?: []
+        result.vendor.marker    = markerService.getMyObjectsByClassAndType(Vendor.class, Marker.TYPE.WEKB_CHANGES).collect { it.id }.intersect(venList)     ?: []
+
+        ['package', 'platform', 'provider', 'vendor'].each { type ->
+            ['count', 'countInLaser', 'countUpdated'].each { cnt -> // ensure counts
+                if (result[type][cnt] == null) {
+                    result[type][cnt] = 0
+                    log.debug('wekbNews: missing ' + type + '.' + cnt + ' > set default to 0')
+                }
+            }
+        }
 
         try {
-            result.counts.all       = result.package.count          + result.platform.count           + result.provider.count             + result.vendor.count
-            result.counts.inLaser   = result.package.countInLaser   + result.platform.countInLaser    + result.provider.countInLaser      + result.vendor.countInLaser
-            result.counts.my        = result.package.my.size()      + result.platform.my.size()       + result.provider.my.size()         + result.vendor.my.size()
-            result.counts.marker    = result.package.marker.size()  + result.platform.marker.size()   + result.provider.marker.size()     + result.vendor.marker.size()
-            result.counts.created   = result.package.created.size() + result.platform.created.size()  + result.provider.created.size()    + result.vendor.created.size()
-            result.counts.updated   = result.package.countUpdated   + result.platform.countUpdated    + result.provider.countUpdated      + result.vendor.countUpdated
-            result.counts.deleted   = result.package.deleted.size() + result.platform.deleted.size()  + result.provider.deleted.size()    + result.vendor.deleted.size()
+            result.counts.all       = result.package.count          + result.platform.count             + result.provider.count             + result.vendor.count
+            result.counts.inLaser   = result.package.countInLaser   + result.platform.countInLaser      + result.provider.countInLaser      + result.vendor.countInLaser
+            result.counts.updated   = result.package.countUpdated   + result.platform.countUpdated      + result.provider.countUpdated      + result.vendor.countUpdated
+
+            result.counts.my        = result.package.my.size()       + result.platform.my.size()        + result.provider.my.size()         + result.vendor.my.size()
+            result.counts.marker    = result.package.marker.size()   + result.platform.marker.size()    + result.provider.marker.size()     + result.vendor.marker.size()
+            result.counts.created   = result.package.created.size()  + result.platform.created.size()   + result.provider.created.size()    + result.vendor.created.size()
+            result.counts.deleted   = result.package.deleted.size()  + result.platform.deleted.size()   + result.provider.deleted.size()    + result.vendor.deleted.size()
         }
         catch (Exception e) {
             log.error 'failed getCurrentNews() -> ' + e.getMessage()
 
-            // debug
-            println " count             ${result.package.count} - ${result.platform.count} - ${result.provider.count} - ${result.vendor.count}"
-            println " countInLaser      ${result.package.countInLaser} - ${result.platform.countInLaser} - ${result.provider.countInLaser} - ${result.vendor.countInLaser}"
-            println " countUpdated      ${result.package.countUpdated} - ${result.platform.countUpdated} - ${result.provider.countUpdated} - ${result.vendor.countUpdated}"
-            println " my.size()         ${result.package.my?.size()} - ${result.platform.my?.size()} - ${result.provider.my?.size()} - ${result.vendor.my?.size()}"
-            println " marker.size()     ${result.package.marker?.size()} - ${result.platform.marker?.size()} - ${result.provider.marker?.size()} - ${result.vendor.marker?.size()}"
-            println " created.size()    ${result.package.created?.size()} - ${result.platform.created?.size()} - ${result.provider.created?.size()} - ${result.vendor.created?.size()}"
-            println " deleted.size()    ${result.package.deleted?.size()} - ${result.platform.deleted?.size()} - ${result.provider.deleted?.size()} - ${result.vendor.deleted?.size()}"
+            ['package', 'platform', 'provider', 'vendor'].each { type ->
+                ['all', 'my', 'marker', 'created', 'deleted', 'count', 'countInLaser', 'countUpdated'].each { x ->
+                    if (result[type][x] == null) {
+                        log.warn ('wekbNews: IS NULL > ' + type + '.' + x)
+                    }
+                }
+            }
             return [:]
         }
         result
