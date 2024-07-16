@@ -337,11 +337,12 @@ class VendorService {
                     /* identifiers */
                     vendor.ids.clear()
                     ids.each { Identifier id ->
-                        id.provider = replacement
+                        id.vendor = replacement
                         id.save()
                     }
 
                     int updateCount = 0, deleteCount = 0
+                    vendor.links.clear()
                     vendorLinks.each { VendorRole vr ->
                         Map<String, Object> checkParams = [target: replacement]
                         String targetClause = ''
@@ -493,7 +494,7 @@ class VendorService {
                     result.status = RESULT_SUCCESS
                 }
                 catch (Exception e) {
-                    log.error 'error while merging provider ' + vendor.id + ' .. rollback: ' + e.message
+                    log.error('error while merging provider ' + vendor.id + ' .. rollback: ' + e.message)
                     e.printStackTrace()
                     status.setRollbackOnly()
                     result.status = RESULT_ERROR
