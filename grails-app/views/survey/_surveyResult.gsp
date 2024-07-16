@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.storage.PropertyStore; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.PropertyStore; de.laser.storage.RDStore;" %>
 <g:if test="${surResult.surveyConfig.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()}">
 
     <g:message code="surveyOrg.perennialTerm.available"/>
@@ -7,7 +7,7 @@
         <span class="la-long-tooltip la-popup-tooltip la-delay"
               data-position="right center"
               data-content="${surResult.comment}">
-            <i class="${Icons.HELP_TOOLTIP}"></i>
+            <i class="${Icon.TOOLTIP.HELP}"></i>
         </span>
     </g:if>
 </g:if>
@@ -42,7 +42,7 @@
         <span class="la-long-tooltip la-popup-tooltip la-delay"
               data-position="right center"
               data-content="${surResult.comment}">
-            <i class="${Icons.HELP_TOOLTIP}"></i>
+            <i class="${Icon.TOOLTIP.HELP}"></i>
         </span>
     </g:if>
 

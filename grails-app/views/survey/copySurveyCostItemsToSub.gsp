@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
 <laser:htmlStart message="surveyInfo.copySurveyCostItems" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -23,7 +23,7 @@
 </ui:h1HeaderWithIcon>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="${Icons.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+    <ui:linkWithIcon icon="${Icon.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
@@ -188,7 +188,7 @@
                     <td>
                         <g:if test="${participant.newSub}">
                             <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:participant.newSub.id]}"
-                                    class="ui button icon"><i class="${Icons.SUBSCRIPTION}"></i></g:link>
+                                    class="ui button icon"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                         </g:if>
                     </td>
                 </tr>

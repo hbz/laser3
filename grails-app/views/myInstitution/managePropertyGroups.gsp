@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.properties.PropertyDefinition;de.laser.*"%>
+<%@ page import="de.laser.ui.Icon; de.laser.properties.PropertyDefinition;de.laser.*"%>
 <laser:htmlStart message="menu.institutions.prop_groups" serviceInjection="true"/>
 
         <ui:breadcrumbs>
@@ -46,30 +46,30 @@
                         <tr>
                             <td>
                                 <g:if test="${i == 1 && propDefGroups.size() == 2}">%{-- override layout --}%
-                                    <div class="ui icon button compact la-hidden"><i class="${Icons._PLACEHOLDER}"></i></div>
+                                    <div class="ui icon button compact la-hidden"><i class="${Icon.X.PLACEHOLDER}"></i></div>
                                     <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveUp', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
                                             role="button">
-                                        <i class="${Icons.GENERIC.MOVE_UP}"></i>
+                                        <i class="${Icon.CMD.MOVE_UP}"></i>
                                     </g:link>
                                 </g:if>
                                 <g:elseif test="${typeEntry.value.size() > 1}">
                                     <g:if test="${i > 0}">
                                         <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveUp', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
                                                 role="button">
-                                            <i class="${Icons.GENERIC.MOVE_UP}"></i>
+                                            <i class="${Icon.CMD.MOVE_UP}"></i>
                                         </g:link>
                                     </g:if>
                                     <g:else>
-                                        <div class="ui icon button compact la-hidden"><i class="${Icons._PLACEHOLDER}"></i></div>
+                                        <div class="ui icon button compact la-hidden"><i class="${Icon.X.PLACEHOLDER}"></i></div>
                                     </g:else>
                                     <g:if test="${i < typeEntry.value.size()-1}">
                                         <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveDown', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
                                                 role="button">
-                                            <i class="${Icons.GENERIC.MOVE_DOWN}"></i>
+                                            <i class="${Icon.CMD.MOVE_DOWN}"></i>
                                         </g:link>
                                     </g:if>
                                     <g:else>
-                                        <div class="ui icon button compact la-hidden"><i class="${Icons._PLACEHOLDER}"></i></div>
+                                        <div class="ui icon button compact la-hidden"><i class="${Icon.X.PLACEHOLDER}"></i></div>
                                     </g:else>
                                 </g:elseif>
                             </td>
@@ -90,7 +90,7 @@
                                     <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="ui icon button blue la-modern-button trigger-modal"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                        <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                                        <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                     </g:link>
                                     <g:link controller="myInstitution"
                                             action="managePropertyGroups"
@@ -100,7 +100,7 @@
                                             class="ui icon negative button la-modern-button js-open-confirm-modal"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="${Icons.CMD.DELETE}"></i>
+                                        <i class="${Icon.CMD.DELETE}"></i>
                                     </g:link>
                                 </td>
                             </g:if>

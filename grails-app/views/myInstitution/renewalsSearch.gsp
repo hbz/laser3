@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.Subscription" %>
+<%@ page import="de.laser.ui.Icon; de.laser.Subscription" %>
 <laser:htmlStart message="myinst.renewalSearch.label" />
 
     <ui:breadcrumbs>
@@ -104,7 +104,7 @@
                     <tbody>
                     <g:each in="${hits}" var="hit">
                         <tr>
-                            <td><i class="${Icons.PACKAGE}"></i><g:link controller="package" action="show"
+                            <td><i class="${Icon.PACKAGE}"></i><g:link controller="package" action="show"
                                                                                              id="${hit.getSource().dbId}"
                                                                                              target="_blank">${hit.getSource().name}</g:link></td>
                             %{--<td>${hit.getSource().consortiaName}</td>--}%
@@ -167,9 +167,9 @@
                 <g:each in="${basket}" var="itm">
                     <tr>
                     <td><g:if test="${itm.getClass().getName() != Subscription.class.name}">
-                        <i class="${Icons.PACKAGE}"></i>${itm.name}
+                        <i class="${Icon.PACKAGE}"></i>${itm.name}
                     </g:if><g:else>
-                        <i class="${Icons.SUBSCRIPTION}"></i>${itm.name}<hr />
+                        <i class="${Icon.SUBSCRIPTION}"></i>${itm.name}<hr />
                     </g:else>
                     </td>
                     <td><g:if test="${itm.getClass().getName() != Subscription.class.name}">
@@ -177,7 +177,7 @@
                                 value="${itm.id}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="trash icon"></i></button>
+                            <i class="${Icon.CMD.DELETE}"></i></button>
                     </g:if>
                     </td>
                     </tr>

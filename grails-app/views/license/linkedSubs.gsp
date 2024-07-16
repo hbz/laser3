@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.helper.Params; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.License; de.laser.RefdataValue; de.laser.interfaces.CalculatedType; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Icon; de.laser.helper.Params; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.License; de.laser.RefdataValue; de.laser.interfaces.CalculatedType; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart text="${message(code:'license.details.incoming.childs',args:[message(code:'consortium.subscriber')])}" serviceInjection="true"/>
 
@@ -119,7 +119,7 @@
             <th>
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.previous.label')}">
-                    <i class="${Icons.LNK.PREV}"></i>
+                    <i class="${Icon.LNK.PREV}"></i>
                 </span>
             </th>
             <th>${message(code:'default.startDate.label.shy')}</th>
@@ -127,7 +127,7 @@
             <th>
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.next.label')}">
-                    <i class="${Icons.LNK.NEXT}"></i>
+                    <i class="${Icon.LNK.NEXT}"></i>
                 </span>
             </th>
             <th>${message(code:'default.status.label')}</th>
@@ -179,7 +179,7 @@
                             <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(subscr, 'General contact person', institution)}" var="gcp">
                                 <div class="item">
                                     ${gcp}
-                                    (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')} <i class="${Icons.ADDRESS_PRIVATE}" style="display:inline-block"></i>)
+                                    (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')} <i class="${Icon.ADDRESS_PRIVATE}" style="display:inline-block"></i>)
                                 </div>
                             </g:each>
                             <g:each in="${Person.getPublicByOrgAndObjectResp(subscr, sub, 'Specific subscription editor')}" var="sse">
@@ -191,7 +191,7 @@
                             <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(subscr, sub, 'Specific subscription editor', institution)}" var="sse">
                                 <div class="item">
                                     ${sse}
-                                    (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')} <i class="${Icons.ADDRESS_PRIVATE}" style="display:inline-block"></i>)
+                                    (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')} <i class="${Icon.ADDRESS_PRIVATE}" style="display:inline-block"></i>)
                                 </div>
                             </g:each>
                         </div>
@@ -202,14 +202,14 @@
                 </td>
                 <td class="center aligned">
                     <g:if test="${navPrevSubscription}">
-                        <g:link controller="subscription" action="show" id="${navPrevSubscription.id}"><i class="${Icons.LNK.PREV}"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${navPrevSubscription.id}"><i class="${Icon.LNK.PREV}"></i></g:link>
                     </g:if>
                 </td>
                 <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                 <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
                 <td class="center aligned">
                     <g:if test="${navNextSubscription}">
-                        <g:link controller="subscription" action="show" id="${navNextSubscription.id}"><i class="${Icons.LNK.NEXT}"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${navNextSubscription.id}"><i class="${Icon.LNK.NEXT}"></i></g:link>
                     </g:if>
                 </td>
                 <td>

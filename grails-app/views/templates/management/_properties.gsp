@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.AuditConfig" %>
+<%@ page import="de.laser.ui.Icon; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.AuditConfig" %>
 <laser:serviceInjection/>
     <%
         SortedSet<PropertyDefinition> allProperties = new TreeSet<PropertyDefinition>()
@@ -288,7 +288,7 @@
                                 class="ui icon button blue la-modern-button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                            <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                         </g:link>
                     </td>
                 </tr>
@@ -297,7 +297,7 @@
         </div>
 
         <div class="ui icon info message">
-            <i class="${Icons.UI.INFO}"></i>
+            <i class="${Icon.UI.INFO}"></i>
             <div class="content">
                 <g:message code="subscriptionsManagement.info2" args="${args.memberTypeSingle}"/> <br />
 
@@ -327,7 +327,7 @@
 
                     <strong>${propertiesFilterPropDef.getI10n('name')}
                         <g:if test="${propertiesFilterPropDef.tenant != null}">
-                            <i class="${Icons.PROP.IS_PRIVATE}"></i>
+                            <i class="${Icon.PROP.IS_PRIVATE}"></i>
                         </g:if>
                     </strong>
                 </div>
@@ -629,7 +629,7 @@
                                     class="ui icon button blue la-modern-button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i></g:link>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i></g:link>
                         </td>
                     </tr>
                 </g:each>

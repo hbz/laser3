@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 
 <g:set var="user" value="${contextService.getUser()}"/>
@@ -33,7 +33,7 @@
             <br/>
             <br/>
             <div class="field holdingSelection">
-                <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="${Icons.HELP_TOOLTIP} la-popup"></i></span></label>
+                <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="${Icon.TOOLTIP.HELP} la-popup"></i></span></label>
             </div>
             <div class="two fields holdingSelection">
                 <div class="field">

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.IssueEntitlementGroup; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.ui.Icon; de.laser.IssueEntitlementGroup; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <div class="sixteen wide column">
     <g:set var="counter" value="${offset + 1}"/>
     <g:set var="sumlistPriceEuro" value="${0}"/>
@@ -124,8 +124,8 @@
 
                                 </div>
 
-                                <div class="ui icon blue button la-modern-button"><i
-                                        class="ui angle double down icon"></i>
+                                <div class="ui icon blue button la-modern-button">
+                                    <i class="${Icon.CMD.SHOW_MORE}"></i>
                                 </div>
                                 <g:if test="${(params.tab == 'selectedIEs') && editable && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
                                     <g:link class="ui icon negative button la-modern-button la-popup-tooltip la-delay"
@@ -200,7 +200,7 @@
                                     </g:if>
                                     <g:if test="${covStmt.coverageDepth}">
                                         <div class="item">
-                                            <i class="grey ${Icons.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
+                                            <i class="grey ${Icon.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
                                                data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                                             <div class="content">
@@ -262,7 +262,7 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="item">
-                                                                            <i class="grey ${Icons.CMD.EDIT} la-popup-tooltip la-delay"
+                                                                            <i class="grey ${Icon.CMD.EDIT} la-popup-tooltip la-delay"
                                                                                data-content="${message(code: 'issueEntitlement.myNotes')}"></i>
                                                                             <div class="content">
                                                                                 <div class="header"><g:message code="issueEntitlement.myNotes"/></div>
@@ -276,7 +276,7 @@
 
                                                                     <g:each in="${ie.priceItems}" var="priceItem" status="i">
                                                                         <div class="item">
-                                                                            <i class="${Icons.COSTS_CONFIG} grey la-popup-tooltip la-delay"></i>
+                                                                            <i class="${Icon.FNC.COST_CONFIG} grey la-popup-tooltip la-delay"></i>
 
                                                                             <div class="content">
                                                                                 <div class="header"><g:message
@@ -295,7 +295,7 @@
                                                                                                     action="removePriceItem"
                                                                                                     params="${[priceItem: priceItem.id, id: subscription.id]}"
                                                                                                     class="ui compact icon button tiny"><i
-                                                                                                    class="ui icon minus"
+                                                                                                    class="${Icon.CMD.REMOVE}"
                                                                                                     data-content="Preis entfernen"></i></g:link>
                                                                                         </span>
                                                                                     </g:if>
@@ -310,7 +310,7 @@
                                                                         <g:link action="addEmptyPriceItem"
                                                                                 class="ui tiny button"
                                                                                 params="${[ieid: ie.id, id: subscription.id]}">
-                                                                            <i class="${Icons.COSTS_CONFIG}"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
+                                                                            <i class="${Icon.FNC.COST_CONFIG}"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
                                                                         </g:link>
                                                                     </g:if>
 

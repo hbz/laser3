@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowService; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowService; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <g:if test="${clist}">
@@ -173,34 +173,34 @@
                         <div class="four wide column wf-centered">
                             <g:if test="${checkedEditable}"><!-- TODO: workflows-permissions -->
                                 <g:if test="${ti == 1 && cpoints.size() == 2}">%{-- override layout --}%
-                                    <div class="ui icon button compact la-hidden"><i class="${Icons._PLACEHOLDER}"></i></div>
+                                    <div class="ui icon button compact la-hidden"><i class="${Icon.X.PLACEHOLDER}"></i></div>
                                     <div class="ui icon blue button compact la-modern-button"
-                                         data-cmd="moveUp:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icons.GENERIC.MOVE_UP}"></i>
+                                         data-cmd="moveUp:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icon.CMD.MOVE_UP}"></i>
                                     </div>
                                 </g:if>
                                 <g:else>
                                     <g:if test="${ti > 0}">
                                         <div class="ui icon blue button compact la-modern-button"
-                                             data-cmd="moveUp:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icons.GENERIC.MOVE_UP}"></i>
+                                             data-cmd="moveUp:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icon.CMD.MOVE_UP}"></i>
                                         </div>
                                     </g:if>
                                     <g:else>
-                                        <div class="ui icon button compact la-hidden"><i class="${Icons._PLACEHOLDER}"></i></div>
+                                        <div class="ui icon button compact la-hidden"><i class="${Icon.X.PLACEHOLDER}"></i></div>
                                     </g:else>
                                     <g:if test="${ti < cpoints.size()-1}">
                                         <div class="ui icon blue button compact la-modern-button"
-                                             data-cmd="moveDown:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icons.GENERIC.MOVE_DOWN}"></i>
+                                             data-cmd="moveDown:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icon.CMD.MOVE_DOWN}"></i>
                                         </div>
                                     </g:if>
                                     <g:else>
-                                        <div class="ui icon button compact la-hidden"><i class="${Icons._PLACEHOLDER}"></i></div>
+                                        <div class="ui icon button compact la-hidden"><i class="${Icon.X.PLACEHOLDER}"></i></div>
                                     </g:else>
                                 </g:else>
                             </g:if>
 
                             <g:if test="${checkedEditable}"><!-- TODO: workflows-permissions -->
 %{--                                <div class="ui icon negative button la-modern-button"--}%
-%{--                                     data-cmd="delete:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icons.CMD.DELETE}"></i>--}%
+%{--                                     data-cmd="delete:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icon.CMD.DELETE}"></i>--}%
 %{--                                </div>--}%
                                 <div class="ui icon negative button la-modern-button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.checkpoint", args: [cpoint.title])}"
@@ -210,7 +210,7 @@
                                         data-key="${WfChecklist.KEY}:${clist.id}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD.DELETE}"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </div>
                             </g:if>
 
@@ -255,10 +255,10 @@
                         </div>
 
                         <div class="four wide column wf-centered">
-                            <div class="ui icon button compact la-hidden"><i class="${Icons._PLACEHOLDER}"></i></div>
-                            <div class="ui icon button compact la-hidden"><i class="${Icons._PLACEHOLDER}"></i></div>
+                            <div class="ui icon button compact la-hidden"><i class="${Icon.X.PLACEHOLDER}"></i></div>
+                            <div class="ui icon button compact la-hidden"><i class="${Icon.X.PLACEHOLDER}"></i></div>
 
-                            <div class="ui icon blue button compact la-modern-button" id="cpFormToggle"><i class="icon plus"></i></div>
+                            <div class="ui icon blue button compact la-modern-button" id="cpFormToggle"><i class="${Icon.CMD.ADD}"></i></div>
                         </div>
                     </div><!-- .row -->
 

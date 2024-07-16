@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore; de.laser.Subscription; de.laser.License; de.laser.Links" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription; de.laser.License; de.laser.Links" %>
 <laser:serviceInjection/>
 
 
@@ -68,7 +68,7 @@
                                                 </div>
                                             </g:elseif>
                                             <div class="item">
-                                                <i aria-hidden="true" class="grey ${Icons.DATE}"></i>
+                                                <i aria-hidden="true" class="grey ${Icon.SYM.DATE}"></i>
 
                                                 <div class="content">
                                                     <div class="header">
@@ -95,7 +95,7 @@
                                                 <div id="derived-license-properties-toggle${link.id}"
                                                         class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                                         data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
-                                                    <i class="ui angle double down icon"></i>
+                                                    <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                 </div>
                                             </g:if>
                                         </g:else>
@@ -125,7 +125,7 @@
                                                                 params="${[license: link.sourceLicense.id, id: subscription.id]}"
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                            <i class="${Icons.CMD.UNLINK}"></i>
+                                                            <i class="${Icon.CMD.UNLINK}"></i>
                                                         </g:link>
                                                     </span>
                                                     <g:if test="${atConsortialParent}">
@@ -155,7 +155,7 @@
                                                             params="${[oid: genericOIDService.getOID(link)]}"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                        <i class="${Icons.CMD.UNLINK}"></i>
+                                                        <i class="${Icon.CMD.UNLINK}"></i>
                                                     </g:link>
                                                 </span>
                                             </g:else>

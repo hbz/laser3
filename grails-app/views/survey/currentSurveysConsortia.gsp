@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.helper.Params; de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Icon; de.laser.helper.Params; de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart message="currentSurveys.label" serviceInjection="true" />
 
@@ -223,7 +223,7 @@
 
             <th rowspan="2" scope="col">
                 <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfigDocs.label')}" data-position="top center">
-                    <i class="${Icons.DOCUMENT} large"></i>
+                    <i class="${Icon.DOCUMENT} large"></i>
                 </a>
             </th>
 
@@ -235,7 +235,7 @@
 
             <th scope="col" rowspan="2">
                 <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyCostItems.label')}" data-position="top center">
-                    <i class="${Icons.COSTS} large"></i>
+                    <i class="${Icon.FNC.COST} large"></i>
                 </a>
             </th>
 
@@ -291,7 +291,7 @@
                     <g:if test="${surveyInfo.isMandatory}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
-                            <i class="${Icons.IMPORTANT_TOOLTIP2} yellow"></i>
+                            <i class="${Icon.TOOLTIP.SERIOUS} yellow"></i>
                         </span>
                     </g:if>
                 </td>
@@ -373,14 +373,14 @@
                                 <g:else>
                                     0%
                                 </g:else>--}%%{--
-                                <i class="${Icons.SURVEY} blue"></i>
+                                <i class="${Icon.SURVEY} blue"></i>
                             </div>
                         </g:link>
                     </g:if>--}%
                         <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]"
                                 class="ui icon blue button la-modern-button">
-                            <i class="${Icons.SURVEY}"></i>
+                            <i class="${Icon.SURVEY}"></i>
                             </div>
                         </g:link>
                 </td>
@@ -390,14 +390,14 @@
                             class="ui button blue icon la-modern-button"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.change.universal')}">
-                        <i class="${Icons.CMD.EDIT}"></i>
+                        <i class="${Icon.CMD.EDIT}"></i>
                     </g:link>
 
                     <g:if test="${editable}">
                         <g:link controller="survey" action="copySurvey" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id, q: surveyConfig?.subscription?.providers ? surveyConfig.subscription.providers[0].name : '']"
                                 class="ui icon blue button la-modern-button">
-                            <i class="${Icons.CMD.COPY}"></i>
+                            <i class="${Icon.CMD.COPY}"></i>
                             </div>
                         </g:link>
                     </g:if>

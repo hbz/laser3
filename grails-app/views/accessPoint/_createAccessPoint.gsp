@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 
     <ui:form controller="accessPoint" action="processCreate" id="${orgInstance.id}">
@@ -15,7 +15,7 @@
                 <label>URL
                     <span class="la-long-tooltip la-popup-tooltip la-delay"
                           data-content="${message(code: "accessPoint.url.help")}">
-                        <i class="${Icons.HELP_TOOLTIP} la-popup"></i></span> <g:message code="messageRequiredField" />
+                        <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span> <g:message code="messageRequiredField" />
                 </label>
                 <g:textField name="url" value="${url}" />
             </div>
@@ -25,7 +25,7 @@
                 <label>${message(code: 'accessPoint.oa.name.label')}
                     <span class="la-long-tooltip la-popup-tooltip la-delay"
                           data-content="${message(code:'accessPoint.oa.help')}">
-                        <i class="${Icons.HELP_TOOLTIP} la-popup"></i></span>  <g:message code="messageRequiredField" />
+                        <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span>  <g:message code="messageRequiredField" />
                 </label>
                 <g:field type="text" name="name" value="" />
             </div>
@@ -42,7 +42,7 @@
                 <label>${message(code: 'accessPoint.shibboleth.name.label')}
                     <span class="la-long-tooltip la-popup-tooltip la-delay"
                           data-content="${message(code:'accessPoint.shibboleth.help')}">
-                        <i class="${Icons.HELP_TOOLTIP} la-popup"></i></span> <g:message code="messageRequiredField" />
+                        <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span> <g:message code="messageRequiredField" />
                 </label>
                 <g:field type="text" name="name" value="" />
             </div>

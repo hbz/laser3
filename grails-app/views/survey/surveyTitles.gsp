@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.remote.ApiSource; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDStore" %>
 <laser:htmlStart message="surveyShow.label" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
@@ -13,7 +13,7 @@
 <uiSurvey:status object="${surveyInfo}"/>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="${Icons.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+    <ui:linkWithIcon icon="${Icon.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
@@ -52,7 +52,7 @@
     <div class="la-inline-lists">
         <g:if test="${!titlesList}">
             <div class="ui icon info message">
-                <i class="${Icons.UI.INFO}"></i>
+                <i class="${Icon.UI.INFO}"></i>
 
                 <div class="content">
                     <div class="header"></div>

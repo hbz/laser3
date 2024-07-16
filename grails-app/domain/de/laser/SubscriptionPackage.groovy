@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.ui.Icon
 import de.laser.oap.OrgAccessPointLink
 import de.laser.storage.RDStore
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -137,7 +137,7 @@ class SubscriptionPackage implements Comparable {
    */
   String getIEandPackageSize(){
 
-    return '(<span data-tooltip="Titel in der Lizenz"><i class="ui icon archive"></i></span>' + executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.tipp.pkg = :pkg and ie.status = :current',[sub: this.subscription, pkg: this.pkg, current: RDStore.TIPP_STATUS_CURRENT])[0] + ' / <span data-tooltip="Titel im Paket"><i class="ui icon book"></i></span>' + executeQuery('select count(*) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current',[ctx:this.pkg,current:RDStore.TIPP_STATUS_CURRENT])[0] + ')'
+    return '(<span data-tooltip="Titel in der Lizenz"><i class="ui icon archive"></i></span>' + executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.tipp.pkg = :pkg and ie.status = :current',[sub: this.subscription, pkg: this.pkg, current: RDStore.TIPP_STATUS_CURRENT])[0] + ' / <span data-tooltip="Titel im Paket"><i class="' + Icon.TIPP + '"></i></span>' + executeQuery('select count(*) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current',[ctx:this.pkg, current:RDStore.TIPP_STATUS_CURRENT])[0] + ')'
   }
 
   /**

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
 
 <laser:htmlStart message="menu.my.currentSubscriptionsTransfer" serviceInjection="true"/>
 
@@ -19,11 +19,11 @@
 <g:if test="${params.referenceYears}">
     <div class="ui large label la-annual-rings">
         <g:link action="currentSubscriptionsTransfer" params="${[referenceYears: (Integer.parseInt(params.referenceYears).value - 1).toString()]}" class="item">
-            <i class="${Icons.LNK.PREV}" aria-hidden="true"></i>
+            <i class="${Icon.LNK.PREV}" aria-hidden="true"></i>
         </g:link>
         <span class="la-annual-rings-text">${params.referenceYears}</span>
         <g:link action="currentSubscriptionsTransfer" params="${[referenceYears: (Integer.parseInt(params.referenceYears).value + 1).toString()]}" class="item">
-            <i class="${Icons.LNK.NEXT}" aria-hidden="true"></i>
+            <i class="${Icon.LNK.NEXT}" aria-hidden="true"></i>
         </g:link>
     </div>
 </g:if>
@@ -40,7 +40,7 @@
                 <label for="search-title">${message(code: 'default.search.text')}
                     <span data-position="right center" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.subscription')}">
-                        <i class="${Icons.HELP_TOOLTIP}"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
 
@@ -53,7 +53,7 @@
                 <label for="identifier">${message(code: 'default.search.identifier')}
                     <span data-position="right center" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.subscription.identifier')}">
-                        <i class="${Icons.HELP_TOOLTIP}"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
 
@@ -286,7 +286,7 @@
 
                     <th scope="col" rowspan="3" class="center aligned">
                         <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'survey.label')}" data-position="top center">
-                            <i class="${Icons.SURVEY} large"></i>
+                            <i class="${Icon.SURVEY} large"></i>
                         </a>
                     </th>
 
@@ -319,7 +319,7 @@
                     <th scope="col" rowspan="3" class="center aligned sortable ${params.sort == 'participantTransferWithSurvey' ? ('sorted '+(params.order == 'asc' ? 'desc' : 'asc')) : ''}">
                         <g:link action="currentSubscriptionsTransfer" params="${params+[sort: 'participantTransferWithSurvey', order: params.order == 'asc' ? 'desc' : 'asc']}" class="la-popup-tooltip la-delay " data-content="${message(code: 'subscription.participantTransferWithSurvey.label')}" data-position="top center">
                             <i class="large icons">
-                                <i class="${Icons.SURVEY}"></i>
+                                <i class="${Icon.SURVEY}"></i>
                                 <i class="top right corner redo icon"></i>
                             </i>
                         </g:link>
@@ -454,14 +454,14 @@
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                             class="ui icon blue tiny button la-modern-button"
-                                                            target="_blank"><i class="${Icons.CMD.DOWNLOAD} small"></i></g:link>
+                                                            target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                                 class="ui icon blue tiny button la-modern-button"
-                                                                target="_blank"><i class="${Icons.CMD.DOWNLOAD} small"></i></g:link>
+                                                                target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
 
                                                     <%-- 2 --%>
                                                         <laser:render template="/templates/documents/modal"
@@ -471,7 +471,7 @@
                                                                 data-ui="modal"
                                                                 data-href="#modalEditDocument_${docctx.id}"
                                                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                                            <i class="${Icons.CMD.EDIT} small"></i>
+                                                            <i class="${Icon.CMD.EDIT} small"></i>
                                                         </button>
                                                     </g:if>
 
@@ -485,7 +485,7 @@
                                                                 params='[instanceId: "${s.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="${Icons.CMD.DELETE} small"></i>
+                                                            <i class="${Icon.CMD.DELETE} small"></i>
                                                         </g:link>
                                                     </g:if>
                                                 </g:else>%{-- (editable || editable2) --}%
@@ -573,7 +573,7 @@
                                         ${s.discountScale.name} : ${s.discountScale.discount}
                                         <g:if test="${s.discountScale.note}">
                                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${s.discountScale.note}">
-                                                <i class="${Icons.INFO_TOOLTIP} blue"></i>
+                                                <i class="${Icon.TOOLTIP.INFO} blue"></i>
                                             </span>
                                         </g:if>
                                     </g:if>
@@ -644,14 +644,14 @@
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                             class="ui icon blue tiny button la-modern-button"
-                                                            target="_blank"><i class="${Icons.CMD.DOWNLOAD} small"></i></g:link>
+                                                            target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                                 class="ui icon blue tiny button la-modern-button"
-                                                                target="_blank"><i class="${Icons.CMD.DOWNLOAD} small"></i></g:link>
+                                                                target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
 
                                                     <%-- 2 --%>
                                                         <laser:render template="/templates/documents/modal"
@@ -661,7 +661,7 @@
                                                                 data-ui="modal"
                                                                 data-href="#modalEditDocument_${docctx.id}"
                                                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                                            <i class="${Icons.CMD.EDIT} small"></i>
+                                                            <i class="${Icon.CMD.EDIT} small"></i>
                                                         </button>
                                                     </g:if>
 
@@ -675,7 +675,7 @@
                                                                 params='[instanceId: "${s.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="${Icons.CMD.DELETE} small"></i>
+                                                            <i class="${Icon.CMD.DELETE} small"></i>
                                                         </g:link>
                                                     </g:if>
                                                 </g:else>%{-- (editable || editable2) --}%

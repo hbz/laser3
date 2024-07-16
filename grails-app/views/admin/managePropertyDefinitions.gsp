@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.I10nTranslation; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.I10nTranslation; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <laser:htmlStart message="menu.admin.managePropertyDefinitions" serviceInjection="true"/>
 
@@ -50,23 +50,23 @@
                                     <td>
                                         <g:if test="${pd.isHardData}">
                                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="${Icons.PROP.HARDDATA}"></i>
+                                                <i class="${Icon.PROP.HARDDATA}"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.multipleOccurrence}">
                                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                                <i class="${Icons.PROP.MULTIPLE}"></i>
+                                                <i class="${Icon.PROP.MULTIPLE}"></i>
                                             </span>
                                         </g:if>
 
                                         <g:if test="${usedPdList?.contains(pd.id)}">
                                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataIsUsed.tooltip', args:[pd.id])}">
-                                                <i class="${Icons.PROP.IN_USE}"></i>
+                                                <i class="${Icon.PROP.IN_USE}"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.isUsedForLogic}">
                                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
-                                                <i class="${Icons.PROP.LOGIC}"></i>
+                                                <i class="${Icon.PROP.LOGIC}"></i>
                                             </span>
                                         </g:if>
                                     </td>
@@ -126,7 +126,7 @@
                                         <g:if test="${pd.mandatory}">
                                             <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="top left"
                                                     params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="ui icon yellow button la-modern-button la-popup-tooltip la-delay">
-                                                <i class="${Icons.PROP.MANDATORY}"></i>
+                                                <i class="${Icon.PROP.MANDATORY}"></i>
                                             </g:link>
                                         </g:if>
                                         <g:else>
@@ -153,7 +153,7 @@
                                         <g:if test="${(pd.descr == PropertyDefinition.SUB_PROP) && !PropertyDefinition.findByNameAndDescrAndTenant(pd.name, PropertyDefinition.SVY_PROP, null)}">
                                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}">
                                                 <g:link class="ui icon button blue la-modern-button" action="transferSubPropToSurProp" params="[propertyDefinition: pd.id]">
-                                                    <i class="${Icons.CMD.COPY}"></i>
+                                                    <i class="${Icon.CMD.COPY}"></i>
                                                 </g:link>
                                             </span>
                                         </g:if>
@@ -166,7 +166,7 @@
                                                             data-xcg-type="${pd.type}"
                                                             data-xcg-rdc="${pd.refdataCategory}"
                                                             data-xcg-debug="${pd.getI10n('name')} (${pd.name})"
-                                                    ><i class="${Icons.CMD.REPLACE}"></i></button>
+                                                    ><i class="${Icon.CMD.REPLACE}"></i></button>
                                                 </span>
                                             </g:if>
                                         </sec:ifAnyGranted>
@@ -176,7 +176,7 @@
                                                     params="${[cmd: 'deletePropertyDefinition', pd: pd.id]}" class="ui icon negative button la-modern-button"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="${Icons.CMD.DELETE}"></i>
+                                                <i class="${Icon.CMD.DELETE}"></i>
                                             </g:link>
                                         </g:if>
                                     </td>

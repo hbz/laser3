@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyOrg;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyOrg;" %>
 <laser:serviceInjection/>
 <table class="ui table la-js-responsive-table la-table">
     <colgroup>
@@ -44,17 +44,17 @@
             <g:if test="${tmplShowOrgName}">
                 <td>
                     <g:if test="${address.org}">
-                        <i class="${Icons.ORG} la-list-icon"></i>
+                        <i class="${Icon.ORG} la-list-icon"></i>
                         <g:link controller="organisation" action="addressbook"
                                 id="${address.org.id}">${address.org.name} (${address.org.sortname})</g:link>
                     </g:if>
                     <g:if test="${address.provider}">
-                        <i class="${Icons.PROVIDER} la-list-icon"></i>
+                        <i class="${Icon.PROVIDER} la-list-icon"></i>
                         <g:link controller="provider" action="addressbook"
                                 id="${address.provider.id}">${address.provider.name} (${address.provider.sortname})</g:link>
                     </g:if>
                     <g:if test="${address.vendor}">
-                        <i class="${Icons.VENDOR} la-list-icon"></i>
+                        <i class="${Icon.VENDOR} la-list-icon"></i>
                         <g:link controller="vendor" action="addressbook"
                                 id="${address.vendor.id}">${address.vendor.name} (${address.vendor.sortname})</g:link>
                     </g:if>
@@ -155,7 +155,7 @@
                         <button type="button" onclick="JSPC.app.editAddress(${address.id})" class="ui icon button blue la-modern-button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                            <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                         </button>
                         <g:link class="ui negative button icon js-open-confirm-modal la-modern-button"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.address.addressbook")}"
@@ -163,7 +163,7 @@
                                 controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: genericOIDService.getOID(address)]"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="${Icons.CMD.DELETE}"></i>
+                            <i class="${Icon.CMD.DELETE}"></i>
                         </g:link>
                     </g:if>
                 </td>

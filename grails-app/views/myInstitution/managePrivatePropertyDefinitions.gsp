@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.I10nTranslation" %>
+<%@ page import="de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.I10nTranslation" %>
 
 <laser:htmlStart message="menu.institutions.private_props" serviceInjection="true"/>
 
@@ -57,18 +57,18 @@
                                         <td>
                                             <g:if test="${pd.isHardData}">
                                                 <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
-                                                    <i class="${Icons.PROP.HARDDATA}"></i>
+                                                    <i class="${Icon.PROP.HARDDATA}"></i>
                                                 </span>
                                             </g:if>
                                             <g:if test="${pd.multipleOccurrence}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                                    <i class="${Icons.PROP.MULTIPLE}"></i>
+                                                    <i class="${Icon.PROP.MULTIPLE}"></i>
                                                 </span>
                                             </g:if>
 
                                             <g:if test="${pd.isUsedForLogic}">
                                                 <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
-                                                    <i class="${Icons.PROP.LOGIC}"></i>
+                                                    <i class="${Icon.PROP.LOGIC}"></i>
                                                 </span>
                                             </g:if>
                                         </td>
@@ -121,7 +121,7 @@
                                                 <g:if test="${pd.mandatory}">
                                                     <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="left center"
                                                             params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="ui icon yellow button la-modern-button la-popup-tooltip la-delay">
-                                                        <i class="${Icons.PROP.MANDATORY}"></i>
+                                                        <i class="${Icon.PROP.MANDATORY}"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
@@ -152,7 +152,7 @@
                                                             class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                        <i class="${Icons.CMD.DELETE}"></i>
+                                                        <i class="${Icon.CMD.DELETE}"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
@@ -162,7 +162,7 @@
                                                                 data-xcg-type="${pd.type}"
                                                                 data-xcg-rdc="${pd.refdataCategory}"
                                                                 data-xcg-debug="${pd.getI10n('name')}">
-                                                            <i class="${Icons.CMD.REPLACE}"></i>
+                                                            <i class="${Icon.CMD.REPLACE}"></i>
                                                         </button>
                                                     </span>
                                                 </g:else>
@@ -174,7 +174,7 @@
                                                             data-xcg-type="${pd.type}"
                                                             data-xcg-rdc="${pd.refdataCategory}"
                                                             data-xcg-debug="${pd.getI10n('name')}"
-                                                    ><i class="${Icons.CMD.REPLACE}"></i></button>
+                                                    ><i class="${Icon.CMD.REPLACE}"></i></button>
                                                 </span>
                                             </g:elseif>
                                         </td>

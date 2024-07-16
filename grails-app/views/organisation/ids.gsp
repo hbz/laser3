@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.Combo; de.laser.CustomerIdentifier; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting" %>
+<%@ page import="de.laser.ui.Icon; de.laser.Combo; de.laser.CustomerIdentifier; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <laser:htmlStart message="${isProviderOrAgency ? 'org.nav.ids' : 'org.nav.idsCids.shy'}" serviceInjection="true" />
@@ -148,7 +148,7 @@
                                     <g:if test="${editable_customeridentifier && editable_this_ci}">
                                         %{--}<button class="ui icon button blue la-modern-button" onclick="JSPC.app.IdContoller.editCustomerIdentifier(${ci.id});"
                                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                            <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                                            <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                         </button>--}%
                                         <g:link controller="organisation"
                                                 action="deleteCustomerIdentifier"
@@ -159,7 +159,7 @@
                                                 data-confirm-term-how="delete"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="${Icons.CMD.DELETE}"></i>
+                                            <i class="${Icon.CMD.DELETE}"></i>
                                         </g:link>
                                     </g:if>
                                 </td>

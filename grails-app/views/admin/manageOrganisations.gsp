@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.Org; de.laser.OrgSetting; de.laser.RefdataCategory; groovy.json.JsonOutput; de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Contact; de.laser.OrgRole; de.laser.RefdataValue" %>
+<%@ page import="de.laser.ui.Icon; de.laser.Org; de.laser.OrgSetting; de.laser.RefdataCategory; groovy.json.JsonOutput; de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Contact; de.laser.OrgRole; de.laser.RefdataValue" %>
 
 <laser:htmlStart message="menu.admin.manageOrganisations" serviceInjection="true"/>
 
@@ -34,18 +34,18 @@
                 <th>
                     ${message(code:'org.apiLevel.label')}
                     <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.apiLevel.tooltip')}">
-                        <i class="${Icons.HELP_TOOLTIP} icon popup"></i>
+                        <i class="${Icon.TOOLTIP.HELP} icon popup"></i>
                     </span>
                 </th>
                 <th>
                     ${message(code:'org.serverAccess.label')}
                     <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.serverAccess.tooltip')}">
-                        <i class="${Icons.HELP_TOOLTIP} icon popup"></i>
+                        <i class="${Icon.TOOLTIP.HELP} icon popup"></i>
                     </span>
                 </th>
                 <th class="la-no-uppercase">
                     <span class="la-popup-tooltip la-delay" data-position="left center" data-content="${message(code:'org.legalInformation.tooltip')}">
-                        <i class="${Icons.ORG_LEGAL_INFORMATION}"></i>
+                        <i class="${Icon.ORG_LEGAL_INFORMATION}"></i>
                     </span>
                 </th>
                 <th>${message(code:'org.hasAccessOrg')}</th>
@@ -81,7 +81,7 @@
                             def gascoEntry = OrgSetting.get(org, OrgSetting.KEYS.GASCO_ENTRY)
                             if (gascoEntry != OrgSetting.SETTING_NOT_FOUND && gascoEntry.getValue()?.value == 'Yes') {
                                 println ' <span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + message(code:'org.gascoEntry.label') + '">'
-                                println ' <i class="' + Icons.GASCO + ' blue"></i>'
+                                println ' <i class="' + Icon.GASCO + ' blue"></i>'
                                 println ' </span>'
                                 gascoEntry = gascoEntry.getValue()
                             } else {
@@ -188,7 +188,7 @@
                                     data-orgName="${org.name}"
                                     data-ui="modal"
                                     data-href="#gascoEntryModal"
-                                    data-content="GASCO-Eintrag ändern" data-position="top left"><i class="${Icons.GASCO}"></i></button>
+                                    data-content="GASCO-Eintrag ändern" data-position="top left"><i class="${Icon.GASCO}"></i></button>
                         </g:if>
 
                         <g:if test="${org.isCustomerType_Inst()}">
@@ -199,7 +199,7 @@
                                     data-orgName="${org.name}"
                                     data-ui="modal"
                                     data-href="#legalInformationModal"
-                                    data-content="Rechtl. Informationen ändern" data-position="top left"><i class="${Icons.ORG_LEGAL_INFORMATION}"></i></button>
+                                    data-content="Rechtl. Informationen ändern" data-position="top left"><i class="${Icon.ORG_LEGAL_INFORMATION}"></i></button>
                         </g:if>
 
                         <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay"

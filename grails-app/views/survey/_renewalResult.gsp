@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg" %>
 <laser:serviceInjection/>
 
 <table class="ui celled sortable table la-js-responsive-table la-table">
@@ -13,7 +13,7 @@
             <g:if test="${participationProperty?.getI10n('expl')}">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${participationProperty?.getI10n('expl')}">
-                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                    <i class="${Icon.TOOLTIP.HELP}"></i>
                 </span>
             </g:if>
         </th>
@@ -31,7 +31,7 @@
                 <g:if test="${surveyProperty?.getI10n('expl')}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                           data-content="${surveyProperty.getI10n('expl')}">
-                        <i class="${Icons.HELP_TOOLTIP}"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </g:if>
             </th>
@@ -94,7 +94,7 @@
                 <g:if test="${propertiesChangedByParticipant && participantResult.participant.id in propertiesChangedByParticipant.id}">
                     <span data-position="top right" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
-                        <i class="${Icons.IMPORTANT_TOOLTIP2} yellow"></i>
+                        <i class="${Icon.TOOLTIP.SERIOUS} yellow"></i>
                     </span>
                 </g:if>
                 <g:if test="${surveyOrg.orgInsertedItself}">
@@ -115,14 +115,14 @@
                 <g:if test="${participantResult.resultOfParticipation.comment}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                           data-content="${participantResult.resultOfParticipation.comment}">
-                        <i class="${Icons.HELP_TOOLTIP}"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </g:if>
 
                 <g:if test="${surveyOrg && surveyOrg.ownerComment}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                           data-content="${surveyOrg.ownerComment}">
-                        <i class="${Icons.INFO_TOOLTIP}"></i>
+                        <i class="${Icon.TOOLTIP.INFO}"></i>
                     </span>
                 </g:if>
 
@@ -142,7 +142,7 @@
                 <g:if test="${participantResult.participantPropertyTwoComment}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                           data-content="${participantResult.participantPropertyTwoComment}">
-                        <i class="${Icons.HELP_TOOLTIP}"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </g:if>
 
@@ -157,7 +157,7 @@
                 <g:if test="${participantResult.participantPropertyThreeComment}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                           data-content="${participantResult.participantPropertyThreeComment}">
-                        <i class="${Icons.HELP_TOOLTIP}"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </g:if>
             </g:if>
@@ -172,7 +172,7 @@
                 <g:if test="${participantResult.participantPropertyFourComment}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                           data-content="${participantResult.participantPropertyFourComment}">
-                        <i class="${Icons.HELP_TOOLTIP}"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </g:if>
             </g:if>
@@ -187,7 +187,7 @@
                 <g:if test="${participantResult.participantPropertyFiveComment}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                           data-content="${participantResult.participantPropertyFiveComment}">
-                        <i class="${Icons.HELP_TOOLTIP}"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </g:if>
             </g:if>
@@ -203,7 +203,7 @@
                     <g:if test="${participantResultProperty.comment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${participantResultProperty.comment}">
-                            <i class="${Icons.HELP_TOOLTIP}"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </g:if>
 
@@ -213,7 +213,7 @@
                     <g:if test="${surveyOrg && surveyOrg.ownerComment}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${surveyOrg.ownerComment}">
-                            <i class="${Icons.INFO_TOOLTIP}"></i>
+                            <i class="${Icon.TOOLTIP.INFO}"></i>
                         </span>
                     </g:if>
 
@@ -243,13 +243,13 @@
                         class="ui icon button blue la-modern-button"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                    <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                 </g:link>
 
                 <g:if test="${participantResult.sub}">
                     <br/>
                     <g:link controller="subscription" action="show" id="${participantResult.sub?.id}"
-                            class="ui button orange icon"><i class="${Icons.SUBSCRIPTION}"></i></g:link>
+                            class="ui button orange icon"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                 </g:if>
             </td>
 

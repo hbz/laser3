@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.FormService" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.FormService" %>
 
 <g:set var="entityName" value="${message(code: 'default.institution')}" />
 <laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" serviceInjection="true"/>
@@ -95,12 +95,12 @@
 													params="${params+[direction:'remove', fromOrg:organisationInstance.id]}"
 													role="button"
 													aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-												<i class="minus icon"></i>
+												<i class="${Icon.CMD.REMOVE}"></i>
 											</g:link>
 										</g:if>
 										<g:else>
 											<g:link class="ui icon positive button blue la-modern-button la-popup-tooltip la-delay" data-content="${message(code:'org.consortiaToggle.add.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'add', fromOrg:organisationInstance.id]}">
-												<i class="plus icon"></i>
+												<i class="${Icon.CMD.ADD}"></i>
 											</g:link>
 										</g:else>
 									</td>

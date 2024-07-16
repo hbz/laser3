@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.helper.Params; de.laser.CustomerTypeService; de.laser.Org; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Icon; de.laser.helper.Params; de.laser.CustomerTypeService; de.laser.Org; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
 <ui:filter>
@@ -20,7 +20,7 @@
             <div class="field">
                 <label for="search-title">${message(code: 'default.search.text')}
                     <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
-                        <i class="${Icons.HELP_TOOLTIP}"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
 
@@ -34,7 +34,7 @@
             <div class="field">
                 <label for="identifier">${message(code: 'default.search.identifier')}
                     <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription.identifier')}">
-                        <i class="${Icons.HELP_TOOLTIP}"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
 

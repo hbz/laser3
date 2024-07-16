@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Vendor; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.ProviderLink; de.laser.Contact; de.laser.remote.ApiSource; de.laser.Provider" %>
+<%@ page import="de.laser.ui.Icon; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Vendor; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.ProviderLink; de.laser.Contact; de.laser.remote.ApiSource; de.laser.Provider" %>
 
 <g:set var="entityName" value="${message(code: 'provider.label')}"/>
 
@@ -69,13 +69,13 @@
                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: provider.altnames[0].id]"
                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [provider.altnames[0].name])}"
                                                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(provider.altnames[0])}')">
-                                                    <i class="${Icons.CMD.DELETE}"></i>
+                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                 </ui:remoteLink>
                                             </g:if>
                                         </div>
                                         <div class="ui icon blue button la-show-button la-modern-button la-popup-tooltip la-delay"
                                              data-content="${message(code: 'org.altname.show')}">
-                                            <i class="ui angle double down icon"></i>
+                                            <i class="${Icon.CMD.SHOW_MORE}"></i>
                                         </div>
                                     </div>
                                     <div class="content">
@@ -94,7 +94,7 @@
                                                             <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                            data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                <i class="${Icons.CMD.DELETE}"></i>
+                                                                <i class="${Icon.CMD.DELETE}"></i>
                                                             </ui:remoteLink>
                                                         </div>
                                                     </div>
@@ -314,7 +314,7 @@
                                                             action="unlinkProviderVendor" params="[id: provider.id, combo: row.id]"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                        <i class="${Icons.CMD.UNLINK}"></i>
+                                                        <i class="${Icon.CMD.UNLINK}"></i>
                                                     </g:link>
                                                 </span>
                                             </g:if>
@@ -415,7 +415,7 @@
                             </div>
                         </div>
                         <div class="content">
-                            <p class="ui header">%{--<i class="${Icons.PLATFORM} icon"></i>--}% <g:message code="org.platforms.label" /></p>
+                            <p class="ui header">%{--<i class="${Icon.PLATFORM} icon"></i>--}% <g:message code="org.platforms.label" /></p>
 
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <g:each in="${platforms}" var="platform">
@@ -429,7 +429,7 @@
                                 </g:each>
                             </div>
 
-                            <p class="ui header">%{--<i class="${Icons.PACKAGE}"></i>--}% <g:message code="package.plural" /></p>
+                            <p class="ui header">%{--<i class="${Icon.PACKAGE}"></i>--}% <g:message code="package.plural" /></p>
 
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <g:each in="${packages}" var="pkg">
@@ -441,13 +441,13 @@
                                 </g:each>
                             </div>
 
-                            <p class="ui header">%{--<i class="${Icons.SUBSCRIPTION}"></i>--}% <g:message code="subscription.plural" /></p>
+                            <p class="ui header">%{--<i class="${Icon.SUBSCRIPTION}"></i>--}% <g:message code="subscription.plural" /></p>
 
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <div class="ui item">
                                     <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: provider.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id]">
                                         <div class="content la-space-right">
-                                            <i class="${Icons.LNK.FILTERED}"></i> <g:message code="subscription.plural.current" />
+                                            <i class="${Icon.LNK.FILTERED}"></i> <g:message code="subscription.plural.current" />
                                             &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}</div>
                                         </div>
                                     </g:link>
@@ -455,27 +455,27 @@
                                 <div class="ui item">
                                     <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: provider.globalUID, status: 'FETCH_ALL']">
                                         <div class="content la-space-right">
-                                            <i class="${Icons.LNK.FILTERED}"></i> <g:message code="subscription.plural.total" />
+                                            <i class="${Icon.LNK.FILTERED}"></i> <g:message code="subscription.plural.total" />
                                             &nbsp;<div class="ui blue circular label">${subLinks}</div>
                                         </div>
                                     </g:link>
                                 </div>
                             </div>
 
-                            <p class="ui header">%{--<i class="${Icons.LICENSE}"></i>--}% <g:message code="license.plural" /></p>
+                            <p class="ui header">%{--<i class="${Icon.LICENSE}"></i>--}% <g:message code="license.plural" /></p>
 
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <div class="ui item">
                                     <div class="content la-space-right">
                                         <g:link controller="myInstitution" action="currentLicenses" params="[licensor: provider.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']">
-                                            <i class="${Icons.LNK.FILTERED}"></i> <g:message code="license.plural.current" />
+                                            <i class="${Icon.LNK.FILTERED}"></i> <g:message code="license.plural.current" />
                                             &nbsp;<div class="ui blue circular label">${currentLicensesCount}</div></g:link>
                                     </div>
                                 </div>
                                 <div class="ui item">
                                     <div class="content la-space-right">
                                         <g:link controller="myInstitution" action="currentLicenses" params="[licensor: provider.id, filterSubmit: 'Filtern']">
-                                            <i class="${Icons.LNK.FILTERED}"></i> <g:message code="license.plural.total" />
+                                            <i class="${Icon.LNK.FILTERED}"></i> <g:message code="license.plural.total" />
                                             &nbsp;<div class="ui blue circular label">${licLinks}</div></g:link>
                                     </div>
                                 </div>
@@ -545,7 +545,7 @@
                                     <div class="ui item">
                                         <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: provider.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id]">
                                             <div class="content la-space-right">
-                                                <i class="${Icons.LNK.FILTERED} icon"></i> <g:message code="subscription.plural.current" />
+                                                <i class="${Icon.LNK.FILTERED} icon"></i> <g:message code="subscription.plural.current" />
                                                 &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}</div>
                                             </div>
                                         </g:link>
@@ -553,7 +553,7 @@
                                     <div class="ui item">
                                         <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: provider.globalUID, status: 'FETCH_ALL']">
                                             <div class="content la-space-right">
-                                                <i class="${Icons.LNK.FILTERED} icon"></i> <g:message code="subscription.plural.total" />
+                                                <i class="${Icon.LNK.FILTERED} icon"></i> <g:message code="subscription.plural.total" />
                                                 &nbsp;<div class="ui blue circular label">${subLinks.size()}</div>
                                             </div>
                                         </g:link>
@@ -575,14 +575,14 @@
                                     <div class="ui item">
                                         <div class="content la-space-right">
                                             <g:link controller="myInstitution" action="currentLicenses" params="[licensor: provider.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']">
-                                                <i class="${Icons.LNK.FILTERED} icon"></i> <g:message code="license.plural.current" />
+                                                <i class="${Icon.LNK.FILTERED} icon"></i> <g:message code="license.plural.current" />
                                                 &nbsp;<div class="ui blue circular label">${currentLicensesCount}</div></g:link>
                                         </div>
                                     </div>
                                     <div class="ui item">
                                         <div class="content la-space-right">
                                             <g:link controller="myInstitution" action="currentLicenses" params="[licensor: provider.id, filterSubmit: 'Filtern']">
-                                                <i class="${Icons.LNK.FILTERED} icon"></i> <g:message code="license.plural.total" />
+                                                <i class="${Icon.LNK.FILTERED} icon"></i> <g:message code="license.plural.total" />
                                                 &nbsp;<div class="ui blue circular label">${licLinks.size()}</div></g:link>
                                         </div>
                                     </div>
@@ -722,10 +722,10 @@
                                                                             <a target="_blank" href="${wekbApi.editUrl ? wekbApi.editUrl + '/public/orgContent/' + provider.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
                                                                         </g:if>
                                                                         <g:elseif test="${prs.isPublic}">
-                                                                            <i class="${Icons.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                            <i class="${Icon.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                                         </g:elseif>
                                                                         <g:else>
-                                                                            <i class="${Icons.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                            <i class="${Icon.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                         </g:else>
                                                                     </div>
                                                                     <div class="fourteen wide column">
@@ -843,10 +843,10 @@
                                                             <div class="row">
                                                                 <div class="two wide column">
                                                                     <g:if test="${person.isPublic}">
-                                                                        <i class="${Icons.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                        <i class="${Icon.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                                     </g:if>
                                                                     <g:else>
-                                                                        <i class="${Icons.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                        <i class="${Icon.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                     </g:else>
                                                                 </div>
                                                                 <div class="fourteen wide column">
@@ -912,10 +912,10 @@
                                                                 <div class="row">
                                                                     <div class="two wide column">
                                                                         <g:if test="${person.isPublic}">
-                                                                            <i class="${Icons.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                            <i class="${Icon.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                                         </g:if>
                                                                         <g:else>
-                                                                            <i class="${Icons.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                            <i class="${Icon.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                         </g:else>
                                                                     </div>
                                                                     <div class="fourteen wide column">

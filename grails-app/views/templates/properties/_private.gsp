@@ -3,7 +3,7 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#private-property-wrapper-xxx"); --}%
 
-<%@ page import="de.laser.helper.Icons; de.laser.utils.LocaleUtils; de.laser.CustomerTypeService; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; java.net.URL" %>
+<%@ page import="de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.CustomerTypeService; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; java.net.URL" %>
 <laser:serviceInjection />
 
 
@@ -47,7 +47,7 @@
                             ${prop.type.getI10n('name')}
                             <g:if test="${prop.type.getI10n('expl')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${prop.type.getI10n('expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </g:if>
                         </g:if>
@@ -56,12 +56,12 @@
                         </g:else>
                         <g:if test="${prop.type.mandatory}">
                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.mandatory.tooltip')}">
-                                <i class="${Icons.PROP.MANDATORY} yellow"></i>
+                                <i class="${Icon.PROP.MANDATORY} yellow"></i>
                             </span>
                         </g:if>
                         <g:if test="${prop.type.multipleOccurrence}">
                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                <i class="${Icons.PROP.MULTIPLE}"></i>
+                                <i class="${Icon.PROP.MULTIPLE}"></i>
                             </span>
                         </g:if>
                     </td>
@@ -110,7 +110,7 @@
                                               data-update="${propertyWrapper}"
                                               role="button"
                                               ariaLabel="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="${Icons.CMD.DELETE}"></i>
+                                <i class="${Icon.CMD.DELETE}"></i>
                             </ui:remoteLink>
                         </g:if>
                     </td>

@@ -2,7 +2,7 @@ package de.laser.domain
 
 import de.laser.ContextService
 import de.laser.RefdataValue
-import de.laser.helper.Icons
+import de.laser.ui.Icon
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.workflow.WorkflowHelper
@@ -39,8 +39,8 @@ class WorkflowTagLib {
         List<String> fields = []
 
         fields.add( (cpoint.date ?
-                '<i class="' + Icons.DATE + '"></i> ' + message(code:'workflow.checkpoint.date') + ': <strong>' + DateUtils.getLocalizedSDF_noTime().format(cpoint.date) + '</strong>' :
-                '<i class="' + Icons.DATE + ' la-light-grey"></i> ' + message(code:'workflow.checkpoint.noDate')
+                '<i class="' + Icon.SYM.DATE + '"></i> ' + message(code:'workflow.checkpoint.date') + ': <strong>' + DateUtils.getLocalizedSDF_noTime().format(cpoint.date) + '</strong>' :
+                '<i class="' + Icon.SYM.DATE + ' la-light-grey"></i> ' + message(code:'workflow.checkpoint.noDate')
         ))
         fields.add( (cpoint.done == true ?
                 '<i class="ui icon check square outline"></i> ' + message(code:'workflow.checkpoint.done') :

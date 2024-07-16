@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.Subscription;de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.Subscription;de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.finance.CostItem" %>
 <laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -27,7 +27,7 @@
                     <span data-position="right center" data-variation="tiny"
                           class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.subscription')}">
-                        <i class="${Icons.HELP_TOOLTIP}"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
 
@@ -134,7 +134,7 @@
                 </th>
                 <th scope="col" rowspan="2">
                     <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
-                        <i class="${Icons.COSTS} large"></i>
+                        <i class="${Icon.FNC.COST} large"></i>
                     </a>
                 </th>
 
@@ -169,7 +169,7 @@
                             </g:link>
                             <g:each in="${allLinkedLicenses.get(s)}" var="license">
                                 <div class="la-flexbox">
-                                    <i class="${Icons.LICENSE} la-list-icon"></i>
+                                    <i class="${Icon.LICENSE} la-list-icon"></i>
                                     <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br />
                                 </div>
                             </g:each>
@@ -179,7 +179,7 @@
                             <g:each in="${s.packages.sort { it.pkg.name }}" var="sp" status="ind">
                                 <g:if test="${ind < 10}">
                                     <div class="la-flexbox">
-                                        <i class="${Icons.PACKAGE} la-list-icon"></i>
+                                        <i class="${Icon.PACKAGE} la-list-icon"></i>
                                         <g:link controller="subscription" action="index" id="${s.id}"
                                                 params="[pkgfilter: sp.pkg.id]"
                                                 title="${sp.pkg.provider?.name}">
@@ -234,7 +234,7 @@
                                             data-content="${message(code: 'survey.toggleSurveySub.add.label', args:[SurveyConfig.countBySubscriptionAndSubSurveyUseForTransfer(s, true), SurveyConfig.countBySubscriptionAndSubSurveyUseForTransfer(s, false)])}"
                                             controller="survey" action="addSubtoSubscriptionSurvey"
                                             params="[sub: s.id]">
-                                        <i class="${Icons.CMD.EDIT}"></i>
+                                        <i class="${Icon.CMD.EDIT}"></i>
                                     </g:link>
 
                             </g:if>

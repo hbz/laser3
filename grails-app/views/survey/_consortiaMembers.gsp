@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyConfig; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.storage.RDStore;" %>
 
 <g:if test="${selectedSubParticipantsCount == 0}">
     <div class="four wide column">
@@ -70,7 +70,7 @@
                     <input type="file" name="selectMembersWithImport" accept="text/tab-separated-values,.txt,.csv"
                            style="display: none;">
                     <div class="ui icon button">
-                        <i class="${Icons.CMD.ATTACHMENT}"></i>
+                        <i class="${Icon.CMD.ATTACHMENT}"></i>
                     </div>
                 </div>
             </div><!-- .message -->

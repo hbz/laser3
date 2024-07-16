@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Icon" %>
 <div class="ui segment">
     <h3 class="ui header">
         <g:if test="${controllerName == "subscription"}">
@@ -52,7 +52,7 @@
                                     data-confirm-term-how="unset"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="${Icons.CMD.ERASE}"></i>
+                                <i class="${Icon.CMD.ERASE}"></i>
                             </g:link>
                         </g:if>
                     </td>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue; de.laser.License; de.laser.ProviderRole; de.laser.VendorRole" %>
+<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.License; de.laser.ProviderRole; de.laser.VendorRole" %>
 <g:set var="auditConfigProviders" value="${ProviderRole.findAllBySubscriptionAndIsShared(parentSuccessorSubscription, true)}" />
 <g:set var="auditConfigVendors" value="${VendorRole.findAllBySubscriptionAndIsShared(parentSuccessorSubscription, true)}" />
 
@@ -189,7 +189,7 @@
                         <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_all')}</label>
                     </div>
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'myinst.separate_lics_all.expl')}">
-                        <i class="${Icons.HELP_TOOLTIP} la-popup"></i>
+                        <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
                     </span>
                     <br />
                     <div class="ui radio checkbox">

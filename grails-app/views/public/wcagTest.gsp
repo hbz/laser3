@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; java.sql.Timestamp; de.laser.Org; de.laser.License; de.laser.Subscription; de.laser.Task; de.laser.storage.RDStore;de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Icon; java.sql.Timestamp; de.laser.Org; de.laser.License; de.laser.Subscription; de.laser.Task; de.laser.storage.RDStore;de.laser.storage.RDConstants" %>
 <laser:htmlStart text="Komponenten zur Überprüfung der Barrierefreiheit" serviceInjection="true"/>
 
     <div id="modalCreateTask">
@@ -28,7 +28,7 @@
         <h3 class="ui dividing header">7.1. Dekoratives Icon mit einer Dopplung der Semantik durch Text, der daneben steht.</h3>--}%
 %{--
         <div class="ui icon info message">
-            <i aria-hidden="true" class="${Icons.UI.INFO}"></i>
+            <i aria-hidden="true" class="${Icon.UI.INFO}"></i>
             <div class="content">
                 <div class="header">
                     Achtung

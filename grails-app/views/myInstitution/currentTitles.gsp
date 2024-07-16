@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.remote.ApiSource; de.laser.PermanentTitle; de.laser.Subscription" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.remote.ApiSource; de.laser.PermanentTitle; de.laser.Subscription" %>
 <laser:htmlStart message="myinst.currentTitles.label"/>
 
 <ui:breadcrumbs>
@@ -342,7 +342,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.coverageDepth}">
                                                                 <div class="item">
-                                                                    <i class="grey ${Icons.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
+                                                                    <i class="grey ${Icon.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
                                                                        data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                                                                     <div class="content">
@@ -385,7 +385,7 @@
                                                         <div class="ui list">
                                                             <g:each in="${ie_infos}" var="ie">
                                                                 <div class="item">
-                                                                    <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
+                                                                    <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                                     <div class="content">
                                                                         <div class="header">
                                                                             <g:link controller="subscription"

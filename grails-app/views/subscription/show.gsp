@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.config.ConfigMapper; de.laser.Person; de.laser.PersonRole; de.laser.Subscription; de.laser.Links; java.text.SimpleDateFormat;de.laser.properties.PropertyDefinition; de.laser.OrgRole; de.laser.License;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.interfaces.CalculatedType; de.laser.FormService; de.laser.AuditConfig" %>
+<%@ page import="de.laser.ui.Icon; de.laser.config.ConfigMapper; de.laser.Person; de.laser.PersonRole; de.laser.Subscription; de.laser.Links; java.text.SimpleDateFormat;de.laser.properties.PropertyDefinition; de.laser.OrgRole; de.laser.License;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.interfaces.CalculatedType; de.laser.FormService; de.laser.AuditConfig" %>
 <laser:htmlStart message="subscription.details.label" serviceInjection="true"/>
 
 %{-- flyouts --}%
@@ -98,7 +98,7 @@
                                                                     <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
                                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
                                                                                    data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                        <i class="${Icons.CMD.DELETE}"></i>
+                                                                        <i class="${Icon.CMD.DELETE}"></i>
                                                                     </ui:remoteLink>
                                                                 </div>
                                                             </g:if>
@@ -125,7 +125,7 @@
                                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
                                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
                                                                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(subscription.altnames[0])}')">
-                                                                    <i class="${Icons.CMD.DELETE}"></i>
+                                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                                 </ui:remoteLink>
                                                             </div>
                                                         </g:else>
@@ -137,14 +137,14 @@
                                                         <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
                                                                        data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(subscription.altnames[0])}')">
-                                                            <i class="${Icons.CMD.DELETE}"></i>
+                                                            <i class="${Icon.CMD.DELETE}"></i>
                                                         </ui:remoteLink>
                                                     </g:else>
                                                 </g:if>
                                             </div>
                                             <div class="ui icon blue button la-show-button la-modern-button la-popup-tooltip la-delay"
                                                  data-content="${message(code: 'org.altname.show')}">
-                                                <i class="ui angle double down icon"></i>
+                                                <i class="${Icon.CMD.SHOW_MORE}"></i>
                                             </div>
                                         </div>
                                         <div class="content">
@@ -182,7 +182,7 @@
                                                                         <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                                        data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                            <i class="${Icons.CMD.DELETE}"></i>
+                                                                            <i class="${Icon.CMD.DELETE}"></i>
                                                                         </ui:remoteLink>
                                                                     </div>
                                                                 </g:if>
@@ -209,7 +209,7 @@
                                                                     <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                                    data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                        <i class="${Icons.CMD.DELETE}"></i>
+                                                                        <i class="${Icon.CMD.DELETE}"></i>
                                                                     </ui:remoteLink>
                                                                 </div>
                                                             </g:else>
@@ -222,7 +222,7 @@
                                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                    <i class="${Icons.CMD.DELETE}"></i>
+                                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                                 </ui:remoteLink>
                                                             </div>
                                                         </g:else>
@@ -459,7 +459,7 @@
                                                     <g:if test="${missingSubMonths}">
                                                         <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                               data-html="${message(code: 'default.usage.missingUsageInfo')}: ${missingSubMonths.join(',')}">
-                                                            <i class="${Icons.IMPORTANT_TOOLTIP2} la-popup small"></i>
+                                                            <i class="${Icon.TOOLTIP.SERIOUS} la-popup small"></i>
                                                         </span>
                                                     </g:if>
                                                 </td>
@@ -494,7 +494,7 @@
                                             <td>${reportMetric}
                                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                       data-html="${message(code: 'default.usage.reportUpToInfo')}: ${lastUsagePeriodForReportType[reportMetric.split(':')[0]]}">
-                                                    <i class="${Icons.INFO_TOOLTIP} small la-popup"></i>
+                                                    <i class="${Icon.TOOLTIP.INFO} small la-popup"></i>
                                                 </span>
                                             </td>
                                             <g:each in="${v}" status="i" var="v2">
@@ -522,7 +522,7 @@
                                                 <g:if test="${missing}">
                                                     <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                           data-html="${message(code: 'default.usage.missingUsageInfo')}: ${missing.join(',')}">
-                                                        <i class="${Icons.IMPORTANT_TOOLTIP2} la-popup small"></i>
+                                                        <i class="${Icon.TOOLTIP.SERIOUS} la-popup small"></i>
                                                     </span>
                                                 </g:if>
                                             </td>

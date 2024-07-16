@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore; de.laser.system.SystemMessage; de.laser.jobs.HeartbeatJob" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.system.SystemMessage; de.laser.jobs.HeartbeatJob" %>
 
 <laser:htmlStart message="menu.admin.systemMessage" />
 
@@ -63,7 +63,7 @@
                 <g:link controller="admin" action="deleteSystemMessage" id="${msg.id}" class="ui negative icon button la-modern-button"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="${Icons.CMD.DELETE}"></i>
+                    <i class="${Icon.CMD.DELETE}"></i>
                 </g:link>
             </td>
         </tr>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.ui.Button; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:htmlStart text="Playground: Various" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -13,37 +13,56 @@
     <g:link controller="dev" action="icons" class="item"><i class="certificate icon red"></i> New Icons</g:link>
 </nav>
 
--- Reminder --
+<div class="ui segment">
 
-<ui:messages data="${[message: message(code: 'renewalEvaluation.dynamicSite')]}"/>
+    <p class="ui header">de.laser.ui.Button</p>
 
-<ui:msg class="success" message="renewalEvaluation.dynamicSite" />
-<ui:msg class="info" message="renewalEvaluation.dynamicSite" />
-
--- Reminder --
+    <p>
+        <button class="${Button.PRIMARY}">PRIMARY</button>
+        <button class="${Button.SECONDARY}">SECONDARY</button>
+        <button class="${Button.POSITIVE}">POSITIVE</button>
+        <button class="${Button.NEGATIVE}">NEGATIVE</button>
+    </p>
+    <p>
+        <button class="${Button.PRIMARY_ICON}"><i class="${Icon.X.SQUARE}"></i></button>
+        <button class="${Button.SECONDARY_ICON}"><i class="${Icon.X.SQUARE}"></i></button>
+        <button class="${Button.POSITIVE_ICON}"><i class="${Icon.CMD.ADD}"></i></button>
+        <button class="${Button.NEGATIVE_ICON}"><i class="${Icon.CMD.REMOVE}"></i></button>
+    </p>
+    <p>
+        <button class="${Button.MODERN.BLUE}">MODERN.BLUE</button>
+        <button class="${Button.MODERN.POSITIVE}">MODERN.POSITIVE</button>
+        <button class="${Button.MODERN.NEGATIVE}">MODERN.NEGATIVE</button>
+    </p>
+    <p>
+        <button class="${Button.MODERN.BLUE_ICON}"><i class="${Icon.X.SQUARE}"></i></button>
+        <button class="${Button.MODERN.POSITIVE_ICON}"><i class="${Icon.CMD.ADD}"></i></button>
+        <button class="${Button.MODERN.NEGATIVE_ICON}"><i class="${Icon.CMD.REMOVE}"></i></button>
+    </p>
+</div>
 
 <div class="ui four column grid">
     <div class="column">
         <div class="ui icon info message">
-            <i class="${Icons.UI.INFO}"></i>
+            <i class="${Icon.UI.INFO}"></i>
             <div class="content"> INFO </div>
         </div>
     </div>
     <div class="column">
         <div class="ui icon warning message">
-            <i class="${Icons.UI.WARNING}"></i>
+            <i class="${Icon.UI.WARNING}"></i>
             <div class="content"> WARNING </div>
         </div>
     </div>
     <div class="column">
         <div class="ui icon success message">
-            <i class="${Icons.UI.SUCCESS}"></i>
+            <i class="${Icon.UI.SUCCESS}"></i>
             <div class="content"> SUCCESS </div>
         </div>
     </div>
     <div class="column">
         <div class="ui icon error message">
-            <i class="${Icons.UI.ERROR}"></i>
+            <i class="${Icon.UI.ERROR}"></i>
             <div class="content"> ERROR </div>
         </div>
     </div>
@@ -108,32 +127,32 @@
     <p class="ui header">Icons #2</p>
     <div class="ui list">
         <div class="item">
-            <i class="${Icons.PROVIDER} large"></i>
-            <div class="content"> Anbieter (${Icons.PROVIDER})</div>
+            <i class="${Icon.PROVIDER} large"></i>
+            <div class="content"> Anbieter (${Icon.PROVIDER})</div>
         </div>
         <div class="item">
-            <i class="${Icons.VENDOR} large"></i>
-            <div class="content"> Lieferanten (${Icons.VENDOR})</div>
+            <i class="${Icon.VENDOR} large"></i>
+            <div class="content"> Lieferanten (${Icon.VENDOR})</div>
         </div>
         <div class="item">
-            <i class="${Icons.ORG} large"></i>
-            <div class="content"> Einrichtungen (${Icons.ORG})</div>
+            <i class="${Icon.ORG} large"></i>
+            <div class="content"> Einrichtungen (${Icon.ORG})</div>
         </div>
         <div class="item">
-            <i class="${Icons.PLATFORM} large"></i>
-            <div class="content"> Plattformen (${Icons.PLATFORM})</div>
+            <i class="${Icon.PLATFORM} large"></i>
+            <div class="content"> Plattformen (${Icon.PLATFORM})</div>
         </div>
         <div class="item">
-            <i class="${Icons.SUBSCRIPTION} large"></i>
-            <div class="content"> Lizenzen (${Icons.SUBSCRIPTION})</div>
+            <i class="${Icon.SUBSCRIPTION} large"></i>
+            <div class="content"> Lizenzen (${Icon.SUBSCRIPTION})</div>
         </div>
         <div class="item">
-            <i class="${Icons.LICENSE} large"></i>
-            <div class="content"> Verträge (${Icons.LICENSE})</div>
+            <i class="${Icon.LICENSE} large"></i>
+            <div class="content"> Verträge (${Icon.LICENSE})</div>
         </div>
         <div class="item">
-            <i class="${Icons.PACKAGE} large"></i>
-            <div class="content"> Pakete (${Icons.PACKAGE})</div>
+            <i class="${Icon.PACKAGE} large"></i>
+            <div class="content"> Pakete (${Icon.PACKAGE})</div>
         </div>
     </div>
 </div>
@@ -142,16 +161,16 @@
     <p class="ui header">Icons #3</p>
     <div class="ui list">
         <div class="item">
-            <i class="${Icons.SUBSCRIPTION_IS_MULTIYEAR} large"></i>
-            <div class="content"> Mehrjahreslaufzeit (${Icons.SUBSCRIPTION_IS_MULTIYEAR})</div>
+            <i class="${Icon.SUBSCRIPTION_IS_MULTIYEAR} large"></i>
+            <div class="content"> Mehrjahreslaufzeit (${Icon.SUBSCRIPTION_IS_MULTIYEAR})</div>
         </div>
         <div class="item">
-            <i class="${Icons.COSTS} large"></i>
-            <div class="content"> Kosten (${Icons.COSTS})</div>
+            <i class="${Icon.FNC.COST} large"></i>
+            <div class="content"> Kosten (${Icon.FNC.COST})</div>
         </div>
         <div class="item">
-            <i class="${Icons.COSTS_CONFIG} large"></i>
-            <div class="content"> Kosten (Konfiguration) (${Icons.COSTS_CONFIG})</div>
+            <i class="${Icon.FNC.COST_CONFIG} large"></i>
+            <div class="content"> Kosten (Konfiguration) (${Icon.FNC.COST_CONFIG})</div>
         </div>
         <div class="item">
             <i class="euro sign icon large"></i>
@@ -168,12 +187,12 @@
             <div class="content"> internal link</div>
         </div>
         <div class="item">
-            <i class="${Icons.LNK.FILTERED} large"></i>
+            <i class="${Icon.LNK.FILTERED} large"></i>
             <div class="content"> internal link (redirect to list view with filter)</div>
         </div>
         <div class="item">
-            <i class="${Icons.LNK.EXTERNAL} large"></i>
-            <div class="content"> external link (${Icons.LNK.EXTERNAL})</div>
+            <i class="${Icon.LNK.EXTERNAL} large"></i>
+            <div class="content"> external link (${Icon.LNK.EXTERNAL})</div>
         </div>
         <div class="item">
             <i class="icon large fake"></i>
@@ -205,19 +224,19 @@
     <div class="ui list">
         <div class="item">
             <div class="ui label">
-                <i class="${Icons.AUTH.INST_USER}"></i>
+                <i class="${Icon.AUTH.INST_USER}"></i>
                 <g:message code="cv.roles.INST_USER"/>
             </div>
         </div>
         <div class="item">
             <div class="ui label">
-                <i class="${Icons.AUTH.INST_EDITOR}"></i>
+                <i class="${Icon.AUTH.INST_EDITOR}"></i>
                 <g:message code="cv.roles.INST_EDITOR"/>
             </div>
         </div>
         <div class="item">
             <div class="ui label">
-                <i class="${Icons.AUTH.INST_ADM}"></i>
+                <i class="${Icon.AUTH.INST_ADM}"></i>
                 <g:message code="cv.roles.INST_ADM"/>
             </div>
         </div>
@@ -225,26 +244,26 @@
     <div class="ui list">
         <div class="item">
             <div class="ui label yellow">
-                <i class="${Icons.AUTH.ORG_INST_BASIC}" style="color:#FFFFFF;"></i>
+                <i class="${Icon.AUTH.ORG_INST_BASIC}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')}
             </div>
         </div>
         <div class="item">
             <div class="ui label yellow">
-                <i class="${Icons.AUTH.ORG_INST_PRO}" style="color:#FFFFFF;"></i>
+                <i class="${Icon.AUTH.ORG_INST_PRO}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')}
             </div>
         </div>
 
         <div class="item">
             <div class="ui label teal">
-                <i class="${Icons.AUTH.ORG_CONSORTIUM_BASIC}" style="color:#FFFFFF;"></i>
+                <i class="${Icon.AUTH.ORG_CONSORTIUM_BASIC}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')}
             </div>
         </div>
         <div class="item">
             <div class="ui label teal">
-                <i class="${Icons.AUTH.ORG_CONSORTIUM_PRO}" style="color:#FFFFFF;"></i>
+                <i class="${Icon.AUTH.ORG_CONSORTIUM_PRO}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')}
             </div>
         </div>
@@ -318,25 +337,25 @@
         <i class="icon large kiwi bird"></i> simple color helper
     </p>
     <p>
-        <i class="icon large stop red"></i> fomantic red <br/>
-        <i class="icon large stop sc_red"></i> fallback <br/>
+        <i class="${Icon.X.SQUARE} large red"></i> fomantic red <br/>
+        <i class="${Icon.X.SQUARE} large sc_red"></i> fallback <br/>
 
-        <i class="icon large stop blue"></i> fomantic blue <br/>
-        <i class="icon large stop sc_blue"></i> fallback <br/>
+        <i class="${Icon.X.SQUARE} large blue"></i> fomantic blue <br/>
+        <i class="${Icon.X.SQUARE} large sc_blue"></i> fallback <br/>
 
-        <i class="icon large stop yellow"></i> fomantic yellow <br/>
-        <i class="icon large stop sc_yellow"></i> fallback <br/>
+        <i class="${Icon.X.SQUARE} large yellow"></i> fomantic yellow <br/>
+        <i class="${Icon.X.SQUARE} large sc_yellow"></i> fallback <br/>
 
-        <i class="icon large stop green"></i> fomantic green <br/>
-        <i class="icon large stop olive"></i> fomantic olive <br/>
-        <i class="icon large stop sc_green"></i> fallback <br/>
+        <i class="${Icon.X.SQUARE} large green"></i> fomantic green <br/>
+        <i class="${Icon.X.SQUARE} large olive"></i> fomantic olive <br/>
+        <i class="${Icon.X.SQUARE} large sc_green"></i> fallback <br/>
 
-        <i class="icon large stop orange"></i> fomantic orange <br/>
-        <i class="icon large stop sc_orange"></i> fallback <br/>
+        <i class="${Icon.X.SQUARE} large orange"></i> fomantic orange <br/>
+        <i class="${Icon.X.SQUARE} large sc_orange"></i> fallback <br/>
 
-        <i class="icon large stop sc_grey"></i> fallback <br/>
+        <i class="${Icon.X.SQUARE} large sc_grey"></i> fallback <br/>
 
-        <i class="icon large stop sc_darkgrey"></i> fallback <br/>
+        <i class="${Icon.X.SQUARE} large sc_darkgrey"></i> fallback <br/>
     </p>
 
     <p>

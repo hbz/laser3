@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Icon" %>
 <g:if test="${person}">
     <div class="ui divided middle aligned selection list la-flex-list">
 
@@ -17,7 +17,7 @@
                     <button class="ui icon button blue la-modern-button" type="button" onclick="JSPC.app.editPerson(${person.id})"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                        <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                        <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                     </button>
                 </div>
             </g:if>
@@ -97,7 +97,7 @@
                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                        <i class="${Icons.CMD.UNLINK}"></i>
+                        <i class="${Icon.CMD.UNLINK}"></i>
                     </g:link>
                 </g:if>
             </div>

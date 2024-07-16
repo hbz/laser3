@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.Doc; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.Doc; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyConfigDocs.label')})" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -22,7 +22,7 @@
 <uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="${actionName}"/>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="${Icons.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+    <ui:linkWithIcon icon="${Icon.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
@@ -35,7 +35,7 @@
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
     <g:if test="${surveyConfig.subscription}">
-        <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
+        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
             ${surveyConfig.getConfigNameShort()}
         </g:link>
@@ -56,7 +56,7 @@
 
             <div class="four wide column">
                 <button type="button" class="ui icon button blue la-modern-button right floated" data-ui="modal"
-                        data-href="#modalCreateDocument"><i class="plus icon"></i></button>
+                        data-href="#modalCreateDocument"><i class="${Icon.CMD.ADD}"></i></button>
 %{--                <laser:render template="/templates/documents/modal"--}%
 %{--                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>--}%
             </div>
@@ -106,13 +106,13 @@
                             <g:if test="${docctx.isDocAFile()}">
 
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i
-                                        class="${Icons.CMD.DOWNLOAD}"></i></g:link>
+                                        class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                 <g:if test="${editable && !docctx.sharedFrom}">
                                     <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-ui="modal"
                                             href="#modalEditDocument_${docctx.id}"
                                             data-content="${message(code: "template.documents.edit")}"
                                             aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                        <i class="${Icons.CMD.EDIT}"></i></button>
+                                        <i class="${Icon.CMD.EDIT}"></i></button>
                                     <g:link controller="${controllerName}" action="deleteDocuments"
                                             class="ui icon negative button la-modern-button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
@@ -120,7 +120,7 @@
                                             params='[surveyConfigID: surveyConfig.id, id: surveyInfo.id, deleteId: "${docctx.id}", redirectAction: "${actionName}"]'
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="${Icons.CMD.DELETE}"></i>
+                                        <i class="${Icon.CMD.DELETE}"></i>
                                     </g:link>
                                 </g:if>
                             </g:if>

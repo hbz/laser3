@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyConfig;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig;" %>
 <br />
 
 <div class="four wide column">
@@ -97,7 +97,7 @@
                     data-confirm-term-how="unlink"
                     role="button"
                     aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                <i class="${Icons.CMD.UNLINK}"></i> ${message(code: 'default.button.unlink.label')}
+                <i class="${Icon.CMD.UNLINK}"></i> ${message(code: 'default.button.unlink.label')}
             </button>
         </g:if>
 

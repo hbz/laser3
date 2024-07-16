@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Icon" %>
 <h2 class="ui dividing header">Icons<a class="anchor" id="icons"></a></h2>
 <h4 class="ui header">Zusätzliche Icons</h4>
 <div class="html ui top attached segment example">
@@ -6,7 +6,7 @@
     <div class="ui doubling five column grid">
         <div class="column"><i aria-hidden="true" class="hand pointer outline slash icon"></i>hand pointer outline slash</div>
 
-        <div class="column"><i aria-hidden="true" class="${Icons.CMD.EDIT} slash"></i>write slash</div>
+        <div class="column"><i aria-hidden="true" class="${Icon.CMD.EDIT} slash"></i>write slash</div>
 
         <div class="column"><i aria-hidden="true" class="la-thumbtack slash icon"></i>la-thumbtack slash</div>
 
@@ -60,8 +60,8 @@
 <i class="la-object-extended bordered la-database icon"></i>
 <i class="la-object-extended bordered la-ebook icon"></i>
 <i class="la-object-extended bordered la-book icon"></i>
-<i aria-hidden="true" class="${Icons.WORKFLOW} la-object-extended bordered inverted brown"></i>
-<i aria-hidden="true" class="${Icons.SURVEY} la-object-extended bordered inverted pink"></i>
+<i aria-hidden="true" class="${Icon.WORKFLOW} la-object-extended bordered inverted brown"></i>
+<i aria-hidden="true" class="${Icon.SURVEY} la-object-extended bordered inverted pink"></i>
 <div class="html ui top attached segment example">
 
     <div class="ui doubling five column grid">
@@ -83,9 +83,9 @@
 
         <div class="column"><i class="la-object-extended bordered la-book icon"></i>la-object-extended bordered la-book icon</div>
 
-        <div class="column"><i aria-hidden="true" class="${Icons.WORKFLOW} la-object-extended bordered inverted brown"></i>${Icons.SURVEY} la-object-extended bordered inverted brown</div>
+        <div class="column"><i aria-hidden="true" class="${Icon.WORKFLOW} la-object-extended bordered inverted brown"></i>${Icon.SURVEY} la-object-extended bordered inverted brown</div>
 
-        <div class="column"><i aria-hidden="true" class="${Icons.SURVEY} la-object-extended bordered inverted pink"></i>${Icons.SURVEY} la-object-extended bordered inverted pink</div>
+        <div class="column"><i aria-hidden="true" class="${Icon.SURVEY} la-object-extended bordered inverted pink"></i>${Icon.SURVEY} la-object-extended bordered inverted pink</div>
 
     </div>
 

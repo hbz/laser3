@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.ui.Icon; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
     <g:if test="${institutionalView}">
         <g:set var="entityName" value="${message(code: 'org.institution.label')}"/>
@@ -33,7 +33,7 @@
 
 <g:if test="${missing.size() > 0}">
     <div class="ui icon message warning">
-        <i class="${Icons.UI.WARNING}"></i>
+        <i class="${Icon.UI.WARNING}"></i>
         <div class="content">
             <div class="header">${message(code: 'org.eInvoice.info.header')}</div>
             ${message(code: 'org.eInvoice.info.text')}
@@ -89,13 +89,13 @@
                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [orgInstance.altnames[0].name])}"
                                                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(orgInstance.altnames[0])}')">
-                                                    <i class="${Icons.CMD.DELETE}"></i>
+                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                 </ui:remoteLink>
                                             </g:if>
                                         </div>
                                         <div class="ui icon blue button la-show-button la-modern-button la-popup-tooltip la-delay"
                                              data-content="${message(code: 'org.altname.show')}">
-                                            <i class="ui angle double down icon"></i>
+                                            <i class="${Icon.CMD.SHOW_MORE}"></i>
                                         </div>
                                     </div>
                                     <div class="content">
@@ -110,7 +110,7 @@
                                                             <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                            data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                <i class="${Icons.CMD.DELETE}"></i>
+                                                                <i class="${Icon.CMD.DELETE}"></i>
                                                             </ui:remoteLink>
                                                         </div>
                                                     </div>
@@ -149,7 +149,7 @@
                                 <g:message code="org.legalPatronName.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.legalPatronName.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -161,7 +161,7 @@
                                 <g:message code="org.urlGov.label"/>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.urlGov.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -183,7 +183,7 @@
                                 <g:message code="org.linkResolverBase.label"/>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.linkResolverBase.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -195,7 +195,7 @@
                                 <g:message code="org.eInvoice.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.eInvoice.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -207,7 +207,7 @@
                                 <g:message code="org.eInvoicePortal.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.eInvoicePortal.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -282,7 +282,7 @@
                                                             action="unlinkOrg" params="[id: orgInstance.id, combo: row.id]"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                        <i class="${Icons.CMD.UNLINK}"></i>
+                                                        <i class="${Icon.CMD.UNLINK}"></i>
                                                     </g:link>
                                                 </span>
                                             </g:if>
@@ -338,7 +338,7 @@
                                 <g:message code="org.libraryType.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.libraryType.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -386,7 +386,7 @@
                                 <g:message code="org.libraryNetwork.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.libraryNetwork.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -399,7 +399,7 @@
                                 <g:message code="org.funderType.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.funderType.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -411,7 +411,7 @@
                                 <g:message code="org.funderHSK.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.funderHSK.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -423,7 +423,7 @@
                                 <g:message code="address.country.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.country.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -434,7 +434,7 @@
                                 <g:message code="org.region.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.region.expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -570,10 +570,10 @@
                                                             <div class="row">
                                                                 <div class="two wide column">
                                                                     <g:if test="${prs.isPublic}">
-                                                                        <i class="${Icons.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                        <i class="${Icon.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                                     </g:if>
                                                                     <g:else>
-                                                                        <i class="${Icons.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                        <i class="${Icon.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                     </g:else>
                                                                 </div>
                                                                 <div class="fourteen wide column">
@@ -610,10 +610,10 @@
                                                             <div class="row">
                                                                 <div class="two wide column">
                                                                     <g:if test="${prs.isPublic}">
-                                                                        <i class="${Icons.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                        <i class="${Icon.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                                     </g:if>
                                                                     <g:else>
-                                                                        <i class="${Icons.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                        <i class="${Icon.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                     </g:else>
                                                                 </div>
                                                                 <div class="fourteen wide column">
@@ -742,10 +742,10 @@
                                                             <div class="row">
                                                                 <div class="two wide column">
                                                                     <g:if test="${person.isPublic}">
-                                                                        <i class="${Icons.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                        <i class="${Icon.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                                     </g:if>
                                                                     <g:else>
-                                                                        <i class="${Icons.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                        <i class="${Icon.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                     </g:else>
                                                                 </div>
                                                                 <div class="fourteen wide column">
@@ -834,10 +834,10 @@
                                                                 <div class="row">
                                                                     <div class="two wide column">
                                                                         <g:if test="${person.isPublic}">
-                                                                            <i class="${Icons.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                            <i class="${Icon.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                                         </g:if>
                                                                         <g:else>
-                                                                            <i class="${Icons.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                            <i class="${Icon.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                         </g:else>
                                                                     </div>
                                                                     <div class="fourteen wide column">

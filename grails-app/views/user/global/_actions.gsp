@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection/>
 
 <g:if test="${actionName == 'list'}">%{-- /user/list --}%
@@ -9,7 +9,7 @@
 <g:elseif test="${actionName == 'edit'}">%{-- /user/edit --}%
     <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
         <ui:actionsDropdown>
-            <g:link class="item" action="delete" id="${params.id}"><i class="${Icons.CMD.DELETE}"></i> ${message(code:'deletion.user')}</g:link>
+            <g:link class="item" action="delete" id="${params.id}"><i class="${Icon.CMD.DELETE}"></i> ${message(code:'deletion.user')}</g:link>
         </ui:actionsDropdown>
     </g:if>
 </g:elseif>
@@ -48,14 +48,14 @@
     <g:if test="${controllerName == 'myInstitution'}">%{-- /myInstitution/editUser --}%
         <g:if test="${contextService.isInstAdm_or_ROLEADMIN()}">
             <ui:actionsDropdown>
-                <g:link class="item" action="deleteUser" params="${[uoid: params.uoid]}"><i class="${Icons.CMD.DELETE}"></i> ${message(code:'deletion.user')}</g:link>
+                <g:link class="item" action="deleteUser" params="${[uoid: params.uoid]}"><i class="${Icon.CMD.DELETE}"></i> ${message(code:'deletion.user')}</g:link>
             </ui:actionsDropdown>
         </g:if>
     </g:if>
     <g:elseif test="${controllerName == 'organisation'}">%{-- /organisation/editUser - TODO: isComboInstAdminOf --}%
         <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
             <ui:actionsDropdown>
-                <g:link class="item" action="deleteUser" params="${[id:params.id, uoid: params.uoid]}"><i class="${Icons.CMD.DELETE}"></i> ${message(code:'deletion.user')}</g:link>
+                <g:link class="item" action="deleteUser" params="${[id:params.id, uoid: params.uoid]}"><i class="${Icon.CMD.DELETE}"></i> ${message(code:'deletion.user')}</g:link>
             </ui:actionsDropdown>
         </g:if>
     </g:elseif>

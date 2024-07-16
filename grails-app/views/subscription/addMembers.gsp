@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore; de.laser.*;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants;de.laser.FormService;de.laser.utils.LocaleUtils" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.*;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants;de.laser.FormService;de.laser.utils.LocaleUtils" %>
 
 <laser:htmlStart text="${message(code: 'subscription.details.addMembers.label', args: memberType)}" serviceInjection="true"/>
 <%
@@ -78,7 +78,7 @@
                                         <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_all')}</label>
                                     </div>
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'myinst.separate_lics_all.expl')}">
-                                        <i class="${Icons.HELP_TOOLTIP} la-popup"></i>
+                                        <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
                                     </span>
                                 </div>
                                 <div class="field">
@@ -194,7 +194,7 @@
                                                                 </div>
                                                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                                       data-content="${message(code: 'myinst.separate_lics_all.expl')}">
-                                                                    <i class="${Icons.HELP_TOOLTIP} la-popup"></i>
+                                                                    <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
                                                                 </span>
                                                             </div>
 
@@ -375,7 +375,7 @@
                 <input type="file" name="selectSubMembersWithImport" accept="text/tab-separated-values,.txt,.csv"
                        style="display: none;">
                 <div class="ui icon button">
-                    <i class="${Icons.CMD.ATTACHMENT}"></i>
+                    <i class="${Icon.CMD.ATTACHMENT}"></i>
                 </div>
             </div>
         </div><!-- .message -->

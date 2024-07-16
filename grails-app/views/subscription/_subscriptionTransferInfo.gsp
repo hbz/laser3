@@ -1,5 +1,5 @@
 <!-- template: meta/subscriptionTransferInfo -->
-<%@ page import="de.laser.helper.Icons; de.laser.ExportClickMeService; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
 
 <laser:serviceInjection />
 
@@ -19,7 +19,7 @@
 
                 <th scope="col" rowspan="3" class="center aligned">
                     <span class="la-popup-tooltip la-delay" data-content="${message(code: 'survey.label')}" data-position="top center">
-                        <i class="${Icons.SURVEY} large"></i>
+                        <i class="${Icon.SURVEY} large"></i>
                     </span>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned">
@@ -46,7 +46,7 @@
                             data-content="${message(code: 'subscription.participantTransferWithSurvey.label')}"
                             data-position="top center">
                         <i class="large icons">
-                            <i class="${Icons.SURVEY}"></i>
+                            <i class="${Icon.SURVEY}"></i>
                             <i class="top right corner redo icon"></i>
                         </i>
                     </span>
@@ -55,7 +55,7 @@
                     <span class="la-popup-tooltip la-delay"
                        data-content="${message(code: 'renewalEvaluation.exportRenewal')}"
                        data-position="top center">
-                        <i class="${Icons.CMD.DOWNLOAD}"></i>
+                        <i class="${Icon.CMD.DOWNLOAD}"></i>
                     </span>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned"></th>
@@ -161,7 +161,7 @@
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                     class="ui icon blue tiny button la-modern-button"
                                                     target="_blank">
-                                                <i class="${Icons.CMD.DOWNLOAD} small"></i>
+                                                <i class="${Icon.CMD.DOWNLOAD} small"></i>
                                             </g:link>
                                         </div>
                                     </div>
@@ -238,7 +238,7 @@
                                 ${s.discountScale.name} : ${s.discountScale.discount}
                                 <g:if test="${s.discountScale.note}">
                                     <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${s.discountScale.note}">
-                                        <i class="${Icons.INFO_TOOLTIP} blue"></i>
+                                        <i class="${Icon.TOOLTIP.INFO} blue"></i>
                                     </span>
                                 </g:if>
                             </g:if>
@@ -285,7 +285,7 @@
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                     class="ui icon blue tiny button la-modern-button"
                                                     target="_blank">
-                                                <i class="${Icons.CMD.DOWNLOAD} small"></i>
+                                                <i class="${Icon.CMD.DOWNLOAD} small"></i>
                                             </g:link>
                                         </div>
                                     </div>
@@ -300,7 +300,7 @@
                         <g:if test="${countModificationToCostInformationAfterRenewalDoc > 0}">
                             <g:link class="ui label triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
                                     params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]">
-                                <i class="${Icons.CMD.DOWNLOAD}"></i> ${countModificationToCostInformationAfterRenewalDoc}
+                                <i class="${Icon.CMD.DOWNLOAD}"></i> ${countModificationToCostInformationAfterRenewalDoc}
                             </g:link>
                         </g:if>
                         <g:else>
@@ -328,7 +328,7 @@
                                 class="ui icon button blue la-modern-button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                            <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                         </g:link>
                     </td>
                 </tr>

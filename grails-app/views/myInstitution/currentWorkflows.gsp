@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.License; de.laser.Subscription; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.*; de.laser.RefdataCategory; de.laser.WorkflowService" %>
+<%@ page import="de.laser.ui.Icon; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.License; de.laser.Subscription; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.*; de.laser.RefdataCategory; de.laser.WorkflowService" %>
 
 <laser:htmlStart message="menu.my.workflows" serviceInjection="true"/>
 
@@ -131,11 +131,11 @@
                 <td class="center aligned">
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
 %{--                        <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + clist.id + ':' + WfChecklist.KEY + ':' + clist.id]}" />--}%
-%{--                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="${Icons.CMD.EDIT}"></i></button>--}%
+%{--                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="${Icon.CMD.EDIT}"></i></button>--}%
                     </g:if>
                     <g:elseif test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
 %{--                        <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + clist.id + ':' + WfChecklist.KEY + ':' + clist.id]}" />--}%
-%{--                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="${Icons.CMD.EDIT}"></i></button>--}%
+%{--                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="${Icon.CMD.EDIT}"></i></button>--}%
                     </g:elseif>
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                         <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
@@ -144,7 +144,7 @@
                                 controller="myInstitution" action="currentWorkflows" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}"]}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="${Icons.CMD.DELETE}"></i>
+                            <i class="${Icon.CMD.DELETE}"></i>
                         </g:link>
                     </g:if>
                 </td>

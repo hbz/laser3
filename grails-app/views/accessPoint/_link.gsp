@@ -1,10 +1,10 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Icon" %>
 <div class="ui card">
     <div class="content">
         <div class="header">
             <h3>${message(code: 'accessPoint.link.with.platform')}
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: 'accessPoint.platformHelp')}">
-                    <i class="${Icons.HELP_TOOLTIP} la-popup"></i>
+                    <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
                 </span>
             </h3>
         </div>
@@ -12,7 +12,7 @@
     <div class="content">
         <g:if test="${contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC(inContextOrg)}">
             <a class="ui icon right floated button" data-ui="modal" href="#linkPlatformModal">
-                <i class="plus icon"></i>
+                <i class="${Icon.CMD.ADD}"></i>
             </a>
 
             <ui:modal formID="linkPlatform" id="linkPlatformModal"
@@ -48,7 +48,7 @@
                 ${message(code: 'accessPoint.link.with.subscription')}
                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                       data-html='${message(code: "accessPoint.linkedSubscriptionHelp")}'>
-                    <i class="${Icons.HELP_TOOLTIP} la-popup"></i>
+                    <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
                 </span>
             </h3>
         </div>

@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.Icons; de.laser.Provider; de.laser.CustomerTypeService; de.laser.survey.SurveyPackageResult; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.Vendor; de.laser.convenience.Marker; de.laser.utils.DateUtils; de.laser.storage.RDConstants; de.laser.Package; de.laser.Org; de.laser.Platform; de.laser.RefdataValue" %>
+<%@page import="de.laser.ui.Icon; de.laser.Provider; de.laser.CustomerTypeService; de.laser.survey.SurveyPackageResult; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.Vendor; de.laser.convenience.Marker; de.laser.utils.DateUtils; de.laser.storage.RDConstants; de.laser.Package; de.laser.Org; de.laser.Platform; de.laser.RefdataValue" %>
 <laser:serviceInjection/>
 <table class="ui sortable celled la-js-responsive-table la-table table">
     <thead>
@@ -73,7 +73,7 @@
                             ${message(code: 'surveyResult.commentParticipant')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentParticipant.info')}">
-                                <i class="${Icons.HELP_TOOLTIP}"></i>
+                                <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
                         </g:else>
                     </th>
@@ -82,14 +82,14 @@
                             ${message(code: 'surveyResult.commentOnlyForOwner')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                                <i class="${Icons.HELP_TOOLTIP}"></i>
+                                <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
                         </g:if>
                         <g:else>
                             ${message(code: 'surveyResult.commentOnlyForParticipant')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
-                                <i class="${Icons.HELP_TOOLTIP}"></i>
+                                <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
                         </g:else>
                     </th>
@@ -293,7 +293,7 @@
                                     <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}" />
                                     ${curatoryGroup.name}
                                 %{--<g:link url="${editUrl.endsWith('/') ? editUrl : editUrl+'/'}resource/show/${curatoryGroup.curatoryGroup}" target="_blank">--}%
-                                %{--    <i class="${Icons.LNK.EXTERNAL}"></i>--}%
+                                %{--    <i class="${Icon.LNK.EXTERNAL}"></i>--}%
                                 %{--</g:link>--}%
                                     <br />
                                 </g:each>
@@ -306,7 +306,7 @@
                                 <g:message code="package.index.result.automaticUpdates"/>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${record.source.frequency}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </g:if>
                             <g:else>
@@ -396,7 +396,7 @@
                         <td class="center aligned">
                             <g:if test="${pkg && pkg.id in currentPackageIdSet}">
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.packages')}">
-                                    <i class="${Icons.MY_OBJECT} yellow"></i>
+                                    <i class="${Icon.UI.MY_OBJECT} yellow"></i>
                                 </span>
                             </g:if>
                         </td>

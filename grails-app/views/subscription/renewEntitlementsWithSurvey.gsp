@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.remote.ApiSource; de.laser.Org" %>
+<%@ page import="de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.remote.ApiSource; de.laser.Org" %>
 <laser:htmlStart message="subscription.details.renewEntitlements.label" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -193,7 +193,7 @@
 
             <h4 class="ui dividing header"><g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.label"/>
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'renewEntitlementsWithSurvey.issueEntitlementSelect.info')}">
-                <i class="${Icons.HELP_TOOLTIP}"></i>
+                <i class="${Icon.TOOLTIP.HELP}"></i>
             </span></h4>
 
             <div class="two fields">
@@ -216,7 +216,7 @@
                                style="display: none;">
 
                         <div class="ui icon button">
-                            <i class="${Icons.CMD.ATTACHMENT}"></i>
+                            <i class="${Icon.CMD.ATTACHMENT}"></i>
                         </div>
                     </div>
                 </div>
@@ -268,7 +268,7 @@
         <g:message code="renewEntitlementsWithSurvey.currentTitles"/>
             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                   data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitles.mouseover')}">
-                <i class="${Icons.HELP_TOOLTIP}"></i>
+                <i class="${Icon.TOOLTIP.HELP}"></i>
             </span>
         <div class="ui circular label">${countCurrentPermanentTitles}</div>
     </g:link>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.utils.DateUtils; de.laser.config.ConfigMapper; de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat; de.laser.PersonRole; de.laser.Contact" %>
+<%@ page import="de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.config.ConfigMapper; de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat; de.laser.PersonRole; de.laser.Contact" %>
 <laser:htmlStart message="package.details" serviceInjection="true"/>
 
 <ui:debugInfo>
@@ -209,7 +209,7 @@ making obsolete package/actions
                                         ${packageInstanceRecord.source.name}
                                         <div class="ui icon blue button la-modern-button ${buttonColor} la-popup-tooltip la-delay"
                                              data-content="${message(code: 'platform.details')}">
-                                            <i class="ui angle double down icon"></i>
+                                            <i class="${Icon.CMD.SHOW_MORE}"></i>
                                         </div>
                                     </div>
                                     <div class="ui fluid segment content">
@@ -265,7 +265,7 @@ making obsolete package/actions
                                                 <div class="right aligned column">
                                                     <div class="ui icon blue button la-modern-button ${buttonColor} la-popup-tooltip la-delay"
                                                          data-content="${message(code: 'platform.details')}">
-                                                        <i class="ui angle double down icon"></i>
+                                                        <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                     </div>
                                                 </div>
                                             </div>
@@ -486,7 +486,7 @@ making obsolete package/actions
                                                               institutions: statsWibid
                                                      ]"
                                                      title="${message(code: 'default.jumpToNatStat')}">
-                                        <i class="${Icons.STATS}"></i>
+                                        <i class="${Icon.STATS}"></i>
                                     </ui:statsLink>
                                 </dd>
                             </dl>
@@ -562,7 +562,7 @@ making obsolete package/actions
                                                                                         overwriteEditable   : false
                                                                                 ]}" />
                                                                             <%--<div class="js-copyTriggerParent">
-                                                                                <i class="${Icons.EMAIL} la-list-icon js-copyTrigger"></i>
+                                                                                <i class="${Icon.SYM.EMAIL} la-list-icon js-copyTrigger"></i>
                                                                                 <span class="la-popup-tooltip la-delay" data-position="right center " data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
                                                                                     <a class="la-break-all js-copyTopic" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
                                                                                 </span>

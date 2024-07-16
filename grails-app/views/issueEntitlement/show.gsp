@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.config.ConfigMapper; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.remote.ApiSource; de.laser.IssueEntitlement" %>
+<%@ page import="de.laser.ui.Icon; de.laser.config.ConfigMapper; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.remote.ApiSource; de.laser.IssueEntitlement" %>
 
 <g:set var="entityName" value="${message(code: 'issueEntitlement.label')}"/>
 <laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" />
@@ -65,7 +65,7 @@
                 <div class="ui list">
                     <g:each in="${participantPerpetualAccessToTitle}" var="pt">
                         <div class="item">
-                                <i class="${Icons.SUBSCRIPTION}"></i>
+                                <i class="${Icon.SUBSCRIPTION}"></i>
                                 <div class="content">
                                     <div class="header"
                                         <g:link controller="subscription"
@@ -128,12 +128,12 @@
 
                 <div class="la-icon-list">
                     <div class="item">
-                        <i class="grey ${Icons.DATE} la-popup-tooltip la-delay"
+                        <i class="grey ${Icon.SYM.DATE} la-popup-tooltip la-delay"
                            data-content="${message(code: 'subscription.details.access_start')}"></i>
                         <g:if test="${editable}">
                             <ui:xEditable owner="${issueEntitlementInstance}" type="date"
                                              field="accessStartDate"/>
-                            <i class="${Icons.HELP_TOOLTIP} la-popup-tooltip la-delay"
+                            <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip la-delay"
                                data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                         </g:if>
                         <g:else>
@@ -143,11 +143,11 @@
                     </div>
 
                     <div class="item">
-                        <i class="grey ${Icons.DATE} la-popup-tooltip la-delay"
+                        <i class="grey ${Icon.SYM.DATE} la-popup-tooltip la-delay"
                            data-content="${message(code: 'subscription.details.access_end')}"></i>
                         <g:if test="${editable}">
                             <ui:xEditable owner="${issueEntitlementInstance}" type="date" field="accessEndDate"/>
-                            <i class="${Icons.HELP_TOOLTIP} la-popup-tooltip la-delay"
+                            <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip la-delay"
                                data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                         </g:if>
                         <g:else>
@@ -232,7 +232,7 @@
                                               institutions: statsWibid
                                      ]"
                                      title="Springe zu Statistik im Nationalen Statistikserver">
-                        <i class="${Icons.STATS}"></i>
+                        <i class="${Icon.STATS}"></i>
                     </ui:statsLink>
                 </span>
 

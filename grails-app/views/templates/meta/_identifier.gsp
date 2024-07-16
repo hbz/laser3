@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.Platform; de.laser.AuditConfig; de.laser.FormService" %>
+<%@ page import="de.laser.ui.Icon; de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.Platform; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection />
 <!-- template: meta/identifier : editable: ${editable} -->
 <%
@@ -37,7 +37,7 @@
                     <div class="two fields">
                         <input name="owner" type="hidden" value="${genericOIDService.getOID(object)}" />
                         <div class="field">
-                            <label for="value">${message(code:'default.identifier.label')} <i id="idExpl" class="${Icons.HELP_TOOLTIP} la-delay la-popup-tooltip" data-content=""></i></label>
+                            <label for="value">${message(code:'default.identifier.label')} <i id="idExpl" class="${Icon.TOOLTIP.HELP} la-delay la-popup-tooltip" data-content=""></i></label>
                             <input name="value" id="value" type="text" class="ui" />
                         </div>
                         <div class="field">

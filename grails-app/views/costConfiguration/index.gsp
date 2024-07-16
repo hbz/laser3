@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue" %>
+<%@ page import="de.laser.ui.Icon; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue" %>
 <laser:htmlStart message="menu.institutions.costConfiguration" />
 
 <ui:breadcrumbs>
@@ -58,7 +58,7 @@
                                             params="${[ciec: ciec.id]}"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="${Icons.CMD.DELETE}"></i>
+                                        <i class="${Icon.CMD.DELETE}"></i>
                                     </g:link>
                                 </td>
                             </g:if>

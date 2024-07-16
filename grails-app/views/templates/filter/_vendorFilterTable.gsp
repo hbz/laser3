@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyVendorResult; de.laser.CustomerTypeService; de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.Vendor; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyVendorResult; de.laser.CustomerTypeService; de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.Vendor; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
 <laser:serviceInjection/>
 
 <table id="${tableID ?: ''}" class="ui sortable celled la-js-responsive-table la-table table ${fixedHeader ?: ''}">
@@ -48,7 +48,7 @@
                             ${message(code: 'surveyResult.commentParticipant')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentParticipant.info')}">
-                                <i class="${Icons.HELP_TOOLTIP}"></i>
+                                <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
                         </g:else>
                     </th>
@@ -57,14 +57,14 @@
                             ${message(code: 'surveyResult.commentOnlyForOwner')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                                <i class="${Icons.HELP_TOOLTIP}"></i>
+                                <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
                         </g:if>
                         <g:else>
                             ${message(code: 'surveyResult.commentOnlyForParticipant')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
-                                <i class="${Icons.HELP_TOOLTIP}"></i>
+                                <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
                         </g:else>
                     </th>
@@ -121,12 +121,12 @@
                     <td class="center aligned">
                         <g:if test="${vendor.status == RDStore.VENDOR_STATUS_CURRENT}">
                             <span class="la-popup-tooltip la-delay" data-position="top right">
-                                <i class="ui icon green circle"></i>
+                                <i class="${Icon.X.CIRCLE} green"></i>
                             </span>
                         </g:if>
                         <g:if test="${vendor.status == RDStore.VENDOR_STATUS_RETIRED}">
                             <span class="la-popup-tooltip la-delay" data-position="top right" <g:if test="${vendor.retirementDate}">data-content="<g:message code="org.retirementDate.label"/>: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${vendor.retirementDate}"/>"</g:if>>
-                                <i class="ui icon yellow circle"></i>
+                                <i class="${Icon.X.CIRCLE} yellow"></i>
                             </span>
                         </g:if>
                     </td>
@@ -176,7 +176,7 @@
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('isMyX')}">
                     <td class="center aligned">
                         <g:if test="${currentVendorIdList && (vendor.id in currentVendorIdList)}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.vendors')}"><i class="${Icons.MY_OBJECT} yellow"></i></span>
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.vendors')}"><i class="${Icon.UI.MY_OBJECT} yellow"></i></span>
                         </g:if>
                     </td>
                 </g:if>

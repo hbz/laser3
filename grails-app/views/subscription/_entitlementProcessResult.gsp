@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Icon" %>
 <g:if test="${success}">
     <ui:msg class="success" showIcon="true" message="subscription.details.addEntitlements.matchingSuccessful" args="[processCount, processRows, countSelectTipps, countNotSelectTipps, g.createLink(controller: 'subscription', action: 'index', params: [id: subscription.id])]"/>
 </g:if>
@@ -13,9 +13,9 @@
 </g:if>
 <g:if test="${errorKBART}">
     <ui:msg class="error" showIcon="true" message="subscription.details.addEntitlements.titleNotMatched" args="[errorCount]"/>
-    <g:link class="ui icon button la-modern-button" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icons.CMD.DOWNLOAD}"></i></g:link>
+    <g:link class="ui icon button la-modern-button" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 </g:if>
 <g:elseif test="${errMess}">
     <ui:msg class="error" showIcon="true" message="${errMess}" args="[errorCount]"/>
-    <g:link class="ui icon button la-modern-button" controller="package" action="downloadLargeFile" params="[token: token, fileformat: 'txt']"><i class="${Icons.CMD.DOWNLOAD}"></i></g:link>
+    <g:link class="ui icon button la-modern-button" controller="package" action="downloadLargeFile" params="[token: token, fileformat: 'txt']"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 </g:elseif>

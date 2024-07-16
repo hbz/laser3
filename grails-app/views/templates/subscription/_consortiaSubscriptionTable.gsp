@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.Subscription; de.laser.Org; de.laser.OrgRole; de.laser.FormService; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Links;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Icon; de.laser.Subscription; de.laser.Org; de.laser.OrgRole; de.laser.FormService; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Links;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
 <g:if test="${params.member}">
@@ -38,14 +38,14 @@
             <th class="center aligned la-smaller-table-head"  rowspan="2" >
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.previous.label')}">
-                    <i class="${Icons.LNK.PREV}"></i>
+                    <i class="${Icon.LNK.PREV}"></i>
                 </span>
             </th>
             <g:sortableColumn property="subT.name" params="${params}" title="${message(code:'default.subscription.label')}" class="la-smaller-table-head" />
             <th class="center aligned la-smaller-table-head" rowspan="2" >
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.next.label')}">
-                    <i class="${Icons.LNK.NEXT}"></i>
+                    <i class="${Icon.LNK.NEXT}"></i>
                 </span>
             </th>
             <g:if test="${'showPackages' in tableConfig}">
@@ -62,7 +62,7 @@
                 <th rowspan="2">${message(code:'financials.amountFinal')}</th>
                 <th rowspan="2" class="la-no-uppercase center aligned">
                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center">
-                        <i class="${Icons.COSTS_CONFIG}"></i>
+                        <i class="${Icon.FNC.COST_CONFIG}"></i>
                     </span>&nbsp;/&nbsp;
                     <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                         <i class="icon eye"></i>
@@ -125,31 +125,31 @@
                 %>
                 <td class="center aligned">
                     <g:if test="${navPrevSubMember}">
-                        <g:link controller="subscription" action="show" id="${navPrevSubMember}"><i class="${Icons.LNK.PREV}"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${navPrevSubMember}"><i class="${Icon.LNK.PREV}"></i></g:link>
                     </g:if>
                 </td>
                 <th scope="row" class="la-th-column">
                     <div class="la-flexbox la-main-object">
-                        <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
+                        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                         <g:link controller="subscription" action="show" id="${subCons.id}">${subCons.name}</g:link>
                     </div>
                     <g:each in="${linkedLicenses.get(subCons)}" var="linkedLicense">
                         <div class="la-flexbox la-minor-object">
-                            <i class="${Icons.LICENSE} la-list-icon"></i>
+                            <i class="${Icon.LICENSE} la-list-icon"></i>
                             <g:link controller="license" action="show" id="${linkedLicense.id}">${linkedLicense.reference}</g:link><br />
                         </div>
                     </g:each>
                 </th>
                 <td class="center aligned">
                     <g:if test="${navNextSubMember}">
-                        <g:link controller="subscription" action="show" id="${navNextSubMember}"><i class="${Icons.LNK.NEXT}"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${navNextSubMember}"><i class="${Icon.LNK.NEXT}"></i></g:link>
                     </g:if>
                 </td>
                 <g:if test="${'showPackages' in tableConfig}">
                     <td>
                         <g:each in="${subCons.packages}" var="subPkg">
                             <div class="la-flexbox">
-                                <i class="${Icons.PACKAGE} la-list-icon"></i>
+                                <i class="${Icon.PACKAGE} la-list-icon"></i>
                                 <g:link controller="package" action="show" id="${subPkg.pkg.id}">${subPkg.pkg.name}</g:link>
                             </div>
                         </g:each>
@@ -211,19 +211,19 @@
                     switch(elementSign) {
                         case RDStore.CIEC_POSITIVE:
                             dataTooltip = message(code:'financials.costItemConfiguration.positive')
-                            icon = '<i class="plus green circle icon"></i>'
+                            icon = '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
                             break
                         case RDStore.CIEC_NEGATIVE:
                             dataTooltip = message(code:'financials.costItemConfiguration.negative')
-                            icon = '<i class="minus red circle icon"></i>'
+                            icon = '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
                             break
                         case RDStore.CIEC_NEUTRAL:
                             dataTooltip = message(code:'financials.costItemConfiguration.neutral')
-                            icon = '<i class="circle yellow icon"></i>'
+                            icon = '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
                             break
                         default:
                             dataTooltip = message(code:'financials.costItemConfiguration.notSet')
-                            icon = '<i class="' + Icons.HELP_TOOLTIP + '"></i>'
+                            icon = '<i class="' + Icon.FNC.COST_NO + '"></i>'
                             break
                     }
                     %>
@@ -260,12 +260,12 @@
                     <td>
                         <g:if test="${subCons in linkedSubscriptions}">
                             <g:link class="ui icon negative button la-modern-button la-popup-tooltip" action="linkToSubscription" data-content="${message(code: 'default.button.unlink.label')}" params="${params+[id:license.id,unlink:true,subscription:subCons.id,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">
-                                <i class="ui minus icon"></i>
+                                <i class="${Icon.CMD.REMOVE}"></i>
                             </g:link>
                         </g:if>
                         <g:else>
                             <g:link class="ui icon positive button la-modern-button la-popup-tooltip" action="linkToSubscription" data-content="${message(code: 'default.button.link.label')}" params="${params+[id:license.id,subscription:subCons.id,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">
-                                <i class="ui plus icon"></i>
+                                <i class="${Icon.CMD.ADD}"></i>
                             </g:link>
                         </g:else>
                     </td>

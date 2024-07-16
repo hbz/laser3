@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.Icons; de.laser.storage.RDConstants; org.apache.commons.lang3.RandomStringUtils; de.laser.storage.RDStore; de.laser.*; de.laser.interfaces.CalculatedType" %>
+<%@page import="de.laser.ui.Icon; de.laser.storage.RDConstants; org.apache.commons.lang3.RandomStringUtils; de.laser.storage.RDStore; de.laser.*; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection/>
 <%
     boolean parentAtChild = false
@@ -147,16 +147,16 @@
                         %{--
                             <td>
                                 <g:if test="${docctx.org}">
-                                    <g:link controller="organisation" action="show" params="[id:docctx.org.id]"><i class="${Icons.ORG} icon small"></i> ${docctx.org.name}</g:link>
+                                    <g:link controller="organisation" action="show" params="[id:docctx.org.id]"><i class="${Icon.ORG} icon small"></i> ${docctx.org.name}</g:link>
                                 </g:if>
                                 <g:elseif test="${docctx.license}">
-                                    <g:link controller="license" action="show" params="[id:docctx.license.id]"><i class="${Icons.LICENSE} icon small"></i> ${docctx.license.reference}</g:link>
+                                    <g:link controller="license" action="show" params="[id:docctx.license.id]"><i class="${Icon.LICENSE} icon small"></i> ${docctx.license.reference}</g:link>
                                 </g:elseif>
                                 <g:elseif test="${docctx.subscription}">
                                     <g:link controller="subscription" action="show" params="[id:docctx.subscription.id]"><i class="folder open icon small"></i> ${docctx.subscription.name}</g:link>
                                 </g:elseif>
                                 <g:elseif test="${docctx.pkg}">
-                                    <g:link controller="package" action="show" params="[id:docctx.pkg.id]"><i class="${Icons.PACKAGE} icon small"></i> ${docctx.pkg.name}</g:link>
+                                    <g:link controller="package" action="show" params="[id:docctx.pkg.id]"><i class="${Icon.PACKAGE} icon small"></i> ${docctx.pkg.name}</g:link>
                                 </g:elseif>
                             </td>
                         --}%
@@ -188,10 +188,10 @@
                                         </g:else>
                                     </g:if>
                                 </g:if>
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icons.CMD.DOWNLOAD}"></i></g:link>
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                 %{-- todo: !docctx.sharedFrom --}%
                                 <g:if test="${userService.hasFormalAffiliation(user, docctx.owner.owner, 'INST_EDITOR') && inOwnerOrg && !docctx.sharedFrom}">
-                                    <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="${Icons.CMD.EDIT}"></i></button>
+                                    <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="${Icon.CMD.EDIT}"></i></button>
                                     <%
                                         securityWorkaroundList.add(docctx as DocContext)
                                     %>
@@ -206,7 +206,7 @@
                                             params='[instanceId:"${redirectId}", deleteId:"${docctx.id}", redirectAction:"${actionName}", redirectTab: "${params.tab}"]'
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="${Icons.CMD.DELETE}"></i>
+                                        <i class="${Icon.CMD.DELETE}"></i>
                                     </g:link>
                                 </g:if>
                             </g:if>

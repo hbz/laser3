@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:htmlStart text="Playground: New Icons" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -14,25 +14,25 @@
 </nav>
 
 <div class="ui basic segment">
-    <p class="ui header">de.laser.helper.Icons</p>
+    <p class="ui header">de.laser.ui.Icon</p>
     <div class="ui five cards">
-        <g:each in="${Icons.getDeclaredFields().findAll{ ! it.isSynthetic() }}" var="f" status="i">
+        <g:each in="${Icon.getDeclaredFields().findAll{ ! it.isSynthetic() }}" var="f" status="i">
             <div class="ui mini card" data-cat="${f.name.split('\\.').last().split('_').first()}">
                 <div class="content">
                     <div class="header">
-                        <i class="${Icons[f.name]} large"></i>
+                        <i class="${Icon[f.name]} large"></i>
                         ${f.name.split('\\.').last()}
                     </div>
-                    <div class="meta">${Icons[f.name]}</div>
+                    <div class="meta">${Icon[f.name]}</div>
                 </div>
             </div>
         </g:each>
     </div>
 </div>
 
-<g:each in="${Icons.getDeclaredClasses().findAll{ true }}" var="ic">
+<g:each in="${Icon.getDeclaredClasses().findAll{ true }}" var="ic">
     <div class="ui basic segment">
-        <p class="ui header">${ic.name}</p>
+        <p class="ui header">${ic.name.replace(Icon.name + '$', 'Icon.')}</p>
         <div class="ui five cards">
             <g:each in="${ic.getDeclaredFields().findAll{ ! it.isSynthetic() }}" var="f">
                 <div class="ui mini card" data-cat="${f.name.split('\\.').last().split('_').first()}">

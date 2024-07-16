@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.interfaces.CalculatedType" %>
+<%@ page import="de.laser.ui.Icon; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.interfaces.CalculatedType" %>
 <laser:htmlStart message="subscription.details.surveys.label" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
@@ -53,7 +53,7 @@
                         <g:if test="${surveyConfig.subSurveyUseForTransfer}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info2")}">
-                                <i class="grey ${Icons.SURVEY} la-list-icon"></i>
+                                <i class="grey ${Icon.SURVEY} la-list-icon"></i>
                             </span>
                         </g:if>
                         ${surveyConfig.getSurveyName()}
@@ -73,7 +73,7 @@
                     <g:if test="${surveyInfo.isMandatory}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
-                            <i class="${Icons.IMPORTANT_TOOLTIP2} yellow"></i>
+                            <i class="${Icon.TOOLTIP.SERIOUS} yellow"></i>
                         </span>
                     </g:if>
                 </td>
@@ -95,7 +95,7 @@
                                         class="ui icon button blue la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                 </g:link>
                             </span>
                     </g:if>
@@ -107,7 +107,7 @@
                                         class="ui icon button blue la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                 </g:link>
                             </span>
                     </g:else>

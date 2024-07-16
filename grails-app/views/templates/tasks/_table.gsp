@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDConstants" %>
 <laser:serviceInjection />
 
 <g:set var="institution" value="${contextService.getOrg()}"/>
@@ -79,7 +79,7 @@
                         <g:if test="${overwriteEditable}">
                             <a onclick="JSPC.app.editTask(${taskInstance.id});" class="ui icon button blue la-modern-button"
                                role="button" aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </a>
                         </g:if>
                         <g:if test="${(user == taskInstance.creator && userIsInstEditorOrRoleAdmin) || contextService.isInstAdm_or_ROLEADMIN()}">
@@ -89,7 +89,7 @@
                                     action="deleteTask" controller="ajax" params="[deleteId:taskInstance.id]"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.task')}">
-                                <i class="${Icons.CMD.DELETE}"></i>
+                                <i class="${Icon.CMD.DELETE}"></i>
                             </g:link>
                         </g:if>
                     </td>

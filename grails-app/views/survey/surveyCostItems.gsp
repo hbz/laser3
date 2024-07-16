@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.storage.RDConstants; de.laser.survey.SurveyConfig;de.laser.RefdataValue;de.laser.finance.CostItem;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.survey.SurveyConfig;de.laser.RefdataValue;de.laser.finance.CostItem;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyCostItems.label')})" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -22,7 +22,7 @@
 <uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="${actionName}"/>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="${Icons.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+    <ui:linkWithIcon icon="${Icon.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
@@ -35,7 +35,7 @@
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
     <g:if test="${surveyConfig.subscription}">
-        <i class="${Icons.SUBSCRIPTION} la-list-icon"></i>
+        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
             ${surveyConfig.getConfigNameShort()}
         </g:link>
@@ -72,7 +72,7 @@
                     <input type="file" name="costItemsFile" accept="text/tab-separated-values,.txt,.csv"
                            style="display: none;">
                     <div class="ui icon button">
-                        <i class="${Icons.CMD.ATTACHMENT}"></i>
+                        <i class="${Icon.CMD.ATTACHMENT}"></i>
                     </div>
                 </div>
             </div>
@@ -183,7 +183,7 @@
                                                     data-position="right center"
                                                     data-content="${message(code: 'surveyCostItems.bulkOption.info')}">
                             ${message(code: 'surveyCostItems.bulkOption.label')}
-                            <i class="${Icons.HELP_TOOLTIP}"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span></h3>
 
                         <div class="ui basic segment">
@@ -368,7 +368,7 @@
                         data-confirm-id="processSurveyCostItemsBulk"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="${Icons.CMD.DELETE}"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
+                    <i class="${Icon.CMD.DELETE}"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
                 </button>
 
             </g:form>

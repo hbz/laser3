@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.ui.Icon; de.laser.remote.ApiSource" %>
 <laser:serviceInjection />
 
 <g:if test="${tmplView == 'info' && wekbNews.counts.all > 0}">
@@ -6,14 +6,14 @@
     <div id="wekb-menu" style="margin:1em 0 2em 0">
         <div style="margin:1em 0;padding:0 1em; text-align:right">
             <div class="ui large labels">
-                <a href="#" id="wekb-menu-trigger" class="ui label"><i class="${Icons.LNK.WEKB} blue"></i>&nbsp;We:kb-News</a>
+                <a href="#" id="wekb-menu-trigger" class="ui label"><i class="${Icon.WEKB} blue"></i>&nbsp;We:kb-News</a>
                     <a href="#" class="ui icon label la-popup-tooltip la-delay wekb-flyout-trigger" data-preset="all,my"
                        data-content="${message(code: 'menu.my')}" data-position="top right">
-                            <i class="${Icons.MY_OBJECT} yellow"></i> ${wekbNews.counts.my}
+                            <i class="${Icon.UI.MY_OBJECT} yellow"></i> ${wekbNews.counts.my}
                     </a>
                     <a href="#" class="ui icon label la-popup-tooltip la-delay wekb-flyout-trigger" data-preset="all,marker"
                        data-content="${message(code: 'marker.WEKB_CHANGES')}" data-position="top right">
-                            <i class="${Icons.MARKER} purple"></i> ${wekbNews.counts.marker}
+                            <i class="${Icon.MARKER} purple"></i> ${wekbNews.counts.marker}
                     </a>
             </div>
         </div>
@@ -29,7 +29,7 @@
                         <div class="content">
                             <div class="header">
                                 <a href="#" class="wekb-flyout-trigger" data-preset="provider,all">${message(code: 'provider.label')}%{--: ${wekbNews.provider.count}--}%</a>
-                                <div class="right floated meta"><i class="${Icons.PROVIDER}"></i></div>
+                                <div class="right floated meta"><i class="${Icon.PROVIDER}"></i></div>
                             </div>
                         </div>
                         <div class="content">
@@ -37,8 +37,8 @@
                                     <a href="#" class="wekb-flyout-trigger" data-preset="provider,created">Neu: ${wekbNews.provider.created.size()}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="provider,updated">Geändert: ${wekbNews.provider.countUpdated}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="provider,deleted">Gelöscht: ${wekbNews.provider.deleted.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="provider,my"><i class="${Icons.MY_OBJECT}"></i>${wekbNews.provider.my.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="provider,marker"><i class="${Icons.MARKER}"></i>${wekbNews.provider.marker.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="provider,my"><i class="${Icon.UI.MY_OBJECT}"></i>${wekbNews.provider.my.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="provider,marker"><i class="${Icon.MARKER}"></i>${wekbNews.provider.marker.size()}</a> <br/>
                             </div>
                         </div>
                     </div>
@@ -49,7 +49,7 @@
                         <div class="content">
                             <div class="header">
                                 <a href="#" class="wekb-flyout-trigger" data-preset="vendor,all">${message(code: 'vendor.plural')}%{--: ${wekbNews.vendor.count}--}%</a>
-                                <div class="right floated meta"><i class="${Icons.VENDOR}"></i></div>
+                                <div class="right floated meta"><i class="${Icon.VENDOR}"></i></div>
                             </div>
                         </div>
                         <div class="content">
@@ -57,8 +57,8 @@
                                     <a href="#" class="wekb-flyout-trigger" data-preset="vendor,created">Neu: ${wekbNews.vendor.created.size()}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="vendor,updated">Geändert: ${wekbNews.vendor.countUpdated}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="vendor,deleted">Gelöscht: ${wekbNews.vendor.deleted.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="vendor,my"><i class="${Icons.MY_OBJECT}"></i>${wekbNews.vendor.my.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="vendor,marker"><i class="${Icons.MARKER}"></i>${wekbNews.vendor.marker.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="vendor,my"><i class="${Icon.UI.MY_OBJECT}"></i>${wekbNews.vendor.my.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="vendor,marker"><i class="${Icon.MARKER}"></i>${wekbNews.vendor.marker.size()}</a> <br/>
                             </div>
                         </div>
                     </div>
@@ -69,7 +69,7 @@
                         <div class="content">
                             <div class="header">
                                 <a href="#" class="wekb-flyout-trigger" data-preset="platform,all">${message(code: 'platform.plural')}%{--: ${wekbNews.platform.count}--}%</a>
-                                <div class="right floated meta"><i class="${Icons.PLATFORM}"></i></div>
+                                <div class="right floated meta"><i class="${Icon.PLATFORM}"></i></div>
                             </div>
                         </div>
                         <div class="content">
@@ -77,8 +77,8 @@
                                     <a href="#" class="wekb-flyout-trigger" data-preset="platform,created">Neu: ${wekbNews.platform.created.size()}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="platform,updated">Geändert: ${wekbNews.platform.countUpdated}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="platform,deleted">Gelöscht: ${wekbNews.platform.deleted.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,my"><i class="${Icons.MY_OBJECT}"></i>${wekbNews.platform.my.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,marker"><i class="${Icons.MARKER}"></i>${wekbNews.platform.marker.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,my"><i class="${Icon.UI.MY_OBJECT}"></i>${wekbNews.platform.my.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,marker"><i class="${Icon.MARKER}"></i>${wekbNews.platform.marker.size()}</a> <br/>
                             </div>
                         </div>
                     </div>
@@ -89,7 +89,7 @@
                         <div class="content">
                             <div class="header">
                                 <a href="#" class="wekb-flyout-trigger" data-preset="package,all">${message(code: 'package.plural')}%{--: ${wekbNews.package.count}--}%</a>
-                                <div class="right floated meta"><i class="${Icons.PACKAGE}"></i></div>
+                                <div class="right floated meta"><i class="${Icon.PACKAGE}"></i></div>
                             </div>
                         </div>
                         <div class="content">
@@ -97,8 +97,8 @@
                                     <a href="#" class="wekb-flyout-trigger" data-preset="package,created">Neu: ${wekbNews.package.created.size()}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="package,updated">Geändert: ${wekbNews.package.countUpdated}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="package,deleted">Gelöscht: ${wekbNews.package.deleted.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,my"><i class="${Icons.MY_OBJECT}"></i>${wekbNews.package.my.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,marker"><i class="${Icons.MARKER}"></i>${wekbNews.package.marker.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,my"><i class="${Icon.UI.MY_OBJECT}"></i>${wekbNews.package.my.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,marker"><i class="${Icon.MARKER}"></i>${wekbNews.package.marker.size()}</a> <br/>
                             </div>
                         </div>
                     </div>
@@ -211,10 +211,10 @@
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
 
         tmplConfig = [
-                ['provider', wekbNews.provider,   'provider.label',     "${Icons.PROVIDER}",    'menu.my.providers'],
-                ['vendor',   wekbNews.vendor,     'vendor.plural',      "${Icons.VENDOR}",      'menu.my.vendors'],
-                ['platform', wekbNews.platform,   'platform.plural',    "${Icons.PLATFORM}",    'menu.my.platforms'],
-                ['package',  wekbNews.package,    'package.plural',     "${Icons.PACKAGE}",     'menu.my.packages']
+                ['provider', wekbNews.provider,   'provider.label',     "${Icon.PROVIDER}",    'menu.my.providers'],
+                ['vendor',   wekbNews.vendor,     'vendor.plural',      "${Icon.VENDOR}",      'menu.my.vendors'],
+                ['platform', wekbNews.platform,   'platform.plural',    "${Icon.PLATFORM}",    'menu.my.platforms'],
+                ['package',  wekbNews.package,    'package.plural',     "${Icon.PACKAGE}",     'menu.my.packages']
         ]
     %>
 
@@ -223,7 +223,7 @@
             Änderungen der letzten <strong>${wekbNews.query.days}</strong> Tage: <strong>${wekbNews.counts.all}</strong> Datensätze.<br />
             Letzter Datenabgleich: <strong>${wekbNews.query.call}</strong>
             <span style="float:right">
-                <a href="${apiSource.baseUrl}" target="_blank"><i class="${Icons.LNK.WEKB} large"></i></a>
+                <a href="${apiSource.baseUrl}" target="_blank"><i class="${Icon.WEKB} large"></i></a>
             </span>
         </p>
         <div class="filter" style="margin:0 2em 0.5em; text-align:right;">
@@ -241,8 +241,8 @@
                 <span class="ui button" data-filter="created">Neue Objekte: ${wekbNews.counts.created}</span>
                 <span class="ui button" data-filter="updated">Geänderte Objekte: ${wekbNews.counts.updated}</span>
                 <span class="ui button" data-filter="deleted">Gelöschte Objekte: ${wekbNews.counts.deleted}</span>
-                <span class="ui button" data-filter="my"><i class="${Icons.MY_OBJECT}"></i> ${wekbNews.counts.my}</span>
-                <span class="ui button" data-filter="marker"><i class="${Icons.MARKER}"></i> ${wekbNews.counts.marker}</span>
+                <span class="ui button" data-filter="my"><i class="${Icon.UI.MY_OBJECT}"></i> ${wekbNews.counts.my}</span>
+                <span class="ui button" data-filter="marker"><i class="${Icon.MARKER}"></i> ${wekbNews.counts.marker}</span>
                 <span class="ui button la-popup-tooltip la-long-tooltip la-delay" data-filter="all"
                       data-content="Alle anzeigen: Neue Objekte, Geänderte Objekte, Gelöschte Objekte, Meine Objekte, Meine Beobachtungsliste">Alle</span>
             </div>

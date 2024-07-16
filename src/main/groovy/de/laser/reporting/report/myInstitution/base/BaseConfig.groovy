@@ -11,7 +11,7 @@ import de.laser.RefdataCategory
 import de.laser.Subscription
 import de.laser.SubscriptionsQueryService
 import de.laser.auth.Role
-import de.laser.helper.Icons
+import de.laser.ui.Icon
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.config.CostItemXCfg
@@ -587,16 +587,16 @@ class BaseConfig {
     }
 
     static String getIcon(String objKey) {
-        String icon = 'question'
+        String icon = Icon.SYM.UNKOWN
 
-             if (objKey == KEY_ISSUEENTITLEMENT){ icon = 'book' }
-        else if (objKey == KEY_LICENSE)         { icon = Icons.LICENSE }
-        else if (objKey == KEY_ORGANISATION)    { icon = Icons.ORG }
-        else if (objKey == KEY_PACKAGE)         { icon = Icons.PACKAGE }
-        else if (objKey == KEY_PLATFORM)        { icon = Icons.PLATFORM }
-        else if (objKey == KEY_PROVIDER)        { icon = Icons.PROVIDER }
-        else if (objKey == KEY_SUBSCRIPTION)    { icon = Icons.SUBSCRIPTION }
-        else if (objKey == KEY_VENDOR)          { icon = Icons.VENDOR }
+             if (objKey == KEY_ISSUEENTITLEMENT){ icon = 'book icon' }
+        else if (objKey == KEY_LICENSE)         { icon = Icon.LICENSE }
+        else if (objKey == KEY_ORGANISATION)    { icon = Icon.ORG }
+        else if (objKey == KEY_PACKAGE)         { icon = Icon.PACKAGE }
+        else if (objKey == KEY_PLATFORM)        { icon = Icon.PLATFORM }
+        else if (objKey == KEY_PROVIDER)        { icon = Icon.PROVIDER }
+        else if (objKey == KEY_SUBSCRIPTION)    { icon = Icon.SUBSCRIPTION }
+        else if (objKey == KEY_VENDOR)          { icon = Icon.VENDOR }
 
         icon
     }

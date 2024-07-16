@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.titles.TitleHistoryEventParticipant" %>
+<%@ page import="de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.titles.TitleHistoryEventParticipant" %>
 
 <laser:htmlStart text="${message(code:"tipp.show.label", args:[tipp.name, tipp.pkg.name, tipp.platform.name])}" />
 
@@ -159,7 +159,7 @@
 
         <div class="content">
             <div class="item">
-                <i class="grey ${Icons.PACKAGE} la-popup-tooltip la-delay"
+                <i class="grey ${Icon.PACKAGE} la-popup-tooltip la-delay"
                    data-content="${message(code: 'package.label')}"></i>
                 <g:link controller="package" action="show"
                         id="${tipp.pkg?.id}">${tipp.pkg?.name}</g:link>
@@ -191,7 +191,7 @@
                            class="ui icon tiny blue button la-popup-tooltip la-delay"
                            data-content="${message(code: 'wekb')}"
                            href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/packageContent/?id=' + tipp.pkg.gokbId : '#'}"
-                           target="_blank"><i class="${Icons.LNK.WEKB}"></i>
+                           target="_blank"><i class="${Icon.WEKB}"></i>
                         </a>
                     </g:if>
                 </g:each>
@@ -207,7 +207,7 @@
 
         <div class="content">
             <div class="item">
-                <i class="${Icons.PLATFORM} grey la-popup-tooltip la-delay"
+                <i class="${Icon.PLATFORM} grey la-popup-tooltip la-delay"
                    data-content="${message(code: 'platform.label')}"></i>
                 <g:if test="${tipp.platform.name}">
                     <g:link controller="platform" action="show" id="${tipp.platform.id}">
@@ -237,7 +237,7 @@
                     <a role="button" class="ui icon mini blue button la-modern-button la-popup-tooltip la-delay"
                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
                        href="${tipp.platform.primaryUrl?.contains('http') ? tipp.platform.primaryUrl : 'http://' + tipp.platform.primaryUrl}"
-                       target="_blank"><i class="${Icons.LNK.EXTERNAL}"></i></a>
+                       target="_blank"><i class="${Icon.LNK.EXTERNAL}"></i></a>
                 </g:if>
             </div>
             <br/>
@@ -248,7 +248,7 @@
                        class="ui icon tiny blue button la-popup-tooltip la-delay"
                        data-content="${message(code: 'wekb')}"
                        href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/platformContent/?id=' + tipp.platform.gokbId : '#'}"
-                       target="_blank"><i class="${Icons.LNK.WEKB}"></i>
+                       target="_blank"><i class="${Icon.WEKB}"></i>
                     </a>
                 </g:if>
             </g:each>

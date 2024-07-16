@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService;" %>
 
     <g:if test="${isRenewSub}">
         <g:set var="pageTitle" value="${message(code: 'subscription.details.renewals.renew_sub.label')}" />
@@ -64,9 +64,9 @@
                         <i class="flag outline icon"></i>   ${message(code:'subscription.hasPerpetualAccess.label')}
                         <i class="comment icon"></i>        ${message(code:'subscription.hasPublishComponent.label')} <br />
                         <i class="pizza slice icon"></i>    ${message(code:'subscription.holdingSelection.label')}
-                        <i class="${Icons.LICENSE}"></i>   ${message(code: 'license.label')}
-                        <i class="${Icons.ORG}"></i>       ${message(code: 'subscription.organisations.label')} <br />
-                        <i class="${Icons.ADDRESS_PUBLIC}"></i>   ${message(code: 'subscription.specificSubscriptionEditors')}
+                        <i class="${Icon.LICENSE}"></i>   ${message(code: 'license.label')}
+                        <i class="${Icon.ORG}"></i>       ${message(code: 'subscription.organisations.label')} <br />
+                        <i class="${Icon.ADDRESS_PUBLIC}"></i>   ${message(code: 'subscription.specificSubscriptionEditors')}
                         <i class="barcode icon"></i>        ${message(code: 'default.identifiers.label')}
                         <i class="exchange icon"></i>       ${message(code: 'subscription.linkedObjects')}
                     </div>
@@ -81,9 +81,9 @@
                     </div>
                     <div class="description">
                         <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
-                        <i class="${Icons.TASK}"></i>          ${message(code: 'menu.institutions.tasks')} <br />
-                        <i class="${Icons.DOCUMENT}"></i>      ${message(code: 'default.documents.label')} <br />
-                        <i class="${Icons.WORKFLOW}"></i>      ${message(code: 'workflow.plural')}
+                        <i class="${Icon.TASK}"></i>          ${message(code: 'menu.institutions.tasks')} <br />
+                        <i class="${Icon.DOCUMENT}"></i>      ${message(code: 'default.documents.label')} <br />
+                        <i class="${Icon.WORKFLOW}"></i>      ${message(code: 'workflow.plural')}
                     </div>
                 </div>
             </div>
@@ -97,7 +97,7 @@
                             </g:link>
                         </div>
                         <div class="description">
-                            <i class="${Icons.ORG}"></i> ${message(code: 'consortium.subscriber')}
+                            <i class="${Icon.ORG}"></i> ${message(code: 'consortium.subscriber')}
                         </div>
                     </div>
                 </div>
@@ -111,8 +111,8 @@
                         </g:link>
                     </div>
                     <div class="description">
-                        <i class="${Icons.PACKAGE}"></i>   ${message(code: 'package.label')} <br />
-                        <i class="book icon"></i>           ${message(code: 'title')} <br />
+                        <i class="${Icon.PACKAGE}"></i>    ${message(code: 'package.label')} <br />
+                        <i class="${Icon.TIPP}"></i>       ${message(code: 'title')} <br />
                         <i class="icon object group"></i>   ${message(code: 'subscription.details.ieGroups')}
                     </div>
                 </div>
@@ -126,7 +126,7 @@
                         </g:link>
                     </div>
                     <div class="description">
-                        <i class="tags icon"></i> ${message(code: 'properties')}
+                        <i class="${Icon.SYM.PROPERTIES}"></i> ${message(code: 'properties')}
                     </div>
                 </div>
             </div>
@@ -140,7 +140,7 @@
                         ${message(code: 'copyElementsIntoObject.general_data.label')}
                     </div>
                     <div class="description">
-                        <i class="${Icons.DATE}"></i>                       ${message(code: 'subscription.periodOfValidity.label')}
+                        <i class="${Icon.SYM.DATE}"></i>                   ${message(code: 'subscription.periodOfValidity.label')}
                         <i class="ellipsis vertical icon"></i>              ${message(code:'subscription.status.label')}
                         <i class="image outline icon"></i>                  ${message(code:'subscription.kind.label')} <br />
                         <i class="dolly icon"></i>                          ${message(code:'subscription.form.label')}
@@ -149,9 +149,9 @@
                         <i class="flag outline icon"></i>                   ${message(code:'subscription.hasPerpetualAccess.label')}
                         <i class="comment icon"></i>                        ${message(code:'subscription.hasPublishComponent.label')}
                         <i class="pizza slice icon"></i>                    ${message(code:'subscription.holdingSelection.label')}
-                        <i class="${Icons.LICENSE}"></i>                    ${message(code: 'license.label')} <br />
-                        <i class="${Icons.ORG}"></i>                        ${message(code: 'subscription.organisations.label')}
-                        <i class="${Icons.ADDRESS_PUBLIC}"></i>             ${message(code: 'subscription.specificSubscriptionEditors')} <br />
+                        <i class="${Icon.LICENSE}"></i>                    ${message(code: 'license.label')} <br />
+                        <i class="${Icon.ORG}"></i>                        ${message(code: 'subscription.organisations.label')}
+                        <i class="${Icon.ADDRESS_PUBLIC}"></i>             ${message(code: 'subscription.specificSubscriptionEditors')} <br />
                         <i class="barcode icon"></i>                        ${message(code: 'default.identifiers.label')}
                     </div>
                 </div>
@@ -164,9 +164,9 @@
                     </div>
                     <div class="description">
                         <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
-                        <i class="${Icons.TASK}"></i>          ${message(code: 'menu.institutions.tasks')} <br />
-                        <i class="${Icons.DOCUMENT}"></i>      ${message(code: 'default.documents.label')} <br />
-                        <i class="${Icons.WORKFLOW}"></i>      ${message(code: 'workflow.plural')}
+                        <i class="${Icon.TASK}"></i>          ${message(code: 'menu.institutions.tasks')} <br />
+                        <i class="${Icon.DOCUMENT}"></i>      ${message(code: 'default.documents.label')} <br />
+                        <i class="${Icon.WORKFLOW}"></i>      ${message(code: 'workflow.plural')}
                     </div>
                 </div>
             </ui:complexSubNavItem>
@@ -178,7 +178,7 @@
                             ${message(code: 'consortium.subscriber')}
                         </div>
                         <div class="description">
-                            <i class="${Icons.ORG}"></i> ${message(code: 'consortium.subscriber')}
+                            <i class="${Icon.ORG}"></i> ${message(code: 'consortium.subscriber')}
                         </div>
                     </div>
                 </ui:complexSubNavItem>
@@ -190,8 +190,8 @@
                         ${message(code: 'copyElementsIntoObject.inventory.label')}
                     </div>
                     <div class="description">
-                        <i class="${Icons.PACKAGE}"></i>   ${message(code: 'package.label')} <br />
-                        <i class="book icon"></i>           ${message(code: 'title')} <br />
+                        <i class="${Icon.PACKAGE}"></i>    ${message(code: 'package.label')} <br />
+                        <i class="${Icon.TIPP}"></i>       ${message(code: 'title')} <br />
                         <i class="icon object group"></i>   ${message(code: 'subscription.details.ieGroups')}
                     </div>
                 </div>
@@ -203,7 +203,7 @@
                         ${message(code: 'properties')}
                     </div>
                     <div class="description">
-                        <i class="tags icon"></i> ${message(code: 'properties')}
+                        <i class="${Icon.SYM.PROPERTIES}"></i> ${message(code: 'properties')}
                     </div>
                 </div>
             </ui:complexSubNavItem>

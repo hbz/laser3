@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Icon" %>
 <laser:htmlStart message="menu.admin.announcements" />
 
     <ui:breadcrumbs>
@@ -151,8 +151,8 @@ ${currentAnnouncement?.getCleanContent()}
                         <br />
                         <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'delete']" role="button" class="ui negative icon button la-modern-button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i aria-hidden="true" class="${Icons.CMD.DELETE}"></i></g:link>
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'edit']" role="button" class="ui icon button la-modern-button"><i aria-hidden="true" class="${Icons.CMD.EDIT}"></i></g:link>
+                            <i aria-hidden="true" class="${Icon.CMD.DELETE}"></i></g:link>
+                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'edit']" role="button" class="ui icon button la-modern-button"><i aria-hidden="true" class="${Icon.CMD.EDIT}"></i></g:link>
 
                         <g:if test="${mailDisabled}">
                             <button class="ui button" disabled="disabled">${message(code:'default.publish.label')}</button>

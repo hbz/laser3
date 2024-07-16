@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.config.ConfigMapper; de.laser.system.SystemSetting; de.laser.jobs.HeartbeatJob" %>
+<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.config.ConfigMapper; de.laser.system.SystemSetting; de.laser.jobs.HeartbeatJob" %>
 <laser:htmlStart message="menu.yoda.systemSettings" />
 
 <ui:breadcrumbs>
@@ -31,20 +31,20 @@
             </td>
             <td>
                 <g:if test="${configMailDisabled}">
-                    <i class="${Icons.GENERIC.SQUARE} red"></i>${message(code: 'default.deactivated.label')}
+                    <i class="${Icon.X.SQUARE} red"></i>${message(code: 'default.deactivated.label')}
                 </g:if>
                 <g:else>
-                    <i class="${Icons.GENERIC.SQUARE} green"></i> ${message(code: 'default.activated.label')}
+                    <i class="${Icon.X.SQUARE} green"></i> ${message(code: 'default.activated.label')}
                 </g:else>
             </td>
             <td>
                 <g:if test="${configMailDisabled}">
-                    <g:link controller="yoda" action="toggleMailSent" class="ui button positive right floated" params="${[mailSent: true]}">
+                    <g:link controller="yoda" action="toggleMailSent" class="${Button.POSITIVE} right floated" params="${[mailSent: true]}">
                         ${message(code: 'system.setting.activate', args:[message(code: 'system.config.mail.label')])}
                     </g:link>
                 </g:if>
                 <g:else>
-                    <g:link controller="yoda" action="toggleMailSent" class="ui button negative right floated" params="${[mailSent: false]}">
+                    <g:link controller="yoda" action="toggleMailSent" class="${Button.NEGATIVE} right floated" params="${[mailSent: false]}">
                         ${message(code: 'system.setting.deactivate', args:[message(code: 'system.config.mail.label')])}
                     </g:link>
                 </g:else>
@@ -56,20 +56,20 @@
             </td>
             <td>
                 <g:if test="${! maintenanceModeEnabled}">
-                    <i class="${Icons.GENERIC.SQUARE} red"></i> ${message(code: 'default.deactivated.label')}
+                    <i class="${Icon.X.SQUARE} red"></i> ${message(code: 'default.deactivated.label')}
                 </g:if>
                 <g:else>
-                    <i class="${Icons.GENERIC.SQUARE} green"></i> ${message(code: 'default.activated.label')}
+                    <i class="${Icon.X.SQUARE} green"></i> ${message(code: 'default.activated.label')}
                 </g:else>
             </td>
             <td>
                 <g:if test="${! maintenanceModeEnabled}">
-                    <g:link controller="yoda" action="toggleBoolSetting" class="ui button positive right floated" params="${[setting: 'MaintenanceMode']}">
+                    <g:link controller="yoda" action="toggleBoolSetting" class="${Button.POSITIVE} right floated" params="${[setting: 'MaintenanceMode']}">
                         ${message(code: 'system.setting.activate', args:[message(code: 'system.setting.maintenanceMode.label')])}
                     </g:link>
                 </g:if>
                 <g:else>
-                    <g:link controller="yoda" action="toggleBoolSetting" class="ui button negative right floated" params="${[setting: 'MaintenanceMode']}">
+                    <g:link controller="yoda" action="toggleBoolSetting" class="${Button.NEGATIVE} right floated" params="${[setting: 'MaintenanceMode']}">
                         ${message(code: 'system.setting.deactivate', args:[message(code: 'system.setting.maintenanceMode.label')])}
                     </g:link>
                 </g:else>
@@ -84,20 +84,20 @@
             </td>
             <td>
                 <g:if test="${! systemInsightEnabled}">
-                    <i class="${Icons.GENERIC.SQUARE} red"></i> ${message(code: 'default.deactivated.label')}
+                    <i class="${Icon.X.SQUARE} red"></i> ${message(code: 'default.deactivated.label')}
                 </g:if>
                 <g:else>
-                    <i class="${Icons.GENERIC.SQUARE} green"></i> ${message(code: 'default.activated.label')}
+                    <i class="${Icon.X.SQUARE} green"></i> ${message(code: 'default.activated.label')}
                 </g:else>
             </td>
             <td>
                 <g:if test="${! systemInsightEnabled}">
-                    <g:link controller="yoda" action="toggleBoolSetting" class="ui button positive right floated" params="${[setting: 'SystemInsight']}">
+                    <g:link controller="yoda" action="toggleBoolSetting" class="${Button.POSITIVE} right floated" params="${[setting: 'SystemInsight']}">
                         ${message(code: 'system.setting.activate', args:[message(code: 'system.setting.systemInsight.label')])}
                     </g:link>
                 </g:if>
                 <g:else>
-                    <g:link controller="yoda" action="toggleBoolSetting" class="ui button negative right floated" params="${[setting: 'SystemInsight']}">
+                    <g:link controller="yoda" action="toggleBoolSetting" class="${Button.NEGATIVE} right floated" params="${[setting: 'SystemInsight']}">
                         ${message(code: 'system.setting.deactivate', args:[message(code: 'system.setting.systemInsight.label')])}
                     </g:link>
                 </g:else>

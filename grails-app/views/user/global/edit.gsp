@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.auth.UserRole;de.laser.Org;de.laser.auth.Role;de.laser.utils.DateUtils;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.auth.UserRole;de.laser.Org;de.laser.auth.Role;de.laser.utils.DateUtils;" %>
 <laser:htmlStart message="user.edit.label" serviceInjection="true"/>
 
         <laser:render template="/user/global/breadcrumb" model="${[ params:params ]}"/>
@@ -92,7 +92,7 @@
                     <div class="ui card">
                         <div class="ui content">
                             <h2 class="ui dividing orange header">
-                                <i class="${Icons.AUTH.ROLE_ADMIN} small"></i>
+                                <i class="${Icon.AUTH.ROLE_ADMIN} small"></i>
                                 <span class="content">${message(code: 'default.adminsOnly.label')}</span>
                             </h2>
                             <div class="ui form">
@@ -100,7 +100,7 @@
 %{--                                    <label>--}%
 %{--                                        ${message(code:'user.enabled.label')}--}%
 %{--                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.disabled')}">--}%
-%{--                                            <i class="${Icons.HELP_TOOLTIP}"></i>--}%
+%{--                                            <i class="${Icon.TOOLTIP.HELP}"></i>--}%
 %{--                                        </span>--}%
 %{--                                    </label>--}%
 %{--                                    <ui:xEditableBoolean owner="${user}" field="enabled" overwriteEditable="true"/>--}%
@@ -109,7 +109,7 @@
                                     <label>
                                         ${message(code:'user.accountExpired.label')}
                                         <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.expired')}">
-                                            <i class="${Icons.HELP_TOOLTIP}"></i>
+                                            <i class="${Icon.TOOLTIP.HELP}"></i>
                                         </span>
                                     </label>
                                     <ui:xEditableBoolean owner="${user}" field="accountExpired" overwriteEditable="true"/>
@@ -118,7 +118,7 @@
                                     <label>
                                         ${message(code:'user.accountLocked.label')}
                                         <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.locked')}">
-                                            <i class="${Icons.HELP_TOOLTIP}"></i>
+                                            <i class="${Icon.TOOLTIP.HELP}"></i>
                                         </span>
                                     </label>
                                     <ui:xEditableBoolean owner="${user}" field="accountLocked" overwriteEditable="true"/>
@@ -127,7 +127,7 @@
 %{--                                    <label>--}%
 %{--                                        ${message(code:'user.passwordExpired.label')}--}%
 %{--                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.passwordExpired')}">--}%
-%{--                                            <i class="${Icons.HELP_TOOLTIP}"></i>--}%
+%{--                                            <i class="${Icon.TOOLTIP.HELP}"></i>--}%
 %{--                                        </span>--}%
 %{--                                    </label>--}%
 %{--                                    <ui:xEditableBoolean owner="${user}" field="passwordExpired" overwriteEditable="true"/>--}%
@@ -241,7 +241,7 @@
                                                                 data-confirm-tokenMsg="${message(code:'confirm.dialog.unlink.user.role')}"
                                                                 data-confirm-term-how="unlink"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="${Icons.CMD.DELETE}"></i>
+                                                            <i class="${Icon.CMD.DELETE}"></i>
                                                         </g:link>
                                                     </g:if>
                                                 </td>

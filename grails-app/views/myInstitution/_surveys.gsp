@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.OrgRole" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.OrgRole" %>
 <laser:serviceInjection/>
 <h3 class="ui header"><g:message code="surveys.active"/></h3>
 
@@ -33,7 +33,7 @@
                         &nbsp;
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
-                            <i class="${Icons.IMPORTANT_TOOLTIP2} yellow"></i>
+                            <i class="${Icon.TOOLTIP.SERIOUS} yellow"></i>
                         </span>
                     </g:if>
 
@@ -56,7 +56,7 @@
                                             <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                                     params="[surveyConfigID: surveyConfig.id]"
                                                     class="ui icon blue button la-modern-button">
-                                                <i class="${Icons.SURVEY}"></i>
+                                                <i class="${Icon.SURVEY}"></i>
                                             </g:link>
                                     </span>
                             </span>

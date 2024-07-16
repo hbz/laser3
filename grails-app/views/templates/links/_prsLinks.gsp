@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Icon" %>
 
 <table class="ui celled la-js-responsive-table la-table table">
     <thead>
@@ -15,7 +15,7 @@
         <tr>
             <g:if test="${pr.org}">
                 <td>
-                    <g:if test="${! pr.prs.isPublic}"><i class="${Icons.ADDRESS_PRIVATE}"></i> </g:if>
+                    <g:if test="${! pr.prs.isPublic}"><i class="${Icon.ADDRESS_PRIVATE}"></i> </g:if>
                     ${pr.prs}
                 </td>
                 <g:if test="${tmplShowFunction}">
@@ -38,7 +38,7 @@
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                                 data-confirm-term-how="unlink"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="${Icons.CMD.DELETE}"></i></g:link>
+                            <i class="${Icon.CMD.DELETE}"></i></g:link>
                     </g:if>
                 </td>
             </g:if>

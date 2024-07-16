@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.GlobalSourceSyncService; de.laser.FormService" %>
+<%@ page import="de.laser.ui.Icon; de.laser.GlobalSourceSyncService; de.laser.FormService" %>
 <laser:serviceInjection />
 
 <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
@@ -110,7 +110,7 @@
 
         <div class="item" role="menuitem" aria-haspopup="true">
             <div class="title">
-                <i class="${Icons.EMAIL}"></i> ${message(code:'menu.yoda.mail.label')} <i class="dropdown icon"></i>
+                <i class="${Icon.SYM.EMAIL}"></i> ${message(code:'menu.yoda.mail.label')} <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="mailAsync" action="index">${message(code:'menu.yoda.mailAysnc.list')}</ui:link>

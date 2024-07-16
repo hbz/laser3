@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.utils.DateUtils; java.text.SimpleDateFormat; java.text.DateFormat; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.SubscriptionPackage; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.Platform; de.laser.SubscriptionPackage; de.laser.Org" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.utils.DateUtils; java.text.SimpleDateFormat; java.text.DateFormat; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.SubscriptionPackage; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.Platform; de.laser.SubscriptionPackage; de.laser.Org" %>
 <laser:serviceInjection/>
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
@@ -10,9 +10,9 @@
                 <div class="item">
                     <div class="title">
                         <div
-                                class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated "
+                                class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated"
                                 data-content="<g:message code="survey.subscription.propertiesChange.show"/>">
-                            <i class="ui angle double down icon"></i>
+                            <i class="${Icon.CMD.SHOW_MORE}"></i>
                         </div>
                         <laser:script file="${this.getGroovyPageFileName()}">
                             $('.js-propertiesCompareInfo-accordion')
@@ -70,7 +70,7 @@
                     <div class="title">
                         <div
                                 class="ui button icon blue la-modern-button la-delay right floated">
-                            <i class="ui angle double down icon"></i>
+                            <i class="${Icon.CMD.SHOW_MORE}"></i>
                         </div>
                         <laser:script file="${this.getGroovyPageFileName()}">
                             $('.js-subscription-info-accordion')
@@ -248,7 +248,7 @@
                                                         <div id="derived-license-properties-toggle${link.id}"
                                                              class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                                              data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
-                                                            <i class="ui angle double down icon"></i>
+                                                            <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                         </div>
                                                         <laser:script file="${this.getGroovyPageFileName()}">
                                                             $("#derived-license-properties-toggle${link.id}").on('click', function() {
@@ -300,10 +300,10 @@
                     <div class="item">
                         <div class="title">
                             <div class="ui button icon blue la-modern-button la-delay right floated ">
-                                <i class="ui angle double down icon"></i>
+                                <i class="${Icon.CMD.SHOW_MORE}"></i>
                             </div>
 
-                            <i aria-hidden="true" class="${Icons.STATS} circular green inverted"></i>
+                            <i aria-hidden="true" class="${Icon.STATS} circular green inverted"></i>
 
                             <h2 class="ui icon header la-clear-before la-noMargin-top">
                                 <g:link controller="subscription" action="stats" target="_blank"

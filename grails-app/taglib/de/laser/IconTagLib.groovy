@@ -1,7 +1,8 @@
 package de.laser
 
+import de.laser.annotations.FixedFeature_DoNotModify
 import de.laser.auth.Role
-import de.laser.helper.Icons
+import de.laser.ui.Icon
 import de.laser.storage.RDStore
 
 class IconTagLib {
@@ -20,17 +21,17 @@ class IconTagLib {
         if (attrs.type) {
         switch (attrs.type.toLowerCase()) {
             case 'addressbook':
-                icon = Icons.ADDRESS_PUBLIC + ' bordered inverted teal la-object-extended'
+                icon = Icon.ADDRESS_PUBLIC + ' bordered inverted teal la-object-extended'
                 break
             case 'admin':
-                icon = Icons.AUTH.ROLE_ADMIN + ' la-object'
+                icon = Icon.AUTH.ROLE_ADMIN + ' la-object'
                 break
             case 'affiliation':
                 Role fr = contextService.getUser().formalRole
                 if (fr) {
-                    if (fr.authority == Role.INST_USER)   { icon = Icons.AUTH.INST_USER + ' bordered inverted grey la-object-extended' }
-                    if (fr.authority == Role.INST_EDITOR) { icon = Icons.AUTH.INST_EDITOR + ' bordered inverted grey la-object-extended' }
-                    if (fr.authority == Role.INST_ADM)    { icon = Icons.AUTH.INST_ADM + ' bordered inverted grey la-object-extended' }
+                    if (fr.authority == Role.INST_USER)   { icon = Icon.AUTH.INST_USER + ' bordered inverted grey la-object-extended' }
+                    if (fr.authority == Role.INST_EDITOR) { icon = Icon.AUTH.INST_EDITOR + ' bordered inverted grey la-object-extended' }
+                    if (fr.authority == Role.INST_ADM)    { icon = Icon.AUTH.INST_ADM + ' bordered inverted grey la-object-extended' }
                 } else {
                     icon = 'icon user slash bordered inverted grey la-object-extended'
                 }
@@ -43,23 +44,23 @@ class IconTagLib {
                 icon = 'icon bordered la-object-ebook'
                 break
             case 'file':
-                icon = Icons.DOCUMENT + ' bordered inverted blue la-object-extended'
+                icon = Icon.DOCUMENT + ' bordered inverted blue la-object-extended'
                 break
             case 'finance':
                 icon = 'icon euro sign bordered inverted teal la-object-extended'
                 break
             case 'help':
-                icon = Icons.HELP + ' bordered inverted grey la-object-extended'
+                icon = Icon.UI.HELP + ' bordered inverted grey la-object-extended'
                 break
             case 'journal':
             case 'serial':
                 icon = 'icon bordered la-object-journal'
                 break
             case 'gasco':
-                icon = Icons.GASCO +' bordered inverted grey la-object-extended'
+                icon = Icon.GASCO +' bordered inverted grey la-object-extended'
                 break
             case 'marker':
-                icon = Icons.MARKER + ' bordered inverted purple la-object-extended'
+                icon = Icon.MARKER + ' bordered inverted purple la-object-extended'
                 break
             case 'package':
                 icon = 'icon bordered la-package la-object-extended'
@@ -68,25 +69,25 @@ class IconTagLib {
                 icon = 'icon search'
                 break
             case 'reporting':
-                icon = Icons.REPORTING + ' bordered inverted teal la-object-extended'
+                icon = Icon.REPORTING + ' bordered inverted teal la-object-extended'
                 break
             case 'subscription':
-                icon = Icons.SUBSCRIPTION + ' bordered inverted orange la-object-extended'
+                icon = Icon.SUBSCRIPTION + ' bordered inverted orange la-object-extended'
                 break
             case 'survey':
-                icon = Icons.SURVEY + ' bordered inverted pink la-object-extended'
+                icon = Icon.SURVEY + ' bordered inverted pink la-object-extended'
                 break
             case 'task':
-                icon = Icons.TASK + ' bordered inverted green la-object-extended'
+                icon = Icon.TASK + ' bordered inverted green la-object-extended'
                 break
             case 'user':
-                icon = Icons.AUTH.ROLE_USER + ' bordered inverted grey la-object-extended'
+                icon = Icon.AUTH.ROLE_USER + ' bordered inverted grey la-object-extended'
                 break
             case 'workflow':
-                icon = Icons.WORKFLOW + ' bordered inverted brown la-object-extended'
+                icon = Icon.WORKFLOW + ' bordered inverted brown la-object-extended'
                 break
             case 'yoda':
-                icon = Icons.AUTH.ROLE_YODA + ' la-object'
+                icon = Icon.AUTH.ROLE_YODA + ' la-object'
                 break
         }
         }
@@ -132,19 +133,19 @@ class IconTagLib {
                 icon = 'pizza slice'
                 break
             case 'startDate':
-                icon = Icons.DATE
+                icon = Icon.SYM.DATE
                 break
             case 'endDate':
-                icon = Icons.DATE
+                icon = Icon.SYM.DATE
                 break
             case 'type':
                 icon = 'image outline'
                 break
             case 'manualCancellationDate':
-                icon = Icons.DATE
+                icon = Icon.SYM.DATE
                 break
             case 'referenceYear':
-                icon = Icons.DATE
+                icon = Icon.SYM.DATE
                 break
             case 'licenseUrl':
                 icon = 'cloud'
@@ -212,16 +213,16 @@ class IconTagLib {
     def contactIcon = { attrs, body ->
 
         String msg = message(code: 'contact.icon.label.contactinfo')
-        String icon = Icons.ADDRESS_PUBLIC + ' la-list-icon'
+        String icon = Icon.ADDRESS_PUBLIC + ' la-list-icon'
 
         switch (attrs.type) {
             case [ 'E-Mail', 'Mail' ]: // 'Mail' -> Deprecated
                 msg = message(code: 'contact.icon.label.email')
-                icon = Icons.EMAIL + ' la-list-icon la-js-copyTriggerIcon'
+                icon = Icon.SYM.EMAIL + ' la-list-icon la-js-copyTriggerIcon'
                 break
             case 'Fax':
                 msg = message(code: 'contact.icon.label.fax')
-                icon = 'icon tty la-list-icon'
+                icon = Icon.SYM.FAX + ' la-list-icon'
                 break
             case 'Phone':
                 msg = message(code: 'contact.icon.label.phone')
@@ -229,7 +230,7 @@ class IconTagLib {
                 break
             case 'Url':
                 msg = message(code: 'contact.icon.label.url')
-                icon = 'icon globe la-list-icon'
+                icon = Icon.SYM.URL + ' la-list-icon'
                 break
         }
 
@@ -346,7 +347,7 @@ class IconTagLib {
 
         out << '<span class="la-long-tooltip la-popup-tooltip la-delay"'
         out << ' data-position="bottom center" data-content="' + tt +'">'
-        out << '<i class="' + Icons.SUBSCRIPTION_IS_MULTIYEAR + ' ' + color + '"></i>'
+        out << '<i class="' + Icon.SUBSCRIPTION_IS_MULTIYEAR + ' ' + color + '"></i>'
         out << '</span>'
     }
 
@@ -354,7 +355,7 @@ class IconTagLib {
         String tooltip = attrs.type ? message(code: 'marker.' + attrs.type ) : message(code: 'marker.label')
 
         out << '<span class="la-popup-tooltip la-delay" data-content="' + tooltip + '">'
-        out << '<i class="' + Icons.MARKER + (attrs.color ? ' ' + attrs.color : '') + '"></i>'
+        out << '<i class="' + Icon.MARKER + (attrs.color ? ' ' + attrs.color : '') + '"></i>'
         out << '</span>'
     }
 
@@ -377,22 +378,23 @@ class IconTagLib {
 
         out << '<span class="la-long-tooltip la-popup-tooltip la-delay"'
         out << ' data-position="bottom center" data-content="' + tt +'">'
-        out << '<i class="' + Icons.STATS + ' ' + color + '"></i>'
+        out << '<i class="' + Icon.STATS + ' ' + color + '"></i>'
         out << '</span>'
     }
 
+    @FixedFeature_DoNotModify
     def booleanIcon = { attrs, body ->
-        String icon = 'question circle yellow'
+        String icon = Icon.SYM.UNKOWN
 
         if (attrs.value === true) {
-            icon = 'check circle green'
+            icon = Icon.X.CIRCLE + ' green'
         }
         else if(attrs.value === false) {
-            icon = 'minus circle red'
+            icon = Icon.X.CIRCLE + ' red'
         }
         else if (attrs.value === null) {
-            'minus circle orange'
+            icon = Icon.X.CIRCLE + ' grey'
         }
-        out << '<i class="icon ' + icon + '"></i>'
+        out << '<i class="' + icon + '"></i>'
     }
 }

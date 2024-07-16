@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue;de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue;de.laser.storage.RDConstants" %>
 <laser:htmlStart message="menu.public.all_titles" />
 
     <ui:breadcrumbs>

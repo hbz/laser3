@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.helper.Params; de.laser.License; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.Person; de.laser.Subscription" %>
+<%@ page import="de.laser.ui.Icon; de.laser.helper.Params; de.laser.License; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.Person; de.laser.Subscription" %>
 
 <laser:htmlStart text="${message(code:'license.details.incoming.childs',args:[message(code:'consortium.subscriber')])}" serviceInjection="true" />
 
@@ -83,7 +83,7 @@
             <th class="la-no-uppercase">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.previous.label')}">
-                    <i class="${Icons.LNK.PREV}"></i>
+                    <i class="${Icon.LNK.PREV}"></i>
                 </span>
             </th>
             <th>${message(code:'default.startDate.label.shy')}</th>
@@ -91,7 +91,7 @@
             <th class="la-no-uppercase">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.next.label')}">
-                    <i class="${Icons.LNK.NEXT}"></i>
+                    <i class="${Icon.LNK.NEXT}"></i>
                 </span>
             </th>
             <th>${message(code: 'license')}</th>
@@ -112,21 +112,21 @@
                 <td>${lic.reference}</td>
                 <td class="center aligned">
                     <g:if test="${navPrevLicense}">
-                        <g:link controller="license" action="show" id="${navPrevLicense.id}"><i class="${Icons.LNK.PREV}"></i></g:link>
+                        <g:link controller="license" action="show" id="${navPrevLicense.id}"><i class="${Icon.LNK.PREV}"></i></g:link>
                     </g:if>
                 </td>
                 <td><g:formatDate formatName="default.date.format.notime" date="${lic.startDate}"/></td>
                 <td><g:formatDate formatName="default.date.format.notime" date="${lic.endDate}"/></td>
                 <td class="center aligned">
                     <g:if test="${navNextLicense}">
-                        <g:link controller="license" action="show" id="${navNextLicense.id}"><i class="${Icons.LNK.NEXT}"></i></g:link>
+                        <g:link controller="license" action="show" id="${navNextLicense.id}"><i class="${Icon.LNK.NEXT}"></i></g:link>
                     </g:if>
                 </td>
                 <td>
                     <g:link controller="license" action="show" id="${lic.id}" class="ui icon button blue la-modern-button"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                        <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i></g:link>
+                        <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i></g:link>
                 </td>
                 <td>
                     <g:if test="${row.subs > 0}">

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyPackageResult; de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyPackageResult; de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
 <laser:serviceInjection/>
 
 <g:if test="${showOpenParticipantsAgainButtons}">
@@ -189,7 +189,7 @@
                             <g:if test="${surveyProperty.getI10n('expl')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${surveyProperty.getI10n('expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </g:if>
                         </th>
@@ -199,7 +199,7 @@
                     <th>${message(code: 'surveyResult.commentOnlyForOwner')}
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                            <i class="${Icons.HELP_TOOLTIP}"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </th>
                 </g:if>
@@ -321,7 +321,7 @@
                             <g:if test="${propertiesChangedByParticipant && participant.id in propertiesChangedByParticipant.id}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
-                                    <i class="${Icons.IMPORTANT_TOOLTIP2} yellow"></i>
+                                    <i class="${Icon.TOOLTIP.SERIOUS} yellow"></i>
                                 </span>
                             </g:if>
 
@@ -346,7 +346,7 @@
                                     <span data-position="right center"
                                           class="la-popup-tooltip la-delay"
                                           data-content="Mail senden an Hauptkontakte">
-                                        <i class="${Icons.EMAIL} la-list-icon"></i>
+                                        <i class="${Icon.SYM.EMAIL} la-list-icon"></i>
                                     </span>
                                 </a>
                             </g:if>
@@ -523,7 +523,7 @@
                                                                 data-ui="modal"
                                                                 data-href="#modalEditDocument_${docctx.id}"
                                                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                                            <i class="${Icons.CMD.EDIT} small"></i>
+                                                            <i class="${Icon.CMD.EDIT} small"></i>
                                                         </button>
                                                     </g:if>
 
@@ -537,7 +537,7 @@
                                                                 params='[instanceId: "${subParticipant.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="${Icons.CMD.DELETE} small"></i>
+                                                            <i class="${Icon.CMD.DELETE} small"></i>
                                                         </g:link>
                                                     </g:if>
                                                 </g:else>%{-- (editable || editable2) --}%
@@ -566,7 +566,7 @@
                                                tab           : 'selectedIEs']}"
                                     class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                     data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
-                                    target="_blank"><i class="${Icons.CMD.DOWNLOAD}"></i></g:link>
+                                    target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                         </td>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyPackages')}">
@@ -597,7 +597,7 @@
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
                             class="ui button blue icon la-modern-button la-popup-tooltip la-delay"
                             data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                        <i class="${Icons.SURVEY}"></i>
+                        <i class="${Icon.SURVEY}"></i>
                     </g:link>
 
                     <g:if test="${surveyConfig.subscription}">
@@ -605,7 +605,7 @@
                             <g:if test="${participantSub}">
                                 <br/>
                                 <g:link controller="subscription" action="show" id="${participantSub.id}"
-                                        class="ui button orange icon"><i class="${Icons.SUBSCRIPTION}"></i></g:link>
+                                        class="ui button orange icon"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                             </g:if>
                     </g:if>
                 </td>
@@ -771,7 +771,7 @@
                             <g:if test="${surveyProperty.getI10n('expl')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${surveyProperty.getI10n('expl')}">
-                                    <i class="${Icons.HELP_TOOLTIP}"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </g:if>
                         </th>
@@ -781,7 +781,7 @@
                     <th>${message(code: 'surveyResult.commentOnlyForOwner')}
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                            <i class="${Icons.HELP_TOOLTIP}"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </th>
                 </g:if>
@@ -905,7 +905,7 @@
                             <g:if test="${propertiesChangedByParticipant && participant.id in propertiesChangedByParticipant.id}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
-                                    <i class="${Icons.IMPORTANT_TOOLTIP2} yellow"></i>
+                                    <i class="${Icon.TOOLTIP.SERIOUS} yellow"></i>
                                 </span>
                             </g:if>
 
@@ -929,7 +929,7 @@
                                     <span data-position="right center"
                                           class="la-popup-tooltip la-delay"
                                           data-content="Mail senden an Hauptkontakte">
-                                        <i class="${Icons.EMAIL} la-list-icon"></i>
+                                        <i class="${Icon.SYM.EMAIL} la-list-icon"></i>
                                     </span>
                                 </a>
                             </g:if>
@@ -1088,7 +1088,7 @@
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                             class="ui icon blue tiny button la-modern-button"
-                                                            target="_blank"><i class="${Icons.CMD.DOWNLOAD} small"></i></g:link>
+                                                            target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
@@ -1096,7 +1096,7 @@
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                                 class="ui icon blue tiny button la-modern-button"
                                                                 target="_blank"><i
-                                                                class="${Icons.CMD.DOWNLOAD} small"></i></g:link>
+                                                                class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
 
                                                     <%-- 2 --%>
                                                         <laser:render template="/templates/documents/modal"
@@ -1106,7 +1106,7 @@
                                                                 data-ui="modal"
                                                                 data-href="#modalEditDocument_${docctx.id}"
                                                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                                            <i class="${Icons.CMD.EDIT} small"></i>
+                                                            <i class="${Icon.CMD.EDIT} small"></i>
                                                         </button>
                                                     </g:if>
 
@@ -1120,7 +1120,7 @@
                                                                 params='[instanceId: "${subParticipant.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="${Icons.CMD.DELETE} small"></i>
+                                                            <i class="${Icon.CMD.DELETE} small"></i>
                                                         </g:link>
                                                     </g:if>
                                                 </g:else>%{-- (editable || editable2) --}%
@@ -1149,7 +1149,7 @@
                                                tab           : 'selectedIEs']}"
                                     class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                     data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
-                                    target="_blank"><i class="${Icons.CMD.DOWNLOAD}"></i></g:link>
+                                    target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                         </td>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyPackages')}">
@@ -1181,7 +1181,7 @@
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
                             class="ui button blue icon la-modern-button la-popup-tooltip la-delay"
                             data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                        <i class="${Icons.SURVEY}"></i>
+                        <i class="${Icon.SURVEY}"></i>
                     </g:link>
 
                     <g:if test="${surveyConfig.subscription}">
@@ -1189,7 +1189,7 @@
                         <g:if test="${participantSub}">
                             <br/>
                             <g:link controller="subscription" action="show" id="${participantSub.id}"
-                                    class="ui button orange icon"><i class="${Icons.SUBSCRIPTION}"></i></g:link>
+                                    class="ui button orange icon"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                         </g:if>
                     </g:if>
                 </td>

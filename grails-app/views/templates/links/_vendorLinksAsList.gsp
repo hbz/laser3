@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.workflow.WfChecklist; de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.ui.Icon; de.laser.workflow.WfChecklist; de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <laser:serviceInjection />
 <g:set var="wekbAPI" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 <table class="ui compact table">
@@ -7,7 +7,7 @@
         <tr>
             <td>
                 <span class="la-flexbox la-minor-object">
-                    <i class="${Icons.VENDOR} la-list-icon la-popup-tooltip la-delay" data-content="${message(code:'vendor.label')}"></i>
+                    <i class="${Icon.VENDOR} la-list-icon la-popup-tooltip la-delay" data-content="${message(code:'vendor.label')}"></i>
                 </span>
                 <g:link controller="vendor" action="show" id="${role.vendor.id}">
                     ${role.vendor.name}
@@ -47,7 +47,7 @@
                                     data-confirm-term-how = "unlink"
                                     role="button"
                                     aria-label="${message(code:'ariaLabel.unlink.provider-agency.subscription')}">
-                                    <i class="${Icons.CMD.UNLINK}"></i>
+                                    <i class="${Icon.CMD.UNLINK}"></i>
                                 </g:link>
                             </span>
                         </g:if>
@@ -60,7 +60,7 @@
                         <%--
                         <g:if test="${showPersons}">
                                 <button class="ui icon button blue la-modern-button la-selectable-button la-popup-tooltip la-delay" data-ui="modal" data-href="#${cssId}" data-content="${message(code:'subscription.details.addNewContact')}">
-                                    <i class="address plus icon"></i>
+                                    <i class="${Icon.CMD.ADD}"></i>
                                 </button>
 
                         <laser:render template="/templates/links/vendorLinksAsListAddPrsModal"
@@ -108,7 +108,7 @@
                                         <g:each in="${Person.getPublicByOrgAndFunc(role.vendor, 'General contact person')}" var="func">
                                             <div class="row">
                                                 <div class="two wide column">
-                                                    <i class="${Icons.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                    <i class="${Icon.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                 </div>
                                                 <div class="thirteen wide column">
                                                     <div class="ui  label">
@@ -147,7 +147,7 @@
                                                             <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + role.vendor.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
                                                         </g:if>
                                                         <g:else>
-                                                            <i class="${Icons.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                            <i class="${Icon.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                         </g:else>
                                                     </div>
                                                     <div class="thirteen wide column">
@@ -177,7 +177,7 @@
                                                             <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + role.vendor.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
                                                         </g:if>
                                                         <g:else>
-                                                            <i class="${Icons.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                            <i class="${Icon.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                         </g:else>
                                                     </div>
                                                     <div class="thirteen wide column">
@@ -207,7 +207,7 @@
                                                             <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + role.vendor.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
                                                         </g:if>
                                                         <g:else>
-                                                            <i class="${Icons.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                            <i class="${Icon.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                         </g:else>
                                                     </div>
                                                     <div class="thirteen wide column">
@@ -234,7 +234,7 @@
                                         <g:each in="${Person.getPublicByOrgAndObjectResp(role.vendor, roleObject, roleRespValue)}" var="resp">
                                             <div class="row">
                                                 <div class="two wide column">
-                                                    <i class="${Icons.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                    <i class="${Icon.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                 </div>
                                                 <div class="thirteen wide column">
                                                     <div class="ui  label">
@@ -261,7 +261,7 @@
                                                             <g:link class="ui negative  button la-modern-button la-selectable-button js-open-confirm-modal" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
                                                                     data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
                                                                     data-confirm-how = "unlink">
-                                                                <i class="${Icons.CMD.UNLINK}"></i>
+                                                                <i class="${Icon.CMD.UNLINK}"></i>
                                                             </g:link>
                                                         </div>
                                                     </div>
@@ -286,7 +286,7 @@
                                         <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person', contextOrg)}" var="func">
                                             <div class="row">
                                                 <div class="two wide column">
-                                                    <i class="${Icons.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                    <i class="${Icon.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                 </div>
                                                 <div class="thirteen wide column">
                                                     <div class="ui  label">
@@ -312,7 +312,7 @@
                                             <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Technical Support', contextOrg)}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
-                                                        <i class="${Icons.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                        <i class="${Icon.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                     </div>
                                                     <div class="thirteen wide column">
                                                         <div class="ui  label">
@@ -337,7 +337,7 @@
                                             <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Service Support', contextOrg)}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
-                                                        <i class="${Icons.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                        <i class="${Icon.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                     </div>
                                                     <div class="thirteen wide column">
                                                         <div class="ui  label">
@@ -362,7 +362,7 @@
                                             <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Metadata Contact', contextOrg)}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
-                                                        <i class="${Icons.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                        <i class="${Icon.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                     </div>
                                                     <div class="thirteen wide column">
                                                         <div class="ui  label">
@@ -388,7 +388,7 @@
                                         <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, roleObject, roleRespValue, contextOrg)}" var="resp">
                                             <div class="row">
                                                <div class="two wide column">
-                                                    <i class="${Icons.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" ></i>
+                                                    <i class="${Icon.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" ></i>
                                                </div>
                                                 <div class="twelve wide column">
                                                     <div class="ui  label">
@@ -415,7 +415,7 @@
                                                             <g:link class="ui negative button la-modern-button la-selectable-button js-open-confirm-modal" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
                                                                     data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
                                                                     data-confirm-how = "unlink">
-                                                                <i class="${Icons.CMD.UNLINK}"></i>
+                                                                <i class="${Icon.CMD.UNLINK}"></i>
                                                             </g:link>
                                                         </div>
                                                     </div>

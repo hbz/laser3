@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.finance.CostItemGroup; de.laser.finance.BudgetCode"%>
+<%@ page import="de.laser.ui.Icon; de.laser.finance.CostItemGroup; de.laser.finance.BudgetCode"%>
 
 <laser:htmlStart message="menu.institutions.budgetCodes" />
 
@@ -30,7 +30,7 @@
                     ${message(code: 'financials.budgetCode.usage')}
                     <span data-position="right center" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'financials.budgetCode.usage.explanation')}">
-                        <i class="${Icons.HELP_TOOLTIP}"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </th>
                 <g:if test="${editable}">
@@ -66,7 +66,7 @@
                                         class="ui icon negative button la-modern-button js-open-confirm-modal"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD.DELETE}"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </g:link>
                             </g:if>
                         </td>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.storage.PropertyStore; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg; de.laser.AuditConfig" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.PropertyStore; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg; de.laser.AuditConfig" %>
 <laser:htmlStart message="surveyInfo.copyProperties" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -17,7 +17,7 @@
 </ui:h1HeaderWithIcon>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="${Icons.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+    <ui:linkWithIcon icon="${Icon.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
@@ -94,7 +94,7 @@
     </ui:greySegment>
 
 %{--<div class="ui icon positive message">
-    <i class="${Icons.UI.INFO}"></i>
+    <i class="${Icon.UI.INFO}"></i>
 
     <div class="content">
         <div class="header"></div>
@@ -570,7 +570,7 @@
                             <td>
                                 <g:if test="${participant.newSub}">
                                     <g:link controller="subscription" action="show" id="${participant.newSub.id}"
-                                            class="ui button icon"><i class="${Icons.SUBSCRIPTION}"></i></g:link>
+                                            class="ui button icon"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                                 </g:if>
 
                                 <g:if test="${surveyConfig.subSurveyUseForTransfer}">
@@ -593,7 +593,7 @@
 
                                     <div class="ui icon"
                                          data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
-                                        <i class="${Icons.SURVEY} bordered colored"></i>
+                                        <i class="${Icon.SURVEY} bordered colored"></i>
                                     </div>
                                 </g:if>
                             </td>

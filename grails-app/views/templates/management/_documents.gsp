@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription;" %>
 <laser:serviceInjection/>
 <g:if test="${filteredSubscriptions}">
 
@@ -32,7 +32,7 @@
                 <input type="file" id="upload_file" name="upload_file" style="display: none;">
 
                 <div class="ui icon button" style="padding-left:30px; padding-right:30px">
-                    <i class="${Icons.CMD.ATTACHMENT}"></i>
+                    <i class="${Icon.CMD.ATTACHMENT}"></i>
                 </div>
             </div>
         </div>
@@ -151,7 +151,7 @@
                                 class="ui icon button blue la-modern-button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="${Icons.CMD.EDIT}"></i>
+                            <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                         </g:link>
                     </td>
                 </tr>
