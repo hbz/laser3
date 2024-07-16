@@ -25,15 +25,15 @@
                 <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'mail']" tab="mail" text="${message(code: 'org.setting.tab.mail')}"/>
             </g:if>
             <%--<ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'general']" tab="general" text="${message(code: 'org.setting.tab.general')}"/>--%>
-            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro() || contextService._hasPerm('FAKE')}">
+            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || (OrgSetting.get(contextService.getOrg(), OrgSetting.KEYS.API_LEVEL) != OrgSetting.SETTING_NOT_FOUND && OrgSetting.get(contextService.getOrg(), OrgSetting.KEYS.API_LEVEL).getValue() == 'API_LEVEL_READ') || contextService._hasPerm('FAKE')}">
                 <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'api']" tab="api" text="${message(code: 'org.setting.tab.api')}"/>
             </g:if>
             <%-- deactivated U.F.N. as of [ticket=5385], November 8th, 2023 --%>
             <%--<ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'ezb']" tab="ezb" text="${message(code: 'org.setting.tab.ezb')}"/>--%>
             <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'natstat']" tab="natstat" text="${message(code: 'org.setting.tab.natstat')}"/>
-            <g:if test="${orgInstance.isCustomerType_Pro()}">
+            <%--<g:if test="${orgInstance.isCustomerType_Pro()}">--%>
                 <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'oamonitor']" tab="oamonitor" text="${message(code: 'org.setting.tab.oamonitor')}"/>
-            </g:if>
+            <%--</g:if>--%>
         </ui:tabs>
 
         <div class="ui bottom attached tab active segment">
