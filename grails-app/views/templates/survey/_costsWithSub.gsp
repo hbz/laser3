@@ -82,7 +82,7 @@
                                                 break
                                             default:
                                                 dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                                icon = '<i class="' + Icon.FNC.COST_NO + '"></i>'
+                                                icon = '<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
                                                 break
                                         }
                                     %>
@@ -154,7 +154,7 @@
                                                         break
                                                     default:
                                                         dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                                        icon = '<i class="' + Icon.FNC.COST_NO + '"></i>'
+                                                        icon = '<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
                                                         break
                                                 }
                                             %>
@@ -269,7 +269,7 @@
                                                     break
                                                 default:
                                                     dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                                    icon = '<i class="' + Icon.FNC.COST_NO + '"></i>'
+                                                    icon = '<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
                                                     break
                                             }
                                         %>
@@ -363,7 +363,7 @@
                                                 break
                                             default:
                                                 dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                                icon = '<i class="' + Icon.FNC.COST_NO + '"></i>'
+                                                icon = '<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
                                                 break
                                         }
                                     %>

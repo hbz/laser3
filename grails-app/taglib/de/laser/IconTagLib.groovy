@@ -21,7 +21,7 @@ class IconTagLib {
         if (attrs.type) {
         switch (attrs.type.toLowerCase()) {
             case 'addressbook':
-                icon = Icon.ADDRESS_PUBLIC + ' bordered inverted teal la-object-extended'
+                icon = Icon.UI.ACP_PUBLIC + ' bordered inverted teal la-object-extended'
                 break
             case 'admin':
                 icon = Icon.AUTH.ROLE_ADMIN + ' la-object'
@@ -213,7 +213,7 @@ class IconTagLib {
     def contactIcon = { attrs, body ->
 
         String msg = message(code: 'contact.icon.label.contactinfo')
-        String icon = Icon.ADDRESS_PUBLIC + ' la-list-icon'
+        String icon = Icon.UI.ACP_PUBLIC + ' la-list-icon'
 
         switch (attrs.type) {
             case [ 'E-Mail', 'Mail' ]: // 'Mail' -> Deprecated
@@ -347,7 +347,7 @@ class IconTagLib {
 
         out << '<span class="la-long-tooltip la-popup-tooltip la-delay"'
         out << ' data-position="bottom center" data-content="' + tt +'">'
-        out << '<i class="' + Icon.SUBSCRIPTION_IS_MULTIYEAR + ' ' + color + '"></i>'
+        out << '<i class="' + Icon.SYM.SUBSCRIPTION_IS_MULTIYEAR + ' ' + color + '"></i>'
         out << '</span>'
     }
 
@@ -387,13 +387,13 @@ class IconTagLib {
         String icon = Icon.SYM.UNKOWN
 
         if (attrs.value === true) {
-            icon = Icon.X.CIRCLE + ' green'
+            icon = Icon.UNC.CIRCLE + ' green'
         }
         else if(attrs.value === false) {
-            icon = Icon.X.CIRCLE + ' red'
+            icon = Icon.UNC.CIRCLE + ' red'
         }
         else if (attrs.value === null) {
-            icon = Icon.X.CIRCLE + ' grey'
+            icon = Icon.UNC.CIRCLE + ' grey'
         }
         out << '<i class="' + icon + '"></i>'
     }

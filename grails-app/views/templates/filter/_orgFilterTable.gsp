@@ -56,7 +56,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('legalInformation')}">
                 <th class="la-no-uppercase">
                     <span class="la-popup-tooltip la-delay" data-content="${message(code: 'org.legalInformation.tooltip')}">
-                        <i class="${Icon.ORG_LEGAL_INFORMATION}"></i>
+                        <i class="${Icon.SYM.ORG_LEGAL_INFORMATION}"></i>
                     </span>
                 </th>
             </g:if>
@@ -385,12 +385,12 @@
                             </span>
                         </g:each>
                         <span class="la-popup-tooltip la-delay" data-position="top right">
-                            <i class="${Icon.X.CIRCLE} green"></i>
+                            <i class="${Icon.UNC.CIRCLE} green"></i>
                         </span>
                     </g:if>
                     <g:if test="${org.status == RDStore.ORG_STATUS_RETIRED}">
                         <span class="la-popup-tooltip la-delay" data-position="top right" <g:if test="${org.retirementDate}">data-content="<g:message code="org.retirementDate.label"/>: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${org.retirementDate}"/>"</g:if>>
-                            <i class="${Icon.X.CIRCLE} yellow"></i>
+                            <i class="${Icon.UNC.CIRCLE} yellow"></i>
                         </span>
                         <g:set var="successors" value="${Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :org and c.type = :follows',[org: org, follows: RDStore.COMBO_TYPE_FOLLOWS])}"/>
                         <g:each in="${successors}" var="successor">

@@ -137,7 +137,7 @@
                                 print '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
                                 break
                             default:
-                                print'<i class="' + Icon.FNC.COST_NO + '"></i>'
+                                print'<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
                                 break
                         }
                     %>
@@ -236,7 +236,7 @@
                                     print '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
                                     break
                                 default:
-                                    print'<i class="' + Icon.FNC.COST_NO + '"></i>'
+                                    print'<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
                                     break
                             }
                         %>

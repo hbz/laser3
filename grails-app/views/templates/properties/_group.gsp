@@ -239,7 +239,7 @@
                             <g:else>
                                 <!-- Hidden Fake Button To hold the other Botton in Place -->
                                 <div class="ui icon button la-hidden">
-                                    <i class="${Icon.X.PLACEHOLDER}"></i>
+                                    <i class="${Icon.UNC.PLACEHOLDER}"></i>
                                 </div>
 
                             </g:else>

@@ -52,7 +52,7 @@
                     </g:if>
                     <g:if test="${covStmt.coverageDepth}">
                         <div class="item">
-                            <i class="grey ${Icon.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
+                            <i class="grey ${Icon.SYM.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
                                data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                             <div class="content">

@@ -18,7 +18,7 @@
                         <tr>
                             <td>
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
-                                    <i class="${Icon.ADDRESS_PUBLIC}"></i>
+                                    <i class="${Icon.UI.ACP_PUBLIC}"></i>
                                 </span>
                                 ${p}
                             </td>
@@ -46,7 +46,7 @@
                         <tr>
                             <td>
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
-                                    <i class="${Icon.ADDRESS_PRIVATE}"></i>
+                                    <i class="${Icon.UI.ACP_PRIVATE}"></i>
                                 </span>
                                 ${p}
                             </td>

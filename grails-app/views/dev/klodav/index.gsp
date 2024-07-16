@@ -11,35 +11,8 @@
 <nav class="ui secondary menu">
     <g:link controller="dev" action="klodav" class="item active">Various</g:link>
     <g:link controller="dev" action="icons" class="item"><i class="certificate icon red"></i> New Icons</g:link>
+%{--    <g:link controller="dev" action="buttons" class="item"><i class="certificate icon orange"></i> New Buttons</g:link>--}%
 </nav>
-
-<div class="ui segment">
-
-    <p class="ui header">de.laser.ui.Button</p>
-
-    <p>
-        <button class="${Button.PRIMARY}">PRIMARY</button>
-        <button class="${Button.SECONDARY}">SECONDARY</button>
-        <button class="${Button.POSITIVE}">POSITIVE</button>
-        <button class="${Button.NEGATIVE}">NEGATIVE</button>
-    </p>
-    <p>
-        <button class="${Button.PRIMARY_ICON}"><i class="${Icon.X.SQUARE}"></i></button>
-        <button class="${Button.SECONDARY_ICON}"><i class="${Icon.X.SQUARE}"></i></button>
-        <button class="${Button.POSITIVE_ICON}"><i class="${Icon.CMD.ADD}"></i></button>
-        <button class="${Button.NEGATIVE_ICON}"><i class="${Icon.CMD.REMOVE}"></i></button>
-    </p>
-    <p>
-        <button class="${Button.MODERN.BLUE}">MODERN.BLUE</button>
-        <button class="${Button.MODERN.POSITIVE}">MODERN.POSITIVE</button>
-        <button class="${Button.MODERN.NEGATIVE}">MODERN.NEGATIVE</button>
-    </p>
-    <p>
-        <button class="${Button.MODERN.BLUE_ICON}"><i class="${Icon.X.SQUARE}"></i></button>
-        <button class="${Button.MODERN.POSITIVE_ICON}"><i class="${Icon.CMD.ADD}"></i></button>
-        <button class="${Button.MODERN.NEGATIVE_ICON}"><i class="${Icon.CMD.REMOVE}"></i></button>
-    </p>
-</div>
 
 <div class="ui four column grid">
     <div class="column">
@@ -161,8 +134,8 @@
     <p class="ui header">Icons #3</p>
     <div class="ui list">
         <div class="item">
-            <i class="${Icon.SUBSCRIPTION_IS_MULTIYEAR} large"></i>
-            <div class="content"> Mehrjahreslaufzeit (${Icon.SUBSCRIPTION_IS_MULTIYEAR})</div>
+            <i class="${Icon.SYM.SUBSCRIPTION_IS_MULTIYEAR} large"></i>
+            <div class="content"> Mehrjahreslaufzeit (${Icon.SYM.SUBSCRIPTION_IS_MULTIYEAR})</div>
         </div>
         <div class="item">
             <i class="${Icon.FNC.COST} large"></i>
@@ -337,25 +310,25 @@
         <i class="icon large kiwi bird"></i> simple color helper
     </p>
     <p>
-        <i class="${Icon.X.SQUARE} large red"></i> fomantic red <br/>
-        <i class="${Icon.X.SQUARE} large sc_red"></i> fallback <br/>
+        <i class="${Icon.UNC.SQUARE} large red"></i> fomantic red <br/>
+        <i class="${Icon.UNC.SQUARE} large sc_red"></i> fallback <br/>
 
-        <i class="${Icon.X.SQUARE} large blue"></i> fomantic blue <br/>
-        <i class="${Icon.X.SQUARE} large sc_blue"></i> fallback <br/>
+        <i class="${Icon.UNC.SQUARE} large blue"></i> fomantic blue <br/>
+        <i class="${Icon.UNC.SQUARE} large sc_blue"></i> fallback <br/>
 
-        <i class="${Icon.X.SQUARE} large yellow"></i> fomantic yellow <br/>
-        <i class="${Icon.X.SQUARE} large sc_yellow"></i> fallback <br/>
+        <i class="${Icon.UNC.SQUARE} large yellow"></i> fomantic yellow <br/>
+        <i class="${Icon.UNC.SQUARE} large sc_yellow"></i> fallback <br/>
 
-        <i class="${Icon.X.SQUARE} large green"></i> fomantic green <br/>
-        <i class="${Icon.X.SQUARE} large olive"></i> fomantic olive <br/>
-        <i class="${Icon.X.SQUARE} large sc_green"></i> fallback <br/>
+        <i class="${Icon.UNC.SQUARE} large green"></i> fomantic green <br/>
+        <i class="${Icon.UNC.SQUARE} large olive"></i> fomantic olive <br/>
+        <i class="${Icon.UNC.SQUARE} large sc_green"></i> fallback <br/>
 
-        <i class="${Icon.X.SQUARE} large orange"></i> fomantic orange <br/>
-        <i class="${Icon.X.SQUARE} large sc_orange"></i> fallback <br/>
+        <i class="${Icon.UNC.SQUARE} large orange"></i> fomantic orange <br/>
+        <i class="${Icon.UNC.SQUARE} large sc_orange"></i> fallback <br/>
 
-        <i class="${Icon.X.SQUARE} large sc_grey"></i> fallback <br/>
+        <i class="${Icon.UNC.SQUARE} large sc_grey"></i> fallback <br/>
 
-        <i class="${Icon.X.SQUARE} large sc_darkgrey"></i> fallback <br/>
+        <i class="${Icon.UNC.SQUARE} large sc_darkgrey"></i> fallback <br/>
     </p>
 
     <p>

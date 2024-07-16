@@ -15,7 +15,7 @@
         <tr>
             <g:if test="${pr.org}">
                 <td>
-                    <g:if test="${! pr.prs.isPublic}"><i class="${Icon.ADDRESS_PRIVATE}"></i> </g:if>
+                    <g:if test="${! pr.prs.isPublic}"><i class="${Icon.UI.ACP_PRIVATE}"></i> </g:if>
                     ${pr.prs}
                 </td>
                 <g:if test="${tmplShowFunction}">

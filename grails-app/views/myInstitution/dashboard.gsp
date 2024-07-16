@@ -80,7 +80,7 @@
                             </div>
                         </div>
                         <div class="item">
-                            <i class="${Icon.ADDRESS_PUBLIC} la-list-icon"></i>
+                            <i class="${Icon.UI.ACP_PUBLIC} la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
                             </div>
