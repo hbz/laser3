@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <ui:modal id="KBARTUploadForm" message="subscription.details.addEntitlements.header" msgSave="${message(code: 'subscription.details.addEntitlements.preselect')}">
     <ui:msg header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.warning" />
 
@@ -14,7 +14,7 @@
                        placeholder="${message(code: 'template.addDocument.selectFile')}">
                 <input type="file" id="kbartPreselect" name="kbartPreselect" accept="text/tab-separated-values"
                        style="display: none;">
-                <div class="${Button.BASIC_ICON}">
+                <div class="${Btn.BASIC_ICON}">
                     <i class="${Icon.CMD.ATTACHMENT}"></i>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.Vendor;de.laser.Package;de.laser.Platform;de.laser.Provider;de.laser.TitleInstancePackagePlatform" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.Vendor;de.laser.Package;de.laser.Platform;de.laser.Provider;de.laser.TitleInstancePackagePlatform" %>
 
 <laser:htmlStart message="menu.my.markers" serviceInjection="true"/>
 
@@ -25,8 +25,8 @@
 
             </div>
             <div class="field la-field-right-aligned">
-%{--                <g:link controller="myInstitution" action="currentWorkflows" params="${[filter: 'reset']}" class="${Button.SECONDARY} reset">${message(code:'default.button.reset.label')}</g:link>--}%
-                <input type="submit" class="${Button.PRIMARY}" value="${message(code:'default.button.filter.label')}" />
+%{--                <g:link controller="myInstitution" action="currentWorkflows" params="${[filter: 'reset']}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</g:link>--}%
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}" />
             </div>
         </div>
     </form>

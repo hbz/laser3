@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <g:if test="${person}">
     <div class="ui divided middle aligned selection list la-flex-list">
 
@@ -82,7 +82,7 @@
                 <g:if test="${editable && tmplShowDeleteButton}">
 
                     <g:if test="${showAddContacts}">
-                        <input class="${Button.BASIC_ICON}" type="button" data-ui="modal"
+                        <input class="${Btn.BASIC_ICON}" type="button" data-ui="modal"
                                data-href="#contactFormModal${personRole.prs.id}"
                                value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label')])}">
                         <laser:render template="/contact/formModal" model="['prsId': personRole.prs.id, modalId: 'contactFormModal'+personRole.prs.id]"/>

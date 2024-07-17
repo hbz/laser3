@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.auth.Role" %>
+<%@ page import="de.laser.ui.Btn; de.laser.auth.Role" %>
 <laser:serviceInjection/>
 
 <ui:filter>
@@ -37,8 +37,8 @@
             </g:if>
 
             <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}" class="${Button.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
-                <input type="submit" value="${message(code:'default.button.search.label')}" class="${Button.PRIMARY}"/>
+                <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+                <input type="submit" value="${message(code:'default.button.search.label')}" class="${Btn.PRIMARY}"/>
             </div>
         </div>
     </g:form>

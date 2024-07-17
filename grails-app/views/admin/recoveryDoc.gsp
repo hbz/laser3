@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.DocContext" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.DocContext" %>
 
 <laser:htmlStart message="menu.admin.recoveryDoc" />
 
@@ -97,7 +97,7 @@
                                                 id="${docRecovery.owner.id}">${docRecovery.owner.name}</g:link>)
                             </g:if>
 
-                            <g:link class="${Button.BASIC} mini" action="processRecoveryDoc" params="[sourceDoc: doc.id, targetDoc: docRecovery.id]">Auswählen</g:link>
+                            <g:link class="${Btn.BASIC} mini" action="processRecoveryDoc" params="[sourceDoc: doc.id, targetDoc: docRecovery.id]">Auswählen</g:link>
 
                             </li>
 

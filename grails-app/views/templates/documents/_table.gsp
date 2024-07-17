@@ -1,4 +1,4 @@
-<%@page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.storage.RDConstants; org.apache.commons.lang3.RandomStringUtils; de.laser.storage.RDStore; de.laser.*; de.laser.interfaces.CalculatedType" %>
+<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants; org.apache.commons.lang3.RandomStringUtils; de.laser.storage.RDStore; de.laser.*; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection/>
 <%
     boolean parentAtChild = false
@@ -242,7 +242,7 @@
                         <td></td>
                     </g:if>
                     <td>
-                        <button id="bulk_submit_${randomId}" class="${Button.PRIMARY}">Übernehmen</button>
+                        <button id="bulk_submit_${randomId}" class="${Btn.PRIMARY}">Übernehmen</button>
                     </td>
                 </tr>
             </tfoot>

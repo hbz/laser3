@@ -1,4 +1,4 @@
-<%@page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.Provider; de.laser.CustomerTypeService; de.laser.survey.SurveyPackageResult; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.Vendor; de.laser.convenience.Marker; de.laser.utils.DateUtils; de.laser.storage.RDConstants; de.laser.Package; de.laser.Org; de.laser.Platform; de.laser.RefdataValue" %>
+<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Provider; de.laser.CustomerTypeService; de.laser.survey.SurveyPackageResult; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.Vendor; de.laser.convenience.Marker; de.laser.utils.DateUtils; de.laser.storage.RDConstants; de.laser.Package; de.laser.Org; de.laser.Platform; de.laser.RefdataValue" %>
 <laser:serviceInjection/>
 <table class="ui sortable celled la-js-responsive-table la-table table">
     <thead>
@@ -427,7 +427,7 @@
                         <td class="right aligned">
                             <g:if test="${editable}">
                                 <g:if test="${(!uuidPkgs || !(record.uuid in uuidPkgs))}">
-                                    <g:link type="button" class="${Button.BASIC_ICON}" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                    <g:link type="button" class="${Btn.BASIC_ICON}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                             params="[addUUID: record.uuid, surveyConfigID: surveyConfig.id]"><g:message
                                             code="surveyPackages.linkPackage"/></g:link>
 
@@ -484,14 +484,14 @@
                     <g:if test="${tmplConfigItem == 'yodaActions'}">
                         <td class="x">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'menu.yoda.reloadPackage')}">
-                                <g:link controller="yoda" action="reloadPackage" params="${[packageUUID: record.uuid]}" class="${Button.BASIC_ICON}">
+                                <g:link controller="yoda" action="reloadPackage" params="${[packageUUID: record.uuid]}" class="${Btn.BASIC_ICON}">
                                     <i class="icon cloud download alternate"></i>
                                 </g:link>
                             </span>
                             <g:if test="${pkg}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'menu.yoda.retriggerPendingChanges')}">
                                     <g:if test="${pkg}">
-                                        <g:link controller="yoda" action="matchPackageHoldings" params="${[pkgId: pkg.id]}" class="${Button.BASIC_ICON}">
+                                        <g:link controller="yoda" action="matchPackageHoldings" params="${[pkgId: pkg.id]}" class="${Btn.BASIC_ICON}">
                                             <i class="icon wrench"></i>
                                         </g:link>
                                     </g:if>

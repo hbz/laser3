@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.system.SystemMessage; de.laser.jobs.HeartbeatJob" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.system.SystemMessage; de.laser.jobs.HeartbeatJob" %>
 
 <laser:htmlStart message="menu.admin.systemMessage" />
 
@@ -10,7 +10,7 @@
 <ui:h1HeaderWithIcon message="menu.admin.systemMessage" type="admin"/>
 
 <div class="la-float-right">
-    <input type="submit" class="${Button.BASIC}" value="${message(code: 'admin.systemMessage.create')}" data-ui="modal" data-href="#modalCreateSystemMessage" />
+    <input type="submit" class="${Btn.BASIC}" value="${message(code: 'admin.systemMessage.create')}" data-ui="modal" data-href="#modalCreateSystemMessage" />
 </div>
 
 <br />
@@ -60,7 +60,7 @@
                 <g:formatDate date="${msg.lastUpdated}" format="${message(code: 'default.date.format.noZ')}"/>
             </td>
             <td class="x">
-                <g:link controller="admin" action="deleteSystemMessage" id="${msg.id}" class="${Button.MODERN.NEGATIVE_ICON}"
+                <g:link controller="admin" action="deleteSystemMessage" id="${msg.id}" class="${Btn.MODERN.NEGATIVE_ICON}"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                     <i class="${Icon.CMD.DELETE}"></i>

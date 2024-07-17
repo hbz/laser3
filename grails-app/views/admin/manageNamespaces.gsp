@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.Identifier; de.laser.IdentifierNamespace; de.laser.I10nTranslation" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Identifier; de.laser.IdentifierNamespace; de.laser.I10nTranslation" %>
 
 <laser:htmlStart message="menu.admin.manageIdentifierNamespaces" />
 
@@ -78,14 +78,14 @@
 
                 <input name="isHidden" type="hidden" value="false" />
 
-                <button type="submit" class="${Button.BASIC}">
+                <button type="submit" class="${Btn.BASIC}">
                     <g:message code="default.button.create.label"/>
                 </button>
         </ui:form>
 
         <g:if test="${cmd == 'details'}">
 
-            <g:link controller="admin" action="manageNamespaces" class="${Button.BASIC} right floated"><g:message code="default.button.back"/></g:link>
+            <g:link controller="admin" action="manageNamespaces" class="${Btn.BASIC} right floated"><g:message code="default.button.back"/></g:link>
 
             &nbsp;&nbsp;
 
@@ -194,7 +194,7 @@
                                     <td>
                                         <g:if test="${!idNs.isHardData}">
                                             <g:link controller="admin" action="manageNamespaces"
-                                                    params="${[cmd: 'deleteNamespace', oid: IdentifierNamespace.class.name + ':' + idNs.id]}" class="${Button.MODERN.NEGATIVE_ICON}"
+                                                    params="${[cmd: 'deleteNamespace', oid: IdentifierNamespace.class.name + ':' + idNs.id]}" class="${Btn.MODERN.NEGATIVE_ICON}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                 <i class="${Icon.CMD.DELETE}"></i>
@@ -267,7 +267,7 @@
                                         <g:if test="${tooltip}">
                                             <span data-content="Verwendet für ${tooltip.join(', ')}" data-position="left center"
                                                   class="la-long-tooltip la-popup-tooltip la-delay">
-                                                <g:link class="${Button.BASIC_ICON}" controller="admin" action="manageNamespaces"
+                                                <g:link class="${Btn.BASIC_ICON}" controller="admin" action="manageNamespaces"
                                                         params="${[cmd: 'details', oid: IdentifierNamespace.class.name + ':' + idNs.id]}"><i class="${Icon.TOOLTIP.HELP}"></i></g:link>
                                             </span>
                                         </g:if>

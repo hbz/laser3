@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.IssueEntitlement; de.laser.TitleInstancePackagePlatform;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
+<%@ page import="de.laser.ui.Btn; de.laser.IssueEntitlement; de.laser.TitleInstancePackagePlatform;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
 
 <laser:htmlStart message="menu.public.gasco_monitor" />
 
@@ -29,9 +29,9 @@
                 </div>
 
                 <div class="field la-field-right-aligned">
-                    <a href="${request.forwardURI}" class="${Button.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+                    <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
 
-                    <input type="submit" class="${Button.PRIMARY}" value="${message(code:'default.button.filter.label')}" />
+                    <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}" />
                 </div>
 
             </div>

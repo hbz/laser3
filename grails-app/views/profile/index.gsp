@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.auth.Role; de.laser.UserSetting.KEYS; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.auth.Role; de.laser.UserSetting.KEYS; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart message="profile.user" serviceInjection="true" />
 
@@ -461,7 +461,7 @@
                             <g:set var="US_LANGUAGE" value="${user.getSetting(KEYS.LANGUAGE, RDStore.LANGUAGE_DE)}" />
                             <ui:xEditableRefData owner="${US_LANGUAGE}" field="rdValue" config="${US_LANGUAGE.key.rdc}" />
                             &nbsp;
-                            <g:link controller="profile" action="index" class="${Button.BASIC_ICON}" style="float:right"><i class="icon sync"></i></g:link>
+                            <g:link controller="profile" action="index" class="${Btn.BASIC_ICON}" style="float:right"><i class="icon sync"></i></g:link>
                         </div>
                         <div class="field">
                             <label>${message(code: 'profile.emailLanguage')}</label>

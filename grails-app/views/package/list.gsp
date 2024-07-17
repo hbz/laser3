@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.Package" %>
+<%@ page import="de.laser.ui.Btn; de.laser.Package" %>
 <laser:htmlStart text="${message(code: 'myinst.packages')} - ${message(code: 'default.onlyDatabase')}" />
 
     <g:set var="entityName" value="${message(code: 'package.label')}" />
@@ -35,8 +35,8 @@
 
 
               <div class="field la-field-right-aligned">
-              <a href="${request.forwardURI}" class="${Button.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
-                  <input type="submit" class="${Button.PRIMARY}" value="${message(code:'default.button.filter.label')}" />
+              <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+                  <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}" />
               </div>
 
           </g:form>

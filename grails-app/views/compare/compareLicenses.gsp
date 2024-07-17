@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.helper.Params; de.laser.CustomerTypeService; de.laser.License; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.ui.Btn; de.laser.helper.Params; de.laser.CustomerTypeService; de.laser.License; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory" %>
 <laser:htmlStart message="menu.my.comp_lic" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -38,7 +38,7 @@
         </div>
 
         <div class="field">
-            <g:link controller="compare" action="${actionName}" class="${Button.SECONDARY}">${message(code: 'default.button.comparereset.label')}</g:link>
+            <g:link controller="compare" action="${actionName}" class="${Btn.SECONDARY}">${message(code: 'default.button.comparereset.label')}</g:link>
             &nbsp;
             <input ${params.selectedObjects ? 'disabled' : ''} type="submit"
                                                                value="${message(code: 'default.button.compare.label')}"

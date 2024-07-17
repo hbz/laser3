@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <laser:htmlStart text="Database Migration" />
 
     <ui:breadcrumbs>
@@ -10,7 +10,7 @@
 
     <ui:h1HeaderWithIcon text="Private Properties (mandatory) without existing values" type="yoda" />
 
-    <g:link controller="yoda" action="dbmFixPrivateProperties" params="[cmd:'doIt']" class="${Button.NEGATIVE}">
+    <g:link controller="yoda" action="dbmFixPrivateProperties" params="[cmd:'doIt']" class="${Btn.NEGATIVE}">
         <i class="${Icon.CMD.DELETE}"></i> &nbsp;  Delete all</g:link>
 
     <br />

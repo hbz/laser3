@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.config.ConfigMapper; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.remote.ApiSource; de.laser.IssueEntitlement" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.config.ConfigMapper; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.remote.ApiSource; de.laser.IssueEntitlement" %>
 
 <g:set var="entityName" value="${message(code: 'issueEntitlement.label')}"/>
 <laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" />
@@ -341,7 +341,7 @@
                     </div>
 
                     <div class="field">
-                        <input type="submit" class="${Button.PRIMARY}"
+                        <input type="submit" class="${Btn.PRIMARY}"
                                value="${message(code: 'default.button.submit.label')}">
                     </div>
 

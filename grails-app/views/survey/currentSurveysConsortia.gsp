@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.helper.Params; de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart message="currentSurveys.label" serviceInjection="true" />
 
@@ -190,8 +190,8 @@
 
             <div class="field la-field-right-aligned">
                 <g:link controller="survey" action="currentSurveysConsortia"
-                        class="${Button.SECONDARY} reset">${message(code: 'default.button.reset.label')}</g:link>
-                <input type="submit" class="${Button.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
+                        class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</g:link>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
             </div>
 
         </div>
@@ -360,7 +360,7 @@
                     %{--<g:if test="${surveyConfig && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION && !surveyConfig.pickAndChoose}">
                         <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]"
-                                class="${Button.BASIC_ICON}">
+                                class="${Btn.BASIC_ICON}">
                                 --}%%{--<div class="ui circular ${(participantsFinish.size() == participantsTotal.size()) ? "green" : (participantsFinish.size() > 0) ? "yellow" : ""} label">
                                 <g:if
                                         test="${participantsFinish && participantsTotal}">

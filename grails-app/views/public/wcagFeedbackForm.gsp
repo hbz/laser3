@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.PersonRole; de.laser.Contact; de.laser.OrgRole; de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
+<%@ page import="de.laser.ui.Btn; de.laser.PersonRole; de.laser.Contact; de.laser.OrgRole; de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
 <laser:htmlStart message="feedback.title" />
 
     <h1 class="ui header">
@@ -48,8 +48,8 @@
             </div>
 
             <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}" class="${Button.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
-                <input type="submit" class="${Button.PRIMARY}" value="Abschicken">
+                <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+                <input type="submit" class="${Btn.PRIMARY}" value="Abschicken">
             </div>
 
         </g:form>

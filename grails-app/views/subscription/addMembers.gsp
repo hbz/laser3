@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.*;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants;de.laser.FormService;de.laser.utils.LocaleUtils" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.*;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants;de.laser.FormService;de.laser.utils.LocaleUtils" %>
 
 <laser:htmlStart text="${message(code: 'subscription.details.addMembers.label', args: memberType)}" serviceInjection="true"/>
 <%
@@ -374,7 +374,7 @@
                        placeholder="${message(code: 'template.addDocument.selectFile')}">
                 <input type="file" name="selectSubMembersWithImport" accept="text/tab-separated-values,.txt,.csv"
                        style="display: none;">
-                <div class="${Button.BASIC_ICON}">
+                <div class="${Btn.BASIC_ICON}">
                     <i class="${Icon.CMD.ATTACHMENT}"></i>
                 </div>
             </div>

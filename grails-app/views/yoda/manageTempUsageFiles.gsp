@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; java.nio.file.Files" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; java.nio.file.Files" %>
 <laser:htmlStart message="menu.yoda.stats.cache"/>
 
 <ui:breadcrumbs>
@@ -11,7 +11,7 @@
 
         <h3 class="ui header"><i class="ui hdd icon"></i><span class="content">Dateien</span></h3>
 
-        <g:link action="deleteTempFile" class="${Button.NEGATIVE_ICON_CONFIRM}" data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.tempDir")}" params="[emptyDir: true]" role="button" aria-label="${message(code: 'ariaLabel.delete.universal')}">
+        <g:link action="deleteTempFile" class="${Btn.NEGATIVE_ICON_CONFIRM}" data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.tempDir")}" params="[emptyDir: true]" role="button" aria-label="${message(code: 'ariaLabel.delete.universal')}">
             <i class="${Icon.CMD.DELETE}"></i> Gesamtes Verzeichnis leeren
         </g:link>
 
@@ -28,7 +28,7 @@
                     <tr>
                         <td>${tempFile.getName()}</td>
                         <td>${Files.getAttribute(tempFile.toPath(), 'creationTime')}</td>
-                        <td><g:link action="deleteTempFile" class="${Button.NEGATIVE_ICON}" params="[filename: tempFile.getName()]"><i class="${Icon.CMD.DELETE}"></i></g:link></td>
+                        <td><g:link action="deleteTempFile" class="${Btn.NEGATIVE_ICON}" params="[filename: tempFile.getName()]"><i class="${Icon.CMD.DELETE}"></i></g:link></td>
                     </tr>
                 </g:each>
             </tbody>

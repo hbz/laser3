@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.storage.PropertyStore; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg; de.laser.AuditConfig" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.PropertyStore; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg; de.laser.AuditConfig" %>
 <laser:htmlStart message="surveyInfo.copyProperties" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -570,7 +570,7 @@
                             <td>
                                 <g:if test="${participant.newSub}">
                                     <g:link controller="subscription" action="show" id="${participant.newSub.id}"
-                                            class="${Button.BASIC_ICON}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
+                                            class="${Btn.BASIC_ICON}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                                 </g:if>
 
                                 <g:if test="${surveyConfig.subSurveyUseForTransfer}">

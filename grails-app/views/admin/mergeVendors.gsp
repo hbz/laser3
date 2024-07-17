@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button" %>
+<%@ page import="de.laser.ui.Btn" %>
 <laser:htmlStart message="menu.admin.mergeVendors" serviceInjection="true"/>
 
     <ui:h1HeaderWithIcon message="menu.admin.mergeVendors" />
@@ -59,7 +59,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="6"><g:submitButton name="validate" class="${Button.PRIMARY}" value="Gewählte Lieferanten zusammenführen"/></td>
+                    <td colspan="6"><g:submitButton name="validate" class="${Btn.PRIMARY}" value="Gewählte Lieferanten zusammenführen"/></td>
                 </tr>
             </tfoot>
         </table>

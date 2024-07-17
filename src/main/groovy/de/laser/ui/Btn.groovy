@@ -4,7 +4,7 @@ import de.laser.annotations.UIDoc
 import de.laser.annotations.UnstableFeature
 
 @UnstableFeature
-class Button {
+class Btn {
 
     // <button/>, <input type="button"/>, <g:link/>, etc.
 

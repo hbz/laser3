@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.helper.Params; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.License; de.laser.RefdataValue; de.laser.interfaces.CalculatedType; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.License; de.laser.RefdataValue; de.laser.interfaces.CalculatedType; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart text="${message(code:'license.details.incoming.childs',args:[message(code:'consortium.subscriber')])}" serviceInjection="true"/>
 
@@ -94,9 +94,9 @@
                                noSelection="${['' : message(code:'default.select.choose.label')]}"/>
                 </div>
                 <div class="field la-field-right-aligned">
-                    <a href="${request.forwardURI}" class="${Button.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+                    <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
                     <input name="filterSet" type="hidden" value="true">
-                    <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Button.PRIMARY}"/>
+                    <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Btn.PRIMARY}"/>
                 </div>
             </g:else>
         </g:form>

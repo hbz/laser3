@@ -1,4 +1,4 @@
-<%@ page import="de.laser.annotations.UIDoc; de.laser.ui.Button; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.annotations.UIDoc; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:htmlStart text="Playground: New Icons" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -17,10 +17,10 @@
 <div class="ui info message">
     <p class="ui header">
         Usage
-        <button class="${Button.PRIMARY_ICON}" id="metaToggle1" style="float: right"><i class="${Icon.UI.INFO}"></i></button>
-        <button class="${Button.SECONDARY_ICON}" id="metaToggle2" style="float: right"><i class="${Icon.UI.HELP}"></i></button>
+        <button class="${Btn.PRIMARY_ICON}" id="metaToggle1" style="float: right"><i class="${Icon.UI.INFO}"></i></button>
+        <button class="${Btn.SECONDARY_ICON}" id="metaToggle2" style="float: right"><i class="${Icon.UI.HELP}"></i></button>
     </p>
-    <pre>&lt;button class=&quot;&dollar;{Button.PRIMARY_ICON}&quot; id=&quot;metaToggle&quot;&gt;&lt;i class=&quot;&dollar;{Icon.UI.INFO}&quot;&gt;&lt;/i&gt;&lt;/button&gt;</pre>
+    <pre>&lt;button class=&quot;&dollar;{Btn.PRIMARY_ICON}&quot; id=&quot;metaToggle&quot;&gt;&lt;i class=&quot;&dollar;{Icon.UI.INFO}&quot;&gt;&lt;/i&gt;&lt;/button&gt;</pre>
 </div>
 
 <div class="ui basic segment">

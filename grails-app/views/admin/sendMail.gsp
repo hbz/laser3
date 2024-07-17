@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button" %>
+<%@ page import="de.laser.ui.Btn" %>
 <laser:htmlStart message="menu.admin.sendMail" />
 
     <ui:breadcrumbs>
@@ -25,7 +25,7 @@
             </div>
 
             <div class="field">
-                    <input type="submit" name="sendTestMail" class="${Button.BASIC}" value="Send Test Mail" />
+                    <input type="submit" name="sendTestMail" class="${Btn.BASIC}" value="Send Test Mail" />
             </div>
     </ui:form>
 

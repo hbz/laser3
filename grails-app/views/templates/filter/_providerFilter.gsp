@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
 
 <%
     String lang = LocaleUtils.getCurrentLang()
@@ -214,11 +214,11 @@
 
 <div class="field la-field-right-aligned">
 
-        <a href="${request.forwardURI}" class="${Button.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+        <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
 
         <input name="filterSet" type="hidden" value="true">
         <g:if test="${tmplConfigFormFilter}">
-            <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Button.PRIMARY}" onclick="JSPC.app.formFilter(event)" />
+            <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Btn.PRIMARY}" onclick="JSPC.app.formFilter(event)" />
             <laser:script file="${this.getGroovyPageFileName()}">
                 JSPC.app.formFilter = function (e) {
                     e.preventDefault()
@@ -233,7 +233,7 @@
             </laser:script>
         </g:if>
         <g:else>
-            <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Button.PRIMARY}"/>
+            <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Btn.PRIMARY}"/>
         </g:else>
 
 </div>

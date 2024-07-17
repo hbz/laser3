@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.helper.Params; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 <ui:filter>
     <g:form action="${actionName}" controller="${controllerName}" params="${params}" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
@@ -141,9 +141,9 @@
             </g:if>
         </g:each>
         <div class="field la-field-right-aligned">
-            <a href="${request.forwardURI}" class="${Button.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+            <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
             <button type="submit" name="search" value="yes"
-                    class="${Button.PRIMARY}">${message(code: 'default.button.filter.label')}</button>
+                    class="${Btn.PRIMARY}">${message(code: 'default.button.filter.label')}</button>
         </div>
     </g:form>
 </ui:filter>

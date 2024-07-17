@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.PersonRole; de.laser.storage.RDStore; de.laser.Person; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.PersonRole; de.laser.storage.RDStore; de.laser.Person; de.laser.storage.RDConstants" %>
 
 <g:if test="${person && personContext}">
     <div class="ui divided middle aligned ${noSelection ? '' : 'selection'} list la-flex-list la-list-border-around">
@@ -40,7 +40,7 @@
                 <g:if test="${editable}">
 
                     <g:if test="${tmplShowAddPersonRoles}">
-                        <input class="${Button.BASIC_ICON}" type="button" data-ui="modal"
+                        <input class="${Btn.BASIC_ICON}" type="button" data-ui="modal"
                                data-href="#prsRoleFormModal${personRole.id}_F"
                                value="Funktionen">
                         <laser:render template="/person/prsRoleModal" model="[personInstance: person,
@@ -51,7 +51,7 @@
                                                                           message:'person.function_new.label',
                                                                           presetOrgId: personContext.id ]"/>
 
-                        <input class="${Button.BASIC_ICON}" type="button" data-ui="modal"
+                        <input class="${Btn.BASIC_ICON}" type="button" data-ui="modal"
                                data-href="#prsRoleFormModal${personRole.id}_P"
                                value="Positionen">
                         <laser:render template="/person/prsRoleModal" model="[personInstance: person,
@@ -64,7 +64,7 @@
                     </g:if>
 
                     <g:if test="${tmplShowAddContacts}">
-                        <input class="${Button.BASIC_ICON}" type="button" data-ui="modal"
+                        <input class="${Btn.BASIC_ICON}" type="button" data-ui="modal"
                                data-href="#contactFormModal${personRole.id}"
                                value="${message(code: 'person.contacts.label')}">
                         <laser:render template="/contact/formModal" model="['prsId': person.id, prId: personRole.id, modalId: 'contactFormModal' + personRole.id]"/>
@@ -76,7 +76,7 @@
                         model.typeId = RDStore.ADDRESS_TYPE_LIBRARY
                         model.redirect = '.'
                         model.hideType = true%>
-                        <input class="${Button.BASIC_ICON}" type="button"
+                        <input class="${Btn.BASIC_ICON}" type="button"
                                value="${message(code: 'person.addresses.label')}"
                                onclick="JSPC.app.addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');" >
                     </g:if>--%>

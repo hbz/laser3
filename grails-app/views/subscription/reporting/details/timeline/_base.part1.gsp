@@ -1,8 +1,8 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.reporting.report.myInstitution.base.BaseQuery; de.laser.reporting.export.LocalExportHelper;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.reporting.report.myInstitution.base.BaseQuery; de.laser.reporting.export.LocalExportHelper;" %>
 <br />
 
 <div style="text-align: right">
-    <button id="details-export-button" class="${Button.BASIC_ICON}" data-href="#detailsExportModal" data-ui="modal">
+    <button id="details-export-button" class="${Btn.BASIC_ICON}" data-href="#detailsExportModal" data-ui="modal">
         <i class="${Icon.CMD.DOWNLOAD}"></i>
     </button>
 </div>

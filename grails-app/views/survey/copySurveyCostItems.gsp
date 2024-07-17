@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem; de.laser.storage.RDConstants;" %>
 <laser:htmlStart message="surveyInfo.copySurveyCostItems" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -300,7 +300,7 @@
                             <g:if test="${participant.newSub}">
                                 <g:link mapping="subfinance" controller="finance" action="index"
                                         params="${[sub: participant.newSub.id]}"
-                                        class="${Button.BASIC_ICON}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
+                                        class="${Btn.BASIC_ICON}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                             </g:if>
 
                             <g:if test="${surveyConfig.subSurveyUseForTransfer}">

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.helper.Params; de.laser.CustomerTypeService; de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.CustomerTypeService; de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
 <laser:serviceInjection />
 
   <ui:filter>
@@ -122,9 +122,9 @@
               </g:else>
               <div class="field"></div>
               <div class="field la-field-right-aligned">
-                  <g:link action="currentLicenses" params="[resetFilter:true]" class="${Button.SECONDARY} reset">${message(code:'default.button.reset.label')}</g:link>
+                  <g:link action="currentLicenses" params="[resetFilter:true]" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</g:link>
                   <input type="hidden" name="filterSet" value="true">
-                  <input type="submit" name="filterSubmit" class="${Button.PRIMARY}" value="${message(code:'default.button.filter.label')}">
+                  <input type="submit" name="filterSubmit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}">
               </div>
           </div>
       </form>

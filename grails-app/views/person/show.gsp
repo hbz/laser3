@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.PersonRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.PersonRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 
 <g:set var="entityName" value="${message(code: 'person.label')}"/>
 <laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" serviceInjection="true" />
@@ -113,7 +113,7 @@
                                 model.redirect = '.'
                                 model.typeId = RDStore.ADDRESS_TYPE_LIBRARY.id
                                 model.hideType = true%>
-                                <input class="${Button.BASIC_ICON}" type="button"
+                                <input class="${Btn.BASIC_ICON}" type="button"
                                        value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}"
                                        onclick="JSPC.app.addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
                                 >

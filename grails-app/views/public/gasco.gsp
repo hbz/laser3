@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.helper.Params; de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.PersonRole; de.laser.ProviderRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.PersonRole; de.laser.ProviderRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
 
 <laser:htmlStart message="menu.public.gasco_monitor">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
@@ -67,8 +67,8 @@
                     </div>
 
                     <div class="field la-field-right-aligned">
-                        <a href="${request.forwardURI}" class="${Button.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
-                        <input type="submit" class="${Button.PRIMARY}" value="${message(code:'default.button.search.label')}">
+                        <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+                        <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.search.label')}">
                     </div>
 
                 </g:form>

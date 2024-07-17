@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.Subscription" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Subscription" %>
 <laser:htmlStart message="myinst.renewalSearch.label" />
 
     <ui:breadcrumbs>
@@ -19,7 +19,7 @@
             </div>
 
             <div class="field">
-                <button class="${Button.PRIMARY}" type="submit" name="search"
+                <button class="${Btn.PRIMARY}" type="submit" name="search"
                         value="yes">${message(code: 'default.button.search.label')}</button>
                 <g:if test="${params.search == 'yes'}">
                     <button class="ui button" type="submit" name="searchreset"

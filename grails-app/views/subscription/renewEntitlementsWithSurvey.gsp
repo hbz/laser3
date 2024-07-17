@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.remote.ApiSource; de.laser.Org" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.remote.ApiSource; de.laser.Org" %>
 <laser:htmlStart message="subscription.details.renewEntitlements.label" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -215,7 +215,7 @@
                         <input type="file" id="kbartPreselect" name="kbartPreselect" accept="text/tab-separated-values"
                                style="display: none;">
 
-                        <div class="${Button.BASIC_ICON}">
+                        <div class="${Btn.BASIC_ICON}">
                             <i class="${Icon.CMD.ATTACHMENT}"></i>
                         </div>
                     </div>
