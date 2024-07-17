@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Button" %>
 <laser:htmlStart text="Manage FTControl" />
 
     <ui:breadcrumbs>
@@ -97,8 +98,8 @@
                     <g:formatNumber number="${indexInfo.countDB}" format="${message(code:'default.decimal.format')}"/>
                 </td>
                 <td class="right aligned">
-                    <g:link action="resetIndex" params="[name: indexInfo.name]" class="ui tiny button red">Reset</g:link>
-                    <g:link action="continueIndex" params="[name: indexInfo.name]" class="ui tiny button green ${indexInfo.countIndex == indexInfo.countDB ? 'disabled' : ''}">Continue</g:link>
+                    <g:link action="resetIndex" params="[name: indexInfo.name]" class="${Button.NEGATIVE} tiny">Reset</g:link>
+                    <g:link action="continueIndex" params="[name: indexInfo.name]" class="${Button.POSITIVE} tiny ${indexInfo.countIndex == indexInfo.countDB ? 'disabled' : ''}">Continue</g:link>
                 </td>
             </tr>
             </g:each>
