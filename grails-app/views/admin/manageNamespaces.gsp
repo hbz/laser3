@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.Identifier; de.laser.IdentifierNamespace; de.laser.I10nTranslation" %>
+<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.Identifier; de.laser.IdentifierNamespace; de.laser.I10nTranslation" %>
 
 <laser:htmlStart message="menu.admin.manageIdentifierNamespaces" />
 
@@ -78,14 +78,14 @@
 
                 <input name="isHidden" type="hidden" value="false" />
 
-                <button type="submit" class="ui button">
+                <button type="submit" class="${Button.BASIC}">
                     <g:message code="default.button.create.label"/>
                 </button>
         </ui:form>
 
         <g:if test="${cmd == 'details'}">
 
-            <g:link controller="admin" action="manageNamespaces" class="ui button right floated"><g:message code="default.button.back"/></g:link>
+            <g:link controller="admin" action="manageNamespaces" class="${Button.BASIC} right floated"><g:message code="default.button.back"/></g:link>
 
             &nbsp;&nbsp;
 
@@ -267,7 +267,7 @@
                                         <g:if test="${tooltip}">
                                             <span data-content="Verwendet für ${tooltip.join(', ')}" data-position="left center"
                                                   class="la-long-tooltip la-popup-tooltip la-delay">
-                                                <g:link class="ui button icon" controller="admin" action="manageNamespaces"
+                                                <g:link class="${Button.BASIC_ICON}" controller="admin" action="manageNamespaces"
                                                         params="${[cmd: 'details', oid: IdentifierNamespace.class.name + ':' + idNs.id]}"><i class="${Icon.TOOLTIP.HELP}"></i></g:link>
                                             </span>
                                         </g:if>

@@ -10,6 +10,9 @@ class Button {
 
     class MODERN {
 
+        public static String BASIC              = 'ui button la-modern-button'
+        public static String BASIC_ICON         = 'ui button icon la-modern-button'
+
 //        public static String PRIMARY            = 'ui button primary la-modern-button'
 //        public static String SECONDARY          = 'ui button secondary la-modern-button'
         public static String BLUE               = 'ui button blue la-modern-button'
