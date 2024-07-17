@@ -6,9 +6,9 @@
             <g:form controller="pendingChange" action="processAll">
                 <g:select from="${packages}" noSelection="${['':message(code:'default.select.choose.label')]}" name="acceptChangesForPackages" class="ui select search multiple dropdown" optionKey="${{it.id}}" optionValue="${{it.pkg.name}}"/>
                 <div class="ui buttons">
-                    <g:submitButton class="ui button positive" name="acceptAll" value="${message(code:'pendingChange.takeAll')}"/>
+                    <g:submitButton class="${Btn.POSITIVE}" name="acceptAll" value="${message(code:'pendingChange.takeAll')}"/>
                     <div class="or" data-text="${message(code:'default.or')}"></div>
-                    <g:submitButton class="ui button negative" name="rejectAll" value="${message(code:'pendingChange.rejectAll')}"/>
+                    <g:submitButton class="${Btn.NEGATIVE}" name="rejectAll" value="${message(code:'pendingChange.rejectAll')}"/>
                 </div>
              </g:form>
         </g:if>

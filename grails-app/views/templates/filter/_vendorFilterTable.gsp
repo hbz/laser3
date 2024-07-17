@@ -191,7 +191,7 @@
 
                             </g:if>
                             <g:else>
-                                <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                <g:link type="button" class="${Btn.NEGATIVE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                         params="[removeVendor: vendor.id, surveyConfigID: surveyConfig.id]"><g:message
                                         code="surveyVendors.unlinkVendor"/></g:link>
 
@@ -202,7 +202,7 @@
                 <g:if test="${tmplConfigItem == 'unLinkSurveyVendor'}">
                     <td class="right aligned">
                         <g:if test="${editable && (SurveyConfigVendor.findByVendorAndSurveyConfig(vendor, surveyConfig))}">
-                            <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                            <g:link type="button" class="${Btn.NEGATIVE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                     params="[removeVendor: vendor.id, surveyConfigID: surveyConfig.id]"><g:message
                                     code="surveyVendors.unlinkVendor"/></g:link>
 
@@ -217,7 +217,7 @@
                                     code="surveyVendors.linkVendor"/></g:link>
                         </g:if>
                         <g:elseif test="${editable && (SurveyVendorResult.findByVendorAndSurveyConfigAndParticipant(vendor, surveyConfig, participant))}">
-                            <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                            <g:link type="button" class="${Btn.NEGATIVE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                     params="${parame+ [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'removeSurveyVendor', vendorId: vendor.id]}"><g:message
                                     code="surveyVendors.unlinkVendor"/></g:link>
 
@@ -227,7 +227,7 @@
                 <g:if test="${tmplConfigItem == 'removeSurveyVendorResult'}">
                     <td class="right aligned">
                         <g:if test="${editable && (SurveyVendorResult.findByVendorAndSurveyConfigAndParticipant(vendor, surveyConfig, participant))}">
-                            <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                            <g:link type="button" class="${Btn.NEGATIVE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                     params="${parame+ [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'removeSurveyVendor', vendorId: vendor.id]}"><g:message
                                     code="surveyVendors.unlinkVendor"/></g:link>
 

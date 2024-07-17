@@ -364,7 +364,7 @@
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
                     <div class="ui buttons">
-                        <button class="ui positive button" ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                        <button class="${Btn.POSITIVE}" ${!editable ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 value="changeCreateProperty">${message(code: 'default.button.save_changes')}</button>
                     </div>

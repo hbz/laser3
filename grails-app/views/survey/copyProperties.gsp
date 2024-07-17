@@ -619,7 +619,7 @@
                             <br>
                         </g:if>
 
-                        <button class="ui button positive"
+                        <button class="${Btn.POSITIVE}"
                                 type="submit">${message(code: 'copyProperties.copyProperties', args: [message(code: 'copyProperties.' + params.tab)])}</button>
                     </div>
                 </div>

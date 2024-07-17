@@ -57,11 +57,11 @@
 							</tbody>
 						</table>
 						<ui:msg class="warning" message="org.findVendorMatches.match" args="[params.proposedVendor]" />
-						<g:link controller="vendor" action="createVendor" class="ui negative button" params="${[vendor:params.proposedVendor]}">${message(code:'org.findVendorMatches.matches.create', args: [params.proposedVendor])}</g:link>
+						<g:link controller="vendor" action="createVendor" class="${Btn.NEGATIVE}" params="${[vendor:params.proposedVendor]}">${message(code:'org.findVendorMatches.matches.create', args: [params.proposedVendor])}</g:link>
 					</g:if>
 					<g:else>
 						<ui:msg class="warning" message="org.findVendorMatches.no_match" args="[params.proposedVendor]" />
-						<g:link controller="vendor" action="createVendor" class="ui positive button" params="${[vendor:params.proposedVendor]}">${message(code:'org.findVendorMatches.no_matches.create', args: [params.proposedVendor])}</g:link>
+						<g:link controller="vendor" action="createVendor" class="${Btn.POSITIVE}" params="${[vendor:params.proposedVendor]}">${message(code:'org.findVendorMatches.no_matches.create', args: [params.proposedVendor])}</g:link>
 					</g:else>
 				</g:if>
 

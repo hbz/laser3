@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.Subscription; de.laser.License; de.laser.Person; de.laser.storage.RDStore; de.laser.FormService" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Subscription; de.laser.License; de.laser.Person; de.laser.storage.RDStore; de.laser.FormService" %>
 <laser:serviceInjection/>
 
 <g:if test="${filteredSubscriptions}">
@@ -53,7 +53,7 @@
                 <div class="two fields">
                     <div class="eight wide field" style="text-align: left;">
                         <div class="ui buttons">
-                            <button class="ui positive button" ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                            <button class="${Btn.POSITIVE}" ${!editable ? 'disabled="disabled"' : ''} type="submit"
                                     name="processOption"
                                     value="linkLicense">${message(code: 'subscriptionsManagement.linkLicenses.button')}</button>
                         </div>

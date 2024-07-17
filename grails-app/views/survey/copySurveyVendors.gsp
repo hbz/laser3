@@ -237,7 +237,7 @@
 
 
                     <div class="field" style="text-align: right;">
-                        <button class="ui button positive" ${!editable ? 'disabled="disabled"' : ''}
+                        <button class="${Btn.POSITIVE}" ${!editable ? 'disabled="disabled"' : ''}
                                 name="processOption"
                                 type="submit">${message(code: 'copySurveyVendors.transfer')}</button>
                     </div>

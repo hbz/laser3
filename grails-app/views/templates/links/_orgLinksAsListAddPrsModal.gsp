@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.PersonRole" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.PersonRole" %>
 <ui:modal id="${cssId}" text="Neuen ${modalPrsLinkRole.getI10n("value")} hinzufügen" hideSubmitButton="true">
 
     <p>${message(code:'myinst.addressBook.visibleOnly')}</p>
@@ -34,7 +34,7 @@
                                     <input type="hidden" name="role" value="${role}"/>
                                     <input type="hidden" name="org" value="${orgRole.org.class.name}:${orgRole.org.id}" />
 
-                                    <input type="submit" class="ui positive button" name="save" value="${message(code:'default.button.link.label')}"/>
+                                    <input type="submit" class="${Btn.POSITIVE}" name="save" value="${message(code:'default.button.link.label')}"/>
                                 </g:form>
                             </td>
                         </tr>
@@ -62,7 +62,7 @@
                                     <input type="hidden" name="role" value="${role}"/>
                                     <input type="hidden" name="org" value="${orgRole.org.class.name}:${orgRole.org.id}" />
 
-                                    <input type="submit" class="ui positive button" name="save" value="${message(code:'default.button.link.label')}"/>
+                                    <input type="submit" class="${Btn.POSITIVE}" name="save" value="${message(code:'default.button.link.label')}"/>
                                 </g:form>
                             </td>
                         </tr>

@@ -97,7 +97,7 @@
                         </g:elseif>
                     </g:if>
                     <g:else>
-                        <input disabled type="submit" class="ui button negative" value="${message(code:'deletion.user')}" />
+                        <input disabled type="submit" class="${Btn.NEGATIVE}" value="${message(code:'deletion.user')}" />
                     </g:else>
 
                 </g:if>

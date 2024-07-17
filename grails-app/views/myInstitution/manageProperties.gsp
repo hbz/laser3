@@ -348,7 +348,7 @@
                         <th>${message(code: 'property.manageProperties.propertySelected')}: ${filterPropDef.getI10n('name')}</th>
                         <th class="x">
                             <button class="${Btn.SIMPLE}" type="submit" name="saveChanges" value="true">${message(code: 'default.button.save_changes')}</button>
-                            <button class="ui button negative" type="submit" name="deleteProperties" value="true">${message(code: 'property.manageProperties.deleteProperty.button', args: [filterPropDef.getI10n('name')])}</button>
+                            <button class="${Btn.NEGATIVE}" type="submit" name="deleteProperties" value="true">${message(code: 'property.manageProperties.deleteProperty.button', args: [filterPropDef.getI10n('name')])}</button>
                                 <%-- TODO ask Ingrid
                                     js-open-confirm-modal
                                     data-confirm-tokenMsg="${message(code: 'property.manageProperties.deleteProperty.button.confirm')}"
