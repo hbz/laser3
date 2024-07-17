@@ -317,7 +317,7 @@
     <ui:modal id="customerTypeModal" message="org.customerType.label" isEditModal="isEditModal" formID="customerTypeChangeForm"
                  showDeleteButton="showDeleteButton" deleteFormID="customerTypeDeleteForm" msgDelete="Kundentyp löschen">
 
-        <g:form id="customerTypeChangeForm" class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
+        <g:form id="customerTypeChangeForm" class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filterParams]">
             <input type="hidden" name="cmd" value="changeCustomerType"/>
             <input type="hidden" name="target" value="" />
 
@@ -337,7 +337,7 @@
             </div>
         </g:form>
 
-        <g:form id="customerTypeDeleteForm" class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
+        <g:form id="customerTypeDeleteForm" class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filterParams]">
             <input type="hidden" name="cmd" value="deleteCustomerType"/>
             <input type="hidden" name="target" value=""/>
         </g:form>
@@ -362,7 +362,7 @@
 
     <ui:modal id="apiLevelModal" message="org.apiLevel.label" isEditModal="isEditModal">
 
-        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
+        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filterParams]">
             <input type="hidden" name="cmd" value="changeApiLevel"/>
             <input type="hidden" name="target" value=""/>
 
