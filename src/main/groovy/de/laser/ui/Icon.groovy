@@ -17,22 +17,22 @@ class Icon {
         @IconUsage(usage = 'Only for Inst Role: Adm')
         public static String INST_ADM       = 'user shield icon'
 
-        @IconUsage(usage = 'Only for Customer Type: Institution Basic')
-        public static String ORG_INST_BASIC         = 'user circle icon grey'   // COLOR INCLUDED !!
-        @IconUsage(usage = 'Only for Customer Type: Institution Pro')
-        public static String ORG_INST_PRO           = 'trophy icon grey'        // COLOR INCLUDED !!
-        @IconUsage(usage = 'Only for Customer Type: Consortium Basic')
-        public static String ORG_CONSORTIUM_BASIC   = 'user circle icon teal'   // COLOR INCLUDED !!
-        @IconUsage(usage = 'Only for Customer Type: Consortium Pro')
-        public static String ORG_CONSORTIUM_PRO     = 'trophy icon teal'        // COLOR INCLUDED !!
-        @IconUsage(usage = 'Only for Customer Type: Support')
-        public static String ORG_SUPPORT            = 'theater masks icon red'  // COLOR INCLUDED !!
+        @IconUsage(usage = 'Only for Customer Type: Institution Basic (COLORED)')
+        public static String ORG_INST_BASIC         = 'user circle icon grey'
+        @IconUsage(usage = 'Only for Customer Type: Institution Pro (COLORED)')
+        public static String ORG_INST_PRO           = 'trophy icon grey'
+        @IconUsage(usage = 'Only for Customer Type: Consortium Basic (COLORED)')
+        public static String ORG_CONSORTIUM_BASIC   = 'user circle icon teal'
+        @IconUsage(usage = 'Only for Customer Type: Consortium Pro (COLORED)')
+        public static String ORG_CONSORTIUM_PRO     = 'trophy icon teal'
+        @IconUsage(usage = 'Only for Customer Type: Support (COLORED)')
+        public static String ORG_SUPPORT            = 'theater masks icon red'
 
         @IconUsage(usage = 'Only for Role: User')
         public static String ROLE_USER      = 'user icon'
-        @IconUsage(usage = 'Only for Role: Admin / Default color: orange')
+        @IconUsage(usage = 'Only for Role: Admin (Default color: orange)')
         public static String ROLE_ADMIN     = 'tools icon'
-        @IconUsage(usage = 'Only for Role: Yoda / Default color: red')
+        @IconUsage(usage = 'Only for Role: Yoda (Default color: red)')
         public static String ROLE_YODA      = 'star of life icon'
     }
 
@@ -40,7 +40,7 @@ class Icon {
         // please do not touch during refactoring ..
         // cmds, functions
 
-        @IconUsage(usage = 'Only for Buttons/Links with command: Add element')
+        @IconUsage(usage = 'Only for Buttons/Links with command: Add element (see also REMOVE)')
         public static String ADD        = 'plus icon'
         @IconUsage(usage = 'Only for Buttons/Links with command: Attach file')
         public static String ATTACHMENT = 'attach icon'
@@ -54,17 +54,19 @@ class Icon {
         public static String EDIT       = 'write icon'
         @IconUsage(usage = 'Only for Buttons/Links with command: Erase element')
         public static String ERASE      = 'eraser icon'
-        @IconUsage(usage = 'Only for Buttons/Links with command: Move element up')
+        @IconUsage(usage = 'Only for Buttons/Links with command: Linkify element (see also UNLINK)')
+        public static String LINKIFY    = 'linkify icon'
+        @IconUsage(usage = 'Only for Buttons/Links with command: Move element up (see also MOVE_DOWN)')
         public static String MOVE_UP    = 'arrow up icon'
-        @IconUsage(usage = 'Only for Buttons/Links with command: Move element down')
+        @IconUsage(usage = 'Only for Buttons/Links with command: Move element down (see also MOVE_UP)')
         public static String MOVE_DOWN  = 'arrow down icon'
-        @IconUsage(usage = 'Only for Buttons/Links with command: Remove element')
+        @IconUsage(usage = 'Only for Buttons/Links with command: Remove element (see also ADD)')
         public static String REMOVE     = 'minus icon'
         @IconUsage(usage = 'Only for Buttons/Links with command: Replace element')
         public static String REPLACE    = 'retweet icon'
         @IconUsage(usage = 'Only for Buttons/Links with command: Show more / Open accordion')
         public static String SHOW_MORE  = 'angle double down icon'
-        @IconUsage(usage = 'Only for Buttons/Links with command: Unlink element / Do not delete')
+        @IconUsage(usage = 'Only for Buttons/Links with command: Unlink element / Do not delete (see also LINKIFY)')
         public static String UNLINK     = 'unlink icon'
     }
 
@@ -76,9 +78,9 @@ class Icon {
         public static String EXTERNAL   = 'external alternate icon'
         @IconUsage(usage = 'Only for Links to views with preset filters')
         public static String FILTERED   = 'filter icon'
-        @IconUsage(usage = 'Only for Links to views for successors of the current object')
+        @IconUsage(usage = 'Only for Links to views for successors of the current object (see also PREV)')
         public static String NEXT       = 'arrow right icon'     // todo: duplicate: ui:anualRings, ui:statusWithRings
-        @IconUsage(usage = 'Only for Links to views for predecessors of the current object')
+        @IconUsage(usage = 'Only for Links to views for predecessors of the current object (see also NEXT)')
         public static String PREV       = 'arrow left icon'      // todo: duplicate: ui:anualRings, ui:statusWithRings
     }
 
@@ -87,17 +89,17 @@ class Icon {
         // properties only
         @IconUsage(usage = 'Only for Properties: formalOrg is tenant = private')
         public static String IS_PRIVATE = 'shield alternate icon'
-        @IconUsage(usage = 'Only for Properties: currently in use')
-        public static String IN_USE     = 'info circle icon blue'   // COLOR INCLUDED !! todo: duplicate: Icon.UI.INFO
+        @IconUsage(usage = 'Only for Properties: currently in use (COLORED)')
+        public static String IN_USE     = 'info circle icon blue'   // todo: duplicate: Icon.UI.INFO
 
-        @IconUsage(usage = 'Only for Property attribute: isHardData')
-        public static String HARDDATA   = 'check circle icon green' // COLOR INCLUDED !!
-        @IconUsage(usage = 'Only for Property attribute: isUsedForLogic')
-        public static String LOGIC      = 'cube icon red'           // COLOR INCLUDED !!
-        @IconUsage(usage = 'Only for Property attribute: mandatory')
+        @IconUsage(usage = 'Only for Property attribute: isHardData (COLORED)')
+        public static String HARDDATA   = 'check circle icon green'
+        @IconUsage(usage = 'Only for Property attribute: isUsedForLogic (COLORED)')
+        public static String LOGIC      = 'cube icon red'
+        @IconUsage(usage = 'Only for Property attribute: mandatory (Default color: yellow)')
         public static String MANDATORY  = 'star icon'               // todo: duplicate: survey/renew? > Icon.UI.MY_OBJECT
-        @IconUsage(usage = 'Only for Property attribute: multipleOccurrence')
-        public static String MULTIPLE   = 'redo icon orange'        // COLOR INCLUDED !! todo: duplicate: currentSubscriptionsTransfer
+        @IconUsage(usage = 'Only for Property attribute: multipleOccurrence (COLORED)')
+        public static String MULTIPLE   = 'redo icon orange'        // todo: duplicate: currentSubscriptionsTransfer
     }
 
     class FNC {
@@ -109,15 +111,15 @@ class Icon {
         @IconUsage(usage = 'Only for cost item configurations')
         public static String COST_CONFIG    = 'money bill alternate icon'
 
-        @IconUsage(usage = 'Only for Cost items: Configuration signed positive')
-        public static String COST_POSITIVE  = 'circle plus icon green'      // COLOR INCLUDED !!
-        @IconUsage(usage = 'Only for Cost items: Configuration signed negative')
-        public static String COST_NEGATIVE  = 'circle minus icon red'       // COLOR INCLUDED !!
-        @IconUsage(usage = 'Only for Cost items: Configuration signed neutral')
-        public static String COST_NEUTRAL   = 'circle icon yellow'          // COLOR INCLUDED !!
+        @IconUsage(usage = 'Only for Cost items: Configuration signed positive (COLORED)')
+        public static String COST_POSITIVE  = 'circle plus icon green'
+        @IconUsage(usage = 'Only for Cost items: Configuration signed negative (COLORED)')
+        public static String COST_NEGATIVE  = 'circle minus icon red'
+        @IconUsage(usage = 'Only for Cost items: Configuration signed neutral (COLORED)')
+        public static String COST_NEUTRAL   = 'circle icon yellow'
 
-        @IconUsage(usage = 'Only for Cost items: Configuration not set')
-        public static String COST_NOT_SET   = 'grey question circle icon'   // COLOR INCLUDED !!
+        @IconUsage(usage = 'Only for Cost items: Configuration not set (COLORED)')
+        public static String COST_NOT_SET   = 'grey question circle icon'
     }
 
     class SYM {
@@ -145,7 +147,7 @@ class Icon {
         public static String UNKOWN         = 'question icon'
 
 
-        @IconUsage(usage = 'Only for Org attributes: createdBy/legallyObligedBy')
+        @IconUsage(usage = 'Only for Org attributes: createdBy / legallyObligedBy')
         public static String ORG_LEGAL_INFORMATION      = 'hands helping icon'
 
         @IconUsage(usage = 'Only for Subscription attribute: isMultiYear')
