@@ -1820,13 +1820,7 @@ class SubscriptionService {
                     if(licRole) {
                         OrgRole orgLicRole = OrgRole.findByLicAndOrgAndRoleType(newLicense,subscr,licRole)
                         if(!orgLicRole){
-                            orgLicRole = OrgRole.findByLicAndOrgAndRoleType(newLicense,subscr,licRole)
-                            if(orgLicRole && orgLicRole.lic != newLicense) {
-                                orgLicRole.lic = newLicense
-                            }
-                            else {
-                                orgLicRole = new OrgRole(lic: newLicense,org: subscr, roleType: licRole)
-                            }
+                            orgLicRole = new OrgRole(lic: newLicense,org: subscr, roleType: licRole)
                             if(!orgLicRole.save())
                                 log.error(orgLicRole.errors.toString())
                         }

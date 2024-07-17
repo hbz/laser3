@@ -268,9 +268,10 @@
 
     <g:each in="${tmplConfig}" var="cfg">
         <div class="dataWrapper" data-obj="${cfg[0]}" style="margin:2em">
-            <p class="ui header">
-                <i class="icon grey ${cfg[3]}" style="vertical-align:bottom"></i> ${message(code: "${cfg[2]}")}
-            </p>
+            <div class="ui header">
+                <i class="icon circular grey ${cfg[3]}"></i>
+                <div class="content"> ${message(code: "${cfg[2]}")} </div>
+            </div>
             <div class="ui vertically divided very compact grid" style="margin-top: 1.5em;">
                 <g:each in="${cfg[1].all}" var="obj">
                     <g:set var="isObjCreated" value="${obj.uuid in cfg[1].created}" /> %{-- uuid --}%
