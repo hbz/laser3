@@ -10,8 +10,8 @@
 
 <nav class="ui secondary menu">
     <g:link controller="dev" action="klodav" class="item">Various</g:link>
-    <g:link controller="dev" action="icons" class="item"><i class="certificate icon red"></i> New Icons</g:link>
-%{--    <g:link controller="dev" action="buttons" class="item active"><i class="certificate icon orange"></i> New Buttons</g:link>--}%
+    <g:link controller="dev" action="icons" class="item"><i class="certificate icon yellow"></i> New Icons</g:link>
+    <g:link controller="dev" action="buttons" class="item active"><i class="certificate icon red"></i> New Buttons</g:link>
 </nav>
 
 <div class="ui info message">
@@ -19,7 +19,7 @@
         Usage
         <button class="${Btn.MODERN.SIMPLE_ICON} blue" style="float: right"><i class="${Icon.SYM.UNKOWN}"></i></button>
     </p>
-    <pre>&lt;button class=&quot;&dollar;{Btn.MODERN.BASIC_ICON} blue&quot;&gt;&lt;i class=&quot;&dollar;{Icon.SYM.UNKOWN}&quot;&gt;&lt;/i&gt;&lt;/button&gt;</pre>
+    <pre>&lt;button class=&quot;&dollar;{Btn.MODERN.SIMPLE_ICON} blue&quot;&gt;&lt;i class=&quot;&dollar;{Icon.SYM.UNKOWN}&quot;&gt;&lt;/i&gt;&lt;/button&gt;</pre>
 </div>
 
 <div class="ui segment">

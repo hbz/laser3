@@ -10,8 +10,8 @@
 
 <nav class="ui secondary menu">
     <g:link controller="dev" action="klodav" class="item active">Various</g:link>
-    <g:link controller="dev" action="icons" class="item"><i class="certificate icon red"></i> New Icons</g:link>
-%{--    <g:link controller="dev" action="buttons" class="item"><i class="certificate icon orange"></i> New Buttons</g:link>--}%
+    <g:link controller="dev" action="icons" class="item"><i class="certificate icon yellow"></i> New Icons</g:link>
+    <g:link controller="dev" action="buttons" class="item"><i class="certificate icon red"></i> New Buttons</g:link>
 </nav>
 
 <div class="ui four column grid">
