@@ -247,6 +247,10 @@
           description: Timestamp when the cost item validity span starts.
           format: <% print ApiToolkit.DATE_TIME_PATTERN %>
           example: "2022-01-01T00:00:00"
+        sub:
+          $ref: "#/components/schemas/SubscriptionStub"
+        pkg:
+          $ref: "#/components/schemas/Package_in_CostItem"
         taxCode:
           type: string
           description: The type of tax for this cost item; maps to RefdataCategory "${RDConstants.TAX_TYPE}".
