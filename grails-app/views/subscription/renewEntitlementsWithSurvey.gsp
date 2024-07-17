@@ -224,7 +224,7 @@
                 <div class="field">
                     <input type="submit"
                            value="${message(code: 'renewEntitlementsWithSurvey.issueEntitlementSelect.uploadButton')}"
-                           class="fluid ui button"/>
+                           class="${Btn.SIMPLE} fluid"/>
                 </div>
             </div>
         </g:form>
@@ -362,14 +362,14 @@
         <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
             <g:link controller="survey" action="evaluationParticipant"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: subscriber.id]"
-                    class="ui button right floated">
+                    class="${Btn.SIMPLE} right floated">
                 <g:message code="surveyInfo.backToSurvey"/>
             </g:link>
         </g:if>
         <g:else>
             <g:link controller="myInstitution" action="surveyInfos"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]"
-                    class="ui button right floated">
+                    class="${Btn.SIMPLE} right floated">
                 <g:message code="surveyInfo.backToSurvey"/>
             </g:link>
         </g:else>

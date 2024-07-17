@@ -70,7 +70,7 @@
                                     <div class="ui two fields">
                                         <div class="ui field">
                                             <label>${message(code:'user.password.label')}</label>
-                                            <input type="submit" class="ui button orange" value="${message(code:'user.newPassword.text')}">
+                                            <input type="submit" class="${Btn.SIMPLE} orange" value="${message(code:'user.newPassword.text')}">
                                         </div>
                                     </div>
                                 </g:form>
@@ -79,7 +79,7 @@
                                     <div class="ui two fields">
                                         <div class="ui field">
                                             <label>${message(code:'user.username.label')}</label>
-                                            <input type="submit" class="ui button orange" value="${message(code:'menu.user.forgottenUsername.send')}">
+                                            <input type="submit" class="${Btn.SIMPLE} orange" value="${message(code:'menu.user.forgottenUsername.send')}">
                                         </div>
                                     </div>
                                 </g:form>

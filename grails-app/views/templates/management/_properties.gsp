@@ -372,7 +372,7 @@
 
                 <div class="eight wide field" style="text-align: right;">
                     <div class="ui buttons">
-                        <button class="ui button negative " ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                        <button class="${Btn.NEGATIVE}" ${!editable ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 value="deleteProperty">${message(code: 'subscriptionsManagement.deleteProperty.button', args: [propertiesFilterPropDef.getI10n('name')])}</button>
                     </div>

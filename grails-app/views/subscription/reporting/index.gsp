@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.reporting.report.ReportingCache; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.reporting.report.ReportingCache; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.storage.RDStore;" %>
 <laser:htmlStart message="myinst.reporting" serviceInjection="true">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
@@ -23,7 +23,7 @@
         <laser:render template="/subscription/reporting/query/query" />
 
         %{-- <sec:ifAnyGranted roles="ROLE_YODA">
-            <g:link controller="yoda" action="systemCache" params="${[key: ReportingCache.CTX_SUBSCRIPTION + 'static#' + params.id]}" target="_blank" class="ui button small"><i class="icon bug"></i> YODA only CACHE</g:link>
+            <g:link controller="yoda" action="systemCache" params="${[key: ReportingCache.CTX_SUBSCRIPTION + 'static#' + params.id]}" target="_blank" class="${Btn.SIMPLE} small"><i class="icon bug"></i> YODA only CACHE</g:link>
         </sec:ifAnyGranted> --}%
 
         <div id="reporting-chart-nodata" class="ui error message">${message(code:'reporting.modal.nodata')}</div>
