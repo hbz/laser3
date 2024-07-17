@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.TitleInstancePackagePlatform; grails.converters.JSON" %>
+<%@ page import="de.laser.ui.Button; de.laser.storage.RDStore; de.laser.TitleInstancePackagePlatform; grails.converters.JSON" %>
 
 <laser:htmlStart text="Datenbereinigung: Gelöschte TIPPs" serviceInjection="true"/>
 
@@ -14,7 +14,7 @@
             <thead>
                 <tr>
                     <th colspan="5">
-                        <g:link action="expungeRemovedTIPPs" params="[doIt: true]" class="ui negative button js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.deleteTIPPsWithoutGOKBId')}"
+                        <g:link action="expungeRemovedTIPPs" params="[doIt: true]" class="${Button.NEGATIVE_CONFIRM}" data-confirm-tokenMsg="${message(code: 'confirmation.content.deleteTIPPsWithoutGOKBId')}"
                                 data-confirm-term-how="ok">Daten bereinigen (bitte mit EXTREMER VORSICHT betätigen!!!)</g:link>
                     </th>
                 </tr>
@@ -46,7 +46,7 @@
             <tfoot>
                 <tr>
                     <td colspan="5">
-                        <g:link action="expungeRemovedTIPPs" params="[doIt: true]" class="ui negative button js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.deleteTIPPsWithoutGOKBId')}"
+                        <g:link action="expungeRemovedTIPPs" params="[doIt: true]" class="${Button.NEGATIVE_CONFIRM}" data-confirm-tokenMsg="${message(code: 'confirmation.content.deleteTIPPsWithoutGOKBId')}"
                                 data-confirm-term-how="ok">Daten bereinigen (bitte mit EXTREMER VORSICHT betätigen!!!)</g:link>
                     </td>
                 </tr>

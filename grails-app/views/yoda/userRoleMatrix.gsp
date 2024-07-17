@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.utils.DateUtils" %>
+<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.utils.DateUtils" %>
 <laser:htmlStart message="menu.yoda.userRoleMatrix" />
 
 <ui:breadcrumbs>
@@ -43,7 +43,7 @@
 %{--                                    <ui:booleanIcon value="${user.passwordExpired}"/>--}%
 %{--                                </td>--}%
                                 <td class="x">
-                                    <g:link controller="user" action="edit" id="${user.id}" class="ui icon button">
+                                    <g:link controller="user" action="edit" id="${user.id}" class="${Button.BASIC_ICON}">
                                         <i class="${Icon.CMD.EDIT}"></i>
                                     </g:link>
                                 </td>

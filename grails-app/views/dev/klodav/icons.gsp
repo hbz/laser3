@@ -1,4 +1,4 @@
-<%@ page import="de.laser.annotations.UIDoc; de.laser.annotations.IconUsage; de.laser.ui.Button; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.annotations.UIDoc; de.laser.ui.Button; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:htmlStart text="Playground: New Icons" serviceInjection="true" />
 
 <ui:breadcrumbs>
