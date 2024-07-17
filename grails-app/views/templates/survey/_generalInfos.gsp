@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.utils.DateUtils;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.utils.DateUtils;" %>
 
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
@@ -170,7 +170,7 @@
 </div>
 
 <g:if test="${surveyConfig.invoicingInformation}">
-    <g:link class="ui button"
+    <g:link class="${Btn.SIMPLE}"
             controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
             params="${parame+[viewTab: 'invoicingInformation']}">
         ${message(code: 'default.edit.label', args:  [message(code: 'surveyOrg.invoicingInformation')])}

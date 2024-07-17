@@ -186,7 +186,7 @@
                                     </g:if><g:else>
                                     <div class="content">
                                         ${message(code: 'subscriptionsManagement.noCustomProperty')}
-                                        <g:link class="ui button" controller="ajax" action="addCustomPropertyValue"
+                                        <g:link class="${Btn.SIMPLE}" controller="ajax" action="addCustomPropertyValue"
                                                 params="[
                                                         propIdent    : propertiesFilterPropDef.id,
                                                         ownerId      : subscription.id,
@@ -263,7 +263,7 @@
                                     </g:if><g:else>
                                     <div class="content">
                                         ${message(code: 'subscriptionsManagement.noPrivateProperty')}
-                                        <g:link class="ui button" controller="ajax" action="addPrivatePropertyValue"
+                                        <g:link class="${Btn.SIMPLE}" controller="ajax" action="addPrivatePropertyValue"
                                                 params="[
                                                         propIdent    : propertiesFilterPropDef.id,
                                                         ownerId      : subscription.id,
@@ -531,7 +531,7 @@
                                         </g:if><g:else>
                                         <div class="content">
                                             ${message(code: 'subscriptionsManagement.noCustomProperty')}
-                                            <g:link class="ui button" controller="ajax" action="addCustomPropertyValue"
+                                            <g:link class="${Btn.SIMPLE}" controller="ajax" action="addCustomPropertyValue"
                                                     params="[
                                                             propIdent    : propertiesFilterPropDef.id,
                                                             ownerId      : sub.id,
@@ -604,7 +604,7 @@
                                         </g:if><g:else>
                                         <div class="content">
                                             ${message(code: 'subscriptionsManagement.noPrivateProperty')}
-                                            <g:link class="ui button" controller="ajax" action="addPrivatePropertyValue"
+                                            <g:link class="${Btn.SIMPLE}" controller="ajax" action="addPrivatePropertyValue"
                                                     params="[
                                                             propIdent    : propertiesFilterPropDef.id,
                                                             ownerId      : sub.id,

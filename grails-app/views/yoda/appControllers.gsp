@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <laser:htmlStart message="menu.yoda.appControllers" />
 
 <ui:breadcrumbs>
@@ -59,7 +59,7 @@
 <br />
 <br />
 
-%{--<button id="resultToggle" class="ui button">Hier klicken zum Ändern der Ansicht</button>--}%
+%{--<button id="resultToggle" class="${Btn.SIMPLE}">Hier klicken zum Ändern der Ansicht</button>--}%
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.resultViewModes = [

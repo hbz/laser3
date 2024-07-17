@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore" %>
     <ui:messages data="${flash}" />
     <div id="filterTemplateWrapper" class="wrapper">
         <div id="filterTemplate">
@@ -39,24 +39,24 @@
                             <div class="field" style="text-align: right;">
                                 <g:if test="${showBulkCostItems == null || showBulkCostItems == 'false'}">
                                     <g:if test="${fixedSubscription}">
-                                        <g:link class="ui button" mapping="subfinance" controller="finance" action="index" params="${params+[showView:showView, showBulkCostItems: 'true']}">
+                                        <g:link class="${Btn.SIMPLE}" mapping="subfinance" controller="finance" action="index" params="${params+[showView:showView, showBulkCostItems: 'true']}">
                                             ${g.message(code: 'financials.bulkCostItems.show')}
                                         </g:link>
                                     </g:if>
                                     <g:else>
-                                        <g:link class="ui button" action="finance" controller="myInstitution" params="${params+[showView:showView, showBulkCostItems: 'true']}">
+                                        <g:link class="${Btn.SIMPLE}" action="finance" controller="myInstitution" params="${params+[showView:showView, showBulkCostItems: 'true']}">
                                             ${g.message(code: 'financials.bulkCostItems.show')}
                                         </g:link>
                                     </g:else>
                                 </g:if>
                                 <g:else>
                                     <g:if test="${fixedSubscription}">
-                                        <g:link class="ui button" mapping="subfinance" controller="finance" action="index" params="${params+[showView:showView, showBulkCostItems: 'false']}">
+                                        <g:link class="${Btn.SIMPLE}" mapping="subfinance" controller="finance" action="index" params="${params+[showView:showView, showBulkCostItems: 'false']}">
                                             ${g.message(code: 'financials.bulkCostItems.hidden')}
                                         </g:link>
                                     </g:if>
                                     <g:else>
-                                        <g:link class="ui button" action="finance" controller="myInstitution" params="${params+[showView:showView, showBulkCostItems: 'false']}">
+                                        <g:link class="${Btn.SIMPLE}" action="finance" controller="myInstitution" params="${params+[showView:showView, showBulkCostItems: 'false']}">
                                             ${g.message(code: 'financials.bulkCostItems.hidden')}
                                         </g:link>
                                     </g:else>
@@ -117,7 +117,7 @@
 
                                             <div class="two fields">
                                                 <div class="eight wide field" style="text-align: left;">
-                                                    <button class="ui button"
+                                                    <button class="${Btn.SIMPLE}"
                                                             type="submit">${message(code: 'financials.bulkCostItems.submit')}</button>
                                                 </div>
 

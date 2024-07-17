@@ -301,7 +301,7 @@
         <br />
 
         <div class="paginateButtons" style="text-align:center">
-            <button type="submit" name="processCopyButton" value="yes" class="ui button">${message(code: 'subscription.details.copyDiscountScales.process')}</button>
+            <button type="submit" name="processCopyButton" value="yes" class="${Btn.SIMPLE}">${message(code: 'subscription.details.copyDiscountScales.process')}</button>
         </div>
 
         <g:if test="${num_sub_rows}">

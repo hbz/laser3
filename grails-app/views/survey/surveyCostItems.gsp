@@ -156,7 +156,7 @@
             <g:if test="${(params.tab == 'selectedSubParticipants' && selectedSubParticipants.size() > 0) || (params.tab == 'selectedParticipants' && selectedParticipants.size() > 0)}">
                 <div class="field" style="text-align: right;">
                     <button id="bulkCostItems-toggle"
-                            class="ui button"><g:message code="financials.bulkCostItems.show"/></button>
+                            class="${Btn.SIMPLE}"><g:message code="financials.bulkCostItems.show"/></button>
                     <laser:script file="${this.getGroovyPageFileName()}">
                         $('#bulkCostItems-toggle').on('click', function () {
                             $('#bulkCostItems').toggleClass('hidden')
@@ -237,7 +237,7 @@
 
                         <div class="two fields">
                             <div class="eight wide field" style="text-align: left;">
-                                <button class="ui button"
+                                <button class="${Btn.SIMPLE}"
                                         type="submit">${message(code: 'default.button.save_changes')}</button>
                             </div>
 

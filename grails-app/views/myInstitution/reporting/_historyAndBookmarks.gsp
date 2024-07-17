@@ -1,4 +1,4 @@
-<%@page import="de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.ReportingFilter;de.laser.reporting.export.GlobalExportHelper;de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.reporting.report.ReportingCache;" %>
+<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.ReportingFilter;de.laser.reporting.export.GlobalExportHelper;de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.reporting.report.ReportingCache;" %>
 <laser:serviceInjection/>
 
 <g:if test="${filterHistory}">
@@ -50,7 +50,7 @@
         </div>
         <div style="margin-top: 1em">
             <g:link controller="ajaxHtml" action="reporting" params="${[context: BaseConfig.KEY_MYINST, cmd: 'deleteHistory']}"
-                    elementId="history-delete" class="ui button">${message(code:'reporting.ui.global.history.delete')}</g:link>
+                    elementId="history-delete" class="${Btn.SIMPLE}">${message(code:'reporting.ui.global.history.delete')}</g:link>
         </div>
     </div>
 </g:if>

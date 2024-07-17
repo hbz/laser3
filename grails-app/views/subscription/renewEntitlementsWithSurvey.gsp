@@ -122,14 +122,14 @@
             <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
                 <g:link controller="survey" action="evaluationParticipant"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: subscriber.id]"
-                        class="ui button">
+                        class="${Btn.SIMPLE}">
                     <g:message code="surveyInfo.backToSurvey"/>
                 </g:link>
             </g:if>
             <g:else>
                 <g:link controller="myInstitution" action="surveyInfos"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]"
-                        class="ui button">
+                        class="${Btn.SIMPLE}">
                     <g:message code="surveyInfo.backToSurvey"/>
                 </g:link>
             </g:else>

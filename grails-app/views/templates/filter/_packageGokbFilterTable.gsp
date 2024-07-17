@@ -454,7 +454,7 @@
                     <g:if test="${tmplConfigItem == 'addSurveyPackageResult'}">
                         <td class="right aligned">
                             <g:if test="${editable && (!uuidPkgs || !(record.uuid in uuidPkgs))}">
-                                <g:link type="button" class="ui button" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                <g:link type="button" class="${Btn.SIMPLE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                         params="${parame+ [viewTab: 'packageSurvey', actionsForSurveyPackages: 'addSurveyPackage', pkgUUID: record.uuid]}"><g:message
                                         code="surveyPackages.linkPackage"/></g:link>
                             </g:if>

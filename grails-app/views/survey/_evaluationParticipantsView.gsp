@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyPackageResult; de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyPackageResult; de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
 <laser:serviceInjection/>
 
 <g:if test="${showOpenParticipantsAgainButtons}">
@@ -90,7 +90,7 @@
                                 </td>
                                 <td>${property.value.size()}</td>
                                 <td>
-                                    <button class="ui button"  onclick="JSPC.app.propertiesChanged(${property.key});">
+                                    <button class="${Btn.SIMPLE}"  onclick="JSPC.app.propertiesChanged(${property.key});">
                                         <g:message code="default.button.show.label"/>
                                     </button>
                                 </td>
@@ -695,7 +695,7 @@
                 <div class="two fields">
                     <g:if test="${actionName == 'participantsReminder'}">
                        %{-- <div class="eight wide field" style="text-align: left;">
-                            <a data-ui="modal" class="ui button"
+                            <a data-ui="modal" class="${Btn.SIMPLE}"
                                href="#generateEmailWithAddresses_ajaxModal">
                                 ${message(code: 'openParticipantsAgain.reminder.participantsHasAccess')}
                             </a>--}%
@@ -709,7 +709,7 @@
                         </div>
 
                         <div class="eight wide field" style="text-align: left;">
-                            <button name="openOption" type="submit" value="ReminderMail" class="ui button">
+                            <button name="openOption" type="submit" value="ReminderMail" class="${Btn.SIMPLE}">
                                 ${message(code: 'openParticipantsAgain.reminder.participantsHasAccess')}
                             </button>
                         </div>
@@ -1303,7 +1303,7 @@
                 </div>
             </div>
 
-            <input class="ui button" type="submit" value="${message(code: 'surveyTransfer.button')}">
+            <input class="${Btn.SIMPLE}" type="submit" value="${message(code: 'surveyTransfer.button')}">
         </ui:greySegment>
         </div>
 
@@ -1316,13 +1316,13 @@
                     <g:if test="${actionName == 'openParticipantsAgain'}">
 
                         <div class="eight wide field" style="text-align: left;">
-                            <button name="openOption" type="submit" value="OpenWithoutMail" class="ui button">
+                            <button name="openOption" type="submit" value="OpenWithoutMail" class="${Btn.SIMPLE}">
                                 ${message(code: 'openParticipantsAgain.openWithoutMail.button')}
                             </button>
                         </div>
 
                         <div class="eight wide field" style="text-align: right;">
-                            <button name="openOption" type="submit" value="OpenWithMail" class="ui button">
+                            <button name="openOption" type="submit" value="OpenWithMail" class="${Btn.SIMPLE}">
                                 ${message(code: 'openParticipantsAgain.openWithMail.button')}
                             </button>
                         </div>

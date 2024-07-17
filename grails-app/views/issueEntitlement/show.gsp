@@ -381,7 +381,7 @@
                             <td><g:link controller="package" action="show"
                                         id="${t.pkg.id}">${t.pkg.name}</g:link></td>
                             <td>
-                                <g:link class="ui button" controller="tipp" action="show"
+                                <g:link class="${Btn.SIMPLE}" controller="tipp" action="show"
                                         id="${t.id}">${message(code: 'tipp.details')}</g:link></td>
                         </tr>
                     </g:each>

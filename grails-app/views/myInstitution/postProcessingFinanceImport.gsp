@@ -176,7 +176,7 @@
                     <tr>
                         <td colspan="3">
                             <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.save.label')}">
-                            <g:link action="financeImport" class="ui button"><g:message code="default.button.back"/></g:link>
+                            <g:link action="financeImport" class="${Btn.SIMPLE}"><g:message code="default.button.back"/></g:link>
                         </td>
                     </tr>
                 </tfoot>

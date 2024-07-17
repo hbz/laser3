@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription;" %>
 <laser:serviceInjection/>
 <g:if test="${filteredSubscriptions}">
 
@@ -35,7 +35,7 @@
             </div>
         </g:if>
 
-        <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
+        <button class="${Btn.SIMPLE}" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
                 value="newNote">${message(code: 'default.button.create.label')}</button>
 
         </div><!-- .segment -->

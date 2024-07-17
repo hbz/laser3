@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 
 <laser:htmlStart message="createSubscriptionSurvey.label" serviceInjection="true" />
 
@@ -80,7 +80,7 @@
             <textarea class="la-textarea-resize-vertical" name="comment">${params.comment}</textarea>
         </div>
 
-        <input type="submit" class="ui button"
+        <input type="submit" class="${Btn.SIMPLE}"
                value="${message(code: 'createSubscriptionSurvey.create')}"/>
 
     </ui:form>

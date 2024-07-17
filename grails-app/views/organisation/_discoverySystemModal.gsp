@@ -1,7 +1,7 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.ui.Btn; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
 <g:if test="${editable}">
     <g:if test="${config == 'discoverySystemFrontend'}">
-        <a class="ui button" data-ui="modal" href="#frontend">
+        <a class="${Btn.SIMPLE}" data-ui="modal" href="#frontend">
             <g:message code="org.discoverySystems.frontend.add"/>
         </a>
 
@@ -22,7 +22,7 @@
         </ui:modal>
     </g:if>
     <g:elseif test="${config == 'discoverySystemIndex'}">
-        <a class="ui button" data-ui="modal" href="#index">
+        <a class="${Btn.SIMPLE}" data-ui="modal" href="#index">
             <g:message code="org.discoverySystems.index.add"/>
         </a>
 

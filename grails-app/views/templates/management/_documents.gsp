@@ -63,7 +63,7 @@
 
         <div class="ui error message"></div>
 
-        <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
+        <button class="${Btn.SIMPLE}" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
                 value="newDoc">${message(code: 'default.button.create.label')}</button>
     </g:form>
 

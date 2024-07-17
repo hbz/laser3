@@ -84,7 +84,7 @@
                                 </g:each>
                             </div>
                             <g:if test="${editable}">
-                                <input class="ui button" type="button" data-ui="modal" data-href="#contactFormModal"
+                                <input class="${Btn.SIMPLE}" type="button" data-ui="modal" data-href="#contactFormModal"
                                        value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label')])}">
                                 <laser:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
                             </g:if>
@@ -183,7 +183,7 @@
                                 </div>
 
                                 <g:if test="${editable}">
-                                    <a href="#prFunctionModal" data-ui="modal" class="ui button">${message('code':'default.button.add.label')}</a>
+                                    <a href="#prFunctionModal" data-ui="modal" class="${Btn.SIMPLE}">${message('code':'default.button.add.label')}</a>
                                 </g:if>
                             </dd>
                         </dl>
@@ -243,7 +243,7 @@
                                 </div>
 
                                 <g:if test="${editable}">
-                                    <a href="#prPositionModal" data-ui="modal" class="ui button">${message('code':'default.button.add.label')}</a>
+                                    <a href="#prPositionModal" data-ui="modal" class="${Btn.SIMPLE}">${message('code':'default.button.add.label')}</a>
                                 </g:if>
                             </dd>
                         </dl>

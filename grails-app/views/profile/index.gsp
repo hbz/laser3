@@ -44,7 +44,7 @@
                         </div>
 
                         <div class="field">
-                            <button type="submit" class="ui button">${message(code: 'profile.update.button')}</button>
+                            <button type="submit" class="${Btn.SIMPLE}">${message(code: 'profile.update.button')}</button>
                         </div>
                     </ui:form><!-- updateProfile -->
 
@@ -120,7 +120,7 @@
                         </table>
 
                         <div class="inline field">
-                            <button type="submit" class="ui button" id="notificationSubmit">${message(code: 'profile.notification.submit')}</button>
+                            <button type="submit" class="${Btn.SIMPLE}" id="notificationSubmit">${message(code: 'profile.notification.submit')}</button>
                         </div>
                     </ui:form><!-- updateNotificationSettings -->
 
@@ -314,7 +314,7 @@
                         </table>
 
                         <div class="inline field">
-                            <button type="submit" class="ui button" id="reminderSubmit">${message(code: 'profile.reminder.submit')}</button>
+                            <button type="submit" class="${Btn.SIMPLE}" id="reminderSubmit">${message(code: 'profile.reminder.submit')}</button>
                         </div>
                     </ui:form><!-- updateReminderSettings -->
                 </div><!-- .content -->
@@ -383,7 +383,7 @@
                         </div>
                         <div class="field">
                             <label></label>
-                            <button type="submit" class="ui button" id="password_submit">${message(code: 'profile.password.update.button')}</button>
+                            <button type="submit" class="${Btn.SIMPLE}" id="password_submit">${message(code: 'profile.password.update.button')}</button>
                         </div>
                     </ui:form><!-- updatePassword -->
 
@@ -427,7 +427,7 @@
                                         </div>
 
                                         <div class="field">
-                                            <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="ui button">${message(code: 'profile.membership.add.button')}</button>
+                                            <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="${Btn.SIMPLE}">${message(code: 'profile.membership.add.button')}</button>
                                         </div>
                                     </ui:form>
                                 </div><!-- .content -->

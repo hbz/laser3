@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.RefdataCategory; de.laser.Address; de.laser.Org; de.laser.Provider; de.laser.Vendor; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.storage.RDConstants; de.laser.I10nTranslation;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.utils.LocaleUtils; de.laser.RefdataCategory; de.laser.Address; de.laser.Org; de.laser.Provider; de.laser.Vendor; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.storage.RDConstants; de.laser.I10nTranslation;" %>
 <laser:serviceInjection />
 <ui:modalAddress form="create_address"  modalSize="big" id="addressFormModal" text="${modalText ?: message(code: 'address.add.addressForPublic.label')}" msgClose="${message(code: 'default.button.cancel')}" msgSave="${modalMsgSave ?: message(code: 'default.button.create.label')}">
     <g:form id="create_address" class="ui form" url="${url}" method="POST">
@@ -117,7 +117,7 @@
                 </h2>
             </div>
             <div class="or" data-text="<g:message code='search.advancedSearch.option.OR' />"></div>
-            <div class="ui button" id="buttonPostalAddress">
+            <div class="${Btn.SIMPLE}" id="buttonPostalAddress">
                 <h2 class="ui icon inverted header">
                     <i class="inbox icon"></i>
                     <div class="content">

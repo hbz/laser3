@@ -307,7 +307,7 @@
         </table>
         <g:if test="${editable && params.tab == 'open' && reminder}">
             <div class="eight wide field" style="text-align: left;">
-                <button name="openOption" type="submit" value="ReminderMail" class="ui button">
+                <button name="openOption" type="submit" value="ReminderMail" class="${Btn.SIMPLE}">
                     ${message(code: 'openParticipantsAgain.reminder')}
                 </button>
             </div>

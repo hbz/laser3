@@ -24,7 +24,7 @@
 			<div class="field la-field-right-aligned">
 				<a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.searchreset.label')}</a>
 				<input type="submit" value="${message(code:'default.button.search.label')}" class="${Btn.PRIMARY}">
-				<g:link controller="vendor" action="list" class="ui button">${message(code:'default.button.cancel.label')}</g:link>
+				<g:link controller="vendor" action="list" class="${Btn.SIMPLE}">${message(code:'default.button.cancel.label')}</g:link>
 			</div>
 		</ui:searchSegment>
 

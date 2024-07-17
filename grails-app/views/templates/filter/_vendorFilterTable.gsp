@@ -212,7 +212,7 @@
                 <g:if test="${tmplConfigItem == 'addSurveyVendorResult'}">
                     <td class="right aligned">
                         <g:if test="${editable && (!SurveyVendorResult.findBySurveyConfigAndParticipant(surveyConfig, participant))}">
-                            <g:link type="button" class="ui button" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                            <g:link type="button" class="${Btn.SIMPLE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                     params="${parame+ [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'addSurveyVendor', vendorId: vendor.id]}"><g:message
                                     code="surveyVendors.linkVendor"/></g:link>
                         </g:if>

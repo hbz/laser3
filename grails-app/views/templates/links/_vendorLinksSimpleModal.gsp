@@ -1,6 +1,6 @@
-<%@ page import="de.laser.ui.Icon" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <g:if test="${editmode}">
-    <a role="button" class="ui button" data-ui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
+    <a role="button" class="${Btn.SIMPLE}" data-ui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
 </g:if>
 
 <ui:modal contentClass="scrolling" modalSize="medium" id="${tmplModalID}" text="${tmplText}" isEditModal="${editmode}">

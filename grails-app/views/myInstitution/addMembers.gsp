@@ -1,4 +1,4 @@
-<%@page import="de.laser.FormService" %>
+<%@page import="de.laser.ui.Btn; de.laser.FormService" %>
 
 <laser:htmlStart message="menu.institutions.add_consortia_members" serviceInjection="true" />
     <g:set var="entityName" value="${message(code: 'org.label')}" />
@@ -34,7 +34,7 @@
 
         <br />
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
-        <input type="submit" class="ui button" value="${message(code:'default.button.add.label')}" />
+        <input type="submit" class="${Btn.SIMPLE}" value="${message(code:'default.button.add.label')}" />
     </g:form>
     </g:if>
     <g:else>
