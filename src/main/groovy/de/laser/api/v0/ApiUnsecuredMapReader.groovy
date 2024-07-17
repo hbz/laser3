@@ -234,6 +234,8 @@ class ApiUnsecuredMapReader {
         result.startDate        = ApiToolkit.formatInternalDate(sub.startDate)
         result.endDate          = ApiToolkit.formatInternalDate(sub.endDate)
 
+        // RefdataValues
+        result.status           = sub.status.value
 
         // References
         result.identifiers = ApiCollectionReader.getIdentifierCollection(sub.ids) // de.laser.Identifier
