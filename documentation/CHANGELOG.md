@@ -7,7 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-5810    16.07.2024  rc-3.4  3.4.3       Andreas Bug         LAS:eR-API-Reiter fehlte für Basic-Kunden
+5813    17.07.2024  rc-3.4  3.4.3       Andreas Bug         Spaltenüberschrift Lieferant fehlte
+
+5812    16.07.2024  rc-3.4  3.4.3       Andreas Bug         Brücke zur Ersetzung von fehlenden Vertrag-Einrichtung-Verknüpfungen
+
+5810    16.07.2024  rc-3.4  3.4.3       Andreas Bug         Zugriff auf Datentransfer-Reiter behoben
 
 5809    11.07.2024  rc-3.4  3.4.2       Andreas Bug         Umfragekosten wurden nicht dargestellt, wenn es keine Lizenzkosten gibt 
 

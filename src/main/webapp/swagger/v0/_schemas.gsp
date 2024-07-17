@@ -925,11 +925,6 @@
           description: The resource type of the titles covered by this subscription. Maps to the RefdataCategory "${RDConstants.SUBSCRIPTION_RESOURCE}".
           enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_RESOURCE, 12) %>
           example: "ebookPackage"
-        status:
-          type: string
-          description: The subscription status. Maps to the RefdataCategory "${RDConstants.SUBSCRIPTION_STATUS}".
-          enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_STATUS+Constants.PERMANENTLY_DELETED, 12) %>
-          example: ${RDStore.SUBSCRIPTION_CURRENT.value}
         successors:
           type: array
           description: The subscription instances following to this subscription.
@@ -1974,6 +1969,11 @@
           description: End date of the subscription running time.
           format: <% print ApiToolkit.DATE_TIME_PATTERN %>
           example: "${ApiToolkit.getEndOfYearRing()}"
+        status:
+          type: string
+          description: The subscription status. Maps to the RefdataCategory "${RDConstants.SUBSCRIPTION_STATUS}".
+          enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_STATUS+Constants.PERMANENTLY_DELETED, 12) %>
+          example: ${RDStore.SUBSCRIPTION_CURRENT.value}
         name:
           type: string
           description: Name of the subscription.
