@@ -48,7 +48,7 @@
             <laser:render template="costItemInput"/>
 
             <g:if test="${editable}">
-                <input type="submit" class="${de.laser.ui.Btn.POSITIVE}" name="save" value="${g.message(code: 'default.button.save.label')}"/>
+                <input type="submit" class="${Btn.POSITIVE}" name="save" value="${g.message(code: 'default.button.save.label')}"/>
             </g:if>
         </g:form>
 
