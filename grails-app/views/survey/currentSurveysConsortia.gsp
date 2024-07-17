@@ -360,7 +360,7 @@
                     %{--<g:if test="${surveyConfig && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION && !surveyConfig.pickAndChoose}">
                         <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]"
-                                class="ui icon button">
+                                class="${Button.BASIC_ICON}">
                                 --}%%{--<div class="ui circular ${(participantsFinish.size() == participantsTotal.size()) ? "green" : (participantsFinish.size() > 0) ? "yellow" : ""} label">
                                 <g:if
                                         test="${participantsFinish && participantsTotal}">

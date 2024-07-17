@@ -139,7 +139,7 @@
 
     <g:if test="${statsError.size()!=0}">
       <td class="x">
-        <button class="ui icon button" data-target="stats-error-content-${i}">
+        <button class="${Button.BASIC_ICON}" data-target="stats-error-content-${i}">
           <i class="${Icon.UI.INFO}"></i>
         </button>
       </td>

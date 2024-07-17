@@ -1,4 +1,4 @@
-<%@page import="de.laser.ui.Icon; de.laser.*; de.laser.storage.RDStore; de.laser.storage.RDConstants"%>
+<%@page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.*; de.laser.storage.RDStore; de.laser.storage.RDConstants"%>
 <laser:serviceInjection/>
 <%
     String modalText
@@ -56,7 +56,7 @@
                         <div class="ui fluid action input">
                             <input type="text" name="upload_file_placeholder" readonly="readonly" placeholder="${message(code:'template.addDocument.selectFile')}">
                             <input type="file" name="upload_file" style="display: none;">
-                            <div class="ui icon button" style="padding-left:30px; padding-right:30px">
+                            <div class="${Button.BASIC_ICON}" style="padding-left:30px; padding-right:30px">
                                 <i class="${Icon.CMD.ATTACHMENT}"></i>
                             </div>
                         </div>

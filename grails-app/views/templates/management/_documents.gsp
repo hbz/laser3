@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription;" %>
+<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription;" %>
 <laser:serviceInjection/>
 <g:if test="${filteredSubscriptions}">
 
@@ -31,7 +31,7 @@
                 <input type="text" id="upload_file_placeholder" readonly="readonly" placeholder="${message(code: 'template.addDocument.selectFile')}">
                 <input type="file" id="upload_file" name="upload_file" style="display: none;">
 
-                <div class="ui icon button" style="padding-left:30px; padding-right:30px">
+                <div class="${Button.BASIC_ICON}" style="padding-left:30px; padding-right:30px">
                     <i class="${Icon.CMD.ATTACHMENT}"></i>
                 </div>
             </div>

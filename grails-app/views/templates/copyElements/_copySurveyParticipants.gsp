@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.Subscription; de.laser.Person; de.laser.survey.SurveyConfig; de.laser.SubscriptionsQueryService; java.text.SimpleDateFormat; de.laser.storage.RDStore; de.laser.FormService" %>
+<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.Subscription; de.laser.Person; de.laser.survey.SurveyConfig; de.laser.SubscriptionsQueryService; java.text.SimpleDateFormat; de.laser.storage.RDStore; de.laser.FormService" %>
 <laser:serviceInjection/>
 
     <laser:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
@@ -60,12 +60,12 @@
                                                 <g:if test="${existSubforOrg[0].isCurrentMultiYearSubscriptionNew()}">
                                                     <g:message code="surveyOrg.perennialTerm.available"/>
                                                     <br />
-                                                    <g:link controller="subscription" action="show" class="ui icon button" id="${existSubforOrg[0].id}">
+                                                    <g:link controller="subscription" action="show" class="${Button.BASIC_ICON}" id="${existSubforOrg[0].id}">
                                                         <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
-                                                    <g:link controller="subscription" action="show" class="ui icon button" id="${existSubforOrg[0].id}">
+                                                    <g:link controller="subscription" action="show" class="${Button.BASIC_ICON}" id="${existSubforOrg[0].id}">
                                                         <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                     </g:link>
                                                 </g:else>
@@ -137,12 +137,12 @@
                                                 <g:if test="${existSubforOrg[0].isCurrentMultiYearSubscriptionNew()}">
                                                     <g:message code="surveyOrg.perennialTerm.available"/>
                                                     <br />
-                                                    <g:link controller="subscription" action="show" class="ui icon button" id="${existSubforOrg[0].id}">
+                                                    <g:link controller="subscription" action="show" class="${Button.BASIC_ICON}" id="${existSubforOrg[0].id}">
                                                         <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
-                                                    <g:link controller="subscription" action="show" class="ui icon button" id="${existSubforOrg[0].id}">
+                                                    <g:link controller="subscription" action="show" class="${Button.BASIC_ICON}" id="${existSubforOrg[0].id}">
                                                         <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                     </g:link>
                                                 </g:else>

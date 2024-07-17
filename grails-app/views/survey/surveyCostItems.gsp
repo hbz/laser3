@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.survey.SurveyConfig;de.laser.RefdataValue;de.laser.finance.CostItem;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.survey.SurveyConfig;de.laser.RefdataValue;de.laser.finance.CostItem;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyCostItems.label')})" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -71,12 +71,11 @@
                            placeholder="${message(code: 'template.addDocument.selectFile')}">
                     <input type="file" name="costItemsFile" accept="text/tab-separated-values,.txt,.csv"
                            style="display: none;">
-                    <div class="ui icon button">
+                    <div class="${Button.BASIC_ICON}">
                         <i class="${Icon.CMD.ATTACHMENT}"></i>
                     </div>
                 </div>
             </div>
-
         </g:form>
     </ui:modal>
 
