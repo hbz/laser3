@@ -722,10 +722,10 @@
                                                                             <a target="_blank" href="${wekbApi.editUrl ? wekbApi.editUrl + '/public/orgContent/' + provider.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
                                                                         </g:if>
                                                                         <g:elseif test="${prs.isPublic}">
-                                                                            <i class="${Icon.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                            <i class="${Icon.UI.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                                         </g:elseif>
                                                                         <g:else>
-                                                                            <i class="${Icon.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                            <i class="${Icon.UI.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                         </g:else>
                                                                     </div>
                                                                     <div class="fourteen wide column">
@@ -843,10 +843,10 @@
                                                             <div class="row">
                                                                 <div class="two wide column">
                                                                     <g:if test="${person.isPublic}">
-                                                                        <i class="${Icon.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                        <i class="${Icon.UI.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                                     </g:if>
                                                                     <g:else>
-                                                                        <i class="${Icon.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                        <i class="${Icon.UI.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                     </g:else>
                                                                 </div>
                                                                 <div class="fourteen wide column">
@@ -912,10 +912,10 @@
                                                                 <div class="row">
                                                                     <div class="two wide column">
                                                                         <g:if test="${person.isPublic}">
-                                                                            <i class="${Icon.ADDRESS_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                            <i class="${Icon.UI.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                                         </g:if>
                                                                         <g:else>
-                                                                            <i class="${Icon.ADDRESS_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                            <i class="${Icon.UI.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                         </g:else>
                                                                     </div>
                                                                     <div class="fourteen wide column">

@@ -487,7 +487,7 @@
                     <td data-element="source">
                         <div>
                             <strong>
-                                <i class="${Icon.ADDRESS_PUBLIC}"></i> ${message(code: 'subscription.specificSubscriptionEditors')}:
+                                <i class="${Icon.UI.ACP_PUBLIC}"></i> ${message(code: 'subscription.specificSubscriptionEditors')}:
                             </strong>
                             <g:each in="${source_visibleProviders}" var="source_role">
                                 <g:if test="${source_role.provider}">
@@ -503,7 +503,7 @@
                                                 <span class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'address.public')}"
                                                       data-position="top right">
-                                                    <i class="${Icon.ADDRESS_PUBLIC}"></i>
+                                                    <i class="${Icon.UI.ACP_PUBLIC}"></i>
                                                 </span>
                                                 ${resp}
                                                 (<strong><i class="${Icon.PROVIDER}"></i>&nbsp;${source_role.roleType.getI10n("value")}:
@@ -522,7 +522,7 @@
                                                 <span class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'address.private')}"
                                                       data-position="top right">
-                                                    <i class="${Icon.ADDRESS_PRIVATE}"></i>
+                                                    <i class="${Icon.UI.ACP_PRIVATE}"></i>
                                                 </span>
                                                 ${resp}
                                                 (<strong><i class="${Icon.ORG}"></i>&nbsp;${source_role.roleType.getI10n("value")}:
@@ -579,7 +579,7 @@
                         <td data-element="target">
                             <div>
                                 <strong>
-                                    <i class="${Icon.ADDRESS_PUBLIC}"></i> ${message(code: 'subscription.specificSubscriptionEditors')}:
+                                    <i class="${Icon.UI.ACP_PUBLIC}"></i> ${message(code: 'subscription.specificSubscriptionEditors')}:
                                 </strong>
                                 <g:each in="${target_visibleProviders}" var="target_role">
                                     <g:if test="${target_role.provider}">
@@ -594,7 +594,7 @@
                                                     <span class="la-popup-tooltip la-delay"
                                                           data-content="${message(code: 'address.public')}"
                                                           data-position="top right">
-                                                        <i class="${Icon.ADDRESS_PUBLIC}"></i>
+                                                        <i class="${Icon.UI.ACP_PUBLIC}"></i>
                                                     </span>
                                                     ${resp}
                                                     (<strong><i class="${Icon.PROVIDER}"></i>&nbsp;${target_role.roleType.getI10n("value")}:
@@ -614,7 +614,7 @@
                                                     <span class="la-popup-tooltip la-delay"
                                                           data-content="${message(code: 'address.private')}"
                                                           data-position="top right">
-                                                        <i class="${Icon.ADDRESS_PRIVATE}"></i>
+                                                        <i class="${Icon.UI.ACP_PRIVATE}"></i>
                                                     </span>
                                                     ${resp}
                                                     (<strong><i class="${Icon.ORG}"></i>&nbsp;${target_role.roleType.getI10n("value")}:

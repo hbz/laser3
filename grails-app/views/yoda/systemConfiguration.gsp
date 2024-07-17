@@ -26,12 +26,12 @@
 <br />
 <div id="cfgFilter">
     <span class="ui label" data-class="*">Alle anzeigen</span>
-    <span class="ui label" data-class="green"><i class="${Icon.X.SQUARE} green"></i>spring</span>
-    <span class="ui label" data-class="orange"><i class="${Icon.X.SQUARE} orange"></i>grails</span>
-    <span class="ui label" data-class="yellow"><i class="${Icon.X.SQUARE} yellow"></i>grails.plugin(s)</span>
-    <span class="ui label" data-class="red"><i class="${Icon.X.SQUARE} red"></i>java</span>
-    <span class="ui label" data-class="blue"><i class="${Icon.X.SQUARE} blue"></i>dataSource</span>
-    <span class="ui label" data-class="native"><i class="${Icon.X.SQUARE} grey"></i>default</span>
+    <span class="ui label" data-class="green"><i class="${Icon.UNC.SQUARE} green"></i>spring</span>
+    <span class="ui label" data-class="orange"><i class="${Icon.UNC.SQUARE} orange"></i>grails</span>
+    <span class="ui label" data-class="yellow"><i class="${Icon.UNC.SQUARE} yellow"></i>grails.plugin(s)</span>
+    <span class="ui label" data-class="red"><i class="${Icon.UNC.SQUARE} red"></i>java</span>
+    <span class="ui label" data-class="blue"><i class="${Icon.UNC.SQUARE} blue"></i>dataSource</span>
+    <span class="ui label" data-class="native"><i class="${Icon.UNC.SQUARE} grey"></i>default</span>
 </div>
 
 <table id="cfgTable" class="ui sortable celled la-js-responsive-table la-hover-table la-table compact table">

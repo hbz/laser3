@@ -26,13 +26,19 @@ class DevController  {
     @Secured(['ROLE_ADMIN'])
     def klodav() {
         Map<String, Object> result = [user: contextService.getUser(), institution: contextService.getOrg()]
-        result
+        render view: 'klodav/index', model: result
     }
 
     @Secured(['ROLE_ADMIN'])
     def icons() {
         Map<String, Object> result = [user: contextService.getUser(), institution: contextService.getOrg()]
-        result
+        render view: 'klodav/icons', model: result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def buttons() {
+        Map<String, Object> result = [user: contextService.getUser(), institution: contextService.getOrg()]
+        render view: 'klodav/buttons', model: result
     }
 
     /**

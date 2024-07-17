@@ -10,7 +10,7 @@
 
 <ui:msg class="info" hideClose="true">
     <i class="${Icon.UI.SUCCESS} icon"></i> Job is active <br />
-    <i class="${Icon.X.SQUARE} icon"></i> Job is NOT active <br />
+    <i class="${Icon.UNC.SQUARE} icon"></i> Job is NOT active <br />
     <i class="${Icon.UI.ERROR}"></i> Job is NOT available - due deactivation oder missing configuration <br />
 </ui:msg>
 

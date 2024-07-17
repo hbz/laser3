@@ -197,7 +197,7 @@
                                                 </span>
                                                 <span class="description">
                                                     <g:if test="${link.linkType == RDStore.LINKTYPE_FOLLOWS}">
-                                                        <i class="icon arrow ${linkPrio == 1 ? 'right' : 'left'} la-list-icon"></i>
+                                                        <i class="${linkPrio == 1 ? Icon.LNK.NEXT : Icon.LNK.PREV} la-list-icon"></i>
                                                     </g:if>
                                                     <g:else>
                                                         <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
@@ -274,7 +274,7 @@
                                                 </span>
                                                 <span class="description">
                                                     <g:if test="${link.linkType == RDStore.LINKTYPE_FOLLOWS}">
-                                                        <i class="icon arrow ${linkPrio == 1 ? 'right' : 'left'} la-list-icon"></i>
+                                                        <i class="${linkPrio == 1 ? Icon.LNK.PREV : Icon.LNK.NEXT} la-list-icon"></i>
                                                     </g:if>
                                                     <g:else>
                                                         <i class="${Icon.LICENSE} la-list-icon"></i>

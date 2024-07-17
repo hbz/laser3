@@ -31,10 +31,10 @@
             </td>
             <td>
                 <g:if test="${configMailDisabled}">
-                    <i class="${Icon.X.SQUARE} red"></i>${message(code: 'default.deactivated.label')}
+                    <i class="${Icon.UNC.SQUARE} red"></i>${message(code: 'default.deactivated.label')}
                 </g:if>
                 <g:else>
-                    <i class="${Icon.X.SQUARE} green"></i> ${message(code: 'default.activated.label')}
+                    <i class="${Icon.UNC.SQUARE} green"></i> ${message(code: 'default.activated.label')}
                 </g:else>
             </td>
             <td>
@@ -56,10 +56,10 @@
             </td>
             <td>
                 <g:if test="${! maintenanceModeEnabled}">
-                    <i class="${Icon.X.SQUARE} red"></i> ${message(code: 'default.deactivated.label')}
+                    <i class="${Icon.UNC.SQUARE} red"></i> ${message(code: 'default.deactivated.label')}
                 </g:if>
                 <g:else>
-                    <i class="${Icon.X.SQUARE} green"></i> ${message(code: 'default.activated.label')}
+                    <i class="${Icon.UNC.SQUARE} green"></i> ${message(code: 'default.activated.label')}
                 </g:else>
             </td>
             <td>
@@ -84,10 +84,10 @@
             </td>
             <td>
                 <g:if test="${! systemInsightEnabled}">
-                    <i class="${Icon.X.SQUARE} red"></i> ${message(code: 'default.deactivated.label')}
+                    <i class="${Icon.UNC.SQUARE} red"></i> ${message(code: 'default.deactivated.label')}
                 </g:if>
                 <g:else>
-                    <i class="${Icon.X.SQUARE} green"></i> ${message(code: 'default.activated.label')}
+                    <i class="${Icon.UNC.SQUARE} green"></i> ${message(code: 'default.activated.label')}
                 </g:else>
             </td>
             <td>

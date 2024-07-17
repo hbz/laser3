@@ -272,7 +272,7 @@
                                             </g:if>
                                             <g:else>
                                                 <div class="ui icon button la-hidden">
-                                                    <i class="${Icon.X.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>
+                                                    <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>
                                                 </div>
                                             </g:else>
                                         </g:else>%{-- (editable || editable2) --}%
@@ -350,7 +350,7 @@
                                             </g:if>
                                             <g:else>
                                                 <div class="ui icon button la-hidden">
-                                                    <i class="${Icon.X.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>
+                                                    <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>
                                                 </div>
                                             </g:else>
                                         </g:else>%{-- (editable || editable2) --}%

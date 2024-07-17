@@ -51,7 +51,7 @@
                 </g:if>
                 <g:else>
                     <g:link controller="platform" action="linkAccessPoint" id="${platformInstance.id}" params="[oapl_id: oapl.id]" onclick="return confirm('Zugangspunkt hinzufügen?')">
-                        <i class="linkify icon"></i>
+                        <i class="${Icon.CMD.LINKIFY}"></i>
                     </g:link>
                 </g:else>
             </td>
