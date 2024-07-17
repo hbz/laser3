@@ -1,4 +1,4 @@
-<%@ page import="de.laser.annotations.IconUsage; de.laser.ui.Button; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.annotations.UIDoc; de.laser.annotations.IconUsage; de.laser.ui.Button; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:htmlStart text="Playground: New Icons" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -34,8 +34,8 @@
                         ${f.name.split('\\.').last()}
                     </div>
                     <div class="meta hidden">${Icon[f.name]}</div>
-                    <g:if test="${f.getAnnotation(IconUsage)}">
-                        <div class="description hidden">${f.getAnnotation(IconUsage).usage()}</div>
+                    <g:if test="${f.getAnnotation(de.laser.annotations.UIDoc)}">
+                        <div class="description hidden">${f.getAnnotation(UIDoc).usage()}</div>
                     </g:if>
                 </div>
             </div>
@@ -55,8 +55,8 @@
                             ${f.name.split('\\.').last()}
                         </div>
                         <div class="meta hidden">${ic[f.name]}</div>
-                        <g:if test="${f.getAnnotation(IconUsage)}">
-                            <div class="description hidden">${f.getAnnotation(IconUsage).usage()}</div>
+                        <g:if test="${f.getAnnotation(UIDoc)}">
+                            <div class="description hidden">${f.getAnnotation(UIDoc).usage()}</div>
                         </g:if>
                     </div>
                 </div>
