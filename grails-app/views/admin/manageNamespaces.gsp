@@ -194,7 +194,7 @@
                                     <td>
                                         <g:if test="${!idNs.isHardData}">
                                             <g:link controller="admin" action="manageNamespaces"
-                                                    params="${[cmd: 'deleteNamespace', oid: IdentifierNamespace.class.name + ':' + idNs.id]}" class="ui icon negative button  la-modern-button"
+                                                    params="${[cmd: 'deleteNamespace', oid: IdentifierNamespace.class.name + ':' + idNs.id]}" class="${Button.MODERN.NEGATIVE_ICON}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                 <i class="${Icon.CMD.DELETE}"></i>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.MailTemplate; de.laser.storage.RDConstants;de.laser.RefdataCategory" %>
+<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.MailTemplate; de.laser.storage.RDConstants;de.laser.RefdataCategory" %>
 <laser:htmlStart message="menu.admin.manageMailTemplates" />
 
 <ui:breadcrumbs>
@@ -40,7 +40,7 @@
                         <g:if test="${template.owner}">${template.owner.name}</g:if>
                     </td>
                     <td>
-                        <button type="button" class="ui icon button la-popup-tooltip la-delay"
+                        <button type="button" class="${Button.BASIC_ICON} la-popup-tooltip la-delay"
                                 data-mailTemplateTarget="${MailTemplate.class.name}:${template.id}"
                                 data-mailTemplateName="${template.name}"
                                 data-mailTemplateSubject="${template.subject}"
