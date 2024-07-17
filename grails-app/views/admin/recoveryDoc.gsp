@@ -97,7 +97,7 @@
                                                 id="${docRecovery.owner.id}">${docRecovery.owner.name}</g:link>)
                             </g:if>
 
-                            <g:link class="${Btn.BASIC} mini" action="processRecoveryDoc" params="[sourceDoc: doc.id, targetDoc: docRecovery.id]">Auswählen</g:link>
+                            <g:link class="${Btn.SIMPLE} mini" action="processRecoveryDoc" params="[sourceDoc: doc.id, targetDoc: docRecovery.id]">Auswählen</g:link>
 
                             </li>
 

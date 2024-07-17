@@ -107,7 +107,7 @@
 
             <div class="field">
                 <label>&nbsp;</label>
-                <input type="submit" value="Submit" class="${Btn.BASIC}"/>
+                <input type="submit" value="Submit" class="${Btn.SIMPLE}"/>
             </div>
 
     </ui:form>

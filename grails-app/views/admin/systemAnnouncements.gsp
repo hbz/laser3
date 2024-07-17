@@ -50,11 +50,11 @@ ${currentAnnouncement?.getCleanContent()}
 
             <div class="field">
                 <g:if test="${currentAnnouncement}">
-                    <g:link controller="admin" action="systemAnnouncements" role="button" class="${Btn.BASIC}">${message(code:'default.button.reset.label')}</g:link>
-                    <input type="submit" class="${Btn.BASIC}" value="${message(code:'default.button.save_changes')}"/>
+                    <g:link controller="admin" action="systemAnnouncements" role="button" class="${Btn.SIMPLE}">${message(code:'default.button.reset.label')}</g:link>
+                    <input type="submit" class="${Btn.SIMPLE}" value="${message(code:'default.button.save_changes')}"/>
                 </g:if>
                 <g:else>
-                    <input type="submit" class="${Btn.BASIC}" value="${message(code:'announcement.create.button.label')}" />
+                    <input type="submit" class="${Btn.SIMPLE}" value="${message(code:'announcement.create.button.label')}" />
                 </g:else>
             </div>
         </ui:form>
@@ -145,21 +145,21 @@ ${currentAnnouncement?.getCleanContent()}
                     <g:if test="${sa.isPublished}">
                         <br />
                         <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'undo']" role="button"
-                                class="${Btn.BASIC}" onclick="return confirm('${message(code:'announcement.undo.confirm')}')">${message(code:'default.publish_undo.label')}</g:link>
+                                class="${Btn.SIMPLE}" onclick="return confirm('${message(code:'announcement.undo.confirm')}')">${message(code:'default.publish_undo.label')}</g:link>
                     </g:if>
                     <g:else>
                         <br />
                         <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'delete']" role="button" class="${Btn.MODERN.NEGATIVE_ICON}"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
                             <i aria-hidden="true" class="${Icon.CMD.DELETE}"></i></g:link>
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'edit']" role="button" class="${Btn.MODERN.BASIC_ICON}"><i aria-hidden="true" class="${Icon.CMD.EDIT}"></i></g:link>
+                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'edit']" role="button" class="${Btn.MODERN.SIMPLE_ICON}"><i aria-hidden="true" class="${Icon.CMD.EDIT}"></i></g:link>
 
                         <g:if test="${mailDisabled}">
-                            <button class="${Btn.BASIC}" disabled="disabled">${message(code:'default.publish.label')}</button>
+                            <button class="${Btn.SIMPLE}" disabled="disabled">${message(code:'default.publish.label')}</button>
                         </g:if>
                         <g:else>
                             <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'publish']" role="button"
-                                    class="${Btn.BASIC}" onclick="return confirm('${message(code:'announcement.publish.confirm')}')">${message(code:'default.publish.label')}</g:link>
+                                    class="${Btn.SIMPLE}" onclick="return confirm('${message(code:'announcement.publish.confirm')}')">${message(code:'default.publish.label')}</g:link>
 
                         </g:else>
                      </g:else>

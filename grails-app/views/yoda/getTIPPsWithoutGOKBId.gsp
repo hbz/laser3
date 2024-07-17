@@ -50,7 +50,7 @@
                                 data-confirm-term-how="ok">Daten bereinigen (bitte mit EXTREMER VORSICHT betätigen!!!)</g:link>
                     </td>
                     <td>
-                        <g:link action="purgeTIPPsWithoutGOKBId" params="${[doIt: false, toDelete: toDelete as JSON, toUUIDfy: toUUIDfy as JSON]}" class="${Btn.BASIC}">Testlauf (gefahrlos)</g:link>
+                        <g:link action="purgeTIPPsWithoutGOKBId" params="${[doIt: false, toDelete: toDelete as JSON, toUUIDfy: toUUIDfy as JSON]}" class="${Btn.SIMPLE}">Testlauf (gefahrlos)</g:link>
                     </td>
                 </tr>
             </tfoot>

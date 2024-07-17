@@ -113,7 +113,7 @@
                                                accept="text/tab-separated-values, text/plain"
                                                style="display: none;">
 
-                                        <div class="${Btn.BASIC_ICON}">
+                                        <div class="${Btn.SIMPLE_ICON}">
                                             <i class="${Icon.CMD.ATTACHMENT}"></i>
                                         </div>
                                     </div>

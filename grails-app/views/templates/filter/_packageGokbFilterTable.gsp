@@ -427,7 +427,7 @@
                         <td class="right aligned">
                             <g:if test="${editable}">
                                 <g:if test="${(!uuidPkgs || !(record.uuid in uuidPkgs))}">
-                                    <g:link type="button" class="${Btn.BASIC_ICON}" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                    <g:link type="button" class="${Btn.SIMPLE_ICON}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                             params="[addUUID: record.uuid, surveyConfigID: surveyConfig.id]"><g:message
                                             code="surveyPackages.linkPackage"/></g:link>
 
@@ -484,14 +484,14 @@
                     <g:if test="${tmplConfigItem == 'yodaActions'}">
                         <td class="x">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'menu.yoda.reloadPackage')}">
-                                <g:link controller="yoda" action="reloadPackage" params="${[packageUUID: record.uuid]}" class="${Btn.BASIC_ICON}">
+                                <g:link controller="yoda" action="reloadPackage" params="${[packageUUID: record.uuid]}" class="${Btn.SIMPLE_ICON}">
                                     <i class="icon cloud download alternate"></i>
                                 </g:link>
                             </span>
                             <g:if test="${pkg}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'menu.yoda.retriggerPendingChanges')}">
                                     <g:if test="${pkg}">
-                                        <g:link controller="yoda" action="matchPackageHoldings" params="${[pkgId: pkg.id]}" class="${Btn.BASIC_ICON}">
+                                        <g:link controller="yoda" action="matchPackageHoldings" params="${[pkgId: pkg.id]}" class="${Btn.SIMPLE_ICON}">
                                             <i class="icon wrench"></i>
                                         </g:link>
                                     </g:if>

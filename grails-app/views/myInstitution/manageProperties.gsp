@@ -513,7 +513,7 @@
                                     <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                 </g:link>
                                 <g:if test="${row.manageChildren}">
-                                    <g:link controller="${row.displayController}" action="${row.manageChildren}" params="${row.manageChildrenParams}" class="${Btn.BASIC_ICON}"><i class="users icon"></i></g:link>
+                                    <g:link controller="${row.displayController}" action="${row.manageChildren}" params="${row.manageChildrenParams}" class="${Btn.SIMPLE_ICON}"><i class="users icon"></i></g:link>
                                 </g:if>
                             </td>
                         </tr>

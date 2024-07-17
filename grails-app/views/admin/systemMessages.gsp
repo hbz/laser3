@@ -10,7 +10,7 @@
 <ui:h1HeaderWithIcon message="menu.admin.systemMessage" type="admin"/>
 
 <div class="la-float-right">
-    <input type="submit" class="${Btn.BASIC}" value="${message(code: 'admin.systemMessage.create')}" data-ui="modal" data-href="#modalCreateSystemMessage" />
+    <input type="submit" class="${Btn.SIMPLE}" value="${message(code: 'admin.systemMessage.create')}" data-ui="modal" data-href="#modalCreateSystemMessage" />
 </div>
 
 <br />

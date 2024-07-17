@@ -2,7 +2,7 @@
 <br />
 
 <div style="text-align: right">
-    <button id="details-export-button" class="${Btn.BASIC_ICON}" data-href="#detailsExportModal" data-ui="modal">
+    <button id="details-export-button" class="${Btn.SIMPLE_ICON}" data-href="#detailsExportModal" data-ui="modal">
         <i class="${Icon.CMD.DOWNLOAD}"></i>
     </button>
 </div>

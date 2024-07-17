@@ -188,7 +188,7 @@
                     <td>
                         <g:if test="${participant.newSub}">
                             <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:participant.newSub.id]}"
-                                    class="${Btn.BASIC_ICON}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
+                                    class="${Btn.SIMPLE_ICON}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                         </g:if>
                     </td>
                 </tr>

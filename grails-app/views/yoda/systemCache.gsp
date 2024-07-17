@@ -15,7 +15,7 @@
 <div class="ui segment">
     <p>ID: ${sessionCache.getSession().id}</p>
 
-    <g:link class="${Btn.BASIC} small" controller="yoda" action="systemCache" params="[cmd:'clearCache', type:'session']">Cache leeren</g:link>
+    <g:link class="${Btn.SIMPLE} small" controller="yoda" action="systemCache" params="[cmd:'clearCache', type:'session']">Cache leeren</g:link>
 
     <g:if test="${sessionCache.list().size() > 0}">
         <dl>
@@ -71,9 +71,9 @@
 
             <div class="ui segment">
 
-                <g:link class="${Btn.BASIC} small" controller="yoda" action="systemCache" params="[cmd:'clearCache', type: 'ehcache', cache:cacheName]">Cache leeren</g:link>
+                <g:link class="${Btn.SIMPLE} small" controller="yoda" action="systemCache" params="[cmd:'clearCache', type: 'ehcache', cache:cacheName]">Cache leeren</g:link>
 
-                <button class="${Btn.BASIC} small" onclick="$(this).parent('.segment').next('.cacheConfig').toggleClass('hidden')">Konfiguration</button>
+                <button class="${Btn.SIMPLE} small" onclick="$(this).parent('.segment').next('.cacheConfig').toggleClass('hidden')">Konfiguration</button>
 
                 <g:if test="${cache.getKeysWithExpiryCheck().size() > 0}">
                     <button class="${Btn.POSITIVE} small" onclick="$(this).parent('.segment').find('.cacheContent').toggleClass('hidden')">Elemente: ${cache.getKeys().size()}</button>

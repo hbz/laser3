@@ -185,7 +185,7 @@
                     <td class="right aligned">
                         <g:if test="${editable}">
                             <g:if test="${editable && !(SurveyConfigVendor.findByVendorAndSurveyConfig(vendor, surveyConfig))}">
-                                <g:link type="button" class="${Btn.BASIC_ICON}" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                <g:link type="button" class="${Btn.SIMPLE_ICON}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                         params="[addVendor: vendor.id, surveyConfigID: surveyConfig.id]"><g:message
                                         code="surveyVendors.linkVendor"/></g:link>
 
