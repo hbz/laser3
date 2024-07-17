@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.Org; de.laser.Subscription" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.Org; de.laser.Subscription" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyInfo.evaluation')})" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -262,7 +262,7 @@
                             <td>
                                 <g:if test="${sub}">
                                     <g:link controller="subscription" action="show" id="${sub.id}"
-                                            class="ui button icon"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
+                                            class="${Btn.SIMPLE_ICON}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                                 </g:if>
                                 <g:if test="${sub._getCalculatedPreviousForSurvey()}">
                                     <br/>
@@ -270,7 +270,7 @@
                                     <%-- TODO Moe --%>
                                     <g:link controller="subscription" action="show"
                                             id="${sub._getCalculatedPreviousForSurvey()?.id}"
-                                            class="ui button icon"><i class="${Icon.SUBSCRIPTION} yellow"></i></g:link>
+                                            class="${Btn.SIMPLE_ICON}"><i class="${Icon.SUBSCRIPTION} yellow"></i></g:link>
                                 </g:if>
                             </td>
                     </tr>
@@ -315,7 +315,7 @@
                             <td>
                                 <g:if test="${sub}">
                                     <g:link controller="subscription" action="show" id="${sub.id}"
-                                            class="ui button icon"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
+                                            class="${Btn.SIMPLE_ICON}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                                 </g:if>
                                 <g:if test="${sub._getCalculatedPreviousForSurvey()}">
                                     <br/>
@@ -323,7 +323,7 @@
                                     <%-- TODO Moe --%>
                                     <g:link controller="subscription" action="show"
                                             id="${sub._getCalculatedPreviousForSurvey()?.id}"
-                                            class="ui button icon"><i class="${Icon.SUBSCRIPTION} yellow"></i></g:link>
+                                            class="${Btn.SIMPLE_ICON}"><i class="${Icon.SUBSCRIPTION} yellow"></i></g:link>
                                 </g:if>
                             </td>
                     </tr>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.ui.Btn; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:htmlStart text="Playground: Various" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -10,8 +10,8 @@
 
 <nav class="ui secondary menu">
     <g:link controller="dev" action="klodav" class="item active">Various</g:link>
-    <g:link controller="dev" action="icons" class="item"><i class="certificate icon red"></i> New Icons</g:link>
-%{--    <g:link controller="dev" action="buttons" class="item"><i class="certificate icon orange"></i> New Buttons</g:link>--}%
+    <g:link controller="dev" action="icons" class="item"><i class="certificate icon yellow"></i> New Icons</g:link>
+    <g:link controller="dev" action="buttons" class="item"><i class="certificate icon red"></i> New Buttons</g:link>
 </nav>
 
 <div class="ui four column grid">

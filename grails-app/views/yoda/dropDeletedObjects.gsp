@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button" %>
+<%@ page import="de.laser.ui.Btn" %>
 <laser:htmlStart text="Datenbereinigung" />
 
 <ui:breadcrumbs>
@@ -10,7 +10,7 @@
 
     <h2 class="ui header">Lizenzen - ${subscriptions.size()}</h2>
 
-    <g:link class="${Button.NEGATIVE}" controller="yoda" action="dropDeletedObjects" params="${[cmd:'subscription']}">Lösche die nächsten 10 Lizenzen</g:link>
+    <g:link class="${Btn.NEGATIVE}" controller="yoda" action="dropDeletedObjects" params="${[cmd:'subscription']}">Lösche die nächsten 10 Lizenzen</g:link>
     <br />
     <br />
 
@@ -28,14 +28,14 @@
     </g:each>
 
     <br />
-    <g:link class="${Button.NEGATIVE}" controller="yoda" action="dropDeletedObjects" params="${[cmd:'subscription', option:'reverse']}">Lösche die letzten 10 Lizenzen</g:link>
+    <g:link class="${Btn.NEGATIVE}" controller="yoda" action="dropDeletedObjects" params="${[cmd:'subscription', option:'reverse']}">Lösche die letzten 10 Lizenzen</g:link>
 
     <br />
     <br />
 
     <h2 class="ui header">Verträge - ${licenses.size()}</h2>
 
-    <g:link class="${Button.NEGATIVE}" controller="yoda" action="dropDeletedObjects" params="${[cmd:'license']}">Lösche die nächsten 10 Verträge</g:link>
+    <g:link class="${Btn.NEGATIVE}" controller="yoda" action="dropDeletedObjects" params="${[cmd:'license']}">Lösche die nächsten 10 Verträge</g:link>
     <br />
     <br />
 
@@ -52,7 +52,7 @@
     </g:each>
 
     <br />
-    <g:link class="${Button.NEGATIVE}" controller="yoda" action="dropDeletedObjects" params="${[cmd:'license', option:'reverse']}">Lösche die letzten 10 Verträge</g:link>
+    <g:link class="${Btn.NEGATIVE}" controller="yoda" action="dropDeletedObjects" params="${[cmd:'license', option:'reverse']}">Lösche die letzten 10 Verträge</g:link>
     <br />
     <br />
 

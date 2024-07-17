@@ -1,8 +1,9 @@
+<%@ page import="de.laser.ui.Btn" %>
 <ui:modal id="financeImportTemplate" hideSubmitButton="true">
     <p>
         <g:message code="myinst.financeImport.manual.p1a"/>
     </p>
-    <g:link class="ui primary button" controller="myInstitution" action="generateFinanceImportWorksheet" id="${subscription.id}"><g:message code="myinst.financeImport.manual.p1button"/></g:link>
+    <g:link class="${Btn.PRIMARY}" controller="myInstitution" action="generateFinanceImportWorksheet" id="${subscription.id}"><g:message code="myinst.financeImport.manual.p1button"/></g:link>
     <p>
         <g:message code="myinst.financeImport.manual.p1b" args="${[createLink(controller: "myInstitution", action: "financeImport", id:subscription.id)]}"/>
     </p>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.config.ConfigMapper; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.remote.ApiSource; de.laser.IssueEntitlement" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.config.ConfigMapper; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.remote.ApiSource; de.laser.IssueEntitlement" %>
 
 <g:set var="entityName" value="${message(code: 'issueEntitlement.label')}"/>
 <laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" />
@@ -304,7 +304,6 @@
     </g:if>
 
 
-
 <%-- we should not be supposed to see the same tipp in other circumstances ... do we need the following information at all?
     <g:if test="${issueEntitlementInstance.tipp.title.tipps}">
         <br />
@@ -342,7 +341,7 @@
                     </div>
 
                     <div class="field">
-                        <input type="submit" class="ui primary button"
+                        <input type="submit" class="${Btn.PRIMARY}"
                                value="${message(code: 'default.button.submit.label')}">
                     </div>
 

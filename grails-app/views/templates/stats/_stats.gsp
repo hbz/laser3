@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.base.AbstractReport; de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.base.AbstractReport; de.laser.finance.CostItem" %>
 
 <g:if test="${platformInstanceRecords.values().statisticsFormat.contains('COUNTER')}">
     <laser:serviceInjection/>
@@ -116,10 +116,10 @@
             </div>
 
             <div class="field la-field-right-aligned">
-                <input id="generateReport" type="button" class="ui primary button" disabled="disabled"
+                <input id="generateReport" type="button" class="${Btn.PRIMARY}" disabled="disabled"
                        value="${message(code: 'default.stats.generateReport')}"/>
                 <g:if test="${CostItem.findBySubAndCostItemElementConfiguration(subscription, RDStore.CIEC_POSITIVE)}">
-                    <input id="generateCostPerUse" type="button" class="ui primary button" disabled="disabled"
+                    <input id="generateCostPerUse" type="button" class="${Btn.PRIMARY}" disabled="disabled"
                            value="${message(code: 'default.stats.generateCostPerUse')}"/>
                 </g:if>
 
@@ -133,7 +133,7 @@
                 </g:elseif>
 
                 <g:link controller="$controllerName" action="$actionName" id="${params.id}" params="${parame}"
-                        class="ui button secondary">${message(code: 'default.button.reset.label')}</g:link>
+                        class="${Btn.SECONDARY}">${message(code: 'default.button.reset.label')}</g:link>
             </div>
         </g:form>
         <div class="ui teal progress" id="progressIndicator" hidden="hidden">

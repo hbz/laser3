@@ -1,5 +1,5 @@
 <!-- A: templates/properties/_groupBindings -->
-<%@ page import="de.laser.License; de.laser.Org; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.Subscription" %>
+<%@ page import="de.laser.ui.Btn; de.laser.License; de.laser.Org; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.Subscription" %>
 <laser:serviceInjection />
 
     <div id="propDefGroupBindingConfig">
@@ -75,7 +75,7 @@
                                                                 ]'
                                                       onComplete="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#propDefGroupBindingConfig')"
                                                       data-update="propDefGroupBindingConfig"
-                                                      class="ui icon button">
+                                                      class="${Btn.SIMPLE_ICON}">
                                             Nicht anzeigen
                                         </ui:remoteLink>
                                     </g:if>
@@ -89,7 +89,7 @@
                                                                ]'
                                                       onComplete="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#propDefGroupBindingConfig')"
                                                       data-update="propDefGroupBindingConfig"
-                                                      class="ui icon button">
+                                                      class="${Btn.SIMPLE_ICON}">
                                             Anzeigen
                                         </ui:remoteLink>
                                     </g:else>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.Org; de.laser.OrgSetting; de.laser.RefdataCategory; groovy.json.JsonOutput; de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Contact; de.laser.OrgRole; de.laser.RefdataValue" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Org; de.laser.OrgSetting; de.laser.RefdataCategory; groovy.json.JsonOutput; de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Contact; de.laser.OrgRole; de.laser.RefdataValue" %>
 
 <laser:htmlStart message="menu.admin.manageOrganisations" serviceInjection="true"/>
 
@@ -182,7 +182,7 @@
 
                     <td class="x">
                         <g:if test="${org.isCustomerType_Consortium() || org.isCustomerType_Support()}">
-                            <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay"
+                            <button type="button" class="${Btn.MODERN.SIMPLE_ICON} la-popup-tooltip la-delay"
                                     data-gascoTarget="${org.id}"
                                     data-gascoEntry="${gascoEntry.class.name}:${gascoEntry.id}"
                                     data-orgName="${org.name}"
@@ -192,7 +192,7 @@
                         </g:if>
 
                         <g:if test="${org.isCustomerType_Inst()}">
-                            <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay"
+                            <button type="button" class="${Btn.MODERN.SIMPLE_ICON} la-popup-tooltip la-delay"
                                     data-liTarget="${org.id}"
                                     data-createdBy="${org.createdBy?.id}"
                                     data-legallyObligedBy="${org.legallyObligedBy?.id}"
@@ -202,7 +202,7 @@
                                     data-content="Rechtl. Informationen ändern" data-position="top left"><i class="${Icon.SYM.ORG_LEGAL_INFORMATION}"></i></button>
                         </g:if>
 
-                        <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay"
+                        <button type="button" class="${Btn.MODERN.SIMPLE_ICON} la-popup-tooltip la-delay"
                                 data-ctTarget="${org.id}"
                                 data-customerType="${customerType}"
                                 data-orgName="${org.name}"
@@ -210,7 +210,7 @@
                                 data-href="#customerTypeModal"
                                 data-content="Kundentyp ändern" data-position="top left"><i class="user tie icon"></i></button>
 
-                        <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay"
+                        <button type="button" class="${Btn.MODERN.SIMPLE_ICON} la-popup-tooltip la-delay"
                                 data-alTarget="${org.id}"
                                 data-apiLevel="${apiLevel}"
                                 data-orgName="${org.name}"

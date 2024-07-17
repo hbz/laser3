@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.storage.RDStore;" %>
 
 <g:if test="${selectedSubParticipantsCount == 0}">
     <div class="four wide column">
@@ -69,7 +69,7 @@
                            placeholder="${message(code: 'template.addDocument.selectFile')}">
                     <input type="file" name="selectMembersWithImport" accept="text/tab-separated-values,.txt,.csv"
                            style="display: none;">
-                    <div class="ui icon button">
+                    <div class="${Btn.SIMPLE_ICON}">
                         <i class="${Icon.CMD.ATTACHMENT}"></i>
                     </div>
                 </div>

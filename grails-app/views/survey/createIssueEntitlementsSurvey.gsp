@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.finance.CostItem" %>
 
 <laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true"/>
 
@@ -98,10 +98,8 @@
 
             <div class="field la-field-right-aligned">
 
-                        <a href="${request.forwardURI}"
-                           class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                        <input type="submit" class="ui primary button"
-                               value="${message(code: 'default.button.filter.label')}">
+                <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
 
             </div>
         </div>

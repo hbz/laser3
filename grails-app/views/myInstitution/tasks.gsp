@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory;de.laser.storage.RDConstants"%>
+<%@ page import="de.laser.ui.Btn; de.laser.RefdataCategory;de.laser.storage.RDConstants"%>
 <laser:htmlStart message="menu.my.tasks" serviceInjection="true"/>
 
     <ui:breadcrumbs>
@@ -37,8 +37,8 @@
                     </div>
                 </div>
                 <div class="field la-field-right-aligned">
-                    <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.filterreset.label')}</a>
-                    <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}"/>
+                    <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.filterreset.label')}</a>
+                    <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}"/>
                 </div>
                 <input type="hidden" name="ctrlFilterSend" value="true" />
             </form>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.annotations.UIDoc; de.laser.ui.Button; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.annotations.UIDoc; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:htmlStart text="Playground: New Icons" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -10,17 +10,18 @@
 
 <nav class="ui secondary menu">
     <g:link controller="dev" action="klodav" class="item">Various</g:link>
-    <g:link controller="dev" action="icons" class="item active"><i class="certificate icon red"></i> New Icons</g:link>
-%{--    <g:link controller="dev" action="buttons" class="item"><i class="certificate icon orange"></i> New Buttons</g:link>--}%
+    <g:link controller="dev" action="icons" class="item active"><i class="certificate icon yellow"></i> New Icons</g:link>
+    <g:link controller="dev" action="buttons" class="item"><i class="certificate icon red"></i> New Buttons</g:link>
 </nav>
 
 <div class="ui info message">
     <p class="ui header">
         Usage
-        <button class="${Button.PRIMARY_ICON}" id="metaToggle1" style="float: right"><i class="${Icon.UI.INFO}"></i></button>
-        <button class="${Button.SECONDARY_ICON}" id="metaToggle2" style="float: right"><i class="${Icon.UI.HELP}"></i></button>
+        <button class="${Btn.PRIMARY_ICON}" id="metaToggle1" style="float: right"><i class="${Icon.UI.INFO}"></i></button>
+        <button class="${Btn.SECONDARY_ICON}" id="metaToggle2" style="float: right"><i class="${Icon.UI.HELP}"></i></button>
     </p>
-    <pre>&lt;button class=&quot;&dollar;{Button.PRIMARY_ICON}&quot; id=&quot;metaToggle&quot;&gt;&lt;i class=&quot;&dollar;{Icon.UI.INFO}&quot;&gt;&lt;/i&gt;&lt;/button&gt;</pre>
+    <pre>&lt;button class=&quot;&dollar;{Btn.SECONDARY_ICON}&quot; id=&quot;metaToggle2&quot;&gt;&lt;i class=&quot;&dollar;{Icon.UI.HELP}&quot;&gt;&lt;/i&gt;&lt;/button&gt;</pre>
+    <pre>&lt;button class=&quot;&dollar;{Btn.PRIMARY_ICON}&quot; id=&quot;metaToggle1&quot;&gt;&lt;i class=&quot;&dollar;{Icon.UI.INFO}&quot;&gt;&lt;/i&gt;&lt;/button&gt;</pre>
 </div>
 
 <div class="ui basic segment">

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.RefdataCategory; grails.plugins.orm.auditable.Auditable; de.laser.AuditConfig" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.RefdataCategory; grails.plugins.orm.auditable.Auditable; de.laser.AuditConfig" %>
 <laser:htmlStart message="menu.institutions.manage_props" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -32,9 +32,8 @@
             </div>
         </g:if>
 
-        <a href="${request.forwardURI}"
-           class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-        <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}"/>
+        <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+        <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}"/>
     </g:form>
 </ui:filter>
 
@@ -514,7 +513,7 @@
                                     <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                 </g:link>
                                 <g:if test="${row.manageChildren}">
-                                    <g:link controller="${row.displayController}" action="${row.manageChildren}" params="${row.manageChildrenParams}" class="ui icon button"><i class="users icon"></i></g:link>
+                                    <g:link controller="${row.displayController}" action="${row.manageChildren}" params="${row.manageChildrenParams}" class="${Btn.SIMPLE_ICON}"><i class="users icon"></i></g:link>
                                 </g:if>
                             </td>
                         </tr>

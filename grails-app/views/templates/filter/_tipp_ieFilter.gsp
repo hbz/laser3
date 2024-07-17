@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.helper.Params; de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.base.AbstractReport" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.base.AbstractReport" %>
 <laser:serviceInjection />
 <g:set var="action" value="${action ?: actionName}"/>
 <g:set var="forTitles" value="${forTitles ?: actionName}"/>
@@ -317,8 +317,8 @@
 
             <div class="field la-field-right-aligned">
                 <g:link controller="${controllerName}" action="${action}" id="${params.id}" params="[surveyConfigID: params.surveyConfigID, tab: params.tab, tabStat: params.tabStat]"
-                   class="ui reset secondary button">${message(code: 'default.button.reset.label')}</g:link>
-                <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}"/>
+                   class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</g:link>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}"/>
             </div>
     </g:form>
 </ui:filter>

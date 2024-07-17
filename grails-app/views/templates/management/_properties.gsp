@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.AuditConfig" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.AuditConfig" %>
 <laser:serviceInjection/>
     <%
         SortedSet<PropertyDefinition> allProperties = new TreeSet<PropertyDefinition>()
@@ -17,8 +17,7 @@
                                           model="[propList: propList, hideFilterProp: true, newfilterPropDefName: 'propertiesFilterPropDef', label:message(code: 'subscriptionsManagement.onlyPropOfParentSubscription', args: [subscription.name])]"/>
 
                                 <div class="field la-field-noLabel" >
-                                    <input type="submit" value="${message(code: 'template.orgLinksModal.select')}"
-                                           class="ui primary button"/>
+                                    <input type="submit" value="${message(code: 'template.orgLinksModal.select')}" class="${Btn.PRIMARY}"/>
                                 </div>
                             </div>
                         </g:form>
@@ -32,7 +31,7 @@
 
                                 <div class="field la-field-noLabel">
                                     <input type="submit" value="${message(code: 'template.orgLinksModal.select')}"
-                                           class="ui primary button"/>
+                                           class="${Btn.PRIMARY}"/>
                                 </div>
                             </div>
                         </g:form>
@@ -52,7 +51,7 @@
 
                     <div class="field la-field-noLabel">
                         <input type="submit" value="${message(code: 'template.orgLinksModal.select')}"
-                               class="ui primary button"/>
+                               class="${Btn.PRIMARY}"/>
                     </div>
                 </div>
             </g:form>

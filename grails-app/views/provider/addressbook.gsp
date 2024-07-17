@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.Org; de.laser.Person; de.laser.PersonRole; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants " %>
+<%@ page import="de.laser.ui.Btn; de.laser.helper.Params; de.laser.Org; de.laser.Person; de.laser.PersonRole; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants " %>
 
 <laser:htmlStart message="menu.institutions.myAddressbook" serviceInjection="true"/>
 
@@ -59,8 +59,8 @@
         <div class="field la-field-right-aligned">
             <label></label>
             <a href="${request.forwardURI}"
-               class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-            <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}">
+               class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+            <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
         </div>
     </g:form>
 </ui:filter>

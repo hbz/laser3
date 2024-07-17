@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.CacheService; groovy.json.JsonBuilder; de.laser.utils.DateUtils" %>
+<%@ page import="de.laser.ui.Btn; de.laser.CacheService; groovy.json.JsonBuilder; de.laser.utils.DateUtils" %>
 
 <laser:htmlStart message="menu.yoda.systemCache" serviceInjection="true"/>
 
@@ -15,7 +15,7 @@
 <div class="ui segment">
     <p>ID: ${sessionCache.getSession().id}</p>
 
-    <g:link class="${Button.BASIC} small" controller="yoda" action="systemCache" params="[cmd:'clearCache', type:'session']">Cache leeren</g:link>
+    <g:link class="${Btn.SIMPLE} small" controller="yoda" action="systemCache" params="[cmd:'clearCache', type:'session']">Cache leeren</g:link>
 
     <g:if test="${sessionCache.list().size() > 0}">
         <dl>
@@ -71,12 +71,12 @@
 
             <div class="ui segment">
 
-                <g:link class="${Button.BASIC} small" controller="yoda" action="systemCache" params="[cmd:'clearCache', type: 'ehcache', cache:cacheName]">Cache leeren</g:link>
+                <g:link class="${Btn.SIMPLE} small" controller="yoda" action="systemCache" params="[cmd:'clearCache', type: 'ehcache', cache:cacheName]">Cache leeren</g:link>
 
-                <button class="${Button.BASIC} small" onclick="$(this).parent('.segment').next('.cacheConfig').toggleClass('hidden')">Konfiguration</button>
+                <button class="${Btn.SIMPLE} small" onclick="$(this).parent('.segment').next('.cacheConfig').toggleClass('hidden')">Konfiguration</button>
 
                 <g:if test="${cache.getKeysWithExpiryCheck().size() > 0}">
-                    <button class="${Button.POSITIVE} small" onclick="$(this).parent('.segment').find('.cacheContent').toggleClass('hidden')">Elemente: ${cache.getKeys().size()}</button>
+                    <button class="${Btn.POSITIVE} small" onclick="$(this).parent('.segment').find('.cacheContent').toggleClass('hidden')">Elemente: ${cache.getKeys().size()}</button>
 
                     <div class="cacheContent hidden">
                         <dl>

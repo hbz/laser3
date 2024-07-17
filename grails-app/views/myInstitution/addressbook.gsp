@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.PersonRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.utils.DateUtils" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.PersonRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.utils.DateUtils" %>
 
 <laser:serviceInjection/>
 
@@ -160,8 +160,8 @@
         <div class="field la-field-right-aligned">
             <label></label>
             <a href="${request.forwardURI}"
-               class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-            <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}">
+               class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+            <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
         </div>
     </g:form>
 </ui:filter>

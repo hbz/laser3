@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.IssueEntitlementCoverage; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.IssueEntitlementCoverage; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart message="subscription.details.current_ent" serviceInjection="true"/>
 
@@ -113,7 +113,7 @@
                                                accept="text/tab-separated-values, text/plain"
                                                style="display: none;">
 
-                                        <div class="ui icon button">
+                                        <div class="${Btn.SIMPLE_ICON}">
                                             <i class="${Icon.CMD.ATTACHMENT}"></i>
                                         </div>
                                     </div>

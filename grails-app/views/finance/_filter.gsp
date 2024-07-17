@@ -1,5 +1,5 @@
 <!-- _filter.gsp -->
-<%@ page import="de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.I10nTranslation; java.text.SimpleDateFormat;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.FinanceController;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.I10nTranslation; java.text.SimpleDateFormat;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.FinanceController;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
 <%
@@ -273,9 +273,9 @@
                               noSelection="${['':message(code:'default.select.all.label')]}"/>
                 </div>
                 <div class="field la-field-right-aligned">
-                    <a href="${request.forwardURI}?reset=true" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+                    <a href="${request.forwardURI}?reset=true" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
                     <g:hiddenField name="showView" value="${showView}"/>
-                    <input type="submit" name="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
+                    <input type="submit" name="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}">
                 </div>
             </div>
 

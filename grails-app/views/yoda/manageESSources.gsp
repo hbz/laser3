@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button" %>
+<%@ page import="de.laser.ui.Btn" %>
 <laser:htmlStart text="Manage ES Sources" />
 
     <ui:breadcrumbs>
@@ -107,7 +107,7 @@
 
             <div class="field">
                 <label>&nbsp;</label>
-                <input type="submit" value="Submit" class="${Button.BASIC}"/>
+                <input type="submit" value="Submit" class="${Btn.SIMPLE}"/>
             </div>
 
     </ui:form>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Button; de.laser.ui.Icon" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <laser:htmlStart message="menu.admin.dataConsistency" />
 
 <ui:breadcrumbs>
@@ -37,7 +37,7 @@
                                         ${entry[1]}
                                     </td>
                                     <td class="x">
-                                        <button class="ui mini button icon" data-key="${obj.key}" data-key2="${row.key}" data-value="${entry[0]}"><i class="ui icon search"></i></button>
+                                        <button class="${Btn.SIMPLE_ICON} mini" data-key="${obj.key}" data-key2="${row.key}" data-value="${entry[0]}"><i class="ui icon search"></i></button>
                                     </td>
                                 </tr>
                             </g:each>
@@ -118,12 +118,12 @@
                 if (mergeables.length > 0) {
                     var mergeUrl = "<g:createLink controller="admin" action="dataConsistency" />?task=merge&objType=Org";
                     mergeUrl += '&objId=' + mergeables.join('&objId=')
-                    $html.append( '<a href="' + mergeUrl + '" class="${Button.POSITIVE}"><i class="icon recycle"></i> Zusammenführen</a>' )
+                    $html.append( '<a href="' + mergeUrl + '" class="${Btn.POSITIVE}"><i class="icon recycle"></i> Zusammenführen</a>' )
                 }
                 if (deletables.length > 0) {
                     var deleteUrl = "<g:createLink controller="admin" action="dataConsistency" />?task=delete&objType=Org";
                     deleteUrl += '&objId=' + deletables.join('&objId=')
-                    $html.append( '<a href="' + deleteUrl + '" class="${Button.NEGATIVE}"><i class="${Icon.CMD.DELETE}"></i> Löschen</a>' )
+                    $html.append( '<a href="' + deleteUrl + '" class="${Btn.NEGATIVE}"><i class="${Icon.CMD.DELETE}"></i> Löschen</a>' )
                 }
                 $('#modalConsistencyCheck').modal('show')
             }

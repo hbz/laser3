@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.Org;de.laser.RefdataCategory;de.laser.survey.SurveyInfo;de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;de.laser.survey.SurveyResult" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.Org;de.laser.RefdataCategory;de.laser.survey.SurveyInfo;de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;de.laser.survey.SurveyResult" %>
 <laser:htmlStart message="manageParticipantSurveys.header" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -129,10 +129,8 @@
         <div class="field la-field-right-aligned">
 
             <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}"
-                   class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button"
-                       value="${message(code: 'default.button.filter.label')}">
+                <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
             </div>
 
         </div>
