@@ -178,7 +178,7 @@ class ApiCollectionReader {
             tmp.orderNumber         = it.order?.orderNumber // retrieveOrderMap(it.order) // de.laser.finance.Order
             // tmp.owner               = ApiStubReader.retrieveOrganisationStubMap(it.owner, context) // de.laser.Org
             // tmp.sub                 = ApiStubReader.requestSubscriptionStub(it.sub, context) // de.laser.Subscription // RECURSION ???
-            // tmp.package             = ApiStubReader.requestSubscriptionPackageStubMixed(it.subPkg, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.SubscriptionPackage
+            // tmp.pkg             = ApiStubReader.requestSubscriptionPackageStubMixed(it.subPkg, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.SubscriptionPackage
             //tmp.surveyOrg
             //tmp.subPkg
 

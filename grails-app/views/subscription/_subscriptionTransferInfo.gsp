@@ -9,7 +9,8 @@
             <thead>
             <tr>
                 <th scope="col" rowspan="3">${message(code: 'subscription.referenceYear.short.label')}</th>
-                <th scope="col" rowspan="3">${message(code: 'provider.label')} / ${message(code: 'vendor.label')}</th>
+                <th scope="col" rowspan="3">${message(code: 'provider.label')}</th>
+                <th scope="col" rowspan="3">${message(code: 'vendor.label')}</th>
                 <th scope="col" rowspan="3">${message(code: 'subscription')}</th>
                 <th scope="col" rowspan="2" class="la-smaller-table-head">${message(code: 'default.startDate.label.shy')}</th>
                 <th scope="col" rowspan="3">${message(code: 'subscription.manualCancellationDate.label.shy')}</th>
