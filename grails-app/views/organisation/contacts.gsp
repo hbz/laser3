@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore;de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.ui.Button; de.laser.storage.RDStore;de.laser.storage.RDConstants;" %>
 <%@ page import="de.laser.Org; de.laser.Person; de.laser.PersonRole; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 
 <laser:htmlStart message="menu.institutions.publicContacts" serviceInjection="true" />
@@ -73,8 +73,8 @@
 
             <div class="field la-field-right-aligned">
                 <label></label>
-                <a href="${request.forwardURI}" class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}">
+                <a href="${request.forwardURI}" class="${Button.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+                <input type="submit" class="${Button.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
             </div>
         </g:form>
     </ui:filter>
@@ -135,8 +135,8 @@
             <div class="field la-field-right-aligned">
                 <label></label>
                 <a href="${request.forwardURI}"
-                   class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button"
+                   class="${Button.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+                <input type="submit" class="${Button.PRIMARY}"
                        value="${message(code: 'default.button.filter.label')}">
             </div>
         </g:form>

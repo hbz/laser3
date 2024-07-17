@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
 
 <laser:htmlStart message="search.advancedSearch" serviceInjection="true"/>
 
@@ -155,8 +155,8 @@
 
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}"
-                   class="ui reset secondary button">${message(code: 'default.button.searchreset.label')}</a>
-                <button name="search" type="submit" value="true" class="ui primary button">
+                   class="${Button.SECONDARY} reset">${message(code: 'default.button.searchreset.label')}</a>
+                <button name="search" type="submit" value="true" class="${Button.PRIMARY}">
                     <g:message code="search.button" />
                 </button>
             </div>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.License; de.laser.Subscription; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.*; de.laser.RefdataCategory; de.laser.WorkflowService" %>
+<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.License; de.laser.Subscription; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.*; de.laser.RefdataCategory; de.laser.WorkflowService" %>
 
 <laser:htmlStart message="menu.my.workflows" serviceInjection="true"/>
 
@@ -42,8 +42,8 @@
             </div>
         </div>
         <div class="field la-field-right-aligned">
-            <g:link controller="myInstitution" action="currentWorkflows" params="${[filter: 'reset']}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</g:link>
-            <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}" />
+            <g:link controller="myInstitution" action="currentWorkflows" params="${[filter: 'reset']}" class="${Button.SECONDARY} reset">${message(code:'default.button.reset.label')}</g:link>
+            <input type="submit" class="${Button.PRIMARY}" value="${message(code:'default.button.filter.label')}" />
         </div>
         <input type="hidden" name="filter" value="true" />
 %{--        <input type="hidden" name="tab" value="${tab}" />--}%

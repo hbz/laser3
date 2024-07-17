@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.FormService" %>
+<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.FormService" %>
 
 <g:set var="entityName" value="${message(code: 'default.institution')}" />
 <laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" serviceInjection="true"/>
@@ -28,8 +28,8 @@
 				</div>
 			</g:if>
 			<div class="field la-field-right-aligned">
-				<a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.searchreset.label')}</a>
-				<input type="submit" value="${message(code:'default.button.search.label')}" class="ui primary button">
+				<a href="${request.forwardURI}" class="${Button.SECONDARY} reset">${message(code:'default.button.searchreset.label')}</a>
+				<input type="submit" value="${message(code:'default.button.search.label')}" class="${Button.PRIMARY}">
 				<g:link controller="organisation" action="list" class="ui button">${message(code:'default.button.cancel.label')}</g:link>
 			</div>
 		</ui:searchSegment>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
+<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
 
 <laser:htmlStart message="menu.my.currentSubscriptionsTransfer" serviceInjection="true"/>
 
@@ -243,8 +243,8 @@
             </g:if>
             <div class="field la-field-right-aligned">
                 <a href="${createLink(controller: controllerName, action: actionName, params: [id: params.id, resetFilter: true, tab: params.tab])}"
-                   class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}">
+                   class="${Button.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+                <input type="submit" class="${Button.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
             </div>
 
         </div>

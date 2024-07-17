@@ -1,4 +1,4 @@
-<%@ page import="de.laser.base.AbstractReport; de.laser.helper.Params; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Button; de.laser.base.AbstractReport; de.laser.helper.Params; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 
 <ui:filter>
     <g:form controller="${controllerName}" action="${actionName}" method="get" class="ui form">
@@ -165,8 +165,8 @@
             <div class="field"></div>
             <div class="field"></div>
             <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button" name="filterSet" value="${message(code:'default.button.filter.label')}" />
+                <a href="${request.forwardURI}" class="${Button.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+                <input type="submit" class="${Button.PRIMARY}" name="filterSet" value="${message(code:'default.button.filter.label')}" />
             </div>
         </div>
     </g:form>

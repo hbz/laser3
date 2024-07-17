@@ -1,4 +1,4 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.OrgRole; de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
+<%@ page import="de.laser.ui.Button; de.laser.TitleInstancePackagePlatform; de.laser.OrgRole; de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
 
 <laser:htmlStart message="gasco.title" />
 
@@ -39,9 +39,9 @@
 
                 <div class="field">
                     <label>&nbsp;</label>
-                    <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+                    <a href="${request.forwardURI}" class="${Button.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
 
-                    <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}" />
+                    <input type="submit" class="${Button.PRIMARY}" value="${message(code:'default.button.filter.label')}" />
                 </div>
 
             </div>

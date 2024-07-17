@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.helper.Params; de.laser.License; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.Person; de.laser.Subscription" %>
+<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.helper.Params; de.laser.License; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.Person; de.laser.Subscription" %>
 
 <laser:htmlStart text="${message(code:'license.details.incoming.childs',args:[message(code:'consortium.subscriber')])}" serviceInjection="true" />
 
@@ -67,9 +67,9 @@
                 </div>
             </div>
             <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+                <a href="${request.forwardURI}" class="${Button.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
                 <input name="filterSet" type="hidden" value="true">
-                <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui primary button"/>
+                <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Button.PRIMARY}"/>
             </div>
         </div>
     </g:form>

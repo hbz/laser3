@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.Platform; de.laser.base.AbstractReport; grails.converters.JSON; de.laser.CustomerIdentifier; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Button; de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.Platform; de.laser.base.AbstractReport; grails.converters.JSON; de.laser.CustomerIdentifier; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <%
     Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscriberSub", [subscriberSub: subscriberSub])
@@ -90,7 +90,7 @@
                 <div class="field"></div>
                 <div class="field"></div>
                 <div class="field la-field-right-aligned">
-                    <input id="generateReport" type="button" class="ui primary button" disabled="disabled" value="${message(code: 'default.stats.generateReport')}"/>
+                    <input id="generateReport" type="button" class="${Button.PRIMARY}" disabled="disabled" value="${message(code: 'default.stats.generateReport')}"/>
                 </div>
             </div>
         </g:form>

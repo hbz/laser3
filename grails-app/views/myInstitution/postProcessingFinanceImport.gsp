@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.OrgRole; grails.converters.JSON;de.laser.storage.RDStore;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Button; de.laser.CustomerTypeService; de.laser.OrgRole; grails.converters.JSON;de.laser.storage.RDStore;de.laser.finance.CostItem" %>
 <laser:htmlStart message="myinst.financeImport.post.title" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -175,7 +175,7 @@
                 <tfoot>
                     <tr>
                         <td colspan="3">
-                            <input type="submit" class="ui button primary" value="${message(code:'default.button.save.label')}">
+                            <input type="submit" class="${Button.PRIMARY}" value="${message(code:'default.button.save.label')}">
                             <g:link action="financeImport" class="ui button"><g:message code="default.button.back"/></g:link>
                         </td>
                     </tr>
