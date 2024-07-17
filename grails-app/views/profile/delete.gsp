@@ -44,7 +44,7 @@
                         </div>
                     </g:if>
                     <g:else>
-                        <input disabled type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
+                        <input disabled type="submit" class="${Btn.NEGATIVE}" value="${message(code:'deletion.user')}" />
                         <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="user.delete.substitute.missing" />
                     </g:else>
                 </g:if>
@@ -56,7 +56,7 @@
                 </g:elseif>
             </g:if>
             <g:else>
-                <input disabled type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
+                <input disabled type="submit" class="${Btn.NEGATIVE}" value="${message(code:'deletion.user')}" />
             </g:else>
 
         </g:form>

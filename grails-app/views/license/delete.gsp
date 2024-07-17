@@ -29,10 +29,10 @@
 
             <g:if test="${editable}">
                 <g:if test="${delResult.deletable}">
-                    <g:link controller="license" action="delete" params="${[id: license.id, process: true]}" class="ui button red">${message(code:'deletion.license')}</g:link>
+                    <g:link controller="license" action="delete" params="${[id: license.id, process: true]}" class="${Btn.NEGATIVE}">${message(code:'deletion.license')}</g:link>
                 </g:if>
                 <g:else>
-                    <input disabled type="submit" class="ui button red" value="${message(code:'deletion.license')}" />
+                    <input disabled type="submit" class="${Btn.NEGATIVE}" value="${message(code:'deletion.license')}" />
                 </g:else>
             </g:if>
         </g:else>

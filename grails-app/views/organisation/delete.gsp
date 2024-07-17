@@ -40,7 +40,7 @@
                     <g:if test="${delResult.deletable}">
                         <g:if test="${delResult.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
                             <p>Löschen mit Datenübertrag wird noch nicht unterstützt.</p>
-                            <%--<input type="submit" class="ui button red" value="Organisation löschen" />
+                            <%--<input type="submit" class="${Btn.NEGATIVE}" value="Organisation löschen" />
 
                             <br /><br />
                             Beim Löschen relevante Daten an folgende Organisation übertragen:
@@ -51,11 +51,11 @@
                                       --%>
                         </g:if>
                         <g:elseif test="${delResult.status != deletionService.RESULT_ERROR}">
-                            <input type="submit" class="ui button red" value="${message(code:'deletion.org')}" />
+                            <input type="submit" class="${Btn.NEGATIVE}" value="${message(code:'deletion.org')}" />
                         </g:elseif>
                     </g:if>
                     <g:else>
-                        <input disabled type="submit" class="ui button red" value="${message(code:'deletion.org')}" />
+                        <input disabled type="submit" class="${Btn.NEGATIVE}" value="${message(code:'deletion.org')}" />
                     </g:else>
                 </g:form>
             </g:if>

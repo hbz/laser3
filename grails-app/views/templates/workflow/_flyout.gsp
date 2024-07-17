@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowService; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowService; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <g:if test="${clist}">
@@ -249,7 +249,7 @@
                                     <input type="hidden" name="target" value="${clistInfo.target.class.name}:${clistInfo.target.id}" />
                                 </div>
                                 <div class="field">
-                                    <input type="submit" class="ui button green" name="save" value="Neue Aufgabe hinzufügen">
+                                    <input type="submit" class="${Btn.POSITIVE}" name="save" value="Neue Aufgabe hinzufügen">
                                 </div>
                             </g:form>
                         </div>
