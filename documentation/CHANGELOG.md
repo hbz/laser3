@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5815    18.07.2024  rc-3.4  3.4.3       Andreas Bug         Umfragen können grundsätzlich abgeschickt werden, wenn keine Teilnahme beabsichtigt ist
+
+5814    18.07.2024  rc-3.4  3.4.3       Andreas Bug         Paketzuordnung wurde bei Neuanlegen eines Kostenpostens nicht erkannt
+
+--      18.07.2024  rc-3.4  3.4.3       Andreas Bug         falsche Verarbeitung der Verküpfungen beim Zusammenführen von Anbietern und Lieferanten behoben
+
 5813    17.07.2024  rc-3.4  3.4.3       Andreas Bug         Spaltenüberschrift Lieferant fehlte
 
 5812    16.07.2024  rc-3.4  3.4.3       Andreas Bug         Brücke zur Ersetzung von fehlenden Vertrag-Einrichtung-Verknüpfungen
