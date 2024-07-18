@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.Package; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.FormService; de.laser.SubscriptionPackage; de.laser.Subscription" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Package; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.FormService; de.laser.SubscriptionPackage; de.laser.Subscription" %>
 <laser:serviceInjection/>
 
 <g:if test="${filteredSubscriptions}">
@@ -12,7 +12,7 @@
                             <g:link controller="package" action="show" id="${subPkg.pkg.id}">${subPkg.pkg.name} ${raw(subPkg.getIEandPackageSize())}</g:link>
 
                             <div class="right floated content">
-                                <button class="ui negative button la-modern-button la-selectable-button unlinkPackages" ${!editable || isUnlinkingRunning ? 'disabled="disabled"' : ''}
+                                <button class="${Btn.MODERN.NEGATIVE_ICON} la-selectable-button unlinkPackages" ${!editable || isUnlinkingRunning ? 'disabled="disabled"' : ''}
                                         data-package="${subPkg.pkg.id}" data-subscription="${subPkg.subscription.id}">
                                     <i class="${Icon.CMD.UNLINK}"></i>
                                 </button>
@@ -72,12 +72,12 @@
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
                     <div class="ui buttons">
-                        <button class="ui green button" ${!editable || isLinkingRunning || isUnlinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
+                        <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning || isUnlinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkwithoutIE')}</button>
 
                         <div class="or" data-text="${message(code: 'default.or')}"></div>
-                        <button class="ui green button" ${!editable || isLinkingRunning || isUnlinkingRunning ? 'disabled="disabled"' : ''} type="submit"
+                        <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning || isUnlinkingRunning ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 value="linkwithIE">${message(code: 'subscriptionsManagement.linkwithIE')}</button>
                     </div>

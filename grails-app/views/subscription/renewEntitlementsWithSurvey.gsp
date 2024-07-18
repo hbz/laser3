@@ -336,12 +336,12 @@
             <g:if test="${params.tab != 'stats'}">
                 <div class="eight wide field" style="text-align: left;">
                     <g:if test="${editable && params.tab == 'allTipps'}">
-                        <button type="submit" name="process" id="processButton" value="preliminary" class="ui green button">
+                        <button type="submit" name="process" id="processButton" value="preliminary" class="${Btn.POSITIVE}">
                             ${checkedCount} <g:message code="renewEntitlementsWithSurvey.preliminary"/></button>
                     </g:if>
 
                     <g:if test="${editable && params.tab == 'selectedIEs'}">
-                        <button type="submit" name="process" id="processButton" value="remove" class="ui red button">
+                        <button type="submit" name="process" id="processButton" value="remove" class="${Btn.NEGATIVE}">
                             ${checkedCount}  <g:message code="renewEntitlementsWithSurvey.remove"/></button>
                     </g:if>
                 </div>
