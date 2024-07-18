@@ -45,6 +45,8 @@ class Btn {
     public static String POSITIVE_CONFIRM       = 'ui button positive js-open-confirm-modal'
     @UIDoc(usage = 'Buttons/Links/Inputs with Confirmation Dialog (data-confirm-attributes needed)')
     public static String NEGATIVE_CONFIRM       = 'ui button negative js-open-confirm-modal'
+    @UIDoc(usage = 'Buttons/Links/Inputs with Js Click Control')
+    public static String NEGATIVE_CLICKCONTROL    = 'ui button negative js-click-control'
 
     public static String SIMPLE_ICON        = 'ui button icon'          // merge with PRIMARY_ICON ?
     public static String PRIMARY_ICON       = 'ui button primary icon'

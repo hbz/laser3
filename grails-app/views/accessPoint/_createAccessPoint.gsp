@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 
     <ui:form controller="accessPoint" action="processCreate" id="${orgInstance.id}">
@@ -58,5 +58,5 @@
             <label>${message(code:'default.note.label')}</label>
             <g:field type="text" name="note" value="" />
         </div>
-        <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
+        <input type="submit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${message(code: 'default.button.create.label')}"/>
     </ui:form>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.RefdataCategory;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Combo;de.laser.RefdataValue;de.laser.Org" %>
+<%@ page import="de.laser.ui.Btn; de.laser.CustomerTypeService; de.laser.RefdataCategory;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Combo;de.laser.RefdataValue;de.laser.Org" %>
 
 <laser:htmlStart message="myinst.emptySubscription.label" serviceInjection="true"/>
 
@@ -42,8 +42,8 @@
                 </g:elseif>
             <div class="field">
                 <br />
-                <input id="submitterFallback" type="submit" class="ui button js-click-control" value="${message(code:'default.button.create.label')}" />
-                <input type="button" class="ui button js-click-control" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
+                <input type="submit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${message(code:'default.button.create.label')}" />
+                <input type="button" class="${Btn.SIMPLE_CLICKCONTROL}" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
             </div>
         </ui:form>
 

@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 
 <ui:filter>
     <g:form controller="${processController}" action="${processAction}" id="${surveyInfo.id}"
@@ -24,17 +25,14 @@
 
         <g:if test="${processController && processAction && tmplConfigShow.contains('unLinkSurveyVendor')}">
             <div class="field">
-                <input type="submit" class="ui button negative js-click-control" value="${message(code: 'surveyVendors.unlinkVendor.plural')}"/>
+                <input type="submit" class="${Btn.NEGATIVE_CLICKCONTROL}" value="${message(code: 'surveyVendors.unlinkVendor.plural')}"/>
             </div>
         </g:if>
         <g:if test="${processController && processAction && tmplConfigShow.contains('linkSurveyVendor')}">
             <div class="field">
-                <input type="submit" class="ui button js-click-control" value="${message(code: 'surveyVendors.linkVendor.plural')}"/>
+                <input type="submit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${message(code: 'surveyVendors.linkVendor.plural')}"/>
             </div>
         </g:if>
-
-
-
 
     </g:form>
     <ui:paginate controller="${controllerName}" action="${actionName}"

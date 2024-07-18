@@ -383,7 +383,7 @@
 
         <g:if test="${members}">
             <div class="field la-field-right-aligned">
-                <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
+                <input type="submit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${message(code: 'default.button.create.label')}"/>
             </div>
             <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         </g:if>

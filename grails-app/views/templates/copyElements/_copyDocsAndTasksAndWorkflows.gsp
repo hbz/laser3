@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.Person; de.laser.Doc; de.laser.Subscription; de.laser.FormService" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.Person; de.laser.Doc; de.laser.Subscription; de.laser.FormService" %>
 <laser:serviceInjection />
 
 
@@ -425,14 +425,14 @@
         <g:if test="${!fromSurvey && !copyObject}">
             <div class="sixteen wide field" style="text-align: right;">
                 <g:set var="submitDisabled" value="${(sourceObject && targetObject)? '' : 'disabled'}"/>
-                <input type="submit" id="copyElementsSubmit" class="ui button js-click-control" value="${submitButtonText}" data-confirm-id="copyElements"
+                <input type="submit" id="copyElementsSubmit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${submitButtonText}" data-confirm-id="copyElements"
                        data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
                        data-confirm-term-how="delete" ${submitDisabled}/>
             </div>
         </g:if>
         <g:elseif test="${copyObject}">
             <div class="sixteen wide field" style="text-align: right;">
-                <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.copy.label')}"/>
+                <input type="submit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${message(code: 'default.button.copy.label')}"/>
             </div>
         </g:elseif>
         <g:else>
@@ -440,14 +440,14 @@
                 <div class="eight wide field" style="text-align: left;">
                     <g:set var="surveyConfig" value="${SurveyConfig.get(Long.valueOf(fromSurvey))}"/>
                     <g:if test="${surveyConfig.isSubSurveyUseForTransfer()}">
-                        <g:link controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" class="ui button js-click-control">
+                        <g:link controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" class="${Btn.SIMPLE_CLICKCONTROL}">
                             <g:message code="renewalEvaluation.back"/>
                         </g:link>
                     </g:if>
                 </div>
                 <div class="eight wide field" style="text-align: right;">
                     <g:set var="submitDisabled" value="${(sourceObject && targetObject)? '' : 'disabled'}"/>
-                    <input type="submit" id="copyElementsSubmit" class="ui button js-click-control" value="${submitButtonText}" data-confirm-id="copyElements"
+                    <input type="submit" id="copyElementsSubmit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${submitButtonText}" data-confirm-id="copyElements"
                            data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
                            data-confirm-term-how="delete" ${submitDisabled}/>
                 </div>

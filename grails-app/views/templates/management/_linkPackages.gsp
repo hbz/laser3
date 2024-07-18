@@ -84,7 +84,7 @@
                 </div>
                 <div class="eight wide field" style="text-align: right;">
                     <div class="ui buttons">
-                        <button class="ui button negative js-open-confirm-modal"
+                        <button class="${Btn.NEGATIVE_CONFIRM}"
                                 data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE.confirm')}"
                                 data-confirm-term-how="ok" ${!editable || isLinkingRunning || isUnlinkingRunning ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
@@ -92,7 +92,7 @@
                                 value="unlinkIEonly">${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}</button>
 
                         <div class="or" data-text="${message(code: 'default.or')}"></div>
-                        <button class="ui button negative js-open-confirm-modal"
+                        <button class="${Btn.NEGATIVE_CONFIRM}"
                                 data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.unlinkInfo.withIE.confirm')}"
                                 data-confirm-term-how="ok" ${!editable || isLinkingRunning || isUnlinkingRunning ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"

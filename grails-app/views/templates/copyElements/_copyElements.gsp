@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.License; de.laser.PersonRole; de.laser.Person; de.laser.SubscriptionController; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.RefdataValue; de.laser.FormService;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.License; de.laser.PersonRole; de.laser.Person; de.laser.SubscriptionController; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.RefdataValue; de.laser.FormService;" %>
 <laser:serviceInjection/>
 
 <g:set var="copyElementsService" bean="copyElementsService"/>
@@ -815,14 +815,14 @@
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
                     <g:link controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}"
-                            params="[surveyConfigID: surveyConfig.id]" class="ui button js-click-control">
+                            params="[surveyConfigID: surveyConfig.id]" class="${Btn.SIMPLE_CLICKCONTROL}">
                         <g:message code="renewalEvaluation.back"/>
                     </g:link>
                 </div>
 
                 <div class="eight wide field" style="text-align: right;">
                     <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
-                    <input type="submit" id="copyElementsSubmit" class="ui button js-click-control" value="${submitButtonText}"
+                    <input type="submit" id="copyElementsSubmit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${submitButtonText}"
                            data-confirm-id="copyElements"
                            data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
                            data-confirm-term-how="delete" ${submitDisabled}/>
@@ -831,13 +831,13 @@
         </g:if>
         <g:elseif test="${copyObject}">
             <div class="sixteen wide field" style="text-align: right;">
-                <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.copy.label')}"/>
+                <input type="submit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${message(code: 'default.button.copy.label')}"/>
             </div>
         </g:elseif>
         <g:else>
             <div class="sixteen wide field" style="text-align: right;">
                 <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
-                <input type="submit" id="copyElementsSubmit" class="ui button js-click-control" value="${submitButtonText}"
+                <input type="submit" id="copyElementsSubmit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${submitButtonText}"
                        data-confirm-id="copyElements"
                        data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
                        data-confirm-term-how="delete" ${submitDisabled}/>

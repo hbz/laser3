@@ -267,7 +267,7 @@
 
                                             <g:if test="${surveysConsortiaSub.surveyInfo?.isCompletedforOwner()}">
                                                 <g:link controller="subscription" action="surveysConsortia" id="${s.id}"
-                                                        class="ui button positive icon la-modern-button">
+                                                        class="${Btn.MODERN.POSITIVE_ICON}">
                                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                           data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
                                                         <i class="${Icon.SURVEY}"></i>
