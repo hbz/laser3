@@ -378,7 +378,7 @@
                     </td>
                     <td>
                         <g:link controller="survey" action="show" id="${surveyInfo.id}"
-                                class="${Btn.MODERN.BLUE_ICON}"
+                                class="${Btn.MODERN.SIMPLE_ICON}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
                             <i class="${Icon.CMD.EDIT}"></i>

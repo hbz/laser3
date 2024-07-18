@@ -44,7 +44,7 @@
                 <td>
                     <g:if test="${nextSubs && nextSubs[i]}">
                         <g:if test="${actionName == 'compareMembersOfTwoSubs'}">
-                            <g:link class="ui button openTransferParticipantsModal" controller="survey" action="openTransferParticipantsModal" params="${[surveyConfigID: surveyConfig.id, id: surveyInfo.id, targetSubscriptionId: nextSubs[i].id]}">
+                            <g:link class="${Btn.SIMPLE} openTransferParticipantsModal" controller="survey" action="openTransferParticipantsModal" params="${[surveyConfigID: surveyConfig.id, id: surveyInfo.id, targetSubscriptionId: nextSubs[i].id]}">
                                 <g:message code="surveyInfo.transferParticipants"/>
                             </g:link>
                             <br>
@@ -101,7 +101,7 @@
             </g:link>
         </g:if>
         <g:elseif test="${parentSuccessorSubscription}">
-            <g:link class="ui button openTransferParticipantsModal" controller="survey" action="openTransferParticipantsModal" params="${[surveyConfigID: surveyConfig.id, id: surveyInfo.id, targetSubscriptionId: parentSuccessorSubscription.id]}">
+            <g:link class="${Btn.SIMPLE} openTransferParticipantsModal" controller="survey" action="openTransferParticipantsModal" params="${[surveyConfigID: surveyConfig.id, id: surveyInfo.id, targetSubscriptionId: parentSuccessorSubscription.id]}">
                 <g:message code="surveyInfo.transferParticipants"/>
             </g:link>
         </g:elseif>

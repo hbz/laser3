@@ -275,8 +275,7 @@
                                                 </g:link>
                                             </g:if>
                                             <g:else>
-                                                <g:link controller="subscription" action="surveysConsortia" id="${s.id}"
-                                                        class="${Btn.MODERN.BLUE_ICON}">
+                                                <g:link controller="subscription" action="surveysConsortia" id="${s.id}" class="${Btn.MODERN.SIMPLE_ICON}">
                                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                           data-content="${message(code: "surveyconfig.isCompletedforOwner.false")}">
                                                         <i class="${Icon.SURVEY}"></i>
@@ -285,7 +284,7 @@
                                             </g:else>
 
 %{--                                        <g:link controller="subscription" action="surveysConsortia" id="${s.id}"
-                                                class="${Btn.MODERN.BLUE_ICON}">
+                                                class="${Btn.MODERN.SIMPLE_ICON}">
                                             <g:if test="${surveysConsortiaSub.surveyInfo?.isCompletedforOwner()}">
                                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                       data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
