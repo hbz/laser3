@@ -595,7 +595,7 @@
                 <td>
                     <g:link controller="survey" action="evaluationParticipant"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
-                            class="ui button blue icon la-modern-button la-popup-tooltip la-delay"
+                            class="${Btn.MODERN.SIMPLE_ICON} la-popup-tooltip la-delay"
                             data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                         <i class="${Icon.SURVEY}"></i>
                     </g:link>
@@ -1179,7 +1179,7 @@
                 <td>
                     <g:link controller="survey" action="evaluationParticipant"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
-                            class="ui button blue icon la-modern-button la-popup-tooltip la-delay"
+                            class="${Btn.MODERN.SIMPLE_ICON} la-popup-tooltip la-delay"
                             data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                         <i class="${Icon.SURVEY}"></i>
                     </g:link>

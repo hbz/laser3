@@ -40,11 +40,11 @@
         <button class="${Btn.POSITIVE_ICON}"><i class="${Icon.CMD.ADD}"></i></button>
         <button class="${Btn.NEGATIVE_ICON}"><i class="${Icon.CMD.REMOVE}"></i></button>
     </p>
-    <p>
-        <button class="${Btn.MODERN.SIMPLE}">MODERN.SIMPLE</button>
-        <button class="${Btn.MODERN.POSITIVE}">MODERN.POSITIVE</button>
-        <button class="${Btn.MODERN.NEGATIVE}">MODERN.NEGATIVE</button>
-    </p>
+%{--    <p>--}%
+%{--        <button class="${Btn.MODERN.SIMPLE}">MODERN.SIMPLE</button>--}%
+%{--        <button class="${Btn.MODERN.POSITIVE}">MODERN.POSITIVE</button>--}%
+%{--        <button class="${Btn.MODERN.NEGATIVE}">MODERN.NEGATIVE</button>--}%
+%{--    </p>--}%
     <p>
         <button class="${Btn.MODERN.BASIC_ICON} blue"><i class="${Icon.UNC.SQUARE}"></i> + blue</button>
         <button class="${Btn.MODERN.SIMPLE_ICON}"><i class="${Icon.UNC.SQUARE}"></i></button>

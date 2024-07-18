@@ -3,6 +3,7 @@ package de.laser
 import de.laser.ContextService
 import de.laser.SystemService
 import de.laser.YodaService
+import de.laser.ui.Btn
 import de.laser.ui.Icon
 import de.laser.utils.SwissKnife
 
@@ -29,7 +30,7 @@ class ModalTagLib {
             out << '<br />'
             out << '</div>'
             out << '<div class="actions">'
-            out << '<a href="#" class="ui button" onclick="$(\'#debugInfo\').modal(\'hide\')">Schließen</a>'
+            out << '<a href="#" class="' + Btn.SIMPLE + '" onclick="$(\'#debugInfo\').modal(\'hide\')">Schließen</a>'
             out << '</div>'
             out << '</div>'
         }
@@ -76,7 +77,7 @@ class ModalTagLib {
         if (attrs.hideSubmitButton == true || attrs.hideSubmitButton == 'true') {
         }
         else {
-            out << '<input type="submit" class="ui button green" name="save" form="' + attrs.form + '" value="' + msgSave + '" />'
+            out << '<input type="submit" class="' + Btn.POSITIVE + '" name="save" form="' + attrs.form + '" value="' + msgSave + '" />'
         }
 
         out << '</div>'
@@ -126,9 +127,9 @@ class ModalTagLib {
         }
         else {
             if (attrs.formID) {
-                out << '<input type="submit" class="ui button green" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'#' + attrs.formID + '\').submit()"/>'
+                out << '<input type="submit" class="' + Btn.POSITIVE + '" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'#' + attrs.formID + '\').submit()"/>'
             } else {
-                out << '<input type="submit" class="ui button green" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'form\').submit()"/>'
+                out << '<input type="submit" class="' + Btn.POSITIVE + '" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'form\').submit()"/>'
             }
         }
 
@@ -154,7 +155,7 @@ class ModalTagLib {
         out <<       '</div>'
         out <<    '</div>'
         out <<    '<div class="actions">'
-        out <<       '<button class="ui button ' + attrs.id + '" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</button>'
+        out <<       '<button class="' + Btn.SIMPLE + ' ' + attrs.id + '" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</button>'
         out <<    '</div>'
         out << '</div>'
     }

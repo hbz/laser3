@@ -9,8 +9,7 @@
             <div class="ui accordion la-accordion-showMore js-propertiesCompareInfo-accordion">
                 <div class="item">
                     <div class="title">
-                        <div
-                                class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated"
+                        <div class="${Btn.MODERN.SIMPLE_ICON} la-popup-tooltip la-delay right floated"
                                 data-content="<g:message code="survey.subscription.propertiesChange.show"/>">
                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                         </div>
@@ -68,8 +67,7 @@
             <div class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                 <div class="item">
                     <div class="title">
-                        <div
-                                class="ui button icon blue la-modern-button la-delay right floated">
+                        <div class="${Btn.MODERN.SIMPLE_ICON} la-delay right floated">
                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                         </div>
                         <laser:script file="${this.getGroovyPageFileName()}">
@@ -299,7 +297,7 @@
                 <div id="statsInfos" class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                     <div class="item">
                         <div class="title">
-                            <div class="ui button icon blue la-modern-button la-delay right floated ">
+                            <div class="${Btn.MODERN.SIMPLE_ICON} la-delay right floated">
                                 <i class="${Icon.CMD.SHOW_MORE}"></i>
                             </div>
 

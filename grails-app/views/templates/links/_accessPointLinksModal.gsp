@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ui.Btn" %>
 
 <g:if test="${editmode}">
-    <a role="button" class="${Btn.SIMPLE} ${tmplCss}" data-ui="modal" href="#${tmplModalID}">
+    <a role="button" class="ui button ${tmplCss}" data-ui="modal" href="#${tmplModalID}">
         <g:if test="${tmplIcon}">
             <i class="${tmplIcon} icon"></i>
         </g:if>

@@ -1,5 +1,6 @@
 package de.laser.system
 
+import de.laser.ui.Btn
 import de.laser.utils.SwissKnife
 
 class SystemTagLib {
@@ -88,7 +89,7 @@ class SystemTagLib {
         }
         out << body()
         out << '      <br />'
-        out << '      <p> <button class="ui button" onclick="JSPC.helper.goBack()">' + message(code: 'default.button.back') + '</button> </p>'
+        out << '      <p> <button class="' + Btn.SIMPLE + '" onclick="JSPC.helper.goBack()">' + message(code: 'default.button.back') + '</button> </p>'
         out << '    </div>'
         out << '  </div>'
         out << '</div>'

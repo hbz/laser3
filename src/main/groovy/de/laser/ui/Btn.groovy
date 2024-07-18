@@ -10,17 +10,6 @@ class Btn {
 
     class MODERN {
 
-//        public static String PRIMARY            = 'ui button primary la-modern-button'
-//        public static String SECONDARY          = 'ui button secondary la-modern-button'
-
-        @UIDoc(usage = 'TODO: refactoring; la-modern-button does not work without declared color!')
-        public static String SIMPLE             = 'ui button la-modern-button'              // merge with PRIMARY ?
-        public static String POSITIVE           = 'ui button positive la-modern-button'
-        public static String NEGATIVE           = 'ui button negative la-modern-button'
-
-        @UIDoc(usage = 'Buttons/Links/Inputs with Confirmation Dialog (data-confirm-attributes needed)')
-        public static String NEGATIVE_CONFIRM   = 'ui button negative la-modern-button js-open-confirm-modal'
-
 //        public static String PRIMARY_ICON       = 'ui button primary icon la-modern-button'
 //        public static String SECONDARY_ICON     = 'ui button secondary icon la-modern-button'
 
