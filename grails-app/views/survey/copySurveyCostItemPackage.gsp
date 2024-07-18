@@ -376,11 +376,11 @@
                 </div>
 
                 <div class="eight wide field" style="text-align: right;">
-                    <button class="ui button positive"
+                    <button class="${Btn.POSITIVE}"
                             type="submit">${message(code: 'copySurveyCostItems.copyCostItems')}</button>
                     <br/>
                     <br/>
-                    <button class="ui button positive" name="isVisibleForSubscriber" value="true"
+                    <button class="${Btn.POSITIVE}" name="isVisibleForSubscriber" value="true"
                             type="submit">${message(code: 'copySurveyCostItems.copyCostItems')} (${message(code: 'financials.isVisibleForSubscriber')})</button>
                 </div>
             </div>

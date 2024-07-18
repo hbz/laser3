@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.IssueEntitlement; grails.converters.JSON" %>
+<%@ page import="de.laser.ui.Btn; de.laser.Subscription; de.laser.IssueEntitlement; grails.converters.JSON" %>
 
 <laser:htmlStart text="Paket-Duplikate" serviceInjection="true" />
 
@@ -126,7 +126,7 @@
                     <div class="sixteen wide column">
                         <g:link action="purgeDuplicatePackages" params="${[doIt: true, toDelete: toDelete as JSON]}" class="ui negative button js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.deleteDuplicatePackages')}"
                                 data-confirm-term-how="ok">Daten bereinigen (bitte mit EXTREMER VORSICHT betätigen!!!)</g:link>
-                        <g:link action="purgeDuplicatePackages" params="${[doIt: false, toDelete: toDelete as JSON]}" class="ui button">Testlauf (gefahrlos)</g:link>
+                        <g:link action="purgeDuplicatePackages" params="${[doIt: false, toDelete: toDelete as JSON]}" class="${Btn.SIMPLE}">Testlauf (gefahrlos)</g:link>
                     </div>
                 </div>
             </div>

@@ -42,11 +42,11 @@
                     <g:actionSubmit action="deleteSelection" class="${Btn.PRIMARY}" value="${message(code: 'default.usage.adminPage.button.deleteSelection')}" onclick="return confirm('${message(code:'confirm.start.StatsDeleteSelection')}')"/>
                 </div>
                 <div class="field">
-                    <g:actionSubmit action="deleteAll" value="${message(code: 'default.usage.adminPage.button.deleteAll')}" class="ui button red" onclick="return confirm('${message(code:'confirm.start.StatsDelete')}')"/>
+                    <g:actionSubmit action="deleteAll" value="${message(code: 'default.usage.adminPage.button.deleteAll')}" class="${Btn.NEGATIVE}" onclick="return confirm('${message(code:'confirm.start.StatsDelete')}')"/>
                 </div>
                 <g:if test="${statsSyncService.running}">
                     <div class="field">
-                        <g:actionSubmit action="abort" value="${message(code: 'default.usage.adminPage.button.abortProcess')}" class="ui button red" onclick="return confirm('${message(code:'confirm.start.StatsAbort')}')"/>
+                        <g:actionSubmit action="abort" value="${message(code: 'default.usage.adminPage.button.abortProcess')}" class="${Btn.NEGATIVE}" onclick="return confirm('${message(code:'confirm.start.StatsAbort')}')"/>
                     </div>
                 </g:if>
             </div>

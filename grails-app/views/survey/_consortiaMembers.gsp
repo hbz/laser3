@@ -76,7 +76,7 @@
             </div><!-- .message -->
 
 
-            <input type="submit" class="ui button" value="${message(code: 'default.button.add.label')}"/>
+            <input type="submit" class="${Btn.SIMPLE}" value="${message(code: 'default.button.add.label')}"/>
         </g:if>
 
     </g:form>

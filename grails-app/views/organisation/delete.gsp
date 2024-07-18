@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 <laser:htmlStart message="org.label" serviceInjection="true"/>
 
     <laser:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
@@ -13,7 +14,7 @@
     <g:if test="${delResult}">
         <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
             <ui:msg class="success" message="deletion.success.msg" />
-            <g:link controller="organisation" action="listInstitution" class="ui button">${message(code:'menu.public.all_insts')}</g:link>
+            <g:link controller="organisation" action="listInstitution" class="${Btn.SIMPLE}">${message(code:'menu.public.all_insts')}</g:link>
         </g:if>
         <g:else>
             <g:if test="${delResult.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
@@ -30,8 +31,8 @@
                 <ui:msg class="error" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
-            <g:link controller="organisation" action="listInstitution" class="ui button">${message(code:'menu.public.all_insts')}</g:link>
-            <g:link controller="organisation" action="show" params="${[id: orgInstance.id]}" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
+            <g:link controller="organisation" action="listInstitution" class="${Btn.SIMPLE}">${message(code:'menu.public.all_insts')}</g:link>
+            <g:link controller="organisation" action="show" params="${[id: orgInstance.id]}" class="${Btn.SIMPLE}"><g:message code="default.button.cancel.label"/></g:link>
 
             <g:if test="${editable}">
                 <g:form controller="organisation" action="delete" params="${[id: orgInstance.id, process: true]}" style="display:inline-block;vertical-align:top">
@@ -39,7 +40,7 @@
                     <g:if test="${delResult.deletable}">
                         <g:if test="${delResult.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
                             <p>Löschen mit Datenübertrag wird noch nicht unterstützt.</p>
-                            <%--<input type="submit" class="ui button red" value="Organisation löschen" />
+                            <%--<input type="submit" class="${Btn.NEGATIVE}" value="Organisation löschen" />
 
                             <br /><br />
                             Beim Löschen relevante Daten an folgende Organisation übertragen:
@@ -50,11 +51,11 @@
                                       --%>
                         </g:if>
                         <g:elseif test="${delResult.status != deletionService.RESULT_ERROR}">
-                            <input type="submit" class="ui button red" value="${message(code:'deletion.org')}" />
+                            <input type="submit" class="${Btn.NEGATIVE}" value="${message(code:'deletion.org')}" />
                         </g:elseif>
                     </g:if>
                     <g:else>
-                        <input disabled type="submit" class="ui button red" value="${message(code:'deletion.org')}" />
+                        <input disabled type="submit" class="${Btn.NEGATIVE}" value="${message(code:'deletion.org')}" />
                     </g:else>
                 </g:form>
             </g:if>

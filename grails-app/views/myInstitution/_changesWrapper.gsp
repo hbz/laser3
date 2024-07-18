@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PendingChangeConfiguration; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.PendingChangeConfiguration; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <div id="pendingChangesWrapper">
 <%--<div class="la-float-right">
@@ -6,9 +6,9 @@
             <g:form controller="pendingChange" action="processAll">
                 <g:select from="${packages}" noSelection="${['':message(code:'default.select.choose.label')]}" name="acceptChangesForPackages" class="ui select search multiple dropdown" optionKey="${{it.id}}" optionValue="${{it.pkg.name}}"/>
                 <div class="ui buttons">
-                    <g:submitButton class="ui button positive" name="acceptAll" value="${message(code:'pendingChange.takeAll')}"/>
+                    <g:submitButton class="${Btn.POSITIVE}" name="acceptAll" value="${message(code:'pendingChange.takeAll')}"/>
                     <div class="or" data-text="${message(code:'default.or')}"></div>
-                    <g:submitButton class="ui button negative" name="rejectAll" value="${message(code:'pendingChange.rejectAll')}"/>
+                    <g:submitButton class="${Btn.NEGATIVE}" name="rejectAll" value="${message(code:'pendingChange.rejectAll')}"/>
                 </div>
              </g:form>
         </g:if>
@@ -50,7 +50,7 @@
                     <g:if test="${editable}">
                         <g:if test="${event == PendingChangeConfiguration.NEW_SUBSCRIPTION}">
                             <div class="right aligned wide column">
-                                <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: entry.source, targetObjectId: entry.target]}">
+                                <g:link class="${Btn.SIMPLE}" controller="subscription" action="copyMyElements" params="${[sourceObjectId: entry.source, targetObjectId: entry.target]}">
                                     <g:message code="myinst.copyMyElements"/>
                                 </g:link>
                                 <div class="ui grid">
@@ -121,7 +121,7 @@
 </div>
 <div id="acceptedChangesWrapper">
     <div class="la-float-right">
-        <%--<g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>--%>
+        <%--<g:link action="changes" class="${Btn.SIMPLE}"><g:message code="myinst.changes.submit.label"/></g:link>--%>
     </div>
     <div class="ui internally celled grid">
         <div class="row">
@@ -160,7 +160,7 @@
                     </g:else>
                     <%--<g:if test="${event == PendingChangeConfiguration.NEW_SUBSCRIPTION}">
                         <div class="right aligned wide column">
-                            <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: entry.source, targetObjectId: entry.target]}">
+                            <g:link class="${Btn.SIMPLE}" controller="subscription" action="copyMyElements" params="${[sourceObjectId: entry.source, targetObjectId: entry.target]}">
                                 <g:message code="myinst.copyMyElements"/>
                             </g:link>
                         </div>

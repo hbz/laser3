@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.AuditConfig;de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.CustomerTypeService; de.laser.AuditConfig;de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore;" %>
 <laser:htmlStart message="myinst.renewals" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -125,8 +125,7 @@
             </table>
 
             <div class="la-float-right">
-                <button type="submit"
-                        class="ui button">${message(code: 'myinst.renewalUpload.renew')}</button>
+                <button type="submit" class="${Btn.SIMPLE}">${message(code: 'myinst.renewalUpload.renew')}</button>
             </div>
             <br />
 

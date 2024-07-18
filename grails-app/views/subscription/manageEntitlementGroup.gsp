@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Subscription; de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Subscription; de.laser.finance.CostItem" %>
 <laser:htmlStart message="subscription.details.manageEntitlementGroup.label" />
 
 <ui:breadcrumbs>
@@ -24,7 +24,7 @@
 <ui:messages data="${flash}"/>
 
 <g:if test="${editable}">
-    <input class="ui button" value="${message(code: 'subscription.details.createEntitlementGroup.label')}"
+    <input class="${Btn.SIMPLE}" value="${message(code: 'subscription.details.createEntitlementGroup.label')}"
            data-ui="modal" data-href="#createEntitlementGroupModal" type="submit">
 </g:if>
 

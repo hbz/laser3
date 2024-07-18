@@ -45,7 +45,7 @@
             &nbsp;
             <input ${params.selectedObjects ? 'disabled' : ''} type="submit"
                                                                value="${message(code: 'default.button.compare.label')}"
-                                                               name="Compare" class="ui button"/>
+                                                               name="Compare" class="${Btn.SIMPLE}"/>
         </div>
 
     </ui:form>

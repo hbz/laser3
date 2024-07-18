@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 
 <table class="ui celled la-js-responsive-table la-table table">
     <thead>
@@ -50,7 +50,7 @@
 </table>
 
 <g:if test="${editable}">
-    <input class="ui button"
+    <input class="${Btn.SIMPLE}"
            value="${message(code: 'default.add.label', args: [message(code: 'person.label')])}"
            data-ui="modal"
            data-href="#prsLinksModal" />

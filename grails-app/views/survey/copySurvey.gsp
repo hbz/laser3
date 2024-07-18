@@ -580,7 +580,7 @@
         <div class="paginateButtons" style="text-align:center">
             <input type="submit"
                    value="${message(code: 'copySurvey.copyInSelectedSubs')}"
-                   class="ui button"/>
+                   class="${Btn.SIMPLE}"/>
         </div>
 
         <g:if test="${num_sub_rows}">

@@ -1,4 +1,4 @@
-<%@ page import="grails.util.Environment; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.ui.Btn; grails.util.Environment; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <laser:htmlStart text="Login" />
 
@@ -24,7 +24,7 @@
                 </div>
 
                 <div class="field">
-                    <input type="submit" class="ui button" value="${message(code: "menu.user.login")}"/>
+                    <input type="submit" class="${Btn.SIMPLE}" value="${message(code: "menu.user.login")}"/>
                 </div>
             </form>
             <div class="field">

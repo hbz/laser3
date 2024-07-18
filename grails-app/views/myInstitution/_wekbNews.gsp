@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.ApiSource" %>
 <laser:serviceInjection />
 
 <g:if test="${tmplView == 'info' && wekbNews.counts.all > 0}">
@@ -228,21 +228,21 @@
         </p>
         <div class="filter" style="margin:0 2em 0.5em; text-align:right;">
             <div class="ui buttons mini">
-                <span class="ui button" data-obj="provider">${message(code: 'provider.label')}: ${wekbNews.provider.count}</span>
-                <span class="ui button" data-obj="vendor">${message(code: 'vendor.plural')}: ${wekbNews.vendor.count}</span>
-                <span class="ui button" data-obj="platform">${message(code: 'platform.plural')}: ${wekbNews.platform.count}</span>
-                <span class="ui button" data-obj="package">${message(code: 'package.plural')}: ${wekbNews.package.count}</span>
+                <span class="${Btn.SIMPLE}" data-obj="provider">${message(code: 'provider.label')}: ${wekbNews.provider.count}</span>
+                <span class="${Btn.SIMPLE}" data-obj="vendor">${message(code: 'vendor.plural')}: ${wekbNews.vendor.count}</span>
+                <span class="${Btn.SIMPLE}" data-obj="platform">${message(code: 'platform.plural')}: ${wekbNews.platform.count}</span>
+                <span class="${Btn.SIMPLE}" data-obj="package">${message(code: 'package.plural')}: ${wekbNews.package.count}</span>
                 <span class="ui button la-popup-tooltip la-long-tooltip la-delay" data-obj="all"
                       data-content="Alle anzeigen: ${message(code: 'provider.label')}, ${message(code: 'vendor.plural')}, ${message(code: 'platform.plural')}, ${message(code: 'package.plural')}">Alle</span>
             </div>
         </div>
         <div class="filter" style="margin:0 2em 0.5em; text-align:right;">
             <div class="ui buttons mini">
-                <span class="ui button" data-filter="created">Neue Objekte: ${wekbNews.counts.created}</span>
-                <span class="ui button" data-filter="updated">Geänderte Objekte: ${wekbNews.counts.updated}</span>
-                <span class="ui button" data-filter="deleted">Gelöschte Objekte: ${wekbNews.counts.deleted}</span>
-                <span class="ui button" data-filter="my"><i class="${Icon.UI.MY_OBJECT}"></i> ${wekbNews.counts.my}</span>
-                <span class="ui button" data-filter="marker"><i class="${Icon.MARKER}"></i> ${wekbNews.counts.marker}</span>
+                <span class="${Btn.SIMPLE}" data-filter="created">Neue Objekte: ${wekbNews.counts.created}</span>
+                <span class="${Btn.SIMPLE}" data-filter="updated">Geänderte Objekte: ${wekbNews.counts.updated}</span>
+                <span class="${Btn.SIMPLE}" data-filter="deleted">Gelöschte Objekte: ${wekbNews.counts.deleted}</span>
+                <span class="${Btn.SIMPLE}" data-filter="my"><i class="${Icon.UI.MY_OBJECT}"></i> ${wekbNews.counts.my}</span>
+                <span class="${Btn.SIMPLE}" data-filter="marker"><i class="${Icon.MARKER}"></i> ${wekbNews.counts.marker}</span>
                 <span class="ui button la-popup-tooltip la-long-tooltip la-delay" data-filter="all"
                       data-content="Alle anzeigen: Neue Objekte, Geänderte Objekte, Gelöschte Objekte, Meine Objekte, Meine Beobachtungsliste">Alle</span>
             </div>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.auth.UserRole;de.laser.Org;de.laser.auth.Role;de.laser.utils.DateUtils;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.auth.UserRole;de.laser.Org;de.laser.auth.Role;de.laser.utils.DateUtils;" %>
 <laser:htmlStart message="user.edit.label" serviceInjection="true"/>
 
         <laser:render template="/user/global/breadcrumb" model="${[ params:params ]}"/>
@@ -70,7 +70,7 @@
                                     <div class="ui two fields">
                                         <div class="ui field">
                                             <label>${message(code:'user.password.label')}</label>
-                                            <input type="submit" class="ui button orange" value="${message(code:'user.newPassword.text')}">
+                                            <input type="submit" class="${Btn.SIMPLE} orange" value="${message(code:'user.newPassword.text')}">
                                         </div>
                                     </div>
                                 </g:form>
@@ -79,7 +79,7 @@
                                     <div class="ui two fields">
                                         <div class="ui field">
                                             <label>${message(code:'user.username.label')}</label>
-                                            <input type="submit" class="ui button orange" value="${message(code:'menu.user.forgottenUsername.send')}">
+                                            <input type="submit" class="${Btn.SIMPLE} orange" value="${message(code:'menu.user.forgottenUsername.send')}">
                                         </div>
                                     </div>
                                 </g:form>
@@ -206,7 +206,7 @@
                                             </div>
 
                                             <div class="field">
-                                                <button type="submit" class="ui button">${message(code: 'profile.membership.add.button')}</button>
+                                                <button type="submit" class="${Btn.SIMPLE}">${message(code: 'profile.membership.add.button')}</button>
                                             </div>
                                         </g:form>
                                     </div><!-- .form -->
@@ -265,7 +265,7 @@
                                                                 />
                                                             </div>
                                                             <div class="field">
-                                                                <input type="submit" class="ui button" value="${message(code:'user.role.add')}"/>
+                                                                <input type="submit" class="${Btn.SIMPLE}" value="${message(code:'user.role.add')}"/>
                                                             </div>
                                                         </div>
                                                     </g:form>

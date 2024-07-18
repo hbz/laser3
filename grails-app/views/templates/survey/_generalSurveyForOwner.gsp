@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.survey.SurveyOrg; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.RefdataValue" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.survey.SurveyOrg; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.RefdataValue" %>
 
 <div class="ui stackable grid">
     <div class="eleven wide column">
@@ -111,7 +111,7 @@
 
                     <div class="left aligned">
                         <button type="submit"
-                                class="ui button">${message(code: 'default.button.save_changes')}</button>
+                                class="${Btn.SIMPLE}">${message(code: 'default.button.save_changes')}</button>
                     </div>
                 </div>
             </g:form>

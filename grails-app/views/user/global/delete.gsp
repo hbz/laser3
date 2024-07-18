@@ -1,4 +1,4 @@
-<%@ page import="de.laser.auth.User; de.laser.DeletionService" %>
+<%@ page import="de.laser.ui.Btn; de.laser.auth.User; de.laser.DeletionService" %>
 <laser:htmlStart message="user.delete.label" serviceInjection="true"/>
 
     <laser:render template="/user/global/breadcrumb" model="${[ params:params ]}"/>
@@ -15,13 +15,13 @@
             <ui:msg class="success" message="deletion.success.msg" />
 
             <g:if test="${controllerName == 'myInstitution'}">
-                <g:link action="users" class="ui button"><g:message code="org.nav.users"/></g:link>
+                <g:link action="users" class="${Btn.SIMPLE}"><g:message code="org.nav.users"/></g:link>
             </g:if>
             <g:if test="${controllerName == 'organisation'}">
-                <g:link action="users" params="${[id: orgInstance.id]}" class="ui button"><g:message code="org.nav.users"/></g:link>
+                <g:link action="users" params="${[id: orgInstance.id]}" class="${Btn.SIMPLE}"><g:message code="org.nav.users"/></g:link>
             </g:if>
             <g:if test="${controllerName == 'user'}">
-                <g:link action="list" class="ui button"><g:message code="org.nav.users"/></g:link>
+                <g:link action="list" class="${Btn.SIMPLE}"><g:message code="org.nav.users"/></g:link>
             </g:if>
 
         </g:if>
@@ -51,15 +51,15 @@
             <g:form action="${formAction}" data-confirm-id="deleteUserForm_form" params="${formParams}">
 
                 <g:if test="${controllerName == 'myInstitution'}">
-                    <g:link action="users" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
+                    <g:link action="users" class="${Btn.SIMPLE}"><g:message code="default.button.cancel.label"/></g:link>
                     <input type="hidden" name="uoid" value="${genericOIDService.getOID(user)}" />
                 </g:if>
                 <g:if test="${controllerName == 'organisation'}">
-                    <g:link action="users" params="${[id: orgInstance.id]}" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
+                    <g:link action="users" params="${[id: orgInstance.id]}" class="${Btn.SIMPLE}"><g:message code="default.button.cancel.label"/></g:link>
                     <input type="hidden" name="uoid" value="${genericOIDService.getOID(user)}" />
                 </g:if>
                 <g:if test="${controllerName == 'user'}">
-                    <g:link action="list" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
+                    <g:link action="list" class="${Btn.SIMPLE}"><g:message code="default.button.cancel.label"/></g:link>
                     <input type="hidden" name="id" value="${user.id}" />
                 </g:if>
 
@@ -84,7 +84,7 @@
                                 </div>
                             </g:if>
                             <g:else>
-                                <input disabled type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
+                                <input disabled type="submit" class="${Btn.NEGATIVE}" value="${message(code:'deletion.user')}" />
                                 <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="user.delete.substitute.missing" />
                             </g:else>
                         </g:if>
@@ -97,7 +97,7 @@
                         </g:elseif>
                     </g:if>
                     <g:else>
-                        <input disabled type="submit" class="ui button negative" value="${message(code:'deletion.user')}" />
+                        <input disabled type="submit" class="${Btn.NEGATIVE}" value="${message(code:'deletion.user')}" />
                     </g:else>
 
                 </g:if>

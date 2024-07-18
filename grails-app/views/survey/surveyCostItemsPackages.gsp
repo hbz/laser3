@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.survey.SurveyConfig;de.laser.RefdataValue;de.laser.finance.CostItem;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.survey.SurveyConfig;de.laser.RefdataValue;de.laser.finance.CostItem;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyCostItems.label')})" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -118,7 +118,7 @@
             <br/>
             <div class="field" style="text-align: right;">
                 <button id="bulkCostItems-toggle"
-                        class="ui button"><g:message code="financials.bulkCostItems.show"/></button>
+                        class="${Btn.SIMPLE}"><g:message code="financials.bulkCostItems.show"/></button>
                 <laser:script file="${this.getGroovyPageFileName()}">
                     $('#bulkCostItems-toggle').on('click', function () {
                         $('#bulkCostItems').toggleClass('hidden')
@@ -198,8 +198,7 @@
 
                         <div class="two fields">
                             <div class="eight wide field" style="text-align: left;">
-                                <button class="ui button"
-                                        type="submit">${message(code: 'default.button.save_changes')}</button>
+                                <button class="${Btn.SIMPLE}" type="submit">${message(code: 'default.button.save_changes')}</button>
                             </div>
 
                             <div class="eight wide field" style="text-align: right;">

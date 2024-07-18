@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.storage.RDStore" %>
 <laser:htmlStart message="mail.sendMail.label" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -173,22 +173,19 @@
 
             <g:if test="${surveyInfo}">
                 <g:if test="${reminderMail}">
-                    <g:link class="ui button left floated" controller="survey" action="participantsReminder"
-                            id="${surveyInfo.id}">
+                    <g:link class="${Btn.SIMPLE} left floated" controller="survey" action="participantsReminder" id="${surveyInfo.id}">
                         <g:message code="default.button.back"/>
                     </g:link>
                 </g:if>
                 <g:else>
-                    <g:link class="ui button left floated" controller="survey" action="openParticipantsAgain"
-                            id="${surveyInfo.id}">
+                    <g:link class="${Btn.SIMPLE} left floated" controller="survey" action="openParticipantsAgain" id="${surveyInfo.id}">
                         <g:message code="default.button.back"/>
                     </g:link>
                 </g:else>
             </g:if>
 
             <g:if test="${org}">
-                    <g:link class="ui button left floated" controller="myInstitution" action="manageParticipantSurveys"
-                            id="${org.id}">
+                    <g:link class="${Btn.SIMPLE} left floated" controller="myInstitution" action="manageParticipantSurveys" id="${org.id}">
                         <g:message code="default.button.back"/>
                     </g:link>
             </g:if>

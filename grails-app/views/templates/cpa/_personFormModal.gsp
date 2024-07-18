@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.properties.PropertyDefinition; de.laser.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.properties.PropertyDefinition; de.laser.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.storage.RDConstants" %>
 <laser:serviceInjection/>
 
 <ui:modalAddress  id="${modalID ?: 'personModal'}" form="person_form"
@@ -170,7 +170,7 @@
                     </h2>
                 </div>
                 <div class="or" data-text="<g:message code='search.advancedSearch.option.OR' />"></div>
-                <div class="ui button" id="la-js-buttonFunction">
+                <div class="${Btn.SIMPLE}" id="la-js-buttonFunction">
                     <h2 class="ui icon inverted header">
                         <i class="wrench icon"></i>
                         <div class="content">

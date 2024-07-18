@@ -186,7 +186,7 @@
                                     </g:if><g:else>
                                     <div class="content">
                                         ${message(code: 'subscriptionsManagement.noCustomProperty')}
-                                        <g:link class="ui button" controller="ajax" action="addCustomPropertyValue"
+                                        <g:link class="${Btn.SIMPLE}" controller="ajax" action="addCustomPropertyValue"
                                                 params="[
                                                         propIdent    : propertiesFilterPropDef.id,
                                                         ownerId      : subscription.id,
@@ -263,7 +263,7 @@
                                     </g:if><g:else>
                                     <div class="content">
                                         ${message(code: 'subscriptionsManagement.noPrivateProperty')}
-                                        <g:link class="ui button" controller="ajax" action="addPrivatePropertyValue"
+                                        <g:link class="${Btn.SIMPLE}" controller="ajax" action="addPrivatePropertyValue"
                                                 params="[
                                                         propIdent    : propertiesFilterPropDef.id,
                                                         ownerId      : subscription.id,
@@ -364,7 +364,7 @@
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
                     <div class="ui buttons">
-                        <button class="ui positive button" ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                        <button class="${Btn.POSITIVE}" ${!editable ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 value="changeCreateProperty">${message(code: 'default.button.save_changes')}</button>
                     </div>
@@ -372,7 +372,7 @@
 
                 <div class="eight wide field" style="text-align: right;">
                     <div class="ui buttons">
-                        <button class="ui button negative " ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                        <button class="${Btn.NEGATIVE}" ${!editable ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 value="deleteProperty">${message(code: 'subscriptionsManagement.deleteProperty.button', args: [propertiesFilterPropDef.getI10n('name')])}</button>
                     </div>
@@ -531,7 +531,7 @@
                                         </g:if><g:else>
                                         <div class="content">
                                             ${message(code: 'subscriptionsManagement.noCustomProperty')}
-                                            <g:link class="ui button" controller="ajax" action="addCustomPropertyValue"
+                                            <g:link class="${Btn.SIMPLE}" controller="ajax" action="addCustomPropertyValue"
                                                     params="[
                                                             propIdent    : propertiesFilterPropDef.id,
                                                             ownerId      : sub.id,
@@ -604,7 +604,7 @@
                                         </g:if><g:else>
                                         <div class="content">
                                             ${message(code: 'subscriptionsManagement.noPrivateProperty')}
-                                            <g:link class="ui button" controller="ajax" action="addPrivatePropertyValue"
+                                            <g:link class="${Btn.SIMPLE}" controller="ajax" action="addPrivatePropertyValue"
                                                     params="[
                                                             propIdent    : propertiesFilterPropDef.id,
                                                             ownerId      : sub.id,

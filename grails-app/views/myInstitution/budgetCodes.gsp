@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.finance.CostItemGroup; de.laser.finance.BudgetCode"%>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.finance.CostItemGroup; de.laser.finance.BudgetCode"%>
 
 <laser:htmlStart message="menu.institutions.budgetCodes" />
 
@@ -15,7 +15,7 @@
             <div class="content ui form ui left floated  la-clear-before">
                 <div class="fields">
                     <div class="field">
-                        <button class="ui button" value="" data-href="#addBudgetCodeModal" data-ui="modal">${message(code:'budgetCode.create_new.label')}</button>
+                        <button class="${Btn.SIMPLE}" value="" data-href="#addBudgetCodeModal" data-ui="modal">${message(code:'budgetCode.create_new.label')}</button>
                     </div>
                 </div>
             </div>

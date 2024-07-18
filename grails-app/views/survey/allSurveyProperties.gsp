@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.RefdataValue; de.laser.survey.SurveyConfig" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.RefdataValue; de.laser.survey.SurveyConfig" %>
 
 <laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true"/>
 
@@ -21,7 +21,7 @@
 
 
 <g:if test="${editable}">
-    <input class="ui button" value="${message(code:'surveyProperty.create_new')}"
+    <input class="${Btn.SIMPLE}" value="${message(code:'surveyProperty.create_new')}"
            data-ui="modal" data-href="#createSurveyPropertyModal" type="submit">
 </g:if>
 

@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 <laser:htmlStart message="myinst.renewals" />
 
 <ui:breadcrumbs>
@@ -58,8 +59,7 @@
 
             <div class="la-float-right">
 
-                    <button type="submit"
-                            class="ui button">${message(code: 'myinst.renewalUpload.accept')}</button>
+                    <button type="submit" class="${Btn.SIMPLE}">${message(code: 'myinst.renewalUpload.accept')}</button>
 
             </div>
 

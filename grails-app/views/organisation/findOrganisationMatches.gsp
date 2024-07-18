@@ -30,7 +30,7 @@
 			<div class="field la-field-right-aligned">
 				<a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.searchreset.label')}</a>
 				<input type="submit" value="${message(code:'default.button.search.label')}" class="${Btn.PRIMARY}">
-				<g:link controller="organisation" action="list" class="ui button">${message(code:'default.button.cancel.label')}</g:link>
+				<g:link controller="organisation" action="list" class="${Btn.SIMPLE}">${message(code:'default.button.cancel.label')}</g:link>
 			</div>
 		</ui:searchSegment>
 
@@ -110,7 +110,7 @@
 						</table>
 						<g:if test="${params.proposedOrganisation && !params.proposedOrganisation.isEmpty()}">
 							<ui:msg class="warning" message="org.findInstitutionMatches.match" args="[params.proposedOrganisation]" />
-							<g:link controller="organisation" action="createMember" class="ui negative button" params="${[institution:params.proposedOrganisation]}">${message(code:'org.findInstitutionMatches.matches.create', args: [params.proposedOrganisation])}</g:link>
+							<g:link controller="organisation" action="createMember" class="${Btn.NEGATIVE}" params="${[institution:params.proposedOrganisation]}">${message(code:'org.findInstitutionMatches.matches.create', args: [params.proposedOrganisation])}</g:link>
 						</g:if>
 						<g:else if="${params.proposedOrganisation.isEmpty()}">
 							<ui:msg class="warning" message="org.findInstitutionMatches.matchNoName" args="[params.proposedOrganisation]" />
@@ -119,7 +119,7 @@
 					</g:if>
 					<g:elseif test="${params.proposedOrganisation && !params.proposedOrganisation.isEmpty()}">
 						<ui:msg class="warning" message="org.findInstitutionMatches.no_match" args="[params.proposedOrganisation]" />
-						<g:link controller="organisation" action="createMember" class="ui positive button" params="${[institution:params.proposedOrganisation,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">${message(code:'org.findInstitutionMatches.no_matches.create', args: [params.proposedOrganisation])}</g:link>
+						<g:link controller="organisation" action="createMember" class="${Btn.POSITIVE}" params="${[institution:params.proposedOrganisation,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">${message(code:'org.findInstitutionMatches.no_matches.create', args: [params.proposedOrganisation])}</g:link>
 					</g:elseif>
 					<g:elseif test="${params.proposedOrganisationID && !params.proposedOrganisationID.isEmpty()}">
 						<ui:msg class="warning" message="org.findInstitutionMatches.no_id_match" args="[params.proposedOrganisationID]" />

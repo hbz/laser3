@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.AuditConfig;de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.AuditConfig;de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
 <laser:htmlStart message="surveyInfo.renewal" />
 
 <ui:breadcrumbs>
@@ -227,7 +227,7 @@
         </table>
 
         <div class="la-float-right">
-            <button type="submit" class="ui button">${message(code: 'myinst.renewalUpload.renew')}</button>
+            <button type="submit" class="${Btn.SIMPLE}">${message(code: 'myinst.renewalUpload.renew')}</button>
         </div>
 
 </g:form>

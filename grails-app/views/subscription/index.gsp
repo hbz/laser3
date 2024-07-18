@@ -136,7 +136,7 @@
                                 <div class="field">
                                     <input type="submit"
                                            value="${message(code: 'subscription.details.addEntitlements.preselect')}"
-                                           class="fluid ui button"/>
+                                           class="${Btn.SIMPLE} fluid"/>
                                 </div>
                             </div>
                         </g:form>

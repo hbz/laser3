@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
 <laser:serviceInjection />
 
 <g:form action="compareLicenses" controller="compare" method="post">
@@ -136,7 +136,7 @@
     </div>
 
   <g:if test="${licenses && compare}">
-      <input type="submit" class="ui button" value="${message(code:'menu.my.comp_lic')}" />
+      <input type="submit" class="${Btn.SIMPLE}" value="${message(code:'menu.my.comp_lic')}" />
   </g:if>
 
 </g:form>

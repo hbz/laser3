@@ -1,5 +1,6 @@
+<%@ page import="de.laser.ui.Btn" %>
 <g:if test="${editable}">
-    <a class="ui button" data-ui="modal" href="#subjectGroup">
+    <a class="${Btn.SIMPLE}" data-ui="modal" href="#subjectGroup">
         <g:message code="org.subjectGroup.add.label"/>
     </a>
 

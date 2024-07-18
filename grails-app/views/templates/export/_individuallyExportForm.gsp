@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <%
     int filterFieldsSize
     Map totalFields
@@ -378,17 +378,17 @@
 
             <div class="wide two field">
                 <label></label>
-                <button class="ui button positive right floated export" value="exportClickMeExcel">Export</button>
+                <button class="${Btn.POSITIVE} right floated export" value="exportClickMeExcel">Export</button>
                 <%-- disused
                 <br>
                 <g:hiddenField name="format" value=""/>
                 <g:hiddenField name="exportClickMeExcel" value=""/>
                 <g:if test="${multiMap}">
-                    <button class="ui button positive right floated exportButton" id="export-as-excel" value="exportClickMeExcel">Export</button>
+                    <button class="${Btn.POSITIVE} right floated exportButton" id="export-as-excel" value="exportClickMeExcel">Export</button>
                 </g:if>
                 <g:else>
-                    <button class="ui button positive right floated exportButton" id="export-as-excel" value="exportClickMeExcel">${exportExcelButtonName ?: 'Export Excel'}</button>
-                    <button class="ui button positive right floated exportButton" id="export-as-csv" value="exportClickMeCSV">${exportCSVButtonName ?: 'Export CSV'}</button>
+                    <button class="${Btn.POSITIVE} right floated exportButton" id="export-as-excel" value="exportClickMeExcel">${exportExcelButtonName ?: 'Export Excel'}</button>
+                    <button class="${Btn.POSITIVE} right floated exportButton" id="export-as-csv" value="exportClickMeCSV">${exportCSVButtonName ?: 'Export CSV'}</button>
                 </g:else>
                 --%>
             </div>
@@ -414,7 +414,7 @@
 
                 <div class="wide five field">
                     <label></label>
-                    <button class="ui button positive export" value="saveClickMeConfig" name="saveClickMeConfig">Export <g:message code="default.config.label"/> <g:message
+                    <button class="${Btn.POSITIVE} export" value="saveClickMeConfig" name="saveClickMeConfig">Export <g:message code="default.config.label"/> <g:message
                             code="default.button.save"/> </button>
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: 'clickMeConfig.save.info')}">
                         <i class="${Icon.TOOLTIP.HELP} la-popup"></i>

@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 <laser:htmlStart message="license.label" serviceInjection="true"/>
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
@@ -11,7 +12,7 @@
     <g:if test="${delResult}">
         <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
             <ui:msg class="success" message="deletion.success.msg" />
-            <g:link controller="myInstitution" action="currentLicenses" class="ui button">${message(code:'menu.my.licenses')}</g:link>
+            <g:link controller="myInstitution" action="currentLicenses" class="${Btn.SIMPLE}">${message(code:'menu.my.licenses')}</g:link>
         </g:if>
         <g:else>
             <ui:msg class="info" message="license.delete.info" />
@@ -23,15 +24,15 @@
                 <ui:msg class="error" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
-            <g:link controller="myInstitution" action="currentLicenses" class="ui button">${message(code:'menu.my.licenses')}</g:link>
-            <g:link controller="license" action="show" params="${[id: license.id]}" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
+            <g:link controller="myInstitution" action="currentLicenses" class="${Btn.SIMPLE}">${message(code:'menu.my.licenses')}</g:link>
+            <g:link controller="license" action="show" params="${[id: license.id]}" class="${Btn.SIMPLE}"><g:message code="default.button.cancel.label"/></g:link>
 
             <g:if test="${editable}">
                 <g:if test="${delResult.deletable}">
-                    <g:link controller="license" action="delete" params="${[id: license.id, process: true]}" class="ui button red">${message(code:'deletion.license')}</g:link>
+                    <g:link controller="license" action="delete" params="${[id: license.id, process: true]}" class="${Btn.NEGATIVE}">${message(code:'deletion.license')}</g:link>
                 </g:if>
                 <g:else>
-                    <input disabled type="submit" class="ui button red" value="${message(code:'deletion.license')}" />
+                    <input disabled type="submit" class="${Btn.NEGATIVE}" value="${message(code:'deletion.license')}" />
                 </g:else>
             </g:if>
         </g:else>

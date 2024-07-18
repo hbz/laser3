@@ -619,7 +619,7 @@
                             <br>
                         </g:if>
 
-                        <button class="ui button positive"
+                        <button class="${Btn.POSITIVE}"
                                 type="submit">${message(code: 'copyProperties.copyProperties', args: [message(code: 'copyProperties.' + params.tab)])}</button>
                     </div>
                 </div>
@@ -632,14 +632,14 @@
 
     <div class="sixteen wide field" style="text-align: center;">
         <g:if test="${params.tab != 'privateProperties'}">
-            <g:link class="ui button" controller="survey" action="copyProperties"
+            <g:link class="${Btn.SIMPLE}" controller="survey" action="copyProperties"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: ((params.tab == 'customProperties') ? 'privateProperties' : ((params.tab == 'surveyProperties') ? 'customProperties' : 'surveyProperties')), targetSubscriptionId: targetSubscription?.id]">
                 ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
             </g:link>
         </g:if>
 
         <g:if test="${params.tab == 'privateProperties'}">
-            <g:link class="ui button" controller="survey" action="copySurveyCostItems"
+            <g:link class="${Btn.SIMPLE}" controller="survey" action="copySurveyCostItems"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]">
                 ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
             </g:link>

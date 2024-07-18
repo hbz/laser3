@@ -275,7 +275,7 @@
                     </div>
 
                     <div class="eight wide field" style="text-align: right;">
-                        <button class="ui button positive" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''}
+                        <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''}
                                 name="processOption"
                                 type="submit">${message(code: 'copySurveyPackages.transfer')}</button>
                     </div>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.CustomerTypeService; de.laser.workflow.WfChecklist; de.laser.workflow.WfCheckpoint; de.laser.storage.RDStore; de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.CustomerTypeService; de.laser.workflow.WfChecklist; de.laser.workflow.WfCheckpoint; de.laser.storage.RDStore; de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
 
 <laser:htmlStart message="menu.institutions.dash" serviceInjection="true"/>
 
@@ -323,10 +323,10 @@
                 <div class="la-float-right">
                     <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro()}">
                         <g:link controller="survey" action="workflowsSurveysConsortia"
-                                class="ui button">${message(code: 'menu.my.surveys')}</g:link>
+                                class="${Btn.SIMPLE}">${message(code: 'menu.my.surveys')}</g:link>
                     </g:if>
                     <g:else>
-                        <g:link action="currentSurveys" class="ui button">${message(code: 'menu.my.surveys')}</g:link>
+                        <g:link action="currentSurveys" class="${Btn.SIMPLE}">${message(code: 'menu.my.surveys')}</g:link>
                     </g:else>
                 </div>
 

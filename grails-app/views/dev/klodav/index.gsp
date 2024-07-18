@@ -177,7 +177,7 @@
 <div class="ui segment">
     <p class="ui header">[..]</p>
 
-    <g:link controller="admin" action="systemEventsX" class="ui button">
+    <g:link controller="admin" action="systemEventsX" class="${Btn.SIMPLE}">
         <i class="shoe prints icon"></i> System Events X
     </g:link>
 
