@@ -1013,4 +1013,10 @@ class UiTagLib {
         String cleanLink = g.link(attrs, body)
         out << cleanLink.replaceAll("(?<!(http:|https:))[//]+", "/")
     }
+
+    def showMoreCloseButton = { attrs, body ->
+        out << '<button class="ui button la-js-closeAll-showMore right floated">'
+        out << message(code: "accordion.button.closeAll")
+        out << '</button>'
+    }
 }

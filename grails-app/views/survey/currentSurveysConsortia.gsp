@@ -386,7 +386,7 @@
                 <td>
                     <g:link controller="survey" action="show" id="${surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id]"
-                            class="ui button blue icon la-modern-button"
+                            class="${Btn.MODERN.BLUE_ICON}"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.change.universal')}">
                         <i class="${Icon.CMD.EDIT}"></i>
