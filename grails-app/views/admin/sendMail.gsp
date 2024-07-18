@@ -1,22 +1,23 @@
-<laser:htmlStart text="Test E-Mail Sending" />
+<%@ page import="de.laser.ui.Btn" %>
+<laser:htmlStart message="menu.admin.sendMail" />
 
     <ui:breadcrumbs>
         <ui:crumb message="menu.admin" controller="admin" action="index"/>
-        <ui:crumb text="Test E-Mail Sending" class="active"/>
+        <ui:crumb message="menu.admin.sendMail" class="active"/>
     </ui:breadcrumbs>
 
-    <h2>Test E-Mail Sending</h2>
+    <ui:h1HeaderWithIcon message="menu.admin.sendMail" type="admin"/>
 
     <ui:messages data="${flash}" />
 
-    <ui:form controller="admin" action="testMailSending">
+    <ui:form controller="admin" action="sendMail">
             <div class="field">
                 <label for="mailAddress">Mail Address</label>
                 <input type="email" id="mailAddress" name="mailAddress" value="laser@hbz-nrw.de" />
             </div>
             <div class="field">
                 <label for="subject">Subject</label>
-                <input type="text" id="subject" name="subject" value="Test Mail" />
+                <input type="text" id="subject" name="subject" value="E-Mail (Test)" />
             </div>
             <div class="field">
                 <label for="content">Content</label>
@@ -24,7 +25,7 @@
             </div>
 
             <div class="field">
-                    <input type="submit" name="sendTestMail" class="ui button" value="Send Test Mail" />
+                    <input type="submit" name="sendTestMail" class="${Btn.SIMPLE}" value="Send Test Mail" />
             </div>
     </ui:form>
 

@@ -1,4 +1,4 @@
-<%@page import="de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.myInstitution.base.BaseConfig" %>
+<%@page import="de.laser.ui.Icon; de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 
         <div class="menu ui top attached tabular la-tab-with-js">
@@ -22,7 +22,7 @@
                 <a class="item" data-tab="sub-filter-tab-6">${message(code:'default.vendor.export.label')}</a>
             </g:if>
             <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).memberSubscription}">
-                <a class="item" data-tab="sub-filter-tab-help"> ? %{--<i class="icon question"></i>--}%</a>
+                <a class="item" data-tab="sub-filter-tab-help"> ? %{--<i class="${Icon.UI.HELP}"></i>--}%</a>
             </g:if>
         </div><!-- .menu -->
 

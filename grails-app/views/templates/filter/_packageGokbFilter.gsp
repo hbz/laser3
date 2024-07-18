@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 <ui:filter>
     <g:form action="${actionName}" controller="${controllerName}" params="${params}" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
@@ -26,7 +26,7 @@
                         <label for="search-title">${message(code: 'default.search.text')}
                             <span data-position="right center" class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'default.search.tooltip.package')}">
-                                <i class="question circle icon"></i>
+                                <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
                         </label>
 
@@ -141,9 +141,9 @@
             </g:if>
         </g:each>
         <div class="field la-field-right-aligned">
-            <a href="${request.forwardURI}" class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
+            <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
             <button type="submit" name="search" value="yes"
-                    class="ui primary button">${message(code: 'default.button.filter.label')}</button>
+                    class="${Btn.PRIMARY}">${message(code: 'default.button.filter.label')}</button>
         </div>
     </g:form>
 </ui:filter>

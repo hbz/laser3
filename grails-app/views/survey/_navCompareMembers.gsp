@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.finance.CostItem" %>
 <div class="ui tablet stackable steps">
 
     <div class="${(actionName == 'compareMembersOfTwoSubs') ? 'active' : ''} step">
@@ -42,7 +42,7 @@
                 </div>
 
                 <div class="description">
-                    <i class="gift icon"></i>${message(code: 'copySubPackagesAndIes.label')}
+                    <i class="${Icon.PACKAGE}"></i>${message(code: 'copySubPackagesAndIes.label')}
                 </div>
             </div>
         &nbsp;&nbsp;
@@ -74,7 +74,7 @@
             </div>
 
             <div class="description">
-                <i class="tags icon"></i>${message(code: 'properties')}
+                <i class="${Icon.SYM.PROPERTIES}"></i>${message(code: 'properties')}
             </div>
         </div>
 
@@ -104,7 +104,7 @@
                 </div>
 
                 <div class="description">
-                    <i class="gift icon"></i>${message(code: 'copySurveyPackages.label')}
+                    <i class="${Icon.PACKAGE}"></i>${message(code: 'copySurveyPackages.label')}
                 </div>
             </div>
         &nbsp;&nbsp;
@@ -136,7 +136,7 @@
                 </div>
 
                 <div class="description">
-                    <i class="gift icon"></i>${message(code: 'copySurveyVendors.label')}
+                    <i class="${Icon.PACKAGE}"></i>${message(code: 'copySurveyVendors.label')}
                 </div>
             </div>
         &nbsp;&nbsp;
@@ -170,7 +170,7 @@
             </div>
 
             <div class="description">
-                <i class="tags icon"></i>${message(code: 'properties')}
+                <i class="${Icon.SYM.PROPERTIES}"></i>${message(code: 'properties')}
             </div>
         </div>
 
@@ -200,7 +200,7 @@
             </div>
 
             <div class="description">
-                <i class="tags icon"></i>${message(code: 'properties')}
+                <i class="${Icon.SYM.PROPERTIES}"></i>${message(code: 'properties')}
             </div>
         </div>
 
@@ -233,7 +233,7 @@
                 </div>
 
                 <div class="description">
-                    <i class="money bill alternate outline icon"></i>${message(code: 'copySurveyCostItems.surveyCostItem')}
+                    <i class="${Icon.FNC.COST} alternate outline"></i>${message(code: 'copySurveyCostItems.surveyCostItem')}
                 </div>
             </div>
 
@@ -266,7 +266,7 @@
                 </div>
 
                 <div class="description">
-                    <i class="money bill alternate outline icon"></i>${message(code: 'surveyCostItemsPackages.label')}
+                    <i class="${Icon.FNC.COST} alternate outline"></i>${message(code: 'surveyCostItemsPackages.label')}
                 </div>
             </div>
 

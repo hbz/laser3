@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.PropertyStore; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg; de.laser.AuditConfig" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.PropertyStore; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg; de.laser.AuditConfig" %>
 <laser:htmlStart message="surveyInfo.copyProperties" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -17,7 +17,7 @@
 </ui:h1HeaderWithIcon>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+    <ui:linkWithIcon icon="${Icon.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
@@ -94,7 +94,7 @@
     </ui:greySegment>
 
 %{--<div class="ui icon positive message">
-    <i class="info icon"></i>
+    <i class="${Icon.UI.INFO}"></i>
 
     <div class="content">
         <div class="header"></div>
@@ -570,7 +570,7 @@
                             <td>
                                 <g:if test="${participant.newSub}">
                                     <g:link controller="subscription" action="show" id="${participant.newSub.id}"
-                                            class="ui button icon"><i class="icon clipboard"></i></g:link>
+                                            class="${Btn.SIMPLE_ICON}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                                 </g:if>
 
                                 <g:if test="${surveyConfig.subSurveyUseForTransfer}">
@@ -593,7 +593,7 @@
 
                                     <div class="ui icon"
                                          data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
-                                        <i class="bordered colored chart pie icon"></i>
+                                        <i class="${Icon.SURVEY} bordered colored"></i>
                                     </div>
                                 </g:if>
                             </td>
@@ -619,7 +619,7 @@
                             <br>
                         </g:if>
 
-                        <button class="ui button positive"
+                        <button class="${Btn.POSITIVE}"
                                 type="submit">${message(code: 'copyProperties.copyProperties', args: [message(code: 'copyProperties.' + params.tab)])}</button>
                     </div>
                 </div>
@@ -632,14 +632,14 @@
 
     <div class="sixteen wide field" style="text-align: center;">
         <g:if test="${params.tab != 'privateProperties'}">
-            <g:link class="ui button" controller="survey" action="copyProperties"
+            <g:link class="${Btn.SIMPLE}" controller="survey" action="copyProperties"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: ((params.tab == 'customProperties') ? 'privateProperties' : ((params.tab == 'surveyProperties') ? 'customProperties' : 'surveyProperties')), targetSubscriptionId: targetSubscription?.id]">
                 ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
             </g:link>
         </g:if>
 
         <g:if test="${params.tab == 'privateProperties'}">
-            <g:link class="ui button" controller="survey" action="copySurveyCostItems"
+            <g:link class="${Btn.SIMPLE}" controller="survey" action="copySurveyCostItems"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]">
                 ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
             </g:link>

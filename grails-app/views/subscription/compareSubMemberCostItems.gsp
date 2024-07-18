@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.utils.DateUtils; de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.utils.DateUtils; de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
 <laser:htmlStart message="subscription.details.compareSubMemberCostItems.label"/>
 
 <laser:serviceInjection/>
@@ -41,7 +41,7 @@
     <div class="field" style="text-align: right;">
         <g:if test="${showBulkCostItems == null || showBulkCostItems == 'false'}">
             <g:if test="${subscription}">
-                <g:link class="ui button" action="compareSubMemberCostItems" id="${subscription.id}"
+                <g:link class="${Btn.SIMPLE}" action="compareSubMemberCostItems" id="${subscription.id}"
                          params="${params + [showView: showView, showBulkCostItems: 'true']}">
                     ${g.message(code: 'financials.bulkCostItems.show')}
                 </g:link>
@@ -49,7 +49,7 @@
         </g:if>
         <g:else>
             <g:if test="${subscription}">
-                <g:link class="ui button" action="compareSubMemberCostItems" id="${subscription.id}"
+                <g:link class="${Btn.SIMPLE}" action="compareSubMemberCostItems" id="${subscription.id}"
                          params="${params + [showView: showView, showBulkCostItems: 'false']}">
                     ${g.message(code: 'financials.bulkCostItems.hidden')}
                 </g:link>
@@ -110,7 +110,7 @@
 
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
-                    <button class="ui button"
+                    <button class="${Btn.SIMPLE}"
                             type="submit">${message(code: 'financials.bulkCostItems.submit')}</button>
                 </div>
 
@@ -416,7 +416,7 @@
                                     data-id_suffix="edit_${costItemParticipantSub.id}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="write icon"></i>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </g:link>
                         </g:each>
                     </td>

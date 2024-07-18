@@ -1,6 +1,5 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.License; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Org" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.License; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Org" %>
 <laser:serviceInjection />
-
 <g:if test="${actionName == 'show'}">
     <ui:exportDropdown>
         <ui:exportDropdownItem>
@@ -8,11 +7,9 @@
         </ui:exportDropdownItem>
     </ui:exportDropdown>
 </g:if>
-
 <g:if test="${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')}">
     <ui:actionsDropdown>
         <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
-
         <g:if test="${editable}">
             <g:if test="${license.getLicensingConsortium()?.id == institution.id}">
                 <g:if test="${!( license.instanceOf )}">
@@ -48,7 +45,7 @@
 
             <g:if test="${editable}">
                 <div class="divider"></div>
-                <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate outline icon"></i> ${message(code:'deletion.license')}</g:link>
+                <g:link class="item" action="delete" id="${params.id}"><i class="${Icon.CMD.DELETE}"></i> ${message(code:'deletion.license')}</g:link>
             </g:if>
         </g:if>
 

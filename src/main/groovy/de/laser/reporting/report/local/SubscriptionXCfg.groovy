@@ -160,6 +160,11 @@ class SubscriptionXCfg {
                                             chartTemplate   : 'timeline/annualMember',
                                             chartLabels     : [ 'annualMember-subscription' ]
                                     ],
+                                    'timeline-referenceYearMember-subscription' : [
+                                            detailsTemplate : 'timeline/subscription',
+                                            chartTemplate   : 'timeline/annualMember',
+                                            chartLabels     : [ 'annualMember-subscription' ]
+                                    ],
                             ],
                     ]
             ]

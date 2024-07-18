@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 <div id="unlinkPackageModal" class="ui modal">
 
     <div class="header">
@@ -44,6 +45,6 @@
             <input type="hidden" name="confirmed" value="Y"/>
         </g:form>
         <a href="#" class="ui button unlinkPackageModal"><g:message code="default.button.close.label"/></a>
-        <input type="submit" class="ui button negative" name="save" value="${message(code: 'default.button.confirm_delete.label')}" onclick="event.preventDefault(); $('#unlinkPackageModal').find('form').submit()"/>
+        <input type="submit" class="${Btn.NEGATIVE}" name="save" value="${message(code: 'default.button.confirm_delete.label')}" onclick="event.preventDefault(); $('#unlinkPackageModal').find('form').submit()"/>
     </div>
 </div>

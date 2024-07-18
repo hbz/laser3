@@ -1,4 +1,4 @@
-<%@ page import="de.laser.oap.OrgAccessPoint; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.oap.OrgAccessPoint; de.laser.storage.RDConstants" %>
 
 <g:set var="entityName" value="${message(code: 'accessPoint.label')}"/>
 <laser:htmlStart text="${message(code: "default.edit.label", args: [entityName])}" serviceInjection="true"/>
@@ -77,17 +77,17 @@
             <tr>
                 <th class="five wide">${message(code: 'accessPoint.ip.format.input')}
                     &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv4Inputs()">
-                    <i class="copy outline icon"></i>
+                    <i class="${Icon.CMD.COPY}"></i>
                     </button>
                 </th>
                 <th class="five wide">${message(code: 'accessPoint.ip.format.range')}
                     &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv4Ranges()">
-                        <i class="copy outline icon"></i>
+                        <i class="${Icon.CMD.COPY}"></i>
                     </button>
                 </th>
                 <th class="five wide">${message(code: 'accessPoint.ip.format.cidr')}
                     &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv4Cidrs()">
-                        <i class="copy outline icon"></i>
+                        <i class="${Icon.CMD.COPY}"></i>
                     </button>
                 </th>
                 <th class="one wide">${message(code: 'default.actions.label')}</th>
@@ -108,7 +108,7 @@
                                     data-confirm-term-how="delete"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash very alternate icon"></i>
+                                <i class="${Icon.CMD.DELETE}"></i>
                             </g:link>
                         </g:if>
                     </td>
@@ -131,7 +131,7 @@
                             <label for="ipv4_ip">${message(code: 'accessPoint.ip.data')}
                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                                       data-content="${message(code: "accessPoint.ip.input")}">
-                                    <i class="question circle icon la-popup"></i></span>
+                                    <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span>
                             </label>
 
                             <g:if test="${autofocus == true}">
@@ -141,7 +141,7 @@
                                 <g:field type="text" name="ip" id="ipv4_ip" value="${ip}"/>
                             </g:else>
                         </div>
-                        <input type="submit" class="ui button"
+                        <input type="submit" class="${Btn.SIMPLE}"
                                value="${message(code: 'accessPoint.button.add')}"/>
                     </div>
                 </g:form>
@@ -157,17 +157,17 @@
         <tr>
             <th class="five wide">${message(code: 'accessPoint.ip.format.input')}
                 &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv6Inputs()">
-                    <i class="copy outline icon"></i>
+                    <i class="${Icon.CMD.COPY}"></i>
                 </button>
             </th>
             <th class="five wide">${message(code: 'accessPoint.ip.format.range')}
                 &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv6Ranges()">
-                    <i class="copy outline icon"></i>
+                    <i class="${Icon.CMD.COPY}"></i>
                 </button>
             </th>
             <th class="five wide">${message(code: 'accessPoint.ip.format.cidr')}
                 &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv6Cidrs()">
-                    <i class="copy outline icon"></i>
+                    <i class="${Icon.CMD.COPY}"></i>
                 </button>
             </th>
             <th class="one wide">${message(code: 'default.actions.label')}</th>
@@ -191,7 +191,7 @@
                                 data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint.ip', args: [accessPointData.ipInput])}"
                                 data-confirm-term-how="delete"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="trash very alternate icon"></i>
+                            <i class="${Icon.CMD.DELETE}"></i>
                         </g:link>
                     </g:if>
                 </td>
@@ -214,7 +214,7 @@
                         <label for="ipv6_ip">${message(code: 'accessPoint.ip.data')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay"
                                   data-content="${message(code: "accessPoint.ip.input")}">
-                                <i class="question circle icon la-popup"></i></span>
+                                <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span>
                         </label>
 
                         <g:if test="${autofocus == true}">
@@ -224,7 +224,7 @@
                             <g:field type="text" name="ip" id="ipv6_ip" value="${ip}"/>
                         </g:else>
                     </div>
-                    <input type="submit" class="ui button"
+                    <input type="submit" class="${Btn.SIMPLE}"
                            value="${message(code: 'accessPoint.button.add')}"/>
                 </div>
             </g:form>

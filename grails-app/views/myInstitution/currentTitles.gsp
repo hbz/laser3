@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.remote.ApiSource; de.laser.PermanentTitle; de.laser.Subscription" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.remote.ApiSource; de.laser.PermanentTitle; de.laser.Subscription" %>
 <laser:htmlStart message="myinst.currentTitles.label"/>
 
 <ui:breadcrumbs>
@@ -140,27 +140,12 @@
             </div>
 
             <div class="field">
-                <label for="filterPvd">${message(code: 'vendor.label')}</label>
+                <label for="filterVen">${message(code: 'vendor.label')}</label>
                 <div class="ui search selection fluid multiple dropdown" id="filterVen">
                     <input type="hidden" name="filterVen"/>
                     <div class="default text"><g:message code="default.select.all.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
-                %{--
-                <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">
-                    <option <%--<%= (filterPvd.contains("all")) ? 'selected' : '' %>--%>
-                            value="">${message(code: 'default.select.all.label')}</option>
-                    <g:each in="${providers}" var="p">
-                        <%
-                            def pvdId = p[0].toString()
-                            def pvdName = p[1]
-                        %>
-                        <option <%=(filterPvd.contains(pvdId)) ? 'selected' : ''%> value="${pvdId}" title="${pvdName}">
-                            ${pvdName}
-                        </option>
-                    </g:each>
-                </select>
-                --}%
             </div>
         </div>
 
@@ -243,11 +228,9 @@
     </div>--%>
 
         <div class="field la-field-right-aligned">
-            <a href="${request.forwardURI}"
-               class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
+            <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
             <input type="hidden" name="filterSet" value="true"/>
-            <input type="submit" class="ui primary button"
-                   value="${message(code: 'default.button.filter.label')}"/>
+            <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}"/>
         </div>
 
     </g:form>
@@ -357,7 +340,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.coverageDepth}">
                                                                 <div class="item">
-                                                                    <i class="grey icon file alternate right la-popup-tooltip la-delay"
+                                                                    <i class="grey ${Icon.SYM.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
                                                                        data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                                                                     <div class="content">
@@ -400,7 +383,7 @@
                                                         <div class="ui list">
                                                             <g:each in="${ie_infos}" var="ie">
                                                                 <div class="item">
-                                                                    <i class="icon clipboard outline la-list-icon"></i>
+                                                                    <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                                     <div class="content">
                                                                         <div class="header">
                                                                             <g:link controller="subscription"
@@ -507,7 +490,7 @@
 
     JSPC.app.ajaxDropdown($('#filterSub'), '<g:createLink controller="ajaxJson" action="lookupSubscriptions"/>?query={query}&restrictLevel=true', '${params.filterSub}');
     JSPC.app.ajaxDropdown($('#filterPvd'), '<g:createLink controller="ajaxJson" action="lookupProviders"/>?query={query}', '${params.filterPvd}');
-    JSPC.app.ajaxDropdown($('#filterPvd'), '<g:createLink controller="ajaxJson" action="lookupVendors"/>?query={query}', '${params.filterPvd}');
+    JSPC.app.ajaxDropdown($('#filterVen'), '<g:createLink controller="ajaxJson" action="lookupVendors"/>?query={query}', '${params.filterPvd}');
     JSPC.app.ajaxDropdown($('#filterHostPlat'), '<g:createLink controller="ajaxJson" action="lookupPlatforms"/>?query={query}', '${params.filterHostPlat}');
 </laser:script>
 

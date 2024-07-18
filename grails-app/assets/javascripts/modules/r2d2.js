@@ -173,7 +173,7 @@ r2d2 = {
                         $('#ajaxLoginModal').modal('hide');
                     }
                     else if (json.error) {
-                        $('#ajaxLoginMessage').html('<div class="ui negative message">' + json.error + '</div>');
+                        $('#ajaxLoginMessage').html('<div class="ui error message">' + json.error + '</div>');
                     }
                     else {
                         $('#loginMessage').html(xhr.responseText);
@@ -183,21 +183,21 @@ r2d2 = {
                     if (xhr.status == 401 && xhr.getResponseHeader('Location')) {
                         // the login request itself wasn't allowed, possibly because the
                         // post url is incorrect and access was denied to it
-                        $('#loginMessage').html('<div class="ui negative message">Unbekannter Fehler beim Login. Melden Sie sich bitte über die Startseite an.</div>');
+                        $('#loginMessage').html('<div class="ui error message">Unbekannter Fehler beim Login. Melden Sie sich bitte über die Startseite an.</div>');
                     }
                     else {
                         var responseText = xhr.responseText;
                         if (responseText) {
                             var json = $.parseJSON(responseText);
                             if (json.error) {
-                                $('#loginMessage').html('<div class="ui negative message">' + json.error + '</div>');
+                                $('#loginMessage').html('<div class="ui error message">' + json.error + '</div>');
                                 return;
                             }
                         }
                         else {
                             responseText = 'Status: ' + textStatus + ', Fehler: ' + errorThrown + ')';
                         }
-                        $('#ajaxLoginMessage').html('<div class="ui negative message">' + responseText + '</div>');
+                        $('#ajaxLoginMessage').html('<div class="ui error message">' + responseText + '</div>');
                     }
                 }
             })
@@ -852,9 +852,6 @@ r2d2 = {
                         break;
                     case "concludeBinding":
                         $jscb.html(JSPC.dict.get('confirm.dialog.concludeBinding', JSPC.config.language) + '<i aria-hidden="true" class="check icon"></i>');
-                        break;
-                    case "clearUp":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.clearUp', JSPC.config.language) + '<i aria-hidden="true" class="shower icon"></i>');
                         break;
                     default:
                         $('').html('Entfernen<i aria-hidden="true" class="x icon"></i>');

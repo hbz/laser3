@@ -64,12 +64,11 @@ class SubscriptionService {
     LinksGenerationService linksGenerationService
     MessageSource messageSource
     PropertyService propertyService
+    ProviderService providerService
     RefdataService refdataService
-    StatsSyncService statsSyncService
     SubscriptionsQueryService subscriptionsQueryService
     SurveyService surveyService
     UserService userService
-    OrgTypeService orgTypeService
 
 
     /**
@@ -285,7 +284,6 @@ class SubscriptionService {
 
                 subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) or sub.id in (:subscriptions) order by " + newSort + " " + params.order + ", oo.org.name, sub.name ", [subscriptions: subscriptionsFromQuery.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
             }
-                //select ooo.sub.id from OrgRole ooo where ooo.roletype in (:providerAgency) and ooo.sub != null
         }else {
             subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) order by oo.org.name, sub.name ", [subscriptions: subscriptionsFromQuery.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
             subscriptions = subscriptions + Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where sub.id in (:subscriptions) order by sub.name ", [subscriptions: subscriptionsFromQuery.id])
@@ -299,9 +297,9 @@ class SubscriptionService {
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
 
-        Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.getOrg() )
+        Set providerIds = providerService.getCurrentProviderIds( contextService.getOrg() )
 
-        result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
+        result.providers = providerIds.isEmpty() ? [] : Provider.findAllByIdInList(providerIds).sort { it?.name }
 
         result
     }
@@ -520,8 +518,12 @@ class SubscriptionService {
             prf.setBenchmark('costs init')
 
             if (params.filterPvd) {
-                query = query + " and exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.sub.id = subT.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select orgRole from OrgRole orgRole where orgRole.sub = sub and orgRole.org.id in (:filterPvd))) "
+                query = query + " and exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.sub.id = subT.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select provRole from ProviderRole provRole where provRole.subscription = sub and provRole.provider.id in (:filterPvd))) "
                 qarams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextOrg, filterPvd: Params.getLongList(params, 'filterPvd')]
+            }
+            if (params.filterVen) {
+                query = query + " and exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.sub.id = subT.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select venRole from VendorRole venRole where venRole.subscription = sub and venRole.vendor.id in (:filterVen))) "
+                qarams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextOrg, filterVen: Params.getLongList(params, 'filterVen')]
             }
 
 
@@ -530,26 +532,18 @@ class SubscriptionService {
             //post filter; HQL cannot filter that parameter out
             result.costs = costs
 
-            Map queryParamsProviders = [
-                    subOrg      : contextOrg,
-                    subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
-                    paRoleTypes : [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
-            ]
-
-            String queryProviders = '''select distinct(or_pa.org) from OrgRole or_pa 
-join or_pa.sub sub 
-join sub.orgRelations or_sub where
-    ( sub = or_sub.sub and or_sub.org = :subOrg ) and
-    ( or_sub.roleType in (:subRoleTypes) ) and
-        ( or_pa.roleType in (:paRoleTypes) )'''
-
-            result.providers = Org.executeQuery(queryProviders + " and sub in (:subs)", queryParamsProviders+[subs: costs.sub])
+            Map queryParamsProviders = [context: contextOrg]
+            String queryProviders = 'select p from ProviderRole pvr join pvr.provider p where pvr.subscription in (select oo.sub from OrgRole oo where oo.org = :context) order by p.sortname, p.name',
+            queryVendors = 'select v from VendorRole vr join vr.vendor v where vr.subscription in (select oo.sub from OrgRole oo where oo.org = :context) order by v.sortname, v.name'
+            result.providers = Provider.executeQuery(queryProviders, queryParamsProviders) as Set<Provider>
+            result.vendors = Vendor.executeQuery(queryVendors, queryParamsProviders) as Set<Vendor>
             result.totalCount = costs.size()
-            result.totalSubsCount = costs.sub.unique().size()
-            result.totalMembers = new TreeSet<Org>()
-            costs.each { row ->
-                result.totalMembers << row.orgs
-            }
+            Set<Subscription> uniqueSubs = []
+            uniqueSubs.addAll(costs.sub)
+            result.totalSubsCount = uniqueSubs.size()
+            SortedSet<Org> totalMembers = new TreeSet<Org>()
+            totalMembers.addAll(costs.orgs)
+            result.totalMembers = totalMembers
             if(params.fileformat) {
                 result.entries = costs
                 result.entries.sub.each { Subscription subCons ->
@@ -1826,13 +1820,7 @@ join sub.orgRelations or_sub where
                     if(licRole) {
                         OrgRole orgLicRole = OrgRole.findByLicAndOrgAndRoleType(newLicense,subscr,licRole)
                         if(!orgLicRole){
-                            orgLicRole = OrgRole.findByLicAndOrgAndRoleType(newLicense,subscr,licRole)
-                            if(orgLicRole && orgLicRole.lic != newLicense) {
-                                orgLicRole.lic = newLicense
-                            }
-                            else {
-                                orgLicRole = new OrgRole(lic: newLicense,org: subscr, roleType: licRole)
-                            }
+                            orgLicRole = new OrgRole(lic: newLicense,org: subscr, roleType: licRole)
                             if(!orgLicRole.save())
                                 log.error(orgLicRole.errors.toString())
                         }

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.base.AbstractReport; de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.base.AbstractReport; de.laser.finance.CostItem" %>
 
 <g:if test="${platformInstanceRecords.values().statisticsFormat.contains('COUNTER')}">
     <laser:serviceInjection/>
@@ -51,7 +51,7 @@
                                     data-confirm-term-how="unset"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="eraser icon"></i>
+                                <i class="${Icon.CMD.ERASE}"></i>
                             </g:link>
                         </g:if>
                     </td>
@@ -64,18 +64,13 @@
     <g:if test="${reportTypes}">
         <g:if test="${revision == AbstractReport.COUNTER_4}">
         <%-- taglib not displaying properly
-        <ui:msg icon="ui info" class="info"
+        <ui:msg class="info" showIcon="true"
                 header="${message(code: 'default.usage.counter4reportInfo.header')}"
-                message="default.usage.counter4reportInfo.text" noClose="true"/>
+                message="default.usage.counter4reportInfo.text" hideClose="true"/>
         --%>
-            <div class="ui icon info message">
-                <i class="info icon"></i>
-                <div class="content">
-                    <div class="header">${message(code: 'default.usage.counter4reportInfo.header')}</div>
-
-                    <p>${message(code: 'default.usage.counter4reportInfo.text')}</p>
-                </div>
-            </div>
+            <ui:msg class="info" showIcon="true" hideClose="true"
+                        header="${message(code: 'default.usage.counter4reportInfo.header')}"
+                        message="default.usage.counter4reportInfo.text" />
         </g:if>
         <g:form controller="subscription" action="generateReport" name="stats" class="ui form" method="get">
             <g:hiddenField name="id" value="${subscription.id}"/>
@@ -121,10 +116,10 @@
             </div>
 
             <div class="field la-field-right-aligned">
-                <input id="generateReport" type="button" class="ui primary button" disabled="disabled"
+                <input id="generateReport" type="button" class="${Btn.PRIMARY}" disabled="disabled"
                        value="${message(code: 'default.stats.generateReport')}"/>
                 <g:if test="${CostItem.findBySubAndCostItemElementConfiguration(subscription, RDStore.CIEC_POSITIVE)}">
-                    <input id="generateCostPerUse" type="button" class="ui primary button" disabled="disabled"
+                    <input id="generateCostPerUse" type="button" class="${Btn.PRIMARY}" disabled="disabled"
                            value="${message(code: 'default.stats.generateCostPerUse')}"/>
                 </g:if>
 
@@ -138,7 +133,7 @@
                 </g:elseif>
 
                 <g:link controller="$controllerName" action="$actionName" id="${params.id}" params="${parame}"
-                        class="ui button secondary">${message(code: 'default.button.reset.label')}</g:link>
+                        class="${Btn.SECONDARY}">${message(code: 'default.button.reset.label')}</g:link>
             </div>
         </g:form>
         <div class="ui teal progress" id="progressIndicator" hidden="hidden">
@@ -150,7 +145,8 @@
         <div id="reportWrapper"></div>
     </g:if>
     <g:elseif test="${error}">
-        <ui:msg icon="ui times icon" class="error" noClose="true">
+
+        <ui:msg class="error" showIcon="true" hideClose="true">
             <g:if test="${error == 'noCustomerId'}">
                 <g:message code="default.stats.error.${error}.local" args="${errorArgs}"/>
 
@@ -174,7 +170,7 @@
     <laser:serviceInjection/>
     <ui:tabs>
         <g:each in="${platformInstanceRecords.values()}" var="platform">
-            <ui:tabsItem controller=" $controllerName" action=" $actionName" tab="${platform.id.toString()}"
+            <ui:tabsItem controller="${controllerName}" action="${actionName}" tab="${platform.id.toString()}"
                          params="${params + [tab: platform.id]}" text="${platform.name}"/>
         </g:each>
     </ui:tabs>

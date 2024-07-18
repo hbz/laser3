@@ -1,4 +1,4 @@
-<%@ page import="de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.auth.Role; de.laser.UserSetting.KEYS; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.auth.Role; de.laser.UserSetting.KEYS; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart message="profile.user" serviceInjection="true" />
 
@@ -9,7 +9,7 @@
 <ui:controlButtons>
     <ui:actionsDropdown>
         <g:link class="ui item" controller="profile" action="delete">
-            <i class="trash alternate outline icon"></i>${message(code:'profile.account.delete.button')}
+            <i class="${Icon.CMD.DELETE}"></i>${message(code:'profile.account.delete.button')}
         </g:link>
     </ui:actionsDropdown>
 </ui:controlButtons>
@@ -44,7 +44,7 @@
                         </div>
 
                         <div class="field">
-                            <button type="submit" class="ui button">${message(code: 'profile.update.button')}</button>
+                            <button type="submit" class="${Btn.SIMPLE}">${message(code: 'profile.update.button')}</button>
                         </div>
                     </ui:form><!-- updateProfile -->
 
@@ -120,7 +120,7 @@
                         </table>
 
                         <div class="inline field">
-                            <button type="submit" class="ui button" id="notificationSubmit">${message(code: 'profile.notification.submit')}</button>
+                            <button type="submit" class="${Btn.SIMPLE}" id="notificationSubmit">${message(code: 'profile.notification.submit')}</button>
                         </div>
                     </ui:form><!-- updateNotificationSettings -->
 
@@ -314,7 +314,7 @@
                         </table>
 
                         <div class="inline field">
-                            <button type="submit" class="ui button" id="reminderSubmit">${message(code: 'profile.reminder.submit')}</button>
+                            <button type="submit" class="${Btn.SIMPLE}" id="reminderSubmit">${message(code: 'profile.reminder.submit')}</button>
                         </div>
                     </ui:form><!-- updateReminderSettings -->
                 </div><!-- .content -->
@@ -383,7 +383,7 @@
                         </div>
                         <div class="field">
                             <label></label>
-                            <button type="submit" class="ui button" id="password_submit">${message(code: 'profile.password.update.button')}</button>
+                            <button type="submit" class="${Btn.SIMPLE}" id="password_submit">${message(code: 'profile.password.update.button')}</button>
                         </div>
                     </ui:form><!-- updatePassword -->
 
@@ -401,13 +401,9 @@
                                 <div class="content">
                                     <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
 
-                                    <ui:msg class="info" icon="exclamation" noClose="true">
-                                        Diese Funktion ist nur für Administratoren verfügbar.
-                                    </ui:msg>
+                                    <ui:msg class="info" showIcon="true" hideClose="true" text="Diese Funktion ist nur für Administratoren verfügbar." />
 
-                                    <ui:msg class="warning" icon="exclamation" noClose="true">
-                                        Dieser Nutzer ist noch keiner Einrichtung zugewiesen.
-                                    </ui:msg>
+                                    <ui:msg class="warning" showIcon="true" hideClose="true" text="Dieser Nutzer ist noch keiner Einrichtung zugewiesen." />
 
                                     <ui:form controller="profile" action="setAffiliation" hideWrapper="true">
 
@@ -431,7 +427,7 @@
                                         </div>
 
                                         <div class="field">
-                                            <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="ui button">${message(code: 'profile.membership.add.button')}</button>
+                                            <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="${Btn.SIMPLE}">${message(code: 'profile.membership.add.button')}</button>
                                         </div>
                                     </ui:form>
                                 </div><!-- .content -->
@@ -465,7 +461,7 @@
                             <g:set var="US_LANGUAGE" value="${user.getSetting(KEYS.LANGUAGE, RDStore.LANGUAGE_DE)}" />
                             <ui:xEditableRefData owner="${US_LANGUAGE}" field="rdValue" config="${US_LANGUAGE.key.rdc}" />
                             &nbsp;
-                            <g:link controller="profile" action="index" class="ui button icon" style="float:right"><i class="icon sync"></i></g:link>
+                            <g:link controller="profile" action="index" class="${Btn.SIMPLE_ICON}" style="float:right"><i class="icon sync"></i></g:link>
                         </div>
                         <div class="field">
                             <label>${message(code: 'profile.emailLanguage')}</label>

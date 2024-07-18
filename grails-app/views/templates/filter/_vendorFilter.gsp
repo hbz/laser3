@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
 
 <%
     String lang = LocaleUtils.getCurrentLang()
@@ -22,7 +22,7 @@
                     <label for="nameContains">
                         <g:message code="org.search.vendor.contains"/>
                         <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.vendor.contains.tooltip')}">
-                            <i class="question circle icon"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </label>
                     <input type="text" id="nameContains" name="nameContains"
@@ -68,7 +68,7 @@
                     <label for="privateContact">
                         <g:message code="contact.name"/>
                         <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.contact.tooltip')}">
-                            <i class="question circle icon"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </label>
                     <input id="privateContact" name="privateContact" type="text" placeholder="${message(code: 'default.search.ph')}" value="${params.privateContact}"/>
@@ -141,7 +141,7 @@
                     <select name="qp_supportedLibrarySystems" id="qp_supportedLibrarySystems" multiple="multiple" class="ui search selection dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_SUPPORTED_LIBRARY_SYSTEM)}" var="sls">
-                            <option <%=Params.getLongList(params, 'qp_supportedLibrarySystems').contains(sls.value) ? 'selected=selected"' : ''%> value="${sls.value}">
+                            <option <%=Params.getLongList(params, 'qp_supportedLibrarySystems').contains(sls.id) ? 'selected=selected"' : ''%> value="${sls.id}">
                                 ${sls.getI10n("value")}
                             </option>
                         </g:each>
@@ -154,9 +154,9 @@
                     <label for="qp_electronicBillings">${message(code: 'vendor.invoicing.formats.label')}</label>
                     <select name="qp_electronicBillings" id="qp_electronicBillings" multiple="multiple" class="ui search selection dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_FORMAT)}" var="invoiceFormat">
-                            <option <%=Params.getLongList(params, 'qp_electronicBillings').contains(invoiceFormat.value) ? 'selected=selected"' : ''%> value="${invoiceFormat.value}">
-                                ${invoiceFormat.getI10n("value")}
+                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_FORMAT)}" var="invoicingFormat">
+                            <option <%=Params.getLongList(params, 'qp_electronicBillings').contains(invoicingFormat.id) ? 'selected=selected"' : ''%> value="${invoicingFormat.id}">
+                                ${invoicingFormat.getI10n("value")}
                             </option>
                         </g:each>
                     </select>
@@ -169,7 +169,7 @@
                     <select name="qp_invoiceDispatchs" id="qp_invoiceDispatchs" multiple="multiple" class="ui search selection dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_DISPATCH)}" var="invoiceDispatch">
-                            <option <%=Params.getLongList(params, 'qp_invoiceDispatchs').contains(invoiceDispatch.value) ? 'selected=selected"' : ''%> value="${invoiceDispatch.value}">
+                            <option <%=Params.getLongList(params, 'qp_invoiceDispatchs').contains(invoiceDispatch.id) ? 'selected=selected"' : ''%> value="${invoiceDispatch.id}">
                                 ${invoiceDispatch.getI10n("value")}
                             </option>
                         </g:each>
@@ -222,11 +222,11 @@
 
 <div class="field la-field-right-aligned">
 
-        <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+        <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
 
         <input name="filterSet" type="hidden" value="true">
         <g:if test="${tmplConfigFormFilter}">
-            <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui primary button" onclick="JSPC.app.formFilter(event)" />
+            <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Btn.PRIMARY}" onclick="JSPC.app.formFilter(event)" />
             <laser:script file="${this.getGroovyPageFileName()}">
                 JSPC.app.formFilter = function (e) {
                     e.preventDefault()
@@ -241,7 +241,7 @@
             </laser:script>
         </g:if>
         <g:else>
-            <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui primary button"/>
+            <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Btn.PRIMARY}"/>
         </g:else>
 
 </div>

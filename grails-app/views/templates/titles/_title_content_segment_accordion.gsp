@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Icon" %>
 <div class="ui fluid segment content" data-ajaxTargetWrap="true">
     <div class="ui stackable grid" data-ajaxTarget="true">
 
@@ -51,7 +52,7 @@
                     </g:if>
                     <g:if test="${covStmt.coverageDepth}">
                         <div class="item">
-                            <i class="grey icon file alternate right la-popup-tooltip la-delay"
+                            <i class="grey ${Icon.SYM.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
                                data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                             <div class="content">

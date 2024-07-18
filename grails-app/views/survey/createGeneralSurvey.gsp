@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
 <laser:htmlStart message="createGeneralSurvey.label" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -60,7 +60,7 @@
 
         <br />
 
-        <input type="submit" class="ui button" value="${message(code: 'createGeneralSurvey.create')}"/>
+        <input type="submit" class="${Btn.SIMPLE}" value="${message(code: 'createGeneralSurvey.create')}"/>
 </ui:form>
 
 <laser:htmlEnd />

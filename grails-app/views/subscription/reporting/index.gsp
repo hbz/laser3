@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.report.ReportingCache; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.reporting.report.ReportingCache; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.storage.RDStore;" %>
 <laser:htmlStart message="myinst.reporting" serviceInjection="true">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
@@ -23,10 +23,10 @@
         <laser:render template="/subscription/reporting/query/query" />
 
         %{-- <sec:ifAnyGranted roles="ROLE_YODA">
-            <g:link controller="yoda" action="systemCache" params="${[key: ReportingCache.CTX_SUBSCRIPTION + 'static#' + params.id]}" target="_blank" class="ui button small"><i class="icon bug"></i> YODA only CACHE</g:link>
+            <g:link controller="yoda" action="systemCache" params="${[key: ReportingCache.CTX_SUBSCRIPTION + 'static#' + params.id]}" target="_blank" class="${Btn.SIMPLE} small"><i class="icon bug"></i> YODA only CACHE</g:link>
         </sec:ifAnyGranted> --}%
 
-        <div id="reporting-chart-nodata" class="ui message negative">${message(code:'reporting.modal.nodata')}</div>
+        <div id="reporting-chart-nodata" class="ui error message">${message(code:'reporting.modal.nodata')}</div>
 
         <div id="chart-wrapper"></div>
         <div id="chart-details"></div>
@@ -139,10 +139,12 @@
 
                             JSPC.app.reporting.current.chart.echart = echart;
 
-                            $('#query-export-button').removeAttr('disabled');
-                            if (JSPC.app.reporting.current.request.query.indexOf('timeline-') == 0) {
+                            let escQuery = JSPC.app.reporting.current.request.query.replaceAll('*', '\\*')
+                            let $dhs = $('#queryHelpModal .help-section[data-help-section=' + escQuery + ']');
+                            if ($dhs.length) {
                                 $('#query-help-button').removeAttr('disabled');
                             }
+                            $('#query-export-button').removeAttr('disabled');
                         }
                     })
                     .fail (function (data) {
@@ -159,6 +161,6 @@
         </laser:script>
 
         <ui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
-            <p><i class="icon exclamation triangle large orange"></i> ${message(code:'reporting.modal.error')}</p>
+            <p><i class="${Icon.UI.ERROR} large orange"></i> ${message(code:'reporting.modal.error')}</p>
         </ui:modal>
 <laser:htmlEnd />

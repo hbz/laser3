@@ -1,12 +1,11 @@
 package de.laser
 
+import de.laser.annotations.FixedFeature_DoNotModify
 import de.laser.auth.User
 import de.laser.cache.SessionCacheWrapper
-import de.laser.convenience.Marker
-import de.laser.interfaces.MarkerSupport
+import de.laser.ui.Icon
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
-import de.laser.utils.AppUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
@@ -16,6 +15,7 @@ import org.grails.encoder.Encoder
 import org.grails.taglib.TagLibraryLookup
 import org.grails.taglib.TagOutput
 import org.grails.taglib.encoder.OutputContextLookupHelper
+import org.grails.web.servlet.GrailsFlashScope
 import org.springframework.context.MessageSource
 import org.springframework.web.servlet.support.RequestContextUtils
 
@@ -94,58 +94,92 @@ class UiTagLib {
 
     // <ui:messages data="${flash}" />
 
+    @FixedFeature_DoNotModify
     def messages = { attrs, body ->
 
         def flash = attrs.data
-
-        if (flash && flash.message) {
-            out << '<div class="ui success message la-clear-before">'
-            out << '<i aria-hidden="true" class="close icon"></i>'
-            out << '<p>' + flash.message + '</p>'
-            out << '</div>'
-        }
-
-        if (flash && flash.error) {
-            out << '<div class="ui negative message la-clear-before">'
-            out << '<i aria-hidden="true" class="close icon"></i>'
-            out << '<p>' + flash.error + '</p>'
-            out << '</div>'
+        if (flash) {
+            if (flash instanceof GrailsFlashScope) {
+                if (flash.message) {
+                    out << ui.msg(class: 'success', text: flash.message)
+                }
+                if (flash.error) {
+                    out << ui.msg(class: 'error', text: flash.error)
+                }
+                if (flash.invalidToken) {
+                    out << ui.msg(class: 'error', text: flash.invalidToken)
+                }
+            }
+            else {
+                log.warn 'INVALID USAGE: <ui:messages/> only accepts GrailsFlashScope: ' + flash.getClass()
+            }
         }
     }
 
-    // <ui:msg class="negative|positive|warning|.." icon="${icon}" header="${text}" text="${text}" message="18n.token" noClose="true" />
+    // <ui:msg class="error|info|success|warning" header="${text}" text="${text}" message="18n.token" showIcon="true" hideClose="true" />
 
+    @FixedFeature_DoNotModify
     def msg = { attrs, body ->
 
-        out << '<div class="ui ' + attrs.class + ' message ' + (attrs.icon ? 'icon ' : '') + 'la-clear-before">'
+        String clss = ''
+        String icon = ''
 
-        if (! attrs.noClose) {
+        if (attrs.class) {
+            clss = attrs.class.toString()
+
+            if (attrs.showIcon) {
+                if (clss.toLowerCase() in ['error', 'info', 'success', 'warning']) {
+                    icon = Icon.UI[clss.toUpperCase()]
+                }
+                else {
+                    icon = 'poo icon'
+                }
+            }
+        }
+//        println '> ' + clss + ', ' + attrs.showIcon + ' = ' +  icon
+
+        out << '<div class="ui ' + clss + ' message ' + (icon ? 'icon ' : '') + 'la-clear-before">'
+
+        if (! attrs.hideClose) {
             out << '<i aria-hidden="true" class="close icon"></i>'
         }
-        if (attrs.icon) {
-            out << '<i class="icon ' + attrs.icon + '"></i>'
+        if (icon) {
+            out << '<i class="' + icon + '"></i>'
+            out << '<div class="content">'
         }
         if (attrs.header) {
-            out << '<div class="header">'
-            out << attrs.header
-            out << '</div>'
+            out << '<div class="header">' + attrs.header + '</div>'
         }
 
-        out << '<p>'
+        out << '<p> ' // only phrasing content allowed
 
         if (attrs.text) {
             out << attrs.text
         }
         if (attrs.message) {
             SwissKnife.checkMessageKey(attrs.message as String)
-
-            out << "${message(code: attrs.message, args: attrs.args)}"
+            out << message(code: attrs.message, args: attrs.args)
         }
-        if ( body ) {
-            out << body()
-        }
+        if (body) {
+            String content = body()
+            out << content
 
-        out << '</p>'
+            boolean phraseCheck = true
+            for (String bad : ['</div>', '<input', '</li>']) {
+                if (phraseCheck && content.contains(bad)) {
+                    phraseCheck = false
+                    break
+                }
+            }
+            if (!phraseCheck) {
+                log.warn 'INVALID USAGE: <ui:msg/> only accepts phrasing content'
+            }
+        }
+        out << ' </p>'
+
+        if (icon) {
+            out << '</div>' //.content
+        }
         out << '</div>'
     }
 
@@ -154,8 +188,9 @@ class UiTagLib {
     def errors = { attrs, body ->
 
         if (attrs.bean?.errors?.allErrors) {
-            out << '<div class="ui negative message">'
+            out << '<div class="ui error message">'
             out << '<i aria-hidden="true" class="close icon"></i>'
+//            out << '<i class="exclamation triangle icon" aria-hidden="true"></i>'
             out << '<ul class="list">'
             attrs.bean.errors.allErrors.each { e ->
                 if (e in org.springframework.validation.FieldError) {
@@ -163,7 +198,7 @@ class UiTagLib {
                     out << BeanStore.getMessageSource().getMessage(e, LocaleUtils.getCurrentLocale())
                     out << '</li>'
                 } else {
-                    out << '<li>' + g.message(error: "${e}") + '</li>'
+                    out << '<li>' + message(error: "${e}") + '</li>'
                 }
             }
             out << '</ul>'
@@ -201,7 +236,7 @@ class UiTagLib {
             out << '            </div>'
             if (attrs.editable && attrs.href) {
                 out << '        <div class="right aligned four wide column">'
-                out << '            <button type="button" class="ui icon button blue la-modern-button" data-ui="modal" data-href="' + attrs.href + '" ><i aria-hidden="true" class="plus icon"></i></button>'
+                out << '            <button type="button" class="ui icon button blue la-modern-button" data-ui="modal" data-href="' + attrs.href + '" ><i aria-hidden="true" class="' + Icon.CMD.ADD + '"></i></button>'
                 out << '        </div>'
             }
             out << '        </div>'
@@ -371,10 +406,6 @@ class UiTagLib {
         }
     }
 
-    def markerSwitch = { attrs, body ->
-
-    }
-
     //<ui:filter simple="true|false" extended="true|false"> CONTENT </ui:filter>
 
     def filter = { attrs, body ->
@@ -417,7 +448,7 @@ class UiTagLib {
             if (! simpleFilter) {
                 out << '<button aria-expanded="' + (extended ? 'true':'false') + '" class="ui right floated button la-inline-labeled la-js-filterButton la-clearfix' + (extended ? '':' blue') + '">'
                 out << '    Filter'
-                out << '    <i aria-hidden="true" class="filter icon"></i>'
+                out << '    <i aria-hidden="true" class="' + Icon.LNK.FILTERED + '"></i>'
                 out << '   <span class="ui circular label la-js-filter-total hidden">0</span>'
                 out << '</button>'
 
@@ -453,12 +484,7 @@ class UiTagLib {
 
     def flagDeprecated = { attrs, body ->
 
-        out << '<div class="ui icon message error">'
-        out << '<i class="icon exclamation triangle"></i>'
-        out << '<div class="content">'
-        out << 'Diese Funktionalität wird demnächst entfernt.<br/>Bitte nicht mehr verwenden und ggfs. Daten migrieren.'
-        out << '</div>'
-        out << '</div>'
+        out << ui.msg(class: 'error', showIcon: 'true', text: 'Diese Funktionalität wird demnächst entfernt.<br/>Bitte nicht mehr verwenden und ggfs. Daten migrieren.')
     }
 
     /**
@@ -581,7 +607,7 @@ class UiTagLib {
         String type = attrs.type == 'year' ? 'yearpicker' : 'datepicker'
         out <<   '<div class="ui calendar '+type+'">'
         out <<     '<div class="ui input left icon">'
-        out <<       '<i aria-hidden="true" class="calendar icon"></i>'
+        out <<       '<i aria-hidden="true" class="' + Icon.SYM.DATE + '"></i>'
         out <<       '<input class="' + inputCssClass + '" name="' + name +  '" id="' + id +'" type="text" placeholder="' + placeholder + '" value="' + value + '" ' + required + '>'
         out <<     '</div>'
         out <<   '</div>'

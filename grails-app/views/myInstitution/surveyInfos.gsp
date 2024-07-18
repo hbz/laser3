@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.Org" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.Org" %>
 <laser:htmlStart text="${surveyInfo.type.getI10n('value')}" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -23,19 +23,11 @@
 
 <br/>
 <g:if test="${surveyConfig.isResultsSetFinishByOrg(institution)}">
-    <div class="ui icon positive message">
-        <i class="info icon"></i>
-
-        <div class="content">
-            <div class="header"></div>
-
-            <p>
+    <ui:msg class="success" showIcon="true" hideClose="true">
                 <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
                 <g:message
                         code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info' : 'surveyResult.finish.info'}"/>.
-            </p>
-        </div>
-    </div>
+    </ui:msg>
 </g:if>
 
 <g:if test="${ownerId}">

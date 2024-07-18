@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Package; de.laser.RefdataValue" %>
+<%@ page import="de.laser.ui.Btn; de.laser.helper.Params; de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Package; de.laser.RefdataValue" %>
 <laser:htmlStart message="menu.my.packages" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -23,7 +23,7 @@
     <g:if test="${records}">
         <laser:render template="/templates/filter/packageGokbFilterTable"
                       model="[
-                              tmplConfigShow: ['lineNumber', 'name', 'status', 'titleCount', 'provider', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'subscription', 'markPerpetualAccess', 'marker'],
+                              tmplConfigShow: ['lineNumber', 'name', 'status', 'titleCount', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'subscription', 'markPerpetualAccess', 'marker'],
                               subscriptionMap: subscriptionMap
                       ]"
         />
@@ -32,7 +32,6 @@
     <ui:paginate action="currentPackages" total="${packageListTotal}" params="${params}" max="${max}" offset="${offset}" />
 
 </g:if>
-
 <%--
 <ui:filter>
     <g:form action="currentPackages" method="get" class="ui form">
@@ -78,8 +77,8 @@
             </div>
             <div class="field la-field-right-aligned">
                 <input type="hidden" name="isSiteReloaded" value="yes"/>
-                <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}" />
+                <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}" />
             </div>
         </div>
     </g:form>

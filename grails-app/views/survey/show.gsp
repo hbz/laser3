@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.survey.SurveyResult" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.survey.SurveyResult" %>
 <laser:htmlStart message="surveyShow.label" serviceInjection="true"/>
 
 <ui:debugInfo>
@@ -22,26 +22,22 @@
 <uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="${actionName}"/>
 
 <g:if test="${surveyConfig.subscription}">
-<ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+<ui:linkWithIcon icon="${Icon.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
 
 <ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
-
 <ui:messages data="${flash}"/>
 
 <g:if test="${surveyLinksMessage}">
-    <ui:msg class="negative">
-        <div class="ui bulleted list">
+    <ui:msg class="error" showIcon="true">
         <g:each in="${surveyLinksMessage}" var="msg">
-            <div class="item">${msg}</div>
+            &bullet; ${msg} <br/>
         </g:each>
-        </div>
     </ui:msg>
 </g:if>
-
 
 <div class="ui stackable grid">
     <div class="sixteen wide column">

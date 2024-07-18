@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.reporting.export.LocalExportHelper;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.reporting.export.LocalExportHelper;" %>
 <laser:serviceInjection />
 <%
     String lang = (LocaleUtils.getCurrentLang() == 'en') ? 'en' : 'de'
@@ -121,9 +121,9 @@
             ${text['timeline-member'][lang][1]}
         </p>
         <p>
-            <i class="icon circle green"></i> ${text['timeline-member'][lang][2]}, <br />
-            <i class="icon circle red"></i> ${text['timeline-member'][lang][3]}, <br />
-            <i class="icon circle blue"></i> ${text['timeline-member'][lang][4]}
+            <i class="${Icon.UNC.CIRCLE} green"></i> ${text['timeline-member'][lang][2]}, <br />
+            <i class="${Icon.UNC.CIRCLE} red"></i> ${text['timeline-member'][lang][3]}, <br />
+            <i class="${Icon.UNC.CIRCLE} blue"></i> ${text['timeline-member'][lang][4]}
         </p>
     </div>
     <div class="help-section" data-help-section="timeline-member-cost">
@@ -134,10 +134,10 @@
             ${text['timeline-member-cost'][lang][1]}
         </p>
         <p>
-            <i class="icon circle blue"></i> ${text['timeline-member-cost'][lang][2]}, <br />
-            <i class="icon circle green"></i> ${text['timeline-member-cost'][lang][3]}, <br />
-            <i class="icon circle orange"></i> ${text['timeline-member-cost'][lang][4]}, <br />
-            <i class="icon circle yellow"></i> ${text['timeline-member-cost'][lang][5]}
+            <i class="${Icon.UNC.CIRCLE} blue"></i> ${text['timeline-member-cost'][lang][2]}, <br />
+            <i class="${Icon.UNC.CIRCLE} green"></i> ${text['timeline-member-cost'][lang][3]}, <br />
+            <i class="${Icon.UNC.CIRCLE} orange"></i> ${text['timeline-member-cost'][lang][4]}, <br />
+            <i class="${Icon.UNC.CIRCLE} yellow"></i> ${text['timeline-member-cost'][lang][5]}
         </p>
     </div>
     <div class="help-section" data-help-section="timeline-participant-cost">
@@ -148,10 +148,10 @@
             ${text['timeline-participant-cost'][lang][1]}
         </p>
         <p>
-            <i class="icon circle blue"></i> ${text['timeline-participant-cost'][lang][2]}, <br />
-            <i class="icon circle green"></i> ${text['timeline-participant-cost'][lang][3]}, <br />
-            <i class="icon circle orange"></i> ${text['timeline-participant-cost'][lang][4]}, <br />
-            <i class="icon circle yellow"></i> ${text['timeline-participant-cost'][lang][5]}
+            <i class="${Icon.UNC.CIRCLE} blue"></i> ${text['timeline-participant-cost'][lang][2]}, <br />
+            <i class="${Icon.UNC.CIRCLE} green"></i> ${text['timeline-participant-cost'][lang][3]}, <br />
+            <i class="${Icon.UNC.CIRCLE} orange"></i> ${text['timeline-participant-cost'][lang][4]}, <br />
+            <i class="${Icon.UNC.CIRCLE} yellow"></i> ${text['timeline-participant-cost'][lang][5]}
         </p>
     </div>
     <div class="help-section" data-help-section="timeline-entitlement">
@@ -162,9 +162,9 @@
             ${text['timeline-entitlement'][lang][1]}
         </p>
         <p>
-            <i class="icon circle green"></i> ${text['timeline-entitlement'][lang][2]}, <br />
-            <i class="icon circle red"></i> ${text['timeline-entitlement'][lang][3]}, <br />
-            <i class="icon circle blue"></i> ${text['timeline-entitlement'][lang][4]}
+            <i class="${Icon.UNC.CIRCLE} green"></i> ${text['timeline-entitlement'][lang][2]}, <br />
+            <i class="${Icon.UNC.CIRCLE} red"></i> ${text['timeline-entitlement'][lang][3]}, <br />
+            <i class="${Icon.UNC.CIRCLE} blue"></i> ${text['timeline-entitlement'][lang][4]}
         </p>
     </div>
     <div class="help-section" data-help-section="timeline-package">
@@ -175,9 +175,9 @@
             ${text['timeline-package'][lang][1]}
         </p>
         <p>
-            <i class="icon circle green"></i> ${text['timeline-package'][lang][2]}, <br />
-            <i class="icon circle red"></i> ${text['timeline-package'][lang][3]}, <br />
-            <i class="icon circle blue"></i> ${text['timeline-package'][lang][4]}
+            <i class="${Icon.UNC.CIRCLE} green"></i> ${text['timeline-package'][lang][2]}, <br />
+            <i class="${Icon.UNC.CIRCLE} red"></i> ${text['timeline-package'][lang][3]}, <br />
+            <i class="${Icon.UNC.CIRCLE} blue"></i> ${text['timeline-package'][lang][4]}
         </p>
     </div>
     <div class="help-section" data-help-section="timeline-annualMember-subscription">
@@ -187,14 +187,26 @@
         <p>
             ${text['timeline-annualMember-subscription'][lang][1]}
         </p>
+%{--        <p>--}%
+%{--            <g:if test="${lang == 'de'}">--}%
+%{--                Start- und Enddatum <strong>dieser Lizenz</strong> werden bei der Abfrage nicht beachtet, <br />--}%
+%{--            </g:if>--}%
+%{--            <g:if test="${lang == 'en'}">--}%
+%{--                Start and end dates <strong>from this subscription</strong> are ignored when querying, <br />--}%
+%{--            </g:if>--}%
+%{--            ${text['timeline-annualMember-subscription'][lang][3]}--}%
+%{--        </p>--}%
         <p>
             <g:if test="${lang == 'de'}">
-                Start- und Enddatum <strong>in dieser Lizenz</strong> werden bei der Abfrage nicht beachtet; <br />
+                Einrichtungslizenzen ohne Enddatum werden <strong>zusätzlich</strong> in der Gruppe <i class="${Icon.UNC.CIRCLE} teal"></i><strong>* ohne Ablauf</strong> gelistet. <br />
+                Einrichtungslizenzen ohne Startdatum werden <strong>exklusive</strong> in der Gruppe <i class="${Icon.UNC.CIRCLE} pink"></i><strong>* ohne Startdatum</strong> gelistet. <br />
+                Einrichtungslizenzen ohne Angabe von Start- und Enddatum werden <strong>exklusive</strong> in der Gruppe <i class="${Icon.UNC.CIRCLE} pink"></i><strong>* keine Angabe</strong> gelistet. <br />
             </g:if>
             <g:if test="${lang == 'en'}">
-                Start and end dates <strong>in this subscription</strong> are ignored when querying; <br />
+                Participant subscriptions without an end date are <strong>additionally</strong> listed in the group <i class="${Icon.UNC.CIRCLE} teal"></i><strong>* no End date</strong>. <br />
+                Participant subscriptions without a start date will be <strong>exclusive</strong> listed in the group <i class="${Icon.UNC.CIRCLE} pink"></i><strong>* no Start date</strong>. <br />
+                Participant subscriptions without a start and end date will be <strong>exclusive</strong> listed in the group <i class="${Icon.UNC.CIRCLE} pink"></i><strong>* no Information</strong>. <br />
             </g:if>
-            ${text['timeline-annualMember-subscription'][lang][3]}
         </p>
     </div>
 

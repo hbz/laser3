@@ -266,10 +266,13 @@ class NavigationTagLib {
         def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
         String linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
+        if (attrs.icon) {
+            linkBody = '<i class="icon ' + attrs.icon + '"></i> ' + linkBody
+        }
+
         if (!attrs.instRole) {
             attrs.instRole = Role.INST_USER // new default
         }
-
         boolean check = contextService.checkCachedNavPerms(attrs)
 
         if (attrs.addItemAttributes) {

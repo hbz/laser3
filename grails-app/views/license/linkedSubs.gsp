@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.License; de.laser.RefdataValue; de.laser.interfaces.CalculatedType; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.License; de.laser.RefdataValue; de.laser.interfaces.CalculatedType; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart text="${message(code:'license.details.incoming.childs',args:[message(code:'consortium.subscriber')])}" serviceInjection="true"/>
 
@@ -13,13 +13,13 @@
     <ui:h1HeaderWithIcon visibleProviders="${visibleProviders}">
         <ui:xEditable owner="${license}" field="reference" id="reference"/>
     </ui:h1HeaderWithIcon>
-    <ui:totalNumber total="${subscriptions.size() ?: 0}"/>
+
     <ui:anualRings object="${license}" controller="license" action="linkedSubs" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
 <laser:render template="${customerTypeService.getNavTemplatePath()}" />
 
 <g:if test="${license.instanceOf && (institution.id == license.getLicensingConsortium()?.id)}">
-    <ui:msg class="negative" header="${message(code:'myinst.message.attention')}" noClose="true">
+    <ui:msg class="error" header="${message(code:'myinst.message.attention')}" hideClose="true">
         <g:message code="myinst.licenseDetails.message.ChildView" />
         <g:message code="myinst.licenseDetails.message.ConsortialView" />
         <g:link controller="license" action="linkedSubs" id="${license.instanceOf.id}">
@@ -94,13 +94,17 @@
                                noSelection="${['' : message(code:'default.select.choose.label')]}"/>
                 </div>
                 <div class="field la-field-right-aligned">
-                    <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+                    <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
                     <input name="filterSet" type="hidden" value="true">
-                    <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui primary button"/>
+                    <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Btn.PRIMARY}"/>
                 </div>
             </g:else>
         </g:form>
     </ui:filter>
+
+<h3 class="ui left floated aligned icon header la-clear-before">${message(code: 'subscription.plural')}
+<ui:totalNumber total="${subscriptions.size() ?: 0}"/>
+</h3>
 
 <table class="ui celled la-js-responsive-table la-js-responsive-table la-table table">
     <thead>
@@ -115,7 +119,7 @@
             <th>
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.previous.label')}">
-                    <i class="arrow left icon"></i>
+                    <i class="${Icon.LNK.PREV}"></i>
                 </span>
             </th>
             <th>${message(code:'default.startDate.label.shy')}</th>
@@ -123,10 +127,13 @@
             <th>
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                       data-content="${message(code: 'default.next.label')}">
-                    <i class="arrow right icon"></i>
+                    <i class="${Icon.LNK.NEXT}"></i>
                 </span>
             </th>
             <th>${message(code:'default.status.label')}</th>
+            <g:if test="${institution.isCustomerType_Consortium()}">
+                <th>${message(code:'org.institution.label')}</th>
+            </g:if>
             <th class="la-no-uppercase">
                 <ui:multiYearIcon isConsortial="true" />
             </th>
@@ -172,7 +179,7 @@
                             <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(subscr, 'General contact person', institution)}" var="gcp">
                                 <div class="item">
                                     ${gcp}
-                                    (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')} <i class="address book outline icon" style="display:inline-block"></i>)
+                                    (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')} <i class="${Icon.UI.ACP_PRIVATE}" style="display:inline-block"></i>)
                                 </div>
                             </g:each>
                             <g:each in="${Person.getPublicByOrgAndObjectResp(subscr, sub, 'Specific subscription editor')}" var="sse">
@@ -184,7 +191,7 @@
                             <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(subscr, sub, 'Specific subscription editor', institution)}" var="sse">
                                 <div class="item">
                                     ${sse}
-                                    (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')} <i class="address book outline icon" style="display:inline-block"></i>)
+                                    (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')} <i class="${Icon.UI.ACP_PRIVATE}" style="display:inline-block"></i>)
                                 </div>
                             </g:each>
                         </div>
@@ -195,22 +202,39 @@
                 </td>
                 <td class="center aligned">
                     <g:if test="${navPrevSubscription}">
-                        <g:link controller="subscription" action="show" id="${navPrevSubscription.id}"><i class="arrow left icon"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${navPrevSubscription.id}"><i class="${Icon.LNK.PREV}"></i></g:link>
                     </g:if>
                 </td>
                 <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                 <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
                 <td class="center aligned">
                     <g:if test="${navNextSubscription}">
-                        <g:link controller="subscription" action="show" id="${navNextSubscription.id}"><i class="arrow right icon"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${navNextSubscription.id}"><i class="${Icon.LNK.NEXT}"></i></g:link>
                     </g:if>
                 </td>
                 <td>
                     ${sub.status.getI10n("value")}
                 </td>
+                <g:if test="${institution.isCustomerType_Consortium()}">
+                    <g:set var="childSubCount" value="${Subscription.executeQuery('select count(*) from Subscription s where s.instanceOf = :parent',[parent:sub])[0]}"/>
+                    <td>
+                        <g:if test="${childSubCount > 0}">
+                            <g:link controller="subscription" action="members" params="${[id:sub.id]}">
+                                <div class="ui blue circular label">${childSubCount}</div>
+                            </g:link>
+                        </g:if>
+                        <g:else>
+                            <g:link controller="subscription" action="addMembers" params="${[id:sub.id]}">
+                                <div class="ui blue circular label">
+                                    ${childSubCount}
+                                </div>
+                            </g:link>
+                        </g:else>
+                    </td>
+                </g:if>
                 <td>
                     <g:if test="${sub.isMultiYear}">
-                        <ui:multiYearIcon isConsortial="true" color="orange" />
+                        <ui:multiYearIcon isConsortial="${sub.instanceOf}" color="orange" />
                     </g:if>
                 </td>
             </tr>

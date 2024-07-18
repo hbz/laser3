@@ -326,7 +326,7 @@ class YodaController {
         result.labels = labels
         result.activity = activityMatrix
 
-        result
+        render view: '/yoda/profiler/activity', model: result
     }
 
     /**
@@ -397,7 +397,7 @@ class YodaController {
         }
         result.globalHeatMap = heatMap.findAll {it.value[0] > 0 }.sort {e, f -> f.value[0] <=> e.value[0] }.take(20)
 
-        result
+        render view: '/yoda/profiler/loadtime', model: result
     }
 
     /**
@@ -437,7 +437,7 @@ class YodaController {
         }
         result.globalTimelineOrder = ordered.sort{ e,f -> f.value <=> e.value }
 
-        result
+        render view: '/yoda/profiler/timeline', model: result
     }
 
     /**

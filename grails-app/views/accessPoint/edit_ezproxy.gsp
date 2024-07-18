@@ -1,4 +1,4 @@
-<%@ page import="de.laser.oap.OrgAccessPoint; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.oap.OrgAccessPoint; de.laser.storage.RDConstants" %>
 
 <g:set var="entityName" value="${message(code: 'accessPoint.label')}"/>
 <laser:htmlStart text="${message(code: "default.edit.label", args: [entityName])}" serviceInjection="true"/>
@@ -94,7 +94,7 @@
                                 class="ui negative icon button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="trash very alternate icon"></i>
+                            <i class="${Icon.CMD.DELETE}"></i>
                         </g:link>
                     </g:if>
                 </td>
@@ -116,7 +116,7 @@
                         <label for="ipv4_ip">${message(code: 'accessPoint.ip.data')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay"
                                   data-content="${message(code: "accessPoint.ip.input")}">
-                                <i class="question circle icon la-popup"></i></span>
+                                <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span>
                         </label>
 
 
@@ -127,7 +127,7 @@
                             <g:field type="text" name="ip" id="ipv4_ip" value="${ip}"/>
                         </g:else>
                     </div>
-                    <input type="submit" class="ui button"
+                    <input type="submit" class="${Btn.SIMPLE}"
                            value="${message(code: 'accessPoint.button.add')}"/>
                 </div>
             </g:form>
@@ -159,7 +159,7 @@
                             class="ui negative icon button"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                        <i class="trash very alternate icon"></i>
+                        <i class="${Icon.CMD.DELETE}"></i>
                     </g:link>
                 </g:if>
             </td>
@@ -181,7 +181,7 @@
                     <label for="ipv6_ip">${message(code: 'accessPoint.ip.data')}
                         <span class="la-long-tooltip la-popup-tooltip la-delay"
                               data-content="${message(code: "accessPoint.ip.input")}">
-                            <i class="question circle icon la-popup"></i></span>
+                            <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span>
                     </label>
 
                     <g:if test="${autofocus == true}">
@@ -191,7 +191,7 @@
                         <g:field type="text" name="ip" id="ipv6_ip" value="${ip}"/>
                     </g:else>
                 </div>
-                <input type="submit" class="ui button"
+                <input type="submit" class="${Btn.SIMPLE}"
                        value="${message(code: 'accessPoint.button.add')}"/>
             </div>
         </g:form>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyOrg; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.interfaces.CalculatedType; de.laser.survey.SurveyResult" %>
+<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyOrg; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.interfaces.CalculatedType; de.laser.survey.SurveyResult" %>
 <laser:htmlStart message="subscription.details.surveys.label" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
@@ -40,7 +40,7 @@
             <th>${message(code: 'surveyProperty.plural.label')}</th>
             <th>
                 <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfigDocs.label')}" data-position="top center">
-                <i class="file alternate large icon"></i>
+                <i class="${Icon.DOCUMENT} large"></i>
                 </a>
             </th>
             <th>
@@ -51,7 +51,7 @@
 
             <th>
                 <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyCostItems.label')}" data-position="top center">
-                    <i class="money bill large icon"></i>
+                    <i class="${Icon.FNC.COST} large"></i>
                 </a>
             </th>
             <th>${message(code: 'surveyInfo.finished')}</th>
@@ -81,7 +81,7 @@
                         <g:if test="${surveyConfig.subSurveyUseForTransfer}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info2")}">
-                                <i class="icon pie chart la-list-icon"></i>
+                                <i class="${Icon.SURVEY} la-list-icon"></i>
                             </span>
                         </g:if>
 
@@ -165,7 +165,7 @@
                                 class="ui icon button blue la-modern-button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="write icon"></i>
+                            <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                         </g:link>
                     </span>
 
@@ -173,7 +173,7 @@
                     <g:link controller="survey" action="copySurvey" id="${surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id, q: surveyConfig?.subscription?.providers ? surveyConfig.subscription.providers[0].name : '']"
                             class="ui icon button blue la-modern-button">
-                        <i aria-hidden="true" class="copy icon"></i>
+                        <i aria-hidden="true" class="${Icon.CMD.COPY}"></i>
                     </g:link>
                 </td>
             </tr>

@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Icon" %>
 <table class="ui celled sortable table la-js-responsive-table la-table">
     <thead>
     <tr>
@@ -85,7 +86,7 @@
             </a>
 
             <div class="la-flexbox">
-                <i class="icon balance scale la-list-icon"></i>
+                <i class="${Icon.LICENSE} la-list-icon"></i>
                 <a href="/laser/lic/show/26">EBSCO Rahmenvertrag</a>
             </div>
 
@@ -141,7 +142,7 @@
             </a>
 
             <div class="la-flexbox">
-                <i class="icon balance scale la-list-icon"></i>
+                <i class="${Icon.LICENSE} la-list-icon"></i>
                 <a href="/laser/lic/show/26">EBSCO Rahmenvertrag</a>
             </div>
 
@@ -197,7 +198,7 @@
             </a>
 
             <div class="la-flexbox">
-                <i class="icon balance scale la-list-icon"></i>
+                <i class="${Icon.LICENSE} la-list-icon"></i>
                 <a href="/laser/lic/show/30">de Gruyter Rahmenvertrag</a>
             </div>
 
@@ -253,7 +254,7 @@
             </a>
 
             <div class="la-flexbox">
-                <i class="icon balance scale la-list-icon"></i>
+                <i class="${Icon.LICENSE} la-list-icon"></i>
                 <a href="/laser/lic/show/54">Herdt Lizenzvertrag</a>
             </div>
 
@@ -309,7 +310,7 @@
             </a>
 
             <div class="la-flexbox">
-                <i class="icon balance scale la-list-icon"></i>
+                <i class="${Icon.LICENSE} la-list-icon"></i>
                 <a href="/laser/lic/show/52">Brepols Rahmenvertrag</a>
             </div>
 
@@ -365,7 +366,7 @@
             </a>
 
             <div class="la-flexbox">
-                <i class="icon balance scale la-list-icon"></i>
+                <i class="${Icon.LICENSE} la-list-icon"></i>
                 <a href="/laser/lic/show/41">ProQuest Rahmenvertrag</a>
             </div>
 
@@ -421,7 +422,7 @@
             </a>
 
             <div class="la-flexbox">
-                <i class="icon balance scale la-list-icon"></i>
+                <i class="${Icon.LICENSE} la-list-icon"></i>
                 <a href="/laser/lic/show/26">EBSCO Rahmenvertrag</a>
             </div>
 
@@ -477,7 +478,7 @@
             </a>
 
             <div class="la-flexbox">
-                <i class="icon balance scale la-list-icon"></i>
+                <i class="${Icon.LICENSE} la-list-icon"></i>
                 <a href="/laser/lic/show/101">Beck Lizenzvertrag</a>
             </div>
 
@@ -533,7 +534,7 @@
             </a>
 
             <div class="la-flexbox">
-                <i class="icon balance scale la-list-icon"></i>
+                <i class="${Icon.LICENSE} la-list-icon"></i>
                 <a href="/laser/lic/show/30">de Gruyter Rahmenvertrag</a>
             </div>
 

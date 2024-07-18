@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <%
     int filterFieldsSize
     Map totalFields
@@ -13,7 +14,7 @@
 
     <%-- if commanded by Micha, that the notice gets moved into the form: ui.form info.msg has display:none, contact Ingrid in that case! --%>
    %{-- <g:if test="${formFields.keySet().contains('participantAccessPoints')}">
-        <ui:msg icon="ui exclamation icon" class="warning" message="exportClickMe.exportCSV.noAccessPoints" noClose="true"/>
+        <ui:msg class="warning" showIcon="true" message="exportClickMe.exportCSV.noAccessPoints" hideClose="true"/>
     </g:if>--}%
     <div class="ui form">
 
@@ -333,12 +334,12 @@
                 <label>${message(code: 'default.export.cfg.csv')}
                     <g:if test="${accessPointNotice}">
                         <span data-tooltip="${message(code: 'exportClickMe.exportCSV.noAccessPoints')}">
-                            <i class="question circle icon"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </g:if>
                     <g:if test="${currentTabNotice}">
                         <span data-tooltip="${message(code: 'exportClickMe.exportCSV.currentTabOnly')}">
-                            <i class="question circle icon"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </g:if>
                 </label>
@@ -377,17 +378,17 @@
 
             <div class="wide two field">
                 <label></label>
-                <button class="ui button positive right floated export" value="exportClickMeExcel">Export</button>
+                <button class="${Btn.POSITIVE} right floated export" value="exportClickMeExcel">Export</button>
                 <%-- disused
                 <br>
                 <g:hiddenField name="format" value=""/>
                 <g:hiddenField name="exportClickMeExcel" value=""/>
                 <g:if test="${multiMap}">
-                    <button class="ui button positive right floated exportButton" id="export-as-excel" value="exportClickMeExcel">Export</button>
+                    <button class="${Btn.POSITIVE} right floated exportButton" id="export-as-excel" value="exportClickMeExcel">Export</button>
                 </g:if>
                 <g:else>
-                    <button class="ui button positive right floated exportButton" id="export-as-excel" value="exportClickMeExcel">${exportExcelButtonName ?: 'Export Excel'}</button>
-                    <button class="ui button positive right floated exportButton" id="export-as-csv" value="exportClickMeCSV">${exportCSVButtonName ?: 'Export CSV'}</button>
+                    <button class="${Btn.POSITIVE} right floated exportButton" id="export-as-excel" value="exportClickMeExcel">${exportExcelButtonName ?: 'Export Excel'}</button>
+                    <button class="${Btn.POSITIVE} right floated exportButton" id="export-as-csv" value="exportClickMeCSV">${exportCSVButtonName ?: 'Export CSV'}</button>
                 </g:else>
                 --%>
             </div>
@@ -413,10 +414,10 @@
 
                 <div class="wide five field">
                     <label></label>
-                    <button class="ui button positive export" value="saveClickMeConfig" name="saveClickMeConfig">Export <g:message code="default.config.label"/> <g:message
+                    <button class="${Btn.POSITIVE} export" value="saveClickMeConfig" name="saveClickMeConfig">Export <g:message code="default.config.label"/> <g:message
                             code="default.button.save"/> </button>
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: 'clickMeConfig.save.info')}">
-                        <i class="question circle icon la-popup"></i>
+                        <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
                     </span>
                 </div>
 

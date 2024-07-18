@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.interfaces.CalculatedType; de.laser.Person; de.laser.License" %>
+<%@ page import="de.laser.ui.Icon; de.laser.Subscription; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.interfaces.CalculatedType; de.laser.Person; de.laser.License" %>
 <laser:serviceInjection/>
 
 <ui:greySegment>
@@ -55,15 +55,15 @@
         <g:if test="${objects[0] instanceof Subscription}">
             <tr>
                 <td>
-                    <strong><i class="balance scale icon"></i>${message(code: 'license.label')}:</strong>
+                    <strong><i class="${Icon.LICENSE}"></i>${message(code: 'license.label')}:</strong>
                 </td>
                 <g:each in="${objects}" var="object">
                     <td>
                         <article class="la-readmore">
                         <g:each in="${object.getLicenses()?.sort{it.reference}}" var="license">
                             <g:if test="${contextOrg.id in license.orgRelations?.org.id}">
-                            <strong><i
-                                    class="balance scale icon"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:
+                            <strong>
+                                <i class="${Icon.LICENSE}"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:
                             </strong>
                             <g:link controller="license" action="show" target="_blank" id="${license.id}">
                                 ${license.dropdownNamingConvention()}
@@ -80,15 +80,14 @@
         <g:if test="${objects[0] instanceof License}">
             <tr>
                 <td>
-                    <strong><i class="clipboard icon"></i>${message(code: 'subscription.label')}:</strong>
+                    <strong><i class="${Icon.SUBSCRIPTION}"></i>${message(code: 'subscription.label')}:</strong>
                 </td>
                 <g:each in="${objects}" var="object">
                     <td>
                         <article class="la-readmore">
                         <g:each in="${object.getSubscriptions()?.sort{it.name}}" var="subscription">
                             <g:if test="${contextOrg.id in subscription.orgRelations?.org.id}">
-                            <strong><i
-                                    class="clipboard icon"></i>&nbsp;${subscription.kind?.getI10n("value")}:
+                            <strong><i class="${Icon.SUBSCRIPTION}"></i>&nbsp;${subscription.kind?.getI10n("value")}:
                             </strong>
                             <g:link controller="subscription" action="show" target="_blank" id="${subscription.id}">
                                 ${subscription.dropdownNamingConvention()}
@@ -106,14 +105,14 @@
             <tr>
                 <td>
                     <strong><i
-                            class="university icon"></i>&nbsp;${message(code: "${objects[0].getClass().getSimpleName().toLowerCase()}.organisations.label")}:
+                            class="${Icon.ORG}"></i>&nbsp;${RDStore.OR_LICENSOR.getI10n('value')}/${RDStore.OR_LICENSING_CONSORTIUM.getI10n('value')}/${RDStore.OR_SUBSCRIPTION_CONSORTIA.getI10n('value')}}:
                     </strong>
                 </td>
                 <g:each in="${objects}" var="object">
                     <td>
                         <g:each in="${object.orgRelations?.sort{it.org.name}}" var="role">
-                            <g:if test="${(role.roleType in [RDStore.OR_AGENCY, RDStore.OR_PROVIDER, RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_SUBSCRIPTION_CONSORTIA]) && role.org.id != contextOrg.id}">
-                                <strong><i class="university icon"></i>&nbsp;${role.roleType.getI10n("value")}:
+                            <g:if test="${(role.roleType in [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_SUBSCRIPTION_CONSORTIA]) && role.org.id != contextOrg.id}">
+                                <strong><i class="${Icon.ORG}"></i>&nbsp;${role.roleType.getI10n("value")}:
                                 </strong>
                                 <g:link controller="organisation" action="show" target="_blank"
                                         id="${role.org.id}">
@@ -145,60 +144,131 @@
             </tr>
         </g:if>
 
+
+        <tr>
+            <td>
+                <strong>
+                    <i class="${Icon.PROVIDER} la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'provider.label')}"></i>${message(code: 'provider.label')} :
+                </strong>
+            </td>
+            <g:each in="${objects}" var="object">
+                <td>
+                    <g:each in="${object.providers}" var="provider">
+                        <g:link controller="provider" action="show" id="${provider.id}">${fieldValue(bean: provider, field: "name")}
+                            <g:if test="${provider.sortname}">
+                                <br /> (${fieldValue(bean: provider, field: "sortname")})
+                            </g:if>
+                        </g:link><br />
+                    </g:each>
+                </td>
+            </g:each>
+        </tr>
+
+        <tr>
+            <td>
+                <strong>
+                    <i class="${Icon.VENDOR} la-list-icon la-popup-tooltip la-delay" data-content="${message(code:'vendor.label')}"></i> ${message(code:'vendor.label')}:
+                </strong>
+            </td>
+            <g:each in="${objects}" var="object">
+                <td>
+                    <g:each in="${object.vendors}" var="vendor">
+                        <g:link controller="vendor" action="show" id="${vendor.id}">
+                            ${fieldValue(bean: vendor, field: "name")}
+                            <g:if test="${vendor.sortname}">
+                                <br /> (${fieldValue(bean: vendor, field: "sortname")})
+                            </g:if>
+                        </g:link><br />
+                    </g:each>
+                </td>
+            </g:each>
+        </tr>
+
+
         <g:if test="${objects[0] instanceof Subscription}">
             <tr>
                 <td>
 
                     <strong>
-                        <i class="address card icon"></i>
+                        <i class="${Icon.UI.ACP_PUBLIC}"></i>
                         ${message(code: 'subscription.specificSubscriptionEditors')}:
                     </strong>
                 </td>
                 <g:each in="${objects}" var="object">
                     <td>
-                    <g:each in="${object.orgRelations?.sort{it.org.name}}" var="role">
-                        <g:if test="${role.roleType in [RDStore.OR_AGENCY, RDStore.OR_PROVIDER, RDStore.OR_LICENSOR]}">
-                            <g:if test="${Person.getPublicByOrgAndObjectResp(role.org, object, 'Specific subscription editor') ||
-                                    Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, object, 'Specific subscription editor', contextOrg)}">
+                    <g:each in="${object.providers}" var="provider">
+                            <g:if test="${Person.getPublicByOrgAndObjectResp(provider, object, 'Specific subscription editor') ||
+                                    Person.getPrivateByOrgAndObjectRespFromAddressbook(provider, object, 'Specific subscription editor', contextOrg)}">
 
                             <%-- public --%>
-                                <g:each in="${Person.getPublicByOrgAndObjectResp(role.org, object, 'Specific subscription editor')}"
+                                <g:each in="${Person.getPublicByOrgAndObjectResp(provider, object, 'Specific subscription editor')}"
                                         var="resp">
                                     <span class="la-popup-tooltip la-delay"
                                           data-content="${message(code: 'address.public')}"
                                           data-position="top right">
-                                        <i class="address card icon"></i>
+                                        <i class="${Icon.UI.ACP_PUBLIC}"></i>
                                     </span>
                                     ${resp}
-                                    (<strong><i
-                                        class="university icon"></i>&nbsp;${role.roleType.getI10n("value")}:
-                                </strong>
-                                    <g:link controller="organisation" action="show" target="_blank"
-                                            id="${role.org.id}">${role.org.name}</g:link>)
-                                            </div>
+                                    (<strong><i class="${Icon.PROVIDER} la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'provider.label')}"></i>:</strong>
+                                        <g:link controller="provider" action="show" target="_blank" id="${provider.id}">${fieldValue(bean: provider, field: "name")}
+                                        </g:link>)
                                     <br />
                                 </g:each>
                             <%-- public --%>
                             <%-- private --%>
-                                <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, object, 'Specific subscription editor', contextOrg)}"
+                                <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(provider, object, 'Specific subscription editor', contextOrg)}"
                                         var="resp">
                                     <span class="la-popup-tooltip la-delay"
                                           data-content="${message(code: 'address.private')}"
                                           data-position="top right">
-                                        <i class="address card outline icon"></i>
+                                        <i class="${Icon.UI.ACP_PRIVATE}"></i>
                                     </span>
                                     ${resp}
-                                    (<strong><i
-                                        class="university icon"></i>&nbsp;${role.roleType.getI10n("value")}:
-                                </strong>
-                                    <g:link controller="organisation" action="show" target="_blank"
-                                            id="${role.org.id}">${role.org.name}</g:link>)
-                                            </div>
+                                    (<strong><i class="${Icon.PROVIDER} la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'provider.label')}"></i>:</strong>
+                                    <g:link controller="provider" action="show" target="_blank" id="${provider.id}">${fieldValue(bean: provider, field: "name")}
+                                    </g:link>)
                                     <br />
                                 </g:each><%-- private --%>
                             </g:if>
+                    </g:each>
+
+                    <g:each in="${object.vendors}" var="vendor">
+                        <g:if test="${Person.getPublicByOrgAndObjectResp(vendor, object, 'Specific subscription editor') ||
+                                Person.getPrivateByOrgAndObjectRespFromAddressbook(vendor, object, 'Specific subscription editor', contextOrg)}">
+
+                        <%-- public --%>
+                            <g:each in="${Person.getPublicByOrgAndObjectResp(vendor, object, 'Specific subscription editor')}"
+                                    var="resp">
+                                <span class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'address.public')}"
+                                      data-position="top right">
+                                    <i class="${Icon.UI.ACP_PUBLIC}"></i>
+                                </span>
+                                ${resp}
+                                (<strong><i class="${Icon.VENDOR} la-list-icon la-popup-tooltip la-delay" data-content="${message(code:'vendor.label')}"></i>:</strong>
+                                <g:link controller="vendor" action="show" target="_blank" id="${vendor.id}">${fieldValue(bean: vendor, field: "name")}
+                                </g:link>)
+                                <br />
+                            </g:each>
+                        <%-- public --%>
+                        <%-- private --%>
+                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(vendor, object, 'Specific subscription editor', contextOrg)}"
+                                    var="resp">
+                                <span class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'address.private')}"
+                                      data-position="top right">
+                                    <i class="${Icon.UI.ACP_PRIVATE}"></i>
+                                </span>
+                                ${resp}
+                                (<strong><i class="${Icon.VENDOR} la-list-icon la-popup-tooltip la-delay" data-content="${message(code:'vendor.label')}"></i>:</strong>
+                                <g:link controller="vendor" action="show" target="_blank" id="${vendor.id}">${fieldValue(bean: vendor, field: "name")}
+                                </g:link>)
+                                <br />
+                            </g:each><%-- private --%>
                         </g:if>
                     </g:each>
+
+
                     </td>
                 </g:each>
             </tr>

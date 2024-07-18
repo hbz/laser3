@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 <laser:htmlStart message="myinst.renewalUpload.label" />
 
   <ui:breadcrumbs>
@@ -9,7 +10,7 @@
     <ui:greySegment>
       <g:form class="ui form" action="renewalsUpload" method="post" enctype="multipart/form-data" params="${params}">
           <input type="file" id="renewalsWorksheet" name="renewalsWorksheet"/><br /><br />
-        <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.upload')}</button>
+        <button type="submit" class="${Btn.SIMPLE}">${message(code:'myinst.renewalUpload.upload')}</button>
       </g:form>
     </ui:greySegment>
 
@@ -64,7 +65,7 @@
 
                 <div class="la-float-right">
                     <g:if test="${entitlements}">
-                        <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.accept')}</button>
+                        <button type="submit" class="${Btn.SIMPLE}">${message(code:'myinst.renewalUpload.accept')}</button>
                     </g:if>
                 </div>
                 <br /><hr />
@@ -112,7 +113,7 @@
 
           <div class="la-float-right">
               <g:if test="${entitlements}">
-                  <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.accept')}</button>
+                  <button type="submit" class="${Btn.SIMPLE}">${message(code:'myinst.renewalUpload.accept')}</button>
               </g:if>
           </div>
         </div>

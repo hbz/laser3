@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig;de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.Org" %>
+<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig;de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.Org" %>
 
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyResult.label')}-${message(code: 'surveyParticipants.label')})" serviceInjection="true"/>
 
@@ -44,7 +44,7 @@
 
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+    <ui:linkWithIcon icon="${Icon.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 
@@ -54,15 +54,7 @@
 <ui:messages data="${flash}"/>
 
 <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
-    <div class="ui icon positive message">
-        <i class="info icon"></i>
-        <div class="content">
-            <div class="header"></div>
-            <p>
-                <g:message code="surveyResult.finish.info.consortia"/>.
-            </p>
-        </div>
-    </div>
+    <ui:msg class="success" showIcon="true" hideClose="true" text="${message(code:"surveyResult.finish.info.consortia")}." />
 </g:if>
 
 <g:if test="${participant}">

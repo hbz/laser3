@@ -284,6 +284,8 @@ class TaskService {
         result.validResponsibleOrgs         = contextOrg ? [contextOrg] : []
         result.validResponsibleUsers        = getUserDropdown(contextOrg)
         result.validOrgsDropdown            = _getOrgsDropdown(contextOrg)
+        result.validProvidersDropdown       = _getProvidersDropdown(contextOrg)
+        result.validVendorsDropdown         = _getVendorsDropdown(contextOrg)
         result.validSubscriptionsDropdown   = _getSubscriptionsDropdown(contextOrg, false)
         result.validLicensesDropdown        = _getLicensesDropdown(contextOrg, false)
 
@@ -300,7 +302,7 @@ class TaskService {
     }
 
     /**
-     * Gets a list of all organisations for dropdown output
+     * Gets a list of all institutions for dropdown output
      * @param contextOrg the institution whose accessible organisations should be retrieved
      * @return a list of organisation
      */
@@ -325,8 +327,6 @@ class TaskService {
                 String consQuery = 'select new map(o.id as id, o.name as name, o.sortname as sortname) from OrgSetting os join os.org o where os.key = :customerType and os.roleValue in (:consortium) order by '+params.sort
                 validOrgs.addAll(Org.executeQuery(consQuery, [customerType: OrgSetting.KEYS.CUSTOMER_TYPE, consortium: Role.findAllByAuthorityInList([CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_CONSORTIUM_BASIC])]))
             }
-            String provQuery = 'select new map(o.id as id, o.name as name, o.sortname as sortname) from Org o join o.orgType ot where ot in (:providerAgency) order by '+params.sort
-            validOrgs.addAll(Org.executeQuery(provQuery, [providerAgency: [RDStore.OT_PROVIDER, RDStore.OT_AGENCY]]))
             validOrgs = validOrgs.sort { a, b -> !a.sortname ? !b.sortname ? 0 : 1 : !b.sortname ? -1 : a.sortname <=> b.sortname }
             validOrgs.each { row ->
                 Long optionKey = row.id
@@ -338,6 +338,74 @@ class TaskService {
             }
         }
         validOrgsDropdown
+    }
+
+    /**
+     * Gets a list of all providers for dropdown output
+     * @param contextOrg the institution whose accessible organisations should be retrieved
+     * @return a list of organisation
+     */
+    private Set<Map> _getProvidersDropdown(Org contextOrg) {
+        Set<Map> validProviders = [], validProvidersDropdown = []
+        if (contextOrg) {
+            boolean isInstitution = (contextOrg.isCustomerType_Inst())
+            boolean isConsortium  = (contextOrg.isCustomerType_Consortium())
+
+            GrailsParameterMap params = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
+            params.sort      = " LOWER(p.sortname), LOWER(p.name)"
+
+            if (isConsortium) {
+                String query = 'select new map(p.id as id, p.name as name, p.sortname as sortname) from ProviderRole pvr join pvr.provider p, OrgRole oo join oo.sub s where pvr.subscription = s and oo.org = :context and s.instanceOf = null order by '+params.sort
+                validProviders = Provider.executeQuery(query, [context: contextOrg])
+            }
+            else if (isInstitution) {
+                String query = 'select new map(p.id as id, p.name as name, p.sortname as sortname) from ProviderRole pvr join pvr.provider p, OrgRole oo where oo.sub = pvr.subscription and oo.org = :context order by '+params.sort
+                validProviders.addAll(Provider.executeQuery(query, [context: contextOrg]))
+            }
+            validProviders.each { row ->
+                Long optionKey = row.id
+                String optionValue
+                if(row.sortname)
+                    optionValue = "${row.name} (${row.sortname})"
+                else optionValue = "${row.name}"
+                validProvidersDropdown << [optionKey: optionKey, optionValue: optionValue]
+            }
+        }
+        validProvidersDropdown
+    }
+
+    /**
+     * Gets a list of all organisations for dropdown output
+     * @param contextOrg the institution whose accessible organisations should be retrieved
+     * @return a list of organisation
+     */
+    private Set<Map> _getVendorsDropdown(Org contextOrg) {
+        Set<Map> validVendors = [], validVendorsDropdown = []
+        if (contextOrg) {
+            boolean isInstitution = (contextOrg.isCustomerType_Inst())
+            boolean isConsortium  = (contextOrg.isCustomerType_Consortium())
+
+            GrailsParameterMap params = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
+            params.sort      = " LOWER(v.sortname), LOWER(v.name)"
+
+            if (isConsortium) {
+                String query = 'select new map(v.id as id, v.name as name, v.sortname as sortname) from VendorRole vr join vr.vendor v, OrgRole oo join oo.sub s where vr.subscription = s and oo.org = :context and s.instanceOf = null order by '+params.sort
+                validVendors = Combo.executeQuery(query, [context: contextOrg])
+            }
+            else if (isInstitution) {
+                String query = 'select new map(v.id as id, v.name as name, v.sortname as sortname) from VendorRole vr join vr.vendor v, OrgRole oo where vr.subscription = oo.sub and oo.org = :context order by '+params.sort
+                validVendors.addAll(Org.executeQuery(query, [context: contextOrg]))
+            }
+            validVendors.each { row ->
+                Long optionKey = row.id
+                String optionValue
+                if(row.sortname)
+                    optionValue = "${row.name} (${row.sortname})"
+                else optionValue = "${row.name}"
+                validVendorsDropdown << [optionKey: optionKey, optionValue: optionValue]
+            }
+        }
+        validVendorsDropdown
     }
 
     /**

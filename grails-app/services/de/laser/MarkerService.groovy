@@ -13,7 +13,6 @@ import grails.gorm.transactions.Transactional
 class MarkerService {
 
     ContextService contextService
-    OrgTypeService orgTypeService
 
     /**
      * Gets the bookmarks for the given class of the given type

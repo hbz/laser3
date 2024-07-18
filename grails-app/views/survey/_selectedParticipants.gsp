@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Icon" %>
 <br />
 
 <ui:filter>
@@ -81,7 +82,7 @@
                     data-confirm-term-how="unlink"
                     role="button"
                     aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                <i class="unlink icon"></i> ${message(code: 'default.button.unlink.label')}
+                <i class="${Icon.CMD.UNLINK}"></i> ${message(code: 'default.button.unlink.label')}
             </button>
         </g:if>
 

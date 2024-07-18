@@ -25,7 +25,7 @@
         <g:form action="currentVendors" method="get" class="ui form">
             <laser:render template="/templates/filter/vendorFilter"
                       model="[
-                              tmplConfigShow: [['name', 'venStatus', 'subStatus', 'subPerpetualAccess'], ['supportedLibrarySystems', 'electronicBillings', 'invoiceDispatchs'], ['privateContacts', 'isMyX']],
+                              tmplConfigShow: [['name', 'venStatus'], ['supportedLibrarySystems', 'electronicBillings', 'invoiceDispatchs'], ['property&value'], ['subStatus', 'subPerpetualAccess', 'isMyX']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>

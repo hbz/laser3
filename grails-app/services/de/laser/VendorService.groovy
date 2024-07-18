@@ -8,6 +8,8 @@ import de.laser.properties.VendorProperty
 import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyConfigVendor
+import de.laser.survey.SurveyVendorResult
 import de.laser.traces.DeletedObject
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -48,7 +50,7 @@ class VendorService {
      * @param exWekb should only contacts being retrieved which come from the provider itself (i.e. from we:kb)?
      * @return a {@link List} of {@link Person}s matching to the function type
      */
-    List<Person> getContactPersonsByFunctionType(Vendor vendor, Org contextOrg, boolean onlyPublic, RefdataValue functionType = null, boolean exWekb = false) {
+    List<Person> getContactPersonsByFunctionType(Vendor vendor, Org contextOrg, boolean onlyPublic, RefdataValue functionType = null) {
         Map<String, Object> queryParams = [vendor: vendor]
         String functionTypeFilter = ''
         if(functionType) {
@@ -56,18 +58,10 @@ class VendorService {
             queryParams.functionType = functionType
         }
         if (onlyPublic) {
-            if(exWekb) {
-                Person.executeQuery(
-                        'select distinct p from Person as p inner join p.roleLinks pr where pr.vendor = :vendor '+functionTypeFilter+' and p.tenant = null',
-                        queryParams
-                )
-            }
-            else {
-                Person.executeQuery(
-                        'select distinct p from Person as p inner join p.roleLinks pr where pr.vendor = :vendor and p.isPublic = true and p.tenant != null '+functionTypeFilter,
-                        queryParams
-                )
-            }
+            Person.executeQuery(
+                    'select distinct p from Person as p inner join p.roleLinks pr where pr.vendor = :vendor and p.isPublic = true '+functionTypeFilter,
+                    queryParams
+            )
         }
         else {
             queryParams.ctx = contextOrg
@@ -208,44 +202,46 @@ class VendorService {
             Set<OrgRole> agencyRelations = OrgRole.findAllByRoleType(RDStore.OR_AGENCY)
             Set<Long> toDelete = []
             agencyRelations.each { OrgRole ar ->
-                Vendor v = Vendor.findByGlobalUID(ar.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
-                if (!v) {
-                    v = Vendor.convertFromAgency(ar.org)
-                }
-                if (ar.sub && !VendorRole.findByVendorAndSubscription(v, ar.sub)) {
-                    VendorRole vr = new VendorRole(vendor: v, subscription: ar.sub, isShared: ar.isShared)
-                    if (vr.save()) {
-                        if (ar.isShared) {
-                            List<Subscription> newTargets = Subscription.findAllByInstanceOf(vr.subscription)
-                            newTargets.each{ Subscription sub ->
-                                vr.addShareForTarget_trait(sub)
-                            }
-                            //log.debug("${OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: ar])} shares deleted")
-                        }
-                        log.debug("processed: ${vr.vendor}:${vr.subscription} ex ${ar.org}:${ar.sub}")
+                if(!ar.org.getCustomerType()) {
+                    Vendor v = Vendor.findByGlobalUID(ar.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
+                    if (!v) {
+                        v = Vendor.convertFromAgency(ar.org)
                     }
-                    else log.error(vr.errors.getAllErrors().toListString())
-                }
-                else if(ar.lic && !VendorRole.findByVendorAndLicense(v, ar.lic)) {
-                    VendorRole vr = new VendorRole(vendor: v, license: ar.lic, isShared: ar.isShared)
-                    if (vr.save()) {
-                        if (ar.isShared) {
-                            List<License> newTargets = License.findAllByInstanceOf(vr.license)
-                            newTargets.each{ License lic ->
-                                vr.addShareForTarget_trait(lic)
+                    if (ar.sub && !VendorRole.findByVendorAndSubscription(v, ar.sub)) {
+                        VendorRole vr = new VendorRole(vendor: v, subscription: ar.sub, isShared: ar.isShared)
+                        if (vr.save()) {
+                            if (ar.isShared) {
+                                List<Subscription> newTargets = Subscription.findAllByInstanceOf(vr.subscription)
+                                newTargets.each{ Subscription sub ->
+                                    vr.addShareForTarget_trait(sub)
+                                }
+                                //log.debug("${OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: ar])} shares deleted")
                             }
-                            //log.debug("${OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: ar])} shares deleted")
+                            log.debug("processed: ${vr.vendor}:${vr.subscription} ex ${ar.org}:${ar.sub}")
                         }
-                        log.debug("processed: ${vr.vendor}:${vr.license} ex ${ar.org}:${ar.lic}")
+                        else log.error(vr.errors.getAllErrors().toListString())
                     }
-                    else log.error(vr.errors.getAllErrors().toListString())
-                }
-                else if (ar.pkg) {
-                    if(!PackageVendor.findByVendorAndPkg(v, ar.pkg)) {
-                        PackageVendor pv = new PackageVendor(vendor: v, pkg: ar.pkg)
-                        if (pv.save())
-                            log.debug("processed: ${pv.vendor}:${pv.pkg} ex ${ar.org}:${ar.pkg}")
-                        else log.error(pv.errors.getAllErrors().toListString())
+                    else if(ar.lic && !VendorRole.findByVendorAndLicense(v, ar.lic)) {
+                        VendorRole vr = new VendorRole(vendor: v, license: ar.lic, isShared: ar.isShared)
+                        if (vr.save()) {
+                            if (ar.isShared) {
+                                List<License> newTargets = License.findAllByInstanceOf(vr.license)
+                                newTargets.each{ License lic ->
+                                    vr.addShareForTarget_trait(lic)
+                                }
+                                //log.debug("${OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: ar])} shares deleted")
+                            }
+                            log.debug("processed: ${vr.vendor}:${vr.license} ex ${ar.org}:${ar.lic}")
+                        }
+                        else log.error(vr.errors.getAllErrors().toListString())
+                    }
+                    else if (ar.pkg) {
+                        if(!PackageVendor.findByVendorAndPkg(v, ar.pkg)) {
+                            PackageVendor pv = new PackageVendor(vendor: v, pkg: ar.pkg)
+                            if (pv.save())
+                                log.debug("processed: ${pv.vendor}:${pv.pkg} ex ${ar.org}:${ar.pkg}")
+                            else log.error(pv.errors.getAllErrors().toListString())
+                        }
                     }
                 }
                 ar.delete()
@@ -288,16 +284,16 @@ class VendorService {
         Map<String, Object> result = [:]
 
         // gathering references
-
-        List vendorLinks       = VendorRole.findAllByVendor(vendor)
+        List ids            = new ArrayList(vendor.ids)
+        List vendorLinks    = new ArrayList(vendor.links)
 
         List addresses      = new ArrayList(vendor.addresses)
-        List contacts       = new ArrayList(vendor.contacts)
 
-        List prsLinks       = VendorRole.findAllByVendor(vendor)
+        List prsLinks       = new ArrayList(vendor.prsLinks)
         List docContexts    = new ArrayList(vendor.documents)
         List tasks          = Task.findAllByVendor(vendor)
-        List packages       = PackageVendor.findAllByVendor(vendor)
+        List packages       = new ArrayList(vendor.packages)
+        List surveys        = new ArrayList(vendor.surveys)
         List electronicBillings = new ArrayList(vendor.electronicBillings)
         List invoiceDispatchs = new ArrayList(vendor.invoiceDispatchs)
         List supportedLibrarySystems = new ArrayList(vendor.supportedLibrarySystems)
@@ -312,15 +308,15 @@ class VendorService {
 
         //result.info << ['Links: Orgs', links, FLAG_BLOCKER]
 
-        //result.info << ['Identifikatoren', ids]
+        result.info << ['Identifikatoren', ids]
         result.info << ['VendorRoles', vendorLinks]
 
         result.info << ['Adressen', addresses]
-        result.info << ['Kontaktdaten', contacts]
         result.info << ['Personen', prsLinks]
         result.info << ['Aufgaben', tasks]
         result.info << ['Dokumente', docContexts]
         result.info << ['Packages', packages]
+        result.info << ['Umfragen', surveys]
 
         result.info << ['Allgemeine Merkmale', customProperties]
         result.info << ['Private Merkmale', privateProperties]
@@ -338,14 +334,15 @@ class VendorService {
 
                 try {
                     Map<String, Object> genericParams = [source: vendor, target: replacement]
-                    /* identifiers
+                    /* identifiers */
                     vendor.ids.clear()
                     ids.each { Identifier id ->
-                        id.provider = replacement
+                        id.vendor = replacement
                         id.save()
                     }
-                    */
 
+                    int updateCount = 0, deleteCount = 0
+                    vendor.links.clear()
                     vendorLinks.each { VendorRole vr ->
                         Map<String, Object> checkParams = [target: replacement]
                         String targetClause = ''
@@ -357,23 +354,22 @@ class VendorService {
                             targetClause = 'vr.license = :lic'
                             checkParams.lic = vr.license
                         }
-                        List vendorRoleCheck = OrgRole.executeQuery('select vr from VendorRole vr where vr.vendor = :target and '+targetClause, checkParams)
+                        List vendorRoleCheck = VendorRole.executeQuery('select vr from VendorRole vr where vr.vendor = :target and '+targetClause, checkParams)
                         if(!vendorRoleCheck) {
                             vr.vendor = replacement
                             vr.save()
+                            updateCount++
                         }
                         else {
                             vr.delete()
+                            deleteCount++
                         }
                     }
+                    log.debug("${updateCount} vendor roles updated, ${deleteCount} vendor roles deleted because already existent")
 
                     // addresses
                     vendor.addresses.clear()
                     log.debug("${Address.executeUpdate('update Address a set a.vendor = :target where a.org = :source', genericParams)} addresses updated")
-
-                    // contacts
-                    vendor.contacts.clear()
-                    log.debug("${Contact.executeUpdate('update Contact c set c.vendor = :target where c.org = :source', genericParams)} contacts updated")
 
                     // custom properties
                     vendor.propertySet.clear()
@@ -401,14 +397,26 @@ class VendorService {
 
                     // persons
                     List<Person> targetPersons = Person.executeQuery('select pr.prs from PersonRole pr where pr.vendor = :target', [target: replacement])
+                    updateCount = 0
+                    deleteCount = 0
                     PersonRole.findAllByVendor(vendor).each { PersonRole pr ->
                         Person equivalent = targetPersons.find { Person pT -> pT.last_name == pr.prs.last_name && pT.tenant == pT.tenant }
                         if(!equivalent) {
                             pr.vendor = replacement
+                            //ERMS-5775
+                            if(replacement.gokbId && pr.prs.isPublic) {
+                                pr.prs.isPublic = false
+                                pr.prs.save()
+                            }
                             pr.save()
+                            updateCount++
                         }
-                        else pr.delete()
+                        else {
+                            pr.delete()
+                            deleteCount++
+                        }
                     }
+                    log.debug("${updateCount} contacts updated, ${deleteCount} contacts deleted because already existent")
 
                     // tasks
                     log.debug("${Task.executeUpdate('update Task t set t.vendor = :target where t.vendor = :source', genericParams)} tasks updated")
@@ -460,11 +468,20 @@ class VendorService {
                     Set<ElectronicBilling> targetElectronicBillings = replacement.electronicBillings
                     vendor.electronicBillings.clear()
                     electronicBillings.each { ElectronicBilling eb ->
-                        if(!targetInvoiceDispatchs.find { ElectronicBilling ebT -> ebT.invoicingFormat == eb.invoicingFormat }) {
+                        if(!targetElectronicBillings.find { ElectronicBilling ebT -> ebT.invoicingFormat == eb.invoicingFormat }) {
                             eb.vendor = replacement
                             eb.save()
                         }
                         else eb.delete()
+                    }
+                    Set<SurveyConfigVendor> targetSurveyConfigs = replacement.surveys
+                    vendor.surveys.clear()
+                    surveys.each { SurveyConfigVendor scv ->
+                        if(!targetSurveyConfigs.find { SurveyConfigVendor scvT -> scvT.surveyConfig == scv.surveyConfig }) {
+                            scv.vendor = replacement
+                            scv.save()
+                        }
+                        else scv.delete()
                     }
 
                     vendor.delete()
@@ -477,7 +494,7 @@ class VendorService {
                     result.status = RESULT_SUCCESS
                 }
                 catch (Exception e) {
-                    log.error 'error while merging provider ' + vendor.id + ' .. rollback: ' + e.message
+                    log.error('error while merging provider ' + vendor.id + ' .. rollback: ' + e.message)
                     e.printStackTrace()
                     status.setRollbackOnly()
                     result.status = RESULT_ERROR
@@ -495,12 +512,13 @@ class VendorService {
 
     Set<Platform> getSubscribedPlatforms(Vendor vendor, Org contextOrg) {
         /*
-        may cause overlaod; for hbz data, the filter must be excluded
+        may cause overload; for hbz data, the filter must be excluded
         String instanceFilter = ''
         if(contextOrg.isCustomerType_Consortium())
             instanceFilter = 'and s.instanceOf = null'
         */
-        Platform.executeQuery('select pkg.nominalPlatform from PackageVendor pv, VendorRole vr, OrgRole oo join oo.sub s join pv.pkg pkg where pv.vendor = :vendor and pv.vendor = vr.vendor and vr.subscription = s and s.status = :current and oo.org = :contextOrg ', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, contextOrg: contextOrg])
+        Set<Package> subscribedPackages = Package.executeQuery('select pkg from SubscriptionPackage sp join sp.pkg pkg, OrgRole oo join oo.sub s where sp.subscription = oo.sub and s.status = :current and oo.org = :contextOrg and pkg in (select pv.pkg from PackageVendor pv where pv.vendor = :vendor)', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, contextOrg: contextOrg])
+        subscribedPackages.nominalPlatform
     }
 
     Map<String, Object> getResultGenerics(GrailsParameterMap params) {
@@ -569,7 +587,7 @@ class VendorService {
         }
 
         if (params.containsKey('qp_electronicBillings')) {
-            queryArgs << "exists (select eb from v.electronicBillings eb where eb.invoiceFormat in (:electronicBillings))"
+            queryArgs << "exists (select eb from v.electronicBillings eb where eb.invoicingFormat in (:electronicBillings))"
             queryParams.put('electronicBillings', Params.getRefdataList(params, 'qp_electronicBillings'))
         }
 
@@ -613,6 +631,12 @@ class VendorService {
         result.vendorList = vendorsTotal.drop(result.offset).take(result.max)
         result
 
+    }
+
+    Set<Long> getCurrentVendorIds(Org context) {
+        Set<Long> result = VendorRole.executeQuery("select vr.id from VendorRole vr join vr.vendor as v where vr.subscription in (select sub from OrgRole where org = :context and roleType in (:roleTypes))",
+                [context:context,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]])
+        result
     }
 
 }

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.survey.SurveyConfig;de.laser.RefdataValue;de.laser.finance.CostItem;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.survey.SurveyConfig;de.laser.RefdataValue;de.laser.finance.CostItem;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyCostItems.label')})" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -22,7 +22,7 @@
 <uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="${actionName}"/>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+    <ui:linkWithIcon icon="${Icon.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
@@ -35,7 +35,7 @@
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
     <g:if test="${surveyConfig.subscription}">
-        <i class="icon clipboard outline la-list-icon"></i>
+        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
             ${surveyConfig.getConfigNameShort()}
         </g:link>
@@ -71,12 +71,11 @@
                            placeholder="${message(code: 'template.addDocument.selectFile')}">
                     <input type="file" name="costItemsFile" accept="text/tab-separated-values,.txt,.csv"
                            style="display: none;">
-                    <div class="ui icon button">
-                        <i class="attach icon"></i>
+                    <div class="${Btn.SIMPLE_ICON}">
+                        <i class="${Icon.CMD.ATTACHMENT}"></i>
                     </div>
                 </div>
             </div>
-
         </g:form>
     </ui:modal>
 
@@ -147,13 +146,17 @@
 
             <br><br>
 
-            <g:render template="costItemsByCostItemElementTable"/>
+            <g:if test="${costItemsByCostItemElementOfSubs}">
+                <g:render template="costItemsByCostItemElementTable" model="${[costItemsByCTE: costItemsByCostItemElementOfSubs, header: g.message(code: 'costItem.label')+' in '+ g.message(code: 'subscription.label')]}"/>
+            </g:if>
+
+            <g:render template="costItemsByCostItemElementTable" model="${[costItemsByCTE: costItemsByCostItemElement, header: g.message(code: 'costItem.label')+' in '+ g.message(code: 'survey.label')]}"/>
 
             <br/>
             <g:if test="${(params.tab == 'selectedSubParticipants' && selectedSubParticipants.size() > 0) || (params.tab == 'selectedParticipants' && selectedParticipants.size() > 0)}">
                 <div class="field" style="text-align: right;">
                     <button id="bulkCostItems-toggle"
-                            class="ui button"><g:message code="financials.bulkCostItems.show"/></button>
+                            class="${Btn.SIMPLE}"><g:message code="financials.bulkCostItems.show"/></button>
                     <laser:script file="${this.getGroovyPageFileName()}">
                         $('#bulkCostItems-toggle').on('click', function () {
                             $('#bulkCostItems').toggleClass('hidden')
@@ -172,14 +175,14 @@
 
                 <div id="bulkCostItems" class="hidden">
                     <g:if test="${countCostItems == 0}">
-                        <ui:msg icon="info" message="surveyCostItems.bulkOption.info"/>
+                        <ui:msg class="info" showIcon="true" message="surveyCostItems.bulkOption.info"/>
                     </g:if>
                     <g:else>
                         <h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip la-delay"
                                                     data-position="right center"
                                                     data-content="${message(code: 'surveyCostItems.bulkOption.info')}">
                             ${message(code: 'surveyCostItems.bulkOption.label')}
-                            <i class="question circle icon"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span></h3>
 
                         <div class="ui basic segment">
@@ -234,7 +237,7 @@
 
                         <div class="two fields">
                             <div class="eight wide field" style="text-align: left;">
-                                <button class="ui button"
+                                <button class="${Btn.SIMPLE}"
                                         type="submit">${message(code: 'default.button.save_changes')}</button>
                             </div>
 
@@ -364,7 +367,7 @@
                         data-confirm-id="processSurveyCostItemsBulk"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="trash alternate outline icon"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
+                    <i class="${Icon.CMD.DELETE}"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
                 </button>
 
             </g:form>

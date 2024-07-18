@@ -1,5 +1,5 @@
 <!-- A: templates/properties/_group -->
-<%@ page import="de.laser.Subscription; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.AuditConfig; de.laser.FormService" %>
+<%@ page import="de.laser.ui.Icon; de.laser.Subscription; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection/>
 <g:if test="${newProp}">
     <ui:errors bean="${newProp}" />
@@ -55,7 +55,7 @@
                             ${prop.type.getI10n('name')}
                             <g:if test="${prop.type.getI10n('expl')}">
                                 <span class="la-popup-tooltip la-delay" data-position="right center" data-content="${prop.type.getI10n('expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </g:if>
                         </g:if>
@@ -64,7 +64,7 @@
                         </g:else>
                         <g:if test="${prop.type.multipleOccurrence}">
                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                <i class="redo icon orange"></i>
+                                <i class="${Icon.PROP.MULTIPLE}"></i>
                             </span>
                         </g:if>
                     </td>
@@ -233,13 +233,13 @@
                                                   data-update="${custom_props_div}"
                                                   role="button"
                                                   ariaLabel="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </ui:remoteLink>
                             </g:if>
                             <g:else>
                                 <!-- Hidden Fake Button To hold the other Botton in Place -->
                                 <div class="ui icon button la-hidden">
-                                    <i class="coffee icon"></i>
+                                    <i class="${Icon.UNC.PLACEHOLDER}"></i>
                                 </div>
 
                             </g:else>
@@ -308,6 +308,6 @@
 
 </table>
 <g:if test="${error}">
-    <ui:msg class="negative" header="${message(code: 'myinst.message.attention')}" text="${error}"/>
+    <ui:msg class="error" header="${message(code: 'myinst.message.attention')}" text="${error}"/>
 </g:if>
 <!-- O: templates/properties/_group -->

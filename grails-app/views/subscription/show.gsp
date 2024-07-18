@@ -1,4 +1,4 @@
-<%@ page import="de.laser.config.ConfigMapper; de.laser.Person; de.laser.PersonRole; de.laser.Subscription; de.laser.Links; java.text.SimpleDateFormat;de.laser.properties.PropertyDefinition; de.laser.OrgRole; de.laser.License;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.interfaces.CalculatedType; de.laser.FormService; de.laser.AuditConfig" %>
+<%@ page import="de.laser.ui.Icon; de.laser.config.ConfigMapper; de.laser.Person; de.laser.PersonRole; de.laser.Subscription; de.laser.Links; java.text.SimpleDateFormat;de.laser.properties.PropertyDefinition; de.laser.OrgRole; de.laser.License;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.interfaces.CalculatedType; de.laser.FormService; de.laser.AuditConfig" %>
 <laser:htmlStart message="subscription.details.label" serviceInjection="true"/>
 
 %{-- flyouts --}%
@@ -43,14 +43,7 @@
 <laser:render template="${customerTypeService.getNavTemplatePath()}"/>
 
 <g:if test="${permanentTitlesProcessRunning}">
-    <div class="ui icon warning message">
-        <i class="info icon"></i>
-        <div class="content">
-            <div class="header">Info</div>
-
-            <p>${message(code: 'subscription.details.permanentTitlesProcessRunning.info')}</p>
-        </div>
-    </div>
+    <ui:msg class="warning" showIcon="true" hideClose="true" header="Info" message="subscription.details.permanentTitlesProcessRunning.info" />
 </g:if>
 
 <ui:objectStatus object="${subscription}" status="${subscription.status}"/>
@@ -69,10 +62,10 @@
                         <dl>
                             <dt class="control-label"><g:message code="org.altname.label" /></dt>
                             <dd>
-                                <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion">
+                                <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion la-accordion-showMore">
                                     <g:if test="${subscription.altnames}">
-                                        <div class="title" id="altname_title">
-                                            <div data-objId="${genericOIDService.getOID(subscription.altnames[0])}">
+                                        <div class="item title" id="altname_title">
+                                            <div class="item" data-objId="${genericOIDService.getOID(subscription.altnames[0])}">
                                                 <div class="content la-space-right">
                                                     <g:if test="${!subscription.altnames[0].instanceOf}">
                                                         <ui:xEditable owner="${subscription.altnames[0]}" field="name"/>
@@ -105,7 +98,7 @@
                                                                     <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
                                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
                                                                                    data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                        <i class="trash alternate outline icon"></i>
+                                                                        <i class="${Icon.CMD.DELETE}"></i>
                                                                     </ui:remoteLink>
                                                                 </div>
                                                             </g:if>
@@ -132,7 +125,7 @@
                                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
                                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
                                                                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(subscription.altnames[0])}')">
-                                                                    <i class="trash alternate outline icon"></i>
+                                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                                 </ui:remoteLink>
                                                             </div>
                                                         </g:else>
@@ -144,12 +137,15 @@
                                                         <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
                                                                        data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(subscription.altnames[0])}')">
-                                                            <i class="trash alternate outline icon"></i>
+                                                            <i class="${Icon.CMD.DELETE}"></i>
                                                         </ui:remoteLink>
                                                     </g:else>
                                                 </g:if>
                                             </div>
-                                            <i class="dropdown icon"></i>
+                                            <div class="ui icon blue button la-show-button la-modern-button la-popup-tooltip la-delay"
+                                                 data-content="${message(code: 'org.altname.show')}">
+                                                <i class="${Icon.CMD.SHOW_MORE}"></i>
+                                            </div>
                                         </div>
                                         <div class="content">
                                             <g:each in="${subscription.altnames.drop(1)}" var="altname">
@@ -186,7 +182,7 @@
                                                                         <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                                        data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                            <i class="trash alternate outline icon"></i>
+                                                                            <i class="${Icon.CMD.DELETE}"></i>
                                                                         </ui:remoteLink>
                                                                     </div>
                                                                 </g:if>
@@ -213,7 +209,7 @@
                                                                     <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                                    data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                        <i class="trash alternate outline icon"></i>
+                                                                        <i class="${Icon.CMD.DELETE}"></i>
                                                                     </ui:remoteLink>
                                                                 </div>
                                                             </g:else>
@@ -226,7 +222,7 @@
                                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                    <i class="trash alternate outline icon"></i>
+                                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                                 </ui:remoteLink>
                                                             </div>
                                                         </g:else>
@@ -243,6 +239,7 @@
                         </dl>
                         <g:if test="${editable}">
                             <dl>
+                                <dt></dt>
                                 <dd><input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code:'org.altname.add')}"></dd>
                             </dl>
                         </g:if>
@@ -416,50 +413,6 @@
             <g:if test="${subscription.packages}">
                 <div id="packages" class="la-padding-top-1em"></div>
             </g:if>
-        <%--
-        <div class="ui card hidden">
-            <div class="content">
-                <laser:render template="/templates/links/orgLinksAsList"
-                          model="${[roleLinks: visibleOrgRelations,
-                                    roleObject: subscription,
-                                    roleRespValue: 'Specific subscription editor',
-                                    editmode: editable,
-                                    showPersons: true
-                          ]}" />
-                <div class="ui la-vertical buttons">
-
-                    <laser:render template="/templates/links/orgLinksSimpleModal"
-                              model="${[linkType: subscription.class.name,
-                                        parent: genericOIDService.getOID(subscription),
-                                        property: 'orgs',
-                                        recip_prop: 'sub',
-                                        tmplRole: RDStore.OR_PROVIDER,
-                                        tmplType: RDStore.OT_PROVIDER,
-                                        tmplEntity:message(code:'subscription.details.linkProvider.tmplEntity'),
-                                        tmplText:message(code:'subscription.details.linkProvider.tmplText'),
-                                        tmplButtonText:message(code:'subscription.details.linkProvider.tmplButtonText'),
-                                        tmplModalID:'modal_add_provider',
-                                        editmode: editable
-                              ]}" />
-                    <laser:render template="/templates/links/orgLinksSimpleModal"
-                              model="${[linkType: subscription.class.name,
-                                        parent: genericOIDService.getOID(subscription),
-                                        property: 'orgs',
-                                        recip_prop: 'sub',
-                                        tmplRole: RDStore.OR_AGENCY,
-                                        tmplType: RDStore.OT_AGENCY,
-                                        tmplEntity: message(code:'subscription.details.linkAgency.tmplEntity'),
-                                        tmplText: message(code:'subscription.details.linkAgency.tmplText'),
-                                        tmplButtonText: message(code:'subscription.details.linkAgency.tmplButtonText'),
-                                        tmplModalID:'modal_add_agency',
-                                        editmode: editable
-                              ]}" />
-
-                </div>
-
-            </div>
-        </div>
-        --%>
             <div class="ui card" id="licenses"></div>
             <g:if test="${usage}">
                 <div class="ui card la-dl-no-table">
@@ -506,7 +459,7 @@
                                                     <g:if test="${missingSubMonths}">
                                                         <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                               data-html="${message(code: 'default.usage.missingUsageInfo')}: ${missingSubMonths.join(',')}">
-                                                            <i class="exclamation triangle icon la-popup small"></i>
+                                                            <i class="${Icon.TOOLTIP.SERIOUS} la-popup small"></i>
                                                         </span>
                                                     </g:if>
                                                 </td>
@@ -541,7 +494,7 @@
                                             <td>${reportMetric}
                                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                       data-html="${message(code: 'default.usage.reportUpToInfo')}: ${lastUsagePeriodForReportType[reportMetric.split(':')[0]]}">
-                                                    <i class="info icon small circular la-popup"></i>
+                                                    <i class="${Icon.TOOLTIP.INFO} small la-popup"></i>
                                                 </span>
                                             </td>
                                             <g:each in="${v}" status="i" var="v2">
@@ -569,7 +522,7 @@
                                                 <g:if test="${missing}">
                                                     <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                           data-html="${message(code: 'default.usage.missingUsageInfo')}: ${missing.join(',')}">
-                                                        <i class="exclamation triangle icon la-popup small"></i>
+                                                        <i class="${Icon.TOOLTIP.SERIOUS} la-popup small"></i>
                                                     </span>
                                                 </g:if>
                                             </td>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.base.AbstractReport" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.base.AbstractReport" %>
 <laser:serviceInjection />
 <g:set var="action" value="${action ?: actionName}"/>
 <g:set var="forTitles" value="${forTitles ?: actionName}"/>
@@ -25,7 +25,7 @@
                 <label for="filter">${message(code: 'default.search.text')}
                     <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.tipp')}">
-                        <i class="question circle icon"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
                 <input name="filter" id="filter" value="${params.filter}"/>
@@ -34,7 +34,7 @@
                 <label for="identifier">${message(code: 'default.search.identifier')}
                     <span data-position="right center" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.identifier')}">
-                        <i class="question circle icon"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
                 <input name="identifier" id="identifier" value="${params.identifier}"/>
@@ -169,7 +169,7 @@
                 <label for="title_types">${message(code: 'default.search.titleTyp')}
                     <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.titleTyp')}">
-                        <i class="question circle icon"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
                 <div class="ui search selection fluid multiple dropdown" id="title_types">
@@ -227,7 +227,7 @@
 
         <g:if test="${controllerName == 'subscription' && showStatsFilter}">
             <g:if test="${revision == AbstractReport.COUNTER_4}">
-                <ui:msg icon="ui info icon" class="info" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" noClose="true"/>
+                <ui:msg class="info" showIcon="true" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" hideClose="true"/>
             </g:if>
             <div class="five fields" id="filterDropdownWrapper">
                 <div class="field">
@@ -317,8 +317,8 @@
 
             <div class="field la-field-right-aligned">
                 <g:link controller="${controllerName}" action="${action}" id="${params.id}" params="[surveyConfigID: params.surveyConfigID, tab: params.tab, tabStat: params.tabStat]"
-                   class="ui reset secondary button">${message(code: 'default.button.reset.label')}</g:link>
-                <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}"/>
+                   class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</g:link>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}"/>
             </div>
     </g:form>
 </ui:filter>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.Platform; de.laser.Package; de.laser.Org; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.Platform; de.laser.Package; de.laser.Org; de.laser.storage.RDStore" %>
 <laser:htmlStart message="platforms.all_platforms.label" serviceInjection="true" />
 
 	<ui:breadcrumbs>
@@ -10,16 +10,7 @@
 			<ui:messages data="${flash}" />
 
 			<g:if test="${error}">
-				<div class="ui icon error message">
-					<i class="exclamation triangle icon"></i>
-					<i class="close icon"></i>
-					<div class="content">
-						<div class="header">
-							${message(code: 'message.attention')}
-						</div>
-						<p>${error}</p>
-					</div>
-				</div>
+				<ui:msg class="error" showIcon="true" header="${message(code: 'message.attention')}" text="${error}" />
 			</g:if>
 			<g:else>
 				<laser:render template="/templates/filter/platformFilter"/>
@@ -45,8 +36,6 @@
 						<tbody>
 						<g:each in="${records}" var="record" status="jj">
 							<tr>
-								<g:set var="pkg" value="${Package.findByGokbId(record.uuid)}"/>
-								<g:set var="org" value="${Org.findByGokbId(record.providerUuid)}"/>
 								<g:set var="platformInstance" value="${Platform.findByGokbId(record.uuid)}"/>
 								<td>
 									${ (params.int('offset') ?: 0)  + jj + 1 }
@@ -74,11 +63,11 @@
 									</g:if>
 								</td>
 								<td>
-									<g:if test="${platformInstance && platformInstance.org}">
-										<g:if test="${platformInstance.org.gokbId != null && RDStore.OT_PROVIDER.id in platformInstance.org.getAllOrgTypeIds()}">
-											<ui:wekbIconLink type="org" gokbId="${platformInstance.org.gokbId}" />
+									<g:if test="${platformInstance && platformInstance.provider}">
+										<g:if test="${platformInstance.provider.gokbId}">
+											<ui:wekbIconLink type="provider" gokbId="${platformInstance.provider.gokbId}" />
 										</g:if>
-										<g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
+										<g:link controller="provider" action="show" id="${platformInstance.provider.id}">${platformInstance.provider.name}</g:link>
 									</g:if>
 									<g:elseif test="${record.providerUuid}">
 										${record.providerName}
@@ -90,7 +79,7 @@
 								<td class="center aligned">
 									<g:if test="${platformInstance && myPlatformIds.contains(platformInstance.id)}">
 										<span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.platforms')}">
-											<i class="icon yellow star"></i>
+											<i class="${Icon.UI.MY_OBJECT} yellow"></i>
 										</span>
 									</g:if>
 								</td>

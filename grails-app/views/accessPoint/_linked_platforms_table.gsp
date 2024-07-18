@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <table id="platformTable" class="ui celled la-js-responsive-table la-table table compact">
   <thead>
@@ -28,7 +28,7 @@
                   data-confirm-term-how="unlink" data-confirm-id="${java.util.UUID.randomUUID().toString()}"
                   role="button"
                   aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-            <i class="unlink icon"></i>
+            <i class="${Icon.CMD.UNLINK}"></i>
           </g:link>
         </td>
       </g:if>

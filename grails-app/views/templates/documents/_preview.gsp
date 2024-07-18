@@ -9,14 +9,10 @@
 
     <div>
         <g:if test="${info}">
-            <ui:msg class="info" icon="user astronaut" noClose="true">
-                ${info}
-            </ui:msg>
+            <ui:msg class="info" hideClose="true" text="${info}" />
         </g:if>
         <g:if test="${error}">
-            <ui:msg class="error" icon="sad tear outline" noClose="true">
-                ${error}
-            </ui:msg>
+            <ui:msg class="error" hideClose="true" text="${error}" />
         </g:if>
     </div>
 

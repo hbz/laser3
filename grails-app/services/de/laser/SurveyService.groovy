@@ -101,10 +101,10 @@ class SurveyService {
         if (contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
             SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
 
-            if (surveyOrg.finishDate) {
-                return false
-            } else {
+            if (surveyOrg && surveyOrg.finishDate == null) {
                 return true
+            } else {
+                return false
             }
         }else{
             return false
@@ -1169,7 +1169,8 @@ class SurveyService {
                 new SurveyConfigProperties(
                         surveyProperty: surveyConfigProperty.surveyProperty,
                         surveyConfig: newSurveyConfig,
-                        propertyOrder: surveyConfigProperty.propertyOrder).save()
+                        propertyOrder: surveyConfigProperty.propertyOrder,
+                        mandatoryProperty: surveyConfigProperty.mandatoryProperty).save()
             }
         }
     }
@@ -2189,7 +2190,7 @@ class SurveyService {
                 chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.stringValue is not null or sr.stringValue != '') and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
             }
             else if (prop.isBigDecimalType()) {
-                chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.decValue is not null or sr.decValue != '') and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
+                chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.decValue is not null) and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
             }
             else if (prop.isDateType()) {
                 chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.dateValue is not null or sr.dateValue != '') and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
@@ -2473,6 +2474,7 @@ class SurveyService {
                     if (ids.size() > 0) {
                         uuidPkgs = ids
                     } else {
+                        //Fallback with fake UUID
                         uuidPkgs = ['fakeUuids']
                     }
                 }
@@ -2490,7 +2492,7 @@ class SurveyService {
                 switch (params.actionsForSurveyVendors) {
                     case "addSurveyVendor":
                         Vendor vendor = Vendor.findById(params.vendorId)
-                        if (SurveyConfigVendor.findBySurveyConfigAndVendor(result.surveyConfig, vendor) && !SurveyVendorResult.findBySurveyConfigAndParticipantAndVendor(result.surveyConfig, participant, vendor)) {
+                        if (SurveyConfigVendor.findBySurveyConfigAndVendor(result.surveyConfig, vendor) && !SurveyVendorResult.findBySurveyConfigAndParticipant(result.surveyConfig, participant)) {
                             SurveyVendorResult surveyVendorResult = new SurveyVendorResult(surveyConfig: result.surveyConfig, participant: participant, vendor: vendor, owner: result.surveyInfo.owner)
                             surveyVendorResult.save()
                         }
@@ -2499,7 +2501,7 @@ class SurveyService {
                     case "removeSurveyVendor":
                         Vendor vendor = Vendor.findById(params.vendorId)
                         SurveyVendorResult surveyVendorResult = SurveyVendorResult.findBySurveyConfigAndParticipantAndVendor(result.surveyConfig, participant, vendor)
-                        if (SurveyConfigVendor.findBySurveyConfigAndVendor(result.surveyConfig, vendor) && surveyVendorResult) {
+                        if (surveyVendorResult) {
                             surveyVendorResult.delete()
                         }
                         break
@@ -2508,27 +2510,25 @@ class SurveyService {
 
             params.subTab = params.subTab ?: 'allVendors'
 
-            if (result.surveyConfig.surveyVendors) {
-                List configVendorIds
-                if (params.subTab == 'allVendors') {
-                    result.selectedVendorIdList = SurveyVendorResult.executeQuery("select svr.vendor.id from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
-                    configVendorIds = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
-                } else if (params.subTab == 'selectVendors') {
-                    List<Long> ids = SurveyVendorResult.executeQuery("select svr.vendor.id from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
-                    if (ids.size() > 0) {
-                        configVendorIds = ids
-                    } else {
-                        configVendorIds = ['fakeUuids']
-                    }
-                    result.selectedVendorIdList = configVendorIds
-                }
 
-                params.ids = configVendorIds
-                result.putAll(vendorService.getWekbVendors(params))
-            } else {
-                result.vendorList = []
-                result.vendorListTotal = 0
+            List configVendorIds
+            if (params.subTab == 'allVendors') {
+                result.selectedVendorIdList = SurveyVendorResult.executeQuery("select svr.vendor.id from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
+                configVendorIds = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
+            } else if (params.subTab == 'selectVendors') {
+                List<Long> ids = SurveyVendorResult.executeQuery("select svr.vendor.id from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
+                if (ids.size() > 0) {
+                    configVendorIds = ids
+                } else {
+                    //Fallback with fake ID
+                    configVendorIds = [0]
+                }
+                result.selectedVendorIdList = configVendorIds
             }
+
+            params.ids = configVendorIds
+            result.putAll(vendorService.getWekbVendors(params))
+
         }
 
         return result

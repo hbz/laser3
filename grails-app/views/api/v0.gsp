@@ -62,7 +62,7 @@
             width: 250px;
         }
         #main-container .topbar input[name=apiAuth] {
-            width: 400px;
+            width: 430px;
         }
         #main-container .topbar .link,
         #main-container .topbar .download-url-wrapper {

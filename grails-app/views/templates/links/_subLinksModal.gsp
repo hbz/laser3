@@ -182,7 +182,7 @@
                     <g:if test="${linkInstanceType == Links.class.name && !link}">
                         <div class="row">
                             <div class="four wide column">
-                                <g:message code="provider.label"/>
+                                <g:message code="default.linking.provider.label"/>
                             </div>
                             <div class="twelve wide column">
                                 <div class="ui search selection dropdown la-full-width" id="providerFilter">
@@ -265,7 +265,7 @@
         });
         <g:if test="${context instanceof Subscription || context instanceof License}">
             <g:if test="${!subscriptionLicenseLink}">
-                <g:set var="firstProvider" value="${context.orgRelations.find { OrgRole oo -> oo.roleType.id in [RDStore.OR_PROVIDER.id, RDStore.OR_LICENSOR.id] }?.org}"/>
+                <g:set var="firstProvider" value="${ProviderRole.findBySubscriptionOrLicense(context, context)?.provider}"/>
             </g:if>
             <g:if test="${firstProvider}">
                 let providerOID = "${genericOIDService.getOID(firstProvider)}";

@@ -1,4 +1,4 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.Vendor;de.laser.Package;de.laser.Platform;de.laser.Provider;de.laser.TitleInstancePackagePlatform" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.Vendor;de.laser.Package;de.laser.Platform;de.laser.Provider;de.laser.TitleInstancePackagePlatform" %>
 
 <laser:htmlStart message="menu.my.markers" serviceInjection="true"/>
 
@@ -25,14 +25,14 @@
 
             </div>
             <div class="field la-field-right-aligned">
-%{--                <g:link controller="myInstitution" action="currentWorkflows" params="${[filter: 'reset']}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</g:link>--}%
-                <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}" />
+%{--                <g:link controller="myInstitution" action="currentWorkflows" params="${[filter: 'reset']}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</g:link>--}%
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}" />
             </div>
         </div>
     </form>
 </ui:filter>
 
-<ui:msg class="info" noClose="true">
+<ui:msg class="info" hideClose="true">
     <i class="ui icon hand point right"></i> <strong>Hinweis:</strong> Ihre persönlichen Beobachtungslisten sind für andere Nutzer Ihrer Einrichtung nicht sichtbar.
 </ui:msg>
 
@@ -44,22 +44,22 @@
                     <th class="one wide">${message(code:'sidewide.number')}</th>
                     <th class="ten wide">
                         <g:if test="${objCat.value.first() instanceof Org}">
-                            <i class="icon grey university la-list-icon"></i> ???
+                            <i class="${Icon.ORG} grey la-list-icon"></i> ???
                         </g:if>
                         <g:elseif test="${objCat.value.first() instanceof Package}">
-                            <i class="icon grey gift la-list-icon"></i> ${message(code:'package.label')}
+                            <i class="${Icon.PACKAGE} grey la-list-icon"></i> ${message(code:'package.label')}
                         </g:elseif>
                         <g:elseif test="${objCat.value.first() instanceof Platform}">
-                            <i class="icon grey cloud la-list-icon"></i> ${message(code:'platform.label')}
+                            <i class="${Icon.PLATFORM} grey la-list-icon"></i> ${message(code:'platform.label')}
                         </g:elseif>
                         <g:if test="${objCat.value.first() instanceof Provider}">
-                            <i class="icon grey university la-list-icon"></i> ${message(code:'provider.label')}
+                            <i class="${Icon.PROVIDER} grey la-list-icon"></i> ${message(code:'provider.label')}
                         </g:if>
                         <g:elseif test="${objCat.value.first() instanceof Vendor}">
-                            <i class="icon grey shipping fast la-list-icon"></i> ${message(code:'vendor')}
+                            <i class="${Icon.VENDOR} grey la-list-icon"></i> ${message(code:'vendor')}
                         </g:elseif>
                         <g:elseif test="${objCat.value.first() instanceof TitleInstancePackagePlatform}">
-                            <i class="icon grey book la-list-icon"></i> ${message(code:'title')}
+                            <i class="${Icon.TIPP} grey la-list-icon"></i> ${message(code:'title')}
                         </g:elseif>
                     </th>
                     <th class="three wide"></th>

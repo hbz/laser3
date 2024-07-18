@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Combo; de.laser.CustomerIdentifier; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Combo; de.laser.CustomerIdentifier; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <laser:htmlStart message="${isProviderOrAgency ? 'org.nav.ids' : 'org.nav.idsCids.shy'}" serviceInjection="true" />
@@ -111,8 +111,8 @@
                             />
                         </div>
                         <div class="field la-field-right-aligned">
-                            <a href="${createLink(controller:controllerName,action:actionName,params:[id:orgInstance.id,tab:'customerIdentifiers'])}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
-                            <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
+                            <a href="${createLink(controller:controllerName,action:actionName,params:[id:orgInstance.id,tab:'customerIdentifiers'])}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+                            <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}">
                         </div>
                     </div>
                 </g:form>
@@ -148,7 +148,7 @@
                                     <g:if test="${editable_customeridentifier && editable_this_ci}">
                                         %{--}<button class="ui icon button blue la-modern-button" onclick="JSPC.app.IdContoller.editCustomerIdentifier(${ci.id});"
                                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                            <i aria-hidden="true" class="write icon"></i>
+                                            <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                         </button>--}%
                                         <g:link controller="organisation"
                                                 action="deleteCustomerIdentifier"
@@ -159,7 +159,7 @@
                                                 data-confirm-term-how="delete"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="trash alternate outline icon"></i>
+                                            <i class="${Icon.CMD.DELETE}"></i>
                                         </g:link>
                                     </g:if>
                                 </td>

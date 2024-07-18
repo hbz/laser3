@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IssueEntitlementGroup; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.ui.Icon; de.laser.IssueEntitlementGroup; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <div class="sixteen wide column">
     <g:set var="counter" value="${offset + 1}"/>
     <g:set var="sumlistPriceEuro" value="${0}"/>
@@ -117,8 +117,8 @@
 
                                 </div>
 
-                                <div class="ui icon blue button la-modern-button"><i
-                                        class="ui angle double down icon"></i>
+                                <div class="ui icon blue button la-modern-button">
+                                    <i class="${Icon.CMD.SHOW_MORE}"></i>
                                 </div>
                                 <g:if test="${(params.tab == 'allTipps') && editable && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
                                     <g:link class="ui icon negative button la-modern-button la-popup-tooltip la-delay"
@@ -203,7 +203,7 @@
                                     </g:if>
                                     <g:if test="${covStmt.coverageDepth}">
                                         <div class="item">
-                                            <i class="grey icon file alternate right la-popup-tooltip la-delay"
+                                            <i class="grey ${Icon.SYM.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
                                                data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                                             <div class="content">

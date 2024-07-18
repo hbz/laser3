@@ -3,11 +3,14 @@ package de.laser.ctrl
 import de.laser.*
 import de.laser.auth.User
 import de.laser.storage.RDStore
+import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.interfaces.CalculatedType
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+
+import java.text.SimpleDateFormat
 
 /**
  * This class is a service mirror for {@link LicenseController} to capsule the complex data manipulation
@@ -24,6 +27,7 @@ class LicenseControllerService {
     DocstoreService docstoreService
     LinksGenerationService linksGenerationService
     LicenseService licenseService
+    SubscriptionsQueryService subscriptionsQueryService
     TaskService taskService
     WorkflowService workflowService
 
@@ -92,12 +96,6 @@ class LicenseControllerService {
         LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.license)
         result.navPrevLicense = links.prevLink
         result.navNextLicense = links.nextLink
-        // restrict visible for templates/links/orgLinksAsList - done by Andreas Gálffy
-        String i10value = LocaleUtils.getLocalizedAttributeName('value')
-        result.visibleProrivers = OrgRole.executeQuery(
-                "select pr from ProviderRole pr join pr.provider p where pr.license = :license order by p.sortname",
-                [license:result.license]
-        )
 
         result.showConsortiaFunctions = showConsortiaFunctions(result.license)
 
@@ -109,12 +107,37 @@ class LicenseControllerService {
         result.docsCount       = docstoreService.getDocsCount(result.license, result.contextOrg)
         result.checklistCount   = workflowService.getWorkflowCount(result.license, result.contextOrg)
 
+        GrailsParameterMap clone = params.clone() as GrailsParameterMap
+        if(!clone.license){
+            clone.license = result.license.id
+        }
+        Map notNeededOnlySetCloneParams = setSubscriptionFilterData(clone)
+        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(clone)
+        result.subsCount   = result.license ? Subscription.executeQuery( "select count(*) " + tmpQ[0].split('order by')[0] , tmpQ[1] )[0] : 0
+
+
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
             if (! result.license.isVisibleBy(result.user)) {
                 log.debug( "--- NOT VISIBLE ---")
-                return null
+                //perform further check because it may be linked to a subscription and the linking is missing ...
+                List<Links> subLinks = Links.executeQuery('select li from Links li where li.sourceLicense = :lic and li.destinationSubscription in (select oo.sub from OrgRole oo where oo.org = :ctx)', [ctx: result.institution, lic: result.license])
+                if(subLinks) {
+                    //substitute missing link upon call
+                    log.debug("--- SUBSTITUTING ---")
+                    OrgRole substitute = new OrgRole(org: result.institution, lic: result.license)
+                    if(result.institution.isCustomerType_Consortium()) {
+                        substitute.roleType = RDStore.OR_LICENSING_CONSORTIUM
+                    }
+                    else {
+                        if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
+                            substitute.roleType = RDStore.OR_LICENSEE_CONS
+                        else substitute.roleType = RDStore.OR_LICENSEE
+                    }
+                    substitute.save()
+                }
+                else return null
             }
         }
         result.editable = result.license.isEditableBy(result.user)
@@ -150,5 +173,31 @@ class LicenseControllerService {
      */
     boolean showConsortiaFunctions(Org contextOrg, License license) {
         return license.getLicensingConsortium()?.id == contextOrg.id && license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
+    }
+
+    /**
+     * this is very ugly and should be subject of refactor - - but unfortunately, the
+     * {@link SubscriptionsQueryService#myInstitutionCurrentSubscriptionsBaseQuery(java.util.Map)}
+     * requires the {@link GrailsParameterMap} as parameter.
+     * @return validOn and defaultSet-parameters of the filter
+     */
+    Map<String,Object> setSubscriptionFilterData(GrailsParameterMap params) {
+        Map<String, Object> result = [:]
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        Date dateRestriction = null
+        if (params.validOn == null || params.validOn.trim() == '') {
+            result.validOn = ""
+        } else {
+            result.validOn = params.validOn
+            dateRestriction = sdf.parse(params.validOn)
+        }
+        result.dateRestriction = dateRestriction
+        if (! params.status) {
+            if (!params.filterSet) {
+                params.status = RDStore.SUBSCRIPTION_CURRENT.id
+                result.defaultSet = true
+            }
+        }
+        result
     }
 }

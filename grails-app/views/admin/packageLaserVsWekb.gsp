@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.storage.RDConstants; de.laser.utils.DateUtils; de.laser.Org; de.laser.Package; de.laser.Platform; de.laser.RefdataValue; java.text.SimpleDateFormat" %>
+<%@ page import="de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.storage.RDConstants; de.laser.utils.DateUtils; de.laser.Org; de.laser.Package; de.laser.Platform; de.laser.RefdataValue; java.text.SimpleDateFormat" %>
 <laser:htmlStart message="menu.admin.packageLaserVsWekb" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -18,16 +18,7 @@
 </g:if>
 
 <g:if test="${error}">
-    <div class="ui icon error message">
-        <i class="exclamation triangle icon"></i>
-        <i class="close icon"></i>
-        <div class="content">
-            <div class="header">
-                ${message(code: 'message.attention')}
-            </div>
-            <p>${error}</p>
-        </div>
-    </div>
+    <ui:msg class="error" showIcon="true" header="${message(code: 'message.attention')}" text="${error}" />
 </g:if>
 
 <div class="twelve wide column la-clear-before">

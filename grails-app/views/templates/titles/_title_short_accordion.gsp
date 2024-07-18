@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <div class="item">
     <ui:listIcon type="${tipp.titleType}"/>
     <g:if test="${ie}">
@@ -16,7 +16,7 @@
 </div>
 <g:if test="${(tipp.titleType == 'monograph') && (tipp.editionStatement || showEmptyFields)}">
     <div class="item">
-        <i class="grey icon copy la-popup-tooltip la-delay"
+        <i class="grey ${Icon.CMD.COPY} la-popup-tooltip la-delay"
            data-content="${message(code: 'title.editionStatement.label')}"></i>
 
         <div class="content">
@@ -33,7 +33,7 @@
                 target="_blank"
                 controller="tipp" action="show"
                 id="${tipp.id}">
-            <i class="book icon"></i>
+            <i class="${Icon.TIPP}"></i>
         </g:link>
     </g:if>
     <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}" var="gokbAPI">
@@ -41,7 +41,7 @@
             <a role="button" class="ui icon tiny blue button la-popup-tooltip la-delay"
                data-content="${message(code: 'wekb')}"
                href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/tippContent/?id=' + tipp.gokbId : '#'}"
-               target="_blank"><i class="la-gokb  icon"></i>
+               target="_blank"><i class="${Icon.WEKB}"></i>
             </a>
         </g:if>
     </g:each>

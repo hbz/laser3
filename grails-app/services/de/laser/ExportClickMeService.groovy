@@ -56,7 +56,6 @@ class ExportClickMeService {
     ExportService exportService
     FilterService filterService
     FinanceService financeService
-    GokbService gokbService
     SubscriptionsQueryService subscriptionsQueryService
     SurveyService surveyService
     SubscriptionService subscriptionService
@@ -95,812 +94,832 @@ class ExportClickMeService {
                                         SURVEY_COST_ITEMS, TIPPS, VENDORS
     ]
 
-    static Map<String, Object> EXPORT_SURVEY_RENEWAL_CONFIG = [
-            //Wichtig: Hier bei dieser Config bitte drauf achten, welche Feld Bezeichnung gesetzt ist, 
-            // weil die Felder von einer zusammengesetzten Map kommen. siehe SurveyControllerService -> renewalEvaluation
-                    survey      : [
-                            label: 'Survey',
-                            message: 'survey.label',
-                            fields: [
-                                    'participant.sortname'        : [field: 'participant.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                                    'participant.name'            : [field: 'participant.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                                    'survey.period'               : [field: null, label: 'Period', message: 'renewalEvaluation.period', defaultChecked: 'true'],
-                                    'survey.periodComment'        : [field: null, label: 'Period Comment', message: 'renewalEvaluation.periodComment', defaultChecked: 'true'],
-                                    'costItem.costPeriod'           : [field: null, label: 'Cost Period', message: 'renewalEvaluation.costPeriod', defaultChecked: 'true'],
-                                    'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Cost Before Tax', message: 'renewalEvaluation.costBeforeTax', defaultChecked: 'true'],
-                                    'costItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Cost After Tax', message: 'renewalEvaluation.costAfterTax', defaultChecked: 'true'],
-                                    'costItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Cost Tax', message: 'renewalEvaluation.costTax', defaultChecked: 'true'],
-                                    'costItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Cost Before Tax', message: 'default.currency.label', defaultChecked: 'true'],
-                                    'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label'],
-                                    'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
-                                    'survey.ownerComment'                       : [field: null, label: 'Owner Comment', message: 'surveyResult.commentOnlyForOwner', defaultChecked: 'true'],
-                            ]
-                    ],
+    Map<String, Object> getDefaultExportSurveyRenewalConfig() {
+        return  [
+                //Wichtig: Hier bei dieser Config bitte drauf achten, welche Feld Bezeichnung gesetzt ist,
+                // weil die Felder von einer zusammengesetzten Map kommen. siehe SurveyControllerService -> renewalEvaluation
+                survey                        : [
+                        label  : 'Survey',
+                        message: 'survey.label',
+                        fields : [
+                                'participant.sortname'                  : [field: 'participant.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                                'participant.name'                      : [field: 'participant.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true'],
+                                'survey.period'                         : [field: null, label: 'Period', message: 'renewalEvaluation.period', defaultChecked: 'true'],
+                                'survey.periodComment'                  : [field: null, label: 'Period Comment', message: 'renewalEvaluation.periodComment', defaultChecked: 'true'],
+                                'costItem.costPeriod'                   : [field: null, label: 'Cost Period', message: 'renewalEvaluation.costPeriod', defaultChecked: 'true'],
+                                'costItem.costInBillingCurrency'        : [field: 'costItem.costInBillingCurrency', label: 'Cost Before Tax', message: 'renewalEvaluation.costBeforeTax', defaultChecked: 'true'],
+                                'costItem.costInBillingCurrencyAfterTax': [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Cost After Tax', message: 'renewalEvaluation.costAfterTax', defaultChecked: 'true'],
+                                'costItem.taxRate'                      : [field: 'costItem.taxKey.taxRate', label: 'Cost Tax', message: 'renewalEvaluation.costTax', defaultChecked: 'true'],
+                                'costItem.billingCurrency'              : [field: 'costItem.billingCurrency', label: 'Cost Before Tax', message: 'default.currency.label', defaultChecked: 'true'],
+                                'costItem.costDescription'              : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label'],
+                                'costItem.costTitle'                    : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
+                                'survey.ownerComment'                   : [field: null, label: 'Owner Comment', message: 'surveyResult.commentOnlyForOwner', defaultChecked: 'true'],
+                        ]
+                ],
 
-                    participant : [
-                            label: 'Participant',
-                            message: 'surveyParticipants.label',
-                            fields: [
-                                'participant.funderType'        : [field: 'participant.funderType', label: 'Funder Type', message: 'org.funderType.label'],
-                                'participant.funderHskType'     : [field: 'participant.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
-                                'participant.libraryType'       : [field: 'participant.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
-                                'participant.url'               : [field: 'participant.url', label: 'URL', message: 'default.url.label'],
-                                'participant.legalPatronName'   : [field: 'participant.legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
-                                'participant.urlGov'            : [field: 'participant.urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
+                participant                   : [
+                        label  : 'Participant',
+                        message: 'surveyParticipants.label',
+                        fields : [
+                                'participant.funderType'              : [field: 'participant.funderType', label: 'Funder Type', message: 'org.funderType.label'],
+                                'participant.funderHskType'           : [field: 'participant.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+                                'participant.libraryType'             : [field: 'participant.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                                'participant.url'                     : [field: 'participant.url', label: 'URL', message: 'default.url.label'],
+                                'participant.legalPatronName'         : [field: 'participant.legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
+                                'participant.urlGov'                  : [field: 'participant.urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
                                 /*
                                 'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
                                 'participantContact.Functional Contact Billing Adress'   : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
                                 'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
                                 'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
                                 */
-                                'participant.eInvoice'          : [field: 'participant.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
-                                'participant.eInvoicePortal'    : [field: 'participant.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
-                                'participant.linkResolverBaseURL'    : [field: 'participant.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                                'participant.eInvoice'                : [field: 'participant.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
+                                'participant.eInvoicePortal'          : [field: 'participant.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
+                                'participant.linkResolverBaseURL'     : [field: 'participant.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                                'participant.readerNumbers'           : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
+                                'participant.discoverySystemsFrontend': [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
+                                'participant.discoverySystemsIndex'   : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
+                                'participant.uuid'                    : [field: 'participant.globalUID', label: 'Laser-UUID', message: null],
+                                'participant.libraryNetwork'          : [field: 'participant.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
+                                'participant.country'                 : [field: 'participant.country', label: 'Country', message: 'org.country.label'],
+                                'participant.region'                  : [field: 'participant.region', label: 'Region', message: 'org.region.label']
+                        ]
+                ],
+                participantContacts           : [
+                        label  : 'Contacts',
+                        message: 'org.contacts.label',
+                        subTabs: [],
+                        fields : [:]
+                ],
+                participantAddresses          : [
+                        label  : 'Addresses',
+                        message: 'org.addresses.label',
+                        fields : [:]
+                ],
+                participantAccessPoints       : [
+                        label  : 'Participants Access Points',
+                        message: 'exportClickMe.participantAccessPoints',
+                        fields : [
+                                'participant.exportIPs'        : [field: null, label: 'Export IPs', message: 'subscriptionDetails.members.exportIPs', separateSheet: 'true'],
+                                'participant.exportProxys'     : [field: null, label: 'Export Proxys', message: 'subscriptionDetails.members.exportProxys', separateSheet: 'true'],
+                                'participant.exportEZProxys'   : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateSheet: 'true'],
+                                'participant.exportShibboleths': [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
+                                'participant.exportMailDomains': [field: null, label: 'Export Mail Domains', message: 'subscriptionDetails.members.exportMailDomains', separateSheet: 'true'],
+                        ]
+                ],
+                participantIdentifiers        : [
+                        label  : 'Identifiers',
+                        message: 'exportClickMe.participantIdentifiers',
+                        fields : [:],
+
+                ],
+                participantCustomerIdentifiers: [
+                        label  : 'Customer Identifier',
+                        message: 'exportClickMe.participantCustomerIdentifiers',
+                        fields : [:],
+
+                ],
+
+                subscription                  : [
+                        label  : 'Subscription',
+                        message: 'subscription.label',
+                        fields : [
+                                'subscription.name'                  : [field: 'sub.name', label: 'Name', message: 'subscription.name.label'],
+                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true'],
+                                'subscription.startDate'             : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
+                                'subscription.endDate'               : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label'],
+                                'subscription.manualCancellationDate': [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
+                                'subscription.isMultiYear'           : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
+                                'subscription.referenceYear'         : [field: 'sub.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label'],
+                                'subscription.status'                : [field: 'sub.status', label: 'Status', message: 'subscription.status.label'],
+                                'subscription.kind'                  : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label'],
+                                'subscription.form'                  : [field: 'sub.form', label: 'Form', message: 'subscription.form.label'],
+                                'subscription.resource'              : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
+                                'subscription.hasPerpetualAccess'    : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
+                                'subscription.hasPublishComponent'   : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
+                                'subscription.holdingSelection'      : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
+                                'subscription.uuid'                  : [field: 'sub.globalUID', label: 'Laser-UUID', message: null],
+                        ]
+                ]
+        ]
+    }
+
+    Map<String, Object> getDefaultExportSubscriptionMembersConfig() {
+        return [
+                subscription                  : [
+                        label  : 'Subscription',
+                        message: 'subscription.label',
+                        fields : [
+                                'subscription.name'                  : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
+                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true'],
+                                'subscription.startDate'             : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
+                                'subscription.endDate'               : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
+                                'subscription.manualCancellationDate': [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
+                                'subscription.isMultiYear'           : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label', defaultChecked: 'true'],
+                                'subscription.referenceYear'         : [field: 'sub.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label', defaultChecked: 'true'],
+                                'subscription.status'                : [field: 'sub.status', label: 'Status', message: 'subscription.status.label', defaultChecked: 'true'],
+                                'subscription.kind'                  : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label', defaultChecked: 'true'],
+                                'subscription.form'                  : [field: 'sub.form', label: 'Form', message: 'subscription.form.label', defaultChecked: 'true'],
+                                'subscription.resource'              : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
+                                'subscription.hasPerpetualAccess'    : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
+                                'subscription.hasPublishComponent'   : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
+                                'subscription.holdingSelection'      : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
+                                'subscription.notes'                 : [field: null, label: 'Notes', message: 'default.notes.label'],
+                                'subscription.notes.shared'          : [field: null, label: 'Shared notes', message: 'license.notes.shared'],
+                                'subscription.uuid'                  : [field: 'sub.globalUID', label: 'LAS:eR-UUID (Institution)', message: 'default.uuid.inst.label'],
+                        ]
+                ],
+                participant                   : [
+                        label  : 'Participant',
+                        message: 'surveyParticipants.label',
+                        fields : [
+                                'participant.sortname'                : [field: 'orgs.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                                'participant.name'                    : [field: 'orgs.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true'],
+                                'participant.funderType'              : [field: 'orgs.funderType', label: 'Funder Type', message: 'org.funderType.label'],
+                                'participant.funderHskType'           : [field: 'orgs.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+                                'participant.libraryType'             : [field: 'orgs.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                                'participant.url'                     : [field: 'orgs.url', label: 'URL', message: 'default.url.label'],
+                                'participant.legalPatronName'         : [field: 'orgs.legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
+                                'participant.urlGov'                  : [field: 'orgs.urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
+                                /*
+                            'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
+                            'participantContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
+                            'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
+                            'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
+                             */
+                                'participant.eInvoice'                : [field: 'orgs.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
+                                'participant.eInvoicePortal'          : [field: 'orgs.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
+                                'participant.linkResolverBaseURL'     : [field: 'orgs.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                                'participant.readerNumbers'           : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
+                                'participant.discoverySystemsFrontend': [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
+                                'participant.discoverySystemsIndex'   : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
+                                'participant.libraryNetwork'          : [field: 'orgs.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
+                                'participant.country'                 : [field: 'orgs.country', label: 'Country', message: 'org.country.label'],
+                                'participant.region'                  : [field: 'orgs.region', label: 'Region', message: 'org.region.label']
+                        ]
+                ],
+                participantContacts           : [
+                        label  : 'Contacts',
+                        message: 'org.contacts.label',
+                        subTabs: [],
+                        fields : [:]
+                ],
+                participantAddresses          : [
+                        label  : 'Addresses',
+                        message: 'org.addresses.label',
+                        fields : [:]
+                ],
+                participantAccessPoints       : [
+                        label  : 'Participants Access Points',
+                        message: 'exportClickMe.participantAccessPoints',
+                        fields : [
+                                'participant.exportIPs'        : [field: null, label: 'Export IPs', message: 'subscriptionDetails.members.exportIPs', separateSheet: 'true'],
+                                'participant.exportProxys'     : [field: null, label: 'Export Proxys', message: 'subscriptionDetails.members.exportProxys', separateSheet: 'true'],
+                                'participant.exportEZProxys'   : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateSheet: 'true'],
+                                'participant.exportShibboleths': [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
+                                'participant.exportMailDomains': [field: null, label: 'Export Mail Domains', message: 'subscriptionDetails.members.exportMailDomains', separateSheet: 'true'],
+                        ]
+                ],
+                participantIdentifiers        : [
+                        label  : 'Identifiers',
+                        message: 'exportClickMe.participantIdentifiers',
+                        fields : [:]
+                ],
+                participantCustomerIdentifiers: [
+                        label  : 'Customer Identifiers',
+                        message: 'exportClickMe.participantCustomerIdentifiers',
+                        fields : [:]
+                ],
+
+                participantSubProperties      : [
+                        label  : 'Properties',
+                        message: 'exportClickMe.participantSubProperties',
+                        fields : [:]
+                ],
+
+                participantSubCostItems       : [
+                        label  : 'Cost Items',
+                        message: 'subscription.costItems.label',
+                        fields : [
+                                'costItemsElements'                     : [:],
+                                'costItem.costTitle'                    : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
+                                'costItem.reference'                    : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
+                                'costItem.budgetCodes'                  : [field: 'costItem.budgetcodes.value', label: 'Budget Code', message: 'financials.budgetCode'],
+                                'costItem.costItemElementConfiguration' : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
+                                'costItem.costItemStatus'               : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
+                                'costItem.costInBillingCurrency'        : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
+                                'costItem.billingCurrency'              : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'default.currency.label'],
+                                'costItem.costInBillingCurrencyAfterTax': [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
+                                'costItem.currencyRate'                 : [field: 'costItem.currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
+                                'costItem.taxType'                      : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
+                                'costItem.taxRate'                      : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
+                                'costItem.costInLocalCurrency'          : [field: 'costItem.costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency'],
+                                'costItem.costInLocalCurrencyAfterTax'  : [field: 'costItem.costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax'],
+
+                                'costItem.datePaid'                     : [field: 'costItem.datePaid', label: 'Financial Year', message: 'financials.financialYear'],
+                                'costItem.financialYear'                : [field: 'costItem.financialYear', label: 'Date Paid', message: 'financials.datePaid'],
+                                'costItem.invoiceDate'                  : [field: 'costItem.invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
+                                'costItem.startDate'                    : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
+                                'costItem.endDate'                      : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
+
+                                'costItem.costDescription'              : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label'],
+                                'costItem.invoiceNumber'                : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
+                                'costItem.orderNumber'                  : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
+                                'costItem.pkg'                          : [field: 'costItem.pkg.name', label: 'Package Name', message: 'package.label'],
+                                'costItem.issueEntitlement'             : [field: 'costItem.issueEntitlement.tipp.name', label: 'Title', message: 'issueEntitlement.label'],
+                                'costItem.issueEntitlementGroup'        : [field: 'costItem.issueEntitlementGroup.name', label: 'Title Group Name', message: 'package.label'],
+                        ]
+                ],
+
+                providers                     : [
+                        label  : 'Provider',
+                        message: 'provider.label',
+                        fields : [
+                                'provider.sortname': [field: 'sub.providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
+                                'provider.name'    : [field: 'sub.providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true'],
+                                'provider.altnames': [field: 'sub.providers.altnames.name', label: 'Alternative Name', message: 'exportClickMe.provider.altnames'],
+                                'provider.url'     : [field: 'sub.providers.homepage', label: 'Homepage', message: 'exportClickMe.provider.url']
+                        ]
+                ],
+
+                vendor                        : [
+                        label  : 'Agency',
+                        message: 'vendor.label',
+                        fields : [
+                                'vendor.sortname': [field: 'sub.vendors.sortname', label: 'Sortname', message: 'exportClickMe.vendor.sortname'],
+                                'vendor.name'    : [field: 'sub.vendors.name', label: 'Name', message: 'exportClickMe.vendor.name', defaultChecked: 'true'],
+                                'vendor.altnames': [field: 'sub.vendors.altnames.name', label: 'Alternative Name', message: 'exportClickMe.vendor.altnames'],
+                                'vendor.url'     : [field: 'sub.vendors.homepage', label: 'Homepage', message: 'exportClickMe.vendor.url'],
+                        ]
+                ],
+
+        ]
+    }
+
+    Map<String, Object> getDefaultExportSubscriptionConfig(){
+        return [
+                subscription: [
+                        label: 'Subscription',
+                        message: 'subscription.label',
+                        fields: [
+                                'subscription.name'                         : [field: 'name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
+                                'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                                'subscription.startDate'                    : [field: 'startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
+                                'subscription.endDate'                      : [field: 'endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
+                                'subscription.manualCancellationDate'       : [field: 'manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
+                                'subscription.isMultiYear'                  : [field: 'isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label', defaultChecked: 'true'],
+                                'subscription.referenceYear'                : [field: 'referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label', defaultChecked: 'true'],
+                                //'subscription.isAutomaticRenewAnnually'     : [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'], //to be shown for PRO users only!
+                                'subscription.status'                       : [field: 'status', label: 'Status', message: 'subscription.status.label', defaultChecked: 'true'],
+                                'subscription.kind'                         : [field: 'kind', label: 'Kind', message: 'subscription.kind.label', defaultChecked: 'true'],
+                                'subscription.form'                         : [field: 'form', label: 'Form', message: 'subscription.form.label', defaultChecked: 'true'],
+                                'subscription.resource'                     : [field: 'resource', label: 'Resource', message: 'subscription.resource.label'],
+                                'subscription.hasPerpetualAccess'           : [field: 'hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
+                                'subscription.hasPublishComponent'          : [field: 'hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
+                                'subscription.holdingSelection'             : [field: 'holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
+                                'subscription.notes'                        : [field: null, label: 'Notes', message: 'default.notes.label'],
+                                'subscription.notes.shared'                 : [field: null, label: 'Notes', message: 'license.notes.shared'],
+                                'subscription.uuid'                         : [field: 'globalUID', label: 'Laser-UUID',  message: null],
+                        ]
+                ],
+
+                licenses: [
+                        label: 'License',
+                        message: 'license.label',
+                        fields: [
+                                'license.name'            : [field: 'licenses.reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true' ],
+                                'license.status'          : [field: 'licenses.status', label: 'Status', message: 'exportClickMe.license.status'],
+                                'license.licenseCategory' : [field: 'licenses.licenseCategory', label: 'License Category', message: 'license.licenseCategory.label'],
+                                'license.startDate'       : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
+                                'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
+                                'license.openEnded'       : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
+                                'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
+                                'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-UUID',  message: null],
+                        ]
+                ],
+
+                packages : [
+                        label: 'Packages',
+                        message: 'subscription.packages.label',
+                        fields: [
+                                'package.name' : [field: 'package.name', label: 'Name (Package)', message: 'exportClickMe.package.name'],
+                                'platform.name' : [field: 'package.nominalPlatform.name', label: 'Name (Platform)', message: 'exportClickMe.platform.name'],
+                                'platform.url'  : [field: 'providers.platforms.primaryUrl', label: 'Primary URL', message: 'platform.primaryURL'],
+                        ]
+                ],
+
+                institutions: [
+                        label: 'Consortium members',
+                        message: 'consortium.member.plural',
+                        fields: ['memberCount': [field: null, label: 'Count', message: 'default.count.label'],
+                                 'multiYearCount': [field: null, label: 'Count multi-year', message: 'default.count.multiYear.label']
+                        ]
+                ],
+
+                providers: [
+                        label: 'Provider',
+                        message: 'provider.label',
+                        fields: [
+                                'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
+                                'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
+                                'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
+                                'provider.url'               : [field: 'providers.homepage', label: 'Url', message: 'exportClickMe.provider.url']
+                        ]
+                ],
+
+                vendors: [
+                        label: 'Vendor',
+                        message: 'vendor.label',
+                        fields: [
+                                'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.vendor.sortname'],
+                                'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.vendor.name', defaultChecked: 'true' ],
+                                'vendor.altnames'          : [field: 'vendors.altnames.name', label: 'Alt Name', message: 'exportClickMe.vendor.altnames'],
+                                'vendor.url'               : [field: 'vendors.homepage', label: 'Url', message: 'exportClickMe.vendor.url'],
+                        ]
+                ],
+
+                participantIdentifiers : [
+                        label: 'Identifiers',
+                        message: 'exportClickMe.participantIdentifiers',
+                        fields: [:],
+
+                ],
+                participantCustomerIdentifiers : [
+                        label: 'Customer Identifier',
+                        message: 'exportClickMe.participantCustomerIdentifiers',
+                        fields: [:],
+
+                ],
+
+                subProperties : [
+                        label: 'Public properties',
+                        message: 'default.properties',
+                        fields: [:]
+                ],
+
+                mySubProperties : [
+                        label: 'My properties',
+                        message: 'default.properties.my',
+                        fields: [:]
+                ],
+
+                subCostItems : [
+                        label: 'Cost Items',
+                        message: 'subscription.costItems.label',
+                        subTabs: [],
+                        fields: [
+                                'costItemsElements' : [:],
+                                /*
+                                        'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
+                                        'costItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
+                                        'costItem.budgetCodes'                      : [field: 'costItem.budgetcodes.value', label: 'Budget Code', message: 'financials.budgetCode'],
+                                        'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
+                                        'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
+                                        'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
+                                        'costItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'default.currency.label'],
+                                        'costItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
+                                        'costItem.currencyRate'                     : [field: 'costItem.currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
+                                        'costItem.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
+                                        'costItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
+                                        'costItem.costInLocalCurrency'              : [field: 'costItem.costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency'],
+                                        'costItem.costInLocalCurrencyAfterTax'      : [field: 'costItem.costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax'],
+
+                                        'costItem.datePaid'                         : [field: 'costItem.datePaid', label: 'Financial Year', message: 'financials.financialYear'],
+                                        'costItem.financialYear'                    : [field: 'costItem.financialYear', label: 'Date Paid', message: 'financials.datePaid'],
+                                        'costItem.invoiceDate'                      : [field: 'costItem.invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
+                                        'costItem.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
+                                        'costItem.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
+
+                                        'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label'],
+                                        'costItem.invoiceNumber'                    : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
+                                        'costItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number']
+                                */
+                        ]
+                ]
+        ]
+
+    }
+
+    Map<String, Object> getDefaultExportSubscriptionSupportConfig(){
+        return [
+                subscription: [
+                        label: 'Subscription',
+                        message: 'subscription.label',
+                        fields: [
+                                'subscription.name'                         : [field: 'name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
+                                'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                                'subscription.startDate'                    : [field: 'startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
+                                'subscription.endDate'                      : [field: 'endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
+                                'subscription.manualCancellationDate'       : [field: 'manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
+                                'subscription.isMultiYear'                  : [field: 'isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label', defaultChecked: 'true'],
+                                'subscription.referenceYear'                : [field: 'referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label', defaultChecked: 'true'],
+                                //'subscription.isAutomaticRenewAnnually'     : [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'], //to be shown for PRO users only!
+                                'subscription.status'                       : [field: 'status', label: 'Status', message: 'subscription.status.label', defaultChecked: 'true'],
+                                'subscription.kind'                         : [field: 'kind', label: 'Kind', message: 'subscription.kind.label', defaultChecked: 'true'],
+                                'subscription.form'                         : [field: 'form', label: 'Form', message: 'subscription.form.label', defaultChecked: 'true'],
+                                'subscription.resource'                     : [field: 'resource', label: 'Resource', message: 'subscription.resource.label'],
+                                'subscription.notes'                        : [field: null, label: 'Notes', message: 'default.notes.label'],
+                                'subscription.notes.shared'                 : [field: null, label: 'Notes', message: 'license.notes.shared'],
+                                'subscription.uuid'                         : [field: 'globalUID', label: 'Laser-UUID',  message: null],
+                        ]
+                ],
+
+                licenses: [
+                        label: 'License',
+                        message: 'license.label',
+                        fields: [
+                                'license.name'            : [field: 'licenses.reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true' ],
+                                'license.status'          : [field: 'licenses.status', label: 'Status', message: 'exportClickMe.license.status'],
+                                'license.licenseCategory' : [field: 'licenses.licenseCategory', label: 'License Category', message: 'license.licenseCategory.label'],
+                                'license.startDate'       : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
+                                'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
+                                'license.openEnded'       : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
+                                'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
+                                'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-UUID',  message: null],
+                        ]
+                ],
+
+                institutions: [
+                        label: 'Consortium members',
+                        message: 'consortium.member.plural',
+                        fields: [
+                                'memberCount':      [field: null, label: 'Count', message: 'default.count.label'],
+                                'multiYearCount':   [field: null, label: 'Count multi-year', message: 'default.count.multiYear.label']
+                        ]
+                ],
+
+                participantIdentifiers : [
+                        label: 'Identifiers',
+                        message: 'exportClickMe.participantIdentifiers',
+                        fields: [:],
+                ],
+                participantCustomerIdentifiers : [
+                        label: 'Customer Identifier',
+                        message: 'exportClickMe.participantCustomerIdentifiers',
+                        fields: [:],
+                ],
+
+                subProperties : [
+                        label: 'Public properties',
+                        message: 'default.properties',
+                        fields: [:]
+                ],
+
+                mySubProperties : [
+                        label: 'My properties',
+                        message: 'default.properties.my',
+                        fields: [:]
+                ],
+
+                subCostItems : [
+                        label: 'Cost Items',
+                        message: 'subscription.costItems.label',
+                        subTabs: [],
+                        fields: [
+                                'costItemsElements' : [:],
+                                /*
+                                        'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
+                                        'costItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
+                                        'costItem.budgetCodes'                      : [field: 'costItem.budgetcodes.value', label: 'Budget Code', message: 'financials.budgetCode'],
+                                        'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
+                                        'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
+                                        'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
+                                        'costItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'default.currency.label'],
+                                        'costItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
+                                        'costItem.currencyRate'                     : [field: 'costItem.currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
+                                        'costItem.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
+                                        'costItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
+                                        'costItem.costInLocalCurrency'              : [field: 'costItem.costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency'],
+                                        'costItem.costInLocalCurrencyAfterTax'      : [field: 'costItem.costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax'],
+
+                                        'costItem.datePaid'                         : [field: 'costItem.datePaid', label: 'Financial Year', message: 'financials.financialYear'],
+                                        'costItem.financialYear'                    : [field: 'costItem.financialYear', label: 'Date Paid', message: 'financials.datePaid'],
+                                        'costItem.invoiceDate'                      : [field: 'costItem.invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
+                                        'costItem.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
+                                        'costItem.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
+
+                                        'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label'],
+                                        'costItem.invoiceNumber'                    : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
+                                        'costItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number']
+                                */
+                        ]
+                ]
+        ]
+    }
+
+    Map<String, Object> getDefaultExportConsortiaParticipationsConfig() {
+        return [
+                subscription: [
+                        label: 'Subscription',
+                        message: 'subscription.label',
+                        fields: [
+                                'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
+                                'subscription.altnames'                     : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                                'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
+                                'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
+                                'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
+                                'subscription.isMultiYear'                  : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label', defaultChecked: 'true'],
+                                'subscription.referenceYear'                : [field: 'sub.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label', defaultChecked: 'true'],
+                                'subscription.status'                       : [field: 'sub.status', label: 'Status', message: 'subscription.status.label', defaultChecked: 'true'],
+                                'subscription.kind'                         : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label', defaultChecked: 'true'],
+                                'subscription.form'                         : [field: 'sub.form', label: 'Form', message: 'subscription.form.label', defaultChecked: 'true'],
+                                'subscription.resource'                     : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
+                                'subscription.hasPerpetualAccess'           : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
+                                'subscription.hasPublishComponent'          : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
+                                'subscription.holdingSelection'             : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
+                                'subscription.notes'                        : [field: null, label: 'Notes', message: 'default.notes.label'],
+                                'subscription.notes.shared'                 : [field: null, label: 'Notes', message: 'license.notes.shared'],
+                                'subscription.uuid'                         : [field: 'sub.globalUID', label: 'Laser-UUID',  message: null],
+                        ]
+                ],
+
+                licenses: [
+                        label: 'License',
+                        message: 'license.label',
+                        fields: [
+                                'license.name'            : [field: 'licenses.reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true' ],
+                                'license.status'          : [field: 'licenses.status', label: 'Status', message: 'exportClickMe.license.status'],
+                                'license.licenseCategory' : [field: 'licenses.licenseCategory', label: 'License Category', message: 'license.licenseCategory.label'],
+                                'license.startDate'       : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
+                                'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
+                                'license.openEnded'       : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
+                                'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
+                                'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-UUID',  message: null],
+                        ]
+                ],
+
+                participant : [
+                        label: 'Participant',
+                        message: 'surveyParticipants.label',
+                        fields: [
+                                'participant.sortname'          : [field: 'orgs.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                                'participant.name'              : [field: 'orgs.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                                'participant.funderType'        : [field: 'orgs.funderType', label: 'Funder Type', message: 'org.funderType.label'],
+                                'participant.funderHskType'     : [field: 'orgs.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+                                'participant.libraryType'       : [field: 'orgs.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                                'participant.url'               : [field: 'orgs.url', label: 'URL', message: 'default.url.label'],
+                                'participant.legalPatronName'   : [field: 'orgs.legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
+                                'participant.urlGov'            : [field: 'orgs.urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
+                                /*
+                                'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
+                                'participantContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
+                                'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
+                                'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
+                                 */
+                                'participant.eInvoice'          : [field: 'orgs.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
+                                'participant.eInvoicePortal'    : [field: 'orgs.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
+                                'participant.linkResolverBaseURL'    : [field: 'orgs.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
                                 'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                                 'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
                                 'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
-                                'participant.uuid'              : [field: 'participant.globalUID', label: 'Laser-UUID',  message: null],
-                                'participant.libraryNetwork'    : [field: 'participant.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
-                                'participant.country'           : [field: 'participant.country', label: 'Country', message: 'org.country.label'],
-                                'participant.region'            : [field: 'participant.region', label: 'Region', message: 'org.region.label']
-                            ]
-                    ],
-                    participantContacts : [
-                            label: 'Contacts',
-                            message: 'org.contacts.label',
-                            subTabs: [],
-                            fields: [:]
-                    ],
-                    participantAddresses : [
-                            label: 'Addresses',
-                            message: 'org.addresses.label',
-                            fields: [:]
-                    ],
-                    participantAccessPoints : [
-                            label: 'Participants Access Points',
-                            message: 'exportClickMe.participantAccessPoints',
-                            fields: [
-                                    'participant.exportIPs'         : [field: null, label: 'Export IPs', message: 'subscriptionDetails.members.exportIPs', separateSheet: 'true'],
-                                    'participant.exportProxys'      : [field: null, label: 'Export Proxys', message: 'subscriptionDetails.members.exportProxys', separateSheet: 'true'],
-                                    'participant.exportEZProxys'    : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateSheet: 'true'],
-                                    'participant.exportShibboleths' : [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
-                                    'participant.exportMailDomains' : [field: null, label: 'Export Mail Domains', message: 'subscriptionDetails.members.exportMailDomains', separateSheet: 'true'],
-                            ]
-                    ],
-                    participantIdentifiers : [
-                            label: 'Identifiers',
-                            message: 'exportClickMe.participantIdentifiers',
-                            fields: [:],
+                                'participant.libraryNetwork'    : [field: 'orgs.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
+                                'participant.country'           : [field: 'orgs.country', label: 'Country', message: 'org.country.label'],
+                                'participant.region'            : [field: 'orgs.region', label: 'Region', message: 'org.region.label']
+                        ]
+                ],
 
-                    ],
-                    participantCustomerIdentifiers : [
-                            label: 'Customer Identifier',
-                            message: 'exportClickMe.participantCustomerIdentifiers',
-                            fields: [:],
+                participantIdentifiers : [
+                        label: 'Identifiers',
+                        message: 'exportClickMe.participantIdentifiers',
+                        fields: [:],
 
-                    ],
+                ],
+                participantCustomerIdentifiers : [
+                        label: 'Customer Identifier',
+                        message: 'exportClickMe.participantCustomerIdentifiers',
+                        fields: [:],
 
-                    subscription: [
-                            label: 'Subscription',
-                            message: 'subscription.label',
-                            fields: [
-                                    'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label'],
-                                    'subscription.altnames'                     : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
-                                    'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
-                                    'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label'],
-                                    'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
-                                    'subscription.isMultiYear'                  : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
-                                    'subscription.referenceYear'                : [field: 'sub.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label'],
-                                    'subscription.status'                       : [field: 'sub.status', label: 'Status', message: 'subscription.status.label'],
-                                    'subscription.kind'                         : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label'],
-                                    'subscription.form'                         : [field: 'sub.form', label: 'Form', message: 'subscription.form.label'],
-                                    'subscription.resource'                     : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
-                                    'subscription.hasPerpetualAccess'           : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
-                                    'subscription.hasPublishComponent'          : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
-                                    'subscription.holdingSelection'             : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
-                                    'subscription.uuid'                         : [field: 'sub.globalUID', label: 'Laser-UUID',  message: null],
-                                    ]
-                    ]
-    ]
+                ],
 
-    static Map<String, Object> EXPORT_SUBSCRIPTION_MEMBERS_CONFIG = [
-            subscription: [
-                    label: 'Subscription',
-                    message: 'subscription.label',
-                    fields: [
-                            'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                            'subscription.altnames'                     : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
-                            'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
-                            'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
-                            'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
-                            'subscription.isMultiYear'                  : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label', defaultChecked: 'true'],
-                            'subscription.referenceYear'                : [field: 'sub.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label', defaultChecked: 'true'],
-                            'subscription.status'                       : [field: 'sub.status', label: 'Status', message: 'subscription.status.label', defaultChecked: 'true'],
-                            'subscription.kind'                         : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label', defaultChecked: 'true'],
-                            'subscription.form'                         : [field: 'sub.form', label: 'Form', message: 'subscription.form.label', defaultChecked: 'true'],
-                            'subscription.resource'                     : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
-                            'subscription.hasPerpetualAccess'           : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
-                            'subscription.hasPublishComponent'          : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
-                            'subscription.holdingSelection'             : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
-                            'subscription.notes'                        : [field: null, label: 'Notes', message: 'default.notes.label'],
-                            'subscription.notes.shared'                 : [field: null, label: 'Shared notes', message: 'license.notes.shared'],
-                            'subscription.uuid'                         : [field: 'sub.globalUID', label: 'LAS:eR-UUID (Institution)',  message: 'default.uuid.inst.label'],
-                    ]
-            ],
-            participant : [
-                    label: 'Participant',
-                    message: 'surveyParticipants.label',
-                    fields: [
-                            'participant.sortname'          : [field: 'orgs.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                            'participant.name'              : [field: 'orgs.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'participant.funderType'        : [field: 'orgs.funderType', label: 'Funder Type', message: 'org.funderType.label'],
-                            'participant.funderHskType'     : [field: 'orgs.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
-                            'participant.libraryType'       : [field: 'orgs.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
-                            'participant.url'               : [field: 'orgs.url', label: 'URL', message: 'default.url.label'],
-                            'participant.legalPatronName'   : [field: 'orgs.legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
-                            'participant.urlGov'            : [field: 'orgs.urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
-                            /*
+                packages : [
+                        label: 'Packages',
+                        message: 'subscription.packages.label',
+                        fields: [
+                                'package.name' : [field: 'package.name', label: 'Name (Package)', message: 'exportClickMe.package.name'],
+                                'platform.name' : [field: 'package.nominalPlatform.name', label: 'Name (Platform)', message: 'exportClickMe.platform.name'],
+                                'platform.url'  : [field: 'providers.platforms.primaryUrl', label: 'Primary URL', message: 'platform.primaryURL'],
+                        ]
+                ],
+
+                providers: [
+                        label: 'Provider',
+                        message: 'provider.label',
+                        fields: [
+                                'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
+                                'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
+                                'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
+                                'provider.url'               : [field: 'providers.homepage', label: 'Url', message: 'exportClickMe.provider.url']
+                        ]
+                ],
+
+                vendors: [
+                        label: 'Vendor',
+                        message: 'vendor.label',
+                        fields: [
+                                'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.vendor.sortname'],
+                                'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.vendor.name', defaultChecked: 'true' ],
+                                'vendor.url'               : [field: 'vendors.homepage', label: 'Url', message: 'exportClickMe.vendor.url'],
+                        ]
+                ],
+
+                participantContacts : [
+                        label: 'Contacts',
+                        message: 'org.contacts.label',
+                        subTabs: [],
+                        fields: [:]
+                ],
+
+                participantAddresses : [
+                        label: 'Addresses',
+                        message: 'org.addresses.label',
+                        fields: [:]
+                ],
+
+                subProperties : [
+                        label: 'Public properties',
+                        message: 'default.properties',
+                        fields: [:]
+                ],
+
+                mySubProperties : [
+                        label: 'My properties',
+                        message: 'default.properties.my',
+                        fields: [:]
+                ],
+
+                subCostItems : [
+                        label: 'Cost Items',
+                        message: 'subscription.costItems.label',
+                        subTabs: [],
+                        fields: [
+                                'costItemsElements' : [:]
+                        ]
+                ]
+        ]
+    }
+
+    Map<String, Object> getDefaultExportConsortiaParticipationsSupportConfig() {
+        return [
+                subscription                  : [
+                        label  : 'Subscription',
+                        message: 'subscription.label',
+                        fields : [
+                                'subscription.name'                  : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
+                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true'],
+                                'subscription.startDate'             : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
+                                'subscription.endDate'               : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
+                                'subscription.manualCancellationDate': [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
+                                'subscription.isMultiYear'           : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label', defaultChecked: 'true'],
+                                'subscription.referenceYear'         : [field: 'sub.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label', defaultChecked: 'true'],
+                                'subscription.status'                : [field: 'sub.status', label: 'Status', message: 'subscription.status.label', defaultChecked: 'true'],
+                                'subscription.kind'                  : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label', defaultChecked: 'true'],
+                                'subscription.form'                  : [field: 'sub.form', label: 'Form', message: 'subscription.form.label', defaultChecked: 'true'],
+                                'subscription.resource'              : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
+                                'subscription.notes'                 : [field: null, label: 'Notes', message: 'default.notes.label'],
+                                'subscription.notes.shared'          : [field: null, label: 'Notes', message: 'license.notes.shared'],
+                                'subscription.uuid'                  : [field: 'sub.globalUID', label: 'Laser-UUID', message: null],
+                        ]
+                ],
+
+                licenses                      : [
+                        label  : 'License',
+                        message: 'license.label',
+                        fields : [
+                                'license.name'           : [field: 'licenses.reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true'],
+                                'license.status'         : [field: 'licenses.status', label: 'Status', message: 'exportClickMe.license.status'],
+                                'license.licenseCategory': [field: 'licenses.licenseCategory', label: 'License Category', message: 'license.licenseCategory.label'],
+                                'license.startDate'      : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
+                                'license.endDate'        : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
+                                'license.openEnded'      : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
+                                'license.notes'          : [field: null, label: 'Notes', message: 'default.notes.label'],
+                                'license.uuid'           : [field: 'licenses.globalUID', label: 'Laser-UUID', message: null],
+                        ]
+                ],
+
+                participant                   : [
+                        label  : 'Participant',
+                        message: 'surveyParticipants.label',
+                        fields : [
+                                'participant.sortname'           : [field: 'orgs.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                                'participant.name'               : [field: 'orgs.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true'],
+                                'participant.funderType'         : [field: 'orgs.funderType', label: 'Funder Type', message: 'org.funderType.label'],
+                                'participant.funderHskType'      : [field: 'orgs.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+                                'participant.libraryType'        : [field: 'orgs.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                                'participant.url'                : [field: 'orgs.url', label: 'URL', message: 'default.url.label'],
+                                'participant.legalPatronName'    : [field: 'orgs.legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
+                                'participant.urlGov'             : [field: 'orgs.urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
+                                /*
                             'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
                             'participantContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
                             'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
                             'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
                              */
-                            'participant.eInvoice'          : [field: 'orgs.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
-                            'participant.eInvoicePortal'    : [field: 'orgs.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
-                            'participant.linkResolverBaseURL'    : [field: 'orgs.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
-                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
-                            'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
-                            'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
-                            'participant.libraryNetwork'    : [field: 'orgs.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
-                            'participant.country'           : [field: 'orgs.country', label: 'Country', message: 'org.country.label'],
-                            'participant.region'            : [field: 'orgs.region', label: 'Region', message: 'org.region.label']
-                    ]
-            ],
-            participantContacts : [
-                    label: 'Contacts',
-                    message: 'org.contacts.label',
-                    subTabs: [],
-                    fields: [:]
-            ],
-            participantAddresses : [
-                    label: 'Addresses',
-                    message: 'org.addresses.label',
-                    fields: [:]
-            ],
-            participantAccessPoints : [
-                    label: 'Participants Access Points',
-                    message: 'exportClickMe.participantAccessPoints',
-                    fields: [
-                            'participant.exportIPs'         : [field: null, label: 'Export IPs', message: 'subscriptionDetails.members.exportIPs', separateSheet: 'true'],
-                            'participant.exportProxys'      : [field: null, label: 'Export Proxys', message: 'subscriptionDetails.members.exportProxys', separateSheet: 'true'],
-                            'participant.exportEZProxys'    : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateSheet: 'true'],
-                            'participant.exportShibboleths' : [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
-                            'participant.exportMailDomains' : [field: null, label: 'Export Mail Domains', message: 'subscriptionDetails.members.exportMailDomains', separateSheet: 'true'],
-                    ]
-            ],
-            participantIdentifiers : [
-                    label: 'Identifiers',
-                    message: 'exportClickMe.participantIdentifiers',
-                    fields: [:]
-            ],
-            participantCustomerIdentifiers : [
-                    label: 'Customer Identifiers',
-                    message: 'exportClickMe.participantCustomerIdentifiers',
-                    fields: [:]
-            ],
+                                'participant.eInvoice'           : [field: 'orgs.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
+                                'participant.eInvoicePortal'     : [field: 'orgs.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
+                                'participant.linkResolverBaseURL': [field: 'orgs.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                                'participant.readerNumbers'      : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
+                                'participant.libraryNetwork'     : [field: 'orgs.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
+                                'participant.country'            : [field: 'orgs.country', label: 'Country', message: 'org.country.label'],
+                                'participant.region'             : [field: 'orgs.region', label: 'Region', message: 'org.region.label']
+                        ]
+                ],
 
-            participantSubProperties : [
-                    label: 'Properties',
-                    message: 'exportClickMe.participantSubProperties',
-                    fields: [:]
-            ],
+                participantIdentifiers        : [
+                        label  : 'Identifiers',
+                        message: 'exportClickMe.participantIdentifiers',
+                        fields : [:],
 
-            participantSubCostItems : [
-                    label: 'Cost Items',
-                    message: 'subscription.costItems.label',
-                    fields: [
-                            'costItemsElements' : [:],
-                            'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
-                            'costItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
-                            'costItem.budgetCodes'                      : [field: 'costItem.budgetcodes.value', label: 'Budget Code', message: 'financials.budgetCode'],
-                            'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
-                            'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
-                            'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
-                            'costItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'default.currency.label'],
-                            'costItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
-                            'costItem.currencyRate'                     : [field: 'costItem.currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
-                            'costItem.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
-                            'costItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
-                            'costItem.costInLocalCurrency'              : [field: 'costItem.costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency'],
-                            'costItem.costInLocalCurrencyAfterTax'      : [field: 'costItem.costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax'],
+                ],
+                participantCustomerIdentifiers: [
+                        label  : 'Customer Identifier',
+                        message: 'exportClickMe.participantCustomerIdentifiers',
+                        fields : [:],
 
-                            'costItem.datePaid'                         : [field: 'costItem.datePaid', label: 'Financial Year', message: 'financials.financialYear'],
-                            'costItem.financialYear'                    : [field: 'costItem.financialYear', label: 'Date Paid', message: 'financials.datePaid'],
-                            'costItem.invoiceDate'                      : [field: 'costItem.invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
-                            'costItem.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
-                            'costItem.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
+                ],
 
-                            'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label'],
-                            'costItem.invoiceNumber'                    : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
-                            'costItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
-                            'costItem.pkg'                              : [field: 'costItem.pkg.name', label: 'Package Name', message: 'package.label'],
-                            'costItem.issueEntitlement'                 : [field: 'costItem.issueEntitlement.tipp.name', label: 'Title', message: 'issueEntitlement.label'],
-                            'costItem.issueEntitlementGroup'            : [field: 'costItem.issueEntitlementGroup.name', label: 'Title Group Name', message: 'package.label'],
-                    ]
-            ],
+                participantContacts           : [
+                        label  : 'Contacts',
+                        message: 'org.contacts.label',
+                        subTabs: [],
+                        fields : [:]
+                ],
 
-            providers: [
-                    label: 'Provider',
-                    message: 'provider.label',
-                    fields: [
-                            'provider.sortname'          : [field: 'sub.providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
-                            'provider.name'              : [field: 'sub.providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
-                            'provider.altnames'          : [field: 'sub.providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
-                            'provider.url'               : [field: 'sub.providers.url', label: 'Url', message: 'exportClickMe.provider.url']
-                    ]
-            ],
+                participantAddresses          : [
+                        label  : 'Addresses',
+                        message: 'org.addresses.label',
+                        fields : [:]
+                ],
 
-            vendor: [
-                    label: 'Agency',
-                    message: 'vendor.label',
-                    fields: [
-                            'vendor.sortname'          : [field: 'sub.vendors.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
-                            'vendor.name'              : [field: 'sub.vendors.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
-                            'vendor.url'               : [field: 'sub.vendors.homepage', label: 'Url', message: 'exportClickMe.agency.url'],
-                    ]
-            ],
+                subProperties                 : [
+                        label  : 'Public properties',
+                        message: 'default.properties',
+                        fields : [:]
+                ],
 
-    ]
+                mySubProperties               : [
+                        label  : 'My properties',
+                        message: 'default.properties.my',
+                        fields : [:]
+                ],
 
-    static Map<String, Object> EXPORT_SUBSCRIPTION_CONFIG = [
-            subscription: [
-                    label: 'Subscription',
-                    message: 'subscription.label',
-                    fields: [
-                            'subscription.name'                         : [field: 'name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                            'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
-                            'subscription.startDate'                    : [field: 'startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
-                            'subscription.endDate'                      : [field: 'endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
-                            'subscription.manualCancellationDate'       : [field: 'manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
-                            'subscription.isMultiYear'                  : [field: 'isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label', defaultChecked: 'true'],
-                            'subscription.referenceYear'                : [field: 'referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label', defaultChecked: 'true'],
-                            //'subscription.isAutomaticRenewAnnually'     : [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'], //to be shown for PRO users only!
-                            'subscription.status'                       : [field: 'status', label: 'Status', message: 'subscription.status.label', defaultChecked: 'true'],
-                            'subscription.kind'                         : [field: 'kind', label: 'Kind', message: 'subscription.kind.label', defaultChecked: 'true'],
-                            'subscription.form'                         : [field: 'form', label: 'Form', message: 'subscription.form.label', defaultChecked: 'true'],
-                            'subscription.resource'                     : [field: 'resource', label: 'Resource', message: 'subscription.resource.label'],
-                            'subscription.hasPerpetualAccess'           : [field: 'hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
-                            'subscription.hasPublishComponent'          : [field: 'hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
-                            'subscription.holdingSelection'             : [field: 'holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
-                            'subscription.notes'                        : [field: null, label: 'Notes', message: 'default.notes.label'],
-                            'subscription.notes.shared'                 : [field: null, label: 'Notes', message: 'license.notes.shared'],
-                            'subscription.uuid'                         : [field: 'globalUID', label: 'Laser-UUID',  message: null],
-                    ]
-            ],
+                subCostItems                  : [
+                        label  : 'Cost Items',
+                        message: 'subscription.costItems.label',
+                        subTabs: [],
+                        fields : [
+                                'costItemsElements': [:]
+                        ]
+                ]
+        ]
+    }
 
-            licenses: [
-                    label: 'License',
-                    message: 'license.label',
-                    fields: [
-                            'license.name'            : [field: 'licenses.reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true' ],
-                            'license.status'          : [field: 'licenses.status', label: 'Status', message: 'exportClickMe.license.status'],
-                            'license.licenseCategory' : [field: 'licenses.licenseCategory', label: 'License Category', message: 'license.licenseCategory.label'],
-                            'license.startDate'       : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
-                            'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
-                            'license.openEnded'       : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
-                            'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
-                            'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-UUID',  message: null],
-                    ]
-            ],
+    Map<String, Object> getDefaultExportSubscriptionTransferConfig(){
+        return [
+                subscriptionTransfer: [
+                        label: 'Transfer',
+                        message: 'subscription.details.subTransfer.label',
+                        fields: [
+                                'subscription.offerRequested'                : [field: 'offerRequested', label: 'Offer Requested', message: 'subscription.offerRequested.label', defaultChecked: 'true' ],
+                                'subscription.offerRequestedDate'            : [field: 'offerRequestedDate', label: 'Offer Requested Date', message: 'subscription.offerRequestedDate.label', defaultChecked: 'true' ],
+                                'subscription.offerNote'                     : [field: 'offerNote', label: 'Offer Note', message: 'subscription.offerNote.label', defaultChecked: 'true' ],
+                                'subscription.offerAccepted'                 : [field: 'offerAccepted', label: 'Offer Accepted', message: 'subscription.offerAccepted.label', defaultChecked: 'true' ],
+                                'subscription.priceIncreaseInfo'             : [field: 'priceIncreaseInfo', label: 'Price Increase Info', message: 'subscription.priceIncreaseInfo.label', defaultChecked: 'true' ],
+                                'subscription.survey'                        : [field: null, label: 'Survey', message: 'survey.label', defaultChecked: 'true' ],
+                                'subscription.survey.evaluation'             : [field: null, label: 'Evaluation', message: 'subscription.survey.evaluation.label', defaultChecked: 'true' ],
+                                'subscription.survey.cancellation'           : [field: null, label: 'Cancellation', message: 'subscription.survey.cancellation.label', defaultChecked: 'true' ],
+                                'subscription.discountScale'                 : [field: 'discountScale', label: 'Discount Scale', message: 'subscription.discountScale.label', defaultChecked: 'true' ],
+                                'subscription.reminderSent'                  : [field: 'reminderSent', label: 'Reminder Sent', message: 'subscription.reminderSent.label', defaultChecked: 'true' ],
+                                'subscription.reminderSentDate'              : [field: 'reminderSentDate', label: 'Reminder Sent Date', message: 'subscription.reminderSentDate.label', defaultChecked: 'true' ],
+                                'subscription.renewalSent'                   : [field: 'renewalSent', label: 'Renewal Sent', message: 'subscription.renewalSent.label', defaultChecked: 'true' ],
+                                'subscription.renewalSentDate'               : [field: 'renewalSentDate', label: 'Renewal Sent Date', message: 'subscription.renewalSentDate.label', defaultChecked: 'true' ],
+                                'subscription.renewalChanges'               : [field: null, label: 'Renewal Changes', message: 'default.change.label', defaultChecked: 'true' ],
+                                'subscription.participantTransferWithSurvey' : [field: 'participantTransferWithSurvey', label: 'Participant Transfe With Survey', message: 'subscription.participantTransferWithSurvey.label', defaultChecked: 'true' ],
+                        ]
+                ],
+        ]
+    }
 
-            packages : [
-                    label: 'Packages',
-                    message: 'subscription.packages.label',
-                    fields: [
-                            'package.name' : [field: 'package.name', label: 'Name (Package)', message: 'exportClickMe.package.name'],
-                            'platform.name' : [field: 'package.nominalPlatform.name', label: 'Name (Platform)', message: 'exportClickMe.platform.name'],
-                            'platform.url'  : [field: 'providers.platforms.primaryUrl', label: 'Primary URL', message: 'platform.primaryURL'],
-                    ]
-            ],
+    Map<String, Object> getDefaultExportLicenseConfig() {
+        return [
+                licenses              : [
+                        label  : 'License',
+                        message: 'license.label',
+                        fields : [
+                                'license.reference'      : [field: 'reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true'],
+                                'license.altnames'       : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true'],
+                                'license.status'         : [field: 'status', label: 'Status', message: 'exportClickMe.license.status', defaultChecked: 'true'],
+                                'license.licenseCategory': [field: 'licenseCategory', label: 'License Category', message: 'license.licenseCategory.label', defaultChecked: 'true'],
+                                'license.startDate'      : [field: 'startDate', label: 'Start Date', message: 'exportClickMe.license.startDate', defaultChecked: 'true'],
+                                'license.endDate'        : [field: 'endDate', label: 'End Date', message: 'exportClickMe.license.endDate', defaultChecked: 'true'],
+                                'license.openEnded'      : [field: 'openEnded', label: 'Open Ended', message: 'license.openEnded.label', defaultChecked: 'true'],
+                                'license.notes'          : [field: null, label: 'Notes', message: 'default.notes.label'],
+                                'license.notes.shared'   : [field: null, label: 'Notes', message: 'license.notes.shared'],
+                                'license.uuid'           : [field: 'globalUID', label: 'Laser-UUID', message: null],
+                                'subscription.name'      : [field: 'subscription.name', label: 'Name', message: 'license.details.linked_subs', defaultChecked: 'true']
+                        ]
+                ],
 
-            institutions: [
-                    label: 'Consortium members',
-                    message: 'consortium.member.plural',
-                    fields: ['memberCount': [field: null, label: 'Count', message: 'default.count.label'],
-                             'multiYearCount': [field: null, label: 'Count multi-year', message: 'default.count.multiYear.label']
-                    ]
-            ],
-
-            providers: [
-                    label: 'Provider',
-                    message: 'provider.label',
-                    fields: [
-                            'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
-                            'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
-                            'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
-                            'provider.url'               : [field: 'providers.url', label: 'Url', message: 'exportClickMe.provider.url']
-                    ]
-            ],
-
-            vendors: [
-                    label: 'Vendor',
-                    message: 'vendor.label',
-                    fields: [
-                            'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
-                            'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
-                            'vendor.altnames'          : [field: 'vendors.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
-                            'vendor.url'               : [field: 'vendors.url', label: 'Url', message: 'exportClickMe.agency.url'],
-                    ]
-            ],
-
-            participantIdentifiers : [
-                    label: 'Identifiers',
-                    message: 'exportClickMe.participantIdentifiers',
-                    fields: [:],
-
-            ],
-            participantCustomerIdentifiers : [
-                    label: 'Customer Identifier',
-                    message: 'exportClickMe.participantCustomerIdentifiers',
-                    fields: [:],
-
-            ],
-
-            subProperties : [
-                    label: 'Public properties',
-                    message: 'default.properties',
-                    fields: [:]
-            ],
-
-            mySubProperties : [
-                    label: 'My properties',
-                    message: 'default.properties.my',
-                    fields: [:]
-            ],
-
-            subCostItems : [
-                    label: 'Cost Items',
-                    message: 'subscription.costItems.label',
-                    subTabs: [],
-                    fields: [
-                            'costItemsElements' : [:],
-                    /*
-                            'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
-                            'costItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
-                            'costItem.budgetCodes'                      : [field: 'costItem.budgetcodes.value', label: 'Budget Code', message: 'financials.budgetCode'],
-                            'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
-                            'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
-                            'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
-                            'costItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'default.currency.label'],
-                            'costItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
-                            'costItem.currencyRate'                     : [field: 'costItem.currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
-                            'costItem.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
-                            'costItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
-                            'costItem.costInLocalCurrency'              : [field: 'costItem.costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency'],
-                            'costItem.costInLocalCurrencyAfterTax'      : [field: 'costItem.costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax'],
-
-                            'costItem.datePaid'                         : [field: 'costItem.datePaid', label: 'Financial Year', message: 'financials.financialYear'],
-                            'costItem.financialYear'                    : [field: 'costItem.financialYear', label: 'Date Paid', message: 'financials.datePaid'],
-                            'costItem.invoiceDate'                      : [field: 'costItem.invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
-                            'costItem.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
-                            'costItem.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
-
-                            'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label'],
-                            'costItem.invoiceNumber'                    : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
-                            'costItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number']
-                    */
-                    ]
-            ]
-    ]
-
-    static Map<String, Object> EXPORT_SUBSCRIPTION_SUPPORT_CONFIG = [
-            subscription: [
-                    label: 'Subscription',
-                    message: 'subscription.label',
-                    fields: [
-                            'subscription.name'                         : [field: 'name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                            'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
-                            'subscription.startDate'                    : [field: 'startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
-                            'subscription.endDate'                      : [field: 'endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
-                            'subscription.manualCancellationDate'       : [field: 'manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
-                            'subscription.isMultiYear'                  : [field: 'isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label', defaultChecked: 'true'],
-                            'subscription.referenceYear'                : [field: 'referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label', defaultChecked: 'true'],
-                            //'subscription.isAutomaticRenewAnnually'     : [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'], //to be shown for PRO users only!
-                            'subscription.status'                       : [field: 'status', label: 'Status', message: 'subscription.status.label', defaultChecked: 'true'],
-                            'subscription.kind'                         : [field: 'kind', label: 'Kind', message: 'subscription.kind.label', defaultChecked: 'true'],
-                            'subscription.form'                         : [field: 'form', label: 'Form', message: 'subscription.form.label', defaultChecked: 'true'],
-                            'subscription.resource'                     : [field: 'resource', label: 'Resource', message: 'subscription.resource.label'],
-                            'subscription.notes'                        : [field: null, label: 'Notes', message: 'default.notes.label'],
-                            'subscription.notes.shared'                 : [field: null, label: 'Notes', message: 'license.notes.shared'],
-                            'subscription.uuid'                         : [field: 'globalUID', label: 'Laser-UUID',  message: null],
-                    ]
-            ],
-
-            licenses: [
-                    label: 'License',
-                    message: 'license.label',
-                    fields: [
-                            'license.name'            : [field: 'licenses.reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true' ],
-                            'license.status'          : [field: 'licenses.status', label: 'Status', message: 'exportClickMe.license.status'],
-                            'license.licenseCategory' : [field: 'licenses.licenseCategory', label: 'License Category', message: 'license.licenseCategory.label'],
-                            'license.startDate'       : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
-                            'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
-                            'license.openEnded'       : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
-                            'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
-                            'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-UUID',  message: null],
-                    ]
-            ],
-
-            institutions: [
-                    label: 'Consortium members',
-                    message: 'consortium.member.plural',
-                    fields: [
-                            'memberCount':      [field: null, label: 'Count', message: 'default.count.label'],
-                            'multiYearCount':   [field: null, label: 'Count multi-year', message: 'default.count.multiYear.label']
-                    ]
-            ],
-
-            participantIdentifiers : [
-                    label: 'Identifiers',
-                    message: 'exportClickMe.participantIdentifiers',
-                    fields: [:],
-            ],
-            participantCustomerIdentifiers : [
-                    label: 'Customer Identifier',
-                    message: 'exportClickMe.participantCustomerIdentifiers',
-                    fields: [:],
-            ],
-
-            subProperties : [
-                    label: 'Public properties',
-                    message: 'default.properties',
-                    fields: [:]
-            ],
-
-            mySubProperties : [
-                    label: 'My properties',
-                    message: 'default.properties.my',
-                    fields: [:]
-            ],
-
-            subCostItems : [
-                    label: 'Cost Items',
-                    message: 'subscription.costItems.label',
-                    subTabs: [],
-                    fields: [
-                            'costItemsElements' : [:],
-                            /*
-                                    'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
-                                    'costItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
-                                    'costItem.budgetCodes'                      : [field: 'costItem.budgetcodes.value', label: 'Budget Code', message: 'financials.budgetCode'],
-                                    'costItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
-                                    'costItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
-                                    'costItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
-                                    'costItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'default.currency.label'],
-                                    'costItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
-                                    'costItem.currencyRate'                     : [field: 'costItem.currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
-                                    'costItem.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
-                                    'costItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
-                                    'costItem.costInLocalCurrency'              : [field: 'costItem.costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency'],
-                                    'costItem.costInLocalCurrencyAfterTax'      : [field: 'costItem.costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax'],
-
-                                    'costItem.datePaid'                         : [field: 'costItem.datePaid', label: 'Financial Year', message: 'financials.financialYear'],
-                                    'costItem.financialYear'                    : [field: 'costItem.financialYear', label: 'Date Paid', message: 'financials.datePaid'],
-                                    'costItem.invoiceDate'                      : [field: 'costItem.invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
-                                    'costItem.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
-                                    'costItem.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
-
-                                    'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label'],
-                                    'costItem.invoiceNumber'                    : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
-                                    'costItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number']
-                            */
-                    ]
-            ]
-    ]
-
-    static Map<String, Object> EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG = [
-            subscription: [
-                    label: 'Subscription',
-                    message: 'subscription.label',
-                    fields: [
-                            'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                            'subscription.altnames'                     : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
-                            'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
-                            'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
-                            'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
-                            'subscription.isMultiYear'                  : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label', defaultChecked: 'true'],
-                            'subscription.referenceYear'                : [field: 'sub.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label', defaultChecked: 'true'],
-                            'subscription.status'                       : [field: 'sub.status', label: 'Status', message: 'subscription.status.label', defaultChecked: 'true'],
-                            'subscription.kind'                         : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label', defaultChecked: 'true'],
-                            'subscription.form'                         : [field: 'sub.form', label: 'Form', message: 'subscription.form.label', defaultChecked: 'true'],
-                            'subscription.resource'                     : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
-                            'subscription.hasPerpetualAccess'           : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
-                            'subscription.hasPublishComponent'          : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
-                            'subscription.holdingSelection'             : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
-                            'subscription.notes'                        : [field: null, label: 'Notes', message: 'default.notes.label'],
-                            'subscription.notes.shared'                 : [field: null, label: 'Notes', message: 'license.notes.shared'],
-                            'subscription.uuid'                         : [field: 'sub.globalUID', label: 'Laser-UUID',  message: null],
-                    ]
-            ],
-
-            licenses: [
-                    label: 'License',
-                    message: 'license.label',
-                    fields: [
-                            'license.name'            : [field: 'licenses.reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true' ],
-                            'license.status'          : [field: 'licenses.status', label: 'Status', message: 'exportClickMe.license.status'],
-                            'license.licenseCategory' : [field: 'licenses.licenseCategory', label: 'License Category', message: 'license.licenseCategory.label'],
-                            'license.startDate'       : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
-                            'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
-                            'license.openEnded'       : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
-                            'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
-                            'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-UUID',  message: null],
-                    ]
-            ],
-
-            participant : [
-                    label: 'Participant',
-                    message: 'surveyParticipants.label',
-                    fields: [
-                            'participant.sortname'          : [field: 'orgs.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                            'participant.name'              : [field: 'orgs.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'participant.funderType'        : [field: 'orgs.funderType', label: 'Funder Type', message: 'org.funderType.label'],
-                            'participant.funderHskType'     : [field: 'orgs.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
-                            'participant.libraryType'       : [field: 'orgs.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
-                            'participant.url'               : [field: 'orgs.url', label: 'URL', message: 'default.url.label'],
-                            'participant.legalPatronName'   : [field: 'orgs.legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
-                            'participant.urlGov'            : [field: 'orgs.urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
-                            /*
-                            'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
-                            'participantContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
-                            'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
-                            'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
-                             */
-                            'participant.eInvoice'          : [field: 'orgs.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
-                            'participant.eInvoicePortal'    : [field: 'orgs.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
-                            'participant.linkResolverBaseURL'    : [field: 'orgs.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
-                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
-                            'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
-                            'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
-                            'participant.libraryNetwork'    : [field: 'orgs.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
-                            'participant.country'           : [field: 'orgs.country', label: 'Country', message: 'org.country.label'],
-                            'participant.region'            : [field: 'orgs.region', label: 'Region', message: 'org.region.label']
-                    ]
-            ],
-
-            participantIdentifiers : [
-                    label: 'Identifiers',
-                    message: 'exportClickMe.participantIdentifiers',
-                    fields: [:],
-
-            ],
-            participantCustomerIdentifiers : [
-                    label: 'Customer Identifier',
-                    message: 'exportClickMe.participantCustomerIdentifiers',
-                    fields: [:],
-
-            ],
-
-            packages : [
-                    label: 'Packages',
-                    message: 'subscription.packages.label',
-                    fields: [
-                            'package.name' : [field: 'package.name', label: 'Name (Package)', message: 'exportClickMe.package.name'],
-                            'platform.name' : [field: 'package.nominalPlatform.name', label: 'Name (Platform)', message: 'exportClickMe.platform.name'],
-                            'platform.url'  : [field: 'providers.platforms.primaryUrl', label: 'Primary URL', message: 'platform.primaryURL'],
-                    ]
-            ],
-
-            providers: [
-                    label: 'Provider',
-                    message: 'provider.label',
-                    fields: [
-                            'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
-                            'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
-                            'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
-                            'provider.url'               : [field: 'providers.url', label: 'Url', message: 'exportClickMe.provider.url']
-                    ]
-            ],
-
-            vendors: [
-                    label: 'Vendor',
-                    message: 'vendor.label',
-                    fields: [
-                            'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
-                            'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
-                            'vendor.url'               : [field: 'vendors.url', label: 'Url', message: 'exportClickMe.agency.url'],
-                    ]
-            ],
-
-            participantContacts : [
-                    label: 'Contacts',
-                    message: 'org.contacts.label',
-                    subTabs: [],
-                    fields: [:]
-            ],
-
-            participantAddresses : [
-                    label: 'Addresses',
-                    message: 'org.addresses.label',
-                    fields: [:]
-            ],
-
-            subProperties : [
-                    label: 'Public properties',
-                    message: 'default.properties',
-                    fields: [:]
-            ],
-
-            mySubProperties : [
-                    label: 'My properties',
-                    message: 'default.properties.my',
-                    fields: [:]
-            ],
-
-            subCostItems : [
-                    label: 'Cost Items',
-                    message: 'subscription.costItems.label',
-                    subTabs: [],
-                    fields: [
-                            'costItemsElements' : [:]
-                    ]
-            ]
-    ]
-
-    static Map<String, Object> EXPORT_CONSORTIA_PARTICIPATIONS_SUPPORT_CONFIG = [
-            subscription: [
-                    label: 'Subscription',
-                    message: 'subscription.label',
-                    fields: [
-                            'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                            'subscription.altnames'                     : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
-                            'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
-                            'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
-                            'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
-                            'subscription.isMultiYear'                  : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label', defaultChecked: 'true'],
-                            'subscription.referenceYear'                : [field: 'sub.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label', defaultChecked: 'true'],
-                            'subscription.status'                       : [field: 'sub.status', label: 'Status', message: 'subscription.status.label', defaultChecked: 'true'],
-                            'subscription.kind'                         : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label', defaultChecked: 'true'],
-                            'subscription.form'                         : [field: 'sub.form', label: 'Form', message: 'subscription.form.label', defaultChecked: 'true'],
-                            'subscription.resource'                     : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
-                            'subscription.notes'                        : [field: null, label: 'Notes', message: 'default.notes.label'],
-                            'subscription.notes.shared'                 : [field: null, label: 'Notes', message: 'license.notes.shared'],
-                            'subscription.uuid'                         : [field: 'sub.globalUID', label: 'Laser-UUID',  message: null],
-                    ]
-            ],
-
-            licenses: [
-                    label: 'License',
-                    message: 'license.label',
-                    fields: [
-                            'license.name'            : [field: 'licenses.reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true' ],
-                            'license.status'          : [field: 'licenses.status', label: 'Status', message: 'exportClickMe.license.status'],
-                            'license.licenseCategory' : [field: 'licenses.licenseCategory', label: 'License Category', message: 'license.licenseCategory.label'],
-                            'license.startDate'       : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
-                            'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
-                            'license.openEnded'       : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
-                            'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
-                            'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-UUID',  message: null],
-                    ]
-            ],
-
-            participant : [
-                    label: 'Participant',
-                    message: 'surveyParticipants.label',
-                    fields: [
-                            'participant.sortname'          : [field: 'orgs.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                            'participant.name'              : [field: 'orgs.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'participant.funderType'        : [field: 'orgs.funderType', label: 'Funder Type', message: 'org.funderType.label'],
-                            'participant.funderHskType'     : [field: 'orgs.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
-                            'participant.libraryType'       : [field: 'orgs.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
-                            'participant.url'               : [field: 'orgs.url', label: 'URL', message: 'default.url.label'],
-                            'participant.legalPatronName'   : [field: 'orgs.legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
-                            'participant.urlGov'            : [field: 'orgs.urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
-                            /*
-                            'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
-                            'participantContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
-                            'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
-                            'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
-                             */
-                            'participant.eInvoice'          : [field: 'orgs.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
-                            'participant.eInvoicePortal'    : [field: 'orgs.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
-                            'participant.linkResolverBaseURL'    : [field: 'orgs.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
-                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
-                            'participant.libraryNetwork'    : [field: 'orgs.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
-                            'participant.country'           : [field: 'orgs.country', label: 'Country', message: 'org.country.label'],
-                            'participant.region'            : [field: 'orgs.region', label: 'Region', message: 'org.region.label']
-                    ]
-            ],
-
-            participantIdentifiers : [
-                    label: 'Identifiers',
-                    message: 'exportClickMe.participantIdentifiers',
-                    fields: [:],
-
-            ],
-            participantCustomerIdentifiers : [
-                    label: 'Customer Identifier',
-                    message: 'exportClickMe.participantCustomerIdentifiers',
-                    fields: [:],
-
-            ],
-
-            participantContacts : [
-                    label: 'Contacts',
-                    message: 'org.contacts.label',
-                    subTabs: [],
-                    fields: [:]
-            ],
-
-            participantAddresses : [
-                    label: 'Addresses',
-                    message: 'org.addresses.label',
-                    fields: [:]
-            ],
-
-            subProperties : [
-                    label: 'Public properties',
-                    message: 'default.properties',
-                    fields: [:]
-            ],
-
-            mySubProperties : [
-                    label: 'My properties',
-                    message: 'default.properties.my',
-                    fields: [:]
-            ],
-
-            subCostItems : [
-                    label: 'Cost Items',
-                    message: 'subscription.costItems.label',
-                    subTabs: [],
-                    fields: [
-                            'costItemsElements' : [:]
-                    ]
-            ]
-    ]
-
-    static Map<String, Object> EXPORT_SUBSCRIPTION_TRANSFER_CONFIG = [
-            subscriptionTransfer: [
-                    label: 'Transfer',
-                    message: 'subscription.details.subTransfer.label',
-                    fields: [
-                            'subscription.offerRequested'                : [field: 'offerRequested', label: 'Offer Requested', message: 'subscription.offerRequested.label'],
-                            'subscription.offerRequestedDate'            : [field: 'offerRequestedDate', label: 'Offer Requested Date', message: 'subscription.offerRequestedDate.label'],
-                            'subscription.offerAccepted'                 : [field: 'offerAccepted', label: 'Offer Accepted', message: 'subscription.offerAccepted.label'],
-                            'subscription.offerNote'                     : [field: 'offerNote', label: 'Offer Note', message: 'subscription.offerNote.label'],
-                            'subscription.priceIncreaseInfo'             : [field: 'priceIncreaseInfo', label: 'Price Increase Info', message: 'subscription.priceIncreaseInfo.label'],
-                            'subscription.renewalSent'                   : [field: 'renewalSent', label: 'Renewal Sent', message: 'subscription.renewalSent.label'],
-                            'subscription.renewalSentDate'               : [field: 'renewalSentDate', label: 'Renewal Sent Date', message: 'subscription.renewalSentDate.label'],
-                            'subscription.participantTransferWithSurvey' : [field: 'participantTransferWithSurvey', label: 'Participant Transfe With Survey', message: 'subscription.participantTransferWithSurvey.label'],
-                            'subscription.discountScale'                 : [field: 'discountScale', label: 'Discount Scale', message: 'subscription.discountScale.label'],
-                            'subscription.survey'                        : [field: null, label: 'Survey', message: 'survey.label'],
-                            'subscription.survey.evaluation'             : [field: null, label: 'Evaluation', message: 'subscription.survey.evaluation.label'],
-                            'subscription.survey.cancellation'           : [field: null, label: 'Cancellation', message: 'subscription.survey.cancellation.label']
-                    ]
-            ],
-    ]
-
-    static Map<String, Object> EXPORT_LICENSE_CONFIG = [
-            licenses: [
-                    label: 'License',
-                    message: 'license.label',
-                    fields: [
-                            'license.reference'       : [field: 'reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true'],
-                            'license.altnames'        : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
-                            'license.status'          : [field: 'status', label: 'Status', message: 'exportClickMe.license.status', defaultChecked: 'true'],
-                            'license.licenseCategory' : [field: 'licenseCategory', label: 'License Category', message: 'license.licenseCategory.label', defaultChecked: 'true'],
-                            'license.startDate'       : [field: 'startDate', label: 'Start Date', message: 'exportClickMe.license.startDate', defaultChecked: 'true'],
-                            'license.endDate'         : [field: 'endDate', label: 'End Date', message: 'exportClickMe.license.endDate', defaultChecked: 'true'],
-                            'license.openEnded'       : [field: 'openEnded', label: 'Open Ended', message: 'license.openEnded.label', defaultChecked: 'true'],
-                            'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
-                            'license.notes.shared'    : [field: null, label: 'Notes', message: 'license.notes.shared'],
-                            'license.uuid'            : [field: 'globalUID', label: 'Laser-UUID',  message: null],
-                            'subscription.name'       : [field: 'subscription.name', label: 'Name', message: 'license.details.linked_subs', defaultChecked: 'true']
-                    ]
-            ],
-
-            /*
+                /*
             subscription: [
                     label: 'Subscription',
                     message: 'subscription.label',
@@ -923,955 +942,982 @@ class ExportClickMeService {
                     ]
             ],*/
 
-            providers: [
-                    label: 'Provider',
-                    message: 'provider.label',
-                    fields: [
-                            'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
-                            'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
-                            'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
-                            'provider.url'               : [field: 'providers.url', label: 'Url', message: 'exportClickMe.provider.url']
-                    ]
-            ],
+                providers             : [
+                        label  : 'Provider',
+                        message: 'provider.label',
+                        fields : [
+                                'provider.sortname': [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
+                                'provider.name'    : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true'],
+                                'provider.altnames': [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
+                                'provider.url'     : [field: 'providers.homepage', label: 'Url', message: 'exportClickMe.provider.url']
+                        ]
+                ],
 
-            vendors: [
-                    label: 'Agency',
-                    message: 'vendor.label',
-                    fields: [
-                            'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
-                            'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
-                            'vendor.url'               : [field: 'vendors.url', label: 'Url', message: 'exportClickMe.agency.url']
-                    ]
-            ],
+                vendors               : [
+                        label  : 'Agency',
+                        message: 'vendor.label',
+                        fields : [
+                                'vendor.sortname': [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.vendor.sortname'],
+                                'vendor.name'    : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.vendor.name', defaultChecked: 'true'],
+                                'vendor.url'     : [field: 'vendors.homepage', label: 'Url', message: 'exportClickMe.vendor.url']
+                        ]
+                ],
 
-            participantIdentifiers : [
-                    label: 'Identifiers',
-                    message: 'exportClickMe.participantIdentifiers',
-                    fields: [:],
+                participantIdentifiers: [
+                        label  : 'Identifiers',
+                        message: 'exportClickMe.participantIdentifiers',
+                        fields : [:],
 
-            ],
+                ],
 
-            licProperties : [
-                    label: 'Public properties',
-                    message: 'default.properties',
-                    fields: [:]
-            ],
+                licProperties         : [
+                        label  : 'Public properties',
+                        message: 'default.properties',
+                        fields : [:]
+                ],
 
-            myLicProperties : [
-                    label: 'My properties',
-                    message: 'default.properties.my',
-                    fields: [:]
-            ]
-    ]
+                myLicProperties       : [
+                        label  : 'My properties',
+                        message: 'default.properties.my',
+                        fields : [:]
+                ]
+        ]
+    }
 
-    static Map<String, Object> EXPORT_LICENSE_SUPPORT_CONFIG = [
-            licenses: [
-                    label: 'License',
-                    message: 'license.label',
-                    fields: [
-                            'license.reference'       : [field: 'reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true'],
-                            'license.altnames'        : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
-                            'license.status'          : [field: 'status', label: 'Status', message: 'exportClickMe.license.status', defaultChecked: 'true'],
-                            'license.licenseCategory' : [field: 'licenseCategory', label: 'License Category', message: 'license.licenseCategory.label', defaultChecked: 'true'],
-                            'license.startDate'       : [field: 'startDate', label: 'Start Date', message: 'exportClickMe.license.startDate', defaultChecked: 'true'],
-                            'license.endDate'         : [field: 'endDate', label: 'End Date', message: 'exportClickMe.license.endDate', defaultChecked: 'true'],
-                            'license.openEnded'       : [field: 'openEnded', label: 'Open Ended', message: 'license.openEnded.label', defaultChecked: 'true'],
-                            'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
-                            'license.notes.shared'    : [field: null, label: 'Notes', message: 'license.notes.shared'],
-                            'license.uuid'            : [field: 'globalUID', label: 'Laser-UUID',  message: null],
-                            'subscription.name'       : [field: 'subscription.name', label: 'Name', message: 'license.details.linked_subs', defaultChecked: 'true']
-                    ]
-            ],
+    Map<String, Object> getDefaultExportLicenseSupportConfig(){
+        return [
+                licenses: [
+                        label: 'License',
+                        message: 'license.label',
+                        fields: [
+                                'license.reference'       : [field: 'reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true'],
+                                'license.altnames'        : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                                'license.status'          : [field: 'status', label: 'Status', message: 'exportClickMe.license.status', defaultChecked: 'true'],
+                                'license.licenseCategory' : [field: 'licenseCategory', label: 'License Category', message: 'license.licenseCategory.label', defaultChecked: 'true'],
+                                'license.startDate'       : [field: 'startDate', label: 'Start Date', message: 'exportClickMe.license.startDate', defaultChecked: 'true'],
+                                'license.endDate'         : [field: 'endDate', label: 'End Date', message: 'exportClickMe.license.endDate', defaultChecked: 'true'],
+                                'license.openEnded'       : [field: 'openEnded', label: 'Open Ended', message: 'license.openEnded.label', defaultChecked: 'true'],
+                                'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
+                                'license.notes.shared'    : [field: null, label: 'Notes', message: 'license.notes.shared'],
+                                'license.uuid'            : [field: 'globalUID', label: 'Laser-UUID',  message: null],
+                                'subscription.name'       : [field: 'subscription.name', label: 'Name', message: 'license.details.linked_subs', defaultChecked: 'true']
+                        ]
+                ],
 
-            participantIdentifiers : [
-                    label: 'Identifiers',
-                    message: 'exportClickMe.participantIdentifiers',
-                    fields: [:],
-            ],
+                participantIdentifiers : [
+                        label: 'Identifiers',
+                        message: 'exportClickMe.participantIdentifiers',
+                        fields: [:],
+                ],
 
-            licProperties : [
-                    label: 'Public properties',
-                    message: 'default.properties',
-                    fields: [:]
-            ],
+                licProperties : [
+                        label: 'Public properties',
+                        message: 'default.properties',
+                        fields: [:]
+                ],
 
-            myLicProperties : [
-                    label: 'My properties',
-                    message: 'default.properties.my',
-                    fields: [:]
-            ]
-    ]
+                myLicProperties : [
+                        label: 'My properties',
+                        message: 'default.properties.my',
+                        fields: [:]
+                ]
+        ]
+    }
 
-    static Map<String, Object> EXPORT_CONSORTIA_CONFIG = [
-            consortium : [
-                    label: 'Consortium',
-                    message: 'consortium.label',
-                    fields: [
-                            'consortium.sortname'          : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                            'consortium.name'              : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'consortium.funderType'        : [field: 'funderType', label: 'Funder Type', message: 'org.funderType.label'],
-                            'consortium.funderHskType'     : [field: 'funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
-                            'consortium.libraryType'       : [field: 'libraryType', label: 'Library Type', message: 'org.libraryType.label'],
-                            /*
+    Map<String, Object> getDefaultExportConsortiaConfig () {
+        return [
+                consortium            : [
+                        label  : 'Consortium',
+                        message: 'consortium.label',
+                        fields : [
+                                'consortium.sortname'           : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                                'consortium.name'               : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true'],
+                                'consortium.funderType'         : [field: 'funderType', label: 'Funder Type', message: 'org.funderType.label'],
+                                'consortium.funderHskType'      : [field: 'funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+                                'consortium.libraryType'        : [field: 'libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                                /*
                             'consortiumContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
                             'consortiumContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
                             'consortium.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
                             'consortium.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
                             */
-                            'consortium.eInvoice'          : [field: 'eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
-                            'consortium.eInvoicePortal'    : [field: 'eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
-                            'consortium.linkResolverBaseURL'    : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
-                            'consortium.uuid'              : [field: 'globalUID', label: 'Laser-UUID',  message: null],
-                    ]
-            ],
-            consortiumContacts : [
-                    label: 'Contacts',
-                    message: 'org.contacts.label',
-                    subTabs: [],
-                    fields: [:]
-            ],
-            consortiumAddresses : [
-                    label: 'Addresses',
-                    message: 'org.addresses.label',
-                    fields: [:]
-            ],
-            consortiumIdentifiers : [
-                    label: 'Identifiers',
-                    message: 'exportClickMe.consortiumIdentifiers',
-                    fields: [:]
-            ],
-            consortiumProperties : [
-                    label: 'Properties',
-                    message: 'default.properties',
-                    fields: [:]
-            ],
-            myConsortiumProperties : [
-                    label: 'Properties',
-                    message: 'default.properties.my',
-                    fields: [:]
-            ]
-            //customer identifiers: sense for consortia?
-    ]
+                                'consortium.eInvoice'           : [field: 'eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
+                                'consortium.eInvoicePortal'     : [field: 'eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
+                                'consortium.linkResolverBaseURL': [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                                'consortium.uuid'               : [field: 'globalUID', label: 'Laser-UUID', message: null],
+                        ]
+                ],
+                consortiumContacts    : [
+                        label  : 'Contacts',
+                        message: 'org.contacts.label',
+                        subTabs: [],
+                        fields : [:]
+                ],
+                consortiumAddresses   : [
+                        label  : 'Addresses',
+                        message: 'org.addresses.label',
+                        fields : [:]
+                ],
+                consortiumIdentifiers : [
+                        label  : 'Identifiers',
+                        message: 'exportClickMe.consortiumIdentifiers',
+                        fields : [:]
+                ],
+                consortiumProperties  : [
+                        label  : 'Properties',
+                        message: 'default.properties',
+                        fields : [:]
+                ],
+                myConsortiumProperties: [
+                        label  : 'Properties',
+                        message: 'default.properties.my',
+                        fields : [:]
+                ]
+                //customer identifiers: sense for consortia?
+        ]
+    }
 
-    static Map<String, Object> EXPORT_COST_ITEM_CONFIG = [
-            costItem : [
-                    label: 'Cost Item',
-                    message: 'costItem.label',
-                    fields: [
-                            'costItem.costItemElement'                  : [field: 'costItemElement', label: 'Cost Item Element', message: 'financials.costItemElement', defaultChecked: 'true'],
-                            'costItem.costTitle'                        : [field: 'costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle', defaultChecked: 'true'],
-                            'costItem.reference'                        : [field: 'reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
-                            'costItem.budgetCodes'                      : [field: 'budgetcodes.value', label: 'Budget Code', message: 'financials.budgetCode'],
-                            'costItem.costItemElementConfiguration'     : [field: 'costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration', defaultChecked: 'true'],
-                            'costItem.costItemStatus'                   : [field: 'costItemStatus', label: 'Status', message: 'default.status.label', defaultChecked: 'true'],
-                            'costItem.costInBillingCurrency'            : [field: 'costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total', defaultChecked: 'true'],
-                            'costItem.billingCurrency'                  : [field: 'billingCurrency', label: 'Billing Currency', message: 'default.currency.label', defaultChecked: 'true'],
-                            'costItem.costInBillingCurrencyAfterTax'    : [field: 'costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount', defaultChecked: 'true'],
-                            'costItem.currencyRate'                     : [field: 'currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
-                            'costItem.taxType'                          : [field: 'taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType', defaultChecked: 'true'],
-                            'costItem.taxRate'                          : [field: 'taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate', defaultChecked: 'true'],
-                            'costItem.costInLocalCurrency'              : [field: 'costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency', defaultChecked: 'true'],
-                            'costItem.costInLocalCurrencyAfterTax'      : [field: 'costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax', defaultChecked: 'true'],
+    Map<String, Object> getDefaultExportCostItemConfig() {
+        return [
+                costItem : [
+                        label: 'Cost Item',
+                        message: 'costItem.label',
+                        fields: [
+                                'costItem.costItemElement'                  : [field: 'costItemElement', label: 'Cost Item Element', message: 'financials.costItemElement', defaultChecked: 'true'],
+                                'costItem.costTitle'                        : [field: 'costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle', defaultChecked: 'true'],
+                                'costItem.reference'                        : [field: 'reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
+                                'costItem.budgetCodes'                      : [field: 'budgetcodes.value', label: 'Budget Code', message: 'financials.budgetCode'],
+                                'costItem.costItemElementConfiguration'     : [field: 'costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration', defaultChecked: 'true'],
+                                'costItem.costItemStatus'                   : [field: 'costItemStatus', label: 'Status', message: 'default.status.label', defaultChecked: 'true'],
+                                'costItem.costInBillingCurrency'            : [field: 'costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total', defaultChecked: 'true'],
+                                'costItem.billingCurrency'                  : [field: 'billingCurrency', label: 'Billing Currency', message: 'default.currency.label', defaultChecked: 'true'],
+                                'costItem.costInBillingCurrencyAfterTax'    : [field: 'costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount', defaultChecked: 'true'],
+                                'costItem.currencyRate'                     : [field: 'currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
+                                'costItem.taxType'                          : [field: 'taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType', defaultChecked: 'true'],
+                                'costItem.taxRate'                          : [field: 'taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate', defaultChecked: 'true'],
+                                'costItem.costInLocalCurrency'              : [field: 'costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency', defaultChecked: 'true'],
+                                'costItem.costInLocalCurrencyAfterTax'      : [field: 'costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax', defaultChecked: 'true'],
 
-                            'costItem.datePaid'                         : [field: 'datePaid', label: 'Date Paid', message: 'financials.datePaid'],
-                            'costItem.financialYear'                    : [field: 'financialYear', label: 'Financial Year', message: 'financials.financialYear'],
-                            'costItem.invoiceDate'                      : [field: 'invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
-                            'costItem.startDate'                        : [field: 'startDate', label: 'Date From', message: 'financials.dateFrom'],
-                            'costItem.endDate'                          : [field: 'endDate', label: 'Date To', message: 'financials.dateTo'],
+                                'costItem.datePaid'                         : [field: 'datePaid', label: 'Date Paid', message: 'financials.datePaid'],
+                                'costItem.financialYear'                    : [field: 'financialYear', label: 'Financial Year', message: 'financials.financialYear'],
+                                'costItem.invoiceDate'                      : [field: 'invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
+                                'costItem.startDate'                        : [field: 'startDate', label: 'Date From', message: 'financials.dateFrom'],
+                                'costItem.endDate'                          : [field: 'endDate', label: 'Date To', message: 'financials.dateTo'],
 
-                            'costItem.costDescription'                  : [field: 'costDescription', label: 'Description', message: 'default.description.label'],
-                            'costItem.invoiceNumber'                    : [field: 'invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
-                            'costItem.orderNumber'                      : [field: 'order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
-                            'costItem.pkg'                              : [field: 'pkg.name', label: 'Package Name', message: 'package.label'],
-                            'costItem.issueEntitlement'                 : [field: 'issueEntitlement.tipp.name', label: 'Title', message: 'issueEntitlement.label'],
-                            'costItem.issueEntitlementGroup'            : [field: 'issueEntitlementGroup.name', label: 'Title Group Name', message: 'package.label'],
-                    ]
-            ],
+                                'costItem.costDescription'                  : [field: 'costDescription', label: 'Description', message: 'default.description.label'],
+                                'costItem.invoiceNumber'                    : [field: 'invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
+                                'costItem.orderNumber'                      : [field: 'order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
+                                'costItem.pkg'                              : [field: 'pkg.name', label: 'Package Name', message: 'package.label'],
+                                'costItem.issueEntitlement'                 : [field: 'issueEntitlement.tipp.name', label: 'Title', message: 'issueEntitlement.label'],
+                                'costItem.issueEntitlementGroup'            : [field: 'issueEntitlementGroup.name', label: 'Title Group Name', message: 'package.label'],
+                        ]
+                ],
 
-            org : [
-                    label: 'Organisation',
-                    message: 'org.institution.label',
-                    fields: [
-                            'participant.sortname'          : [field: 'sub.subscriberRespConsortia.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                            'participant.name'              : [field: 'sub.subscriberRespConsortia.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'participant.funderType'        : [field: 'sub.subscriberRespConsortia.funderType', label: 'Funder Type', message: 'org.funderType.label'],
-                            'participant.funderHskType'     : [field: 'sub.subscriberRespConsortia.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
-                            'participant.libraryType'       : [field: 'sub.subscriberRespConsortia.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
-                            'participant.url'               : [field: 'sub.subscriberRespConsortia.url', label: 'URL', message: 'default.url.label'],
-                            'participant.legalPatronName'   : [field: 'sub.subscriberRespConsortia.legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
-                            'participant.urlGov'            : [field: 'sub.subscriberRespConsortia.urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
-                            /*
-                            'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
-                            'participantContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
-                            'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
-                            'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
-                            */
-                            'participant.eInvoice'          : [field: 'sub.subscriberRespConsortia.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
-                            'participant.eInvoicePortal'    : [field: 'sub.subscriberRespConsortia.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
-                            'participant.linkResolverBaseURL'    : [field: 'sub.subscriberRespConsortia.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
-                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
-                            'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
-                            'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
-                            'participant.libraryNetwork'    : [field: 'sub.subscriberRespConsortia.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
-                            'participant.country'           : [field: 'sub.subscriberRespConsortia.country', label: 'Country', message: 'org.country.label'],
-                            'participant.region'            : [field: 'sub.subscriberRespConsortia.region', label: 'Region', message: 'org.region.label'],
-                            'participant.uuid'              : [field: 'sub.subscriberRespConsortia.globalUID', label: 'Laser-UUID',  message: null],
-                    ]
-            ],
+                org : [
+                        label: 'Organisation',
+                        message: 'org.institution.label',
+                        fields: [
+                                'participant.sortname'          : [field: 'sub.subscriberRespConsortia.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                                'participant.name'              : [field: 'sub.subscriberRespConsortia.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                                'participant.funderType'        : [field: 'sub.subscriberRespConsortia.funderType', label: 'Funder Type', message: 'org.funderType.label'],
+                                'participant.funderHskType'     : [field: 'sub.subscriberRespConsortia.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+                                'participant.libraryType'       : [field: 'sub.subscriberRespConsortia.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                                'participant.url'               : [field: 'sub.subscriberRespConsortia.url', label: 'URL', message: 'default.url.label'],
+                                'participant.legalPatronName'   : [field: 'sub.subscriberRespConsortia.legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
+                                'participant.urlGov'            : [field: 'sub.subscriberRespConsortia.urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
+                                /*
+                                'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
+                                'participantContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
+                                'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
+                                'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
+                                */
+                                'participant.eInvoice'          : [field: 'sub.subscriberRespConsortia.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
+                                'participant.eInvoicePortal'    : [field: 'sub.subscriberRespConsortia.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
+                                'participant.linkResolverBaseURL'    : [field: 'sub.subscriberRespConsortia.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                                'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
+                                'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
+                                'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
+                                'participant.libraryNetwork'    : [field: 'sub.subscriberRespConsortia.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
+                                'participant.country'           : [field: 'sub.subscriberRespConsortia.country', label: 'Country', message: 'org.country.label'],
+                                'participant.region'            : [field: 'sub.subscriberRespConsortia.region', label: 'Region', message: 'org.region.label'],
+                                'participant.uuid'              : [field: 'sub.subscriberRespConsortia.globalUID', label: 'Laser-UUID',  message: null],
+                        ]
+                ],
 
-            subscription: [
-                    label: 'Subscription',
-                    message: 'subscription.label',
-                    fields: [
-                            'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: true],
-                            'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: true],
-                            'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: true],
-                            'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
-                            'subscription.isMultiYear'                  : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
-                            'subscription.referenceYear'                : [field: 'sub.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label'],
-                            //'subscription.isAutomaticRenewAnnually'     : [field: 'sub.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'],
-                            'subscription.status'                       : [field: 'sub.status', label: 'Status', message: 'subscription.status.label'],
-                            'subscription.kind'                         : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label'],
-                            'subscription.form'                         : [field: 'sub.form', label: 'Form', message: 'subscription.form.label'],
-                            'subscription.resource'                     : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
-                            'subscription.hasPerpetualAccess'           : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
-                            'subscription.hasPublishComponent'          : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
-                            'subscription.holdingSelection'             : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
-                            'subscription.uuid'                         : [field: 'sub.globalUID', label: 'Laser-UUID',  message: null],
-                    ]
-            ],
-            participantIdentifiers : [
-                    label: 'Identifiers',
-                    message: 'exportClickMe.participantIdentifiers',
-                    fields: [:]
-            ],
-            participantCustomerIdentifiers : [
-                    label: 'Customer Identifiers',
-                    message: 'exportClickMe.participantCustomerIdentifiers',
-                    fields: [:]
-            ],
-            participantContacts : [
-                    label: 'Contacts',
-                    message: 'org.contacts.label',
-                    subTabs: [],
-                    fields: [:]
-            ],
-            participantAddresses : [
-                    label: 'Addresses',
-                    message: 'org.addresses.label',
-                    fields: [:]
-            ]
-    ]
+                subscription: [
+                        label: 'Subscription',
+                        message: 'subscription.label',
+                        fields: [
+                                'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: true],
+                                'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: true],
+                                'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: true],
+                                'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
+                                'subscription.isMultiYear'                  : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
+                                'subscription.referenceYear'                : [field: 'sub.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label'],
+                                //'subscription.isAutomaticRenewAnnually'     : [field: 'sub.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'],
+                                'subscription.status'                       : [field: 'sub.status', label: 'Status', message: 'subscription.status.label'],
+                                'subscription.kind'                         : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label'],
+                                'subscription.form'                         : [field: 'sub.form', label: 'Form', message: 'subscription.form.label'],
+                                'subscription.resource'                     : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
+                                'subscription.hasPerpetualAccess'           : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
+                                'subscription.hasPublishComponent'          : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
+                                'subscription.holdingSelection'             : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
+                                'subscription.uuid'                         : [field: 'sub.globalUID', label: 'Laser-UUID',  message: null],
+                        ]
+                ],
+                participantIdentifiers : [
+                        label: 'Identifiers',
+                        message: 'exportClickMe.participantIdentifiers',
+                        fields: [:]
+                ],
+                participantCustomerIdentifiers : [
+                        label: 'Customer Identifiers',
+                        message: 'exportClickMe.participantCustomerIdentifiers',
+                        fields: [:]
+                ],
+                participantContacts : [
+                        label: 'Contacts',
+                        message: 'org.contacts.label',
+                        subTabs: [],
+                        fields: [:]
+                ],
+                participantAddresses : [
+                        label: 'Addresses',
+                        message: 'org.addresses.label',
+                        fields: [:]
+                ]
+        ]
+    }
 
-    static Map<String, Object> EXPORT_SURVEY_COST_ITEM_CONFIG = [
-            costItem : [
-                    label: 'Cost Item',
-                    message: 'costItem.label',
-                    fields: [
-                            'costItem.costItemElement'                  : [field: 'costItemElement', label: 'Cost Item Element', message: 'financials.costItemElement', defaultChecked: 'true'],
-                            'costItem.costTitle'                        : [field: 'costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle', defaultChecked: 'true'],
-                            'costItem.costItemElementConfiguration'     : [field: 'costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration', defaultChecked: 'true'],
-                            'costItem.costItemStatus'                   : [field: 'costItemStatus', label: 'Status', message: 'default.status.label', defaultChecked: 'true'],
-                            'costItem.costInBillingCurrency'            : [field: 'costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total', defaultChecked: 'true'],
-                            'costItem.billingCurrency'                  : [field: 'billingCurrency', label: 'Billing Currency', message: 'default.currency.label', defaultChecked: 'true'],
-                            'costItem.costInBillingCurrencyAfterTax'    : [field: 'costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount', defaultChecked: 'true'],
-                            'costItem.taxType'                          : [field: 'taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType', defaultChecked: 'true'],
-                            'costItem.taxRate'                          : [field: 'taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate', defaultChecked: 'true'],
-                            'costItem.startDate'                        : [field: 'startDate', label: 'Date From', message: 'financials.dateFrom'],
-                            'costItem.endDate'                          : [field: 'endDate', label: 'Date To', message: 'financials.dateTo'],
-                            'costItem.costDescription'                  : [field: 'costDescription', label: 'Description', message: 'default.description.label'],
-                    ]
-            ],
+    Map<String, Object> getDefaultExportSurveyCostItemConfig(){
+        return [
+                costItem : [
+                        label: 'Cost Item',
+                        message: 'costItem.label',
+                        fields: [
+                                'costItem.costItemElement'                  : [field: 'costItemElement', label: 'Cost Item Element', message: 'financials.costItemElement', defaultChecked: 'true'],
+                                'costItem.costTitle'                        : [field: 'costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle', defaultChecked: 'true'],
+                                'costItem.costItemElementConfiguration'     : [field: 'costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration', defaultChecked: 'true'],
+                                'costItem.costItemStatus'                   : [field: 'costItemStatus', label: 'Status', message: 'default.status.label', defaultChecked: 'true'],
+                                'costItem.costInBillingCurrency'            : [field: 'costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total', defaultChecked: 'true'],
+                                'costItem.billingCurrency'                  : [field: 'billingCurrency', label: 'Billing Currency', message: 'default.currency.label', defaultChecked: 'true'],
+                                'costItem.costInBillingCurrencyAfterTax'    : [field: 'costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount', defaultChecked: 'true'],
+                                'costItem.taxType'                          : [field: 'taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType', defaultChecked: 'true'],
+                                'costItem.taxRate'                          : [field: 'taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate', defaultChecked: 'true'],
+                                'costItem.startDate'                        : [field: 'startDate', label: 'Date From', message: 'financials.dateFrom'],
+                                'costItem.endDate'                          : [field: 'endDate', label: 'Date To', message: 'financials.dateTo'],
+                                'costItem.costDescription'                  : [field: 'costDescription', label: 'Description', message: 'default.description.label'],
+                        ]
+                ],
 
-            org : [
-                    label: 'Organisation',
-                    message: 'org.institution.label',
-                    fields: [
-                            'participant.sortname'          : [field: 'surveyOrg.org.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                            'participant.name'              : [field: 'surveyOrg.org.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'participant.funderType'        : [field: 'surveyOrg.org.funderType', label: 'Funder Type', message: 'org.funderType.label'],
-                            'participant.funderHskType'     : [field: 'surveyOrg.org.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
-                            'participant.libraryType'       : [field: 'surveyOrg.org.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
-                            'participant.libraryNetwork'    : [field: 'surveyOrg.org.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
-                            'participant.region'            : [field: 'surveyOrg.org.region', label: 'Region', message: 'org.region.label'],
-                            'participant.country'           : [field: 'surveyOrg.org.country', label: 'Country', message: 'org.country.label'],
-                            'participant.eInvoice'          : [field: 'surveyOrg.org.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
-                            'participant.eInvoicePortal'    : [field: 'surveyOrg.org.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
-                            'participant.linkResolverBaseURL'    : [field: 'surveyOrg.org.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
-                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
-                            'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
-                            'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
-                            'participant.uuid'              : [field: 'surveyOrg.org.globalUID', label: 'Laser-UUID',  message: null],
-                    ]
-            ],
+                org : [
+                        label: 'Organisation',
+                        message: 'org.institution.label',
+                        fields: [
+                                'participant.sortname'          : [field: 'surveyOrg.org.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                                'participant.name'              : [field: 'surveyOrg.org.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                                'participant.funderType'        : [field: 'surveyOrg.org.funderType', label: 'Funder Type', message: 'org.funderType.label'],
+                                'participant.funderHskType'     : [field: 'surveyOrg.org.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+                                'participant.libraryType'       : [field: 'surveyOrg.org.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                                'participant.libraryNetwork'    : [field: 'surveyOrg.org.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
+                                'participant.region'            : [field: 'surveyOrg.org.region', label: 'Region', message: 'org.region.label'],
+                                'participant.country'           : [field: 'surveyOrg.org.country', label: 'Country', message: 'org.country.label'],
+                                'participant.eInvoice'          : [field: 'surveyOrg.org.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
+                                'participant.eInvoicePortal'    : [field: 'surveyOrg.org.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
+                                'participant.linkResolverBaseURL'    : [field: 'surveyOrg.org.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                                'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
+                                'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
+                                'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
+                                'participant.uuid'              : [field: 'surveyOrg.org.globalUID', label: 'Laser-UUID',  message: null],
+                        ]
+                ],
 
-            participantIdentifiers : [
-                    label: 'Identifiers',
-                    message: 'exportClickMe.participantIdentifiers',
-                    fields: [:]
-            ],
-            participantContacts : [
-                    label: 'Contacts',
-                    message: 'org.contacts.label',
-                    subTabs: [],
-                    fields: [:]
-            ],
-            participantAddresses : [
-                    label: 'Addresses',
-                    message: 'org.addresses.label',
-                    fields: [:]
-            ]
-    ]
+                participantIdentifiers : [
+                        label: 'Identifiers',
+                        message: 'exportClickMe.participantIdentifiers',
+                        fields: [:]
+                ],
+                participantContacts : [
+                        label: 'Contacts',
+                        message: 'org.contacts.label',
+                        subTabs: [],
+                        fields: [:]
+                ],
+                participantAddresses : [
+                        label: 'Addresses',
+                        message: 'org.addresses.label',
+                        fields: [:]
+                ]
+        ]
+    }
 
-    static Map<String, Object> EXPORT_ORG_CONFIG = [
-            participant : [
-                    label: 'Participant',
-                    message: 'surveyParticipants.label',
-                    fields: [
-                            'participant.sortname'          : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                            'participant.name'              : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'participant.url'               : [field: 'url', label: 'URL', message: 'default.url.label'],
-                            'participant.legalPatronName'   : [field: 'legalPatronName', label: 'Name of Legal Patron', message: 'org.legalPatronName.label'],
-                            'participant.urlGov'            : [field: 'urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
-                            'participant.funderType'        : [field: 'funderType', label: 'Funder Type', message: 'org.funderType.label'],
-                            'participant.funderHskType'     : [field: 'funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
-                            'participant.libraryType'       : [field: 'libraryType', label: 'Library Type', message: 'org.libraryType.label'],
-                            /*
-                            'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
-                            'participantContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
-                            'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
-                            'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
-                             */
-                            'participant.eInvoice'          : [field: 'eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
-                            'participant.eInvoicePortal'    : [field: 'eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
-                            'participant.linkResolverBaseURL'    : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
-                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
-                            'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
-                            'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
-                            'participant.libraryNetwork'    : [field: 'libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
-                            'participant.country'           : [field: 'country', label: 'Country', message: 'org.country.label'],
-                            'participant.region'            : [field: 'region', label: 'Region', message: 'org.region.label']
-                    ]
-            ],
-            participantAccessPoints : [
-                    label: 'Participants Access Points',
-                    message: 'exportClickMe.participantAccessPoints',
-                    fields: [
-                            'participant.exportIPs'         : [field: null, label: 'Export IPs', message: 'subscriptionDetails.members.exportIPs', separateSheet: 'true'],
-                            'participant.exportProxys'      : [field: null, label: 'Export Proxys', message: 'subscriptionDetails.members.exportProxys', separateSheet: 'true'],
-                            'participant.exportEZProxys'    : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateSheet: 'true'],
-                            'participant.exportShibboleths' : [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
-                            'participant.exportMailDomains' : [field: null, label: 'Export Mail Domains', message: 'subscriptionDetails.members.exportMailDomains', separateSheet: 'true'],
-                    ]
-            ],
-            participantIdentifiers : [
-                    label: 'Identifiers',
-                    message: 'exportClickMe.participantIdentifiers',
-                    fields: [:]
-            ],
-            participantCustomerIdentifiers : [
-                    label: 'Customer Identifiers',
-                    message: 'exportClickMe.participantCustomerIdentifiers',
-                    fields: [:]
-            ],
-            participantContacts : [
-                    label: 'Contacts',
-                    message: 'org.contacts.label',
-                    subTabs: [],
-                    fields: [:]
-            ],
-            participantAddresses : [
-                    label: 'Addresses',
-                    message: 'org.addresses.label',
-                    fields: [:]
-            ],
-            participantProperties : [
-                    label: 'Properties',
-                    message: 'default.properties',
-                    fields: [:]
-            ],
-            myParticipantProperties : [
-                    label: 'Properties',
-                    message: 'default.properties.my',
-                    fields: [:]
-            ]
-    ]
-
-    static Map<String, Object> EXPORT_ORG_SUPPORT_CONFIG = [
-            participant : [
-                    label: 'Participant',
-                    message: 'surveyParticipants.label',
-                    fields: [
-                            'participant.sortname'          : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                            'participant.name'              : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'participant.url'               : [field: 'url', label: 'URL', message: 'default.url.label'],
-                            'participant.legalPatronName'   : [field: 'legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
-                            'participant.urlGov'            : [field: 'urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
-                            'participant.funderType'        : [field: 'funderType', label: 'Funder Type', message: 'org.funderType.label'],
-                            'participant.funderHskType'     : [field: 'funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
-                            'participant.libraryType'       : [field: 'libraryType', label: 'Library Type', message: 'org.libraryType.label'],
-                            /*
+    Map<String, Object> getDefaultExportOrgConfig() {
+        return [
+                participant                   : [
+                        label  : 'Participant',
+                        message: 'surveyParticipants.label',
+                        fields : [
+                                'participant.sortname'                : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                                'participant.name'                    : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true'],
+                                'participant.url'                     : [field: 'url', label: 'URL', message: 'default.url.label'],
+                                'participant.legalPatronName'         : [field: 'legalPatronName', label: 'Name of Legal Patron', message: 'org.legalPatronName.label'],
+                                'participant.urlGov'                  : [field: 'urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
+                                'participant.funderType'              : [field: 'funderType', label: 'Funder Type', message: 'org.funderType.label'],
+                                'participant.funderHskType'           : [field: 'funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+                                'participant.libraryType'             : [field: 'libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                                /*
                             'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
                             'participantContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
                             'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
                             'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
                              */
-                            'participant.eInvoice'          : [field: 'eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
-                            'participant.eInvoicePortal'    : [field: 'eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
-                            'participant.linkResolverBaseURL'    : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
-                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
-                            'participant.libraryNetwork'    : [field: 'libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
-                            'participant.country'           : [field: 'country', label: 'Country', message: 'org.country.label'],
-                            'participant.region'            : [field: 'region', label: 'Region', message: 'org.region.label']
-                    ]
-            ],
-            participantIdentifiers : [
-                    label: 'Identifiers',
-                    message: 'exportClickMe.participantIdentifiers',
-                    fields: [:]
-            ],
-            participantCustomerIdentifiers : [
-                    label: 'Customer Identifiers',
-                    message: 'exportClickMe.participantCustomerIdentifiers',
-                    fields: [:]
-            ],
-            participantContacts : [
-                    label: 'Contacts',
-                    message: 'org.contacts.label',
-                    subTabs: [],
-                    fields: [:]
-            ],
-            participantAddresses : [
-                    label: 'Addresses',
-                    message: 'org.addresses.label',
-                    fields: [:]
-            ],
-            participantProperties : [
-                    label: 'Properties',
-                    message: 'default.properties',
-                    fields: [:]
-            ],
-            myParticipantProperties : [
-                    label: 'Properties',
-                    message: 'default.properties.my',
-                    fields: [:]
-            ]
-    ]
+                                'participant.eInvoice'                : [field: 'eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
+                                'participant.eInvoicePortal'          : [field: 'eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
+                                'participant.linkResolverBaseURL'     : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                                'participant.readerNumbers'           : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
+                                'participant.discoverySystemsFrontend': [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
+                                'participant.discoverySystemsIndex'   : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
+                                'participant.libraryNetwork'          : [field: 'libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
+                                'participant.country'                 : [field: 'country', label: 'Country', message: 'org.country.label'],
+                                'participant.region'                  : [field: 'region', label: 'Region', message: 'org.region.label']
+                        ]
+                ],
+                participantAccessPoints       : [
+                        label  : 'Participants Access Points',
+                        message: 'exportClickMe.participantAccessPoints',
+                        fields : [
+                                'participant.exportIPs'        : [field: null, label: 'Export IPs', message: 'subscriptionDetails.members.exportIPs', separateSheet: 'true'],
+                                'participant.exportProxys'     : [field: null, label: 'Export Proxys', message: 'subscriptionDetails.members.exportProxys', separateSheet: 'true'],
+                                'participant.exportEZProxys'   : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateSheet: 'true'],
+                                'participant.exportShibboleths': [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
+                                'participant.exportMailDomains': [field: null, label: 'Export Mail Domains', message: 'subscriptionDetails.members.exportMailDomains', separateSheet: 'true'],
+                        ]
+                ],
+                participantIdentifiers        : [
+                        label  : 'Identifiers',
+                        message: 'exportClickMe.participantIdentifiers',
+                        fields : [:]
+                ],
+                participantCustomerIdentifiers: [
+                        label  : 'Customer Identifiers',
+                        message: 'exportClickMe.participantCustomerIdentifiers',
+                        fields : [:]
+                ],
+                participantContacts           : [
+                        label  : 'Contacts',
+                        message: 'org.contacts.label',
+                        subTabs: [],
+                        fields : [:]
+                ],
+                participantAddresses          : [
+                        label  : 'Addresses',
+                        message: 'org.addresses.label',
+                        fields : [:]
+                ],
+                participantProperties         : [
+                        label  : 'Properties',
+                        message: 'default.properties',
+                        fields : [:]
+                ],
+                myParticipantProperties       : [
+                        label  : 'Properties',
+                        message: 'default.properties.my',
+                        fields : [:]
+                ]
+        ]
+    }
 
-    static Map<String, Object> EXPORT_PROVIDER_CONFIG = [
-            provider : [
-                    label: 'Provider',
-                    message: 'provider.label',
-                    fields: [
-                            'provider.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'provider.sortname'              : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                            'provider.altnames'              : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
-                            'provider.status'                : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: true],
-                            'provider.homepage'              : [field: 'homepage', label: 'Homepage URL', message: 'org.homepage.label', defaultChecked: true],
-                            'provider.metadataDownloaderURL' : [field: 'metadataDownloaderURL', label: 'Metadata Downloader URL', message: 'org.metadataDownloaderURL.label', defaultChecked: true],
-                            'provider.kbartDownloaderURL'    : [field: 'kbartDownloaderURL', label: 'KBART Downloader URL', message: 'org.KBARTDownloaderURL.label', defaultChecked: true],
-                            'provider.packages'              : [field: null, label: 'Packages', message:'package.plural', defaultChecked: true],
-                            'provider.platforms'             : [field: null, label: 'Platforms', message: 'org.platforms.label', defaultChecked: true],
-                            'provider.subscriptions'         : [field: null, label: 'Subscriptions', message: 'subscription.plural', defaultChecked: true],
-                            'provider.licenses'              : [field: null, label: 'Licenses', message: 'license.plural', defaultChecked: true]
-                    ]
-            ],
-            providerIdentifiers : [
-                    label: 'Identifiers',
-                    message: 'exportClickMe.participantIdentifiers',
-                    fields: [:]
-            ],
-            providerCustomerIdentifiers : [
-                    label: 'Customer Identifiers',
-                    message: 'exportClickMe.participantCustomerIdentifiers',
-                    fields: [:]
-            ],
-            providerInvoicing : [
-                    label: 'Invoicing',
-                    message: 'vendor.invoicing.header',
-                    fields: [
-                            'vendor.electronicBillings'                 : [field: null, label: 'Electronic invoice formats', message: 'vendor.invoicing.formats.label'],
-                            'vendor.invoiceDispatchs'                   : [field: null, label: 'Invoice dispatch via', message: 'vendor.invoicing.dispatch.label'],
-                            'vendor.paperInvoice'                       : [field: 'paperInvoice', label: 'Paper invoice', message: 'vendor.invoicing.paperInvoice.label'],
-                            'vendor.managementOfCredits'                : [field: 'managementOfCredits', label: 'Management of credits', message: 'vendor.invoicing.managementOfCredits.label'],
-                            'vendor.processingOfCompensationPayments'   : [field: 'processingOfCompensationPayments', label: 'Processing of compensation payments (credits/subsequent debits)', message: 'vendor.invoicing.compensationPayments.label'],
-                            'vendor.individualInvoiceDesign'            : [field: 'individualInvoiceDesign', label: 'Individual invoice design', message: 'vendor.invoicing.individualInvoiceDesign.label']
-                    ]
-            ],
-            providerContacts : [
-                    label: 'Contacts',
-                    message: 'org.contacts.label',
-                    subTabs: [],
-                    fields: [:]
-            ],
-            providerAddresses : [
-                    label: 'Addresses',
-                    message: 'org.addresses.label',
-                    fields: [:]
-            ],
-            myProviderProperties : [
-                    label: 'Properties',
-                    message: 'default.properties.my',
-                    fields: [:]
-            ]
-    ]
+    Map<String, Object> getDefaultExportOrgSupportConfig(){
+        return  [
+                participant : [
+                        label: 'Participant',
+                        message: 'surveyParticipants.label',
+                        fields: [
+                                'participant.sortname'          : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                                'participant.name'              : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                                'participant.url'               : [field: 'url', label: 'URL', message: 'default.url.label'],
+                                'participant.legalPatronName'   : [field: 'legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
+                                'participant.urlGov'            : [field: 'urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
+                                'participant.funderType'        : [field: 'funderType', label: 'Funder Type', message: 'org.funderType.label'],
+                                'participant.funderHskType'     : [field: 'funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+                                'participant.libraryType'       : [field: 'libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                                /*
+                                'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
+                                'participantContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
+                                'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
+                                'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
+                                 */
+                                'participant.eInvoice'          : [field: 'eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
+                                'participant.eInvoicePortal'    : [field: 'eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
+                                'participant.linkResolverBaseURL'    : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                                'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
+                                'participant.libraryNetwork'    : [field: 'libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
+                                'participant.country'           : [field: 'country', label: 'Country', message: 'org.country.label'],
+                                'participant.region'            : [field: 'region', label: 'Region', message: 'org.region.label']
+                        ]
+                ],
+                participantIdentifiers : [
+                        label: 'Identifiers',
+                        message: 'exportClickMe.participantIdentifiers',
+                        fields: [:]
+                ],
+                participantCustomerIdentifiers : [
+                        label: 'Customer Identifiers',
+                        message: 'exportClickMe.participantCustomerIdentifiers',
+                        fields: [:]
+                ],
+                participantContacts : [
+                        label: 'Contacts',
+                        message: 'org.contacts.label',
+                        subTabs: [],
+                        fields: [:]
+                ],
+                participantAddresses : [
+                        label: 'Addresses',
+                        message: 'org.addresses.label',
+                        fields: [:]
+                ],
+                participantProperties : [
+                        label: 'Properties',
+                        message: 'default.properties',
+                        fields: [:]
+                ],
+                myParticipantProperties : [
+                        label: 'Properties',
+                        message: 'default.properties.my',
+                        fields: [:]
+                ]
+        ]
+    }
 
-    static Map<String, Object> EXPORT_VENDOR_CONFIG = [
-            vendor : [
-                    label: 'Vendor',
-                    message: 'vendor.label',
-                    fields: [
-                            'vendor.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'vendor.sortname'              : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                            'vendor.status'                : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: true],
-                            'vendor.homepage'              : [field: 'homepage', label: 'Homepage URL', message: 'org.homepage.label', defaultChecked: true],
-                            'vendor.packages'              : [field: null, label: 'Packages', message:'package.plural', defaultChecked: true],
-                            'vendor.platforms'             : [field: null, label: 'Platforms', message: 'org.platforms.label', defaultChecked: true],
-                            'vendor.subscriptions'         : [field: null, label: 'Subscriptions', message: 'subscription.plural', defaultChecked: true],
-                            'vendor.licenses'              : [field: null, label: 'Licenses', message: 'license.plural', defaultChecked: true]
-                    ]
-            ],
-            vendorOrders : [
-                    label: 'Ordering',
-                    message: 'vendor.ordering.header',
-                    fields: [
-                            'vendor.webShopOrders'         : [field: 'webShopOrders', label: 'Order via Webshop', message: 'vendor.ordering.webshop.label'],
-                            'vendor.xmlOrders'             : [field: 'xmlOrders', label: 'Order via XML', message: 'vendor.ordering.xml.label'],
-                            'vendor.ediOrders'             : [field: 'ediOrders', label: 'Order via EDI', message: 'vendor.ordering.edi.label'],
-                            'vendor.supportedLibrarySystems': [field: null, label: 'Supported library systems', message: 'vendor.ordering.supportedLibrarySystems.label'],
-                            'vendor.electronicDeliveryDelays': [field: null, label: 'Electronic delivery delay notification via', message: 'vendor.ordering.electronicDeliveryDelayNotifications.label']
-                    ]
-            ],
-            vendorInvoicing : [
-                    label: 'Invoicing',
-                    message: 'vendor.invoicing.header',
-                    fields: [
-                            'vendor.electronicBillings'                 : [field: null, label: 'Electronic invoice formats', message: 'vendor.invoicing.formats.label'],
-                            'vendor.invoiceDispatchs'                   : [field: null, label: 'Invoice dispatch via', message: 'vendor.invoicing.dispatch.label'],
-                            'vendor.paperInvoice'                       : [field: 'paperInvoice', label: 'Paper invoice', message: 'vendor.invoicing.paperInvoice.label'],
-                            'vendor.managementOfCredits'                : [field: 'managementOfCredits', label: 'Management of credits', message: 'vendor.invoicing.managementOfCredits.label'],
-                            'vendor.processingOfCompensationPayments'   : [field: 'processingOfCompensationPayments', label: 'Processing of compensation payments (credits/subsequent debits)', message: 'vendor.invoicing.compensationPayments.label'],
-                            'vendor.individualInvoiceDesign'            : [field: 'individualInvoiceDesign', label: 'Individual invoice design', message: 'vendor.invoicing.individualInvoiceDesign.label']
-                    ]
-            ],
-            vendorGeneralServices : [
-                    label: 'General services',
-                    message: 'vendor.general.header',
-                    fields: [
-                            'vendor.technicalSupport'                       : [field: 'technicalSupport', label: 'Technical support', message: 'vendor.general.technicalSupport.label'],
-                            'vendor.shippingMetadata'                       : [field: 'shippingMetadata', label: 'Metadata (MARC records)', message: 'vendor.general.metadata.label'],
-                            'vendor.forwardingUsageStatisticsFromPublisher' : [field: 'forwardingUsageStatisticsFromPublisher', label: 'Forwarding usage statistics from the publisher', message: 'vendor.general.usageStats.label'],
-                            'vendor.activationForNewReleases'               : [field: 'activationForNewReleases', label: 'Update information about new releases within e-book packages', message: 'vendor.general.newReleaseInformation.label'],
-                            'vendor.exchangeOfIndividualTitles'             : [field: 'exchangeOfIndividualTitles', label: 'Exchange of individual titles within e-book packages', message: 'vendor.general.exchangeIndividualTitles.label'],
-                            'vendor.researchPlatformForEbooks'              : [field: 'researchPlatformForEbooks', label: 'Research platform for e-books', message: 'vendor.general.researchPlatform.label']
-                    ]
-            ],
-            vendorSupplierInformation : [
-                    label: 'Supplier information',
-                    message: 'vendor.supplier.header',
-                    fields: [
-                            'vendor.prequalificationVOL'        : [field: 'prequalificationVOL', label: 'Prequalification VOL', message: 'vendor.supplier.prequalificationVol.label'],
-                            'vendor.prequalificationVOLInfo'    : [field: 'prequalificationVOLInfo', label: 'Info to Prequalification VOL', message: 'vendor.supplier.infoPrequalificationVol.label']
-                    ]
-            ],
-            vendorIdentifiers : [
-                    label: 'Identifiers',
-                    message: 'exportClickMe.participantIdentifiers',
-                    fields: [:]
-            ],
-            vendorCustomerIdentifiers : [
-                    label: 'Customer Identifiers',
-                    message: 'exportClickMe.participantCustomerIdentifiers',
-                    fields: [:]
-            ],
-            vendorContacts : [
-                    label: 'Contacts',
-                    message: 'org.contacts.label',
-                    subTabs: [],
-                    fields: [:]
-            ],
-            vendorAddresses : [
-                    label: 'Addresses',
-                    message: 'org.addresses.label',
-                    fields: [:]
-            ],
-            myVendorProperties : [
-                    label: 'Properties',
-                    message: 'default.properties.my',
-                    fields: [:]
-            ]
-    ]
+    Map<String, Object> getDefaultExportProviderConfig(){
+        return [
+                provider : [
+                        label: 'Provider',
+                        message: 'provider.label',
+                        fields: [
+                                'provider.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                                'provider.sortname'              : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                                'provider.altnames'              : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                                'provider.status'                : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: true],
+                                'provider.homepage'              : [field: 'homepage', label: 'Homepage URL', message: 'org.homepage.label', defaultChecked: true],
+                                'provider.metadataDownloaderURL' : [field: 'metadataDownloaderURL', label: 'Metadata Downloader URL', message: 'org.metadataDownloaderURL.label', defaultChecked: true],
+                                'provider.kbartDownloaderURL'    : [field: 'kbartDownloaderURL', label: 'KBART Downloader URL', message: 'org.KBARTDownloaderURL.label', defaultChecked: true],
+                                'provider.packages'              : [field: null, label: 'Packages', message:'package.plural', defaultChecked: true],
+                                'provider.platforms'             : [field: null, label: 'Platforms', message: 'org.platforms.label', defaultChecked: true],
+                                'provider.subscriptions'         : [field: null, label: 'Subscriptions', message: 'subscription.plural', defaultChecked: true],
+                                'provider.licenses'              : [field: null, label: 'Licenses', message: 'license.plural', defaultChecked: true]
+                        ]
+                ],
+                providerIdentifiers : [
+                        label: 'Identifiers',
+                        message: 'exportClickMe.participantIdentifiers',
+                        fields: [:]
+                ],
+                providerCustomerIdentifiers : [
+                        label: 'Customer Identifiers',
+                        message: 'exportClickMe.participantCustomerIdentifiers',
+                        fields: [:]
+                ],
+                providerInvoicing : [
+                        label: 'Invoicing',
+                        message: 'vendor.invoicing.header',
+                        fields: [
+                                'vendor.electronicBillings'                 : [field: null, label: 'Electronic invoice formats', message: 'vendor.invoicing.formats.label'],
+                                'vendor.invoiceDispatchs'                   : [field: null, label: 'Invoice dispatch via', message: 'vendor.invoicing.dispatch.label'],
+                                'vendor.paperInvoice'                       : [field: 'paperInvoice', label: 'Paper invoice', message: 'vendor.invoicing.paperInvoice.label'],
+                                'vendor.managementOfCredits'                : [field: 'managementOfCredits', label: 'Management of credits', message: 'vendor.invoicing.managementOfCredits.label'],
+                                'vendor.processingOfCompensationPayments'   : [field: 'processingOfCompensationPayments', label: 'Processing of compensation payments (credits/subsequent debits)', message: 'vendor.invoicing.compensationPayments.label'],
+                                'vendor.individualInvoiceDesign'            : [field: 'individualInvoiceDesign', label: 'Individual invoice design', message: 'vendor.invoicing.individualInvoiceDesign.label']
+                        ]
+                ],
+                providerContacts : [
+                        label: 'Contacts',
+                        message: 'org.contacts.label',
+                        subTabs: [],
+                        fields: [:]
+                ],
+                providerAddresses : [
+                        label: 'Addresses',
+                        message: 'org.addresses.label',
+                        fields: [:]
+                ],
+                myProviderProperties : [
+                        label: 'Properties',
+                        message: 'default.properties.my',
+                        fields: [:]
+                ]
+        ]
+    }
 
-    static Map<String, Object> EXPORT_ADDRESS_CONFIG = [
-            contact : [
-                    label: 'Contact',
-                    message: 'contact.label',
-                    fields: [
-                            'organisation': [field: 'organisation', label: 'Organisation', message: 'address.org.label', defaultChecked: 'true'],
-                            'receiver' : [field: 'receiver', label: 'Receiver', message: 'address.receiver.label', defaultChecked: 'true'],
-                            'language': [field: 'language', label: 'Language', message: 'contact.language.label', defaultChecked: 'true'],
-                            'email': [field: 'email', label: 'Email', message: 'contact.icon.label.email', defaultChecked: 'true'],
-                            'fax': [field: 'fax', label: 'Fax', message: 'contact.icon.label.fax', defaultChecked: 'true'],
-                            'url': [field: 'url', label: 'URL', message: 'contact.icon.label.url', defaultChecked: 'true'],
-                            'phone': [field: 'phone', label: 'Phone', message: 'contact.icon.label.phone', defaultChecked: 'true']
-                    ]
-            ],
-            address : [
-                    label: 'Address',
-                    message: 'address.label',
-                    fields: [
-                            'organisation': [field: 'organisation', label: 'Organisation', message: 'address.org.label', defaultChecked: true],
-                            'receiver' : [field: 'receiver', label: 'Receiver', message: 'address.receiver.label', defaultChecked: true],
-                            'additionFirst': [field: 'additionFirst', label: 'First Addition', message: 'address.additionFirst.label'],
-                            'additionSecond': [field: 'additionSecond', label: 'Second Addition', message: 'address.additionSecond.label'],
-                            'street_1': [field: 'street_1', label: 'Street', message: 'address.street_1.label', defaultChecked: true],
-                            'street_2': [field: 'street_2', label: 'Number', message: 'address.street_2.label', defaultChecked: true],
-                            'zipcode': [field: 'zipcode', label: 'Postcode', message: 'address.zipcode.label', defaultChecked: true],
-                            'city': [field: 'city', label: 'City', message: 'address.city.label', defaultChecked: true],
-                            'pob': [field: 'pob', label: 'Postal box', message: 'address.pob.label'],
-                            'pobZipcode': [field: 'pobZipcode', label: 'Postal box zip code', message: 'address.pobZipcode.label'],
-                            'pobCity': [field: 'pobCity', label: 'Postal box city', message: 'address.pobCity.label'],
-                            'country': [field: 'country', label: 'Country', message: 'address.country.label', defaultChecked: true],
-                            'region': [field: 'region', label: 'Region', message: 'address.region.label'],
-                    ]
-            ]
-    ]
+    Map<String, Object> getDefaultExportVendorConfig(){
+        return [
+                vendor : [
+                        label: 'Vendor',
+                        message: 'vendor.label',
+                        fields: [
+                                'vendor.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                                'vendor.sortname'              : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                                'vendor.status'                : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: true],
+                                'vendor.homepage'              : [field: 'homepage', label: 'Homepage URL', message: 'org.homepage.label', defaultChecked: true],
+                                'vendor.packages'              : [field: null, label: 'Packages', message:'package.plural', defaultChecked: true],
+                                'vendor.platforms'             : [field: null, label: 'Platforms', message: 'org.platforms.label', defaultChecked: true],
+                                'vendor.subscriptions'         : [field: null, label: 'Subscriptions', message: 'subscription.plural', defaultChecked: true],
+                                'vendor.licenses'              : [field: null, label: 'Licenses', message: 'license.plural', defaultChecked: true]
+                        ]
+                ],
+                vendorOrders : [
+                        label: 'Ordering',
+                        message: 'vendor.ordering.header',
+                        fields: [
+                                'vendor.webShopOrders'         : [field: 'webShopOrders', label: 'Order via Webshop', message: 'vendor.ordering.webshop.label'],
+                                'vendor.xmlOrders'             : [field: 'xmlOrders', label: 'Order via XML', message: 'vendor.ordering.xml.label'],
+                                'vendor.ediOrders'             : [field: 'ediOrders', label: 'Order via EDI', message: 'vendor.ordering.edi.label'],
+                                'vendor.supportedLibrarySystems': [field: null, label: 'Supported library systems', message: 'vendor.ordering.supportedLibrarySystems.label'],
+                                'vendor.electronicDeliveryDelays': [field: null, label: 'Electronic delivery delay notification via', message: 'vendor.ordering.electronicDeliveryDelayNotifications.label']
+                        ]
+                ],
+                vendorInvoicing : [
+                        label: 'Invoicing',
+                        message: 'vendor.invoicing.header',
+                        fields: [
+                                'vendor.electronicBillings'                 : [field: null, label: 'Electronic invoice formats', message: 'vendor.invoicing.formats.label'],
+                                'vendor.invoiceDispatchs'                   : [field: null, label: 'Invoice dispatch via', message: 'vendor.invoicing.dispatch.label'],
+                                'vendor.paperInvoice'                       : [field: 'paperInvoice', label: 'Paper invoice', message: 'vendor.invoicing.paperInvoice.label'],
+                                'vendor.managementOfCredits'                : [field: 'managementOfCredits', label: 'Management of credits', message: 'vendor.invoicing.managementOfCredits.label'],
+                                'vendor.processingOfCompensationPayments'   : [field: 'processingOfCompensationPayments', label: 'Processing of compensation payments (credits/subsequent debits)', message: 'vendor.invoicing.compensationPayments.label'],
+                                'vendor.individualInvoiceDesign'            : [field: 'individualInvoiceDesign', label: 'Individual invoice design', message: 'vendor.invoicing.individualInvoiceDesign.label']
+                        ]
+                ],
+                vendorGeneralServices : [
+                        label: 'General services',
+                        message: 'vendor.general.header',
+                        fields: [
+                                'vendor.technicalSupport'                       : [field: 'technicalSupport', label: 'Technical support', message: 'vendor.general.technicalSupport.label'],
+                                'vendor.shippingMetadata'                       : [field: 'shippingMetadata', label: 'Metadata (MARC records)', message: 'vendor.general.metadata.label'],
+                                'vendor.forwardingUsageStatisticsFromPublisher' : [field: 'forwardingUsageStatisticsFromPublisher', label: 'Forwarding usage statistics from the publisher', message: 'vendor.general.usageStats.label'],
+                                'vendor.activationForNewReleases'               : [field: 'activationForNewReleases', label: 'Update information about new releases within e-book packages', message: 'vendor.general.newReleaseInformation.label'],
+                                'vendor.exchangeOfIndividualTitles'             : [field: 'exchangeOfIndividualTitles', label: 'Exchange of individual titles within e-book packages', message: 'vendor.general.exchangeIndividualTitles.label'],
+                                'vendor.researchPlatformForEbooks'              : [field: 'researchPlatformForEbooks', label: 'Research platform for e-books', message: 'vendor.general.researchPlatform.label']
+                        ]
+                ],
+                vendorSupplierInformation : [
+                        label: 'Supplier information',
+                        message: 'vendor.supplier.header',
+                        fields: [
+                                'vendor.prequalificationVOL'        : [field: 'prequalificationVOL', label: 'Prequalification VOL', message: 'vendor.supplier.prequalificationVol.label'],
+                                'vendor.prequalificationVOLInfo'    : [field: 'prequalificationVOLInfo', label: 'Info to Prequalification VOL', message: 'vendor.supplier.infoPrequalificationVol.label']
+                        ]
+                ],
+                vendorIdentifiers : [
+                        label: 'Identifiers',
+                        message: 'exportClickMe.participantIdentifiers',
+                        fields: [:]
+                ],
+                vendorCustomerIdentifiers : [
+                        label: 'Customer Identifiers',
+                        message: 'exportClickMe.participantCustomerIdentifiers',
+                        fields: [:]
+                ],
+                vendorContacts : [
+                        label: 'Contacts',
+                        message: 'org.contacts.label',
+                        subTabs: [],
+                        fields: [:]
+                ],
+                vendorAddresses : [
+                        label: 'Addresses',
+                        message: 'org.addresses.label',
+                        fields: [:]
+                ],
+                myVendorProperties : [
+                        label: 'Properties',
+                        message: 'default.properties.my',
+                        fields: [:]
+                ]
+        ]
+    }
 
-    static Map<String, Object> EXPORT_ADDRESS_FILTER = [
-            function : [
-                    label: 'Function',
-                    message: 'person.function.label',
-                    fields: [:]
-            ],
-            position : [
-                    label: 'Position',
-                    message: 'person.position.label',
-                    fields: [:]
-            ],
-            type : [
-                    label: 'Type',
-                    message: 'default.type.label',
-                    fields: [:]
-            ]
-    ]
+    Map<String, Object> getDefaultExportAddressConfig(){
+        return [
+                contact : [
+                        label: 'Contact',
+                        message: 'contact.label',
+                        fields: [
+                                'organisation': [field: 'organisation', label: 'Organisation', message: 'address.org.label', defaultChecked: 'true'],
+                                'receiver' : [field: 'receiver', label: 'Receiver', message: 'address.receiver.label', defaultChecked: 'true'],
+                                'language': [field: 'language', label: 'Language', message: 'contact.language.label', defaultChecked: 'true'],
+                                'email': [field: 'email', label: 'Email', message: 'contact.icon.label.email', defaultChecked: 'true'],
+                                'fax': [field: 'fax', label: 'Fax', message: 'contact.icon.label.fax', defaultChecked: 'true'],
+                                'url': [field: 'url', label: 'URL', message: 'contact.icon.label.url', defaultChecked: 'true'],
+                                'phone': [field: 'phone', label: 'Phone', message: 'contact.icon.label.phone', defaultChecked: 'true']
+                        ]
+                ],
+                address : [
+                        label: 'Address',
+                        message: 'address.label',
+                        fields: [
+                                'organisation': [field: 'organisation', label: 'Organisation', message: 'address.org.label', defaultChecked: true],
+                                'receiver' : [field: 'receiver', label: 'Receiver', message: 'address.receiver.label', defaultChecked: true],
+                                'additionFirst': [field: 'additionFirst', label: 'First Addition', message: 'address.additionFirst.label'],
+                                'additionSecond': [field: 'additionSecond', label: 'Second Addition', message: 'address.additionSecond.label'],
+                                'street_1': [field: 'street_1', label: 'Street', message: 'address.street_1.label', defaultChecked: true],
+                                'street_2': [field: 'street_2', label: 'Number', message: 'address.street_2.label', defaultChecked: true],
+                                'zipcode': [field: 'zipcode', label: 'Postcode', message: 'address.zipcode.label', defaultChecked: true],
+                                'city': [field: 'city', label: 'City', message: 'address.city.label', defaultChecked: true],
+                                'pob': [field: 'pob', label: 'Postal box', message: 'address.pob.label'],
+                                'pobZipcode': [field: 'pobZipcode', label: 'Postal box zip code', message: 'address.pobZipcode.label'],
+                                'pobCity': [field: 'pobCity', label: 'Postal box city', message: 'address.pobCity.label'],
+                                'country': [field: 'country', label: 'Country', message: 'address.country.label', defaultChecked: true],
+                                'region': [field: 'region', label: 'Region', message: 'address.region.label'],
+                        ]
+                ]
+        ]
+    }
 
-    static Map<String, Object> EXPORT_SURVEY_EVALUATION = [
-            //Wichtig: Hier bei dieser Config bitte drauf achten, welche Feld Bezeichnung gesetzt ist,
-            // weil die Felder von einer zusammengesetzten Map kommen. siehe ExportClickMeService -> exportSurveyEvaluation
-            survey      : [
-                    label: 'Survey',
-                    message: 'survey.label',
-                    fields: [
-                            'participant.sortname'        : [field: 'participant.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                            'participant.name'            : [field: 'participant.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'survey.ownerComment'        : [field: null, label: 'Owner Comment', message: 'surveyResult.commentOnlyForOwner', defaultChecked: 'true'],
-                            'survey.finishDate'        : [field: null, label: 'Finish Date', message: 'surveyInfo.finishedDate', defaultChecked: 'true'],
-                            'survey.reminderMailDate'  : [field: null, label: 'Reminder Mail Date', message: 'surveyOrg.reminderMailDate'],
-                    ]
-            ],
+    Map<String, Object> getDefaultExportAddressFilter() {
+        return [
+                function: [
+                        label  : 'Function',
+                        message: 'person.function.label',
+                        fields : [:]
+                ],
+                position: [
+                        label  : 'Position',
+                        message: 'person.position.label',
+                        fields : [:]
+                ],
+                type    : [
+                        label  : 'Type',
+                        message: 'default.type.label',
+                        fields : [:]
+                ]
+        ]
+    }
 
-            participantSurveyCostItems : [
-                    label: 'Cost Items',
-                    message: 'exportClickMe.survey.costItems',
-                    fields: [
-                            'costItemsElements' : [:],
-                            'participantSurveyCostItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
-                            'participantSurveyCostItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
-                            'participantSurveyCostItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
-                            'participantSurveyCostItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
-                            'participantSurveyCostItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'default.currency.label'],
-                            'participantSurveyCostItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
-                            'participantSurveyCostItem.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
-                            'participantSurveyCostItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
-                            'participantSurveyCostItem.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
-                            'participantSurveyCostItem.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
-                            'participantSurveyCostItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label']
-                    ]
-            ],
+    Map<String, Object> getDefaultExportSurveyEvaluation() {
+        return [
+                //Wichtig: Hier bei dieser Config bitte drauf achten, welche Feld Bezeichnung gesetzt ist,
+                // weil die Felder von einer zusammengesetzten Map kommen. siehe ExportClickMeService -> exportSurveyEvaluation
+                survey                        : [
+                        label  : 'Survey',
+                        message: 'survey.label',
+                        fields : [
+                                'participant.sortname'   : [field: 'participant.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                                'participant.name'       : [field: 'participant.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true'],
+                                'survey.ownerComment'    : [field: null, label: 'Owner Comment', message: 'surveyResult.commentOnlyForOwner', defaultChecked: 'true'],
+                                'survey.finishDate'      : [field: null, label: 'Finish Date', message: 'surveyInfo.finishedDate', defaultChecked: 'true'],
+                                'survey.reminderMailDate': [field: null, label: 'Reminder Mail Date', message: 'surveyOrg.reminderMailDate'],
+                        ]
+                ],
 
-            participantSurveySubCostItems : [
-                    label: 'Cost Items',
-                    message: 'exportClickMe.subscription.costItems',
-                    fields: [
-                            'costItemsElements' : [:],
-                            'participantSubCostItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
-                            'participantSubCostItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
-                            'participantSubCostItem.budgetCodes'                      : [field: 'costItem.budgetcodes.value', label: 'Budget Code', message: 'financials.budgetCode'],
-                            'participantSubCostItem.costItemElementConfiguration'     : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
-                            'participantSubCostItem.costItemStatus'                   : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
-                            'participantSubCostItem.costInBillingCurrency'            : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
-                            'participantSubCostItem.billingCurrency'                  : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'default.currency.label'],
-                            'participantSubCostItem.costInBillingCurrencyAfterTax'    : [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
-                            'participantSubCostItem.currencyRate'                     : [field: 'costItem.currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
-                            'participantSubCostItem.taxType'                          : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
-                            'participantSubCostItem.taxRate'                          : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
-                            'participantSubCostItem.costInLocalCurrency'              : [field: 'costItem.costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency'],
-                            'participantSubCostItem.costInLocalCurrencyAfterTax'      : [field: 'costItem.costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax'],
+                participantSurveyCostItems    : [
+                        label  : 'Cost Items',
+                        message: 'exportClickMe.survey.costItems',
+                        fields : [
+                                'costItemsElements'                                      : [:],
+                                'participantSurveyCostItem.costTitle'                    : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
+                                'participantSurveyCostItem.costItemElementConfiguration' : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
+                                'participantSurveyCostItem.costItemStatus'               : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
+                                'participantSurveyCostItem.costInBillingCurrency'        : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
+                                'participantSurveyCostItem.billingCurrency'              : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'default.currency.label'],
+                                'participantSurveyCostItem.costInBillingCurrencyAfterTax': [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
+                                'participantSurveyCostItem.taxType'                      : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
+                                'participantSurveyCostItem.taxRate'                      : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
+                                'participantSurveyCostItem.startDate'                    : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
+                                'participantSurveyCostItem.endDate'                      : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
+                                'participantSurveyCostItem.costDescription'              : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label']
+                        ]
+                ],
 
-                            'participantSubCostItem.datePaid'                         : [field: 'costItem.datePaid', label: 'Financial Year', message: 'financials.financialYear'],
-                            'participantSubCostItem.financialYear'                    : [field: 'costItem.financialYear', label: 'Date Paid', message: 'financials.datePaid'],
-                            'participantSubCostItem.invoiceDate'                      : [field: 'costItem.invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
-                            'participantSubCostItem.startDate'                        : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
-                            'participantSubCostItem.endDate'                          : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
+                participantSurveySubCostItems : [
+                        label  : 'Cost Items',
+                        message: 'exportClickMe.subscription.costItems',
+                        fields : [
+                                'costItemsElements'                                   : [:],
+                                'participantSubCostItem.costTitle'                    : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
+                                'participantSubCostItem.reference'                    : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
+                                'participantSubCostItem.budgetCodes'                  : [field: 'costItem.budgetcodes.value', label: 'Budget Code', message: 'financials.budgetCode'],
+                                'participantSubCostItem.costItemElementConfiguration' : [field: 'costItem.costItemElementConfiguration', label: 'CostItem Configuration', message: 'financials.costItemConfiguration'],
+                                'participantSubCostItem.costItemStatus'               : [field: 'costItem.costItemStatus', label: 'Status', message: 'default.status.label'],
+                                'participantSubCostItem.costInBillingCurrency'        : [field: 'costItem.costInBillingCurrency', label: 'Invoice Total', message: 'financials.invoice_total'],
+                                'participantSubCostItem.billingCurrency'              : [field: 'costItem.billingCurrency', label: 'Billing Currency', message: 'default.currency.label'],
+                                'participantSubCostItem.costInBillingCurrencyAfterTax': [field: 'costItem.costInBillingCurrencyAfterTax', label: 'Total Amount', message: 'financials.newCosts.totalAmount'],
+                                'participantSubCostItem.currencyRate'                 : [field: 'costItem.currencyRate', label: 'Exchange Rate', message: 'financials.newCosts.exchangeRate'],
+                                'participantSubCostItem.taxType'                      : [field: 'costItem.taxKey.taxType', label: 'Tax Type', message: 'myinst.financeImport.taxType'],
+                                'participantSubCostItem.taxRate'                      : [field: 'costItem.taxKey.taxRate', label: 'Tax Rate', message: 'myinst.financeImport.taxRate'],
+                                'participantSubCostItem.costInLocalCurrency'          : [field: 'costItem.costInLocalCurrency', label: 'Cost In Local Currency', message: 'financials.costInLocalCurrency'],
+                                'participantSubCostItem.costInLocalCurrencyAfterTax'  : [field: 'costItem.costInLocalCurrencyAfterTax', label: 'Cost in Local Currency after taxation', message: 'financials.costInLocalCurrencyAfterTax'],
 
-                            'participantSubCostItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label'],
-                            'participantSubCostItem.invoiceNumber'                    : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
-                            'participantSubCostItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
-                            'participantSubCostItem.pkg'                              : [field: 'costItem.pkg.name', label: 'Package Name', message: 'package.label'],
-                            'participantSubCostItem.issueEntitlement'                 : [field: 'costItem.issueEntitlement.tipp.name', label: 'Title', message: 'issueEntitlement.label'],
-                            'participantSubCostItem.issueEntitlementGroup'            : [field: 'costItem.issueEntitlementGroup.name', label: 'Title Group Name', message: 'package.label'],
-                    ]
-            ],
+                                'participantSubCostItem.datePaid'                     : [field: 'costItem.datePaid', label: 'Financial Year', message: 'financials.financialYear'],
+                                'participantSubCostItem.financialYear'                : [field: 'costItem.financialYear', label: 'Date Paid', message: 'financials.datePaid'],
+                                'participantSubCostItem.invoiceDate'                  : [field: 'costItem.invoiceDate', label: 'Invoice Date', message: 'financials.invoiceDate'],
+                                'participantSubCostItem.startDate'                    : [field: 'costItem.startDate', label: 'Date From', message: 'financials.dateFrom'],
+                                'participantSubCostItem.endDate'                      : [field: 'costItem.endDate', label: 'Date To', message: 'financials.dateTo'],
 
-            participant : [
-                    label: 'Participant',
-                    message: 'surveyParticipants.label',
-                    fields: [
-                            'participant.funderType'        : [field: 'participant.funderType', label: 'Funder Type', message: 'org.funderType.label'],
-                            'participant.funderHskType'     : [field: 'participant.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
-                            'participant.libraryType'       : [field: 'participant.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
-                            'participant.url'               : [field: 'participant.url', label: 'URL', message: 'default.url.label'],
-                            'participant.legalPatronName'   : [field: 'participant.legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
-                            'participant.urlGov'            : [field: 'participant.urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
-                            /*
+                                'participantSubCostItem.costDescription'              : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label'],
+                                'participantSubCostItem.invoiceNumber'                : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
+                                'participantSubCostItem.orderNumber'                  : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
+                                'participantSubCostItem.pkg'                          : [field: 'costItem.pkg.name', label: 'Package Name', message: 'package.label'],
+                                'participantSubCostItem.issueEntitlement'             : [field: 'costItem.issueEntitlement.tipp.name', label: 'Title', message: 'issueEntitlement.label'],
+                                'participantSubCostItem.issueEntitlementGroup'        : [field: 'costItem.issueEntitlementGroup.name', label: 'Title Group Name', message: 'package.label'],
+                        ]
+                ],
+
+                participant                   : [
+                        label  : 'Participant',
+                        message: 'surveyParticipants.label',
+                        fields : [
+                                'participant.funderType'         : [field: 'participant.funderType', label: 'Funder Type', message: 'org.funderType.label'],
+                                'participant.funderHskType'      : [field: 'participant.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+                                'participant.libraryType'        : [field: 'participant.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                                'participant.url'                : [field: 'participant.url', label: 'URL', message: 'default.url.label'],
+                                'participant.legalPatronName'    : [field: 'participant.legalPatronName', label: 'Lagal Patron Name', message: 'org.legalPatronName.label'],
+                                'participant.urlGov'             : [field: 'participant.urlGov', label: 'URL of governing institution', message: 'org.urlGov.label'],
+                                /*
                             'participantContact.General contact person'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
                             'participantContact.Functional Contact Billing Adress'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
                             'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
                             'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
                              */
-                            'participant.eInvoice'          : [field: 'participant.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
-                            'participant.eInvoicePortal'    : [field: 'participant.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
-                            'participant.linkResolverBaseURL'    : [field: 'participant.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
-                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
-                            'participant.libraryNetwork'    : [field: 'participant.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
-                            'participant.country'           : [field: 'participant.country', label: 'Country', message: 'org.country.label'],
-                            'participant.region'            : [field: 'participant.region', label: 'Region', message: 'org.region.label'],
-                            'participant.uuid'              : [field: 'participant.globalUID', label: 'Laser-UUID',  message: null],
-                    ]
-            ],
-            participantAccessPoints : [
-                    label: 'Participants Access Points',
-                    message: 'exportClickMe.participantAccessPoints',
-                    fields: [
-                            'participant.exportIPs'         : [field: null, label: 'Export IPs', message: 'subscriptionDetails.members.exportIPs', separateSheet: 'true'],
-                            'participant.exportProxys'      : [field: null, label: 'Export Proxys', message: 'subscriptionDetails.members.exportProxys', separateSheet: 'true'],
-                            'participant.exportEZProxys'    : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateSheet: 'true'],
-                            'participant.exportShibboleths' : [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
-                    ]
-            ],
-            participantIdentifiers : [
-                    label: 'Identifiers',
-                    message: 'exportClickMe.participantIdentifiers',
-                    fields: [:],
-            ],
-            participantCustomerIdentifiers : [
-                    label: 'Customer Identifiers',
-                    message: 'exportClickMe.participantCustomerIdentifiers',
-                    fields: [:],
-            ],
-            participantContacts : [
-                    label: 'Contacts',
-                    message: 'org.contacts.label',
-                    subTabs: [],
-                    fields: [:]
-            ],
-            participantAddresses : [
-                    label: 'Addresses',
-                    message: 'org.addresses.label',
-                    fields: [:]
-            ],
+                                'participant.eInvoice'           : [field: 'participant.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
+                                'participant.eInvoicePortal'     : [field: 'participant.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
+                                'participant.linkResolverBaseURL': [field: 'participant.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                                'participant.readerNumbers'      : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
+                                'participant.libraryNetwork'     : [field: 'participant.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
+                                'participant.country'            : [field: 'participant.country', label: 'Country', message: 'org.country.label'],
+                                'participant.region'             : [field: 'participant.region', label: 'Region', message: 'org.region.label'],
+                                'participant.uuid'               : [field: 'participant.globalUID', label: 'Laser-UUID', message: null],
+                        ]
+                ],
+                participantAccessPoints       : [
+                        label  : 'Participants Access Points',
+                        message: 'exportClickMe.participantAccessPoints',
+                        fields : [
+                                'participant.exportIPs'        : [field: null, label: 'Export IPs', message: 'subscriptionDetails.members.exportIPs', separateSheet: 'true'],
+                                'participant.exportProxys'     : [field: null, label: 'Export Proxys', message: 'subscriptionDetails.members.exportProxys', separateSheet: 'true'],
+                                'participant.exportEZProxys'   : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateSheet: 'true'],
+                                'participant.exportShibboleths': [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
+                        ]
+                ],
+                participantIdentifiers        : [
+                        label  : 'Identifiers',
+                        message: 'exportClickMe.participantIdentifiers',
+                        fields : [:],
+                ],
+                participantCustomerIdentifiers: [
+                        label  : 'Customer Identifiers',
+                        message: 'exportClickMe.participantCustomerIdentifiers',
+                        fields : [:],
+                ],
+                participantContacts           : [
+                        label  : 'Contacts',
+                        message: 'org.contacts.label',
+                        subTabs: [],
+                        fields : [:]
+                ],
+                participantAddresses          : [
+                        label  : 'Addresses',
+                        message: 'org.addresses.label',
+                        fields : [:]
+                ],
 
-            subscription: [
-                    label: 'Subscription',
-                    message: 'subscription.label',
-                    fields: [
-                            'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label'],
-                            'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
-                            'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label'],
-                            'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
-                            'subscription.isMultiYear'                  : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
-                            'subscription.referenceYear'                : [field: 'sub.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label'],
-                            'subscription.status'                       : [field: 'sub.status', label: 'Status', message: 'subscription.status.label'],
-                            'subscription.kind'                         : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label'],
-                            'subscription.form'                         : [field: 'sub.form', label: 'Form', message: 'subscription.form.label'],
-                            'subscription.resource'                     : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
-                            'subscription.hasPerpetualAccess'           : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
-                            'subscription.hasPublishComponent'          : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
-                            'subscription.holdingSelection'             : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
-                            'subscription.uuid'                         : [field: 'sub.globalUID', label: 'Laser-UUID',  message: null],
-                    ]
-            ],
+                subscription                  : [
+                        label  : 'Subscription',
+                        message: 'subscription.label',
+                        fields : [
+                                'subscription.name'                  : [field: 'sub.name', label: 'Name', message: 'subscription.name.label'],
+                                'subscription.startDate'             : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
+                                'subscription.endDate'               : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label'],
+                                'subscription.manualCancellationDate': [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
+                                'subscription.isMultiYear'           : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
+                                'subscription.referenceYear'         : [field: 'sub.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label'],
+                                'subscription.status'                : [field: 'sub.status', label: 'Status', message: 'subscription.status.label'],
+                                'subscription.kind'                  : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label'],
+                                'subscription.form'                  : [field: 'sub.form', label: 'Form', message: 'subscription.form.label'],
+                                'subscription.resource'              : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
+                                'subscription.hasPerpetualAccess'    : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
+                                'subscription.hasPublishComponent'   : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
+                                'subscription.holdingSelection'      : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
+                                'subscription.uuid'                  : [field: 'sub.globalUID', label: 'Laser-UUID', message: null],
+                        ]
+                ],
 
-    ]
+        ]
+    }
 
-    static Map<String, Object> EXPORT_ISSUE_ENTITLEMENT_CONFIG = [
-            issueEntitlement      : [
-                    label: 'IssueEntitlement',
-                    message: 'issueEntitlement.label',
-                    fields: [
-                            'issueEntitlement.tipp.name'            : [field: 'tipp.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'issueEntitlement.status'               : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true'],
-                            'issueEntitlement.tipp.medium'          : [field: 'tipp.medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true'],
-                            'issueEntitlement.accessStartDate'      : [field: 'accessStartDate', label: 'Access Start Date', message: 'subscription.details.access_start', defaultChecked: 'true'],
-                            'issueEntitlement.accessEndDate'        : [field: 'accessEndDate', label: 'Access End Date', message: 'subscription.details.access_end', defaultChecked: 'true'],
-                            'issueEntitlement.tipp.titleType'       : [field: 'tipp.titleType', label: 'Title Type', message: 'tipp.titleType', defaultChecked: 'true'],
-                            'issueEntitlement.tipp.pkg'             : [field: 'tipp.pkg.name', label: 'Package', message: 'package.label', defaultChecked: 'true'],
-                            'issueEntitlement.tipp.platform.name'   : [field: 'tipp.platform.name', label: 'Platform', message: 'tipp.platform', defaultChecked: 'true'],
-                            'issueEntitlement.tipp.ieGroup.name'   : [field: 'ieGroups.ieGroup.name', label: 'Group', message: 'issueEntitlementGroup.label', defaultChecked: 'true'],
-                            'issueEntitlement.tipp.perpetualAccessBySub'   : [field: 'perpetualAccessBySub', label: 'Perpetual Access', message: 'issueEntitlement.perpetualAccessBySub.label', defaultChecked: 'true'],
-                    ]
-            ],
-            titleDetails      : [
-                    label: 'Title Details',
-                    message: 'title.details',
-                    fields: [
-                            'issueEntitlement.tipp.hostPlatformURL' : [field: 'tipp.hostPlatformURL', label: 'Url', message: null],
-                            'issueEntitlement.tipp.dateFirstOnline' : [field: 'tipp.dateFirstOnline', label: 'Date first online', message: 'tipp.dateFirstOnline'],
-                            'issueEntitlement.tipp.dateFirstInPrint' : [field: 'tipp.dateFirstInPrint', label: 'Date first in print', message: 'tipp.dateFirstInPrint'],
-                            'issueEntitlement.tipp.firstAuthor'     : [field: 'tipp.firstAuthor', label: 'First Author', message: 'tipp.firstAuthor'],
-                            'issueEntitlement.tipp.firstEditor'     : [field: 'tipp.firstEditor', label: 'First Editor', message: 'tipp.firstEditor'],
-                            'issueEntitlement.tipp.volume'          : [field: 'tipp.volume', label: 'Volume', message: 'tipp.volume'],
-                            'issueEntitlement.tipp.editionStatement': [field: 'tipp.editionStatement', label: 'Edition Statement', message: 'title.editionStatement.label'],
-                            'issueEntitlement.tipp.editionNumber'   : [field: 'tipp.editionNumber', label: 'Edition Number', message: 'tipp.editionNumber'],
-                            'issueEntitlement.tipp.summaryOfContent': [field: 'tipp.summaryOfContent', label: 'Summary of Content', message: 'title.summaryOfContent.label'],
-                            'issueEntitlement.tipp.seriesName'      : [field: 'tipp.seriesName', label: 'Series Name', message: 'tipp.seriesName'],
-                            'issueEntitlement.tipp.subjectReference': [field: 'tipp.subjectReference', label: 'Subject Reference', message: 'tipp.subjectReference'],
-                            'issueEntitlement.tipp.delayedOA'       : [field: 'tipp.delayedOA', label: 'Delayed OA', message: 'tipp.delayedOA'],
-                            'issueEntitlement.tipp.hybridOA'        : [field: 'tipp.hybridOA', label: 'Hybrid OA', message: 'tipp.hybridOA'],
-                            'issueEntitlement.tipp.publisherName'   : [field: 'tipp.publisherName', label: 'Publisher', message: 'tipp.publisher'],
-                            'issueEntitlement.tipp.accessType'      : [field: 'tipp.accessType', label: 'Access Type', message: 'tipp.accessType'],
-                            'issueEntitlement.tipp.openAccess'      : [field: 'tipp.openAccess', label: 'Open Access', message: 'tipp.openAccess'],
-                            'issueEntitlement.tipp.ddcs'            : [field: 'tipp.ddcs', label: 'DDCs', message: 'tipp.ddc'],
-                            'issueEntitlement.tipp.languages'       : [field: 'tipp.languages', label: 'Languages', message: 'tipp.language'],
-                            'issueEntitlement.tipp.publishers'       : [field: 'tipp.publishers', label: 'Publishers', message: 'tipp.provider']
-                    ]
-            ],
-            coverage: [
-                    label: 'Coverage',
-                    message: 'tipp.coverage',
-                    fields: [
-                            'coverage.startDate'        : [field: 'startDate', label: 'Start Date', message: 'tipp.startDate'],
-                            'coverage.startVolume'      : [field: 'startVolume', label: 'Start Volume', message: 'tipp.startVolume'],
-                            'coverage.startIssue'       : [field: 'startIssue', label: 'Start Issue', message: 'tipp.startIssue'],
-                            'coverage.endDate'          : [field: 'endDate', label: 'End Date', message: 'tipp.endDate'],
-                            'coverage.endVolume'        : [field: 'endVolume', label: 'End Volume', message: 'tipp.endVolume'],
-                            'coverage.endIssue'         : [field: 'endIssue', label: 'End Issue', message: 'tipp.endIssue'],
-                            'coverage.coverageNote'     : [field: 'coverageNote', label: 'Coverage Note', message: 'default.note.label'],
-                            'coverage.coverageDepth'    : [field: 'coverageDepth', label: 'Coverage Depth', message: 'tipp.coverageDepth'],
-                            'coverage.embargo'          : [field: 'embargo', label: 'Embargo', message: 'tipp.embargo']
-                    ]
-            ],
-            priceItem: [
-                    label: 'Price Item',
-                    message: 'costItem.label',
-                    fields: [
-                            'listPriceEUR'    : [field: null, label: 'List Price EUR', message: 'tipp.listprice_eur'],
-                            'listPriceGBP'    : [field: null, label: 'List Price GBP', message: 'tipp.listprice_gbp'],
-                            'listPriceUSD'    : [field: null, label: 'List Price USD', message: 'tipp.listprice_usd'],
-                            'localPriceEUR'   : [field: null, label: 'Local Price EUR', message: 'tipp.localprice_eur'],
-                            'localPriceGBP'   : [field: null, label: 'Local Price GBP', message: 'tipp.localprice_gbp'],
-                            'localPriceUSD'   : [field: null, label: 'Local Price USD', message: 'tipp.localprice_usd']
-                    ]
-            ],
-            issueEntitlementIdentifiers : [
-                    label: 'Identifiers',
-                    message: 'identifier.plural',
-                    fields: [:]
-            ],
+    Map<String, Object> getDefaultExportIssueEntitlementConfig() {
+        return [
+                issueEntitlement           : [
+                        label  : 'IssueEntitlement',
+                        message: 'issueEntitlement.label',
+                        fields : [
+                                'issueEntitlement.tipp.name'                : [field: 'tipp.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true'],
+                                'issueEntitlement.status'                   : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true'],
+                                'issueEntitlement.tipp.medium'              : [field: 'tipp.medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true'],
+                                'issueEntitlement.accessStartDate'          : [field: 'accessStartDate', label: 'Access Start Date', message: 'subscription.details.access_start', defaultChecked: 'true'],
+                                'issueEntitlement.accessEndDate'            : [field: 'accessEndDate', label: 'Access End Date', message: 'subscription.details.access_end', defaultChecked: 'true'],
+                                'issueEntitlement.tipp.titleType'           : [field: 'tipp.titleType', label: 'Title Type', message: 'tipp.titleType', defaultChecked: 'true'],
+                                'issueEntitlement.tipp.pkg'                 : [field: 'tipp.pkg.name', label: 'Package', message: 'package.label', defaultChecked: 'true'],
+                                'issueEntitlement.tipp.platform.name'       : [field: 'tipp.platform.name', label: 'Platform', message: 'tipp.platform', defaultChecked: 'true'],
+                                'issueEntitlement.tipp.ieGroup.name'        : [field: 'ieGroups.ieGroup.name', label: 'Group', message: 'issueEntitlementGroup.label', defaultChecked: 'true'],
+                                'issueEntitlement.tipp.perpetualAccessBySub': [field: 'perpetualAccessBySub', label: 'Perpetual Access', message: 'issueEntitlement.perpetualAccessBySub.label', defaultChecked: 'true'],
+                        ]
+                ],
+                titleDetails               : [
+                        label  : 'Title Details',
+                        message: 'title.details',
+                        fields : [
+                                'issueEntitlement.tipp.hostPlatformURL' : [field: 'tipp.hostPlatformURL', label: 'Url', message: null],
+                                'issueEntitlement.tipp.dateFirstOnline' : [field: 'tipp.dateFirstOnline', label: 'Date first online', message: 'tipp.dateFirstOnline'],
+                                'issueEntitlement.tipp.dateFirstInPrint': [field: 'tipp.dateFirstInPrint', label: 'Date first in print', message: 'tipp.dateFirstInPrint'],
+                                'issueEntitlement.tipp.firstAuthor'     : [field: 'tipp.firstAuthor', label: 'First Author', message: 'tipp.firstAuthor'],
+                                'issueEntitlement.tipp.firstEditor'     : [field: 'tipp.firstEditor', label: 'First Editor', message: 'tipp.firstEditor'],
+                                'issueEntitlement.tipp.volume'          : [field: 'tipp.volume', label: 'Volume', message: 'tipp.volume'],
+                                'issueEntitlement.tipp.editionStatement': [field: 'tipp.editionStatement', label: 'Edition Statement', message: 'title.editionStatement.label'],
+                                'issueEntitlement.tipp.editionNumber'   : [field: 'tipp.editionNumber', label: 'Edition Number', message: 'tipp.editionNumber'],
+                                'issueEntitlement.tipp.summaryOfContent': [field: 'tipp.summaryOfContent', label: 'Summary of Content', message: 'title.summaryOfContent.label'],
+                                'issueEntitlement.tipp.seriesName'      : [field: 'tipp.seriesName', label: 'Series Name', message: 'tipp.seriesName'],
+                                'issueEntitlement.tipp.subjectReference': [field: 'tipp.subjectReference', label: 'Subject Reference', message: 'tipp.subjectReference'],
+                                'issueEntitlement.tipp.delayedOA'       : [field: 'tipp.delayedOA', label: 'Delayed OA', message: 'tipp.delayedOA'],
+                                'issueEntitlement.tipp.hybridOA'        : [field: 'tipp.hybridOA', label: 'Hybrid OA', message: 'tipp.hybridOA'],
+                                'issueEntitlement.tipp.publisherName'   : [field: 'tipp.publisherName', label: 'Publisher', message: 'tipp.publisher'],
+                                'issueEntitlement.tipp.accessType'      : [field: 'tipp.accessType', label: 'Access Type', message: 'tipp.accessType'],
+                                'issueEntitlement.tipp.openAccess'      : [field: 'tipp.openAccess', label: 'Open Access', message: 'tipp.openAccess'],
+                                'issueEntitlement.tipp.ddcs'            : [field: 'tipp.ddcs', label: 'DDCs', message: 'tipp.ddc'],
+                                'issueEntitlement.tipp.languages'       : [field: 'tipp.languages', label: 'Languages', message: 'tipp.language'],
+                                'issueEntitlement.tipp.publishers'      : [field: 'tipp.publishers', label: 'Publishers', message: 'tipp.provider']
+                        ]
+                ],
+                coverage                   : [
+                        label  : 'Coverage',
+                        message: 'tipp.coverage',
+                        fields : [
+                                'coverage.startDate'    : [field: 'startDate', label: 'Start Date', message: 'tipp.startDate'],
+                                'coverage.startVolume'  : [field: 'startVolume', label: 'Start Volume', message: 'tipp.startVolume'],
+                                'coverage.startIssue'   : [field: 'startIssue', label: 'Start Issue', message: 'tipp.startIssue'],
+                                'coverage.endDate'      : [field: 'endDate', label: 'End Date', message: 'tipp.endDate'],
+                                'coverage.endVolume'    : [field: 'endVolume', label: 'End Volume', message: 'tipp.endVolume'],
+                                'coverage.endIssue'     : [field: 'endIssue', label: 'End Issue', message: 'tipp.endIssue'],
+                                'coverage.coverageNote' : [field: 'coverageNote', label: 'Coverage Note', message: 'default.note.label'],
+                                'coverage.coverageDepth': [field: 'coverageDepth', label: 'Coverage Depth', message: 'tipp.coverageDepth'],
+                                'coverage.embargo'      : [field: 'embargo', label: 'Embargo', message: 'tipp.embargo']
+                        ]
+                ],
+                priceItem                  : [
+                        label  : 'Price Item',
+                        message: 'costItem.label',
+                        fields : [
+                                'listPriceEUR' : [field: null, label: 'List Price EUR', message: 'tipp.listprice_eur'],
+                                'listPriceGBP' : [field: null, label: 'List Price GBP', message: 'tipp.listprice_gbp'],
+                                'listPriceUSD' : [field: null, label: 'List Price USD', message: 'tipp.listprice_usd'],
+                                'localPriceEUR': [field: null, label: 'Local Price EUR', message: 'tipp.localprice_eur'],
+                                'localPriceGBP': [field: null, label: 'Local Price GBP', message: 'tipp.localprice_gbp'],
+                                'localPriceUSD': [field: null, label: 'Local Price USD', message: 'tipp.localprice_usd']
+                        ]
+                ],
+                issueEntitlementIdentifiers: [
+                        label  : 'Identifiers',
+                        message: 'identifier.plural',
+                        fields : [:]
+                ],
 
-            subscription: [
-                    label: 'Subscription',
-                    message: 'subscription.label',
-                    fields: [
-                            'subscription.name'                         : [field: 'subscription.name', label: 'Name', message: 'subscription.name.label'],
-                            'subscription.startDate'                    : [field: 'subscription.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
-                            'subscription.endDate'                      : [field: 'subscription.endDate', label: 'End Date', message: 'subscription.endDate.label'],
-                            'subscription.manualCancellationDate'       : [field: 'subscription.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
-                            'subscription.isMultiYear'                  : [field: 'subscription.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
-                            'subscription.referenceYear'                : [field: 'subscription.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label'],
-                            //'subscription.isAutomaticRenewAnnually'     : [field: 'subscription.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'],
-                            'subscription.status'                       : [field: 'subscription.status', label: 'Status', message: 'subscription.status.label'],
-                            'subscription.kind'                         : [field: 'subscription.kind', label: 'Kind', message: 'subscription.kind.label'],
-                            'subscription.form'                         : [field: 'subscription.form', label: 'Form', message: 'subscription.form.label'],
-                            'subscription.resource'                     : [field: 'subscription.resource', label: 'Resource', message: 'subscription.resource.label'],
-                            'subscription.hasPerpetualAccess'           : [field: 'subscription.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
-                            'subscription.hasPublishComponent'          : [field: 'subscription.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
-                            'subscription.holdingSelection'             : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
-                            'subscription.uuid'                         : [field: 'subscription.globalUID', label: 'Laser-UUID',  message: null],
-                    ]
-            ],
-    ]
+                subscription               : [
+                        label  : 'Subscription',
+                        message: 'subscription.label',
+                        fields : [
+                                'subscription.name'                  : [field: 'subscription.name', label: 'Name', message: 'subscription.name.label'],
+                                'subscription.startDate'             : [field: 'subscription.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
+                                'subscription.endDate'               : [field: 'subscription.endDate', label: 'End Date', message: 'subscription.endDate.label'],
+                                'subscription.manualCancellationDate': [field: 'subscription.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
+                                'subscription.isMultiYear'           : [field: 'subscription.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
+                                'subscription.referenceYear'         : [field: 'subscription.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label'],
+                                //'subscription.isAutomaticRenewAnnually'     : [field: 'subscription.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'],
+                                'subscription.status'                : [field: 'subscription.status', label: 'Status', message: 'subscription.status.label'],
+                                'subscription.kind'                  : [field: 'subscription.kind', label: 'Kind', message: 'subscription.kind.label'],
+                                'subscription.form'                  : [field: 'subscription.form', label: 'Form', message: 'subscription.form.label'],
+                                'subscription.resource'              : [field: 'subscription.resource', label: 'Resource', message: 'subscription.resource.label'],
+                                'subscription.hasPerpetualAccess'    : [field: 'subscription.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
+                                'subscription.hasPublishComponent'   : [field: 'subscription.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
+                                'subscription.holdingSelection'      : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
+                                'subscription.uuid'                  : [field: 'subscription.globalUID', label: 'Laser-UUID', message: null],
+                        ]
+                ],
+        ]
+    }
 
-    static Map<String, Object> EXPORT_TIPP_CONFIG = [
-            tipp      : [
-                    label: 'Title',
-                    message: 'default.title.label',
-                    fields: [
-                            'tipp.name'            : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true', sqlCol: 'tipp_name' ],
-                            'tipp.status'          : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true', sqlCol: 'tipp_status_rv_fk'],
-                            'tipp.medium'          : [field: 'medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true', sqlCol: 'tipp_medium_rv_fk'],
-                            'tipp.titleType'       : [field: 'titleType', label: 'Title Type', message: 'tipp.titleType', defaultChecked: 'true', sqlCol: 'tipp_title_type'],
-                            'tipp.pkg'             : [field: 'pkg.name', label: 'Package', message: 'package.label', defaultChecked: 'true', sqlCol: 'pkg_name'],
-                            'tipp.platform.name'   : [field: 'platform.name', label: 'Platform', message: 'tipp.platform', defaultChecked: 'true', sqlCol: 'plat_name'],
-                    ]
-            ],
-            titleDetails      : [
-                    label: 'Title Details',
-                    message: 'title.details',
-                    fields: [
-                            'tipp.hostPlatformURL' : [field: 'hostPlatformURL', label: 'Url', message: null, sqlCol: 'tipp_host_platform_url'],
-                            'tipp.dateFirstOnline' : [field: 'dateFirstOnline', label: 'Date first online', message: 'tipp.dateFirstOnline', sqlCol: 'tipp_date_first_online'],
-                            'tipp.dateFirstInPrint' : [field: 'dateFirstInPrint', label: 'Date first in print', message: 'tipp.dateFirstInPrint', sqlCol: 'tipp_date_first_in_print'],
-                            'tipp.firstAuthor'     : [field: 'firstAuthor', label: 'First Author', message: 'tipp.firstAuthor', sqlCol: 'tipp_first_author'],
-                            'tipp.firstEditor'     : [field: 'firstEditor', label: 'First Editor', message: 'tipp.firstEditor', sqlCol: 'tipp_first_editor'],
-                            'tipp.volume'          : [field: 'volume', label: 'Volume', message: 'tipp.volume', sqlCol: 'tipp_volume'],
-                            'tipp.editionStatement': [field: 'editionStatement', label: 'Edition Statement', message: 'title.editionStatement.label', sqlCol: 'tipp_edition_statement'],
-                            'tipp.editionNumber'   : [field: 'editionNumber', label: 'Edition Number', message: 'tipp.editionNumber', sqlCol: 'tipp_edition_number'],
-                            'tipp.summaryOfContent': [field: 'summaryOfContent', label: 'Summary of Content', message: 'title.summaryOfContent.label', sqlCol: 'tipp_summary_of_content'],
-                            'tipp.seriesName'      : [field: 'seriesName', label: 'Series Name', message: 'tipp.seriesName', sqlCol: 'tipp_series_name'],
-                            'tipp.subjectReference': [field: 'subjectReference', label: 'Subject Reference', message: 'tipp.subjectReference', sqlCol: 'tipp_subject_reference'],
-                            'tipp.delayedOA'       : [field: 'delayedOA', label: 'Delayed OA', message: 'tipp.delayedOA', sqlCol: 'tipp_delayedoa_rv_fk'],
-                            'tipp.hybridOA'        : [field: 'hybridOA', label: 'Hybrid OA', message: 'tipp.hybridOA', sqlCol: 'tipp_hybridoa_rv_fk'],
-                            'tipp.publisherName'   : [field: 'publisherName', label: 'Publisher', message: 'tipp.publisher', sqlCol: 'tipp_publisher_name'],
-                            'tipp.accessType'      : [field: 'accessType', label: 'Access Type', message: 'tipp.accessType', sqlCol: 'tipp_access_type_rv_fk'],
-                            'tipp.openAccess'      : [field: 'openAccess', label: 'Open Access', message: 'tipp.openAccess', sqlCol: 'tipp_open_access_rv_fk'],
-                            'tipp.ddcs'            : [field: 'ddcs', label: 'DDCs', message: 'tipp.ddc', sqlCol: 'ddc'],
-                            'tipp.languages'       : [field: 'languages', label: 'Languages', message: 'tipp.language', sqlCol: 'language']
-                    ]
-            ],
-            coverage: [
-                    label: 'Coverage',
-                    message: 'tipp.coverage',
-                    fields: [
-                            'coverage.startDate'        : [field: 'startDate', label: 'Start Date', message: 'tipp.startDate', sqlCol: 'tc_start_date'],
-                            'coverage.startVolume'      : [field: 'startVolume', label: 'Start Volume', message: 'tipp.startVolume', sqlCol:'tc_start_volume'],
-                            'coverage.startIssue'       : [field: 'startIssue', label: 'Start Issue', message: 'tipp.startIssue', sqlCol:'tc_start_issue'],
-                            'coverage.endDate'          : [field: 'endDate', label: 'End Date', message: 'tipp.endDate', sqlCol:'tc_end_date'],
-                            'coverage.endVolume'        : [field: 'endVolume', label: 'End Volume', message: 'tipp.endVolume', sqlCol:'tc_end_volume'],
-                            'coverage.endIssue'         : [field: 'endIssue', label: 'End Issue', message: 'tipp.endIssue', sqlCol:'tc_end_issue'],
-                            'coverage.coverageNote'     : [field: 'coverageNote', label: 'Coverage Note', message: 'default.note.label', sqlCol:'tc_coverage_note'],
-                            'coverage.coverageDepth'    : [field: 'coverageDepth', label: 'Coverage Depth', message: 'tipp.coverageDepth', sqlCol:'tc_coverage_depth'],
-                            'coverage.embargo'          : [field: 'embargo', label: 'Embargo', message: 'tipp.embargo', sqlCol:'tc_embargo']
-                    ]
-            ],
-            priceItem: [
-                    label: 'Price Item',
-                    message: 'costItem.label',
-                    fields: [
-                            'listPriceEUR'    : [field: null, label: 'List Price EUR', message: 'tipp.listprice_eur', sqlCol: 'list_price_eur'],
-                            'listPriceGBP'    : [field: null, label: 'List Price GBP', message: 'tipp.listprice_gbp', sqlCol: 'list_price_gbp'],
-                            'listPriceUSD'    : [field: null, label: 'List Price USD', message: 'tipp.listprice_usd', sqlCol: 'list_price_usd'],
-                            /*'localPriceEUR'   : [field: null, label: 'Local Price EUR', message: 'tipp.localprice_eur', sqlCol: 'local_price_eur'],
-                            'localPriceGBP'   : [field: null, label: 'Local Price GBP', message: 'tipp.localprice_gbp', sqlCol: 'local_price_gbp'],
-                            'localPriceUSD'   : [field: null, label: 'Local Price USD', message: 'tipp.localprice_usd', sqlCol: 'local_price_usd']*/
-                    ]
-            ],
-            tippIdentifiers : [
-                    label: 'Identifiers',
-                    message: 'identifier.plural',
-                    fields: [:]
-            ],
-    ]
+    Map<String, Object> getDefaultExportTippConfig(){
+        return [
+                tipp      : [
+                        label: 'Title',
+                        message: 'default.title.label',
+                        fields: [
+                                'tipp.name'            : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true', sqlCol: 'tipp_name' ],
+                                'tipp.status'          : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true', sqlCol: 'tipp_status_rv_fk'],
+                                'tipp.medium'          : [field: 'medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true', sqlCol: 'tipp_medium_rv_fk'],
+                                'tipp.titleType'       : [field: 'titleType', label: 'Title Type', message: 'tipp.titleType', defaultChecked: 'true', sqlCol: 'tipp_title_type'],
+                                'tipp.pkg'             : [field: 'pkg.name', label: 'Package', message: 'package.label', defaultChecked: 'true', sqlCol: 'pkg_name'],
+                                'tipp.platform.name'   : [field: 'platform.name', label: 'Platform', message: 'tipp.platform', defaultChecked: 'true', sqlCol: 'plat_name'],
+                        ]
+                ],
+                titleDetails      : [
+                        label: 'Title Details',
+                        message: 'title.details',
+                        fields: [
+                                'tipp.hostPlatformURL' : [field: 'hostPlatformURL', label: 'Url', message: null, sqlCol: 'tipp_host_platform_url'],
+                                'tipp.dateFirstOnline' : [field: 'dateFirstOnline', label: 'Date first online', message: 'tipp.dateFirstOnline', sqlCol: 'tipp_date_first_online'],
+                                'tipp.dateFirstInPrint' : [field: 'dateFirstInPrint', label: 'Date first in print', message: 'tipp.dateFirstInPrint', sqlCol: 'tipp_date_first_in_print'],
+                                'tipp.firstAuthor'     : [field: 'firstAuthor', label: 'First Author', message: 'tipp.firstAuthor', sqlCol: 'tipp_first_author'],
+                                'tipp.firstEditor'     : [field: 'firstEditor', label: 'First Editor', message: 'tipp.firstEditor', sqlCol: 'tipp_first_editor'],
+                                'tipp.volume'          : [field: 'volume', label: 'Volume', message: 'tipp.volume', sqlCol: 'tipp_volume'],
+                                'tipp.editionStatement': [field: 'editionStatement', label: 'Edition Statement', message: 'title.editionStatement.label', sqlCol: 'tipp_edition_statement'],
+                                'tipp.editionNumber'   : [field: 'editionNumber', label: 'Edition Number', message: 'tipp.editionNumber', sqlCol: 'tipp_edition_number'],
+                                'tipp.summaryOfContent': [field: 'summaryOfContent', label: 'Summary of Content', message: 'title.summaryOfContent.label', sqlCol: 'tipp_summary_of_content'],
+                                'tipp.seriesName'      : [field: 'seriesName', label: 'Series Name', message: 'tipp.seriesName', sqlCol: 'tipp_series_name'],
+                                'tipp.subjectReference': [field: 'subjectReference', label: 'Subject Reference', message: 'tipp.subjectReference', sqlCol: 'tipp_subject_reference'],
+                                'tipp.delayedOA'       : [field: 'delayedOA', label: 'Delayed OA', message: 'tipp.delayedOA', sqlCol: 'tipp_delayedoa_rv_fk'],
+                                'tipp.hybridOA'        : [field: 'hybridOA', label: 'Hybrid OA', message: 'tipp.hybridOA', sqlCol: 'tipp_hybridoa_rv_fk'],
+                                'tipp.publisherName'   : [field: 'publisherName', label: 'Publisher', message: 'tipp.publisher', sqlCol: 'tipp_publisher_name'],
+                                'tipp.accessType'      : [field: 'accessType', label: 'Access Type', message: 'tipp.accessType', sqlCol: 'tipp_access_type_rv_fk'],
+                                'tipp.openAccess'      : [field: 'openAccess', label: 'Open Access', message: 'tipp.openAccess', sqlCol: 'tipp_open_access_rv_fk'],
+                                'tipp.ddcs'            : [field: 'ddcs', label: 'DDCs', message: 'tipp.ddc', sqlCol: 'ddc'],
+                                'tipp.languages'       : [field: 'languages', label: 'Languages', message: 'tipp.language', sqlCol: 'language']
+                        ]
+                ],
+                coverage: [
+                        label: 'Coverage',
+                        message: 'tipp.coverage',
+                        fields: [
+                                'coverage.startDate'        : [field: 'startDate', label: 'Start Date', message: 'tipp.startDate', sqlCol: 'tc_start_date'],
+                                'coverage.startVolume'      : [field: 'startVolume', label: 'Start Volume', message: 'tipp.startVolume', sqlCol:'tc_start_volume'],
+                                'coverage.startIssue'       : [field: 'startIssue', label: 'Start Issue', message: 'tipp.startIssue', sqlCol:'tc_start_issue'],
+                                'coverage.endDate'          : [field: 'endDate', label: 'End Date', message: 'tipp.endDate', sqlCol:'tc_end_date'],
+                                'coverage.endVolume'        : [field: 'endVolume', label: 'End Volume', message: 'tipp.endVolume', sqlCol:'tc_end_volume'],
+                                'coverage.endIssue'         : [field: 'endIssue', label: 'End Issue', message: 'tipp.endIssue', sqlCol:'tc_end_issue'],
+                                'coverage.coverageNote'     : [field: 'coverageNote', label: 'Coverage Note', message: 'default.note.label', sqlCol:'tc_coverage_note'],
+                                'coverage.coverageDepth'    : [field: 'coverageDepth', label: 'Coverage Depth', message: 'tipp.coverageDepth', sqlCol:'tc_coverage_depth'],
+                                'coverage.embargo'          : [field: 'embargo', label: 'Embargo', message: 'tipp.embargo', sqlCol:'tc_embargo']
+                        ]
+                ],
+                priceItem: [
+                        label: 'Price Item',
+                        message: 'costItem.label',
+                        fields: [
+                                'listPriceEUR'    : [field: null, label: 'List Price EUR', message: 'tipp.listprice_eur', sqlCol: 'list_price_eur'],
+                                'listPriceGBP'    : [field: null, label: 'List Price GBP', message: 'tipp.listprice_gbp', sqlCol: 'list_price_gbp'],
+                                'listPriceUSD'    : [field: null, label: 'List Price USD', message: 'tipp.listprice_usd', sqlCol: 'list_price_usd'],
+                                /*'localPriceEUR'   : [field: null, label: 'Local Price EUR', message: 'tipp.localprice_eur', sqlCol: 'local_price_eur'],
+                                'localPriceGBP'   : [field: null, label: 'Local Price GBP', message: 'tipp.localprice_gbp', sqlCol: 'local_price_gbp'],
+                                'localPriceUSD'   : [field: null, label: 'Local Price USD', message: 'tipp.localprice_usd', sqlCol: 'local_price_usd']*/
+                        ]
+                ],
+                tippIdentifiers : [
+                        label: 'Identifiers',
+                        message: 'identifier.plural',
+                        fields: [:]
+                ],
+        ]
+    }
 
     /**
      * Gets the fields for the subscription renewal for the given survey for processing
@@ -1883,8 +1929,8 @@ class ExportClickMeService {
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
-        EXPORT_SURVEY_RENEWAL_CONFIG.keySet().each {
-            EXPORT_SURVEY_RENEWAL_CONFIG.get(it).fields.each {
+        getDefaultExportSurveyRenewalConfig().keySet().each {
+            getDefaultExportSurveyRenewalConfig().get(it).fields.each {
                 exportFields.put(it.key, it.value)
             }
         }
@@ -1958,10 +2004,10 @@ class ExportClickMeService {
      * @param surveyConfig the survey to which the renewal fields should be generated
      * @return the configuration map for the survey for the modal
      */
-    Map<String, Object> getExportRenewalFieldsForUI(SurveyConfig surveyConfig, ClickMeConfig clickMeConfig = null) {
+    Map<String, Object> getExportRenewalFieldsForUI(SurveyConfig surveyConfig) {
 
         Map<String, Object> fields = [:]
-        fields.putAll(EXPORT_SURVEY_RENEWAL_CONFIG)
+        fields.putAll(getDefaultExportSurveyRenewalConfig())
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
@@ -2063,8 +2109,6 @@ class ExportClickMeService {
             }
         }
 
-        fields = getClickMeFields(clickMeConfig, fields)
-
         fields
     }
 
@@ -2078,8 +2122,8 @@ class ExportClickMeService {
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
-        EXPORT_SUBSCRIPTION_MEMBERS_CONFIG.keySet().each {
-            EXPORT_SUBSCRIPTION_MEMBERS_CONFIG.get(it).fields.each {
+        getDefaultExportSubscriptionMembersConfig().keySet().each {
+            getDefaultExportSubscriptionMembersConfig().get(it).fields.each {
                 exportFields.put(it.key, it.value)
             }
         }
@@ -2139,10 +2183,10 @@ class ExportClickMeService {
      * @param subscription the subscription whose members should be exported
      * @return the configuration map for the subscription member export for the UI
      */
-    Map<String, Object> getExportSubscriptionMembersFieldsForUI(Subscription subscription = null, ClickMeConfig clickMeConfig = null) {
+    Map<String, Object> getExportSubscriptionMembersFieldsForUI(Subscription subscription = null) {
         Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:]
-        fields.putAll(EXPORT_SUBSCRIPTION_MEMBERS_CONFIG)
+        fields.putAll(getDefaultExportSubscriptionMembersConfig())
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
         fields.participantIdentifiers.fields.clear()
@@ -2208,8 +2252,6 @@ class ExportClickMeService {
             fields.participantAddresses.fields.put("participantAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
         }
 
-        fields = getClickMeFields(clickMeConfig, fields)
-
         fields
     }
 
@@ -2234,7 +2276,7 @@ class ExportClickMeService {
                 break
         }
 
-        Map<String, Object> config = contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_SUBSCRIPTION_SUPPORT_CONFIG : EXPORT_SUBSCRIPTION_CONFIG
+        Map<String, Object> config = contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? getDefaultExportSubscriptionSupportConfig() : getDefaultExportSubscriptionConfig()
 
         config.keySet().each { String key ->
             if(key == 'institutions') {
@@ -2252,8 +2294,8 @@ class ExportClickMeService {
         }
 
         if(showTransferFields){
-            EXPORT_SUBSCRIPTION_TRANSFER_CONFIG.keySet().each { String key ->
-                EXPORT_SUBSCRIPTION_TRANSFER_CONFIG.get(key).fields.each {
+            getDefaultExportSubscriptionTransferConfig().keySet().each { String key ->
+                getDefaultExportSubscriptionTransferConfig().get(key).fields.each {
                     exportFields.put(it.key, it.value)
                 }
             }
@@ -2319,10 +2361,11 @@ class ExportClickMeService {
      * @param showTransferFields should the subscription transfer fields be displayed as well?
      * @return the configuration map for the subscription export for the UI
      */
-    Map<String, Object> getExportSubscriptionFieldsForUI(boolean showTransferFields = false, ClickMeConfig clickMeConfig = null) {
+    Map<String, Object> getExportSubscriptionFieldsForUI(boolean showTransferFields = false) {
         Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:]
-        fields.putAll(contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_SUBSCRIPTION_SUPPORT_CONFIG : EXPORT_SUBSCRIPTION_CONFIG)
+
+        fields.putAll(contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? getDefaultExportSubscriptionSupportConfig() : getDefaultExportSubscriptionConfig())
 
         if(contextOrg.getCustomerType() == CustomerTypeService.ORG_INST_PRO)
             fields.subscription.fields.put('subscription.isAutomaticRenewAnnually', [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
@@ -2333,7 +2376,7 @@ class ExportClickMeService {
         }
 
         if(showTransferFields){
-            fields << EXPORT_SUBSCRIPTION_TRANSFER_CONFIG as Map
+            fields << getDefaultExportSubscriptionTransferConfig() as Map
         }
 
         Locale locale = LocaleUtils.getCurrentLocale()
@@ -2428,7 +2471,7 @@ class ExportClickMeService {
                 break
         }
 
-        Map<String, Object> config = contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_CONSORTIA_PARTICIPATIONS_SUPPORT_CONFIG : EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG
+        Map<String, Object> config = contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? getDefaultExportConsortiaParticipationsSupportConfig() : getDefaultExportConsortiaParticipationsConfig()
 
         config.keySet().each { String key ->
             config.get(key).fields.each {
@@ -2483,10 +2526,10 @@ class ExportClickMeService {
      * Gets the export fields for the given contextOrg for the UI
      * @return the configuration map for the participation export for the UI
      */
-    Map<String, Object> getExportConsortiaParticipationFieldsForUI(ClickMeConfig clickMeConfig = null) {
+    Map<String, Object> getExportConsortiaParticipationFieldsForUI() {
         Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:]
-        fields.putAll(contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_CONSORTIA_PARTICIPATIONS_SUPPORT_CONFIG : EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG)
+        fields.putAll(contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? getDefaultExportConsortiaParticipationsSupportConfig() : getDefaultExportConsortiaParticipationsConfig())
 
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName
@@ -2558,8 +2601,6 @@ class ExportClickMeService {
             }
         }
 
-        fields = getClickMeFields(clickMeConfig, fields)
-
         fields
     }
 
@@ -2583,7 +2624,7 @@ class ExportClickMeService {
                 break
         }
 
-        Map<String, Object> config = contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_LICENSE_SUPPORT_CONFIG : EXPORT_LICENSE_CONFIG
+        Map<String, Object> config = contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? getDefaultExportLicenseSupportConfig() : getDefaultExportLicenseConfig()
 
         config.keySet().each { String key ->
             if(key == 'institutions') {
@@ -2624,10 +2665,10 @@ class ExportClickMeService {
      * Gets the license fields for the given contextOrg for the UI
      * @return the configuration map for the subscription export for the UI
      */
-    Map<String, Object> getExportLicenseFieldsForUI(ClickMeConfig clickMeConfig = null) {
+    Map<String, Object> getExportLicenseFieldsForUI() {
         Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:]
-        fields.putAll(contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_LICENSE_SUPPORT_CONFIG : EXPORT_LICENSE_CONFIG)
+        fields.putAll(contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? getDefaultExportLicenseSupportConfig() : getDefaultExportLicenseConfig())
 
         if (!contextOrg.isCustomerType_Consortium()) {
             fields.remove('institutions')
@@ -2663,7 +2704,7 @@ class ExportClickMeService {
                 fields.licProperties.fields << ["licProperty.${propertyDefinition.id}": [field: null, label: propertyDefinition."${localizedName}", privateProperty: false]]
         }
 
-        fields = getClickMeFields(clickMeConfig, fields)
+
 
         fields
     }
@@ -2678,8 +2719,8 @@ class ExportClickMeService {
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
-        EXPORT_COST_ITEM_CONFIG.keySet().each {
-            EXPORT_COST_ITEM_CONFIG.get(it).fields.each {
+        getDefaultExportCostItemConfig().keySet().each {
+            getDefaultExportCostItemConfig().get(it).fields.each {
                 exportFields.put(it.key, it.value)
             }
         }
@@ -2729,11 +2770,11 @@ class ExportClickMeService {
      * @param sub the {@link Subscription} whose packages should be included in the export
      * @return the configuration map for the cost item export for UI
      */
-    Map<String, Object> getExportCostItemFieldsForUI(Subscription sub = null, ClickMeConfig clickMeConfig = null) {
+    Map<String, Object> getExportCostItemFieldsForUI(Subscription sub = null) {
         Org contextOrg = contextService.getOrg()
 
         Map<String, Object> fields = [:]
-        fields.putAll(EXPORT_COST_ITEM_CONFIG)
+        fields.putAll(getDefaultExportCostItemConfig())
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
         if(contextOrg.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
@@ -2782,7 +2823,7 @@ class ExportClickMeService {
             fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
         }
 
-        fields = getClickMeFields(clickMeConfig, fields)
+
 
         fields
     }
@@ -2796,8 +2837,8 @@ class ExportClickMeService {
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
-        EXPORT_SURVEY_COST_ITEM_CONFIG.keySet().each {
-            EXPORT_SURVEY_COST_ITEM_CONFIG.get(it).fields.each {
+        getDefaultExportSurveyCostItemConfig().keySet().each {
+            getDefaultExportSurveyCostItemConfig().get(it).fields.each {
                 exportFields.put(it.key, it.value)
             }
         }
@@ -2826,11 +2867,11 @@ class ExportClickMeService {
      * Gets the cost item fields for the given contextOrg
      * @return the configuration map for the cost item export for UI
      */
-    Map<String, Object> getExportSurveyCostItemFieldsForUI(ClickMeConfig clickMeConfig = null) {
+    Map<String, Object> getExportSurveyCostItemFieldsForUI() {
         Org contextOrg = contextService.getOrg()
 
         Map<String, Object> fields = [:]
-        fields.putAll(EXPORT_SURVEY_COST_ITEM_CONFIG)
+        fields.putAll(getDefaultExportSurveyCostItemConfig())
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
         fields.participantIdentifiers.fields.clear()
@@ -2857,7 +2898,7 @@ class ExportClickMeService {
             fields.participantAddresses.fields.put("participantAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
         }
 
-        fields = getClickMeFields(clickMeConfig, fields)
+
 
         fields
     }
@@ -2883,8 +2924,8 @@ class ExportClickMeService {
 
         switch(config) {
             case 'consortium':
-                EXPORT_CONSORTIA_CONFIG.keySet().each {
-                    EXPORT_CONSORTIA_CONFIG.get(it).fields.each {
+                getDefaultExportConsortiaConfig().keySet().each {
+                    getDefaultExportConsortiaConfig().get(it).fields.each {
                         exportFields.put(it.key, it.value)
                     }
                 }
@@ -2904,7 +2945,7 @@ class ExportClickMeService {
                 }
                 break
             case 'institution':
-                Map<String, Object> config2 = contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_ORG_SUPPORT_CONFIG : EXPORT_ORG_CONFIG
+                Map<String, Object> config2 = contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? getDefaultExportOrgSupportConfig() : getDefaultExportOrgConfig()
 
                 config2.keySet().each {
                     config2.get(it).fields.each {
@@ -2931,8 +2972,8 @@ class ExportClickMeService {
                 }
                 break
             case 'member':
-                EXPORT_ORG_CONFIG.keySet().each {
-                    EXPORT_ORG_CONFIG.get(it).fields.each {
+                getDefaultExportOrgConfig().keySet().each {
+                    getDefaultExportOrgConfig().get(it).fields.each {
                         exportFields.put(it.key, it.value)
                     }
                 }
@@ -2967,7 +3008,7 @@ class ExportClickMeService {
      * @param orgType the organisation type to be exported
      * @return the configuration map for the organisation export for UI
      */
-    Map<String, Object> getExportOrgFieldsForUI(String orgType, ClickMeConfig clickMeConfig = null) {
+    Map<String, Object> getExportOrgFieldsForUI(String orgType) {
 
 //        println 'orgType'
 //        println orgType
@@ -2986,7 +3027,7 @@ class ExportClickMeService {
         String subTabActive = funcType.desc
 
         switch(orgType) {
-            case 'consortium': fields.putAll(EXPORT_CONSORTIA_CONFIG)
+            case 'consortium': fields.putAll(getDefaultExportConsortiaConfig())
                 fields.consortiumIdentifiers.fields.clear()
                 IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
                     fields.consortiumIdentifiers.fields << ["consortiumIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
@@ -3011,7 +3052,7 @@ class ExportClickMeService {
                 }
                 break
             case 'institution':
-                fields.putAll(contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? EXPORT_ORG_SUPPORT_CONFIG : EXPORT_ORG_CONFIG)
+                fields.putAll(contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? getDefaultExportOrgSupportConfig() : getDefaultExportOrgConfig())
 
                 fields.participant.fields << ['participant.subscriptions':[field: null, label: 'Subscriptions',  message: 'subscription.plural']]
                 fields.participantIdentifiers.fields.clear()
@@ -3046,7 +3087,7 @@ class ExportClickMeService {
                 break
         }
 
-        fields = getClickMeFields(clickMeConfig, fields)
+
 
         fields
     }
@@ -3061,8 +3102,8 @@ class ExportClickMeService {
         contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
         addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
 
-        EXPORT_VENDOR_CONFIG.keySet().each {
-            EXPORT_VENDOR_CONFIG.get(it).fields.each {
+        getDefaultExportVendorConfig().keySet().each {
+            getDefaultExportVendorConfig().get(it).fields.each {
                 exportFields.put(it.key, it.value)
             }
         }
@@ -3088,7 +3129,7 @@ class ExportClickMeService {
         exportFields
     }
 
-    Map<String, Object> getExportVendorFieldsForUI(ClickMeConfig clickMeConfig = null) {
+    Map<String, Object> getExportVendorFieldsForUI() {
         Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:], contextParams = [ctx: contextOrg]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
@@ -3101,7 +3142,7 @@ class ExportClickMeService {
         RefdataCategory funcType = RefdataCategory.getByDesc(RDConstants.PERSON_FUNCTION), posType = RefdataCategory.getByDesc(RDConstants.PERSON_POSITION), respType = RefdataCategory.getByDesc(RDConstants.PERSON_RESPONSIBILITY)
         List<Map> subTabs = [[view: funcType.desc, label: funcType.getI10n('desc')], [view: posType.desc, label: posType.getI10n('desc')], [view: respType.desc, label: respType.getI10n('desc')]]
         String subTabActive = funcType.desc
-        fields.putAll(EXPORT_VENDOR_CONFIG)
+        fields.putAll(getDefaultExportVendorConfig())
         fields.vendorIdentifiers.fields.clear()
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_PROVIDER_NS, [sort: 'ns']).each {
             fields.vendorIdentifiers.fields << ["vendorIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
@@ -3127,7 +3168,7 @@ class ExportClickMeService {
             fields.vendorAddresses.fields.put("vendorAddress.${addressType.value}",[field: null, label: addressType.getI10n('value')])
         }
 
-        fields = getClickMeFields(clickMeConfig, fields)
+
 
         fields
     }
@@ -3142,8 +3183,8 @@ class ExportClickMeService {
         contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
         addressTypes.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE))
 
-        EXPORT_PROVIDER_CONFIG.keySet().each {
-            EXPORT_PROVIDER_CONFIG.get(it).fields.each {
+        getDefaultExportProviderConfig().keySet().each {
+            getDefaultExportProviderConfig().get(it).fields.each {
                 exportFields.put(it.key, it.value)
             }
         }
@@ -3170,7 +3211,7 @@ class ExportClickMeService {
         exportFields
     }
 
-    Map<String, Object> getExportProviderFieldsForUI(ClickMeConfig clickMeConfig = null) {
+    Map<String, Object> getExportProviderFieldsForUI() {
         Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:], contextParams = [ctx: contextOrg]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
@@ -3183,7 +3224,7 @@ class ExportClickMeService {
         RefdataCategory funcType = RefdataCategory.getByDesc(RDConstants.PERSON_FUNCTION), posType = RefdataCategory.getByDesc(RDConstants.PERSON_POSITION), respType = RefdataCategory.getByDesc(RDConstants.PERSON_RESPONSIBILITY)
         List<Map> subTabs = [[view: funcType.desc, label: funcType.getI10n('desc')], [view: posType.desc, label: posType.getI10n('desc')], [view: respType.desc, label: respType.getI10n('desc')]]
         String subTabActive = funcType.desc
-        fields.putAll(EXPORT_PROVIDER_CONFIG)
+        fields.putAll(getDefaultExportProviderConfig())
         fields.providerIdentifiers.fields.clear()
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_PROVIDER_NS, [sort: 'ns']).each {
             fields.providerIdentifiers.fields << ["providerIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
@@ -3209,7 +3250,7 @@ class ExportClickMeService {
             fields.providerAddresses.fields.put("providerAddress.${addressType.value}",[field: null, label: addressType.getI10n('value')])
         }
 
-        fields = getClickMeFields(clickMeConfig, fields)
+
 
         fields
     }
@@ -3223,8 +3264,8 @@ class ExportClickMeService {
         Map<String, Object> exportFields = [contact:[:], address:[:]]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
-        EXPORT_ADDRESS_CONFIG.keySet().each { String k ->
-            EXPORT_ADDRESS_CONFIG.get(k).fields.each { key, value ->
+        getDefaultExportAddressConfig().keySet().each { String k ->
+            getDefaultExportAddressConfig().get(k).fields.each { key, value ->
                 exportFields.get(k).put(key, value)
             }
         }
@@ -3233,8 +3274,8 @@ class ExportClickMeService {
         switch(config) {
             case 'institution':
             case 'member':
-                EXPORT_ORG_CONFIG.keySet().each {
-                    EXPORT_ORG_CONFIG.get(it).fields.each {
+                getDefaultExportOrgConfig().keySet().each {
+                    getDefaultExportOrgConfig().get(it).fields.each {
                         exportFields.put(it.key, it.value)
                     }
                 }
@@ -3252,8 +3293,8 @@ class ExportClickMeService {
                 }
                 break
             case 'provider':
-                EXPORT_PROVIDER_CONFIG.keySet().each {
-                    EXPORT_PROVIDER_CONFIG.get(it).fields.each {
+                getDefaultExportProviderConfig().keySet().each {
+                    getDefaultExportProviderConfig().get(it).fields.each {
                         exportFields.put(it.key, it.value)
                     }
                 }
@@ -3281,11 +3322,11 @@ class ExportClickMeService {
      * Gets the address fields for the UI
      * @return the configuration map for the address export for UI
      */
-    Map<String, Object> getExportAddressFieldsForUI(ClickMeConfig clickMeConfig = null) {
+    Map<String, Object> getExportAddressFieldsForUI() {
 
         Map<String, Object> fields = [:], filterFields = [:]
-        fields.putAll(EXPORT_ADDRESS_CONFIG)
-        filterFields.putAll(EXPORT_ADDRESS_FILTER)
+        fields.putAll(getDefaultExportAddressConfig())
+        filterFields.putAll(getDefaultExportAddressFilter())
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
         Org contextOrg = contextService.getOrg()
@@ -3306,7 +3347,7 @@ class ExportClickMeService {
 
         /*
         switch(orgType) {
-            case 'institution': fields = EXPORT_ORG_CONFIG as Map
+            case 'institution': fields = getDefaultExportOrgConfig() as Map
                 IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
                     fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
                 }
@@ -3318,7 +3359,7 @@ class ExportClickMeService {
                     fields.participantProperties.fields << ["participantProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
                 }
                 break
-            case 'provider': fields = EXPORT_PROVIDER_CONFIG as Map
+            case 'provider': fields = getDefaultExportProviderConfig() as Map
                 IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
                     fields.providerIdentifiers.fields << ["providerIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
                 }
@@ -3335,7 +3376,7 @@ class ExportClickMeService {
         }
         */
 
-        fields = getClickMeFields(clickMeConfig, fields)
+
 
         [exportFields: fields, filterFields: filterFields]
     }
@@ -3435,7 +3476,7 @@ class ExportClickMeService {
      * @param surveyConfig the survey whose evaluation should be exported
      * @return the configuration map for the survey evaluation export for UI
      */
-    Map<String, Object> getExportSurveyEvaluationFieldsForUI(SurveyConfig surveyConfig, ClickMeConfig clickMeConfig = null) {
+    Map<String, Object> getExportSurveyEvaluationFieldsForUI(SurveyConfig surveyConfig) {
 
         Map<String, Object> fields = [:]
         fields.putAll(EXPORT_SURVEY_EVALUATION)
@@ -3631,10 +3672,6 @@ class ExportClickMeService {
             }
         }
 
-        fields = getClickMeFields(clickMeConfig, fields)
-
-        fields = getClickMeFields(clickMeConfig, fields)
-
         fields
     }
 
@@ -3643,10 +3680,10 @@ class ExportClickMeService {
      * Gets the issue entitlement export fields and prepares them for the UI
      * @return the configuration map for the issue entitlement export for the UI
      */
-    Map<String, Object> getExportIssueEntitlementFieldsForUI(ClickMeConfig clickMeConfig = null) {
+    Map<String, Object> getExportIssueEntitlementFieldsForUI() {
 
         Map<String, Object> fields = [:]
-        fields.putAll(EXPORT_ISSUE_ENTITLEMENT_CONFIG)
+        fields.putAll(getDefaultExportIssueEntitlementConfig())
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
         if(contextService.getOrg().getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
@@ -3660,8 +3697,6 @@ class ExportClickMeService {
             fields.issueEntitlementIdentifiers.fields << ["issueEntitlementIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
 
-        fields = getClickMeFields(clickMeConfig, fields)
-
         fields
     }
 
@@ -3674,8 +3709,8 @@ class ExportClickMeService {
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
-        EXPORT_ISSUE_ENTITLEMENT_CONFIG.keySet().each {
-            EXPORT_ISSUE_ENTITLEMENT_CONFIG.get(it).fields.each {
+        getDefaultExportIssueEntitlementConfig().keySet().each {
+            getDefaultExportIssueEntitlementConfig().get(it).fields.each {
                 exportFields.put(it.key, it.value)
             }
         }
@@ -3699,17 +3734,15 @@ class ExportClickMeService {
      * Gets the title export fields and prepares them for the UI
      * @return the configuration map for the title export for the UI
      */
-    Map<String, Object> getExportTippFieldsForUI(ClickMeConfig clickMeConfig = null) {
+    Map<String, Object> getExportTippFieldsForUI() {
 
         Map<String, Object> fields = [:]
-        fields.putAll(EXPORT_TIPP_CONFIG)
+        fields.putAll(getDefaultExportTippConfig())
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
         IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
             fields.tippIdentifiers.fields << ["tippIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
-
-        fields = getClickMeFields(clickMeConfig, fields)
 
         fields
     }
@@ -3723,8 +3756,8 @@ class ExportClickMeService {
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
-        EXPORT_TIPP_CONFIG.keySet().each {
-            EXPORT_TIPP_CONFIG.get(it).fields.each {
+        getDefaultExportTippConfig().keySet().each {
+            getDefaultExportTippConfig().get(it).fields.each {
                 exportFields.put(it.key, it.value)
             }
         }
@@ -3756,7 +3789,7 @@ class ExportClickMeService {
             }
         }
 
-        saveClickMeConfig(selectedExportFields, "EXPORT_SURVEY_RENEWAL_CONFIG")
+        saveClickMeConfig(selectedExportFields, "getDefaultExportSurveyRenewalConfig")
 
         Integer maxCostItemsElements = 0
         maxCostItemsElements = CostItem.executeQuery('select count(*) from CostItem where surveyOrg in (select surOrg from SurveyOrg as surOrg where surveyConfig = :surveyConfig) group by costItemElement', [surveyConfig: renewalResult.surveyConfig]).size()
@@ -3939,7 +3972,7 @@ class ExportClickMeService {
         }
 
         if (renewalResult.orgsContinuetoSubscription) {
-            sheetData = _exportSurveyPackagesAndSurveyVendors(renewalResult.surveyConfig, renewalResult.surveyConfigrenewalResult.orgsContinuetoSubscription.participant, sheetData, selectedExportFields, locale, " - 5", format)
+            sheetData = _exportSurveyPackagesAndSurveyVendors(renewalResult.surveyConfig, renewalResult.orgsContinuetoSubscription.participant, sheetData, selectedExportFields, locale, " - 5", format)
         }
 
         if (renewalResult.orgsWithMultiYearTermSub) {
@@ -3986,7 +4019,7 @@ class ExportClickMeService {
             }
         }
 
-        saveClickMeConfig(selectedExportFields, "EXPORT_SUBSCRIPTION_MEMBERS_CONFIG")
+        saveClickMeConfig(selectedExportFields, "getDefaultExportSubscriptionMembersConfig")
 
         Map<String, List<RefdataValue>> selectedCostItemElements = [all: []]
         List<String> removeSelectedCostItemElements = []
@@ -4049,13 +4082,13 @@ class ExportClickMeService {
 
     /**
      * Exports the given fields from the given subscriptions
-     * @param result the subscription set to export
+     * @param result the subscription set or list to export
      * @param selectedFields the fields which should appear
      * @param format the {@link FORMAT} to be exported
      * @param showTransferFields should the subscription transfer fields be included in the export?
      * @return the output in the desired format
      */
-    def exportSubscriptions(List<Subscription> result, Map<String, Object> selectedFields, FORMAT format, boolean showTransferFields = false) {
+    def exportSubscriptions(Collection<Subscription> result, Map<String, Object> selectedFields, FORMAT format, boolean showTransferFields = false) {
         Locale locale = LocaleUtils.getCurrentLocale()
         Org contextOrg = contextService.getOrg()
         Map<String, Object> selectedExportFields = [:]
@@ -4068,7 +4101,7 @@ class ExportClickMeService {
             }
         }
 
-        saveClickMeConfig(selectedExportFields, contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? 'EXPORT_CONSORTIA_PARTICIPATIONS_SUPPORT_CONFIG' : 'EXPORT_CONSORTIA_PARTICIPATIONS_CONFIG')
+        saveClickMeConfig(selectedExportFields, contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? 'getDefaultExportConsortiaParticipationsSupportConfig' : 'getDefaultExportConsortiaParticipationsConfig')
 
         Map<String, List<RefdataValue>> selectedCostItemElements = [:]
         List<String> removeSelectedCostItemElements = []
@@ -4145,7 +4178,7 @@ class ExportClickMeService {
             }
         }
 
-        saveClickMeConfig(selectedExportFields, "EXPORT_SUBSCRIPTION_CONFIG")
+        saveClickMeConfig(selectedExportFields, "getDefaultExportSubscriptionConfig")
 
         Map<String, List<RefdataValue>> selectedCostItemElements = [:]
         List<String> removeSelectedCostItemElements = []
@@ -4220,7 +4253,7 @@ class ExportClickMeService {
             }
         }
 
-        saveClickMeConfig(selectedExportFields, "EXPORT_LICENSE_CONFIG")
+        saveClickMeConfig(selectedExportFields, "getDefaultExportLicenseConfig")
 
         List titles = _exportTitles(selectedExportFields, locale, null, null, null, null, format)
 
@@ -4265,7 +4298,7 @@ class ExportClickMeService {
             }
         }
 
-        saveClickMeConfig(selectedExportFields, "EXPORT_COST_ITEM_CONFIG")
+        saveClickMeConfig(selectedExportFields, "getDefaultExportCostItemConfig")
 
         Map sheetData = [:]
 
@@ -4317,7 +4350,7 @@ class ExportClickMeService {
             }
         }
 
-        saveClickMeConfig(selectedExportFields, "EXPORT_SURVEY_COST_ITEM_CONFIG")
+        saveClickMeConfig(selectedExportFields, "getDefaultExportSurveyCostItemConfig")
 
         List titles = _exportTitles(selectedExportFields, locale, null, null, contactSources, null, format)
 
@@ -4370,15 +4403,15 @@ class ExportClickMeService {
         switch(config) {
             case 'consortium':
                 sheetTitle = messageSource.getMessage('consortium.label', null, locale)
-                nameOfClickMeMap = 'EXPORT_CONSORTIA_CONFIG'
+                nameOfClickMeMap = 'getDefaultExportConsortiaConfig'
                 break
             case 'institution':
                 sheetTitle = messageSource.getMessage('default.institution', null, locale)
-                nameOfClickMeMap = contextService.getOrg().getCustomerType() == CustomerTypeService.ORG_SUPPORT ? 'EXPORT_ORG_SUPPORT_CONFIG' : 'EXPORT_ORG_CONFIG'
+                nameOfClickMeMap = contextService.getOrg().getCustomerType() == CustomerTypeService.ORG_SUPPORT ? 'getDefaultExportOrgSupportConfig' : 'getDefaultExportOrgConfig'
                 break
             case 'member':
                 sheetTitle = messageSource.getMessage('subscription.details.consortiaMembers.label', null, locale)
-                nameOfClickMeMap = 'EXPORT_ORG_CONFIG'
+                nameOfClickMeMap = 'getDefaultExportOrgConfig'
                 break
         }
 
@@ -4439,7 +4472,7 @@ class ExportClickMeService {
             }
         }
 
-        saveClickMeConfig(selectedExportFields, 'EXPORT_VENDOR_CONFIG')
+        saveClickMeConfig(selectedExportFields, 'getDefaultExportVendorConfig')
 
         List titles = _exportTitles(selectedExportFields, locale, null, null, contactSources, null, format)
 
@@ -4486,7 +4519,7 @@ class ExportClickMeService {
             }
         }
 
-        saveClickMeConfig(selectedExportFields, 'EXPORT_PROVIDER_CONFIG')
+        saveClickMeConfig(selectedExportFields, 'getDefaultExportProviderConfig')
 
         List titles = _exportTitles(selectedExportFields, locale, null, null, contactSources, null, format)
 
@@ -4534,7 +4567,7 @@ class ExportClickMeService {
                 selectedExportAddressFields.put(key, configFields.address.get(key))
         }
 
-        saveClickMeConfig(selectedFields, "EXPORT_ADDRESS_CONFIG")
+        saveClickMeConfig(selectedFields, "getDefaultExportAddressConfig")
 
         List titleRow = [messageSource.getMessage('contact.contentType.label', null, locale)]
         titleRow.addAll(_exportTitles(selectedExportContactFields, locale, null, null, null, null, format))
@@ -4880,7 +4913,7 @@ class ExportClickMeService {
             }
         }
 
-        saveClickMeConfig(selectedExportFields, "EXPORT_TIPP_CONFIG")
+        saveClickMeConfig(selectedExportFields, "getDefaultExportTippConfig")
 
         List titles = _exportTitles(selectedExportFields, locale, null, null, null, null, format)
 
@@ -4948,7 +4981,7 @@ class ExportClickMeService {
             }
         }
 
-        saveClickMeConfig(selectedExportFields, "EXPORT_ISSUE_ENTITLEMENT_CONFIG")
+        saveClickMeConfig(selectedExportFields, "getDefaultExportIssueEntitlementConfig")
 
         List titles = _exportTitles(selectedExportFields, locale, null, null, null, null, format)
 
@@ -5493,7 +5526,7 @@ class ExportClickMeService {
                         row.add(createTableCell(format, ' '))
                     }
                 }
-                else if (fieldKey.contains('altnames')) {
+                else if (fieldKey == 'subscription.altnames') {
                     if(subscription.altnames) {
                         row.add(createTableCell(format, subscription.altnames.collect { AlternativeName alt -> alt.name }.join('\n')))
                     }
@@ -5562,6 +5595,15 @@ class ExportClickMeService {
                     }
 
                     row.add(createTableCell(format, surveyConfig ? countOrgsWithTermination : ' ', style))
+                }
+                else if (fieldKey == 'subscription.renewalChanges') {
+                    SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)
+                    int countModificationToCostInformationAfterRenewalDoc = surveyConfig ? surveyService.countModificationToCostInformationAfterRenewalDoc(subscription) : 0
+                    String style = ''
+                    if(surveyConfig) {
+                        style = countModificationToCostInformationAfterRenewalDoc == 0 ? 'positive' : 'negative'
+                    }
+                    row.add(createTableCell(format, surveyConfig ? countModificationToCostInformationAfterRenewalDoc  : ' ', style))
                 }
                 else if ((fieldKey == 'participantSubCostItem' || fieldKey == 'subCostItem')) {
                     if(costItemSums) {

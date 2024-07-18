@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Doc; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.survey.SurveyConfig" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Doc; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.survey.SurveyConfig" %>
 <laser:htmlStart message="copySurvey.label" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -122,7 +122,7 @@
                     <td>
                         <g:if test="${surveyInfo.license}">
                             <g:link controller="license" action="show" id="${surveyInfo.license.id}">
-                                ${surveyInfo.license.reference} (${surveyInfo.license.status.getI10n("value")})
+                                ${surveyInfo.license.reference} (${surveyInfo.license.status?.getI10n("value")})
                             </g:link>
                         </g:if>
                     </td>
@@ -177,14 +177,14 @@
                                         ${surveyProperty.surveyProperty.getI10n('name')}
 
                                         <g:if test="${surveyProperty.surveyProperty.tenant?.id == institution.id}">
-                                            <i class='shield alternate icon'></i>
+                                            <i class='${Icon.PROP.IS_PRIVATE}'></i>
                                         </g:if>
 
                                         <g:if test="${surveyProperty.surveyProperty.getI10n('expl')}">
                                             <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                   data-position="right center"
                                                   data-content="${surveyProperty.surveyProperty.getI10n('expl')}">
-                                                <i class="question circle icon"></i>
+                                                <i class="${Icon.TOOLTIP.HELP}"></i>
                                             </span>
                                         </g:if>
 
@@ -313,10 +313,8 @@
 </g:if>
 
 <g:if test="${workFlow == "1"}">
-    <div class="ui icon message">
-        <i class="info icon"></i>
-        ${message(code: 'copySurvey.subscription.info')}
-    </div>
+
+    <ui:msg class="info" showIcon="true" hideClose="true" message="copySurvey.subscription.info" />
 
     <ui:h1HeaderWithIcon message="myinst.currentSubscriptions.label" total="${num_sub_rows}" floated="true" />
 
@@ -332,7 +330,7 @@
                         <span data-position="right center" data-variation="tiny"
                               class="la-popup-tooltip la-delay"
                               data-content="${message(code: 'default.search.tooltip.subscription')}">
-                            <i class="question circle icon"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </label>
 
@@ -399,10 +397,8 @@
                 </div>
 
                 <div class="field la-field-right-aligned">
-                    <a href="${request.forwardURI}"
-                       class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                    <input type="submit" class="ui primary button"
-                           value="${message(code: 'default.button.filter.label')}">
+                    <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+                    <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
                 </div>
             </div>
         </g:form>
@@ -445,7 +441,7 @@
                             <a href="#" class="la-popup-tooltip la-delay"
                                data-content="${message(code: 'subscription.numberOfCostItems.label')}"
                                data-position="top center">
-                                <i class="money bill large icon"></i>
+                                <i class="${Icon.FNC.COST} large"></i>
                             </a>
                         </th>
                         <th rowspan="2" class="two wide"></th>
@@ -504,7 +500,7 @@
                                     <g:each in="${s.packages.sort { it.pkg.name }}" var="sp" status="ind">
                                         <g:if test="${ind < 10}">
                                             <div class="la-flexbox">
-                                                <i class="icon gift la-list-icon"></i>
+                                                <i class="${Icon.PACKAGE} la-list-icon"></i>
                                                 <g:link controller="subscription" action="index" id="${s.id}"
                                                         params="[pkgfilter: sp.pkg.id]"
                                                         title="${sp.pkg.provider?.name}">
@@ -555,7 +551,7 @@
                                 <td class="x">
                                     <g:if test="${editableAll}">
                                         <g:link class="ui icon positive button la-popup-tooltip la-delay"
-                                                data-content="${message(code: 'survey.toggleSurveySub.add.label', args: [SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNotNull(s).size(), SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNull(s).size()])}"
+                                                data-content="${message(code: 'survey.toggleSurveySub.add.label', args: [SurveyConfig.countBySubscriptionAndSubSurveyUseForTransfer(s, true), SurveyConfig.countBySubscriptionAndSubSurveyUseForTransfer(s, false)])}"
                                                 controller="survey" action="copySurvey"
                                                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubs: [s.id], workFlow: '2']">
                                             <g:message code="createSubscriptionSurvey.selectButton"/>
@@ -584,7 +580,7 @@
         <div class="paginateButtons" style="text-align:center">
             <input type="submit"
                    value="${message(code: 'copySurvey.copyInSelectedSubs')}"
-                   class="ui button"/>
+                   class="${Btn.SIMPLE}"/>
         </div>
 
         <g:if test="${num_sub_rows}">

@@ -80,34 +80,6 @@ class LicenseInstCfg extends BaseConfig {
                     ]
             ],
 
-            licensor : [
-                    meta : [
-                            class:  Org,
-                            cfgKey: BaseConfig.KEY_LICENSE
-                    ],
-                    source : [
-                            'depending-licensor'
-                    ],
-                    fields : [
-//                            'country'   : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-//                            'region'    : [ type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
-//                            'orgType'   : [ type: BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE ]
-                    ],
-                    filter : [
-                            default : []
-                    ],
-                    query : [
-                            default : [
-                                    licensor : [
-                                            'licensor-orgType' :    [ 'generic.org.orgType' ],
-                                            'licensor-country' :    [ 'generic.org.country' ],
-                                            'licensor-region' :     [ 'generic.org.region' ],
-                                            'licensor-*' :          [ 'generic.all' ]
-                                    ]
-                            ]
-                    ]
-            ],
-
             provider : [
                     meta : [
                             class:  Provider,

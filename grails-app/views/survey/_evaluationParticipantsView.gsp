@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyPackageResult; de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyPackageResult; de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
 <laser:serviceInjection/>
 
 <g:if test="${showOpenParticipantsAgainButtons}">
@@ -90,7 +90,7 @@
                                 </td>
                                 <td>${property.value.size()}</td>
                                 <td>
-                                    <button class="ui button"  onclick="JSPC.app.propertiesChanged(${property.key});">
+                                    <button class="${Btn.SIMPLE}"  onclick="JSPC.app.propertiesChanged(${property.key});">
                                         <g:message code="default.button.show.label"/>
                                     </button>
                                 </td>
@@ -189,7 +189,7 @@
                             <g:if test="${surveyProperty.getI10n('expl')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${surveyProperty.getI10n('expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </g:if>
                         </th>
@@ -199,7 +199,7 @@
                     <th>${message(code: 'surveyResult.commentOnlyForOwner')}
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                            <i class="question circle icon"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </th>
                 </g:if>
@@ -321,7 +321,7 @@
                             <g:if test="${propertiesChangedByParticipant && participant.id in propertiesChangedByParticipant.id}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
-                                    <i class="exclamation triangle yellow large icon"></i>
+                                    <i class="${Icon.TOOLTIP.SERIOUS} yellow"></i>
                                 </span>
                             </g:if>
 
@@ -346,7 +346,7 @@
                                     <span data-position="right center"
                                           class="la-popup-tooltip la-delay"
                                           data-content="Mail senden an Hauptkontakte">
-                                        <i class="ui icon envelope outline la-list-icon"></i>
+                                        <i class="${Icon.SYM.EMAIL} la-list-icon"></i>
                                     </span>
                                 </a>
                             </g:if>
@@ -523,7 +523,7 @@
                                                                 data-ui="modal"
                                                                 data-href="#modalEditDocument_${docctx.id}"
                                                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                                            <i class="pencil small icon"></i>
+                                                            <i class="${Icon.CMD.EDIT} small"></i>
                                                         </button>
                                                     </g:if>
 
@@ -537,7 +537,7 @@
                                                                 params='[instanceId: "${subParticipant.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="trash alternate outline small icon"></i>
+                                                            <i class="${Icon.CMD.DELETE} small"></i>
                                                         </g:link>
                                                     </g:if>
                                                 </g:else>%{-- (editable || editable2) --}%
@@ -566,7 +566,7 @@
                                                tab           : 'selectedIEs']}"
                                     class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                     data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
-                                    target="_blank"><i class="download icon"></i></g:link>
+                                    target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                         </td>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyPackages')}">
@@ -597,7 +597,7 @@
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
                             class="ui button blue icon la-modern-button la-popup-tooltip la-delay"
                             data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                        <i class="chart pie icon"></i>
+                        <i class="${Icon.SURVEY}"></i>
                     </g:link>
 
                     <g:if test="${surveyConfig.subscription}">
@@ -605,7 +605,7 @@
                             <g:if test="${participantSub}">
                                 <br/>
                                 <g:link controller="subscription" action="show" id="${participantSub.id}"
-                                        class="ui button orange icon"><i class="icon clipboard"></i></g:link>
+                                        class="${Btn.SIMPLE_ICON} orange"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                             </g:if>
                     </g:if>
                 </td>
@@ -695,7 +695,7 @@
                 <div class="two fields">
                     <g:if test="${actionName == 'participantsReminder'}">
                        %{-- <div class="eight wide field" style="text-align: left;">
-                            <a data-ui="modal" class="ui button"
+                            <a data-ui="modal" class="${Btn.SIMPLE}"
                                href="#generateEmailWithAddresses_ajaxModal">
                                 ${message(code: 'openParticipantsAgain.reminder.participantsHasAccess')}
                             </a>--}%
@@ -709,7 +709,7 @@
                         </div>
 
                         <div class="eight wide field" style="text-align: left;">
-                            <button name="openOption" type="submit" value="ReminderMail" class="ui button">
+                            <button name="openOption" type="submit" value="ReminderMail" class="${Btn.SIMPLE}">
                                 ${message(code: 'openParticipantsAgain.reminder.participantsHasAccess')}
                             </button>
                         </div>
@@ -771,7 +771,7 @@
                             <g:if test="${surveyProperty.getI10n('expl')}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${surveyProperty.getI10n('expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </g:if>
                         </th>
@@ -781,7 +781,7 @@
                     <th>${message(code: 'surveyResult.commentOnlyForOwner')}
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                            <i class="question circle icon"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </th>
                 </g:if>
@@ -905,7 +905,7 @@
                             <g:if test="${propertiesChangedByParticipant && participant.id in propertiesChangedByParticipant.id}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
-                                    <i class="exclamation triangle yellow large icon"></i>
+                                    <i class="${Icon.TOOLTIP.SERIOUS} yellow"></i>
                                 </span>
                             </g:if>
 
@@ -929,7 +929,7 @@
                                     <span data-position="right center"
                                           class="la-popup-tooltip la-delay"
                                           data-content="Mail senden an Hauptkontakte">
-                                        <i class="ui icon envelope outline la-list-icon"></i>
+                                        <i class="${Icon.SYM.EMAIL} la-list-icon"></i>
                                     </span>
                                 </a>
                             </g:if>
@@ -1088,7 +1088,7 @@
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                             class="ui icon blue tiny button la-modern-button"
-                                                            target="_blank"><i class="download small icon"></i></g:link>
+                                                            target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
@@ -1096,7 +1096,7 @@
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                                 class="ui icon blue tiny button la-modern-button"
                                                                 target="_blank"><i
-                                                                class="download small icon"></i></g:link>
+                                                                class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
 
                                                     <%-- 2 --%>
                                                         <laser:render template="/templates/documents/modal"
@@ -1106,7 +1106,7 @@
                                                                 data-ui="modal"
                                                                 data-href="#modalEditDocument_${docctx.id}"
                                                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                                            <i class="pencil small icon"></i>
+                                                            <i class="${Icon.CMD.EDIT} small"></i>
                                                         </button>
                                                     </g:if>
 
@@ -1120,7 +1120,7 @@
                                                                 params='[instanceId: "${subParticipant.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="trash alternate outline small icon"></i>
+                                                            <i class="${Icon.CMD.DELETE} small"></i>
                                                         </g:link>
                                                     </g:if>
                                                 </g:else>%{-- (editable || editable2) --}%
@@ -1149,7 +1149,7 @@
                                                tab           : 'selectedIEs']}"
                                     class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                     data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
-                                    target="_blank"><i class="download icon"></i></g:link>
+                                    target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                         </td>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyPackages')}">
@@ -1181,7 +1181,7 @@
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
                             class="ui button blue icon la-modern-button la-popup-tooltip la-delay"
                             data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                        <i class="chart pie icon"></i>
+                        <i class="${Icon.SURVEY}"></i>
                     </g:link>
 
                     <g:if test="${surveyConfig.subscription}">
@@ -1189,7 +1189,7 @@
                         <g:if test="${participantSub}">
                             <br/>
                             <g:link controller="subscription" action="show" id="${participantSub.id}"
-                                    class="ui button orange icon"><i class="icon clipboard"></i></g:link>
+                                    class="${Btn.SIMPLE_ICON} orange"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                         </g:if>
                     </g:if>
                 </td>
@@ -1303,7 +1303,7 @@
                 </div>
             </div>
 
-            <input class="ui button" type="submit" value="${message(code: 'surveyTransfer.button')}">
+            <input class="${Btn.SIMPLE}" type="submit" value="${message(code: 'surveyTransfer.button')}">
         </ui:greySegment>
         </div>
 
@@ -1316,13 +1316,13 @@
                     <g:if test="${actionName == 'openParticipantsAgain'}">
 
                         <div class="eight wide field" style="text-align: left;">
-                            <button name="openOption" type="submit" value="OpenWithoutMail" class="ui button">
+                            <button name="openOption" type="submit" value="OpenWithoutMail" class="${Btn.SIMPLE}">
                                 ${message(code: 'openParticipantsAgain.openWithoutMail.button')}
                             </button>
                         </div>
 
                         <div class="eight wide field" style="text-align: right;">
-                            <button name="openOption" type="submit" value="OpenWithMail" class="ui button">
+                            <button name="openOption" type="submit" value="OpenWithMail" class="${Btn.SIMPLE}">
                                 ${message(code: 'openParticipantsAgain.openWithMail.button')}
                             </button>
                         </div>

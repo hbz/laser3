@@ -345,19 +345,10 @@ class LicenseController {
             response.sendError(401); return
         }
         result.subscriptions = []
-        result.putAll(_setSubscriptionFilterData())
-        result.subscriptionsForFilter = []
+        result.putAll(licenseControllerService.setSubscriptionFilterData(params))
 
-        if(params.status) {
-            result.subscriptionsForFilter.addAll(
-                    Subscription.executeQuery("select l.destinationSubscription from Links l join l.destinationSubscription s where s.status.id = :status and l.sourceLicense = :lic and l.linkType = :linkType",
-                    [status:params.long('status'), lic:result.license, linkType:RDStore.LINKTYPE_LICENSE]
-            ))
-        }
-        else {
-            result.subscriptionsForFilter.addAll(Subscription.executeQuery("select l.destinationSubscription from Links l where l.sourceLicense = :lic and l.linkType = :linkType" , [lic:result.license, linkType:RDStore.LINKTYPE_LICENSE] ))
-        }
         if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
+            result.subscriptionsForFilter = []
             Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
             Map<String,Object> queryParams = [lic:result.license, subscriberRoleTypes:subscriberRoleTypes, linkType:RDStore.LINKTYPE_LICENSE]
             String whereClause = ""
@@ -390,18 +381,22 @@ class LicenseController {
                             if (params.subRunTimeMultiYear && !params.subRunTime) {
                                 if(sub.isMultiYear) {
                                     result.subscriptions << [sub: sub, orgs: filteredSubscr]
+                                    result.subscriptionsForFilter << sub
                                 }
                             }else if (!params.subRunTimeMultiYear && params.subRunTime){
                                 if(!sub.isMultiYear) {
                                     result.subscriptions << [sub: sub, orgs: filteredSubscr]
+                                    result.subscriptionsForFilter << sub
                                 }
                             }
                             else {
                                 result.subscriptions << [sub: sub, orgs: filteredSubscr]
+                                result.subscriptionsForFilter << sub
                             }
                         }
                         else {
                             result.subscriptions << [sub: sub, orgs: filteredSubscr]
+                            result.subscriptionsForFilter << sub
                         }
                     }
                 }
@@ -412,9 +407,6 @@ class LicenseController {
             List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
             Set<Subscription> subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] )
             //HQL does not support sorting on subquery results nor limits
-            if(params.sort == 'providerAgency') {
-                subscriptions = Subscription.executeQuery("select oo.sub from OrgRole oo join oo.org providerAgency where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency) order by providerAgency.name "+params.order, [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
-            }
             if(params.subscription) {
                 result.subscriptions = []
                 List subIds = params.list("subscription")
@@ -424,8 +416,10 @@ class LicenseController {
             }
             else result.subscriptions = subscriptions
 
+            result.subscriptionsForFilter = result.subscriptions
             result.consAtMember = false
         }
+
 
         result
     }
@@ -445,7 +439,7 @@ class LicenseController {
         if (!result) {
             response.sendError(401); return
         }
-        result.putAll(_setSubscriptionFilterData())
+        result.putAll(licenseControllerService.setSubscriptionFilterData(params))
 
         Set<License> validMemberLicenses = License.findAllByInstanceOf(result.license)
         Set<Map<String,Object>> filteredMemberLicenses = []
@@ -478,7 +472,8 @@ class LicenseController {
             //}
             //}
         }
-
+        /*
+        if used, we should move it to AJAX ==> ControlledListService!
         if(validMemberLicenses) {
             String subQuery = "select l.destinationSubscription from Links l join l.destinationSubscription s where l.sourceLicense in (:licenses) and l.linkType = :linkType "
             if (params.status) {
@@ -487,6 +482,7 @@ class LicenseController {
                 result.subscriptionsForFilter = Subscription.executeQuery(subQuery, [linkType:RDStore.LINKTYPE_LICENSE, licenses:validMemberLicenses])
             }
         }
+        */
         result.validMemberLicenses = filteredMemberLicenses
         result
     }
@@ -504,32 +500,6 @@ class LicenseController {
         result.tableConfig = ['onlyMemberSubs']
         result.linkedSubscriptions = Links.executeQuery('select li.destinationSubscription from Links li where li.sourceLicense = :license and li.linkType = :linkType',[license:result.license,linkType:RDStore.LINKTYPE_LICENSE])
         result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
-        result
-    }
-
-    /**
-     * this is very ugly and should be subject of refactor - - but unfortunately, the
-     * {@link SubscriptionsQueryService#myInstitutionCurrentSubscriptionsBaseQuery(java.lang.Object)}
-     * requires the {@link GrailsParameterMap} as parameter.
-     * @return validOn and defaultSet-parameters of the filter
-     */
-    private Map<String,Object> _setSubscriptionFilterData() {
-        Map<String, Object> result = [:]
-        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-        Date dateRestriction = null
-        if (params.validOn == null || params.validOn.trim() == '') {
-            result.validOn = ""
-        } else {
-            result.validOn = params.validOn
-            dateRestriction = sdf.parse(params.validOn)
-        }
-        result.dateRestriction = dateRestriction
-        if (! params.status) {
-            if (!params.filterSet) {
-                params.status = RDStore.SUBSCRIPTION_CURRENT.id
-                result.defaultSet = true
-            }
-        }
         result
     }
 

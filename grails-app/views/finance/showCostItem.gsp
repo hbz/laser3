@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 <laser:htmlStart message="financials.editCost" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -47,8 +48,7 @@
             <laser:render template="costItemInput"/>
 
             <g:if test="${editable}">
-                <input type="submit" class="ui button green" name="save"
-                       value="${g.message(code: 'default.button.save.label')}"/>
+                <input type="submit" class="${Btn.POSITIVE}" name="save" value="${g.message(code: 'default.button.save.label')}"/>
             </g:if>
         </g:form>
 

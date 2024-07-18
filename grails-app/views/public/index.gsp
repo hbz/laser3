@@ -1,4 +1,4 @@
-<%@ page import="de.laser.system.SystemMessage; de.laser.utils.AppUtils" %>
+<%@ page import="de.laser.ui.Icon; de.laser.system.SystemMessage; de.laser.utils.AppUtils" %>
 <!doctype html>
 <g:set var="currentServer" scope="page" value="${AppUtils.getCurrentServer()}"/>
 <html>
@@ -32,7 +32,7 @@
                 <img class="logo" alt="Logo Laser" src="${resource(dir: 'images', file: 'laser.svg')}"/>
                 <a href="https://www.hbz-nrw.de/produkte/digitale-inhalte/las-er" class="item" target="_blank">${message(code: 'landingpage.menu.about')}</a>
                 <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" target="_blank">Wiki</a>
-                <a class="item" href="${message(code:'url.wekb.' + currentServer)}" target="_blank"><i class="ui icon la-gokb"></i> we:kb</a>
+                <a class="item" href="${message(code:'url.wekb.' + currentServer)}" target="_blank"><i class="${Icon.WEKB}"></i> we:kb</a>
                 <g:link class="item" controller="gasco">${message(code:'menu.public.gasco_monitor')}</g:link>
                 <div class="right item">
                     <g:link controller="home" action="index" class="ui button blue">
@@ -55,7 +55,7 @@
                             <h2 style="padding-bottom: 1rem;">
                                 ${message(code: 'landingpage.hero.h2',args: [message(code: 'Umfragen')]) as String}
                             </h2>
-                            <g:link controller="public" action="licensingModel" class="ui massive white  button">
+                            <g:link controller="public" action="licensingModel" class="ui massive white button">
                                 ${message(code: 'landingpage.hero.button.licensingModel')}<i class="right arrow icon"></i>
                             </g:link>
                         </div>

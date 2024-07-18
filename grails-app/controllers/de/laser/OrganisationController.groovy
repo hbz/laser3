@@ -117,9 +117,8 @@ class OrganisationController  {
         result.contextOrg = result.institution //for the properties template
 
         List<Long> orgInstanceTypeIds = result.orgInstance.getAllOrgTypeIds()
-        boolean isProviderOrAgency = (RDStore.OT_PROVIDER.id in orgInstanceTypeIds) || (RDStore.OT_AGENCY.id in orgInstanceTypeIds)
 
-        Boolean hasAccess = ! isProviderOrAgency && (
+        Boolean hasAccess = (
                 (result.inContextOrg && userService.hasFormalAffiliation(result.user, result.orgInstance, 'INST_ADM')) ||
                 (isComboRelated && userService.hasFormalAffiliation(result.user, result.institution, 'INST_ADM')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
@@ -281,7 +280,6 @@ class OrganisationController  {
     def listInstitution() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         params.orgType   = RDStore.OT_INSTITUTION.id
-        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
         if(!params.orgStatus && !params.filterSet) {
@@ -492,16 +490,12 @@ class OrganisationController  {
         List<IdentifierNamespace> nsList = IdentifierNamespace.executeQuery(
                 'select idns from IdentifierNamespace idns where (idns.nsType = :org or idns.nsType = null) and idns.isFromLaser = true and idns.ns not in (:primaryExcludes) order by idns.name_' + LocaleUtils.getCurrentLang() + ', idns.ns',
                 [org: Org.class.name, primaryExcludes: primaryExcludes])
-        if((RDStore.OT_PROVIDER.id in org.getAllOrgTypeIds()) || (RDStore.OT_AGENCY.id in org.getAllOrgTypeIds())) {
-            nsList = nsList - IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS) + IdentifierNamespace.findByNs(IdentifierNamespace.ROR_ID) //ROR_ID is CORE_ORG_NS and not unique
-        }
-        else {
-            nsList = nsList - IdentifierNamespace.findAllByNsInList([IdentifierNamespace.CROSSREF_FUNDER_ID, IdentifierNamespace.DBPEDIA, IdentifierNamespace.LOC_ID, IdentifierNamespace.VIAF, IdentifierNamespace.WIKIDATA_ID])
-            if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID) })
-                nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID)
-            if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR) })
-                nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR)
-        }
+
+        nsList = nsList - IdentifierNamespace.findAllByNsInList([IdentifierNamespace.CROSSREF_FUNDER_ID, IdentifierNamespace.DBPEDIA, IdentifierNamespace.LOC_ID, IdentifierNamespace.VIAF, IdentifierNamespace.WIKIDATA_ID])
+        if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID) })
+            nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID)
+        if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR) })
+            nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR)
 
         Map<String, Object> namespacesWithValidations = organisationService.getNamespacesWithValidations()
 
@@ -923,33 +917,7 @@ class OrganisationController  {
             }
         }
 
-        //if(!result.isProviderOrAgency){
-            result.orgInstance.createCoreIdentifiersIfNotExist()
-        //}
-        /*
-        TODO move to ProviderController.show()
-        else {
-            Set<Package> packages = []
-            OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and exists(select sp from SubscriptionPackage sp join sp.subscription s join s.orgRelations ooo where ooo.org = :ctx and sp.pkg = oo.pkg)', [ctx: result.institution, org: result.orgInstance]).each { OrgRole oo ->
-                packages << oo.pkg
-            }
-            ATTEMPT! Tendancy goes over to link packages with providers, not as much titles with packages. If data gets missing, this query must be reconsidered and reactivated!
-            OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and oo.tipp in (select ie.tipp from IssueEntitlement ie join ie.subscription s join s.orgRelations ooo where ooo.org = :ctx)', [ctx: result.institution, org: result.orgInstance]).each { OrgRole oo ->
-                packages << oo.tipp.pkg
-            }
-            result.packages = packages.sort { Package pkg -> pkg.sortname }
-            //may become a performance bottleneck - SUBJECT OF OBSERVATION!
-            String subConsortialFilter = '', licConsortialFilter = ''
-            if (result.institution.isCustomerType_Consortium()) {
-                subConsortialFilter = " and s.instanceOf is null"
-                licConsortialFilter = " and l.instanceOf is null"
-            }
-            result.subLinks = OrgRole.executeQuery('select distinct(oo.sub) from OrgRole oo join oo.sub s where oo.org = :org and exists(select ooo from OrgRole ooo where s = ooo.sub and ooo.org = :ctx)'+subConsortialFilter+' order by s.name, s.startDate, s.endDate',[org: result.orgInstance, ctx: result.institution])
-            result.currentSubscriptionsCount = OrgRole.executeQuery('select distinct(oo.sub) from OrgRole oo join oo.sub s where s.status = :current and oo.org = :org and exists(select ooo from OrgRole ooo where s = ooo.sub and ooo.org = :ctx)'+subConsortialFilter+' order by s.name, s.startDate, s.endDate',[org: result.orgInstance, ctx: result.institution, current: RDStore.SUBSCRIPTION_CURRENT]).size()
-            result.licLinks = OrgRole.executeQuery('select distinct(oo.lic) from OrgRole oo join oo.lic l where oo.org = :org and exists(select ooo from OrgRole ooo where l = ooo.lic and ooo.org = :ctx)'+licConsortialFilter+' order by l.reference, l.startDate, l.endDate',[org: result.orgInstance, ctx: result.institution])
-            result.currentLicensesCount = OrgRole.executeQuery('select distinct(oo.lic) from OrgRole oo join oo.lic l where l.status = :current and oo.org = :org and exists(select li from Links li where li.sourceLicense = l and li.destinationSubscription in (select s from OrgRole oos join oos.sub s where oos.org = :ctx and s.status = :subCurrent'+subConsortialFilter+')) and exists(select ooo from OrgRole ooo where l = ooo.lic and ooo.org = :ctx)'+licConsortialFilter+' order by l.reference, l.startDate, l.endDate',[org: result.orgInstance, ctx: result.institution, subCurrent: RDStore.SUBSCRIPTION_CURRENT, current: RDStore.LICENSE_CURRENT]).size()
-        }
-        */
+        result.orgInstance.createCoreIdentifiersIfNotExist()
 
         if (result.orgInstance.createdBy) {
 			result.createdByOrgGeneralContacts = PersonRole.executeQuery(
@@ -1004,9 +972,7 @@ class OrganisationController  {
         else
             result.editable_identifier = userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.orgInstance, 'INST_EDITOR')
 
-        //if(!(RDStore.OT_PROVIDER.id in result.allOrgTypeIds)){
         result.orgInstance.createCoreIdentifiersIfNotExist()
-        //}
 
         Boolean inContextOrg = result.inContextOrg
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
@@ -2016,9 +1982,10 @@ class OrganisationController  {
                 }
                 break
             case [ 'show', 'ids', 'addSubjectGroup', 'deleteSubjectGroup', 'addDiscoverySystem', 'deleteDiscoverySystem', 'readerNumber', 'accessPoints', 'addressbook' ]:
-                if (inContextOrg) {
+                if (inContextOrg || params.action == 'addressbook') {
                     isEditable = userHasEditableRights
-                } else {
+                }
+                else {
                     switch (contextOrg.getCustomerType()){
                         case [ CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO ] :
                             switch (org.getCustomerType()){
@@ -2027,7 +1994,6 @@ class OrganisationController  {
                                 case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = userIsYoda; break
                                 case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = userIsYoda; break
                                 case CustomerTypeService.ORG_SUPPORT:           isEditable = userIsYoda; break
-                                default:                                        isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break
                         case [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_SUPPORT ] :
@@ -2037,7 +2003,6 @@ class OrganisationController  {
                                 case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = userIsYoda; break
                                 case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = userIsYoda; break
                                 case CustomerTypeService.ORG_SUPPORT:           isEditable = userIsYoda; break
-                                default:                                        isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break
                     }

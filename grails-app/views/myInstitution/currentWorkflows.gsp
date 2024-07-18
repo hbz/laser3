@@ -1,4 +1,4 @@
-<%@ page import="de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.License; de.laser.Subscription; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.*; de.laser.RefdataCategory; de.laser.WorkflowService" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.License; de.laser.Subscription; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.*; de.laser.RefdataCategory; de.laser.WorkflowService" %>
 
 <laser:htmlStart message="menu.my.workflows" serviceInjection="true"/>
 
@@ -42,8 +42,8 @@
             </div>
         </div>
         <div class="field la-field-right-aligned">
-            <g:link controller="myInstitution" action="currentWorkflows" params="${[filter: 'reset']}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</g:link>
-            <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}" />
+            <g:link controller="myInstitution" action="currentWorkflows" params="${[filter: 'reset']}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</g:link>
+            <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}" />
         </div>
         <input type="hidden" name="filter" value="true" />
 %{--        <input type="hidden" name="tab" value="${tab}" />--}%
@@ -52,18 +52,18 @@
 
 <g:if test="${status == workflowService.OP_STATUS_DONE}">
     <g:if test="${cmd == 'delete'}">
-        <ui:msg class="positive" message="workflow.delete.ok" />
+        <ui:msg class="success" message="workflow.delete.ok" />
     </g:if>
     <g:else>
-        <ui:msg class="positive" message="workflow.edit.ok" />
+        <ui:msg class="success" message="workflow.edit.ok" />
     </g:else>
 </g:if>
 <g:elseif test="${status == workflowService.OP_STATUS_ERROR}">
     <g:if test="${cmd == 'delete'}">
-        <ui:msg class="negative" message="workflow.delete.error" />
+        <ui:msg class="error" message="workflow.delete.error" />
     </g:if>
     <g:else>
-        <ui:msg class="negative" message="workflow.edit.error" />
+        <ui:msg class="error" message="workflow.edit.error" />
     </g:else>
 </g:elseif>
 
@@ -131,11 +131,11 @@
                 <td class="center aligned">
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
 %{--                        <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + clist.id + ':' + WfChecklist.KEY + ':' + clist.id]}" />--}%
-%{--                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon pencil"></i></button>--}%
+%{--                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="${Icon.CMD.EDIT}"></i></button>--}%
                     </g:if>
                     <g:elseif test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
 %{--                        <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + clist.id + ':' + WfChecklist.KEY + ':' + clist.id]}" />--}%
-%{--                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon pencil"></i></button>--}%
+%{--                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="${Icon.CMD.EDIT}"></i></button>--}%
                     </g:elseif>
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                         <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
@@ -144,7 +144,7 @@
                                 controller="myInstitution" action="currentWorkflows" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}"]}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="trash alternate outline icon"></i>
+                            <i class="${Icon.CMD.DELETE}"></i>
                         </g:link>
                     </g:if>
                 </td>

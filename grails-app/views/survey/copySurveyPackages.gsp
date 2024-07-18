@@ -1,4 +1,4 @@
-<%@ page import="de.laser.AuditConfig; de.laser.storage.RDConstants; de.laser.SubscriptionPackage; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.AuditConfig; de.laser.storage.RDConstants; de.laser.SubscriptionPackage; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
 <laser:htmlStart message="copySurveyPackages.transfer" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -17,7 +17,7 @@
 </ui:h1HeaderWithIcon>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+    <ui:linkWithIcon icon="${Icon.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
@@ -44,14 +44,7 @@
     </h2>
 
     <g:if test="${isLinkingRunning}">
-        <div class="ui icon warning message">
-            <i class="info icon"></i>
-            <div class="content">
-                <div class="header">Info</div>
-
-                <p>${message(code: 'subscriptionsManagement.isLinkingRunning.info')}</p>
-            </div>
-        </div>
+        <ui:msg class="warning" showIcon="true" hideClose="true" header="Info" message="subscriptionsManagement.isLinkingRunning.info" />
     </g:if>
 
 
@@ -216,7 +209,7 @@
                             <g:if test="${participant.newSub}">
                                 <g:link controller="subscription" action="index"
                                         params="${[id: participant.newSub.id]}"
-                                        class="ui button icon"><i class="icon clipboard"></i></g:link>
+                                        class="${Btn.SIMPLE_ICON}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                             </g:if>
 
                             <g:if test="${surveyConfig.subSurveyUseForTransfer}">
@@ -239,7 +232,7 @@
 
                                 <div class="ui icon"
                                      data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
-                                    <i class="bordered colored chart pie icon"></i>
+                                    <i class="${Icon.SURVEY} bordered colored"></i>
                                 </div>
                             </g:if>
                         </td>
@@ -254,7 +247,7 @@
                         <div class="field">
                             <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span
                                     class="la-long-tooltip la-popup-tooltip la-delay"
-                                    data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="question circle icon"></i></span>
+                                    data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="${Icon.TOOLTIP.HELP}"></i></span>
                             </label>
                         </div>
 
@@ -282,7 +275,7 @@
                     </div>
 
                     <div class="eight wide field" style="text-align: right;">
-                        <button class="ui button positive" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''}
+                        <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''}
                                 name="processOption"
                                 type="submit">${message(code: 'copySurveyPackages.transfer')}</button>
                     </div>

@@ -53,6 +53,20 @@
                             <g:message code="task.org.label" />
                         </label>
                     </div>
+                    &nbsp; &nbsp;
+                    <div class="ui radio checkbox">
+                        <input id="providerradio" type="radio" value="provider" name="linkto" tabindex="0" class="hidden">
+                        <label for="providerradio">
+                            <g:message code="task.provider.label" />
+                        </label>
+                    </div>
+                    &nbsp; &nbsp;
+                    <div class="ui radio checkbox">
+                        <input id="vendorradio" type="radio" value="vendor" name="linkto" tabindex="0" class="hidden">
+                        <label for="vendorradio">
+                            <g:message code="task.vendor.label" />
+                        </label>
+                    </div>
                 </fieldset>
             </div>
 
@@ -79,6 +93,36 @@
                 <g:select id="org"
                           name="org"
                           from="${validOrgsDropdown}"
+                          optionKey="${{it.optionKey}}"
+                          optionValue="${{it.optionValue}}"
+                          value="${ownobj?.id}"
+                          class="ui dropdown search many-to-one"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                />
+            </div>
+
+            <div id="providerdiv" class="field ${hasErrors(bean: taskInstance, field: 'provider', 'error')} required">
+            <label for="provider">
+                <g:message code="task.linkto" /><g:message code="task.provider.label" /> <g:message code="messageRequiredField" />
+            </label>
+                <g:select id="provider"
+                          name="provider"
+                          from="${validProvidersDropdown}"
+                          optionKey="${{it.optionKey}}"
+                          optionValue="${{it.optionValue}}"
+                          value="${ownobj?.id}"
+                          class="ui dropdown search many-to-one"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                />
+            </div>
+
+            <div id="vendordiv" class="field ${hasErrors(bean: taskInstance, field: 'vendor', 'error')} required">
+            <label for="vendor">
+                <g:message code="task.linkto" /><g:message code="task.vendor.label" /> <g:message code="messageRequiredField" />
+            </label>
+                <g:select id="vendor"
+                          name="vendor"
+                          from="${validVendorsDropdown}"
                           optionKey="${{it.optionKey}}"
                           optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
@@ -174,7 +218,7 @@
             $("#licensediv, #orgdiv, #subscriptiondiv").hide();
 
             JSPC.app.showHideRequire = function (taskType) {
-                var arr = [ 'license', 'org', 'subscription' ];
+                var arr = [ 'license', 'org', 'provider', 'vendor', 'subscription' ];
                 $('#'+ taskType +'radio').change(function () {
 
                     var hideArray = arr.filter(function(val, index, arr) {
@@ -194,6 +238,8 @@
             JSPC.app.showHideRequire ( 'license' );
             JSPC.app.showHideRequire ( 'subscription' );
             JSPC.app.showHideRequire ( 'org' );
+            JSPC.app.showHideRequire ( 'provider' );
+            JSPC.app.showHideRequire ( 'vendor' );
         </laser:script>
     </g:if>
 
@@ -207,7 +253,7 @@
 
             // myInstitution
             $('#generalradio').prop ('checked', true);
-            $("#licensediv, #orgdiv, #subscriptiondiv").hide();
+            $("#licensediv, #orgdiv, #subscriptiondiv, #providerdiv, #vendordiv").hide();
         };
 
         $("#radioresponsibleOrg").change(function () { JSPC.app.toggleResponsibleUser() });

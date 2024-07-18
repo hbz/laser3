@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 <g:if test="${listMuliYearsSub && listMuliYearsSub.size() > 0}">
     <table class="ui celled sortable table la-js-responsive-table la-table" id="parentSubscription">
         <thead>
@@ -53,7 +54,7 @@
                         <g:if test="${countMultiYearMembers > 0 && parentSuccessorSubscription != nextSubs[i]}">
                             <g:link controller="survey" action="$actionName"
                                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: nextSubs[i].id]"
-                                    class="ui button ">
+                                    class="${Btn.SIMPLE}">
                                 <g:message code="default.select2.label" args="[message(code: 'renewalEvaluation.parentSuccessorSubscription')]"/>
                             </g:link>
                         </g:if>
@@ -62,7 +63,7 @@
                         <g:if test="${(i == 0) || (nextSubs && nextSubs[i - 1])}">
                         <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo.id}"
                                 params="${[surveyConfig: surveyConfig.id, sourceSubId: ((nextSubs && i > 0) ? nextSubs[i - 1].id : parentSubscription.id)]}"
-                                class="ui button ">
+                                class="${Btn.SIMPLE}">
                             <g:message code="renewalEvaluation.newSub"/>
                         </g:link>
                         </g:if>
@@ -73,6 +74,9 @@
         </g:each>
         </tbody>
     </table>
+
+    <br>
+    <br>
 </g:if>
 <g:else>
     <g:if test="${surveyConfig.subSurveyUseForTransfer && actionName == 'compareMembersOfTwoSubs'}">
@@ -82,7 +86,7 @@
                 <g:message code="renewalEvaluation.parentSuccessorSubscription"/>:
                 <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo.id}"
                         params="[surveyConfig: surveyConfig.id, sourceSubId: surveyConfig.subscription.id]"
-                        class="ui button ">
+                        class="${Btn.SIMPLE}">
                     <g:message code="renewalEvaluation.newSub"/>
                 </g:link>
             </h3>
@@ -92,7 +96,7 @@
         <g:if test="${parentSuccessorSubscription && parentSuccessorSubscription.getDerivedNonHiddenSubscribers().size() > 0}">
             <g:link controller="subscription" action="copyElementsIntoSubscription" id="${parentSubscription.id}"
                     params="[sourceObjectId: genericOIDService.getOID(parentSubscription), targetObjectId: genericOIDService.getOID(parentSuccessorSubscription), isRenewSub: true, fromSurvey: surveyConfig.id]"
-                    class="ui button ">
+                    class="${Btn.SIMPLE}">
                 <g:message code="renewalEvaluation.newSub.change"/>
             </g:link>
         </g:if>

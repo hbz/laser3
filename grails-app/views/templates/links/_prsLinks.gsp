@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 
 <table class="ui celled la-js-responsive-table la-table table">
     <thead>
@@ -14,7 +15,7 @@
         <tr>
             <g:if test="${pr.org}">
                 <td>
-                    <g:if test="${! pr.prs.isPublic}"><i class="address book outline icon"></i> </g:if>
+                    <g:if test="${! pr.prs.isPublic}"><i class="${Icon.UI.ACP_PRIVATE}"></i> </g:if>
                     ${pr.prs}
                 </td>
                 <g:if test="${tmplShowFunction}">
@@ -37,7 +38,7 @@
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                                 data-confirm-term-how="unlink"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="trash alternate outline icon"></i></g:link>
+                            <i class="${Icon.CMD.DELETE}"></i></g:link>
                     </g:if>
                 </td>
             </g:if>
@@ -49,7 +50,7 @@
 </table>
 
 <g:if test="${editable}">
-    <input class="ui button"
+    <input class="${Btn.SIMPLE}"
            value="${message(code: 'default.add.label', args: [message(code: 'person.label')])}"
            data-ui="modal"
            data-href="#prsLinksModal" />

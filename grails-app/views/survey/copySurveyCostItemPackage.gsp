@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem; de.laser.storage.RDConstants;" %>
 <laser:htmlStart message="surveyCostItemsPackages.label" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -17,7 +17,7 @@
 </ui:h1HeaderWithIcon>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+    <ui:linkWithIcon icon="${Icon.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
@@ -289,7 +289,7 @@
                             <g:if test="${participant.newSub}">
                                 <g:link mapping="subfinance" controller="finance" action="index"
                                         params="${[sub: participant.newSub.id]}"
-                                        class="ui button icon"><i class="icon clipboard"></i></g:link>
+                                        class="${Btn.SIMPLE_ICON}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                             </g:if>
 
                             <g:if test="${surveyConfig.subSurveyUseForTransfer}">
@@ -312,7 +312,7 @@
 
                                 <div class="ui icon"
                                      data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
-                                    <i class="bordered colored chart pie icon"></i>
+                                    <i class="${Icon.SURVEY} bordered colored"></i>
                                 </div>
                             </g:if>
                         </td>
@@ -376,11 +376,11 @@
                 </div>
 
                 <div class="eight wide field" style="text-align: right;">
-                    <button class="ui button positive"
+                    <button class="${Btn.POSITIVE}"
                             type="submit">${message(code: 'copySurveyCostItems.copyCostItems')}</button>
                     <br/>
                     <br/>
-                    <button class="ui button positive" name="isVisibleForSubscriber" value="true"
+                    <button class="${Btn.POSITIVE}" name="isVisibleForSubscriber" value="true"
                             type="submit">${message(code: 'copySurveyCostItems.copyCostItems')} (${message(code: 'financials.isVisibleForSubscriber')})</button>
                 </div>
             </div>

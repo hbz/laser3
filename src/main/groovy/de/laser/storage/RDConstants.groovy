@@ -116,7 +116,6 @@ class RDConstants {
     public static final String NUMBER_TYPE            = 'number.type'
 
     public static final String ORGANISATIONAL_ROLE    = 'organisational.role'
-    public static final String ORG_SECTOR             = 'org.sector'
     public static final String ORG_STATUS             = 'org.status'
     public static final String ORG_TYPE               = 'org.type'
 

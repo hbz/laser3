@@ -1,19 +1,32 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.reporting.report.myInstitution.config.PlatformXCfg; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.export.GlobalExportHelper;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.reporting.report.myInstitution.config.PlatformXCfg; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.export.GlobalExportHelper;" %>
 <laser:serviceInjection />
 <!-- _helpModal.gsp -->
 <%
     String lang = (LocaleUtils.getCurrentLang() == 'en') ? 'en' : 'de'
 
-    String icon_blue   = '<i class="icon circle blue"></i>'
-    String icon_green  = '<i class="icon circle green"></i>'
-    String icon_yellow = '<i class="icon circle yellow"></i>'
-    String icon_pink   = '<i class="icon circle pink"></i>'
-    String icon_teal   = '<i class="icon circle teal"></i>'
+    String icon_blue   = '<i class="' + Icon.UNC.CIRCLE + ' blue"></i>'
+    String icon_green  = '<i class="' + Icon.UNC.CIRCLE + ' green"></i>'
+    String icon_yellow = '<i class="' + Icon.UNC.CIRCLE + ' yellow"></i>'
+    String icon_pink   = '<i class="' + Icon.UNC.CIRCLE + ' pink"></i>'
+    String icon_teal   = '<i class="' + Icon.UNC.CIRCLE + ' teal"></i>'
+
+    Closure hh_header = { de, en ->
+        println """<p class="ui header"> ${lang == 'de' ? de : en} </p>"""
+    }
+
+    Closure hh_no_x = { de, en ->
+        if (lang == 'de') {
+            println """<p> ${de[0]} ohne ${de[1]} werden in der Gruppe <i class="${Icon.UNC.CIRCLE} pink"></i><strong>* ohne ${de[2]}</strong> zusammmen gefasst. </p>"""
+        } else {
+            println """<p> ${en[0]} without ${en[1]} are summarized in the group <i class="${Icon.UNC.CIRCLE} pink"></i><strong>* no ${en[2]}</strong>. </p>"""
+        }
+    }
 
     Closure hc_identifier = { token1x, token3, token4x, token6 = null ->
+        hh_header( "Identifikatoren von ${token1x}", "Identifiers of ${token1x}" )
+
         if (lang == 'de') {
             println """
-                <p class="ui header"> Identifikatoren von ${token1x} </p>
                 <p>
                     Gelistet werden alle relevanten Namensräume - also Namensräume von Identifikatoren, die ${token1x} konkret vergeben wurden.
                     Die Basissuche bestimmt dabei die Menge der betrachteten ${token3}.
@@ -39,7 +52,6 @@
         }
         else {
             println """
-                <p class="ui header"> Identifiers of ${token1x} </p>
                 <p>
                     All relevant namespaces are listed - i.e. namespaces of identifiers that ${token1x} have been specifically assigned.
                     The basic search determines the number of ${token3} considered.
@@ -66,9 +78,10 @@
     }
 
     Closure hc_property = { token1, token2x, token4 ->
+        hh_header( "Merkmale von ${token1}", "Properties of ${token1}" )
+
         if (lang == 'de') {
             println """
-                <p class="ui header"> Merkmale von ${token1} </p>
                 <p>
                     Gelistet werden alle relevanten (also <strong>private oder öffentliche</strong>) Merkmale, die für ${token2x} konkret vergeben wurden.
                     Die Basissuche bestimmt dabei die Menge der betrachteten ${token2x}.
@@ -83,7 +96,6 @@
         }
         else {
             println """
-                <p class="ui header"> Properties of ${token1} </p>
                 <p>
                     All relevant (i.e. <strong>private or public</strong>) properties that have been specifically assigned for ${token2x} are listed.
                     The basic search determines the number of ${token2x} considered.
@@ -99,9 +111,10 @@
     }
 
     Closure hc_generic_annual = { token1, token2x, token3, token5x ->
+        hh_header( "Laufzeit von ${token1}", "Duration of ${token1}" )
+
         if (lang == 'de') {
             println """
-                <p class="ui header"> Laufzeit von ${token1} </p>
                 <p>
                     Gruppiert werden die ${token2x} in Jahresringen - abhängig von den jeweiligen Datumsgrenzen.
                     Bedingen vorhandene Daten eine Laufzeit mehrerer Jahre, wird die ${token3} auch mehreren Jahresringen zugeordnet.
@@ -116,7 +129,6 @@
         }
         else {
             println """
-                <p class="ui header"> Duration of ${token1} </p>
                 <p>
                     The ${token2x} are grouped in annual rings - depending on the respective date lines.
                     If existing data indicates a duration of several years, the ${token3} is also assigned to several annual rings.
@@ -132,9 +144,10 @@
     }
 
     Closure hc_generic_pkg = { token1, token2x, token4, token5 ->
+        hh_header( "${token1} von Paketen", "${token1} of packages" )
+
         if (lang == 'de') {
             println """
-                <p class="ui header"> ${token1} von Paketen </p>
                 <p>
                     Gelistet werden alle relevanten ${token2x} - also ${token2x}, die Paketen konkret zugeordnet werden können.
                     Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
@@ -144,7 +157,6 @@
         }
         else {
             println """
-                <p class="ui header"> ${token1} of packages </p>
                 <p>
                     All relevant ${token2x} are listed - i.e. ${token2x} that can be specifically assigned to packages.
                     The basic search determines the number of packages considered.
@@ -155,9 +167,10 @@
     }
 
     Closure hc_generic_pkg_wekb = { token1, token2x, token3 ->
+        hh_header( "${token1} von Paketen", "${token1} of packages" )
+
         if (lang == 'de') {
             println """
-                <p class="ui header"> ${token1} von Paketen </p>
                 <p>
                     Gelistet werden alle relevanten ${token2x} - also ${token3}, die Paketen konkret zugeordnet werden können.
                     Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
@@ -171,7 +184,6 @@
         }
         else {
             println """
-                <p class="ui header"> ${token1} of packages </p>
                 <p>
                     All relevant ${token2x} are listed - i.e. ${token3} that can be specifically assigned to packages.
                     The basic search determines the number of packages considered.
@@ -236,109 +248,117 @@
     </div>
 
     <div class="help-section" data-help-section="subscription-x-license">
+        ${hh_header( 'Verträge von Lizenzen', 'Licenses of subscriptions' )}
+
         <g:if test="${lang == 'de'}">
-            <p class="ui header"> Verträge von Lizenzen </p>
             <p>
                 Gelistet werden alle relevanten Verträge - also Verträge, die Lizenzen konkret zugeordnet werden können.
             </p>
-            <p> Lizenzen ohne ausgewiesenen Vertrag werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Vertrag</strong> zusammmen gefasst. </p>
         </g:if>
         <g:else>
-            <p class="ui header"> Licenses of subscriptions </p>
             <p>
                 All relevant licenses are listed - i.e. licenses that can be specifically assigned to subscriptions.
             </p>
-            <p> Subscriptions without a designated license are summarized in the group <i class="icon circle pink"></i><strong>* no License</strong>. </p>
         </g:else>
+        ${hh_no_x( ['Lizenzen', 'ausgewiesene Verträge', 'Vertrag'], ['Subscriptions', 'designated licenses', 'License'] )}
     </div>
 
     <div class="help-section" data-help-section="subscription-x-licenseCategory">
+        ${hh_header( 'Kategorie von Verträgen von Lizenzen', 'Categories of Licenses of subscriptions' )}
+
         <g:if test="${lang == 'de'}">
-            <p class="ui header"> Kategorie von Verträgen von Lizenzen </p>
             <p> TODO </p>
         </g:if>
         <g:else>
-            <p class="ui header"> Categories of Licenses of subscriptions </p>
             <p> TODO </p>
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-provider">
+        ${hh_header( 'Anbieter von Lizenzen', 'Providers of subscriptions' )}
+
         <g:if test="${lang == 'de'}">
-            <p class="ui header"> Anbieter von Lizenzen </p>
             <p>
                 Gelistet werden alle relevanten Anbieter - also Anbieter, die Lizenzen konkret zugeordnet werden können.
                 Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen und Anbieter.
             </p>
-            <p> Lizenzen ohne ausgewiesenen Anbieter werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Anbieter</strong> zusammmen gefasst. </p>
+            <p>
+                Dabei sind folgende Varianten möglich: <br />
+                <i class="${Icon.UNC.CIRCLE} blue"></i> Die Lizenz verweist direkt auf den Anbieter, <br />
+                <i class="${Icon.UNC.CIRCLE} green"></i> Der Anbieter kann über ein referenziertes Paket ermittelt werden <br />
+            </p>
         </g:if>
         <g:else>
-            <p class="ui header"> Providers of subscriptions </p>
             <p>
                 All relevant providers are listed - i.e. providers that can be specifically assigned to subscriptions.
                 The basic search determines the number of subscriptions and providers considered.
             </p>
-            <p> Subscriptions without a designated provider are summarized in the group <i class="icon circle pink"></i><strong>* no Provider</strong>. </p>
+            <p>
+                The following variants are possible: <br />
+                <i class="${Icon.UNC.CIRCLE} blue"></i> The subscription refers directly to the provider, <br />
+                <i class="${Icon.UNC.CIRCLE} green"></i> The provider can be identified via a referenced package <br />
+            </p>
         </g:else>
+        ${hh_no_x( ['Lizenzen', 'ermittelbare Anbieter', 'Anbieter'], ['Subscriptions', 'assignable providers', 'Provider'] )}
     </div>
 
     <div class="help-section" data-help-section="subscription-x-memberProvider">
+        ${hh_header( 'Anbieter von Einrichtungslizenzen', 'Providers of participant subscriptions' )}
+
         <g:if test="${lang == 'de'}">
-            <p class="ui header"> Anbieter von Einrichtungslizenzen </p>
             <p>
                 Gelistet werden alle relevanten Anbieter - also Anbieter, die Einrichtungslizenzen konkret zugeordnet werden können.
                 Genauer muss ein solcher Anbieter gleichzeitig <strong>einer Lizenz sowie der zugehörigen Einrichtungslizenz</strong> zugeordnet sein.
                 Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen, Einrichtungslizenzen und Anbieter.
             </p>
             <p>
-                Einrichtungslizenzen ohne ausgewiesenen Anbieter oder ohne passende Übereinstimmung werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Übereinstimmung</strong> zusammmen gefasst.
+                Einrichtungslizenzen ohne ausgewiesenen Anbieter oder ohne passende Übereinstimmung werden in der Gruppe <i class="${Icon.UNC.CIRCLE} pink"></i><strong>* keine Übereinstimmung</strong> zusammmen gefasst.
             </p>
         </g:if>
         <g:else>
-            <p class="ui header"> Providers of participant subscriptions </p>
             <p>
                 All relevant providers are listed - i.e. providers that can be specifically assigned to participant subscriptions.
                 More precisely, such a provider must be assigned to <strong>a subscription and the associated participant subscription</strong> at the same time.
                 The basic search determines the number of subscriptions, participant subscriptions and providers considered.
             </p>
             <p>
-                Participant subscriptions without a designated provider or without a suitable match are grouped together in the <i class="icon circle pink"></i><strong>* no Match</strong>.
+                Participant subscriptions without a designated provider or without a suitable match are grouped together in the <i class="${Icon.UNC.CIRCLE} pink"></i><strong>* no Match</strong>.
             </p>
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-platform">
+        ${hh_header( 'Plattformen von Lizenzen', 'Platforms of subscriptions' )}
+
         <g:if test="${lang == 'de'}">
-            <p class="ui header"> Plattformen von Lizenzen </p>
             <p>
                 Gelistet werden alle relevanten Plattformen - also Plattformen, die Lizenzen konkret zugeordnet werden können.
                 Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen und Anbieter.
             </p>
             <p>
                 Dabei sind folgende Varianten möglich: <br />
-                <i class="icon circle blue"></i> Die Plattform kann direkt über eine Referenz aus dem Lizenz-Bestand ermittelt werden, <br />
-                <i class="icon circle green"></i> Der einer Lizenz zugeordnete Anbieter verweist auf eine Plattform <br />
+                <i class="${Icon.UNC.CIRCLE} blue"></i> Die Plattform kann direkt über eine Referenz aus dem Lizenz-Bestand ermittelt werden, <br />
+                <i class="${Icon.UNC.CIRCLE} green"></i> Der einer Lizenz zugeordnete Anbieter verweist auf eine Plattform <br />
             </p>
-            <p> Lizenzen ohne ermittelbare Plattform werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Plattform</strong> zusammmen gefasst. </p>
         </g:if>
         <g:else>
-            <p class="ui header"> Platforms of subscriptions </p>
             <p>
                 All relevant platforms are listed - i.e. platforms that can be specifically assigned to subscriptions.
                 The basic search determines the number of subscriptions and providers considered.
             </p>
             <p>
                 The following variants are possible: <br />
-                <i class="icon circle blue"></i> The platform can be determined directly by a reference from the subscription entitlements, <br />
-                <i class="icon circle green"></i> The provider assigned to a subscription refers to a platform <br />
+                <i class="${Icon.UNC.CIRCLE} blue"></i> The platform can be determined directly by a reference from the subscription entitlements, <br />
+                <i class="${Icon.UNC.CIRCLE} green"></i> The provider assigned to a subscription refers to a platform <br />
             </p>
-            <p> Subscriptions without assignable platforms are summarized in the group <i class="icon circle pink"></i><strong>* without Platform</strong>. </p>
         </g:else>
+        ${hh_no_x( ['Lizenzen', 'ermittelbare Plattformen', 'Plattform'], ['Subscriptions', 'assignable platforms', 'Platform'] )}
     </div>
 
     <div class="help-section" data-help-section="subscription-x-memberSubscription">
+        ${hh_header( 'Einrichtungslizenzen von Lizenzen', 'Participant subscriptions of subscriptions' )}
+
         <g:if test="${lang == 'de'}">
-            <p class="ui header"> Einrichtungslizenzen von Lizenzen </p>
             <p>
                 Gelistet werden alle relevanten Lizenzen - also Lizenzen, denen entsprechende Einrichtungslizenzen zugeordnet werden können.
                 Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen und Einrichtungslizenzen.
@@ -346,7 +366,6 @@
             <p> Ohne übereinstimmende Zuordnung sind ggf. vorhandene Lizenzen <strong>nicht</strong> im Ergebnis sichtbar. </p>
         </g:if>
         <g:else>
-            <p class="ui header"> Participant subscriptions of subscriptions </p>
             <p>
                 All relevant subscriptions are listed - i.e. subscriptions to which corresponding participant subscriptions can be assigned.
                 The basic search determines the number of subscriptions and participant subscriptions considered.
@@ -356,8 +375,9 @@
     </div>
 
     <div class="help-section" data-help-section="subscription-x-member">
+        ${hh_header( 'Einrichtungen von Lizenzen', 'Participants of subscriptions' )}
+
         <g:if test="${lang == 'de'}">
-            <p class="ui header"> Einrichtungen von Lizenzen </p>
             <p>
                 Gelistet werden alle relevanten Lizenzen - also Lizenzen, denen entsprechende Einrichtungslizenzen mit konkreten Organisationen als Einrichtungen zugeordnet werden können.
                 Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen, Einrichtungslizenzen und Organisationen.
@@ -365,13 +385,40 @@
             <p> Ohne übereinstimmende Zuordnung sind ggf. vorhandene Lizenzen <strong>nicht</strong> im Ergebnis sichtbar. </p>
         </g:if>
         <g:else>
-            <p class="ui header"> Participants of subscriptions </p>
             <p>
                 All relevant subscriptions are listed - i.e. subscriptions to which corresponding participant subscriptions can be assigned with specific organizations as participants.
                 The basic search determines the number of subscriptions, participant subscriptions and organizations considered.
             </p>
             <p> If there is no suitable assignment, any existing subscriptions are <strong>not</strong> visible in the result. </p>
         </g:else>
+    </div>
+
+    <div class="help-section" data-help-section="subscription-x-vendor">
+        ${hh_header( 'Lieferanten von Lizenzen', 'Vendors of subscriptions' )}
+
+        <g:if test="${lang == 'de'}">
+            <p>
+                Gelistet werden alle relevanten Lieferanten - also Lieferanten, die Lizenzen konkret zugeordnet werden können.
+                Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen und Lieferanten.
+            </p>
+            <p>
+                Dabei sind folgende Varianten möglich: <br />
+                <i class="${Icon.UNC.CIRCLE} blue"></i> Die Lizenz verweist direkt auf den Lieferanten, <br />
+                <i class="${Icon.UNC.CIRCLE} green"></i> Der Lieferant kann über ein referenziertes Paket ermittelt werden <br />
+            </p>
+        </g:if>
+        <g:else>
+            <p>
+                All relevant vendors are listed - i.e. vendors that can be specifically assigned to subscriptions.
+                The basic search determines the number of subscriptions and vendors considered.
+            </p>
+            <p>
+                The following variants are possible: <br />
+                <i class="${Icon.UNC.CIRCLE} blue"></i> The subscription refers directly to the vendor, <br />
+                <i class="${Icon.UNC.CIRCLE} green"></i> The vendor can be identified via a referenced package <br />
+            </p>
+        </g:else>
+        ${hh_no_x( ['Lizenzen', 'ermittelbare Lieferanten', 'Lieferant'], ['Subscriptions', 'assignable vendors', 'Vendor'] )}
     </div>
 
     %{-- license --}%
@@ -403,6 +450,42 @@
         </g:else>
     </div>
 
+    <div class="help-section" data-help-section="license-x-provider">
+        ${hh_header( 'Anbieter von Verträgen', 'Providers of licenses' )}
+
+        <g:if test="${lang == 'de'}">
+            <p>
+                Gelistet werden alle relevanten Anbieter - also Anbieter, die Verträgen konkret zugeordnet werden können.
+                Die Basissuche bestimmt dabei die Menge der betrachteten Verträge und Anbieter.
+            </p>
+        </g:if>
+        <g:else>
+            <p>
+                All relevant providers are listed - i.e. providers that can be specifically assigned to licenses.
+                The basic search determines the number of licenses and providers considered.
+            </p>
+        </g:else>
+        ${hh_no_x( ['Verträge', 'ausgewiesene Anbieter', 'Anbieter'], ['Licenses', 'designated providers', 'Provider'] )}
+    </div>
+
+    <div class="help-section" data-help-section="license-x-vendor">
+        ${hh_header( 'Lieferanten von Verträgen', 'Vendors of licenses' )}
+
+        <g:if test="${lang == 'de'}">
+            <p>
+                Gelistet werden alle relevanten Lieferanten - also Lieferanten, die Verträgen konkret zugeordnet werden können.
+                Die Basissuche bestimmt dabei die Menge der betrachteten Verträge und Lieferanten.
+            </p>
+        </g:if>
+        <g:else>
+            <p>
+                All relevant vendors are listed - i.e. vendors that can be specifically assigned to licenses.
+                The basic search determines the number of licenses and vendors considered.
+            </p>
+        </g:else>
+        ${hh_no_x( ['Verträge', 'ausgewiesene Lieferanten', 'Lieferant'], ['Licenses', 'designated vendors', 'Vendor'] )}
+    </div>
+
     %{-- org --}%
 
     <div class="help-section" data-help-section="org-x-identifier">
@@ -420,6 +503,46 @@
         </g:if>
         <g:else>
             ${hc_property( 'organisations', 'organisations', 'Organisations' )}
+        </g:else>
+    </div>
+
+    %{-- provider --}%
+
+    <div class="help-section" data-help-section="provider-x-identifier">
+        <g:if test="${lang == 'de'}">
+            ${hc_identifier( 'Anbietern', 'Anbieter', 'Anbieter' )}
+        </g:if>
+        <g:else>
+            ${hc_identifier( 'providers', 'providers', 'Providers')}
+        </g:else>
+    </div>
+
+    <div class="help-section" data-help-section="provider-x-property">
+        <g:if test="${lang == 'de'}">
+            ${hc_property( 'Anbieter', 'Anbieter', 'Anbieter' )}
+        </g:if>
+        <g:else>
+            ${hc_property( 'providers', 'providers', 'Providers' )}
+        </g:else>
+    </div>
+
+    %{-- vendor --}%
+
+    <div class="help-section" data-help-section="vendor-x-identifier">
+        <g:if test="${lang == 'de'}">
+            ${hc_identifier( 'Lieferanten', 'Lieferanten', 'Lieferanten' )}
+        </g:if>
+        <g:else>
+            ${hc_identifier( 'vendors', 'vendors', 'Vendors')}
+        </g:else>
+    </div>
+
+    <div class="help-section" data-help-section="vendor-x-property">
+        <g:if test="${lang == 'de'}">
+            ${hc_property( 'Lieferanten', 'Lieferanten', 'Lieferanten' )}
+        </g:if>
+        <g:else>
+            ${hc_property( 'vendors', 'vendors', 'Vendors' )}
         </g:else>
     </div>
 
@@ -512,8 +635,9 @@
         <g:set var="esProperties" value="${PlatformXCfg.CONFIG.base.distribution.default.getAt('platform-x-propertyWekb').esProperties}" />
         <g:set var="esdConfig" value="${BaseConfig.getCurrentConfigElasticsearchData(BaseConfig.KEY_PLATFORM)}" />
 
+        ${hh_header( 'Merkmale von Plattformen', 'Properties of platforms' )}
+
         <g:if test="${lang == 'de'}">
-            <p class="ui header"> Merkmale von Plattformen </p>
             <p>
                 Gelistet werden alle relevanten Merkmale (aus einer fest definierten Liste), die für Plattformen konkret vergeben wurden.
                 Die Basissuche bestimmt dabei die Menge der betrachteten Plattformen.
@@ -524,12 +648,11 @@
                 </ol>
             </p>
             <p>
-                Pakete ohne entsprechende Merkmale werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
-                Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
+                Pakete ohne entsprechende Merkmale werden in der Gruppe <i class="${Icon.UNC.CIRCLE} pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
+                Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="${Icon.UNC.CIRCLE} teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
             </p>
         </g:if>
         <g:else>
-            <p class="ui header"> Properties of platforms </p>
             <p>
                 All relevant properties (from a firmly defined list) that have been specifically assigned for platforms are listed.
                 The basic search determines the number of platforms considered.
@@ -540,8 +663,8 @@
                 </ol>
             </p>
             <p>
-                Packages without corresponding properties are summarized in the group <i class="icon circle pink"></i><strong>* no Information</strong>. <br />
-                Relevant data is missing without a <strong>we:kb</strong> counterpart - such packages are listed under <i class="icon circle teal"></i><strong>* no web:kb object</strong>. <br />
+                Packages without corresponding properties are summarized in the group <i class="${Icon.UNC.CIRCLE} pink"></i><strong>* no Information</strong>. <br />
+                Relevant data is missing without a <strong>we:kb</strong> counterpart - such packages are listed under <i class="${Icon.UNC.CIRCLE} teal"></i><strong>* no web:kb object</strong>. <br />
             </p>
         </g:else>
     </div>
@@ -549,6 +672,7 @@
     <div class="help-section" data-help-section="default">
         ${message(code:'reporting.ui.global.help.missing')}
     </div>
+
 </ui:infoModal>
 
 <style>

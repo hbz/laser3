@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 <g:set var="entityName" value="${message(code: 'menu.yoda.mailAysnc.list')}" />
 <laser:htmlStart text="${message(code:"default.list.label", args:[entityName])}" />
 <ui:breadcrumbs>
@@ -29,12 +30,12 @@
                     <td><g:formatDate date="${message.createDate}" format="yyyy-MM-dd HH:mm:ss"/></td>
                     <td>${fieldValue(bean: message, field: 'status')}</td>
                     <td>
-                        <g:link class="ui button" action="show" id="${message.id}"><g:message code="default.show.label" args="['Mail']"/></g:link>
+                        <g:link class="${Btn.SIMPLE}" action="show" id="${message.id}"><g:message code="default.show.label" args="['Mail']"/></g:link>
                         <g:if test="${message.abortable}">
-                            <g:link class="ui button" action="abort" id="${message.id}"
+                            <g:link class="${Btn.SIMPLE}" action="abort" id="${message.id}"
                                     onclick="return confirm('Are you sure?');">abort</g:link>
                         </g:if>
-                        <g:link class="ui button" action="delete" id="${message.id}"
+                        <g:link class="${Btn.SIMPLE}" action="delete" id="${message.id}"
                                 onclick="return confirm('Are you sure?');">Delete</g:link>
                     </td>
                 </tr>

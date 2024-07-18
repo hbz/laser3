@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Vendor; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.VendorLink; de.laser.Contact;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.Vendor; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.VendorLink; de.laser.Contact;" %>
 
 <laser:htmlStart message="${'menu.institutions.vendor.show'}" serviceInjection="true" />
 
@@ -48,23 +48,26 @@
                     <dl>
                         <dt><g:message code="org.altname.label" /></dt>
                         <dd>
-                            <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion">
+                            <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion la-accordion-showMore">
                                 <g:if test="${vendor.altnames}">
-                                    <div class="title" id="altname_title">
-                                        <div data-objId="${genericOIDService.getOID(vendor.altnames[0])}">
+                                    <div class="item title" id="altname_title">
+                                        <div class="item" data-objId="${genericOIDService.getOID(vendor.altnames[0])}">
                                             <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                                           data_confirm_term_how="ok"
                                                           class="js-open-confirm-modal-xEditable"
                                                           owner="${vendor.altnames[0]}" field="name"/>
-                                            <g:if test="${editable}">
+                                            <g:if test="${editable && !vendor.gokbId}">
                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: vendor.altnames[0].id]"
                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [vendor.altnames[0].name])}"
                                                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(vendor.altnames[0])}')">
-                                                    <i class="trash alternate outline icon"></i>
+                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                 </ui:remoteLink>
                                             </g:if>
                                         </div>
-                                        <i class="dropdown icon"></i>
+                                        <div class="ui icon blue button la-show-button la-modern-button la-popup-tooltip la-delay"
+                                             data-content="${message(code: 'org.altname.show')}">
+                                            <i class="${Icon.CMD.SHOW_MORE}"></i>
+                                        </div>
                                     </div>
                                     <div class="content">
                                         <g:each in="${vendor.altnames.drop(1)}" var="altname">
@@ -82,7 +85,7 @@
                                                             <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                            data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                <i class="trash alternate outline icon"></i>
+                                                                <i class="${Icon.CMD.DELETE}"></i>
                                                             </ui:remoteLink>
                                                         </div>
                                                     </div>
@@ -351,6 +354,37 @@
                 </div>
             </div><!-- .card -->
 
+            <div class="ui card">
+                <div class="content">
+                    <h2 class="ui header"><g:message code="vendor.supplier.header"/></h2>
+                    <dl>
+                        <dt>
+                            <g:message code="vendor.supplier.prequalificationVol.label" />
+                        </dt>
+                        <dd>
+                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                 data_confirm_term_how="ok"
+                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                 owner="${vendor}" field="prequalificationVOL"  overwriteEditable="${editable && !vendor.gokbId}"/>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt>
+                            <g:message code="vendor.supplier.infoPrequalificationVol.label" />
+                        </dt>
+                        <dd>
+                            <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                          data_confirm_term_how="ok"
+                                          class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                          owner="${vendor}" field="prequalificationVOLInfo"  overwriteEditable="${editable && !vendor.gokbId}"/>
+                            <g:if test="${vendor.prequalificationVOLInfo}">
+                                <ui:linkWithIcon href="${vendor.prequalificationVOLInfo}"/>
+                            </g:if>
+                        </dd>
+                    </dl>
+                </div>
+            </div><!-- .card -->
+
             <g:if test="${links || editable}">
                 <div class="ui card">
                     <div class="content">
@@ -383,7 +417,7 @@
                                                             action="unlinkProviderVendor" params="[id: vendor.id, combo: row.id]"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                        <i class="unlink icon"></i>
+                                                        <i class="${Icon.CMD.UNLINK}"></i>
                                                     </g:link>
                                                 </span>
                                             </g:if>
@@ -415,6 +449,53 @@
             <div class="ui card">
                 <div class="content">
                     <div class="ui accordion">
+                        <h2 class="ui header"><g:message code="vendor.general.objects.label"/></h2>
+                        <div class="title">
+                            <i class="dropdown icon la-dropdown-accordion"></i>
+                            <div class="ui horizontal relaxed list">
+                                <div class="item">
+                                    <strong><g:message code="package.plural" /></strong>
+                                    &nbsp;<div class="ui blue circular label">${allPackages.size()}</div>
+                                </div>
+                                <div class="item">
+                                    <strong><g:message code="provider.plural" /></strong>
+                                    &nbsp;<div class="ui blue circular label">${providers.size()}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="content">
+                            <p class="ui header"><g:message code="package.plural" /></p>
+
+                            <div class="ui divided middle aligned selection list la-flex-list">
+                                <g:each in="${allPackages}" var="pkg">
+                                    <div class="ui item">
+                                        <div class="content la-space-right">
+                                            <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
+                                        </div>
+                                    </div>
+                                </g:each>
+                            </div>
+
+                            <p class="ui header"><g:message code="provider.plural" /></p>
+
+                            <div class="ui divided middle aligned selection list la-flex-list">
+                                <g:each in="${providers}" var="provider">
+                                    <div class="ui item">
+                                        <div class="content la-space-right">
+                                            <g:link controller="provider" action="show" id="${provider.id}">${provider.name}</g:link>
+                                        </div>
+                                    </div>
+                                </g:each>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui card">
+                <div class="content">
+                    <div class="ui accordion">
+                        <h2 class="ui header"><g:message code="vendor.my.objects.label"/></h2>
                         <div class="title">
                             <i class="dropdown icon la-dropdown-accordion"></i>
                             <div class="ui horizontal relaxed list">
@@ -454,10 +535,10 @@
                             <p class="ui header"><g:message code="package.plural" /></p>
 
                             <div class="ui divided middle aligned selection list la-flex-list">
-                                <g:each in="${packages}" var="vp">
+                                <g:each in="${packages}" var="pkg">
                                     <div class="ui item">
                                         <div class="content la-space-right">
-                                            <g:link controller="package" action="show" id="${vp.pkg.id}">${vp.pkg.name}</g:link>
+                                            <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
                                         </div>
                                     </div>
                                 </g:each>
@@ -469,7 +550,7 @@
                                 <div class="ui item">
                                     <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: vendor.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id]">
                                         <div class="content la-space-right">
-                                            <i class="icon filter"></i> <g:message code="subscription.plural.current" />
+                                            <i class="${Icon.LNK.FILTERED}"></i> <g:message code="subscription.plural.current" />
                                         &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}</div>
                                         </div>
                                     </g:link>
@@ -477,7 +558,7 @@
                                 <div class="ui item">
                                     <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: vendor.globalUID, status: 'FETCH_ALL']">
                                         <div class="content la-space-right">
-                                            <i class="icon filter"></i> <g:message code="subscription.plural.total" />
+                                            <i class="${Icon.LNK.FILTERED}"></i> <g:message code="subscription.plural.total" />
                                         &nbsp;<div class="ui blue circular label">${subLinks}</div>
                                         </div>
                                     </g:link>
@@ -490,7 +571,7 @@
                                 <div class="ui item">
                                     <div class="content la-space-right">
                                         <g:link controller="myInstitution" action="currentLicenses" params="[vendor: vendor.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']">
-                                            <i class="icon filter"></i> <g:message code="license.plural.current" />
+                                            <i class="${Icon.LNK.FILTERED}"></i> <g:message code="license.plural.current" />
                                             &nbsp;<div class="ui blue circular label">${currentLicensesCount}</div>
                                         </g:link>
                                     </div>
@@ -498,7 +579,7 @@
                                 <div class="ui item">
                                     <div class="content la-space-right">
                                         <g:link controller="myInstitution" action="currentLicenses" params="[vendor: vendor.id, filterSubmit: 'Filtern']">
-                                            <i class="icon filter"></i> <g:message code="license.plural.total" />
+                                            <i class="${Icon.LNK.FILTERED}"></i> <g:message code="license.plural.total" />
                                             &nbsp;<div class="ui blue circular label">${licLinks}</div>
                                         </g:link>
                                     </div>
@@ -574,7 +655,7 @@
     <aside class="five wide column la-sidekick">
         <div class="ui one cards">
             <%
-                Map<String, List> privateTypeAddressMap = [:]
+                Map<String, List> publicTypeAddressMap = [:], privateTypeAddressMap = [:]
                 Set<String> typeNames = new TreeSet<String>()
                 typeNames.add(RDStore.ADDRESS_TYPE_BILLING.getI10n('value'))
                 typeNames.add(RDStore.ADDRESS_TYPE_POSTAL.getI10n('value'))
@@ -595,7 +676,7 @@
                         <g:if test="${PersonRole.executeQuery('select pr from Person p join p.roleLinks pr where pr.vendor = :vendor and ((p.isPublic = false and p.tenant = :ctx) or p.isPublic = true)', [vendor: vendor, ctx: institution]) ||
                                 Address.executeQuery('select a from Address a where a.vendor = :vendor and (a.tenant = :ctx or a.tenant = null)', [vendor: vendor, ctx: institution])}">
                             <table class="ui compact table">
-                                <g:set var="vendorContacts" value="${vendorService.getContactPersonsByFunctionType(vendor, institution, true, null, true)}"/>
+                                <g:set var="vendorContacts" value="${vendorService.getContactPersonsByFunctionType(vendor, institution, true, null)}"/>
                                 <tr>
                                     <td>
                                         <g:if test="${vendorContacts}">
@@ -609,7 +690,7 @@
                                                                         <a target="_blank" href="${wekbApi.editUrl ? wekbApi.editUrl + '/public/orgContent/' + vendor.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
                                                                     </g:if>
                                                                     <g:else>
-                                                                        <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                        <i class="${Icon.UI.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                     </g:else>
                                                                 </div>
                                                                 <div class="fourteen wide column">
@@ -634,6 +715,62 @@
                                         </g:if>
                                     </td>
                                 </tr>
+                                <%
+                                    vendor.addresses.each { Address a ->
+                                        a.type.each { type ->
+                                            String typeName = type.getI10n('value')
+                                            typeNames.add(typeName)
+                                            if(!a.tenant) {
+                                                List addresses = publicTypeAddressMap.get(typeName) ?: []
+                                                addresses.add(a)
+                                                publicTypeAddressMap.put(typeName, addresses)
+                                            }
+                                            else if(a.tenant.id == institution.id) {
+                                                List addresses = privateTypeAddressMap.get(typeName) ?: []
+                                                addresses.add(a)
+                                                privateTypeAddressMap.put(typeName, addresses)
+                                            }
+                                        }
+                                    }
+                                %>
+                                <g:if test="${publicTypeAddressMap}">
+                                    <tr>
+                                        <td>
+                                            <div class="ui segment la-timeLineSegment-contact">
+                                                <div class="la-timeLineGrid">
+                                                    <div class="ui grid">
+                                                        <g:each in="${typeNames}" var="typeName">
+                                                            <% List publicAddresses = publicTypeAddressMap.get(typeName) %>
+                                                            <g:if test="${publicAddresses}">
+                                                                <div class="row">
+                                                                    <div class="two wide column">
+
+                                                                    </div>
+                                                                    <div class="fourteen wide column">
+                                                                        <div class="ui label">${typeName}</div>
+                                                                        <g:each in="${publicAddresses}" var="a">
+                                                                            <g:if test="${a.vendor}">
+                                                                                <laser:render template="/templates/cpa/address" model="${[
+                                                                                        hideAddressType     : true,
+                                                                                        address             : a,
+                                                                                        tmplShowDeleteButton: false,
+                                                                                        controller          : 'org',
+                                                                                        action              : 'show',
+                                                                                        id                  : vendor.id,
+                                                                                        editable            : false
+                                                                                ]}"/>
+                                                                            </g:if>
+                                                                        </g:each>
+                                                                    </div>
+                                                                </div>
+                                                            </g:if>
+                                                        </g:each>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </g:if>
                             </table>
                         </g:if>
                     </div>
@@ -670,10 +807,10 @@
                                                             <div class="row">
                                                                 <div class="two wide column">
                                                                     <g:if test="${person.isPublic}">
-                                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                        <i class="${Icon.UI.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                                     </g:if>
                                                                     <g:else>
-                                                                        <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                        <i class="${Icon.UI.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                     </g:else>
                                                                 </div>
                                                                 <div class="fourteen wide column">
@@ -739,10 +876,10 @@
                                                                 <div class="row">
                                                                     <div class="two wide column">
                                                                         <g:if test="${person.isPublic}">
-                                                                            <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                            <i class="${Icon.UI.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                                         </g:if>
                                                                         <g:else>
-                                                                            <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                            <i class="${Icon.UI.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                         </g:else>
                                                                     </div>
                                                                     <div class="fourteen wide column">

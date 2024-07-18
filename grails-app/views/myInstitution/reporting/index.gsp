@@ -1,4 +1,4 @@
-<%@page import="de.laser.config.ConfigMapper; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
+<%@page import="de.laser.ui.Icon; de.laser.config.ConfigMapper; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
 <laser:htmlStart message="myinst.reporting" serviceInjection="true">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
@@ -22,7 +22,7 @@
                     <i class="icon history"></i>
             </div>
             <div id="info-toggle" class="ui icon button right floated">
-                <i class="icon question"></i>
+                <i class="${Icon.UI.HELP}"></i>
             </div>
         </div>
 
@@ -32,7 +32,7 @@
 
             <div class="ui segment">
                 <span class="ui top attached label" style="text-align:center;">
-                    <i class="icon question large"></i>${message(code:'reporting.ui.global.help')}
+                    <i class="${Icon.UI.HELP} large"></i>${message(code:'reporting.ui.global.help')}
                 </span>
                 <div style="margin: 3.5em 2em 0.5em !important">
                     <p>
@@ -56,7 +56,7 @@
                         ${message(code:'reporting.ui.global.infoBookmarks')}
                     </p>
                     <p>
-                        <i class="icon question blue"></i><strong>${message(code:'reporting.ui.global.help')}</strong> <br />
+                        <i class="${Icon.UI.HELP} blue"></i><strong>${message(code:'reporting.ui.global.help')}</strong> <br />
                         ${message(code:'reporting.ui.global.infoHelp')}
                     </p>
                     <p>
@@ -134,7 +134,7 @@
                             <div class="menu">
                                 <g:each in="${cfgFilterList}" var="cfg">
                                     <div class="item" data-value="${cfg}">
-                                        <i class="${BaseConfig.getIcon(cfg)} icon grey"></i> ${BaseConfig.getFilterLabel(cfg)}
+                                        <i class="${BaseConfig.getIcon(cfg)} grey"></i> ${BaseConfig.getFilterLabel(cfg)}
                                     </div>
                                 </g:each>
                             </div>
@@ -164,7 +164,7 @@
 
             <laser:render template="/myInstitution/reporting/query/${filter}" />
 
-            <div id="reporting-chart-nodata" class="ui message negative">${message(code:'reporting.modal.nodata')}</div>
+            <div id="reporting-chart-nodata" class="ui error message">${message(code:'reporting.modal.nodata')}</div>
 
             <div id="chart-wrapper"></div>
             <div id="chart-details"></div>
@@ -306,10 +306,12 @@
 
                             JSPC.app.reporting.current.chart.echart = echart;
 
-                            $('#query-export-button').removeAttr('disabled');
-                            if (JSPC.app.reporting.current.request.query.indexOf('-x-') >=0) {
+                            let escQuery = JSPC.app.reporting.current.request.query.replaceAll('*', '\\*')
+                            let $dhs = $('#queryHelpModal .help-section[data-help-section=' + escQuery + ']');
+                            if ($dhs.length) {
                                 $('#query-help-button').removeAttr('disabled');
                             }
+                            $('#query-export-button').removeAttr('disabled');
                         }
                     })
                     .fail (function (data) {
@@ -418,6 +420,6 @@
         </laser:script>
 
         <ui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
-            <p><i class="icon exclamation triangle large orange"></i> ${message(code:'reporting.modal.error')}</p>
+            <p><i class="${Icon.UI.ERROR} large orange"></i> ${message(code:'reporting.modal.error')}</p>
         </ui:modal>
 <laser:htmlEnd />

@@ -55,7 +55,7 @@ class SurveyController {
     FinanceControllerService financeControllerService
     FinanceService financeService
     LinksGenerationService linksGenerationService
-    OrgTypeService orgTypeService
+    ProviderService providerService
     SubscriptionService subscriptionService
     SubscriptionsQueryService subscriptionsQueryService
     SurveyControllerService surveyControllerService
@@ -129,7 +129,7 @@ class SurveyController {
         }
 
         prf.setBenchmark("after surveyYears and before current org ids of providers and vendors")
-        result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( (Org) result.institution )
+        result.providers = providerService.getCurrentProviders( (Org) result.institution )
         prf.setBenchmark("after providers and vendors and before subscriptions")
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution])
@@ -213,7 +213,7 @@ class SurveyController {
 
         result.propList = PropertyDefinition.executeQuery( "select surpro.surveyProperty from SurveyConfigProperties as surpro join surpro.surveyConfig surConfig join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg order by surpro.surveyProperty.name_de asc", [contextOrg: result.institution]).groupBy {it}.collect {it.key}
 
-        result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( contextService.getOrg() )
+        result.providers = providerService.getCurrentProviders( contextService.getOrg() )
 
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution])
@@ -368,9 +368,9 @@ class SurveyController {
             }
         }
 
-        Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.getOrg() )
+        Set providerIds = providerService.getCurrentProviderIds( contextService.getOrg() )
 
-        result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
+        result.providers = providerIds.isEmpty() ? [] : Provider.findAllByIdInList(providerIds).sort { it?.name }
 
         List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
 
@@ -448,9 +448,9 @@ class SurveyController {
             }
         }
 
-        Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.getOrg() )
+        Set providerIds = providerService.getCurrentProviderIds( contextService.getOrg() )
 
-        result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
+        result.providers = providerIds.isEmpty() ? [] : Provider.findAllByIdInList(providerIds).sort { it?.name }
 
         List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
         result.filterSet = tmpQ[2]
@@ -968,7 +968,7 @@ class SurveyController {
             }
         }else {
             ctrlResult.result
-            redirect(action: 'surveyCostItems', id: ctrlResult.result.surveyInfo.id, params: params)
+            redirect(action: 'surveyCostItems', id: ctrlResult.result.surveyInfo.id, params: params+[selectedCostItemElementID: params.bulkSelectedCostItemElementID])
             return
         }
 
@@ -1024,11 +1024,18 @@ class SurveyController {
         ArrayList row
         SurveyOrg.findAllBySurveyConfig(ctrlResult.surveyConfig).each { SurveyOrg surveyOrg ->
             row = []
-            row.add(surveyOrg.org.getIdentifierByType('wibid')?.value)
-            row.add(surveyOrg.org.getIdentifierByType('ISIL')?.value)
-            row.add(surveyOrg.org.getIdentifierByType('ROR ID')?.value)
-            row.add(surveyOrg.org.getIdentifierByType('gnd_org_nr')?.value)
-            row.add(surveyOrg.org.getIdentifierByType('deal_id')?.value)
+            Org org = surveyOrg.org
+            String wibid = org.getIdentifierByType('wibid')?.value
+            String isil = org.getIdentifierByType('ISIL')?.value
+            String ror = org.getIdentifierByType('ROR ID')?.value
+            String gng = org.getIdentifierByType('gnd_org_nr')?.value
+            String deal = org.getIdentifierByType('deal_id')?.value
+
+            row.add((wibid != IdentifierNamespace.UNKNOWN && wibid != null) ? wibid : '')
+            row.add((isil != IdentifierNamespace.UNKNOWN && isil != null) ? isil : '')
+            row.add((ror != IdentifierNamespace.UNKNOWN && ror != null) ? ror : '')
+            row.add((gng != IdentifierNamespace.UNKNOWN && gng != null) ? gng : '')
+            row.add((deal != IdentifierNamespace.UNKNOWN && deal != null) ? deal : '')
 
             if(ctrlResult.surveyConfig.subscription){
                 row.add(Platform.executeQuery('select ci.value from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer = (:customer) and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription.instanceOf = :subscription)', [customer: surveyOrg.org, subscription: ctrlResult.surveyConfig.subscription]).join(', '))
@@ -1074,7 +1081,6 @@ class SurveyController {
         String filename = "template_survey_participants_import"
 
         params.orgType = RDStore.OT_INSTITUTION.id
-        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         params.sub = ctrlResult.subscription
 
@@ -1088,11 +1094,18 @@ class SurveyController {
         ArrayList row
         members.each { Org org ->
             row = []
-            row.add(org.getIdentifierByType('wibid')?.value)
-            row.add(org.getIdentifierByType('ISIL')?.value)
-            row.add(org.getIdentifierByType('ROR ID')?.value)
-            row.add(org.getIdentifierByType('gnd_org_nr')?.value)
-            row.add(org.getIdentifierByType('deal_id')?.value)
+
+            String wibid = org.getIdentifierByType('wibid')?.value
+            String isil = org.getIdentifierByType('ISIL')?.value
+            String ror = org.getIdentifierByType('ROR ID')?.value
+            String gng = org.getIdentifierByType('gnd_org_nr')?.value
+            String deal = org.getIdentifierByType('deal_id')?.value
+
+            row.add((wibid != IdentifierNamespace.UNKNOWN && wibid != null) ? wibid : '')
+            row.add((isil != IdentifierNamespace.UNKNOWN && isil != null) ? isil : '')
+            row.add((ror != IdentifierNamespace.UNKNOWN && ror != null) ? ror : '')
+            row.add((gng != IdentifierNamespace.UNKNOWN && gng != null) ? gng : '')
+            row.add((deal != IdentifierNamespace.UNKNOWN && deal != null) ? deal : '')
             row.add(org.sortname)
             row.add(org.name)
             row.add(org.libraryType.getI10n('value'))
@@ -1342,7 +1355,7 @@ class SurveyController {
             }
         }else {
             ctrlResult.result
-            redirect(action: 'compareMembersOfTwoSubs', id: params.id, params: [surveyConfigID: ctrlResult.result.surveyConfig.id, targetSubscriptionId: ctrlResult.result.targetParentSub?.id])
+            redirect(action: 'compareMembersOfTwoSubs', id: params.id, params: [surveyConfigID: ctrlResult.result.surveyConfig.id, targetSubscriptionId: ctrlResult.result.targetSubscription?.id])
             return
         }
 
@@ -2312,7 +2325,7 @@ class SurveyController {
             ctrlResult.result
             flash.message = message(code: 'surveyInfo.transfer.info', args: [ctrlResult.result.countNewSubs, ctrlResult.result.newSubs.size() ?: 0]) as String
 
-            redirect(action: 'compareMembersOfTwoSubs', id: params.id, params: [surveyConfigID: ctrlResult.result.surveyConfig.id])
+            redirect(action: 'compareMembersOfTwoSubs', id: params.id, params: [surveyConfigID: ctrlResult.result.surveyConfig.id, targetSubscriptionId: ctrlResult.result.targetSubscription?.id])
             return
         }
 

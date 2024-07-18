@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <laser:htmlStart message="menu.yoda.appControllers" />
 
 <ui:breadcrumbs>
@@ -58,7 +59,7 @@
 <br />
 <br />
 
-%{--<button id="resultToggle" class="ui button">Hier klicken zum Ändern der Ansicht</button>--}%
+%{--<button id="resultToggle" class="${Btn.SIMPLE}">Hier klicken zum Ändern der Ansicht</button>--}%
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.resultViewModes = [
@@ -173,29 +174,29 @@
                                                     <g:if test="${dd.key == 'perm'}">
                                                         <g:if test="${dd.value.contains('ORG_INST_BASIC')}">
                                                             <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_INST_BASIC / ORG_INST_PRO">
-                                                                <i class="icon user circle grey"></i><i class="icon trophy grey"></i>
+                                                                <i class="${Icon.AUTH.ORG_INST_BASIC}"></i><i class="${Icon.AUTH.ORG_INST_PRO}"></i>
                                                             </span>
                                                         </g:if>
                                                         <g:if test="${dd.value.contains('ORG_INST_PRO')}">
                                                             <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_INST_PRO">
-                                                                <i class="icon trophy grey"></i>
+                                                                <i class="${Icon.AUTH.ORG_INST_PRO}"></i>
                                                             </span>
                                                         </g:if>
                                                         <g:if test="${dd.value.contains('ORG_CONSORTIUM_BASIC')}">
                                                             <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_CONSORTIUM_BASIC / ORG_CONSORTIUM_PRO">
-                                                                <i class="icon user circle teal"></i><i class="icon trophy teal"></i>
+                                                                <i class="${Icon.AUTH.ORG_CONSORTIUM_BASIC}"></i><i class="${Icon.AUTH.ORG_CONSORTIUM_PRO}"></i>
                                                             </span>
                                                         </g:if>
                                                         <g:if test="${dd.value.contains('ORG_CONSORTIUM_PRO')}">
                                                             <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_CONSORTIUM_PRO">
-                                                                <i class="icon trophy teal"></i>
+                                                                <i class="${Icon.AUTH.ORG_CONSORTIUM_PRO}"></i>
                                                             </span>
                                                         </g:if>
                                                     </g:if>
                                                     <g:if test="${dd.key == 'test'}">
                                                         <g:if test="${info.value.getAt('perm')?.contains('ORG_CONSORTIUM_BASIC') || info.value.getAt('perm')?.contains('ORG_CONSORTIUM_PRO') || info.value.getAt('perm')?.contains('ORG_SUPPORT')}">%{-- check with given perms --}%
                                                             <g:if test="${! dd.value.contains('_denySupport_')}">
-                                                                <i class="icon theater masks red"></i>
+                                                                <i class="${Icon.AUTH.ORG_SUPPORT}"></i>
                                                             </g:if>
                                                         </g:if>
                                                     </g:if>
@@ -205,13 +206,13 @@
 
                                             <g:if test="${! info.value.getAt('perm')}">%{-- check without explicit perms --}%
                                                 <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_INST_BASIC / ORG_INST_PRO">
-                                                    <i class="icon user circle grey"></i><i class="icon trophy grey"></i>
+                                                    <i class="${Icon.AUTH.ORG_INST_BASIC}"></i><i class="${Icon.AUTH.ORG_INST_PRO}"></i>
                                                 </span>
                                                 <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_CONSORTIUM_BASIC / ORG_CONSORTIUM_PRO">
-                                                    <i class="icon user circle teal"></i><i class="icon trophy teal"></i>
+                                                    <i class="${Icon.AUTH.ORG_CONSORTIUM_BASIC}"></i><i class="${Icon.AUTH.ORG_CONSORTIUM_PRO}"></i>
                                                 </span>
                                                 <g:if test="${! info.value.getAt('test').contains('_denySupport_')}">
-                                                    <i class="icon theater masks red"></i>
+                                                    <i class="${Icon.AUTH.ORG_SUPPORT}"></i>
                                                 </g:if>
                                             </g:if>
                                         </g:if>
@@ -228,7 +229,7 @@
                     </div>
                 </div>
                 <g:if test="${c.value.methods.others}">
-                    <div class="ui segment">
+                    <div class="ui segment" style="background-color:#eee;">
                         <div class="ui vertically divided grid">
                             <g:each in="${c.value.methods.others}" var="method">
                                 <div class="row">

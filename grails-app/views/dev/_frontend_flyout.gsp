@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <h2 class="ui dividing header">Flyout<a class="anchor" id="flyout"></a>
 </h2>
 
@@ -5,7 +6,7 @@
 <div class="ui flyout test">
     <i class="close icon"></i>
     <div class="ui header">
-        <i class="question icon"></i>
+        <i class="${Icon.UI.HELP}"></i>
         <div class="content">
             Archive Old Messages
         </div>
@@ -32,7 +33,7 @@
     });
 </laser:script>
 
-<a class="ui button" id="flyout-trigger">Trigger Flyout</a>
+<a class="${Btn.SIMPLE}" id="flyout-trigger">Trigger Flyout</a>
 <div class="html ui top attached segment example">
     <div class="ui top attached label">Neues Feature in Fomantic UI 2.9: Flyouts ist die Vereinigung von einem Modal und einer Sidebar</div>
 </div>
@@ -43,7 +44,7 @@
             &lt;div class="ui flyout"&gt;
                 &lt;i class="close icon">&lt;/i&gt;
             &lt;div class="ui header">
-            &lt;i class="question icon">&lt;/i&gt;
+            &lt;i class="${Icon.UI.HELP}">&lt;/i&gt;
             &lt;div class="content"&gt;
                         Archive Old Messages
             &lt;/div&gt;

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore;" %>
 <ui:modal id="modalAllTitleInfos" text="${message(code: 'title.details')}"
              hideSubmitButton="true">
 
@@ -31,11 +31,11 @@
 
         <div class="la-icon-list">
             <div class="item">
-                <i class="grey calendar icon la-popup-tooltip la-delay"
+                <i class="grey ${Icon.SYM.DATE} la-popup-tooltip la-delay"
                    data-content="${message(code: 'subscription.details.access_start')}"></i>
                 <g:if test="${editable}">
                     <ui:xEditable owner="${ie}" type="date" field="accessStartDate"/>
-                    <i class="grey question circle icon la-popup-tooltip la-delay"
+                    <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip la-delay"
                        data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                 </g:if>
                 <g:else>
@@ -44,11 +44,11 @@
             </div>
 
             <div class="item">
-                <i class="grey calendar icon la-popup-tooltip la-delay"
+                <i class="grey ${Icon.SYM.DATE} la-popup-tooltip la-delay"
                    data-content="${message(code: 'subscription.details.access_end')}"></i>
                 <g:if test="${editable}">
                     <ui:xEditable owner="${ie}" type="date" field="accessEndDate"/>
-                    <i class="grey question circle icon la-popup-tooltip la-delay"
+                    <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip la-delay"
                        data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                 </g:if>
                 <g:else>

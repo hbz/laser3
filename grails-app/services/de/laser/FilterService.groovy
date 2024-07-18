@@ -95,10 +95,6 @@ class FilterService {
             query << " exists (select ogr from o.links as ogr where ogr.roleType.id = :orgRole )"
              queryParams << [orgRole : params.long('orgRole')]
         }
-        if (params.orgSector) {
-            query << "o.sector.id in (:orgSector)"
-             queryParams << [orgSector : Params.getLongList(params, 'orgSector')]
-        }
         if (params.orgIdentifier?.length() > 0) {
             query << " ( exists (select ident from Identifier ident join ident.org ioorg " +
                      " where ioorg = o and genfunc_filter_matcher(ident.value, :orgIdentifier) = true ) or " +
@@ -232,10 +228,6 @@ class FilterService {
             query << "exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) )"
             queryParams << [orgType : Params.getLongList(params, 'orgType')]
         }
-        if (params.orgSector) {
-            query << "o.sector.id in (:orgSector)"
-            queryParams << [orgSector : Params.getLongList(params, 'orgSector')]
-        }
         if (params.region) {
             query << "o.region.id in (:region)"
             queryParams << [region : Params.getLongList(params, 'region')]
@@ -318,7 +310,7 @@ class FilterService {
         }
 
         if (params.filterPvd) {
-            String subQuery = " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select orgRole from OrgRole orgRole where orgRole.sub = sub and orgRole.org.id in (:filterPvd)) "
+            String subQuery = " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select pvr from ProviderRole pvr where pvr.subscription = sub and pvr.provider.id in (:filterPvd)) "
             queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg(), filterPvd: Params.getLongList(params, 'filterPvd')]
 
             if (params.subStatus) {
@@ -340,7 +332,13 @@ class FilterService {
                 }
             }
 
-            query << subQuery+")"
+            subQuery+=")"
+
+            if(params.subStatus && RDStore.GENERIC_NULL_VALUE in Params.getRefdataList(params, 'subStatus')) {
+                subQuery += "or not exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf = :sub)"
+                queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg(), sub: params.sub]
+            }
+            query << subQuery
             // params.filterSet = true // ERMS-5516
             isFilterSet = true
         }
@@ -650,7 +648,7 @@ class FilterService {
         }
 
         if (params.filterPvd) {
-            query += " and exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
+            query += " and exists (select pvr from ProviderRole pvr where pvr.subscription = surConfig.subscription and pvr.provider.id in (:filterPvd))"
             queryParams << [filterPvd : Params.getLongList(params, 'filterPvd')]
             isFilterSet = true
         }
@@ -806,7 +804,7 @@ class FilterService {
         }
 
         if (params.filterPvd) {
-            query << "exists (select orgRole from OrgRole orgRole where orgRole.sub = surConfig.subscription and orgRole.org.id in (:filterPvd))"
+            query << "exists (select pvr from ProviderRole pvr where pvr.subscription = surConfig.subscription and prv.provider.id in (:filterPvd))"
             queryParams << [filterPvd: Params.getLongList(params, 'filterPvd')]
             isFilterSet = true
         }
@@ -927,10 +925,6 @@ class FilterService {
         if (params.orgType) {
             base_qry += " and exists (select roletype from surveyOrg.org.orgType as roletype where roletype.id = :orgType )"
             queryParams << [orgType : params.long('orgType')]
-        }
-        if (params.orgSector) {
-            base_qry += " and surveyOrg.org.sector.id = :orgSector"
-            queryParams << [orgSector : params.long('orgSector')]
         }
         if (params.region) {
             base_qry += " and surveyOrg.org.region.id in (:region)"
@@ -2031,11 +2025,16 @@ class FilterService {
                 whereClauses << "tipp_medium_rv_fk = any(:medium)"
             }
             if(configMap.filterPvd != null && !configMap.filterPvd.isEmpty()) {
-                List<Object> providers = [], providerRoleTypes = [RDStore.OR_CONTENT_PROVIDER.id, RDStore.OR_PROVIDER.id, RDStore.OR_AGENCY.id, RDStore.OR_PUBLISHER.id]
+                List<Object> providers = []
                 providers.addAll(listReaderWrapper(configMap, 'filterPvd').collect { Long.parseLong(it.split(':')[1])} )
                 params.providers = connection.createArrayOf('bigint', providers.toArray())
-                params.providerRoleTypes = connection.createArrayOf('bigint', providerRoleTypes.toArray())
-                whereClauses << "exists(select or_id from org_role where or_pkg_fk = pkg_id and or_org_fk = any(:providers) and or_roletype_fk = any(:providerRoleTypes))"
+                whereClauses << "pkg_provider_fk = any(:providers)"
+            }
+            if(configMap.filterVen != null && !configMap.filterVen.isEmpty()) {
+                List<Object> vendors = []
+                vendors.addAll(listReaderWrapper(configMap, 'filterVen').collect { Long.parseLong(it.split(':')[1])} )
+                params.vendors = connection.createArrayOf('bigint', vendors.toArray())
+                whereClauses << "exists(select pv_id from package_vendor where pv_pkg_fk = pkg_id and pv_vendor_fk = any(:vendors))"
             }
             if(configMap.filterHostPlat != null && !configMap.filterHostPlat.isEmpty()) {
                 List<Object> hostPlatforms = []

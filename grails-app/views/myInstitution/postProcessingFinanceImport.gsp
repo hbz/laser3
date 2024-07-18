@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.OrgRole; grails.converters.JSON;de.laser.storage.RDStore;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.CustomerTypeService; de.laser.OrgRole; grails.converters.JSON;de.laser.storage.RDStore;de.laser.finance.CostItem" %>
 <laser:htmlStart message="myinst.financeImport.post.title" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -129,8 +129,12 @@
                                                 errMess = message(code:"myinst.financeImport.post.error.invalidYearFormat",args:[errors.get('invalidYearFormat')])
                                             break
                                         case ["datum von", "date from"]: tableCell = formatDate(format: message(code:'default.date.format.notime'), date: ci.startDate)
+                                            if(errors.containsKey('invalidDate'))
+                                                errMess = message(code:"myinst.financeImport.post.error.invalidDate")
                                             break
                                         case ["datum bis", "date to"]: tableCell = formatDate(format: message(code:'default.date.format.notime'), date: ci.endDate)
+                                            if(errors.containsKey('invalidDate'))
+                                                errMess = message(code:"myinst.financeImport.post.error.invalidDate")
                                             break
                                         case ["rechnungsdatum", "invoice date"]: tableCell = formatDate(format: message(code:'default.date.format.notime'), date: ci.invoiceDate)
                                             break
@@ -171,8 +175,8 @@
                 <tfoot>
                     <tr>
                         <td colspan="3">
-                            <input type="submit" class="ui button primary" value="${message(code:'default.button.save.label')}">
-                            <g:link action="financeImport" class="ui button"><g:message code="default.button.back"/></g:link>
+                            <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.save.label')}">
+                            <g:link action="financeImport" class="${Btn.SIMPLE}"><g:message code="default.button.back"/></g:link>
                         </td>
                     </tr>
                 </tfoot>

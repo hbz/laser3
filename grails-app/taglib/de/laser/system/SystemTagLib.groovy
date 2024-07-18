@@ -23,13 +23,14 @@ class SystemTagLib {
         g.set( var:'escapeService',                 bean:'escapeService')
         g.set( var:'exportClickMeService',          bean:'exportClickMeService')
         g.set( var:'exportService',                 bean:'exportService')
-        g.set( var:'financeService',                 bean:'financeService')
+        g.set( var:'financeService',                bean:'financeService')
         g.set( var:'filterService',                 bean:'filterService' )
         g.set( var:'formService',                   bean:'formService' )
         g.set( var:'genericOIDService',             bean:'genericOIDService' )
         g.set( var:'gokbService',                   bean:'gokbService' )
         g.set( var:'identifierService',             bean:'identifierService' )
         g.set( var:'linksGenerationService',        bean:'linksGenerationService' )
+        g.set( var:'markerService',                 bean:'markerService' )
         g.set( var:'orgTypeService',                bean:'orgTypeService' )
         g.set( var:'packageService',                bean:'packageService')
         g.set( var:'pendingChangeService',          bean:'pendingChangeService')
@@ -75,4 +76,22 @@ class SystemTagLib {
     def htmlEnd = { attrs, body ->
         out << '</body></html>'
     }
+
+    def serverCodeMessage = { attrs, body ->
+        out << '<div class="ui segment piled">'
+        out << '  <div class="content">'
+        out << '    <div> <span class="ui orange label huge">' + attrs.status + '</span> </div>'
+        out << '    <h2 class="ui header"> ' + attrs.header + ' </h2>'
+        out << '    <div>'
+        if (attrs.subheader) {
+            out << '  <p> ' + attrs.subheader + ' </p>'
+        }
+        out << body()
+        out << '      <br />'
+        out << '      <p> <button class="ui button" onclick="JSPC.helper.goBack()">' + message(code: 'default.button.back') + '</button> </p>'
+        out << '    </div>'
+        out << '  </div>'
+        out << '</div>'
+    }
+
 }

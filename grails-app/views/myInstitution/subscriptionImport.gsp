@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
 <laser:htmlStart message="myinst.subscriptionImport.pageTitle" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -106,8 +106,7 @@
                             <input type="file" name="tsvFile"/>
                         </dd>
                     </div>
-                    <button class="ui button" name="load" type="submit" value="Go"><g:message
-                            code="myinst.subscriptionImport.upload"/></button>
+                    <button class="${Btn.SIMPLE}" name="load" type="submit" value="Go"><g:message code="myinst.subscriptionImport.upload"/></button>
                 </dl>
             </g:uploadForm>
         </div>

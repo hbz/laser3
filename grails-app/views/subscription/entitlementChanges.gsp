@@ -1,4 +1,4 @@
-<%@ page import="grails.converters.JSON; de.laser.PendingChangeConfiguration; de.laser.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.TitleChange; de.laser.IssueEntitlementChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; grails.converters.JSON; de.laser.PendingChangeConfiguration; de.laser.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.TitleChange; de.laser.IssueEntitlementChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
 
 <laser:htmlStart message="myinst.menu.pendingChanges.label" serviceInjection="true"/>
 
@@ -50,9 +50,9 @@
                       name="acceptChangesForPackages" class="ui select search multiple dropdown"
                       optionKey="${{ it.id }}"
                       optionValue="${{ it.pkg.name }}"/>
-            <g:submitButton class="ui button positive" name="acceptAll"
+            <g:submitButton class="${Btn.POSITIVE}" name="acceptAll"
                             value="${message(code: 'pendingChange.takeAll')}"/>
-            <g:submitButton class="ui button negative" name="rejectAll"
+            <g:submitButton class="${Btn.NEGATIVE}" name="rejectAll"
                             value="${message(code: 'pendingChange.rejectAll')}"/>
         </g:form>
     </g:if>
@@ -162,7 +162,7 @@
                                     target="_blank"
                                     controller="tipp" action="show"
                                     id="${tipp.id}">
-                                <i class="book icon"></i>
+                                <i class="${Icon.TIPP}"></i>
                             </g:link>
 
                             <g:each in="${apisources}" var="gokbAPI">
@@ -171,7 +171,7 @@
                                        class="ui icon tiny blue button la-popup-tooltip la-delay"
                                        data-content="${message(code: 'wekb')}"
                                        href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/tippContent/?id=' + tipp.gokbId : '#'}"
-                                       target="_blank"><i class="la-gokb  icon"></i>
+                                       target="_blank"><i class="${Icon.WEKB}"></i>
                                     </a>
                                 </g:if>
                             </g:each>
@@ -220,12 +220,12 @@
                     <g:elseif test="${editable && params.tab == 'changes'}">
                         <td>
                             <div class="ui buttons">
-                                <g:link class="ui positive button" controller="pendingChange" action="acceptTitleChange"
+                                <g:link class="${Btn.POSITIVE}" controller="pendingChange" action="acceptTitleChange"
                                         id="${entry.id}"
                                         params="[subId: subscription.id]"><g:message
                                         code="default.button.accept.label"/></g:link>
                                 <div class="or" data-text="${message(code: 'default.or')}"></div>
-                                <g:link class="ui negative button" controller="pendingChange" action="rejectTitleChange"
+                                <g:link class="${Btn.NEGATIVE}" controller="pendingChange" action="rejectTitleChange"
                                         id="${entry.id}"
                                         params="[subId: subscription.id]"><g:message
                                         code="default.button.reject.label"/></g:link>

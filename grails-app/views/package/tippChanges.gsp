@@ -1,4 +1,4 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
 <laser:htmlStart message="myinst.menu.pendingChanges.label" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -55,7 +55,7 @@
                             target="_blank"
                             controller="tipp" action="show"
                             id="${tipp.id}">
-                        <i class="book icon"></i>
+                        <i class="${Icon.TIPP}"></i>
                     </g:link>
 
                     <g:each in="${apisources}" var="gokbAPI">
@@ -64,7 +64,7 @@
                                class="ui icon tiny blue button la-popup-tooltip la-delay"
                                data-content="${message(code: 'wekb')}"
                                href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/tippContent/?id=' + tipp.gokbId : '#'}"
-                               target="_blank"><i class="la-gokb  icon"></i>
+                               target="_blank"><i class="${Icon.WEKB}"></i>
                             </a>
                         </g:if>
                     </g:each>
@@ -84,11 +84,11 @@
                 </g:else>
 
                 <g:if test="${oldValue != null || newValue != null}">
-                    <i class="grey question circle icon la-popup-tooltip la-delay"
+                    <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip la-delay"
                        data-content="${(message(code: 'tipp.' + (entry.priceItem ? 'price.' : '') + entry.targetProperty) ?: '') + ': ' + message(code: 'pendingChange.change', args: [oldValue, newValue])}"></i>
                 </g:if>
                 <g:elseif test="${entry.targetProperty}">
-                    <i class="grey question circle icon la-popup-tooltip la-delay"
+                    <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip la-delay"
                        data-content="${message(code: 'tipp.' + (entry.priceItem ? 'price.' : '') + entry.targetProperty)}"></i>
                 </g:elseif>
 

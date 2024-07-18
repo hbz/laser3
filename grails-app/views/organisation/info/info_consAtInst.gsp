@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Provider; java.time.Year; de.laser.finance.CostItem; de.laser.RefdataValue; de.laser.survey.SurveyInfo; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.ui.Icon; de.laser.Provider; java.time.Year; de.laser.finance.CostItem; de.laser.RefdataValue; de.laser.survey.SurveyInfo; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
 <laser:htmlStart message="menu.institutions.org.info" serviceInjection="true">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
@@ -92,9 +92,9 @@
 
                 <div class="ui tiny header">${message(code: 'provider.label')}</div>
                 <div class="ui secondary wrapping menu la-tab-with-js">
-                    <g:each in="${providerMap}" var="prov,subList">
+                    <g:each in="${providerMap}" var="prov,subList" status="i">
                         <g:set var="provider" value="${Provider.get(prov)}" />
-                        <a href="#" class="item" data-tab="provider-${provider.id}">
+                        <a href="#" class="item ${i == 0 ? 'active' : ''}" data-tab="provider-${provider.id}">
                             ${provider.sortname ?: provider.name} <span class="ui blue circular tiny label">${subList.size()}</span>
                         </a>
                     </g:each>
@@ -161,7 +161,7 @@
                                     <tr data-id="${subId}" data-referenceYear="${sub.referenceYear}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="icon clipboard la-list-icon"></i>
+                                                <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
 
                                                 <g:if test="${OrgRole.findBySubAndOrgAndRoleType(sub, orgInstance, RDStore.OR_SUBSCRIBER_CONS_HIDDEN)}">
@@ -220,7 +220,7 @@
                                     <tr data-id="${licId}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="icon balance scale la-list-icon"></i>
+                                                <i class="${Icon.LICENSE} la-list-icon"></i>
                                                 <g:link controller="license" action="show" id="${lic.id}" target="_blank">${lic.reference}</g:link>
                                             </div>
                                         </td>
@@ -239,9 +239,9 @@
             <div class="stats_provider stats-content">
                 <div class="chartWrapper" id="cw-provider"></div>
 
-                <g:each in="${providerMap}" var="prov,subList">
+                <g:each in="${providerMap}" var="prov,subList" status="i">
                     <g:set var="provider" value="${Provider.get(prov)}" />
-                    <div class="ui tab segment" data-tab="provider-${provider.id}">
+                    <div class="ui tab segment ${i == 0 ? 'active' : ''}" data-tab="provider-${provider.id}">
 
                         <table class="ui table very compact">
                             <thead>
@@ -261,7 +261,7 @@
                                     <tr data-id="${subId}" data-referenceYear="${sub.referenceYear}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="icon clipboard la-list-icon"></i>
+                                                <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                                             </div>
                                         </td>
@@ -337,7 +337,7 @@
                                 <tr data-id="${surveyInfo.id}">
                                     <td>
                                         <div class="la-flexbox la-minor-object">
-                                            <i class="icon pie chart la-list-icon"></i>
+                                            <i class="${Icon.SURVEY} la-list-icon"></i>
                                             <g:link controller="survey" action="show" id="${surveyInfo.id}" target="_blank">${surveyInfo.name}</g:link>
                                         </div>
                                     </td>
@@ -367,7 +367,7 @@
                                     <tr data-id="${surveyInfo.id}" data-ctype="survey-subsciption" class="hidden sub">
                                         <td style="padding-left:2rem;">
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="icon clipboard la-list-icon"></i>
+                                                <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                                             </div>
                                         </td>
@@ -399,7 +399,7 @@
                             <th scope="col" class="la-smaller-table-head">${message(code:'default.subscription.label')}</th>
                             <th scope="col" rowspan="2" class="la-no-uppercase">
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center">
-                                    <i class="money bill alternate icon"></i>
+                                    <i class="${Icon.FNC.COST_CONFIG}"></i>
                                 </span>
                             </th>
                             <th scope="col" rowspan="2">${message(code:'default.currency.label')}</th>
@@ -418,21 +418,21 @@
                     <tbody>
                         <g:each in="${costs.costItems}" var="ci" status="jj">
                             <%
-                                String icon         = '<i class="question circle icon"></i>'
+                                String icon         = '<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
                                 String dataTooltip  = message(code:'financials.costItemConfiguration.notSet')
 
                                 switch (ci.costItemElementConfiguration) {
                                     case RDStore.CIEC_POSITIVE:
                                         dataTooltip = message(code:'financials.costItemConfiguration.positive')
-                                        icon = '<i class="plus green circle icon"></i>'
+                                        icon = '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
                                         break
                                     case RDStore.CIEC_NEGATIVE:
                                         dataTooltip = message(code:'financials.costItemConfiguration.negative')
-                                        icon = '<i class="minus red circle icon"></i>'
+                                        icon = '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
                                         break
                                     case RDStore.CIEC_NEUTRAL:
                                         dataTooltip = message(code:'financials.costItemConfiguration.neutral')
-                                        icon = '<i class="circle yellow icon"></i>'
+                                        icon = '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
                                         break
                                 }
                             %>
@@ -576,7 +576,7 @@
                             data    : [${subscriptionTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${subscriptionTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
                             color   : <%
-                                String color = 'JSPC.colors.hex.pink'
+                                String color = 'JSPC.colors.hex.grey'
                                 switch (RefdataValue.get(status)) {
                                     case RDStore.SUBSCRIPTION_CURRENT:      color = 'JSPC.colors.hex.green'; break;
                                     case RDStore.SUBSCRIPTION_EXPIRED:      color = 'JSPC.colors.hex.blue'; break;
@@ -627,7 +627,7 @@
                             data    : [${licenseTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${licenseTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
                             color   : <%
-                                color = 'JSPC.colors.hex.pink'
+                                color = 'JSPC.colors.hex.grey'
                                 switch (RefdataValue.get(status)) {
                                     case RDStore.LICENSE_CURRENT:      color = 'JSPC.colors.hex.green'; break;
                                     case RDStore.LICENSE_EXPIRED:      color = 'JSPC.colors.hex.blue'; break;
@@ -704,12 +704,12 @@
                             data    : [${surveyTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${surveyTimelineMap.values().collect{ it[status] ? it[status].collect{ it[0].id } : [] }.join(', ')}],
                             color   : <%
-                                color = 'JSPC.colors.hex.pink'
+                                color = 'JSPC.colors.hex.grey'
                                 switch (status) {
-                                    case 'open':        color = 'JSPC.colors.hex.orange'; break;
-                                    case 'finish':      color = 'JSPC.colors.hex.green'; break;
+                                    case 'open':        color = 'JSPC.colors.hex.green'; break;
+                                    case 'finish':      color = 'JSPC.colors.hex.blue'; break;
                                     case 'termination': color = 'JSPC.colors.hex.red'; break;
-                                    case 'notFinish':   color = 'JSPC.colors.hex.blue'; break;
+                                    case 'notFinish':   color = 'JSPC.colors.hex.yellow'; break;
                                 }
                                 println color
                             %>
@@ -781,12 +781,14 @@
                 $(statsId + ' tr[data-id]').hide()
 
                 $.each( $(statsId + ' .menu .item[data-tab^=' + t + ']'), function(i, e) {
-                    let yList = chartConfig.series[i].raw[y]
-                    JSPC.app.info.setCounter($(e), yList.length)
+                    if (chartConfig.series[i]) {
+                        let yList = chartConfig.series[i].raw[y]
+                        JSPC.app.info.setCounter($(e), yList.length)
 
-                    yList.forEach((f) => {
-                        $(statsId + ' tr[data-id=' + f + ']').show()
-                    })
+                        yList.forEach((f) => {
+                            $(statsId + ' tr[data-id=' + f + ']').show()
+                        })
+                    }
                 })
                 // chart.dispatchAction({ type: 'select', dataIndex: y })
                 // chart.dispatchAction({ type: 'highlight', seriesIndex: s, dataIndex: y })

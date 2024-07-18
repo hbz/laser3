@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Icon" %>
 <p class="la-clear-before">
     <g:link controller="public"
             id="trigger-lock"
@@ -8,6 +9,6 @@
             data-confirm-term-how="delete"
             class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
             role="button">
-        <i aria-hidden="true" class="trash alternate outline icon"></i>
+        <i aria-hidden="true" class="${Icon.CMD.DELETE}"></i>
     </g:link>
 </p>

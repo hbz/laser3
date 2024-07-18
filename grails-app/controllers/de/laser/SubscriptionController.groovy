@@ -725,11 +725,18 @@ class SubscriptionController {
         ArrayList row
         consortiaMembers.each { Org org ->
             row = []
-            row.add(org.getIdentifierByType('wibid')?.value)
-            row.add(org.getIdentifierByType('ISIL')?.value)
-            row.add(org.getIdentifierByType('ROR ID')?.value)
-            row.add(org.getIdentifierByType('gnd_org_nr')?.value)
-            row.add(org.getIdentifierByType('deal_id')?.value)
+            String wibid = org.getIdentifierByType('wibid')?.value
+            String isil = org.getIdentifierByType('ISIL')?.value
+            String ror = org.getIdentifierByType('ROR ID')?.value
+            String gng = org.getIdentifierByType('gnd_org_nr')?.value
+            String deal = org.getIdentifierByType('deal_id')?.value
+
+            row.add((wibid != IdentifierNamespace.UNKNOWN && wibid != null) ? wibid : '')
+            row.add((isil != IdentifierNamespace.UNKNOWN && isil != null) ? isil : '')
+            row.add((ror != IdentifierNamespace.UNKNOWN && ror != null) ? ror : '')
+            row.add((gng != IdentifierNamespace.UNKNOWN && gng != null) ? gng : '')
+            row.add((deal != IdentifierNamespace.UNKNOWN && deal != null) ? deal : '')
+
             row.add(org.sortname)
             row.add(org.name)
             row.add(org.libraryType.getI10n('value'))

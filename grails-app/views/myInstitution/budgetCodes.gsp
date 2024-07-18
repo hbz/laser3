@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItemGroup; de.laser.finance.BudgetCode"%>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.finance.CostItemGroup; de.laser.finance.BudgetCode"%>
 
 <laser:htmlStart message="menu.institutions.budgetCodes" />
 
@@ -15,7 +15,7 @@
             <div class="content ui form ui left floated  la-clear-before">
                 <div class="fields">
                     <div class="field">
-                        <button class="ui button" value="" data-href="#addBudgetCodeModal" data-ui="modal">${message(code:'budgetCode.create_new.label')}</button>
+                        <button class="${Btn.SIMPLE}" value="" data-href="#addBudgetCodeModal" data-ui="modal">${message(code:'budgetCode.create_new.label')}</button>
                     </div>
                 </div>
             </div>
@@ -30,7 +30,7 @@
                     ${message(code: 'financials.budgetCode.usage')}
                     <span data-position="right center" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'financials.budgetCode.usage.explanation')}">
-                        <i class="question circle icon"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </th>
                 <g:if test="${editable}">
@@ -66,7 +66,7 @@
                                         class="ui icon negative button la-modern-button js-open-confirm-modal"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </g:link>
                             </g:if>
                         </td>

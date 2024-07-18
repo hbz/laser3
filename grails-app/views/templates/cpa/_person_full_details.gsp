@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PersonRole; de.laser.storage.RDStore; de.laser.Person; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.PersonRole; de.laser.storage.RDStore; de.laser.Person; de.laser.storage.RDConstants" %>
 
 <g:if test="${person && personContext}">
     <div class="ui divided middle aligned ${noSelection ? '' : 'selection'} list la-flex-list la-list-border-around">
@@ -31,7 +31,7 @@
                         <button class="ui icon button blue la-modern-button" type="button" onclick="JSPC.app.editPerson(${person.id})"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="write icon"></i>
+                            <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                         </button>
                         </div>
             </g:if>
@@ -40,7 +40,7 @@
                 <g:if test="${editable}">
 
                     <g:if test="${tmplShowAddPersonRoles}">
-                        <input class="ui icon button" type="button" data-ui="modal"
+                        <input class="${Btn.SIMPLE_ICON}" type="button" data-ui="modal"
                                data-href="#prsRoleFormModal${personRole.id}_F"
                                value="Funktionen">
                         <laser:render template="/person/prsRoleModal" model="[personInstance: person,
@@ -51,7 +51,7 @@
                                                                           message:'person.function_new.label',
                                                                           presetOrgId: personContext.id ]"/>
 
-                        <input class="ui icon button" type="button" data-ui="modal"
+                        <input class="${Btn.SIMPLE_ICON}" type="button" data-ui="modal"
                                data-href="#prsRoleFormModal${personRole.id}_P"
                                value="Positionen">
                         <laser:render template="/person/prsRoleModal" model="[personInstance: person,
@@ -64,7 +64,7 @@
                     </g:if>
 
                     <g:if test="${tmplShowAddContacts}">
-                        <input class="ui icon button" type="button" data-ui="modal"
+                        <input class="${Btn.SIMPLE_ICON}" type="button" data-ui="modal"
                                data-href="#contactFormModal${personRole.id}"
                                value="${message(code: 'person.contacts.label')}">
                         <laser:render template="/contact/formModal" model="['prsId': person.id, prId: personRole.id, modalId: 'contactFormModal' + personRole.id]"/>
@@ -76,7 +76,7 @@
                         model.typeId = RDStore.ADDRESS_TYPE_LIBRARY
                         model.redirect = '.'
                         model.hideType = true%>
-                        <input class="ui icon button" type="button"
+                        <input class="${Btn.BASIC_ICON}" type="button"
                                value="${message(code: 'person.addresses.label')}"
                                onclick="JSPC.app.addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');" >
                     </g:if>--%>
@@ -126,7 +126,7 @@
                                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                        <i class="unlink icon"></i>
+                                        <i class="${Icon.CMD.UNLINK}"></i>
                                     </g:link>
                                 </g:if>
                                 <g:else>
@@ -138,7 +138,7 @@
                                             data-confirm-term-how="delete"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate outline icon"></i>
+                                        <i class="${Icon.CMD.DELETE}"></i>
                                     </g:link>
                                 </g:else>
                             </g:if>
@@ -168,7 +168,7 @@
                                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                        <i class="unlink icon"></i>
+                                        <i class="${Icon.CMD.UNLINK}"></i>
                                     </g:link>
                                 </g:if>
                                 <g:else>
@@ -180,7 +180,7 @@
                                             data-confirm-term-how="delete"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate outline icon"></i>
+                                        <i class="${Icon.CMD.DELETE}"></i>
                                     </g:link>
                                 </g:else>
                             </g:if>
@@ -209,7 +209,7 @@
                                         controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                    <i class="unlink icon"></i>
+                                    <i class="${Icon.CMD.UNLINK}"></i>
                                 </g:link>
                             </g:if>
                         </div>
@@ -229,7 +229,7 @@
                     controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
                     role="button"
                     aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                <i class="unlink icon"></i>
+                <i class="${Icon.CMD.UNLINK}"></i>
             </g:link>
         </td>
     </g:if>

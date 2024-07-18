@@ -1,4 +1,4 @@
-<%@ page import="de.laser.OrgSetting; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Icon; de.laser.OrgSetting; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 <%@ page import="de.laser.CustomerTypeService; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <laser:htmlStart message="org.nav.dataTransfer" serviceInjection="true" />
@@ -25,7 +25,7 @@
                 <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'mail']" tab="mail" text="${message(code: 'org.setting.tab.mail')}"/>
             </g:if>
             <%--<ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'general']" tab="general" text="${message(code: 'org.setting.tab.general')}"/>--%>
-            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro() || contextService._hasPerm('FAKE')}">
+            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || (OrgSetting.get(contextService.getOrg(), OrgSetting.KEYS.API_LEVEL) != OrgSetting.SETTING_NOT_FOUND && OrgSetting.get(contextService.getOrg(), OrgSetting.KEYS.API_LEVEL).getValue() == 'API_LEVEL_READ') || contextService._hasPerm('FAKE')}">
                 <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'api']" tab="api" text="${message(code: 'org.setting.tab.api')}"/>
             </g:if>
             <%-- deactivated U.F.N. as of [ticket=5385], November 8th, 2023 --%>
@@ -97,17 +97,17 @@
                                             ${message(code:"org.setting.${os.key}", default: "${os.key}")}
                                             <g:if test="${OrgSetting.KEYS.NATSTAT_SERVER_ACCESS == os.key}">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.NATSTAT_SERVER_ACCESS.tooltip')}">
-                                                    <i class="question circle icon"></i>
+                                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                                 </span>
                                             </g:if>
                                             <g:elseif test="${OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.OAMONITOR_SERVER_ACCESS.tooltip')}">
-                                                    <i class="question circle icon"></i>
+                                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                                 </span>
                                             </g:elseif>
                                             <g:elseif test="${OrgSetting.KEYS.EZB_SERVER_ACCESS == os.key}">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.EZB.tooltip')}">
-                                                    <i class="question circle icon"></i>
+                                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                                 </span>
                                             </g:elseif>
                                         </td>

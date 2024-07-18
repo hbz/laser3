@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.utils.SqlDateUtils; de.laser.survey.SurveyInfo; de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; de.laser.*; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.utils.SqlDateUtils; de.laser.survey.SurveyInfo; de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; de.laser.*; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
 <table class="ui celled table la-js-responsive-table la-table">
     <thead>
@@ -25,27 +25,27 @@
                     <g:formatDate format="${message(code:'default.date.format.notime')}" date="${dashDueDate.dueDateObject.date}"/>
                     <g:if test="${SqlDateUtils.isToday(dashDueDate.dueDateObject.date)}">
                         <span class="la-popup-tooltip la-delay" data-content="${message(code:'myinst.dash.due_date.enddate.isDueToday.label')}" data-position="top right">
-                            <i class="icon yellow exclamation"></i>
+                            <i class="${Icon.TOOLTIP.IMPORTANT} yellow"></i>
                         </span>
                     </g:if>
                     <g:elseif test="${SqlDateUtils.isBeforeToday(dashDueDate.dueDateObject.date)}">
                         <span class="la-popup-tooltip la-delay" data-content="${message(code:'myinst.dash.due_date.enddate.isOverdue.label')}" data-position="top right">
-                            <i class="icon red exclamation"></i>
+                            <i class="${Icon.TOOLTIP.IMPORTANT} red"></i>
                         </span>
                     </g:elseif>
                 </td>
                 <td>
                     <div class="la-flexbox">
                         <g:if test="${obj instanceof Subscription}">
-                            <i class="icon clipboard outline la-list-icon"></i>
+                            <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                             <g:link controller="subscription" action="show" id="${obj.id}">${obj.name}</g:link>
                         </g:if>
                         <g:elseif test="${obj instanceof License}">
-                            <i class="icon balance scale la-list-icon"></i>
+                            <i class="${Icon.LICENSE} la-list-icon"></i>
                             <g:link controller="license" action="show" id="${obj.id}">${obj.name}</g:link>
                         </g:elseif>
                         <g:elseif test="${obj instanceof SurveyInfo}">
-                            <i class="icon chart pie la-list-icon"></i>
+                            <i class="${Icon.SURVEY} la-list-icon"></i>
                             <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                                 <g:link controller="survey" action="show" params="[surveyConfigID: obj.surveyConfigs[0].id]"
                                         id="${obj.id}">${obj.surveyConfigs[0].getSurveyName()}
@@ -58,7 +58,7 @@
                         </g:elseif>
                         <g:elseif test="${obj instanceof Task}">
                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Aufgabe">
-                                <i class="calendar check outline icon la-list-icon"></i>
+                                <i class="${Icon.TASK} la-list-icon"></i>
                             </span>
                             <g:if test="${obj.subscription}">
                                 <g:link controller="subscription" action="show" id="${obj.subscription.id}">${obj.title}</g:link>
@@ -78,19 +78,19 @@
                         </g:elseif>
                         <g:elseif test="${obj instanceof AbstractPropertyWithCalculatedLastUpdated}">
                             <g:if test="${obj.owner instanceof Person}">
-                                <i class="icon address book la-list-icon"></i>
+                                <i class="${Icon.UI.ACP_PUBLIC} la-list-icon"></i>
                                 ${obj.owner.first_name}&nbsp;${obj.owner.last_name}
                             </g:if>
                             <g:elseif test="${obj.owner instanceof Subscription}">
-                                <i class="icon clipboard outline la-list-icon"></i>
+                                <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                 <g:link controller="subscription" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
                             </g:elseif>
                             <g:elseif test="${obj.owner instanceof License}">
-                                <i class="icon balance scale la-list-icon"></i>
+                                <i class="${Icon.LICENSE} la-list-icon"></i>
                                 <g:link controller="license" action="show" id="${obj.owner?.id}">${obj.owner?.reference}</g:link>
                             </g:elseif>
                             <g:elseif test="${obj.owner instanceof Org}">
-                                <i class="icon university la-list-icon"></i>
+                                <i class="${Icon.ORG} la-list-icon"></i>
                                 <g:link controller="organisation" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
                             </g:elseif>
                             <g:else>
@@ -117,7 +117,7 @@
                                           role="button"
                                           ariaLabel="${message(code:'ariaLabel.delete.universal')}"
                         >
-                            <i class="trash alternate outline icon"></i>
+                            <i class="${Icon.CMD.DELETE}"></i>
                         </ui:remoteLink>
                     </g:if>
                     <g:if test="${dashDueDate?.isHidden}">

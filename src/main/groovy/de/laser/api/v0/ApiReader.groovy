@@ -27,11 +27,15 @@ class ApiReader {
             'platform':                 [Constants.MIME_APPLICATION_JSON],
             'platformList':             [Constants.MIME_APPLICATION_JSON],
             'propertyList':             [Constants.MIME_APPLICATION_JSON],
+            'provider':                 [Constants.MIME_APPLICATION_JSON],
+            'providerList':             [Constants.MIME_APPLICATION_JSON],
             'refdataList':              [Constants.MIME_APPLICATION_JSON],
             'statistic/packages/list':      [Constants.MIME_APPLICATION_JSON],
             'statistic/packages':           [Constants.MIME_APPLICATION_JSON],
             'subscription':             [Constants.MIME_APPLICATION_JSON],
-            'subscriptionList':         [Constants.MIME_APPLICATION_JSON]
+            'subscriptionList':         [Constants.MIME_APPLICATION_JSON],
+            'vendor':                   [Constants.MIME_APPLICATION_JSON],
+            'vendorList':               [Constants.MIME_APPLICATION_JSON]
     ]
 
     static SIMPLE_QUERIES = [
@@ -40,6 +44,8 @@ class ApiReader {
             'refdataList',
             'platformList',
             'propertyList',
+            'providerList',
+            'vendorList',
             'statistic/packages/list'
     ]
 

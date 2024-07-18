@@ -15,16 +15,20 @@ console.log('+ bundle: base.js');
 //= require /trumbowyg/plugins/history/trumbowyg.history.js     //--> assets/vendor
 
 window.onerror  = (a, b, c, d, e) => {
-    if ($.toast) {
-        $.toast({
-            title: 'LAS:eR-Debug',
-            message: '<div>&dot; Javascript</div><div>&dot; ' + a + '</div><div>&dot; ' + b + ':' + c + '</div>',
-            displayTime: 30000,
-            class: 'red',
-            showIcon: 'bug',
-            position: 'bottom left' });
-    } else {
-        alert('LAS:eR-Debug * Javascript-Error\n\n' + a + '\n' + b + ':' + c);
+    if (JSPC.helper.contains(['LOCAL', 'DEV'], JSPC.config.server)) {
+        if ($.toast) {
+            $.toast({
+                title: 'LAS:eR * JavaScript-Fehler',
+                message: '<div>&dot; ' + JSPC.config.server + '</div><div>&dot; ' + a + '</div><div>&dot; ' + b + ':' + c + '</div>',
+                displayTime: 15000,
+                class: 'red',
+                showIcon: 'bug',
+                position: 'bottom left'
+            });
+        }
+        else {
+            alert('LAS:eR * JavaScript-Fehler\n\n' + a + '\n' + b + ':' + c);
+        }
     }
     return false;
 }

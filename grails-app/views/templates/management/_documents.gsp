@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription;" %>
 <laser:serviceInjection/>
 <g:if test="${filteredSubscriptions}">
 
@@ -31,8 +31,8 @@
                 <input type="text" id="upload_file_placeholder" readonly="readonly" placeholder="${message(code: 'template.addDocument.selectFile')}">
                 <input type="file" id="upload_file" name="upload_file" style="display: none;">
 
-                <div class="ui icon button" style="padding-left:30px; padding-right:30px">
-                    <i class="attach icon"></i>
+                <div class="${Btn.SIMPLE_ICON}" style="padding-left:30px; padding-right:30px">
+                    <i class="${Icon.CMD.ATTACHMENT}"></i>
                 </div>
             </div>
         </div>
@@ -63,7 +63,7 @@
 
         <div class="ui error message"></div>
 
-        <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
+        <button class="${Btn.SIMPLE}" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
                 value="newDoc">${message(code: 'default.button.create.label')}</button>
     </g:form>
 
@@ -151,7 +151,7 @@
                                 class="ui icon button blue la-modern-button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="write icon"></i>
+                            <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                         </g:link>
                     </td>
                 </tr>

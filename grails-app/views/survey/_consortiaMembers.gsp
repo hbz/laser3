@@ -1,4 +1,19 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.storage.RDStore;" %>
+
+<g:if test="${selectedSubParticipantsCount == 0}">
+    <div class="four wide column">
+
+        <g:link action="actionSurveyParticipants"
+                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab, actionSurveyParticipants: 'addSubMembersToSurvey']"
+                class="ui icon button right floated">
+            <g:message code="surveyParticipants.addSubMembersToSurvey"/>
+        </g:link>
+        <br/>
+        <br/>
+
+    </div>
+</g:if>
+
 <br />
 
 <ui:filter>
@@ -35,8 +50,10 @@
         <br/>
         <g:if test="${surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]}">
 
-            <ui:msg header="${message(code: 'surveyParticipants.addParticipants.option.selectMembersWithFile.info')}" noClose="true">
+            <div class="ui message">
+                <div class="header">${message(code: 'surveyParticipants.addParticipants.option.selectMembersWithFile.info')}</div>
 
+                <br>
                 ${message(code: 'surveyParticipants.addParticipants.option.selectMembersWithFile.text')}
 
                 <br>
@@ -52,14 +69,14 @@
                            placeholder="${message(code: 'template.addDocument.selectFile')}">
                     <input type="file" name="selectMembersWithImport" accept="text/tab-separated-values,.txt,.csv"
                            style="display: none;">
-                    <div class="ui icon button">
-                        <i class="attach icon"></i>
+                    <div class="${Btn.SIMPLE_ICON}">
+                        <i class="${Icon.CMD.ATTACHMENT}"></i>
                     </div>
                 </div>
-            </ui:msg>
+            </div><!-- .message -->
 
 
-            <input type="submit" class="ui button" value="${message(code: 'default.button.add.label')}"/>
+            <input type="submit" class="${Btn.SIMPLE}" value="${message(code: 'default.button.add.label')}"/>
         </g:if>
 
     </g:form>

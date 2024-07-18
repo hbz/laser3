@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.remote.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.Platform; de.laser.IssueEntitlementGroup" %>
+<%@ page import="de.laser.ui.Icon; de.laser.Subscription; de.laser.remote.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.Platform; de.laser.IssueEntitlementGroup" %>
 
 <laser:htmlStart message="subscription.details.addEntitlements.label" serviceInjection="true" />
 
@@ -137,7 +137,7 @@
 
     <div class="ui accordion la-accordion-showMore" id="surveyEntitlements">
         <g:if test="${allPerpetuallyBought}">
-            <ui:msg message="${message(code: allPerpetuallyBought)}" noClose="true"/>
+            <ui:msg message="${message(code: allPerpetuallyBought)}" hideClose="true"/>
         </g:if>
         <g:if test="${tipps}">
             <g:if test="${editable && !allPerpetuallyBought}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
@@ -229,7 +229,7 @@
                                     </div>
 
                                     <div class="ui icon blue button la-modern-button">
-                                        <i class="ui angle double down icon"></i>
+                                        <i class="${Icon.CMD.SHOW_MORE}"></i>
                                     </div>
                                     <g:if test="${editable && participantPerpetualAccessToTitle.size() == 0}">
                                         <g:if test="${!blockSubmit}">
@@ -237,7 +237,7 @@
                                                     action="processAddEntitlements"
                                                     params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}"
                                                     data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
-                                                <i class="plus icon"></i>
+                                                <i class="${Icon.CMD.ADD}"></i>
                                             </g:link>
                                         </g:if>
                                         <g:else>
@@ -246,7 +246,7 @@
                                                 <g:link class="ui icon disabled button la-popup-tooltip la-delay"
                                                         action="processAddEntitlements"
                                                         params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}">
-                                                    <i class="plus icon"></i>
+                                                    <i class="${Icon.CMD.ADD}"></i>
                                                 </g:link>
                                             </div>
                                         </g:else>
@@ -313,7 +313,7 @@
                                         </g:if>
                                         <g:if test="${covStmt.coverageDepth}">
                                             <div class="item">
-                                                <i class="grey icon file alternate right la-popup-tooltip la-delay"
+                                                <i class="grey ${Icon.SYM.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                                                 <div class="content">

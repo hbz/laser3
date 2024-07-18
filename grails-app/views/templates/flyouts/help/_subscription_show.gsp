@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Icon" %>
 <div class="ui flyout" id="help-content" style="padding:50px 0 10px 0;overflow:scroll">
 
     <h1 class="ui header">Erklärung der Icons</h1>
@@ -22,7 +23,7 @@
         </tr>
         <tr>
             <td>
-                <i class="pencil green alternate icon" aria-hidden="true"></i>
+                <i class="${Icon.CMD.EDIT} green" aria-hidden="true"></i>
             </td>
             <td>
                 Aktuell: Inhalte editierbar
@@ -30,7 +31,7 @@
         </tr>
         <tr>
             <td>
-                <i class="pencil alternate slash icon" aria-hidden="true"></i>
+                <i class="${Icon.CMD.EDIT} slash" aria-hidden="true"></i>
             </td>
             <td>
                 Aktuell: Inhalte nicht editierbar
@@ -38,7 +39,7 @@
         </tr>
         <tr>
             <td>
-                <i class="pencil alternate blue icon" aria-hidden="true"></i>
+                <i class="${Icon.CMD.EDIT} blue" aria-hidden="true"></i>
             </td>
             <td>
                 Verknüpfung bearbeiten
@@ -71,7 +72,7 @@
 
         <tr>
             <td>
-                <i class="unlink icon"></i>
+                <i class="${Icon.CMD.UNLINK}"></i>
             </td>
             <td>
                 Objekt wird entknüpft
@@ -96,7 +97,7 @@
 
         <tr>
             <td>
-                <i class="ui angle double down icon" aria-hidden="true"></i>
+                <i class="${Icon.CMD.SHOW_MORE}" aria-hidden="true"></i>
             </td>
             <td>
                 Anzeige der Vertragsmerkmale

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.PersonRole; de.laser.OrgRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.PersonRole; de.laser.ProviderRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
 
 <laser:htmlStart message="menu.public.gasco_monitor">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
@@ -67,8 +67,8 @@
                     </div>
 
                     <div class="field la-field-right-aligned">
-                        <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
-                        <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label')}">
+                        <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+                        <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.search.label')}">
                     </div>
 
                 </g:form>
@@ -150,14 +150,14 @@
 
                         <g:each in="${sub.packages}" var="subPkg" status="j">
                             <div class="la-flexbox">
-                                <i class="icon gift la-list-icon"></i>
+                                <i class="${Icon.PACKAGE} la-list-icon"></i>
                                 <g:link controller="public" action="gascoDetailsIssueEntitlements" id="${subPkg.id}">${subPkg.pkg}</g:link>
                             </div>
                         </g:each>
                     </td>
                     <td>
-                        <g:each in="${OrgRole.findAllBySubAndRoleType(sub, RDStore.OR_PROVIDER)}" var="role">
-                            ${role.org?.name}<br />
+                        <g:each in="${ProviderRole.findAllBySubscription(sub)}" var="role">
+                            ${role.provider.name}<br />
                         </g:each>
                     </td>
                     <td>
@@ -174,7 +174,7 @@
                                         </div>
                                         <g:each in="${Contact.findAllByPrsAndContentType( person, RDStore.CCT_URL )}" var="prsContact">
                                             <div class="description">
-                                                <i class="icon globe la-list-icon"></i>
+                                                <i class="${Icon.SYM.URL} la-list-icon"></i>
                                                 <span class="la-popup-tooltip la-delay " data-position="right center" data-content="Diese URL aufrufen:  ${prsContact?.content}">
                                                     <a class="la-break-all" href="${prsContact?.content}" target="_blank">Webseite</a>
                                                 </span>
@@ -182,7 +182,7 @@
                                         </g:each>
                                         <g:each in="${Contact.findAllByPrsAndContentType( person, RDStore.CCT_EMAIL )}" var="prsContact">
                                             <div class="description js-copyTriggerParent">
-                                                <i class="ui icon envelope outline la-list-icon js-copyTrigger la-js-copyTriggerIcon la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}"></i>
+                                                <i class="${Icon.SYM.EMAIL} la-list-icon js-copyTrigger la-js-copyTriggerIcon la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}"></i>
                                                 <span class="la-popup-tooltip la-delay" data-position="right center" data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
                                                     <a class="la-break-all js-copyTopic" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
                                                 </span>
@@ -197,7 +197,7 @@
                     <td class="center aligned">
                         <g:if test="${flyoutCheckList.contains(sub.id)}">
                             <g:link class="flyoutLink ui icon button blue la-modern-button" controller="public" action="gascoFlyout" data-key="${sub.id}">
-                                <i class="icon info"></i>
+                                <i class="${Icon.UI.INFO}"></i>
                             </g:link>
                         </g:if>
                         <g:else>
@@ -213,7 +213,7 @@
 
     <div id="gascoFlyout" class="ui eight wide flyout" style="padding:50px 0 10px 0;overflow:scroll">
         <div class="ui header">
-            <i class="info icon"></i>
+            <i class="${Icon.UI.INFO}"></i>
             <div class="content"></div>
         </div>
         <div class="content">

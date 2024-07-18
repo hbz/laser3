@@ -1,4 +1,4 @@
-<%@ page import="de.laser.api.v0.ApiToolkit; de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.api.v0.ApiToolkit; de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
 
 <%
     String lang = LocaleUtils.getCurrentLang()
@@ -103,7 +103,7 @@
                     <label for="osServerAccess">
                         <g:message code="org.serverAccess.label"/>
                     </label>
-                    <select id="osServerAccess" name="osServerAccess" multiple="multiple"  class="ui dropdown multiple">
+                    <select id="osServerAccess" name="osServerAccess" multiple="multiple" class="ui dropdown multiple">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${[OrgSetting.KEYS.NATSTAT_SERVER_ACCESS, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS, OrgSetting.KEYS.EZB_SERVER_ACCESS]}" var="saf">
                             <option <%=(params.list('osServerAccess').contains(saf.toString())) ? 'selected="selected"' : '' %> value="${saf}">
@@ -149,7 +149,7 @@
                     <label for="privateContact">
                         <g:message code="contact.name"/>
                         <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.contact.tooltip')}">
-                            <i class="question circle icon"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </label>
                     <input id="privateContact" name="privateContact" type="text" placeholder="${message(code: 'default.search.ph')}" value="${params.privateContact}"/>
@@ -198,19 +198,6 @@
                                   optionKey="id"
                                   optionValue="value"
                                   value="${params.orgRole}"
-                                  noSelection="${['':message(code:'default.select.choose.label')]}"/>
-                </div>
-            </g:if>
-
-            <g:if test="${field.equalsIgnoreCase('sector')}">
-                <div class="field">
-                    <label for="orgSector">${message(code: 'org.sector.label')}</label>
-                    <g:set var="orgSectors" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.ORG_SECTOR])}" scope="request"/>
-                    <ui:select class="ui dropdown search" id="orgSector" name="orgSector"
-                                  from="${orgSectors}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${params.orgSector}"
                                   noSelection="${['':message(code:'default.select.choose.label')]}"/>
                 </div>
             </g:if>
@@ -449,11 +436,11 @@
 
 <div class="field la-field-right-aligned">
 
-        <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+        <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
 
         <input name="filterSet" type="hidden" value="true">
         <g:if test="${tmplConfigFormFilter}">
-            <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui primary button" onclick="JSPC.app.formFilter(event)" />
+            <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Btn.PRIMARY}" onclick="JSPC.app.formFilter(event)" />
             <laser:script file="${this.getGroovyPageFileName()}">
                 JSPC.app.formFilter = function (e) {
                     e.preventDefault()
@@ -468,7 +455,7 @@
             </laser:script>
         </g:if>
         <g:else>
-            <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui primary button"/>
+            <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Btn.PRIMARY}"/>
         </g:else>
 
 </div>

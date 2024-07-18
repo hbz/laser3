@@ -236,6 +236,63 @@
         412:
           $ref: "#/components/responses/preconditionFailed"
 
+  /provider:
+
+    get:
+      tags:
+        - Objects
+      summary: Retrieving a single provider
+      description: >
+        Supported are queries by following identifiers: *globalUID*, *gokbId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Provider"
+        400:
+          $ref: "#/components/responses/badRequest"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
+        404:
+          description: Valid request, but provider not found
+        406:
+          $ref: "#/components/responses/notAcceptable"
+        412:
+          $ref: "#/components/responses/preconditionFailed"
+
+  /providerList:
+
+    get:
+      tags:
+        - Lists
+      summary: Retrieving a list of all providers
+      description: >
+        Retrieving a list of all providers
+
+      parameters:
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProviderStub"
+        400:
+          $ref: "#/components/responses/badRequest"
+        404:
+          description: Valid request, but result is empty
 
   /package:
 
@@ -446,6 +503,64 @@
           description: Valid request, but owner not found or result is empty
         406:
           $ref: "#/components/responses/notAcceptable"
+
+  /vendor:
+
+    get:
+      tags:
+        - Objects
+      summary: Retrieving a single vendor
+      description: >
+        Supported are queries by following identifiers: *globalUID*, *gokbId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vendor"
+        400:
+          $ref: "#/components/responses/badRequest"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
+        404:
+          description: Valid request, but vendor not found
+        406:
+          $ref: "#/components/responses/notAcceptable"
+        412:
+          $ref: "#/components/responses/preconditionFailed"
+
+  /vendorList:
+
+    get:
+      tags:
+        - Lists
+      summary: Retrieving a list of all vendors
+      description: >
+        Retrieving a list of all vendors
+
+      parameters:
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VendorStub"
+        400:
+          $ref: "#/components/responses/badRequest"
+        404:
+          description: Valid request, but result is empty
 
   /ezb/license/illIndicators:
 

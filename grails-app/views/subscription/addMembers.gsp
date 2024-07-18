@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.*;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants;de.laser.FormService;de.laser.utils.LocaleUtils" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.*;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants;de.laser.FormService;de.laser.utils.LocaleUtils" %>
 
 <laser:htmlStart text="${message(code: 'subscription.details.addMembers.label', args: memberType)}" serviceInjection="true"/>
 <%
@@ -78,7 +78,7 @@
                                         <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_all')}</label>
                                     </div>
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'myinst.separate_lics_all.expl')}">
-                                        <i class="question circle icon la-popup"></i>
+                                        <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
                                     </span>
                                 </div>
                                 <div class="field">
@@ -194,7 +194,7 @@
                                                                 </div>
                                                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                                       data-content="${message(code: 'myinst.separate_lics_all.expl')}">
-                                                                    <i class="question circle icon la-popup"></i>
+                                                                    <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
                                                                 </span>
                                                             </div>
 
@@ -355,8 +355,10 @@
 
         <div class="ui divider"></div>
 
-        <ui:msg header="${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.info')}" noClose="true">
+        <div class="ui message">
+            <div class="header">${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.info')}</div>
 
+            <br>
             ${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.text')}
 
             <br>
@@ -372,11 +374,11 @@
                        placeholder="${message(code: 'template.addDocument.selectFile')}">
                 <input type="file" name="selectSubMembersWithImport" accept="text/tab-separated-values,.txt,.csv"
                        style="display: none;">
-                <div class="ui icon button">
-                    <i class="attach icon"></i>
+                <div class="${Btn.SIMPLE_ICON}">
+                    <i class="${Icon.CMD.ATTACHMENT}"></i>
                 </div>
             </div>
-        </ui:msg>
+        </div><!-- .message -->
 
 
         <g:if test="${members}">
@@ -390,7 +392,7 @@
     <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <hr />
 
-            <ui:msg class="info" header="${message(code: 'myinst.noMembers.cons.header')}" noClose="true">
+            <ui:msg class="info" header="${message(code: 'myinst.noMembers.cons.header')}" hideClose="true">
                 <g:message code="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'consortium.member.plural')]}"/>
             </ui:msg>
     </g:if>

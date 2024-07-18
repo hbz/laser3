@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PersonRole" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.PersonRole" %>
 <ui:modal id="${cssId}" text="Neuen ${modalPrsLinkRole.getI10n("value")} hinzufügen" hideSubmitButton="true">
 
     <p>${message(code:'myinst.addressBook.visibleOnly')}</p>
@@ -18,7 +18,7 @@
                         <tr>
                             <td>
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
-                                    <i class="address card icon"></i>
+                                    <i class="${Icon.UI.ACP_PUBLIC}"></i>
                                 </span>
                                 ${p}
                             </td>
@@ -34,7 +34,7 @@
                                     <input type="hidden" name="role" value="${role}"/>
                                     <input type="hidden" name="org" value="${orgRole.org.class.name}:${orgRole.org.id}" />
 
-                                    <input type="submit" class="ui positive button" name="save" value="${message(code:'default.button.link.label')}"/>
+                                    <input type="submit" class="${Btn.POSITIVE}" name="save" value="${message(code:'default.button.link.label')}"/>
                                 </g:form>
                             </td>
                         </tr>
@@ -46,7 +46,7 @@
                         <tr>
                             <td>
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
-                                    <i class="address card outline icon"></i>
+                                    <i class="${Icon.UI.ACP_PRIVATE}"></i>
                                 </span>
                                 ${p}
                             </td>
@@ -62,7 +62,7 @@
                                     <input type="hidden" name="role" value="${role}"/>
                                     <input type="hidden" name="org" value="${orgRole.org.class.name}:${orgRole.org.id}" />
 
-                                    <input type="submit" class="ui positive button" name="save" value="${message(code:'default.button.link.label')}"/>
+                                    <input type="submit" class="${Btn.POSITIVE}" name="save" value="${message(code:'default.button.link.label')}"/>
                                 </g:form>
                             </td>
                         </tr>

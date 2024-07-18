@@ -6844,6 +6844,10 @@ a i.circular.la-gokb:hover {
   margin-bottom: 1em!important;
 }
 
+.ui.button.la-margin-top-1-7em {
+  margin-top: 1.7em !important;
+}
+
 /*------------------------------------
          Buttons for debug infos
   ------------------------------------*/
@@ -37700,7 +37704,7 @@ i.icon.hand.pointer.outline.slash {
   font-family: 'icomoon';
 }
 
-i.icon.pencil.alternate.slash {
+i.icon.write.slash {
   font-family: 'icomoon';
 }
 
@@ -37858,7 +37862,7 @@ i.icon.hand.pointer.outline.slash:before {
   content: "\e901";
 }
 
-i.icon.pencil.alternate.slash:before {
+i.icon.write.slash:before {
   content: "\e902";
 }
 
@@ -44298,19 +44302,19 @@ ol.ui.suffixed.list li::before,
   visibility: unset;
 }
 
-.ui.divided.middle.la-flex-list .item .button {
+.ui.divided.middle.la-flex-list .item .button:not(.editable-submit):not(.editable-cancel):not(.la-show-button) {
   opacity: 0;
   /* For Safari 3.1 to 6.0 */
   transition: opacity 1s;
 }
 
-.ui.divided.middle.la-flex-list .item .button.disabled {
+.ui.divided.middle.la-flex-list .item .button:not(.editable-submit):not(.editable-cancel):not(.la-show-button).disabled {
   opacity: 0!important;
   /* For Safari 3.1 to 6.0 */
   transition: opacity 1s;
 }
 
-.ui.divided.middle.la-flex-list .item:hover .button {
+.ui.divided.middle.la-flex-list .item:hover .button:not(.editable-submit):not(.editable-cancel) {
   opacity: 1;
 }
 
@@ -50814,13 +50818,15 @@ legend {
 
 /* Addresses */
 
-#create_address .ui.buttons .or::before {
+#create_address .ui.buttons .or::before,
+#person_form .ui.buttons .or::before {
   margin-left: -2.5em;
   width: 4.785714em;
   margin-top: 0;
 }
 
-#create_address .ui.buttons .or {
+#create_address .ui.buttons .or,
+#person_form .ui.buttons .or {
   font-size: 1.5rem;
 }
 
@@ -50842,6 +50848,11 @@ legend {
 #postalAddress {
   background-color: #e6dee2;
   border: none;
+}
+
+.la-contactIconField {
+  align-self: center;
+  text-align: right;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Grid
@@ -66969,6 +66980,10 @@ a.inverted.ui.card:hover,
 .ui.label.la-label-accordion {
   background-color: #997a88;
   color: #FFFFFF;
+}
+
+.ui.accordion.la-namedetails:not(.styled) .title ~ .content {
+  padding: 0;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Calendar

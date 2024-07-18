@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.PersonRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.utils.DateUtils" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.PersonRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.utils.DateUtils" %>
 
 <laser:serviceInjection/>
 
@@ -43,29 +43,30 @@
         <g:if test="${editable}">
 
             <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForProvider');"><i class="address card outline icon"></i><g:message
+               onclick="JSPC.app.personCreate('contactPersonForProvider');"><i class="${Icon.UI.ACP_PRIVATE}"></i><g:message
                     code="person.create_new.contactPersonForProvider.label"/></a>
             <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProvider');"><i class="map marked alternate icon"></i><g:message code="address.add.addressForProvider.label"/></a>
 
             <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForVendor');"><i class="address card outline icon"></i><g:message
+               onclick="JSPC.app.personCreate('contactPersonForVendor');"><i class="${Icon.UI.ACP_PRIVATE}"></i><g:message
                     code="person.create_new.contactPersonForVendor.label"/></a>
 
             <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForVendor');"><i class="map marked alternate icon"></i><g:message code="address.add.addressForVendor.label"/></a>
             <g:if test="${institution.isCustomerType_Consortium()}">
                 <a href="#createPersonModal" class="item" data-ui="modal"
-                   onclick="JSPC.app.personCreate('contactPersonForInstitution');"><i class="address card outline icon"></i><g:message
+                   onclick="JSPC.app.personCreate('contactPersonForInstitution');"><i class="${Icon.UI.ACP_PRIVATE}"></i><g:message
                         code="person.create_new.contactPersonForInstitution.label"/></a>
 
                 <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution');"><i class="map marked alternate icon"></i><g:message code="address.add.addressForInstitution.label"/></a>
             </g:if>
 
             <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForPublic');"><i class="address card outline icon"></i><g:message
+               onclick="JSPC.app.personCreate('contactPersonForPublic');"><i class="${Icon.UI.ACP_PRIVATE}"></i><g:message
                     code="person.create_new.contactPersonForPublic.label"/></a>
 
             <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForPublic');"><i class="map marked alternate icon"></i><g:message code="address.add.addressForPublic.label"/></a>
 
+            <div class="divider"></div>
         </g:if>
 
         <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
@@ -159,8 +160,8 @@
         <div class="field la-field-right-aligned">
             <label></label>
             <a href="${request.forwardURI}"
-               class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-            <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}">
+               class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+            <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
         </div>
     </g:form>
 </ui:filter>
@@ -187,7 +188,7 @@
             showContacts  : true,
             showAddresses : true,
             showOptions : true,
-            tmplConfigShow: ['lineNumber', 'organisation', 'function', 'position', 'name', 'showContacts', 'showAddresses']
+            tmplConfigShow: ['lineNumber', 'organisation', 'function', 'position', 'name', 'showContacts']
     ]}"/>
 
     <ui:paginate action="addressbook" controller="myInstitution" params="${params+[tab: 'contacts']}"

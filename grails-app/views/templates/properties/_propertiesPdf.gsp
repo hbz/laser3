@@ -1,4 +1,4 @@
-<%@page import="de.laser.properties.SubscriptionProperty; de.laser.Subscription; de.laser.License; de.laser.AuditConfig; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinitionGroupBinding" %>
+<%@page import="de.laser.ui.Icon; de.laser.properties.SubscriptionProperty; de.laser.Subscription; de.laser.License; de.laser.AuditConfig; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinitionGroupBinding" %>
 <g:if test="${memberProperties}">
     <section>
         <g:if test="${subscription}">
@@ -116,7 +116,7 @@
                                         ${prop.type.getI10n('name')}
                                     </g:else>
                                     %{--<g:if test="${prop.type.multipleOccurrence}">
-                                        <span class="redo icon orange"> M </span>
+                                        <span class="${Icon.PROP.MULTIPLE}"> M </span>
                                     </g:if>--}%
                                 </td>
                                 <td>

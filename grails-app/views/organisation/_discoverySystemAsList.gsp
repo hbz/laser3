@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Icon" %>
 <g:if test="${config == 'discoverySystemFrontend'}">
     <div class="ui divided middle aligned selection list la-flex-list">
         <g:each in="${org.discoverySystemFrontends}" var="frontend">
@@ -14,7 +15,7 @@
                                            controller="organisation" action="deleteDiscoverySystem" params="[id: org.id, oid: genericOIDService.getOID(frontend)]"
                                            role="button"
                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate outline icon"></i>
+                                <i class="${Icon.CMD.DELETE}"></i>
                             </g:link>
                         </div>
                     </div>
@@ -39,7 +40,7 @@
                                            controller="organisation" action="deleteDiscoverySystem" params="[id: org.id, oid: genericOIDService.getOID(index)]"
                                            role="button"
                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate outline icon"></i>
+                                <i class="${Icon.CMD.DELETE}"></i>
                             </g:link>
                         </div>
                     </div>

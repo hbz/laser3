@@ -28,7 +28,7 @@
             <g:form action="list" method="get" class="ui form">
                 <laser:render template="/templates/filter/vendorFilter"
                           model="[
-                                  tmplConfigShow: [['name', 'venStatus'], ['supportedLibrarySystems', 'electronicBillings', 'invoiceDispatchs'], ['isMyX']],
+                                  tmplConfigShow: [['name', 'venStatus'], ['supportedLibrarySystems', 'electronicBillings', 'invoiceDispatchs'], ['property&value', 'isMyX']],
                                   tmplConfigFormFilter: true
                           ]"/>
             </g:form>
@@ -51,6 +51,10 @@
             </g:else>
         </div>
         <ui:paginate total="${vendorListTotal}" params="${params}" max="${max}" offset="${offset}" />
+
+<ui:debugInfo>
+    <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+</ui:debugInfo>
 
 <g:render template="/clickMe/export/js"/>
 

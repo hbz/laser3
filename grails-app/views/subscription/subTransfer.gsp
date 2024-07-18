@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ExportClickMeService; de.laser.Doc; de.laser.DocContext; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.storage.RDStore; de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.Doc; de.laser.DocContext; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.storage.RDStore; de.laser.survey.SurveyOrg" %>
 <laser:htmlStart message="subscription.details.subTransfer.label" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
@@ -44,8 +44,8 @@
 
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.offerNote.label')}</dt>
-                            <dd><ui:xEditable owner="${subscription}" field="offerNote"
-                                              type="textarea"/></dd>
+                            <dd><ui:xEditable owner="${subscription}" field="offerNote" type="textarea"
+                                              validation="maxlength" maxlength="255"/></dd>
                         </dl>
 
                         <dl>
@@ -83,7 +83,7 @@
                                     <g:if test="${countModificationToCostInformationAfterRenewalDoc > 0}">
                                         <g:link class="ui label triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
                                                 params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyUseForTransfer.surveyInfo.id, surveyConfigID: surveyUseForTransfer.id]">
-                                            <i class="download icon"></i> ${countModificationToCostInformationAfterRenewalDoc}
+                                            <i class="${Icon.CMD.DOWNLOAD}"></i> ${countModificationToCostInformationAfterRenewalDoc}
                                         </g:link>
                                     </g:if>
                                     <g:else>
@@ -173,7 +173,7 @@
                                         <g:if test="${subscription.discountScale.note}">
                                             <span data-position="top left" class="la-popup-tooltip la-delay"
                                                   data-content="${subscription.discountScale.note}">
-                                                <i class="info circle icon blue"></i>
+                                                <i class="${Icon.TOOLTIP.INFO} blue"></i>
                                             </span>
                                         </g:if>
                                     </g:if>
@@ -237,14 +237,14 @@
                                         <%-- 1 --%>
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                     class="ui icon blue button la-modern-button"
-                                                    target="_blank"><i class="download icon"></i></g:link>
+                                                    target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                         </g:if>
                                         <g:else>
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                             <%-- 1 --%>
                                                 <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                         class="ui icon blue button la-modern-button"
-                                                        target="_blank"><i class="download icon"></i></g:link>
+                                                        target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 
                                             <%-- 2 --%>
                                                 <laser:render template="/templates/documents/modal"
@@ -253,7 +253,7 @@
                                                         data-ui="modal"
                                                         data-href="#modalEditDocument_${docctx.id}"
                                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                                    <i class="pencil icon"></i>
+                                                    <i class="${Icon.CMD.EDIT}"></i>
                                                 </button>
                                             </g:if>
 
@@ -267,12 +267,12 @@
                                                         params='[instanceId: "${subscription.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                         role="button"
                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                    <i class="trash alternate outline icon"></i>
+                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                 </g:link>
                                             </g:if>
                                             <g:else>
                                                 <div class="ui icon button la-hidden">
-                                                    <i class="fake icon"></i><%-- Hidden Fake Button --%>
+                                                    <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>
                                                 </div>
                                             </g:else>
                                         </g:else>%{-- (editable || editable2) --}%
@@ -315,14 +315,14 @@
                                         <%-- 1 --%>
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                     class="ui icon blue button la-modern-button"
-                                                    target="_blank"><i class="download icon"></i></g:link>
+                                                    target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                         </g:if>
                                         <g:else>
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                             <%-- 1 --%>
                                                 <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                         class="ui icon blue button la-modern-button"
-                                                        target="_blank"><i class="download icon"></i></g:link>
+                                                        target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 
                                             <%-- 2 --%>
                                                 <laser:render template="/templates/documents/modal"
@@ -331,7 +331,7 @@
                                                         data-ui="modal"
                                                         data-href="#modalEditDocument_${docctx.id}"
                                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                                    <i class="pencil icon"></i>
+                                                    <i class="${Icon.CMD.EDIT}"></i>
                                                 </button>
                                             </g:if>
 
@@ -345,12 +345,12 @@
                                                         params='[instanceId: "${subscription.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                         role="button"
                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                    <i class="trash alternate outline icon"></i>
+                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                 </g:link>
                                             </g:if>
                                             <g:else>
                                                 <div class="ui icon button la-hidden">
-                                                    <i class="fake icon"></i><%-- Hidden Fake Button --%>
+                                                    <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>
                                                 </div>
                                             </g:else>
                                         </g:else>%{-- (editable || editable2) --}%

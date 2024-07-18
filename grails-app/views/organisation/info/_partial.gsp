@@ -1,6 +1,6 @@
-<%@ page import="de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore" %>
 
-<h2 class="ui small header" style="display:inline-block;background-color:red;color:white;padding:0.5em 1em">DEMO</h2>
+%{--<h2 class="ui small header" style="display:inline-block;background-color:red;color:white;padding:0.5em 1em">DEMO</h2>--}%
 
 <div class="ui vertical secondary fluid menu" style="margin-bottom:2em">
     <a class="ui item stats-toggle" data-target="stats_subscription">
@@ -10,7 +10,7 @@
     <a class="ui item stats-toggle" data-target="stats_provider">
         <span class="">
             ${message(code:'provider.label')}
-            <i class="grey question circle icon la-popup-tooltip la-delay" data-content="${message(code: 'subscription.plural')}, ${message(code: 'package.plural')}, ${message(code: 'platform.plural')}"></i>
+            <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip la-delay" data-content="${message(code: 'subscription.plural')}, ${message(code: 'package.plural')}, ${message(code: 'platform.plural')}"></i>
         </span>
         <span class="ui ${providerMap?.size() ? 'primary' : ''} label"> ${providerMap?.size() ?: 0} </span>
     </a>
@@ -161,7 +161,7 @@
     /*  border-color: #dedede;*/
     /*}*/
     .stats-content tr.sub {
-      background-color: rgba(0,0,0, 0.03)
+      background-color: rgba(0,0,0, 0.01);
     }
 
     /*.menu > .item.black {*/

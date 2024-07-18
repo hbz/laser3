@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PersonRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.PersonRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 
 <g:set var="entityName" value="${message(code: 'person.label')}"/>
 <laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" serviceInjection="true" />
@@ -84,7 +84,7 @@
                                 </g:each>
                             </div>
                             <g:if test="${editable}">
-                                <input class="ui button" type="button" data-ui="modal" data-href="#contactFormModal"
+                                <input class="${Btn.SIMPLE}" type="button" data-ui="modal" data-href="#contactFormModal"
                                        value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label')])}">
                                 <laser:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
                             </g:if>
@@ -113,7 +113,7 @@
                                 model.redirect = '.'
                                 model.typeId = RDStore.ADDRESS_TYPE_LIBRARY.id
                                 model.hideType = true%>
-                                <input class="ui icon button" type="button"
+                                <input class="${Btn.BASIC_ICON}" type="button"
                                        value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}"
                                        onclick="JSPC.app.addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
                                 >
@@ -135,7 +135,7 @@
                                         <g:if test="${link.functionType}">
                                             <div class="ui item address-details">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.label')}" data-position="top right" data-variation="tiny">
-                                                    <i class="ui icon university la-list-icon"></i>
+                                                    <i class="${Icon.ORG} la-list-icon"></i>
                                                 </span>
 
                                                 <div class="content la-space-right">
@@ -156,7 +156,7 @@
                                                                         controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]"
                                                                         role="button"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="trash alternate outline icon"></i>
+                                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                                 </g:link>
                                                             </div>
                                                         </g:if>
@@ -171,7 +171,7 @@
                                                                         data-confirm-term-how="delete"
                                                                         role="button"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="trash alternate outline icon"></i>
+                                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                                 </g:link>
                                                             </div>
                                                         </g:else>
@@ -183,7 +183,7 @@
                                 </div>
 
                                 <g:if test="${editable}">
-                                    <a href="#prFunctionModal" data-ui="modal" class="ui button">${message('code':'default.button.add.label')}</a>
+                                    <a href="#prFunctionModal" data-ui="modal" class="${Btn.SIMPLE}">${message('code':'default.button.add.label')}</a>
                                 </g:if>
                             </dd>
                         </dl>
@@ -195,7 +195,7 @@
                                         <g:if test="${link.positionType}">
                                             <div class="ui item address-details">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.label')}" data-position="top right" data-variation="tiny">
-                                                    <i class="ui icon university la-list-icon"></i>
+                                                    <i class="${Icon.ORG} la-list-icon"></i>
                                                 </span>
 
                                                 <div class="content la-space-right">
@@ -216,7 +216,7 @@
                                                                         controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]"
                                                                         role="button"
                                                                         aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                                    <i class="unlink icon"></i>
+                                                                    <i class="${Icon.CMD.UNLINK}"></i>
                                                                 </g:link>
                                                             </div>
                                                         </g:if>
@@ -231,7 +231,7 @@
                                                                         data-confirm-term-how="delete"
                                                                         role="button"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="trash alternate outline icon"></i>
+                                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                                 </g:link>
                                                             </div>
                                                         </g:else>
@@ -243,7 +243,7 @@
                                 </div>
 
                                 <g:if test="${editable}">
-                                    <a href="#prPositionModal" data-ui="modal" class="ui button">${message('code':'default.button.add.label')}</a>
+                                    <a href="#prPositionModal" data-ui="modal" class="${Btn.SIMPLE}">${message('code':'default.button.add.label')}</a>
                                 </g:if>
                             </dd>
                         </dl>
@@ -257,22 +257,22 @@
 
                                                 <g:if test="${link.pkg}">
                                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'package.label')}" data-position="top right" data-variation="tiny">
-                                                        <i class="ui icon university la-list-icon"></i>
+                                                        <i class="${Icon.ORG} la-list-icon"></i>
                                                     </span>
                                                 </g:if>
                                                 <g:if test="${link.sub}">
                                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'default.subscription.label')}" data-position="top right" data-variation="tiny">
-                                                        <i class="ui icon clipboard outline la-list-icon"></i>
+                                                        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                     </span>
                                                 </g:if>
                                                 <g:if test="${link.lic}">
                                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.label')}" data-position="top right" data-variation="tiny">
-                                                        <i class="ui icon balance scale la-list-icon"></i>
+                                                        <i class="${Icon.LICENSE} la-list-icon"></i>
                                                     </span>
                                                 </g:if>
                                                 <g:if test="${link.tipp}">
                                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'title.label')}" data-position="top right" data-variation="tiny">
-                                                        <i class="ui icon book la-list-icon"></i>
+                                                        <i class="${Icon.TIPP} la-list-icon"></i>
                                                     </span>
                                                 </g:if>
 
@@ -304,7 +304,7 @@
                                                             <g:link class="ui negative button la-modern-button" controller="person" action="deletePersonRole" id="${personInstance.id}" params="[oid: oid]"
                                                                     role="button"
                                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                <i class="trash alternate outline icon"></i>
+                                                                <i class="${Icon.CMD.DELETE}"></i>
                                                             </g:link>
                                                         </div>
                                                     </g:if>
@@ -362,13 +362,13 @@
 
                                 <g:if test="${! personInstance.isPublic}">
                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
-                                        <i class="address card outline icon"></i>
+                                        <i class="${Icon.UI.ACP_PRIVATE}"></i>
                                     </span>
                                     *&nbsp;${message(code: 'default.can.not.be.changed')}
                                 </g:if>
                                 <g:else>
                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
-                                        <i class="address card icon"></i>
+                                        <i class="${Icon.UI.ACP_PUBLIC}"></i>
                                     </span>
                                 </g:else>
 

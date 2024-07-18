@@ -1,4 +1,4 @@
-<%@ page import="de.laser.oap.OrgAccessPoint; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.oap.OrgAccessPoint; de.laser.storage.RDConstants" %>
 
 <g:set var="entityName" value="${message(code: 'accessPoint.label')}"/>
 <laser:htmlStart text="${message(code: "default.edit.label", args: [entityName])}" serviceInjection="true"/>
@@ -82,7 +82,7 @@
                                     data-confirm-term-how="delete"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash very alternate icon"></i>
+                                <i class="${Icon.CMD.DELETE}"></i>
                             </g:link>
                         </g:if>
                     </td>
@@ -105,7 +105,7 @@
                             <label for="mailDomain_id">Mail-Domain</label>
                             <g:field type="text" name="mailDomain" id="mailDomain_id" value="${mailDomain}"/>
                         </div>
-                        <input type="submit" class="ui button" value="${message(code: 'accessPoint.button.add')}"/>
+                        <input type="submit" class="${Btn.SIMPLE}" value="${message(code: 'accessPoint.button.add')}"/>
                     </div>
                 </g:form>
             </div>

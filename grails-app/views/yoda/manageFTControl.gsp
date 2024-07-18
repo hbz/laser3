@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 <laser:htmlStart text="Manage FTControl" />
 
     <ui:breadcrumbs>
@@ -7,7 +8,7 @@
 
     <ui:h1HeaderWithIcon text="FTControl" type="yoda" />
 
-    <ui:msg class="${dataload.running ? 'success' : 'info'}" noClose="true">
+    <ui:msg class="${dataload.running ? 'success' : 'info'}" hideClose="true">
         Last doFTUpdate: <strong>${dataload.lastFTIndexUpdateInfo}</strong> ; Currently running: <strong>${dataload.running.toString().toUpperCase()}</strong>
     </ui:msg>
 
@@ -97,8 +98,8 @@
                     <g:formatNumber number="${indexInfo.countDB}" format="${message(code:'default.decimal.format')}"/>
                 </td>
                 <td class="right aligned">
-                    <g:link action="resetIndex" params="[name: indexInfo.name]" class="ui tiny button red">Reset</g:link>
-                    <g:link action="continueIndex" params="[name: indexInfo.name]" class="ui tiny button green ${indexInfo.countIndex == indexInfo.countDB ? 'disabled' : ''}">Continue</g:link>
+                    <g:link action="resetIndex" params="[name: indexInfo.name]" class="${Btn.NEGATIVE} tiny">Reset</g:link>
+                    <g:link action="continueIndex" params="[name: indexInfo.name]" class="${Btn.POSITIVE} tiny ${indexInfo.countIndex == indexInfo.countDB ? 'disabled' : ''}">Continue</g:link>
                 </td>
             </tr>
             </g:each>

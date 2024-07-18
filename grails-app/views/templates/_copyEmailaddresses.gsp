@@ -3,8 +3,19 @@
 <laser:serviceInjection />
 
 <g:set var="modalID" value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
-
-<ui:modal id="${modalID}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true" contentClass="scrolling">
+<%
+    String instanceLabel
+    if(instanceType == Vendor.class.name) {
+        instanceLabel = message(code: 'vendor.plural')
+    }
+    else if(instanceType == Provider.class.name) {
+        instanceLabel = message(code: 'provider.plural.accusative')
+    }
+    else {
+        instanceLabel = message(code: 'org.institution.plural')
+    }
+%>
+<ui:modal id="${modalID}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0, instanceLabel])}" hideSubmitButton="true" contentClass="scrolling">
     <g:set var="rdvAllPersonFunctions" value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}" scope="request"/>
     <g:set var="rdvAllPersonPositions" value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}" scope="request"/>
     <div class="ui form la-filter segment la-clear-before">

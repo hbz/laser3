@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.PropertyStore; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.Org;de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.PropertyStore; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.Org;de.laser.survey.SurveyOrg" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyInfo.transferMembers')})" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -154,7 +154,7 @@
                                             <g:if test="${participantSub}">
                                                 <g:link controller="subscription" action="show"
                                                         id="${participantSub.id}"
-                                                        class="ui button icon"><i class="icon clipboard"></i></g:link>
+                                                        class="${Btn.SIMPLE_ICON}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                                             </g:if>
 
                                             <g:set var="multiYearResultProperties"
@@ -170,13 +170,14 @@
                                             </g:if>
 
 
+
                                             <g:if test="${SurveyOrg.findByOrgAndSurveyConfig(participant, surveyConfig)}">
                                                 <br>
                                                 <br>
 
                                                 <div class="ui icon"
                                                      data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
-                                                    <i class="bordered colored chart pie icon"></i>
+                                                    <i class="${Icon.SURVEY} bordered colored"></i>
                                                 </div>
                                             </g:if>
 
@@ -244,7 +245,31 @@
                                             <g:if test="${participantSub}">
                                                 <g:link controller="subscription" action="show"
                                                         id="${participantSub.id}"
-                                                        class="ui button icon"><i class="icon clipboard"></i></g:link>
+                                                        class="${Btn.SIMPLE_ICON}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
+                                            </g:if>
+
+                                            <g:set var="multiYearResultProperties"
+                                                   value="${surveyService.getMultiYearResultProperties(surveyConfig, participant)}"/>
+                                            <g:if test="${surveyConfig.subSurveyUseForTransfer && multiYearResultProperties.size() > 0}">
+                                                <br>
+                                                <br>
+
+                                                <div class="ui icon"
+                                                     data-tooltip="${message(code: 'surveyProperty.label') + ': ' + multiYearResultProperties.collect { it.getI10n('name') }.join(', ') + ' = ' + message(code: 'refdata.Yes')}">
+                                                    <i class="bordered colored info icon"></i>
+                                                </div>
+                                            </g:if>
+
+
+
+                                            <g:if test="${SurveyOrg.findByOrgAndSurveyConfig(participant, surveyConfig)}">
+                                                <br>
+                                                <br>
+
+                                                <div class="ui icon"
+                                                     data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
+                                                    <i class="${Icon.SURVEY} bordered colored"></i>
+                                                </div>
                                             </g:if>
                                         </td>
                                     </tr>
@@ -265,7 +290,7 @@
         </ui:greySegment>
 
         <div class="sixteen wide field" style="text-align: center;">
-            <g:link class="ui button" controller="survey" action="copyProperties"
+            <g:link class="${Btn.SIMPLE}" controller="survey" action="copyProperties"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: 'surveyProperties', targetSubscriptionId: targetSubscription?.id]">
                 ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
             </g:link>

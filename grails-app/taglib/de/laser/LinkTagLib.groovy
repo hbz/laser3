@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.ui.Icon
 import de.laser.remote.ApiSource
 
 class LinkTagLib {
@@ -9,21 +10,13 @@ class LinkTagLib {
     static namespace = 'ui'
 
     def linkWithIcon = { attrs, body ->
-
-        String icon = attrs.icon ?: 'external alternate'
+        String icon = attrs.icon ?: Icon.LNK.EXTERNAL // TODO erms-5784 doubles 'icon'
 
         out << '<span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + message(code: 'tooltip.callUrl') + '" style="bottom:-3px">&nbsp;'
         out << '<a href="' + attrs.href + '" target="_blank" aria-label="' + attrs.href + '">'
-        out << '<i class="icon ' + icon + '" aria-hidden="true"></i>'
+        out << '<i class="' + icon + ' icon" aria-hidden="true"></i>'
         out << '</a>'
         out << '</span>'
-    }
-
-    // <externalIconLink href="${target}" tooltip="icon tooltip" />
-    def externalIconLink = {attrs, body ->
-        out << '<a href="' + attrs.href + '" target="_blank" aria-label="' + attrs.href + '">'
-        out << '<i class="icon external alternate" aria-hidden="true"' + (attrs.tooltip ? ' title="' + attrs.tooltip + '"' : '') + '></i>'
-        out << '</a>'
     }
 
     // <wekbIconLink href="${target}" />
@@ -66,7 +59,7 @@ class LinkTagLib {
         }
         out << '<span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + label + '" >&nbsp;'
         out << '<a href="' + href + '" target="_blank" aria-label="' + label + '">'
-        out << '<i class="icon small la-gokb" aria-hidden="true"></i>'
+        out << '<i class="' + Icon.WEKB + ' small" aria-hidden="true"></i>'
         out << '</a>'
         out << '</span>'
     }
@@ -92,11 +85,9 @@ class LinkTagLib {
         out << '<a href="' + href + '" target="_blank" aria-label="' + label + '" '
         out << 'class="ui icon blue button la-modern-button la-popup-tooltip la-delay" '
         out << 'data-position="top right" data-content="' + label + '" '
-//        out << 'data-content="' + message(code: 'org.isWekbCurated.header.label') + '" '
-//        out << 'aria-label="' + message(code: 'org.isWekbCurated.header.label') + '" '
         out << 'role="button">'
 
-        out << '<i class="icon la-gokb" aria-hidden="true"></i>'
+        out << '<i class="' + Icon.WEKB + '" aria-hidden="true"></i>'
         out << '</a>'
     }
 

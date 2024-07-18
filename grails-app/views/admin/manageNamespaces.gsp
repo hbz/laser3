@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Identifier; de.laser.IdentifierNamespace; de.laser.I10nTranslation" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Identifier; de.laser.IdentifierNamespace; de.laser.I10nTranslation" %>
 
 <laser:htmlStart message="menu.admin.manageIdentifierNamespaces" />
 
@@ -78,14 +78,14 @@
 
                 <input name="isHidden" type="hidden" value="false" />
 
-                <button type="submit" class="ui button">
+                <button type="submit" class="${Btn.SIMPLE}">
                     <g:message code="default.button.create.label"/>
                 </button>
         </ui:form>
 
         <g:if test="${cmd == 'details'}">
 
-            <g:link controller="admin" action="manageNamespaces" class="ui button right floated"><g:message code="default.button.back"/></g:link>
+            <g:link controller="admin" action="manageNamespaces" class="${Btn.SIMPLE} right floated"><g:message code="default.button.back"/></g:link>
 
             &nbsp;&nbsp;
 
@@ -138,11 +138,11 @@
                                     <td>
                                         ${idNs.ns}
                                         <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataId.tooltip', args:[idNs.id])}">
-                                            <i class="info circle icon blue"></i>
+                                            <i class="${Icon.PROP.IN_USE}"></i>
                                         </span>
                                         <g:if test="${idNs.isHardData}">
                                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="check circle icon green"></i>
+                                                <i class="${Icon.PROP.HARDDATA}"></i>
                                             </span>
                                         </g:if>
                                     </td>
@@ -194,10 +194,10 @@
                                     <td>
                                         <g:if test="${!idNs.isHardData}">
                                             <g:link controller="admin" action="manageNamespaces"
-                                                    params="${[cmd: 'deleteNamespace', oid: IdentifierNamespace.class.name + ':' + idNs.id]}" class="ui icon negative button  la-modern-button"
+                                                    params="${[cmd: 'deleteNamespace', oid: IdentifierNamespace.class.name + ':' + idNs.id]}" class="${Btn.MODERN.NEGATIVE_ICON}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="trash alternate outline icon"></i>
+                                                <i class="${Icon.CMD.DELETE}"></i>
                                             </g:link>
                                         </g:if>
                                     </td>
@@ -206,11 +206,11 @@
                                     <td>
                                         ${idNs.ns}
                                         <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataId.tooltip', args:[idNs.id])}">
-                                            <i class="info circle icon blue"></i>
+                                            <i class="${Icon.PROP.IN_USE}"></i>
                                         </span>
                                         <g:if test="${idNs.isHardData}">
                                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="check circle icon green"></i>
+                                                <i class="${Icon.PROP.HARDDATA}"></i>
                                             </span>
                                         </g:if>
                                     </td>
@@ -267,8 +267,8 @@
                                         <g:if test="${tooltip}">
                                             <span data-content="Verwendet für ${tooltip.join(', ')}" data-position="left center"
                                                   class="la-long-tooltip la-popup-tooltip la-delay">
-                                                <g:link class="ui button icon" controller="admin" action="manageNamespaces"
-                                                        params="${[cmd: 'details', oid: IdentifierNamespace.class.name + ':' + idNs.id]}"><i class="ui icon question"></i></g:link>
+                                                <g:link class="${Btn.SIMPLE_ICON}" controller="admin" action="manageNamespaces"
+                                                        params="${[cmd: 'details', oid: IdentifierNamespace.class.name + ':' + idNs.id]}"><i class="${Icon.TOOLTIP.HELP}"></i></g:link>
                                             </span>
                                         </g:if>
                                     </td>

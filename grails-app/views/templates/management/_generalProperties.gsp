@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription; de.laser.interfaces.CalculatedType;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription; de.laser.interfaces.CalculatedType;" %>
 <laser:serviceInjection/>
 
 <g:if test="${filteredSubscriptions}">
@@ -81,7 +81,7 @@
                                 class="ui icon button blue la-modern-button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="write icon"></i></g:link>
+                            <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i></g:link>
                     </td>
                 </tr>
                 </tbody>
@@ -315,7 +315,7 @@
                 </div>
                 <div class="row">
                     <div class="column">
-                        <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
+                        <button class="${Btn.SIMPLE}" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
                                 value="changeProperties">${message(code: 'default.button.save_changes')}</button>
                     </div>
                 </div>
@@ -470,7 +470,7 @@
                                     class="ui icon button blue la-modern-button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="write icon"></i>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </g:link>
                         </td>
                     </tr>

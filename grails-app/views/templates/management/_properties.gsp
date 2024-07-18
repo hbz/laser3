@@ -1,4 +1,4 @@
-<%@ page import="de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.AuditConfig" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.AuditConfig" %>
 <laser:serviceInjection/>
     <%
         SortedSet<PropertyDefinition> allProperties = new TreeSet<PropertyDefinition>()
@@ -17,8 +17,7 @@
                                           model="[propList: propList, hideFilterProp: true, newfilterPropDefName: 'propertiesFilterPropDef', label:message(code: 'subscriptionsManagement.onlyPropOfParentSubscription', args: [subscription.name])]"/>
 
                                 <div class="field la-field-noLabel" >
-                                    <input type="submit" value="${message(code: 'template.orgLinksModal.select')}"
-                                           class="ui primary button"/>
+                                    <input type="submit" value="${message(code: 'template.orgLinksModal.select')}" class="${Btn.PRIMARY}"/>
                                 </div>
                             </div>
                         </g:form>
@@ -32,7 +31,7 @@
 
                                 <div class="field la-field-noLabel">
                                     <input type="submit" value="${message(code: 'template.orgLinksModal.select')}"
-                                           class="ui primary button"/>
+                                           class="${Btn.PRIMARY}"/>
                                 </div>
                             </div>
                         </g:form>
@@ -52,7 +51,7 @@
 
                     <div class="field la-field-noLabel">
                         <input type="submit" value="${message(code: 'template.orgLinksModal.select')}"
-                               class="ui primary button"/>
+                               class="${Btn.PRIMARY}"/>
                     </div>
                 </div>
             </g:form>
@@ -187,7 +186,7 @@
                                     </g:if><g:else>
                                     <div class="content">
                                         ${message(code: 'subscriptionsManagement.noCustomProperty')}
-                                        <g:link class="ui button" controller="ajax" action="addCustomPropertyValue"
+                                        <g:link class="${Btn.SIMPLE}" controller="ajax" action="addCustomPropertyValue"
                                                 params="[
                                                         propIdent    : propertiesFilterPropDef.id,
                                                         ownerId      : subscription.id,
@@ -264,7 +263,7 @@
                                     </g:if><g:else>
                                     <div class="content">
                                         ${message(code: 'subscriptionsManagement.noPrivateProperty')}
-                                        <g:link class="ui button" controller="ajax" action="addPrivatePropertyValue"
+                                        <g:link class="${Btn.SIMPLE}" controller="ajax" action="addPrivatePropertyValue"
                                                 params="[
                                                         propIdent    : propertiesFilterPropDef.id,
                                                         ownerId      : subscription.id,
@@ -288,7 +287,7 @@
                                 class="ui icon button blue la-modern-button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="write icon"></i>
+                            <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                         </g:link>
                     </td>
                 </tr>
@@ -297,7 +296,7 @@
         </div>
 
         <div class="ui icon info message">
-            <i class="info icon"></i>
+            <i class="${Icon.UI.INFO}"></i>
             <div class="content">
                 <g:message code="subscriptionsManagement.info2" args="${args.memberTypeSingle}"/> <br />
 
@@ -327,7 +326,7 @@
 
                     <strong>${propertiesFilterPropDef.getI10n('name')}
                         <g:if test="${propertiesFilterPropDef.tenant != null}">
-                            <i class="shield alternate icon"></i>
+                            <i class="${Icon.PROP.IS_PRIVATE}"></i>
                         </g:if>
                     </strong>
                 </div>
@@ -365,7 +364,7 @@
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
                     <div class="ui buttons">
-                        <button class="ui positive button" ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                        <button class="${Btn.POSITIVE}" ${!editable ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 value="changeCreateProperty">${message(code: 'default.button.save_changes')}</button>
                     </div>
@@ -373,7 +372,7 @@
 
                 <div class="eight wide field" style="text-align: right;">
                     <div class="ui buttons">
-                        <button class="ui button negative " ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                        <button class="${Btn.NEGATIVE}" ${!editable ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 value="deleteProperty">${message(code: 'subscriptionsManagement.deleteProperty.button', args: [propertiesFilterPropDef.getI10n('name')])}</button>
                     </div>
@@ -532,7 +531,7 @@
                                         </g:if><g:else>
                                         <div class="content">
                                             ${message(code: 'subscriptionsManagement.noCustomProperty')}
-                                            <g:link class="ui button" controller="ajax" action="addCustomPropertyValue"
+                                            <g:link class="${Btn.SIMPLE}" controller="ajax" action="addCustomPropertyValue"
                                                     params="[
                                                             propIdent    : propertiesFilterPropDef.id,
                                                             ownerId      : sub.id,
@@ -605,7 +604,7 @@
                                         </g:if><g:else>
                                         <div class="content">
                                             ${message(code: 'subscriptionsManagement.noPrivateProperty')}
-                                            <g:link class="ui button" controller="ajax" action="addPrivatePropertyValue"
+                                            <g:link class="${Btn.SIMPLE}" controller="ajax" action="addPrivatePropertyValue"
                                                     params="[
                                                             propIdent    : propertiesFilterPropDef.id,
                                                             ownerId      : sub.id,
@@ -629,7 +628,7 @@
                                     class="ui icon button blue la-modern-button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="write icon"></i></g:link>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i></g:link>
                         </td>
                     </tr>
                 </g:each>

@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat
 class FinanceController  {
 
     DeletionService deletionService
+    DocstoreService docstoreService
     EscapeService escapeService
     ExportClickMeService exportClickMeService
     ExportService exportService
@@ -41,6 +42,7 @@ class FinanceController  {
     FinanceService financeService
     GenericOIDService genericOIDService
     PendingChangeService pendingChangeService
+    TaskService taskService
     UserService userService
     WorkflowService workflowService
 
@@ -116,7 +118,13 @@ class FinanceController  {
                     result.currentCostItemCounts = result.financialData.subscr.count
                 }
             }
-            result.workflowCount = workflowService.getWorkflowCount(result.subscription, result.contextOrg)
+            result.checklistCount = workflowService.getWorkflowCount(result.subscription, result.institution)
+            int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.subscription).size()
+            int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.subscription).size()
+            result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
+
+            result.notesCount       = docstoreService.getNotesCount(result.subscription, result.institution)
+            result.docsCount       = docstoreService.getDocsCount(result.subscription, result.institution)
 
             result.ciTitles = result.financialData.ciTitles
             result.budgetCodes = result.financialData.budgetCodes
@@ -212,8 +220,9 @@ class FinanceController  {
             if(viewMode == "cons")
                 titles.addAll([message(code:'org.sortName.label'),message(code:'financials.newCosts.costParticipants'),message(code:'financials.isVisibleForSubscriber')])
             titles.add(message(code: 'financials.newCosts.costTitle'))
-            if(viewMode == "cons")
-                titles.add(message(code:'provider.label'))
+            if(viewMode == "cons") {
+                titles.addAll([message(code: 'provider.label'), message(code: 'vendor.label')])
+            }
             titles.addAll([message(code: 'default.subscription.label'), message(code:'subscription.startDate.label'), message(code: 'subscription.endDate.label'),
                            message(code: 'financials.costItemConfiguration'), message(code: 'package.label'), message(code: 'issueEntitlement.label'),
                            message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'), message(code: 'financials.dateTo'), message(code:'financials.financialYear'),
@@ -226,7 +235,6 @@ class FinanceController  {
                            message(code: 'financials.invoice_number'), message(code: 'financials.order_number')])
             SimpleDateFormat dateFormat = DateUtils.getLocalizedSDF_noTime()
             LinkedHashMap<Subscription,List<Org>> subscribers = [:]
-            LinkedHashMap<Subscription,Set<Org>> providers = [:]
             LinkedHashMap<Subscription,BudgetCode> costItemGroups = [:]
             OrgRole.findAllByRoleTypeInList([RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]).each { it ->
                 List<Org> orgs = subscribers.get(it.sub)
@@ -234,13 +242,6 @@ class FinanceController  {
                     orgs = [it.org]
                 else orgs.add(it.org)
                 subscribers.put(it.sub,orgs)
-            }
-            OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
-                Set<Org> orgs = providers.get(it.sub)
-                if(orgs == null)
-                    orgs = [it.org]
-                else orgs.add(it.org)
-                providers.put(it.sub,orgs)
             }
             CostItemGroup.findAll().each{ cig -> costItemGroups.put(cig.costItem,cig.budgetCode) }
             withFormat {
@@ -284,10 +285,21 @@ class FinanceController  {
                                     //provider
                                     cellnum++
                                     if(ci.sub) {
-                                        Set<Org> orgRoles = ci.sub.orgRelations.findAll { OrgRole oo -> oo.roleType in [RDStore.OR_PROVIDER,RDStore.OR_AGENCY] }.collect { it.org }
+                                        Set<Provider> providerRoles = Provider.executeQuery('select pvr.provider from ProviderRole pvr where pvr.subscription = :sub', [sub: ci.sub])
                                         String cellValue = ""
-                                        orgRoles.each { or ->
-                                            cellValue += or.name
+                                        providerRoles.each { pvr ->
+                                            cellValue += pvr.name
+                                        }
+                                        row.add(cellValue)
+                                    }
+                                    else row.add(" ")
+                                    //vendor
+                                    cellnum++
+                                    if(ci.sub) {
+                                        Set<Vendor> vendorRoles = Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription = :sub', [sub: ci.sub])
+                                        String cellValue = ""
+                                        vendorRoles.each { vr ->
+                                            cellValue += vr.name
                                         }
                                         row.add(cellValue)
                                     }

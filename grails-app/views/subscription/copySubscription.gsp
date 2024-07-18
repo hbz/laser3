@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService;de.laser.storage.RDStore;de.laser.PendingChangeConfiguration;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService;de.laser.storage.RDStore;de.laser.PendingChangeConfiguration;" %>
 <laser:htmlStart message="myinst.copySubscription" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -31,12 +31,12 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                     <i class="image outline icon"></i>  ${message(code:'subscription.kind.label')} <br />
                     <i class="dolly icon"></i>          ${message(code:'subscription.form.label')} <br />
                     <i class="box icon"></i>            ${message(code:'subscription.resource.label')} <br />
-                    <i class="shipping fast icon"></i>  ${message(code:'subscription.isPublicForApi.label')} <br />
+                    <i class="lock open icon"></i>      ${message(code:'subscription.isPublicForApi.label')} <br />
                     <i class="flag outline icon"></i>   ${message(code:'subscription.hasPerpetualAccess.label')} <br />
                     <i class="comment icon"></i>        ${message(code:'subscription.hasPublishComponent.label')} <br />
-                    <i class="balance scale icon"></i>  ${message(code: 'license.label')} <br />
-                    <i class="university icon"></i>     ${message(code: 'subscription.organisations.label')} <br />
-                    <i class="address card icon"></i>   ${message(code: 'subscription.specificSubscriptionEditors')} <br />
+                    <i class="${Icon.LICENSE}"></i>    ${message(code: 'license.label')} <br />
+                    <i class="${Icon.ORG}"></i>        ${message(code: 'subscription.organisations.label')} <br />
+                    <i class="${Icon.UI.ACP_PUBLIC}"></i>   ${message(code: 'subscription.specificSubscriptionEditors')} <br />
                     <i class="barcode icon"></i>        ${message(code: 'default.identifiers.label')} <br />
                     <i class="exchange icon"></i>       ${message(code: 'subscription.linkedObjects')}
                 </div>
@@ -50,9 +50,9 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
             </div>
             <div class="description">
                 <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
-                <i class="calendar check outline icon"></i> ${message(code: 'menu.institutions.tasks')} <br />
-                <i class="file outline icon"></i>           ${message(code: 'default.documents.label')} <br />
-                <i class="tasks icon"></i>                  ${message(code: 'workflow.plural')}
+                <i class="${Icon.TASK}"></i>          ${message(code: 'menu.institutions.tasks')} <br />
+                <i class="${Icon.DOCUMENT}"></i>      ${message(code: 'default.documents.label')} <br />
+                <i class="${Icon.WORKFLOW}"></i>      ${message(code: 'workflow.plural')}
             </div>
         </div>
     </div>
@@ -64,7 +64,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                     ${message(code: 'consortium.subscriber')}
                 </div>
                 <div class="description">
-                    <i class="university icon"></i> ${message(code: 'consortium.subscriber')}
+                    <i class="${Icon.ORG}"></i> ${message(code: 'consortium.subscriber')}
                 </div>
             </div>
         </div>
@@ -74,8 +74,8 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
         <div class="content" >
             <div class="title">${message(code: 'copyElementsIntoObject.inventory.label')}</div>
             <div class="description">
-                <i class="gift icon"></i>           ${message(code: 'package.label')} <br />
-                <i class="book icon"></i>           ${message(code: 'title')} <br />
+                <i class="${Icon.PACKAGE}"></i>    ${message(code: 'package.label')} <br />
+                <i class="${Icon.TIPP}"></i>       ${message(code: 'title')} <br />
                 <i class="icon object group"></i>   ${message(code: 'subscription.details.ieGroups')}
             </div>
         </div>
@@ -87,7 +87,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                 ${message(code: 'properties')}
             </div>
             <div class="description">
-                <i class="tags icon"></i> ${message(code: 'properties')}
+                <i class="${Icon.SYM.PROPERTIES}"></i> ${message(code: 'properties')}
             </div>
         </div>
     </div>

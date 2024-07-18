@@ -20,6 +20,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
+import java.time.Year
 import java.util.concurrent.ExecutorService
 
 /**
@@ -42,6 +43,7 @@ class PackageController {
     GokbService gokbService
     PackageService packageService
     SubscriptionService subscriptionService
+    SubscriptionsQueryService subscriptionsQueryService
     ExportClickMeService exportClickMeService
     YodaService yodaService
 
@@ -729,10 +731,27 @@ class PackageController {
             result.tableConfig << "showProviders"
             result.tableConfig << "showVendors"
         }
+
+        params.status = params.status ?: 'FETCH_ALL'
         params.linkedPkg = result.packageInstance
         result.institution = result.contextOrg
-        result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
 
+        String consortiaFilter = ''
+        if(result.contextOrg.isCustomerType_Consortium() || result.contextOrg.isCustomerType_Support())
+            consortiaFilter = 'and s.instanceOf = null'
+
+        Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear', [contextOrg: result.contextOrg])
+        result.referenceYears = availableReferenceYears
+
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, '', result.contextOrg)
+        result.filterSet = tmpQ[2]
+        List<Subscription> subscriptions
+        subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
+
+        result.num_sub_rows = subscriptions.size()
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], result.contextOrg)
+
+        result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
         result
     }

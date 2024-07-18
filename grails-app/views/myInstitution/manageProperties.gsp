@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.RefdataCategory; grails.plugins.orm.auditable.Auditable; de.laser.AuditConfig" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.RefdataCategory; grails.plugins.orm.auditable.Auditable; de.laser.AuditConfig" %>
 <laser:htmlStart message="menu.institutions.manage_props" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -32,9 +32,8 @@
             </div>
         </g:if>
 
-        <a href="${request.forwardURI}"
-           class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-        <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}"/>
+        <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+        <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}"/>
     </g:form>
 </ui:filter>
 
@@ -46,9 +45,11 @@
     <div class="ui segment">
         <g:form action="processManageProperties" method="post" class="ui form">
             <div class="field">
-                <h2 class="ui header"><g:if test="${filterPropDef.tenant != null}"><i
-                        class="shield alternate icon"></i></g:if><g:message code="property.manageProperties.add"
-                                                                            args="[filterPropDef.getI10n('name')]"/>
+                <h2 class="ui header">
+                    <g:if test="${filterPropDef.tenant != null}">
+                        <i class="${Icon.PROP.IS_PRIVATE}"></i>
+                    </g:if>
+                    <g:message code="property.manageProperties.add" args="[filterPropDef.getI10n('name')]"/>
                 </h2>
 
                 ${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef.type)}
@@ -113,7 +114,7 @@
                         </g:if>
                         <th><g:message code="default.name.label"/></th>
                         <th><g:message code="property.manageProperties.propertySelected"/>: ${filterPropDef.getI10n('name')}</th>
-                        <th class="x"><button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button></th>
+                        <th class="x"><button class="${Btn.SIMPLE}" type="submit">${message(code: 'default.button.save_changes')}</button></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -264,7 +265,7 @@
                                 <g:link controller="${objWithoutProp.displayController}" action="show" id="${objWithoutProp.id}" class="ui icon button blue la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="write icon"></i>
+                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                 </g:link>
                             </td>
                         </tr>
@@ -285,7 +286,7 @@
             <div class="field">
                 <h2 class="ui header">
                     <g:if test="${filterPropDef.tenant != null}">
-                        <i class="shield alternate icon"></i>
+                        <i class="${Icon.PROP.IS_PRIVATE}"></i>
                     </g:if>
                     <g:message code="property.manageProperties.edit" args="[filterPropDef.getI10n('name')]"/>
                 </h2>
@@ -346,8 +347,8 @@
                         <th>${message(code: 'default.name.label')}</th>
                         <th>${message(code: 'property.manageProperties.propertySelected')}: ${filterPropDef.getI10n('name')}</th>
                         <th class="x">
-                            <button class="ui button" type="submit" name="saveChanges" value="true">${message(code: 'default.button.save_changes')}</button>
-                            <button class="ui button negative" type="submit" name="deleteProperties" value="true">${message(code: 'property.manageProperties.deleteProperty.button', args: [filterPropDef.getI10n('name')])}</button>
+                            <button class="${Btn.SIMPLE}" type="submit" name="saveChanges" value="true">${message(code: 'default.button.save_changes')}</button>
+                            <button class="${Btn.NEGATIVE}" type="submit" name="deleteProperties" value="true">${message(code: 'property.manageProperties.deleteProperty.button', args: [filterPropDef.getI10n('name')])}</button>
                                 <%-- TODO ask Ingrid
                                     js-open-confirm-modal
                                     data-confirm-tokenMsg="${message(code: 'property.manageProperties.deleteProperty.button.confirm')}"
@@ -509,10 +510,10 @@
                                 <g:link controller="${row.displayController}" action="${row.displayAction}" id="${row.id}" class="ui icon button blue la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="write icon"></i>
+                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                 </g:link>
                                 <g:if test="${row.manageChildren}">
-                                    <g:link controller="${row.displayController}" action="${row.manageChildren}" params="${row.manageChildrenParams}" class="ui icon button"><i class="users icon"></i></g:link>
+                                    <g:link controller="${row.displayController}" action="${row.manageChildren}" params="${row.manageChildrenParams}" class="${Btn.SIMPLE_ICON}"><i class="users icon"></i></g:link>
                                 </g:if>
                             </td>
                         </tr>

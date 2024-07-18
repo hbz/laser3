@@ -1,6 +1,6 @@
 import java.text.SimpleDateFormat
 
-version '3.3.11'
+version '3.4.3'
 group 'de.laser'
 
 // ---[ build script ]---
@@ -98,8 +98,8 @@ dependencies {
 
     // --------------------------------------------------
 
-    implementation 'org.elasticsearch:elasticsearch:7.17.21'                                // 2024
-    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.21'  // 2024
+    implementation 'org.elasticsearch:elasticsearch:7.17.22'                                // 2024
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.22'  // 2024
 
     implementation 'org.grails.plugins:spring-security-core:6.1.1'          // 2024
     implementation 'org.grails.plugins:audit-logging:4.0.3'                 // 2021
@@ -126,6 +126,7 @@ dependencies {
     implementation 'org.codehaus.janino:janino:3.1.12'                      // 2024 : logback
     implementation 'org.liquibase:liquibase-core:4.19.0'                    // 2023 : + org.grails.plugins:database-migration // [freeze - not 4.19.1]
     implementation 'org.quartz-scheduler:quartz:2.3.2'                      // 2019
+//    implementation 'org.slf4j:slf4j-simple:1.7.36'                          // 2022
 
     // --------------------------------------------------
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.system.SystemMessage; de.laser.jobs.HeartbeatJob" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.system.SystemMessage; de.laser.jobs.HeartbeatJob" %>
 
 <laser:htmlStart message="menu.admin.systemMessage" />
 
@@ -10,13 +10,13 @@
 <ui:h1HeaderWithIcon message="menu.admin.systemMessage" type="admin"/>
 
 <div class="la-float-right">
-    <input type="submit" class="ui button" value="${message(code: 'admin.systemMessage.create')}" data-ui="modal" data-href="#modalCreateSystemMessage" />
+    <input type="submit" class="${Btn.SIMPLE}" value="${message(code: 'admin.systemMessage.create')}" data-ui="modal" data-href="#modalCreateSystemMessage" />
 </div>
 
 <br />
 <br />
 
-<ui:msg class="info" noClose="true">
+<ui:msg class="info" hideClose="true">
     <i class="ui icon hand point right"></i> ${message(code: 'admin.systemMessage.info.TMP', args: [HeartbeatJob.HEARTBEAT_IN_SECONDS])}
 </ui:msg>
 
@@ -60,10 +60,10 @@
                 <g:formatDate date="${msg.lastUpdated}" format="${message(code: 'default.date.format.noZ')}"/>
             </td>
             <td class="x">
-                <g:link controller="admin" action="deleteSystemMessage" id="${msg.id}" class="ui negative icon button la-modern-button"
+                <g:link controller="admin" action="deleteSystemMessage" id="${msg.id}" class="${Btn.MODERN.NEGATIVE_ICON}"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="trash alternate outline icon"></i>
+                    <i class="${Icon.CMD.DELETE}"></i>
                 </g:link>
             </td>
         </tr>

@@ -1,4 +1,4 @@
-<%@page import="de.laser.storage.RDStore" %>
+<%@page import="de.laser.ui.Icon; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <%--OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')} @ ${institution}--%>
@@ -30,16 +30,13 @@
                                 params='[deleteId:tsk.id, id: params.id, returnToShow: controllerName]'
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="trash alternate outline icon"></i>
+                            <i class="${Icon.CMD.DELETE}"></i>
                         </g:link>
                     </div>
                 </g:if>
                 <i class="large la-list-icon la-popup-tooltip la-delay icon ${icon}" data-content="${tooltip}"></i>
                 <div class="content">
                     <a class="header la-js-toggle-showThis" onclick="JSPC.app.editTask(${tsk.id});">${tsk.title}</a>
-                    <g:if test="${!(controllerName in ['organisation', 'survey', 'provider', 'vendor'])}">
-                        <a class="header la-js-toggle-hideThis" onclick="JSPC.app.readTask(${tsk.id});">${tsk.title}</a>
-                    </g:if>
                     <div class="description">${message(code:'task.endDate.label')}
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/>
                     </div>
@@ -74,7 +71,7 @@
                         params='[deleteId:tsk.id, id: params.id, returnToShow: controllerName]'
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="trash alternate outline icon"></i>
+                    <i class="${Icon.CMD.DELETE}"></i>
                 </g:link>
             </div>
         </div>--}%

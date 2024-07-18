@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.License; de.laser.properties.SubscriptionProperty; de.laser.properties.LicenseProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.AuditConfig; de.laser.interfaces.CalculatedType;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.Subscription; de.laser.License; de.laser.properties.SubscriptionProperty; de.laser.properties.LicenseProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.AuditConfig; de.laser.interfaces.CalculatedType;" %>
 <laser:serviceInjection/>
 <thead>
 <tr>
@@ -31,7 +31,7 @@
                 <g:if test="${propKey.getI10n('expl')}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                           data-content="${propKey.getI10n('expl')}">
-                        <i class="question circle icon"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </g:if>
             </g:if>
@@ -42,7 +42,7 @@
             <g:if test="${propKey.multipleOccurrence}">
                 <span data-position="top right" class="la-popup-tooltip la-delay"
                       data-content="${message(code: 'default.multipleOccurrence.tooltip')}">
-                    <i class="redo icon orange"></i>
+                    <i class="${Icon.PROP.MULTIPLE}"></i>
                 </span>
             </g:if>
         </td>

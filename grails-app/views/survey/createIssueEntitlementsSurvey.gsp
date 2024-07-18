@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.finance.CostItem" %>
 
 <laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true"/>
 
@@ -12,15 +12,7 @@
 
 <ui:messages data="${flash}"/>
 
-<div class="ui icon positive message">
-    <i class="info icon"></i>
-    <div class="content">
-        <div class="header"></div>
-        <p>
-            ${message(code: 'allSubscriptions.info2')}
-        </p>
-    </div>
-</div>
+<ui:msg class="info" showIcon="true" hideClose="true" message="allSubscriptions.info2" />
 
 <h2 class="ui left floated aligned icon header la-clear-before"><ui:headerIcon/>${message(code: 'myinst.currentSubscriptions.label')}
 <ui:totalNumber total="${num_sub_rows}"/>
@@ -38,7 +30,7 @@
                     <span data-position="right center" data-variation="tiny"
                           class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'default.search.tooltip.subscription')}">
-                        <i class="question circle icon"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
 
@@ -106,10 +98,8 @@
 
             <div class="field la-field-right-aligned">
 
-                        <a href="${request.forwardURI}"
-                           class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                        <input type="submit" class="ui primary button"
-                               value="${message(code: 'default.button.filter.label')}">
+                <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
 
             </div>
         </div>
@@ -146,7 +136,7 @@
                 </th>
                 <th scope="col" rowspan="2">
                     <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
-                        <i class="money bill large icon"></i>
+                        <i class="${Icon.FNC.COST} large"></i>
                     </a>
                 </th>
 
@@ -181,7 +171,7 @@
                             </g:link>
                             <g:each in="${allLinkedLicenses.get(s)}" var="license">
                                 <div class="la-flexbox">
-                                    <i class="icon balance scale la-list-icon"></i>
+                                    <i class="${Icon.LICENSE} la-list-icon"></i>
                                     <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br />
                                 </div>
                             </g:each>
@@ -191,7 +181,7 @@
                             <g:each in="${s.packages.sort { it.pkg.name }}" var="sp" status="ind">
                                 <g:if test="${ind < 10}">
                                     <div class="la-flexbox">
-                                        <i class="icon gift la-list-icon"></i>
+                                        <i class="${Icon.PACKAGE} la-list-icon"></i>
                                         <g:link controller="subscription" action="index" id="${s.id}"
                                                 params="[pkgfilter: sp.pkg.id]"
                                                 title="${sp.pkg.provider?.name}">

@@ -146,7 +146,6 @@ class ApiOAMonitor {
 
             // RefdataValues
 
-            result.sector       = org.sector?.value
             result.type         = org.orgType?.collect{ it.value }
             result.status       = org.status?.value
 
@@ -308,7 +307,7 @@ class ApiOAMonitor {
         list.each { subPkg ->
             Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg), qryParams = [sub: subPkg.subscription.id, pkg: subPkg.pkg.id, removed: RDStore.TIPP_STATUS_REMOVED.id] // de.laser.Package
 
-            pkg.organisations = ApiCollectionReader.getOrgLinkCollection(subPkg.pkg.orgs, ApiReader.IGNORE_PACKAGE, null) // de.laser.OrgRole
+            pkg.provider = ApiUnsecuredMapReader.getProviderStubMap(subPkg.pkg.provider) // de.laser.Provider
             result << pkg
             JsonSlurper slurper = new JsonSlurper()
             List tmp = []

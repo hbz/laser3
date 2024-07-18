@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.workflow.WfChecklist; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.workflow.WfChecklist; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 <%
     boolean editable2 = contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
@@ -23,7 +23,7 @@
                                         controller="${clistInfo.targetController}" action="${actionName}" id="${clistInfo.target.id}" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}"]}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </g:link>
                             </g:if>
                         </div>

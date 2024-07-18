@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.utils.DateUtils; java.text.SimpleDateFormat; java.text.DateFormat; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.SubscriptionPackage; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.Platform; de.laser.SubscriptionPackage; de.laser.Org" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.utils.DateUtils; java.text.SimpleDateFormat; java.text.DateFormat; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.SubscriptionPackage; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.Platform; de.laser.SubscriptionPackage; de.laser.Org" %>
 <laser:serviceInjection/>
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
@@ -39,7 +39,7 @@
                                 <div class="ui icon la-popup-tooltip la-delay"
                                      data-content="${message(code: "surveyconfig.scheduledStartDate.comment")}">
                                     ${message(code: 'surveyconfig.scheduledStartDate.label')}
-                                    <i class="question small circular inverted icon"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </div>
                             </dt>
                             <dd><ui:xEditable owner="${surveyConfig}" field="scheduledStartDate" type="date"/>
@@ -50,7 +50,7 @@
                                 <div class="ui icon la-popup-tooltip la-delay"
                                      data-content="${message(code: "surveyconfig.scheduledEndDate.comment")}">
                                     ${message(code: 'surveyconfig.scheduledEndDate.label')}
-                                    <i class="question small circular inverted icon"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </div>
                             </dt>
                             <dd><ui:xEditable owner="${surveyConfig}" field="scheduledEndDate" type="date"/></dd>
@@ -62,7 +62,7 @@
                             <div class="ui icon la-popup-tooltip la-delay"
                                  data-content="${message(code: "surveyconfig.internalComment.comment")}">
                                 ${message(code: 'surveyconfig.internalComment.label')}
-                                <i class="question small circular inverted icon"></i>
+                                <i class="${Icon.TOOLTIP.HELP}"></i>
                             </div>
                         </dt>
                         <dd><ui:xEditable owner="${surveyConfig}" field="internalComment" type="textarea"/></dd>
@@ -93,14 +93,14 @@
                                     <g:if test="${editable}">
                                         <span class="la-popup-tooltip la-delay"
                                               data-content="${message(code: 'default.button.delete.label')}">
-                                            <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
+                                            <g:link class="ui negative icon button la-modern-button la-selectable-button js-open-confirm-modal"
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.generic", args: [message(code: 'surveyconfig.url.label', args: [i+1])])}"
                                                     data-confirm-term-how="delete"
                                                     controller="survey" action="addSurveyUrl"
                                                     params="${[deleteSurveyUrl: surveyUrl.id, surveyConfigID: surveyConfig.id, id: surveyInfo.id]}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="trash alternate outline icon"></i>
+                                                <i class="${Icon.CMD.DELETE}"></i>
                                             </g:link>
                                         </span>
                                     </g:if>
@@ -124,14 +124,14 @@
                                     <div class="ui icon la-popup-tooltip la-delay"
                                          data-content="${message(code: "surveyconfig.comment.comment")}">
                                         ${message(code: 'surveyconfig.comment.label')}
-                                        <i class="question small circular inverted icon"></i>
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
                                     </div>
                                 </a>
                                 <a class="item ${commentTab == 'commentForNewParticipants' ? 'active' : ''}" data-tab="commentForNewParticipants">
                                     <div class="ui icon la-popup-tooltip la-delay"
                                          data-content="${message(code: "surveyconfig.commentForNewParticipants.comment")}">
                                         ${message(code: 'surveyconfig.commentForNewParticipants.label')}
-                                        <i class="question small circular inverted icon"></i>
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
                                     </div>
                                 </a>
                             </div>
@@ -158,7 +158,7 @@
 
                                 <div class="left aligned">
                                     <button type="submit"
-                                            class="ui button" value="comment" name="commentTab">${message(code: 'default.button.save_changes')}</button>
+                                            class="${Btn.SIMPLE}" value="comment" name="commentTab">${message(code: 'default.button.save_changes')}</button>
                                 </div>
                             </div>
 
@@ -184,7 +184,7 @@
 
                                 <div class="left aligned">
                                     <button type="submit"
-                                            class="ui button" value="commentForNewParticipants" name="commentTab">${message(code: 'default.button.save_changes')}</button>
+                                            class="${Btn.SIMPLE}" value="commentForNewParticipants" name="commentTab">${message(code: 'default.button.save_changes')}</button>
                                 </div>
 
                             </div>
@@ -201,9 +201,9 @@
                                 <div class="item">
                                     <div class="title">
                                         <div
-                                                class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated "
+                                                class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated"
                                                 data-content="<g:message code="survey.subscription.propertiesChange.show"/>">
-                                            <i class="ui angle double down icon"></i>
+                                            <i class="${Icon.CMD.SHOW_MORE}"></i>
                                         </div>
                                         <laser:script file="${this.getGroovyPageFileName()}">
                                             $('.js-propertiesCompareInfo-accordion')
@@ -261,9 +261,8 @@
                     <div class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                         <div class="item">
                             <div class="title">
-                                <div
-                                        class="ui button icon blue la-modern-button la-delay right floated">
-                                    <i class="ui angle double down icon"></i>
+                                <div class="ui button icon blue la-modern-button la-delay right floated">
+                                    <i class="${Icon.CMD.SHOW_MORE}"></i>
                                 </div>
                                 <laser:script file="${this.getGroovyPageFileName()}">
                                     $('.js-subscription-info-accordion')
@@ -441,7 +440,7 @@
                                                                 <div id="derived-license-properties-toggle${link.id}"
                                                                         class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                                                         data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
-                                                                    <i class="ui angle double down icon"></i>
+                                                                    <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                                 </div>
                                                                 <laser:script file="${this.getGroovyPageFileName()}">
                                                                     $("#derived-license-properties-toggle${link.id}").on('click', function() {
@@ -492,11 +491,11 @@
                         <div id="statsInfos" class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                             <div class="item">
                                 <div class="title">
-                                    <div class="ui button icon blue la-modern-button la-delay right floated ">
-                                        <i class="ui angle double down icon"></i>
+                                    <div class="ui button icon blue la-modern-button la-delay right floated">
+                                        <i class="${Icon.CMD.SHOW_MORE}"></i>
                                     </div>
 
-                                    <i aria-hidden="true" class="circular chart bar green outline inverted icon"></i>
+                                    <i aria-hidden="true" class="${Icon.STATS} circular green inverted"></i>
 
                                     <h2 class="ui icon header la-clear-before la-noMargin-top">
                                         <g:link controller="subscription" action="stats" target="_blank"
@@ -505,7 +504,7 @@
                                 </div>
                                 <div class="content">
                                     <g:link controller="subscription" action="stats" target="_blank"
-                                            id="${subscription.id}" class="ui button">
+                                            id="${subscription.id}" class="${Btn.SIMPLE}">
                                         <g:message code="renewEntitlementsWithSurvey.stats.button"/>
                                     </g:link>
                                 </div>

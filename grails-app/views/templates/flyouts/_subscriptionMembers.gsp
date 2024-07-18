@@ -1,10 +1,10 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.Subscription;de.laser.OrgRole"%>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription;de.laser.OrgRole"%>
 
 <div class="ui seven wide flyout" id="subscriptionMembers-content" style="padding:50px 0 10px 0;overflow:scroll">
 
     <h1 class="ui header">
-%{--        <i class="icon university la-list-icon"></i>--}%
-%{--        <i class="icon clipboard la-list-icon"></i>--}%
+%{--        <i class="${Icon.ORG} icon la-list-icon"></i>--}%
+%{--        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>--}%
         ${message(code:'consortium.member.plural')} ${message(code:'default.and')} ${message(code:'subscription.member.plural')}
     </h1>
 
@@ -34,7 +34,7 @@
                         </td>
                         <td>
                             <g:link controller="org" action="show" id="${subInst.id}" class="item">
-                                <i class="icon university la-list-icon"></i>
+                                <i class="${Icon.ORG} la-list-icon"></i>
                                 ${subInst.sortname ?: subInst.name}
                             </g:link>
                         </td>
@@ -47,7 +47,7 @@
                         </td>
                         <td>
                             <g:link controller="subscription" action="show" id="${sub.id}" class="item">
-                                <i class="icon clipboard la-list-icon"></i>
+                                <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                 ${sub}
                                 <span style="margin-left:0.5em">
                                     (<g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/> - <g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/>)

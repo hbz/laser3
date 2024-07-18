@@ -1,4 +1,4 @@
-<%@page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
+<%@page import="de.laser.ui.Btn; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 <%
     List notAvailable = [ RDStore.DOC_TYPE_ONIXPL, RDStore.DOC_TYPE_NOTE, RDStore.DOC_TYPE_ANNOUNCEMENT ]
     List documentTypes = RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE)-notAvailable
@@ -28,9 +28,9 @@
             </div>
         </div>
         <div class="field la-field-right-aligned">
-            <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+            <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
 
-            <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}" />
+            <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}" />
         </div>
     </g:form>
 </ui:filter>

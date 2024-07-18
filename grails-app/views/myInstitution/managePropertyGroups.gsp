@@ -1,4 +1,4 @@
-<%@ page import="de.laser.properties.PropertyDefinition;de.laser.*"%>
+<%@ page import="de.laser.ui.Icon; de.laser.properties.PropertyDefinition;de.laser.*"%>
 <laser:htmlStart message="menu.institutions.prop_groups" serviceInjection="true"/>
 
         <ui:breadcrumbs>
@@ -24,7 +24,7 @@
         <g:each in="${propDefGroups}" var="typeEntry">
             <div class="title ${params.ownerType == typeEntry.key ? 'active' : ''}">
                 <i class="dropdown icon"></i>
-                <g:message code="propertyDefinition.${typeEntry.key}.label"/>
+                <g:message code="propertyDefinition.${typeEntry.key}.label"/> (${typeEntry.value.size()})
             </div>
             <div class="content ${params.ownerType == typeEntry.key ? 'active' : ''}">
                 <table class="ui celled sortable table la-js-responsive-table la-table compact">
@@ -46,30 +46,30 @@
                         <tr>
                             <td>
                                 <g:if test="${i == 1 && propDefGroups.size() == 2}">%{-- override layout --}%
-                                    <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                                    <div class="ui icon button compact la-hidden"><i class="${Icon.UNC.PLACEHOLDER}"></i></div>
                                     <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveUp', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
                                             role="button">
-                                        <i class="icon arrow up"></i>
+                                        <i class="${Icon.CMD.MOVE_UP}"></i>
                                     </g:link>
                                 </g:if>
                                 <g:elseif test="${typeEntry.value.size() > 1}">
                                     <g:if test="${i > 0}">
                                         <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveUp', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
                                                 role="button">
-                                            <i class="icon arrow up"></i>
+                                            <i class="${Icon.CMD.MOVE_UP}"></i>
                                         </g:link>
                                     </g:if>
                                     <g:else>
-                                        <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                                        <div class="ui icon button compact la-hidden"><i class="${Icon.UNC.PLACEHOLDER}"></i></div>
                                     </g:else>
                                     <g:if test="${i < typeEntry.value.size()-1}">
                                         <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveDown', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
                                                 role="button">
-                                            <i class="icon arrow down"></i>
+                                            <i class="${Icon.CMD.MOVE_DOWN}"></i>
                                         </g:link>
                                     </g:if>
                                     <g:else>
-                                        <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                                        <div class="ui icon button compact la-hidden"><i class="${Icon.UNC.PLACEHOLDER}"></i></div>
                                     </g:else>
                                 </g:elseif>
                             </td>
@@ -90,7 +90,7 @@
                                     <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="ui icon button blue la-modern-button trigger-modal"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                        <i aria-hidden="true" class="write icon"></i>
+                                        <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                     </g:link>
                                     <g:link controller="myInstitution"
                                             action="managePropertyGroups"
@@ -100,7 +100,7 @@
                                             class="ui icon negative button la-modern-button js-open-confirm-modal"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate outline icon"></i>
+                                        <i class="${Icon.CMD.DELETE}"></i>
                                     </g:link>
                                 </td>
                             </g:if>

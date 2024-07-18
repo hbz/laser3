@@ -9,6 +9,7 @@ import de.laser.interfaces.MarkerSupport
 import de.laser.properties.OrgProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.ProviderProperty
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyInfo
@@ -48,11 +49,14 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
     static transients = ['deleted']
 
     static hasMany = [
-            contacts: Contact,
             addresses: Address,
             propertySet: ProviderProperty,
             altnames: AlternativeName,
             documents: DocContext,
+            ingoingCombos: ProviderLink,
+            outgoingCombos: ProviderLink,
+            links: ProviderRole,
+            prsLinks: PersonRole,
             ids: Identifier,
             platforms: Platform,
             packages: Package,
@@ -62,11 +66,14 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
     ]
 
     static mappedBy = [
-            contacts: 'provider',
             addresses: 'provider',
             propertySet: 'owner',
             altnames: 'provider',
             documents: 'provider',
+            ingoingCombos: 'to',
+            outgoingCombos: 'from',
+            links: 'provider',
+            prsLinks: 'provider',
             ids: 'provider',
             platforms: 'provider',
             packages: 'provider',
@@ -191,6 +198,17 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         name
     }
 
+    /**
+     * Gets the property definition groups defined by the given institution for the organisation to be viewed
+     * @param contextOrg the institution whose property definition groups should be loaded
+     * @return a {@link Map} of property definition groups, ordered by sorted, global, local and orphaned property definitions
+     * @see de.laser.properties.PropertyDefinition
+     * @see de.laser.properties.PropertyDefinitionGroup
+     */
+    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
+        BeanStore.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
+    }
+
     static Provider convertFromOrg(Org provider) {
         Provider p = null
         if(provider.gokbId) {
@@ -235,13 +253,6 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
                 altName.provider = p
                 altName.org = null
                 altName.save()
-            }
-        }
-        provider.contacts.each { Contact c ->
-            if(!p.contacts?.find { Contact cOld -> cOld.content == c.content }) {
-                c.provider = p
-                c.org = null
-                c.save()
             }
         }
         provider.addresses.each { Address a ->
@@ -291,7 +302,33 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         PropertyDefinition.executeUpdate('delete from PropertyDefinition pd where pd.tenant = :provider', [provider: provider])
         OrgProperty.findAllByOwner(provider).each { OrgProperty op ->
             PropertyDefinition type = PropertyDefinition.findByNameAndDescrAndTenant(op.type.name, PropertyDefinition.PRV_PROP, op.type.tenant)
-            if(!ProviderProperty.findByOwnerAndTypeAndTenant(p, type, op.tenant)) {
+            Map<String, Object> propParams = [owner: p, type: type, tenant: op.tenant]
+            String valueFilter = ''
+            if(op.dateValue) {
+                propParams.value = op.dateValue
+                valueFilter = 'and pp.dateValue = :value'
+            }
+            if(op.decValue) {
+                propParams.value = op.decValue
+                valueFilter = 'and pp.decValue = :value'
+            }
+            if(op.intValue) {
+                propParams.value = op.intValue
+                valueFilter = 'and pp.intValue = :value'
+            }
+            if(op.refValue) {
+                propParams.value = op.refValue
+                valueFilter = 'and pp.refValue = :value'
+            }
+            if(op.stringValue) {
+                propParams.value = op.stringValue
+                valueFilter = 'and pp.stringValue = :value'
+            }
+            if(op.urlValue) {
+                propParams.value = op.urlValue
+                valueFilter = 'and pp.urlValue = :value'
+            }
+            if(!ProviderProperty.executeQuery('select pp from ProviderProperty pp where pp.owner = :owner and pp.type = :type and pp.tenant = :tenant '+valueFilter, propParams)) {
                 ProviderProperty pp = new ProviderProperty(owner: p, type: type)
                 if (op.dateValue)
                     pp.dateValue = op.dateValue

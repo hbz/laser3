@@ -1,6 +1,5 @@
-<%@ page import="de.laser.helper.Params; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.OrgRole;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.OrgRole;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 <%--<laser:serviceInjection />--%>
-
 <ui:filter>
     <g:form action="${actionName}" controller="${controllerName}" method="get" class="ui small form">
         <g:if test="${license}">
@@ -11,7 +10,7 @@
                 <%--
                <label>${message(code: 'default.search.text')}
                    <span data-position="right center" data-variation="tiny" data-content="${message(code:'default.search.tooltip.subscription')}">
-                       <i class="question circle icon"></i>
+                       <i class="${Icon.TOOLTIP.HELP}"></i>
                    </span>
                </label>
                <div class="ui input">
@@ -168,17 +167,29 @@
                     <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">
                         <option value="">${message(code: 'default.select.choose.label')}</option>
 
-                        <g:each in="${providers.sort { it.name }}" var="provider">
+                        <g:each in="${providers}" var="provider">
                             <option <%=Params.getLongList(params, 'filterPvd').contains(provider.id) ? 'selected="selected"' : ''%>
                                     value="${provider.id}">
                                 ${provider.name}
                             </option>
                         </g:each>
                     </select>
-
                 </g:if>
             </div>
             <div class="field">
+                <g:if test="${'withCostItems' in tableConfig}">
+                    <label for="filterVen">${message(code: 'menu.my.vendors')}</label>
+                    <select id="filterVen" name="filterVen" multiple="" class="ui search selection fluid dropdown">
+                        <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                        <g:each in="${vendors}" var="vendor">
+                            <option <%=Params.getLongList(params, 'filterVen').contains(vendor.id) ? 'selected="selected"' : ''%>
+                                    value="${vendor.id}">
+                                ${vendor.name}
+                            </option>
+                        </g:each>
+                    </select>
+                </g:if>
             </div>
         </div>
             <div class="field la-field-right-aligned">
@@ -188,9 +199,9 @@
                 <g:else>
                     <g:set var="returnURL" value="${request.forwardURI}"/>
                 </g:else>
-                <a href="${returnURL}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+                <a href="${returnURL}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
                 <g:hiddenField name="filterSet" value="true"/>
-                <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}">
             </div>
     </g:form>
 </ui:filter>

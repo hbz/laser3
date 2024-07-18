@@ -81,6 +81,16 @@ class SubscriptionConsCfg extends BaseConfig {
                                              chartLabels        : []
                                      ],
                                      'subscription-x-memberAnnual' : [
+                                            detailsTemplate    : 'subscription',
+                                            chartTemplate      : 'annual',
+                                            chartLabels        : []
+                                    ],
+                                     'subscription-x-referenceYear' : [
+                                             detailsTemplate    : 'subscription',
+                                             chartTemplate      : 'annual',
+                                             chartLabels        : []
+                                     ],
+                                     'subscription-x-memberReferenceYear' : [
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : 'annual',
                                              chartLabels        : []

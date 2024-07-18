@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.*; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.*; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 <laser:serviceInjection/>
 
 <%
@@ -59,7 +59,7 @@
                         </div>
 
                         <div class="right aligned seven wide column">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 
                             <g:if test="${!(ownobj instanceof SurveyConfig)}">
                                 <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton()}">
@@ -104,7 +104,7 @@
                                         data-ui="modal"
                                         data-href="#modalEditDocument_${docctx.id}"
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                    <i class="pencil icon"></i></button>
+                                    <i class="${Icon.CMD.EDIT}"></i></button>
 
                                 <g:link controller="survey" action="deleteDocuments"
                                         class="ui icon negative button la-modern-button js-open-confirm-modal"
@@ -113,7 +113,7 @@
                                         params='[id: surveyInfo.id, deleteId: "${docctx.id}"]'
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </g:link>
                             </g:if>
                         </div>

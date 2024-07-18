@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.properties.OrgProperty; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.storage.RDStore; de.laser.Org; de.laser.properties.PropertyDefinition;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.properties.OrgProperty; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.storage.RDStore; de.laser.Org; de.laser.properties.PropertyDefinition;" %>
 <laser:serviceInjection />
 <g:set var="wekb" value="${ElasticSearchHelper.getCurrentApiSource()}"/>
 
@@ -14,6 +14,12 @@
 %{--            <g:if test="${query == 'org-country'}">--}%
 %{--                <th>${message(code:'org.region.label')}</th>--}%
 %{--            </g:if>--}%
+            <g:if test="${! query.endsWith('-libraryType')}">
+                <th>${message(code:'org.libraryType.label')}</th>
+            </g:if>
+            <g:if test="${! query.endsWith('-libraryNetwork')}">
+                <th>${message(code:'org.libraryNetwork.label')}</th>
+            </g:if>
             <g:if test="${query == 'org-x-property'}">
                 <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
@@ -40,6 +46,12 @@
 %{--                            ${org.region?.getI10n('value')}--}%
 %{--                        </td>--}%
 %{--                    </g:if>--}%
+                    <g:if test="${! query.endsWith('-libraryType')}">
+                        <td>${org.libraryType?.getI10n('value')}</td>
+                    </g:if>
+                    <g:if test="${! query.endsWith('-libraryNetwork')}">
+                        <td>${org.libraryNetwork?.getI10n('value')}</td>
+                    </g:if>
                     <g:if test="${query == 'org-x-property'}">
                         <td>
                             <uiReporting:objectProperties owner="${org}" tenant="${contextService.getOrg()}" propDefId="${id}" />
@@ -64,7 +76,7 @@
                                 <a href="${wekb.baseUrl + '/public/orgContent/' + org.gokbId}" target="_blank">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.chart.result.link.unchecked.label')}"
                                             data-position="top right">
-                                        <i class="icon external alternate grey"></i>
+                                        <i class="${Icon.LNK.EXTERNAL} grey"></i>
                                     </span>
                                 </a>
                             </g:if>

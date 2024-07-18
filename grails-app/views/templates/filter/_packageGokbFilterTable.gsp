@@ -1,4 +1,4 @@
-<%@page import="de.laser.Provider; de.laser.CustomerTypeService; de.laser.survey.SurveyPackageResult; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.Vendor; de.laser.convenience.Marker; de.laser.utils.DateUtils; de.laser.storage.RDConstants; de.laser.Package; de.laser.Org; de.laser.Platform; de.laser.RefdataValue" %>
+<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Provider; de.laser.CustomerTypeService; de.laser.survey.SurveyPackageResult; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.Vendor; de.laser.convenience.Marker; de.laser.utils.DateUtils; de.laser.storage.RDConstants; de.laser.Package; de.laser.Org; de.laser.Platform; de.laser.RefdataValue" %>
 <laser:serviceInjection/>
 <table class="ui sortable celled la-js-responsive-table la-table table">
     <thead>
@@ -73,7 +73,7 @@
                             ${message(code: 'surveyResult.commentParticipant')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentParticipant.info')}">
-                                <i class="question circle icon"></i>
+                                <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
                         </g:else>
                     </th>
@@ -82,14 +82,14 @@
                             ${message(code: 'surveyResult.commentOnlyForOwner')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                                <i class="question circle icon"></i>
+                                <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
                         </g:if>
                         <g:else>
                             ${message(code: 'surveyResult.commentOnlyForParticipant')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
-                                <i class="question circle icon"></i>
+                                <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
                         </g:else>
                     </th>
@@ -186,14 +186,30 @@
                         <td>
                             <g:if test="${record.containsKey('currentTippCount')}">
                                 <g:if test="${record.currentTippCount}">
-                                    ${record.currentTippCount}
+                                    <g:if test="${pkg}">
+                                        <g:link controller="package" action="current" id="${pkg.id}">
+                                            ${record.currentTippCount}
+                                        </g:link>
+                                    </g:if>
+                                    <g:else>
+                                        ${record.currentTippCount}
+                                    </g:else>
                                 </g:if>
                                 <g:else>
-                                    0
+                                    <g:if test="${pkg}">
+                                        <g:link controller="package" action="current" id="${pkg.id}">
+                                            0
+                                        </g:link>
+                                    </g:if>
+                                    <g:else>
+                                        0
+                                    </g:else>
                                 </g:else>
                             </g:if>
                             <g:elseif test="${pkg}">
-                                ${pkg.getCurrentTippsCount()}
+                                <g:link controller="package" action="current" id="${pkg.id}">
+                                    ${pkg.getCurrentTippsCount()}
+                                </g:link>
                             </g:elseif>
                         </td>
                     </g:if>
@@ -247,7 +263,7 @@
                                         <g:if test="${vendor.gokbId}">
                                             <ui:wekbIconLink type="vendor" gokbId="${vendor.gokbId}" />
                                         </g:if>
-                                        <g:link controller="vendor" action="show" id="${vendor.id}">${vendor.sortname}</g:link>
+                                        <g:link controller="vendor" action="show" id="${vendor.id}">${vendor.name}</g:link>
                                     </li>
                                 </g:each>
                                 <g:each in="${nonSyncedVendors}" var="vendor">
@@ -277,7 +293,7 @@
                                     <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}" />
                                     ${curatoryGroup.name}
                                 %{--<g:link url="${editUrl.endsWith('/') ? editUrl : editUrl+'/'}resource/show/${curatoryGroup.curatoryGroup}" target="_blank">--}%
-                                %{--    <i class="icon external alternate"></i>--}%
+                                %{--    <i class="${Icon.LNK.EXTERNAL}"></i>--}%
                                 %{--</g:link>--}%
                                     <br />
                                 </g:each>
@@ -290,7 +306,7 @@
                                 <g:message code="package.index.result.automaticUpdates"/>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${record.source.frequency}">
-                                    <i class="question circle icon"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </g:if>
                             <g:else>
@@ -380,7 +396,7 @@
                         <td class="center aligned">
                             <g:if test="${pkg && pkg.id in currentPackageIdSet}">
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.packages')}">
-                                    <i class="icon yellow star"></i>
+                                    <i class="${Icon.UI.MY_OBJECT} yellow"></i>
                                 </span>
                             </g:if>
                         </td>
@@ -411,13 +427,13 @@
                         <td class="right aligned">
                             <g:if test="${editable}">
                                 <g:if test="${(!uuidPkgs || !(record.uuid in uuidPkgs))}">
-                                    <g:link type="button" class="ui icon button" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                    <g:link type="button" class="${Btn.SIMPLE_ICON}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                             params="[addUUID: record.uuid, surveyConfigID: surveyConfig.id]"><g:message
                                             code="surveyPackages.linkPackage"/></g:link>
 
                                 </g:if>
                                 <g:else>
-                                    <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                    <g:link type="button" class="${Btn.NEGATIVE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                             params="[removeUUID: record.uuid, surveyConfigID: surveyConfig.id]"><g:message
                                             code="surveyPackages.unlinkPackage"/></g:link>
 
@@ -428,7 +444,7 @@
                     <g:if test="${tmplConfigItem == 'unLinkSurveyPackage'}">
                         <td class="right aligned">
                             <g:if test="${editable && (!uuidPkgs || !(record.uuid in uuidPkgs))}">
-                                <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                <g:link type="button" class="${Btn.NEGATIVE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                         params="[removeUUID: record.uuid, surveyConfigID: surveyConfig.id]"><g:message
                                         code="surveyPackages.unlinkPackage"/></g:link>
 
@@ -438,7 +454,7 @@
                     <g:if test="${tmplConfigItem == 'addSurveyPackageResult'}">
                         <td class="right aligned">
                             <g:if test="${editable && (!uuidPkgs || !(record.uuid in uuidPkgs))}">
-                                <g:link type="button" class="ui button" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                <g:link type="button" class="${Btn.SIMPLE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                         params="${parame+ [viewTab: 'packageSurvey', actionsForSurveyPackages: 'addSurveyPackage', pkgUUID: record.uuid]}"><g:message
                                         code="surveyPackages.linkPackage"/></g:link>
                             </g:if>
@@ -447,7 +463,7 @@
                     <g:if test="${tmplConfigItem == 'removeSurveyPackageResult'}">
                         <td class="right aligned">
                             <g:if test="${editable && (!uuidPkgs || !(record.uuid in uuidPkgs))}">
-                                <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                <g:link type="button" class="${Btn.NEGATIVE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                         params="${parame+ [viewTab: 'packageSurvey', actionsForSurveyPackages: 'removeSurveyPackage', pkgUUID: record.uuid]}"><g:message
                                         code="surveyPackages.unlinkPackage"/></g:link>
 
@@ -468,14 +484,14 @@
                     <g:if test="${tmplConfigItem == 'yodaActions'}">
                         <td class="x">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'menu.yoda.reloadPackage')}">
-                                <g:link controller="yoda" action="reloadPackage" params="${[packageUUID: record.uuid]}" class="ui icon button">
+                                <g:link controller="yoda" action="reloadPackage" params="${[packageUUID: record.uuid]}" class="${Btn.SIMPLE_ICON}">
                                     <i class="icon cloud download alternate"></i>
                                 </g:link>
                             </span>
                             <g:if test="${pkg}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'menu.yoda.retriggerPendingChanges')}">
                                     <g:if test="${pkg}">
-                                        <g:link controller="yoda" action="matchPackageHoldings" params="${[pkgId: pkg.id]}" class="ui icon button">
+                                        <g:link controller="yoda" action="matchPackageHoldings" params="${[pkgId: pkg.id]}" class="${Btn.SIMPLE_ICON}">
                                             <i class="icon wrench"></i>
                                         </g:link>
                                     </g:if>

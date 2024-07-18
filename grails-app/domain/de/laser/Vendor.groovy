@@ -17,6 +17,7 @@ import de.laser.properties.VendorProperty
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyConfigVendor
 import de.laser.survey.SurveyResult
 import de.laser.workflow.WfChecklist
 import groovy.util.logging.Slf4j
@@ -65,31 +66,39 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
     SortedSet electronicDeliveryDelays
 
     static mappedBy = [
-            contacts: 'vendor',
             addresses: 'vendor',
             packages: 'vendor',
             altnames: 'vendor',
             propertySet: 'owner',
+            links: 'vendor',
+            prsLinks: 'vendor',
             ids: 'vendor',
             documents: 'vendor',
+            ingoingCombos: 'to',
+            outgoingCombos: 'from',
             supportedLibrarySystems: 'vendor',
             electronicBillings: 'vendor',
             invoiceDispatchs: 'vendor',
-            electronicDeliveryDelays: 'vendor'
+            electronicDeliveryDelays: 'vendor',
+            surveys: 'vendor'
     ]
 
     static hasMany = [
-            contacts: Contact,
             addresses: Address,
             packages: PackageVendor,
             altnames: AlternativeName,
             propertySet: VendorProperty,
+            links: VendorRole,
+            prsLinks: PersonRole,
             ids: Identifier,
             documents: DocContext,
+            ingoingCombos: VendorLink,
+            outgoingCombos: VendorLink,
             supportedLibrarySystems: LibrarySystem,
             electronicBillings: ElectronicBilling,
             invoiceDispatchs: InvoiceDispatch,
-            electronicDeliveryDelays: ElectronicDeliveryDelayNotification
+            electronicDeliveryDelays: ElectronicDeliveryDelayNotification,
+            surveys: SurveyConfigVendor
     ]
 
     static mapping = {
@@ -220,6 +229,17 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         name
     }
 
+    /**
+     * Gets the property definition groups defined by the given institution for the organisation to be viewed
+     * @param contextOrg the institution whose property definition groups should be loaded
+     * @return a {@link Map} of property definition groups, ordered by sorted, global, local and orphaned property definitions
+     * @see de.laser.properties.PropertyDefinition
+     * @see de.laser.properties.PropertyDefinitionGroup
+     */
+    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
+        BeanStore.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
+    }
+
     static Vendor convertFromAgency(Org agency) {
         Vendor v = null
         if(agency.gokbId) {
@@ -265,13 +285,6 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
                 altName.save()
             }
         }
-        agency.contacts.each { Contact c ->
-            if(!v.contacts?.find { Contact cOld -> cOld.content == c.content }) {
-                c.vendor = v
-                c.org = null
-                c.save()
-            }
-        }
         agency.addresses.each { Address a ->
             a.vendor = v
             a.org = null
@@ -307,16 +320,44 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         }
         log.debug("${WfChecklist.executeUpdate('update WfChecklist wf set wf.vendor = :vendor, wf.org = null where wf.org = :agency', [vendor: v, agency: agency])} workflow checkpoints updated")
         //those property definitions should not exist actually ...
-        LicenseProperty.executeUpdate('delete from LicenseProperty lp where lp.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
-        OrgProperty.executeUpdate('delete from OrgProperty op where op.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
+        /*
         ProviderProperty.executeUpdate('delete from ProviderProperty pp where pp.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
         VendorProperty.executeUpdate('delete from VendorProperty vp where vp.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
         SubscriptionProperty.executeUpdate('delete from SubscriptionProperty sp where sp.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
+        LicenseProperty.executeUpdate('delete from LicenseProperty lp where lp.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
+        OrgProperty.executeUpdate('delete from OrgProperty op where op.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
         SurveyResult.executeUpdate('delete from SurveyResult sr where sr.type in (select pd from PropertyDefinition pd where pd.tenant = :agency)', [agency: agency])
+        */
         PropertyDefinition.executeUpdate('delete from PropertyDefinition pd where pd.tenant = :agency', [agency: agency])
         OrgProperty.findAllByOwner(agency).each { OrgProperty op ->
             PropertyDefinition type = PropertyDefinition.findByNameAndDescrAndTenant(op.type.name, PropertyDefinition.VEN_PROP, op.type.tenant)
-            if(!VendorProperty.findByOwnerAndTypeAndTenant(v, type, op.tenant)) {
+            String valueFilter = ''
+            Map<String, Object> propParams = [owner: v, type: type, tenant: op.tenant]
+            if(op.dateValue) {
+                propParams.value = op.dateValue
+                valueFilter = 'and vp.dateValue = :value'
+            }
+            if(op.decValue) {
+                propParams.value = op.decValue
+                valueFilter = 'and vp.decValue = :value'
+            }
+            if(op.intValue) {
+                propParams.value = op.intValue
+                valueFilter = 'and vp.intValue = :value'
+            }
+            if(op.refValue) {
+                propParams.value = op.refValue
+                valueFilter = 'and vp.refValue = :value'
+            }
+            if(op.stringValue) {
+                propParams.value = op.stringValue
+                valueFilter = 'and vp.stringValue = :value'
+            }
+            if(op.urlValue) {
+                propParams.value = op.urlValue
+                valueFilter = 'and vp.urlValue = :value'
+            }
+            if(!VendorProperty.executeQuery('select vp from VendorProperty vp where vp.owner = :owner and vp.type = :type and vp.tenant = :tenant '+valueFilter, propParams)) {
                 VendorProperty vp = new VendorProperty(owner: v, type: type)
                 if(op.dateValue)
                     vp.dateValue = op.dateValue

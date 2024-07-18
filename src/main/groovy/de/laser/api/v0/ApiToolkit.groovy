@@ -3,6 +3,7 @@ package de.laser.api.v0
 import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.storage.Constants
+import de.laser.storage.RDStore
 import org.apache.commons.lang3.RandomStringUtils
 import org.springframework.web.context.request.RequestAttributes
 import org.springframework.web.context.request.RequestContextHolder
@@ -154,6 +155,14 @@ class ApiToolkit {
      */
     static List<Org> getOrgsWithSpecialAPIAccess(String specGrant) {
         Org.executeQuery('select o.globalUID from OrgSetting os join os.org o where os.key = :customerType and os.strValue = :specGrant', [customerType: OrgSetting.KEYS.API_LEVEL, specGrant: specGrant])
+    }
+
+    static Map<String, String> readBoolValues(obj, Set<String> boolFields) {
+        Map<String, String> result = [:]
+        boolFields.each { String key ->
+            result[key] = obj[key] == true ? RDStore.YN_YES.value : RDStore.YN_NO.value
+        }
+        result
     }
 
     /**

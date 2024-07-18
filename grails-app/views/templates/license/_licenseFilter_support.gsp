@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.CustomerTypeService; de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.CustomerTypeService; de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
 <laser:serviceInjection />
 
 <ui:filter>
@@ -7,7 +7,7 @@
               <div class="field">
                   <label for="keyword-search"><g:message code="default.search.text"/>
                         <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.license')}">
-                          <i class="question circle icon"></i>
+                          <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                   </label>
                   <input type="text" id="keyword-search" name="keyword-search" placeholder="${message(code:'default.search.ph')}" value="${params['keyword-search']?:''}" />
@@ -56,9 +56,9 @@
               </div>
           </div>
           <div class="field la-field-right-aligned">
-              <g:link action="currentLicenses" params="[resetFilter:true]" class="ui reset secondary button">${message(code:'default.button.reset.label')}</g:link>
+              <g:link action="currentLicenses" params="[resetFilter:true]" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</g:link>
               <input type="hidden" name="filterSet" value="true">
-              <input type="submit" name="filterSubmit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
+              <input type="submit" name="filterSubmit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}">
           </div>
       </form>
 </ui:filter>

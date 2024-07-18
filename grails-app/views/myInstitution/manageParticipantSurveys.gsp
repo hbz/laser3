@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.Org;de.laser.RefdataCategory;de.laser.survey.SurveyInfo;de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;de.laser.survey.SurveyResult" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.Org;de.laser.RefdataCategory;de.laser.survey.SurveyInfo;de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;de.laser.survey.SurveyResult" %>
 <laser:htmlStart message="manageParticipantSurveys.header" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -129,10 +129,8 @@
         <div class="field la-field-right-aligned">
 
             <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}"
-                   class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button"
-                       value="${message(code: 'default.button.filter.label')}">
+                <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
             </div>
 
         </div>
@@ -252,7 +250,7 @@
                             <g:if test="${surveyConfig?.subSurveyUseForTransfer}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info2")}">
-                                    <i class="icon pie chart la-list-icon"></i>
+                                    <i class="${Icon.SURVEY} la-list-icon"></i>
                                 </span>
                             </g:if>
                             <g:link controller="survey" action="show" id="${surveyInfo.id}" class="ui ">
@@ -268,7 +266,7 @@
                         <g:if test="${surveyInfo.isMandatory}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
-                                <i class="yellow icon exclamation triangle"></i>
+                                <i class="${Icon.TOOLTIP.SERIOUS} yellow"></i>
                             </span>
                         </g:if>
                     </td>
@@ -298,7 +296,7 @@
                                     class="ui icon button blue la-modern-button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="write icon"></i>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </g:link>
                         </span>
                     </td>
@@ -309,7 +307,7 @@
         </table>
         <g:if test="${editable && params.tab == 'open' && reminder}">
             <div class="eight wide field" style="text-align: left;">
-                <button name="openOption" type="submit" value="ReminderMail" class="ui button">
+                <button name="openOption" type="submit" value="ReminderMail" class="${Btn.SIMPLE}">
                     ${message(code: 'openParticipantsAgain.reminder')}
                 </button>
             </div>

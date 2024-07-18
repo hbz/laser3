@@ -4,6 +4,7 @@ import de.laser.annotations.RefdataInfo
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.convenience.Marker
+import de.laser.ui.Icon
 import de.laser.interfaces.MarkerSupport
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -152,19 +153,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     def afterUpdate() {
         super.afterUpdateHandler()
     }
-
-    /**
-     * Gets the content provider of this package
-     * @return the {@link Org} linked to this package by {@link OrgRole} of type Content Provider or Provider
-     */
-  @Transient
-  @Deprecated
-  Org getContentProvider() {
-    Org result = orgs.find { OrgRole or ->
-      or.roleType in [RDStore.OR_CONTENT_PROVIDER, RDStore.OR_PROVIDER]
-    }?.org
-    result
-  }
 
     /**
      * Outputs this package's name and core data for labelling
@@ -354,6 +342,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
     String getPackageSize(){
 
-        return '(<span data-tooltip="Titel im Paket"><i class="ui icon book"></i></span>' + executeQuery('select count(*) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current',[ctx:this,current:RDStore.TIPP_STATUS_CURRENT])[0] + ')'
+        return '(<span data-tooltip="Titel im Paket"><i class="' + Icon.TIPP + '"></i></span>' + executeQuery('select count(*) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current',[ctx:this, current:RDStore.TIPP_STATUS_CURRENT])[0] + ')'
     }
 }

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.survey.SurveyOrg; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.RefdataValue" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.survey.SurveyOrg; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.RefdataValue" %>
 
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
@@ -16,7 +16,7 @@
                                 <g:if test="${surveyUrl.urlComment}">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                           data-content="${surveyUrl.urlComment}">
-                                        <i class="info circle icon"></i>
+                                        <i class="${Icon.TOOLTIP.INFO}"></i>
                                     </span>
                                 </g:if>
                                 <ui:linkWithIcon href="${surveyUrl.url}"/>

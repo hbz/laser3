@@ -1,5 +1,5 @@
 <!-- __generateEmailWithAddresses.gsp -->
-<%@ page import="de.laser.PersonRole; de.laser.Contact; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.PersonRole; de.laser.Contact; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 <laser:serviceInjection />
 
 <g:set var="modalID" value="${modalID ?: '_generateEmailWithAddresses_ajaxModal'}"/>
@@ -72,7 +72,7 @@
                 ${message(code: 'menu.institutions.copy_emailaddresses_to_emailclient')}
             </button>
             <g:if test="${submitButtonValue == 'ReminderMail'}">
-                <button name="openOption" type="submit" value="ReminderMail" class="ui button left floated">
+                <button name="openOption" type="submit" value="ReminderMail" class="${Btn.SIMPLE} left floated">
                     ${message(code: 'openParticipantsAgain.reminder.participantsHasAccess')}
                 </button>
             </g:if>

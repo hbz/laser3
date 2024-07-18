@@ -1,9 +1,18 @@
-<%@page import="de.laser.Subscription; de.laser.FormService" %>
+<%@page import="de.laser.ui.Icon; de.laser.Subscription; de.laser.FormService" %>
 <laser:serviceInjection/>
 <g:if test="${wrapper == 'altname'}">
     <div class="ui item" data-objId="${objOID}">
         <div class="content la-space-right">
-            <ui:xEditable owner="${ownObj}" field="${field}" overwriteEditable="${overwriteEditable}"/>
+            <g:if test="${ownObj.provider || ownObj.vendor}">
+                <ui:xEditable
+                        data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                        data_confirm_term_how="ok"
+                        class="js-open-confirm-modal-xEditable"
+                        owner="${ownObj}" field="${field}" overwriteEditable="${overwriteEditable}"/>
+            </g:if>
+            <g:else>
+                <ui:xEditable owner="${ownObj}" field="${field}" overwriteEditable="${overwriteEditable}"/>
+            </g:else>
         </div>
         <div class="content la-space-right">
             <g:if test="${ownObj.subscription && showConsortiaFunctions}">
@@ -46,7 +55,7 @@
                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: ownObj.id]"
                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.${wrapper}", args: [ownObj.name])}"
                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${objOID}')">
-                    <i class="trash alternate outline icon"></i>
+                    <i class="${Icon.CMD.DELETE}"></i>
                 </ui:remoteLink>
             </div>
         </div>
@@ -62,7 +71,7 @@
                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: wrapper, objId: ownObj.id]"
                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.${wrapper}", args: [ownObj[field].getI10n('value')])}"
                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${objOID}')">
-                    <i class="trash alternate outline icon"></i>
+                    <i class="${Icon.CMD.DELETE}"></i>
                 </ui:remoteLink>
             </div>
         </div>

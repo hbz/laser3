@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Icon" %>
 <g:if test="${address}">
 	<div class="ui item address-details">
         <div style="display: flex" class="js-copyTriggerParent">
@@ -23,7 +24,7 @@
                        onclick="JSPC.app.editAddress(${address.id});"
                        role="button"
                        aria-label="${message(code: 'ariaLabel.change.universal')}">
-                        <i class="pencil icon"></i>
+                        <i class="${Icon.CMD.EDIT}"></i>
                     </a>
 
                     <g:set var="oid" value="${address.class.name}:${address.id}" />
@@ -33,7 +34,7 @@
                             controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: oid]"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                        <i class="trash alternate outline icon"></i>
+                        <i class="${Icon.CMD.DELETE}"></i>
                     </g:link>
                 </div>
             </g:if>

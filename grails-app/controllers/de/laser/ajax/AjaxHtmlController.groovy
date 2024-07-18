@@ -482,7 +482,7 @@ class AjaxHtmlController {
                 if(params.orgId)
                     model.orgId = params.orgId
                 else
-                    model.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) and o.sector.id = :orgSector order by LOWER(o.sortname) nulls last", [orgSector: RDStore.O_SECTOR_HIGHER_EDU.id, orgType: RDStore.OT_INSTITUTION.id])
+                    model.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) order by LOWER(o.sortname) nulls last", [orgType: RDStore.OT_INSTITUTION.id])
                 model.tenant = model.contextOrg.id
                 break
             case 'addressForProvider':
@@ -589,7 +589,7 @@ class AjaxHtmlController {
                     result.modalText = message(code: "person.create_new.contactPersonForInstitution.label") + ' (' + result.org.toString() + ')'
                 } else {
                     result.modalText = message(code: "person.create_new.contactPersonForInstitution.label")
-                    result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_HIGHER_EDU.id, orgType: RDStore.OT_INSTITUTION.id])
+                    result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) order by LOWER(o.sortname)", [orgType: RDStore.OT_INSTITUTION.id])
                 }
                 break
             case 'contactPersonForProvider':
@@ -1169,6 +1169,8 @@ class AjaxHtmlController {
         }
     }
 
+    // ----- workflows -----
+
     /**
      * Call to render the flyout containing the steps of a given workflow
      * @return the template containing the data for the flyout
@@ -1280,6 +1282,8 @@ class AjaxHtmlController {
 
         render template: '/templates/workflow/modal', model: result
     }
+
+    // ----- titles -----
 
     /**
      * Retrieves detailed title information to a given entitlement and opens a modal showing those details

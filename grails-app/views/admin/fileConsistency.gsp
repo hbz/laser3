@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.DocContext" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.DocContext" %>
 
 <laser:htmlStart message="menu.admin.fileConsistency" />
 
@@ -127,7 +127,7 @@
 
         <h3 class="ui header"><i class="ui tasks icon"></i><span class="content">ToDo-Liste (${listOfDocsInUseOrphaned.size()} Dateiobjekte)</span></h3>
 
-        <ui:msg class="info" noClose="true">
+        <ui:msg class="info" hideClose="true">
             Alle aufgelisteten Einträge repräsentieren referenzierte Dateiobjekte in der Datenbank OHNE entspr. Dateien im Filesystem.
             <br />
             Rote Einträge markieren ungültige Referenzen: DocContext.owner( <span class="sc_red">status = deleted</span> ) => Doc.
@@ -164,22 +164,22 @@
 
                             if (dc.license) {
                                 println "License ${dc.license.id} - ${dc.license.reference}, ${dc.license.sortableReference} &nbsp;&nbsp; " +
-                                        link(action: 'show', controller: 'lic', id: dc.license.id) { '<i class="ui icon external alternate"></i>' }
+                                        link(action: 'show', controller: 'lic', id: dc.license.id) { '<i class="' + Icon.LNK.EXTERNAL + '"></i>' }
                             }
                             if (dc.subscription) {
                                 println "Subscription ${dc.subscription.id} - ${dc.subscription.name} &nbsp;&nbsp; " +
-                                        link(action: 'show', controller: 'subscription', id: dc.subscription.id) { '<i class="ui icon external alternate"></i>' }
+                                        link(action: 'show', controller: 'subscription', id: dc.subscription.id) { '<i class="' + Icon.LNK.EXTERNAL + '"></i>' }
                             }
                             if (dc.org) {
                                 println "Org ${dc.org.id} - ${dc.org.name} ${dc.org.sortname} &nbsp;&nbsp;" +
-                                        link(action: 'show', controller: 'org', id: dc.org.id) { '<i class="ui icon external alternate"></i>' }
+                                        link(action: 'show', controller: 'org', id: dc.org.id) { '<i class="' + Icon.LNK.EXTERNAL + '"></i>' }
                             }
                             if (dc.link) {
                                 println "Links ${dc.link.id} "
                             }
                             if (dc.surveyConfig) {
                                 println "SurveyConfig ${dc.surveyConfig.id} - ${dc.surveyConfig.type} ${dc.surveyConfig.header} &nbsp;&nbsp; " +
-                                        link(action: 'surveyConfigDocs', controller: 'survey', id: dc.surveyConfig.surveyInfo.id, params:['surveyConfigID': dc.surveyConfig.id]) { '<i class="ui icon external alternate"></i>' }
+                                        link(action: 'surveyConfigDocs', controller: 'survey', id: dc.surveyConfig.surveyInfo.id, params:['surveyConfigID': dc.surveyConfig.id]) { '<i class="' + Icon.LNK.EXTERNAL + '"></i>' }
                             }
 
                             if (dc.status == RDStore.DOC_CTX_STATUS_DELETED) {

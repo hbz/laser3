@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.survey.SurveyResult; de.laser.survey.SurveyConfig; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.survey.SurveyResult; de.laser.survey.SurveyConfig; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;" %>
 
 <laser:htmlStart message="currentSurveys.label" serviceInjection="true" />
 
@@ -101,14 +101,10 @@
 
         </div>
 
-        <div class="three fields">
+        <div class="two fields">
 
             <laser:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true, label:message(code: 'subscription.property.search')]"/>
 
-
-        </div>
-
-        <div class="two fields">
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
                 <ui:select class="ui dropdown" name="type"
@@ -118,7 +114,9 @@
                            value="${params.type}"
                            noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
+        </div>
 
+        <div class="one fields">
             <div class="field">
                 <label>${message(code: 'surveyInfo.options')}</label>
 
@@ -183,8 +181,8 @@
 
         <div class="field la-field-right-aligned">
             <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}" class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}">
+                <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
             </div>
         </div>
     </g:form>
@@ -263,7 +261,7 @@
                         <g:if test="${surveyConfig.subSurveyUseForTransfer}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info2")}">
-                                <i class="grey icon pie chart la-list-icon"></i>
+                                <i class="grey ${Icon.SURVEY} la-list-icon"></i>
                             </span>
                         </g:if>
 
@@ -282,7 +280,7 @@
                     <g:if test="${surveyInfo.isMandatory}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
-                            <i class="yellow icon exclamation triangle"></i>
+                            <i class="${Icon.TOOLTIP.SERIOUS} yellow"></i>
                         </span>
                     </g:if>
                 </td>
@@ -317,7 +315,7 @@
                                         class="ui icon button blue la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="write icon"></i>
+                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                 </g:link>
                             </span>
                     </g:if>

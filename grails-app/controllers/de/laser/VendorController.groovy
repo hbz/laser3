@@ -5,11 +5,10 @@ import de.laser.annotations.DebugInfo
 import de.laser.auth.User
 import de.laser.cache.EhcacheWrapper
 import de.laser.helper.Params
+import de.laser.helper.Profiler
 import de.laser.properties.PropertyDefinition
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
-import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
 import grails.gorm.transactions.Transactional
@@ -19,6 +18,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class VendorController {
 
     AddressbookService addressbookService
@@ -28,6 +28,7 @@ class VendorController {
     GenericOIDService genericOIDService
     GokbService gokbService
     LinksGenerationService linksGenerationService
+    PropertyService propertyService
     TaskService taskService
     UserService userService
     VendorService vendorService
@@ -50,9 +51,14 @@ class VendorController {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def list() {
+        Profiler prf = new Profiler()
+        prf.startSimpleBench()
         Map<String, Object> result = vendorService.getResultGenerics(params), queryParams = [:]
         result.flagContentGokb = true // vendorService.getWekbVendorRecords()
+        result.propList    = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.VEN_PROP], result.institution)
+        prf.setBenchmark("get curatory groups")
         Map queryCuratoryGroups = gokbService.executeQuery(result.wekbApi.baseUrl + result.wekbApi.fixToken + '/groups', [:])
+        prf.setBenchmark("get we:kb vendors")
         if(queryCuratoryGroups.code == 404) {
             result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String
         }
@@ -89,7 +95,7 @@ class VendorController {
         }
 
         if(params.containsKey('qp_electronicBillings')) {
-            queryArgs << "exists (select eb from v.electronicBillings eb where eb.invoiceFormat in (:electronicBillings))"
+            queryArgs << "exists (select eb from v.electronicBillings eb where eb.invoicingFormat in (:electronicBillings))"
             queryParams.put('electronicBillings', Params.getRefdataList(params, 'qp_electronicBillings'))
         }
 
@@ -102,16 +108,26 @@ class VendorController {
             queryArgs << "v.gokbId in (:wekbIds)"
             queryParams.wekbIds = result.wekbRecords.keySet()
         }
+
         String vendorQuery = 'select v from Vendor v'
         if(queryArgs) {
             vendorQuery += ' where '+queryArgs.join(' and ')
         }
+
+        if (params.filterPropDef) {
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, vendorQuery, 'v', queryParams)
+            vendorQuery = efq.query
+            queryParams = efq.queryParams as Map<String, Object>
+        }
+
         if(params.containsKey('sort')) {
             vendorQuery += " order by ${params.sort} ${params.order ?: 'asc'}, v.name ${params.order ?: 'asc'} "
         }
         else
             vendorQuery += " order by v.sortname "
+        prf.setBenchmark("get total vendors")
         Set<Vendor> vendorsTotal = Vendor.executeQuery(vendorQuery, queryParams)
+        prf.setBenchmark("get subscribed vendors")
         result.currentVendorIdList = Vendor.executeQuery('select vr.vendor.id from VendorRole vr, OrgRole oo join oo.sub s where s = vr.subscription and oo.org = :context and s.status = :current', [current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])
         if (params.isMyX) {
             List<String> xFilter = params.list('isMyX')
@@ -182,8 +198,10 @@ class VendorController {
             }
         }
         else {
+            prf.setBenchmark("end loading")
             result.vendorListTotal = vendorsTotal.size()
             result.vendorList = vendorsTotal.drop(result.offset).take(result.max)
+            result.benchMark = prf.stopBenchmark()
             result
         }
     }
@@ -206,8 +224,11 @@ class VendorController {
                 subscriptionConsortiumFilter = 'and s.instanceOf = null'
                 licenseConsortiumFilter = 'and l.instanceOf = null'
             }
-            result.packages = Package.executeQuery('select pkg from PackageVendor pv join pv.pkg pkg, VendorRole vr, OrgRole oo join oo.sub s where pv.vendor = vr.vendor and vr.subscription = s and vr.vendor = :vendor and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Package>
-            result.platforms = Platform.executeQuery('select pkg.nominalPlatform from PackageVendor pv join pv.pkg pkg, VendorRole vr, OrgRole oo join oo.sub s where pkg.provider = :vendor and vr.subscription = s and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Platform>
+            Set<Package> allPackages = vendor.packages?.pkg
+            result.allPackages = allPackages
+            result.providers = allPackages.provider.toSet()
+            result.packages = Package.executeQuery('select pkg from PackageVendor pv join pv.pkg pkg, VendorRole vr, OrgRole oo join oo.sub s where pv.vendor = vr.vendor and vr.subscription = s and vr.vendor = :vendor and s.status = :current and oo.org = :context ', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Package>
+            result.platforms = Platform.executeQuery('select pkg.nominalPlatform from PackageVendor pv join pv.pkg pkg, VendorRole vr, OrgRole oo join oo.sub s where pkg.provider = :vendor and vr.subscription = s and s.status = :current and oo.org = :context ', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Platform>
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, vendor)
             result.currentSubscriptionsCount = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])[0]
             result.currentLicensesCount  = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and l.status = :current and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, current: RDStore.LICENSE_CURRENT, context: result.institution])[0]
@@ -309,7 +330,7 @@ class VendorController {
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
-    @Check404(domain=Provider)
+    @Check404(domain=Vendor)
     def addressbook() {
         Map<String, Object> result = vendorService.getResultGenerics(params)
         if(!result) {
@@ -386,7 +407,7 @@ class VendorController {
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
-    @Check404(domain=Provider)
+    @Check404(domain=Vendor)
     def tasks() {
         Map<String,Object> result = vendorService.getResultGenerics(params)
         if (!result) {
@@ -420,9 +441,9 @@ class VendorController {
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
-    @Check404(domain=Provider)
+    @Check404(domain=Vendor)
     def notes() {
-        Map<String, Object> result = providerService.getResultGenericsAndCheckAccess(params)
+        Map<String, Object> result = vendorService.getResultGenerics(params)
         if(!result) {
             response.sendError(401)
             return
@@ -440,7 +461,7 @@ class VendorController {
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
-    @Check404(domain=Provider)
+    @Check404(domain=Vendor)
     def documents() {
         Map<String, Object> result = vendorService.getResultGenerics(params)
         if(!result) {

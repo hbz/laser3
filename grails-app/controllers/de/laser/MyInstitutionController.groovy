@@ -955,7 +955,6 @@ class MyInstitutionController  {
         }
         result.curatoryGroupTypes = [
                 [value: 'Provider', name: message(code: 'package.curatoryGroup.provider')],
-                [value: 'Vendor', name: message(code: 'package.curatoryGroup.vendor')],
                 [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
         ]
         if(params.containsKey('nameContains')) {
@@ -980,12 +979,12 @@ class MyInstitutionController  {
         }
 
         if(params.containsKey('qp_invoicingVendors')) {
-            queryArgs << "exists (select iv from p.invoicingVendors iv where iv.vendor in (:vendors))"
+            queryArgs << "exists (select iv from p.invoicingVendors iv where iv.vendor.id in (:vendors))"
             queryParams.put('vendors', Params.getLongList(params, 'qp_invoicingVendors'))
         }
 
         if(params.containsKey('qp_electronicBillings')) {
-            queryArgs << "exists (select eb from p.electronicBillings eb where eb.invoiceFormat in (:electronicBillings))"
+            queryArgs << "exists (select eb from p.electronicBillings eb where eb.invoicingFormat in (:electronicBillings))"
             queryParams.put('electronicBillings', Params.getRefdataList(params, 'qp_electronicBillings'))
         }
 
@@ -1109,17 +1108,12 @@ class MyInstitutionController  {
         }
          */
 
-        //result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
+        result.propList    = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.VEN_PROP], result.institution)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         result.filterSet = params.filterSet ? true : false
         /*
-        if (params.filterPropDef) {
-            Map<String, Object> efq = propertyService.evalFilterQuery(tmpParams, fsr.query, 'o', fsr.queryParams)
-            fsr.query = efq.query
-            fsr.queryParams = efq.queryParams as Map<String, Object>
-        }
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
         if(queryCuratoryGroups.code == 404) {
@@ -1145,6 +1139,11 @@ class MyInstitutionController  {
         String query = "select v from VendorRole vr join vr.vendor v, OrgRole oo join oo.sub s where vr.subscription = s and oo.org = :contextOrg"
 
         Map<String, Object> queryParams = [contextOrg: result.institution]
+        if (params.filterPropDef) {
+            Map<String, Object> efq = propertyService.evalFilterQuery(params, query, 'v', queryParams)
+            query = efq.query
+            queryParams = efq.queryParams as Map<String, Object>
+        }
 
         if(params.containsKey('subStatus')) {
             query += ' and (s.status in (:status) '
@@ -1169,8 +1168,39 @@ class MyInstitutionController  {
             if(params.subPerpetualAccess == RDStore.YN_NO)
                 query += ' and s.hasPerpetualAccess = false '
         }
-        else query += ')' //opened in line 1100 or 1105
+        else if(params.containsKey('subStatus') || !params.containsKey('filterSet')) query += ')' //opened in line 1100 or 1105
+        Set<String> queryArgs = []
+        if(params.containsKey('nameContains')) {
+            queryArgs << "(genfunc_filter_matcher(v.name, :name) = true or genfunc_filter_matcher(v.sortname, :name) = true)"
+            queryParams.put('name', params.nameContains)
+        }
+        if(params.containsKey('qp_supportedLibrarySystems')) {
+            queryArgs << "exists (select ls from v.supportedLibrarySystems ls where ls.librarySystem in (:librarySystems))"
+            queryParams.put('librarySystems', Params.getRefdataList(params, 'qp_supportedLibrarySystems'))
+        }
 
+        if(params.containsKey('qp_electronicBillings')) {
+            queryArgs << "exists (select eb from v.electronicBillings eb where eb.invoicingFormat in (:electronicBillings))"
+            queryParams.put('electronicBillings', Params.getRefdataList(params, 'qp_electronicBillings'))
+        }
+
+        if(params.containsKey('qp_invoiceDispatchs')) {
+            queryArgs << "exists (select idi from v.invoiceDispatchs idi where idi.invoiceDispatch in (:invoiceDispatchs))"
+            queryParams.put('invoiceDispatchs', Params.getRefdataList(params, 'qp_invoiceDispatchs'))
+        }
+
+        if(params.containsKey('curatoryGroup') || params.containsKey('curatoryGroupType')) {
+            queryArgs << "v.gokbId in (:wekbIds)"
+            queryParams.wekbIds = result.wekbRecords.keySet()
+        }
+        if(queryArgs) {
+            query += ' and '+queryArgs.join(' and ')
+        }
+        if(params.containsKey('sort')) {
+            query += " order by ${params.sort} ${params.order ?: 'asc'}, v.name ${params.order ?: 'asc'} "
+        }
+        else
+            query += " order by v.sortname "
 
         String currentSubQuery = "select vr from VendorRole vr, OrgRole oo join oo.sub s where vr.subscription = s and s.status = :current and oo.org = :contextOrg order by s.name, s.startDate desc"
         Map<String, Object> currentSubParams = [current: RDStore.SUBSCRIPTION_CURRENT, contextOrg: result.institution]
@@ -1382,27 +1412,10 @@ class MyInstitutionController  {
         titles.addAll(exportService.loadPropListHeaders(propertyDefinitions))
         Map<Subscription,Set> licenseReferences = [:], subChildMap = [:]
         Map<Long,Integer> costItemCounts = [:]
-        //List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
-        //List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
         //List allIdentifiers = Identifier.findAllBySubIsNotNull()
         List allLicenses = Links.executeQuery("select li from Links li where li.destinationSubscription in (:subscriptions) and li.linkType = :linkType",[subscriptions:subscriptions, linkType:RDStore.LINKTYPE_LICENSE])
         List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and (ci.costItemStatus != :ciDeleted or ci.costItemStatus = null) and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
-        /*allProviders.each { OrgRole provider ->
-            Set subProviders = providers.get(provider.sub)
-            if(!providers.get(provider.sub))
-                subProviders = new TreeSet()
-            String providerName = provider.org.name ? provider.org.name : ' '
-            subProviders.add(providerName)
-            providers.put(provider.sub,subProviders)
-        }
-        allAgencies.each { OrgRole agency ->
-            Set subAgencies = agencies.get(agency.sub)
-            if(!agencies.get(agency.sub))
-                subAgencies = new TreeSet()
-            String agencyName = agency.org.name ? agency.org.name : ' '
-            subAgencies.add(agencyName)
-            agencies.put(agency.sub,subAgencies)
-        }
+        /*
         allIdentifiers.each { Identifier identifier ->
             Set subIdentifiers = identifiers.get(identifier.sub)
             if(!identifiers.get(identifier.sub))
@@ -1446,10 +1459,8 @@ class MyInstitutionController  {
         subscriptions.each { Subscription sub ->
             log.debug("now processing ${sub}")
             List row = []
-            //TreeSet subProviders = sub.orgRelations.findAll { OrgRole oo -> oo.roleType == RDStore.OR_PROVIDER }.collect { OrgRole oo -> oo.org.name }
-            //TreeSet subAgencies = sub.orgRelations.findAll { OrgRole oo -> oo.roleType == RDStore.OR_AGENCY }.collect { OrgRole oo -> oo.org.name }
-            Set subProviders = OrgRole.executeQuery('select org.name from OrgRole oo join oo.org org where oo.sub = :sub and oo.roleType = :provider order by org.name', [sub: sub, provider: RDStore.OR_PROVIDER])
-            Set subAgencies = OrgRole.executeQuery('select org.name from OrgRole oo join oo.org org where oo.sub = :sub and oo.roleType = :agency order by org.name', [sub: sub, agency: RDStore.OR_AGENCY])
+            Set subProviders = ProviderRole.executeQuery('select p.name from ProviderRole pvr join pvr.provider p where pvr.subscription = :sub order by p.name', [sub: sub])
+            Set subAgencies = OrgRole.executeQuery('select v.name from VendorRole vr join vr.vendor v where vr.subscription = :sub order by v.name', [sub: sub])
             TreeSet subIdentifiers = sub.ids.collect { Identifier id -> "(${id.ns.ns}) ${id.value}" }
             switch (format) {
                 case [ "xls", "xlsx" ]:
@@ -1739,19 +1750,34 @@ class MyInstitutionController  {
                 filterSub << Long.parseLong(params.filterSub.split(':')[1])
             }
         }
-        List<Org> filterPvd = []
+        List<Provider> filterPvd = []
         if(params.containsKey('filterPvd')) {
             if(params.filterPvd.contains(',')) {
                 params.filterPvd.split(',').each { String oid ->
-                    Org pvd = genericOIDService.resolveOID(oid)
+                    Provider pvd = genericOIDService.resolveOID(oid)
                     if(pvd)
                         filterPvd << pvd
                 }
             }
             else {
-                Org pvd = genericOIDService.resolveOID(params.filterPvd)
+                Provider pvd = genericOIDService.resolveOID(params.filterPvd)
                 if(pvd)
                     filterPvd << pvd
+            }
+        }
+        List<Vendor> filterVen = []
+        if(params.containsKey('filterVen')) {
+            if(params.filterVen.contains(',')) {
+                params.filterVen.split(',').each { String oid ->
+                    Vendor ven = genericOIDService.resolveOID(oid)
+                    if(ven)
+                        filterVen << ven
+                }
+            }
+            else {
+                Vendor ven = genericOIDService.resolveOID(params.filterVen)
+                if(ven)
+                    filterVen << ven
             }
         }
         List<Platform> filterHostPlat = []
@@ -1805,9 +1831,8 @@ class MyInstitutionController  {
         }*/
 
         if ((params.filter) && (params.filter.length() > 0)) {
-            //genfunc_filter_matcher needs rework because it causes memory leak
-            queryFilter << "( lower(tipp.name) like lower(:titlestr) or lower(tipp.firstAuthor) like lower(:titlestr) or lower(tipp.firstEditor) like lower(:titlestr) )"
-            qryParams.titlestr = "%${params.get('filter').toString()}%"
+            queryFilter << "ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where genfunc_filter_matcher(tipp.name, :titlestr) = true or genfunc_filter_matcher(tipp.firstAuthor, :titlestr) = true or genfunc_filter_matcher(tipp.firstEditor, :titlestr) = true )"
+            qryParams.titlestr = params.filter
         }
 
         if (filterSub) {
@@ -1828,14 +1853,19 @@ class MyInstitutionController  {
 
         if (filterPvd) {
             pkgJoin = "join sub.packages sp join sp.pkg pkg"
-            subscriptionQueryFilter << "pkg in (select op.pkg from OrgRole op where op.org in (:selPvd) and op.roleType in (:provTypes))"
+            subscriptionQueryFilter << "pkg.provider = :selPvd"
             subQryParams.selPvd = filterPvd
-            subQryParams.provTypes = [RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]
         }
-        qryParams.subIds = Subscription.executeQuery("select sub.id from Subscription sub join sub.orgRelations oo "+pkgJoin+" where oo.org = :institution and "+subscriptionQueryFilter.join(" and "), subQryParams)
-        prf.setBenchmark('before sub IDs')
+        if (filterVen) {
+            pkgJoin = "join sub.packages sp join sp.pkg pkg"
+            subscriptionQueryFilter << "pkg in (select pv.pkg from PackageVendor pv where pv.vendor in (:selVen))"
+            subQryParams.selVen = filterVen
+        }
+        Set<Long> subIds = Subscription.executeQuery("select sub.id from Subscription sub join sub.orgRelations oo "+pkgJoin+" where oo.org = :institution and "+subscriptionQueryFilter.join(" and "), subQryParams)
+        qryParams.subIds = subIds
         List<String> countQueryFilter = queryFilter.clone()
         Map<String, Object> countQueryParams = qryParams.clone()
+        prf.setBenchmark('before sub IDs')
 
         if (params.status) {
             queryFilter << "ie.status in (:status)"
@@ -1850,7 +1880,7 @@ class MyInstitutionController  {
         String qryString = "from IssueEntitlement ie join ie.tipp tipp where ie.subscription.id in (:subIds) "
         //String qryString = "from TitleInstancePackagePlatform tipp where exists (select ie.id from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo join sub.packages sp join sp.pkg pkg where ie.tipp = tipp and oo.org = :institution "
 
-        String countQueryString = qryString
+        String countQueryString = " from IssueEntitlement ie where ie.subscription.id in (:subIds) "
         if(queryFilter) {
             qryString += ' and ' + queryFilter.join(' and ')
         }
@@ -1858,15 +1888,10 @@ class MyInstitutionController  {
             countQueryString += ' and ' + countQueryFilter.join(' and ')
         }
 
-        /*
-        if (filterPvd) {
-            qryString = " from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join pkg.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.id.join(", ")+") and ie.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (sub.status = :current or sub.hasPerpetualAccess = true)) "
-            qryParams = [cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER], contextOrg: result.institution, roleTypes: orgRoles, current: RDStore.SUBSCRIPTION_CURRENT, removed: RDStore.TIPP_STATUS_REMOVED]
-        }
-        */
-
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256")
         Map<String, Object> cachingKeys = params.clone()
+        cachingKeys.remove("controller")
+        cachingKeys.remove("action")
         cachingKeys.remove("offset")
         cachingKeys.remove("max")
         String checksum = "${result.user.id}_${cachingKeys.entrySet().join('_')}"
@@ -1925,11 +1950,11 @@ class MyInstitutionController  {
             }
         }
         qryString += orderByClause
-        //log.debug(qryString)
+        //log.debug(qryString.replace(':subIds', subIds.join(',')))
 
         Map<String, Object> selectedFields = [:]
         Set<Long> allTitles = subCache.get("titleIDs") ?: []
-        if(qryParams.containsKey("subIds")) {
+        if(subIds) {
             if(params.containsKey('fileformat') && params.fileformat != 'kbart') {
                 Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
                 selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
@@ -2493,9 +2518,9 @@ class MyInstitutionController  {
                         group by o order by lower(o.name) """
         )
 
-        Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.getOrg() )
+        Set providerIds = providerService.getCurrentProviderIds( contextService.getOrg() )
 
-        result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds).sort { it?.name }
+        result.providers = providerIds.isEmpty() ? [] : Provider.findAllByIdInList(providerIds).sort { it?.name }
 
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIBER_CONS, 'activeInst': result.institution])
@@ -2563,6 +2588,11 @@ class MyInstitutionController  {
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
         result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.long('surveyConfigID')) : result.surveyInfo.surveyConfigs[0]
         result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, result.surveyConfig)
+
+        if(!result.surveyOrg){
+            response.sendError(401); return
+        }
+
         result.ownerId = result.surveyInfo.owner?.id
 
         result.surveyResults = []
@@ -2573,7 +2603,6 @@ class MyInstitutionController  {
         }
 
         params.viewTab = params.viewTab ?: 'overview'
-        params.subTab = params.subTab ?: 'allPackages'
 
         result = surveyService.participantResultGenerics(result, result.institution, params)
 
@@ -2631,9 +2660,13 @@ class MyInstitutionController  {
         List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, surveyConfig)
         result.minimalInput = false
 
-        surveyResults.each{ SurveyResult surre ->
-            if(surre.getValue() != null)
-                result.minimalInput = true
+        if(surveyConfig.type != SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+            surveyResults.each { SurveyResult surre ->
+                if (surre.getValue() != null)
+                    result.minimalInput = true
+            }
+        }else {
+            result.minimalInput = true
         }
 
         if(result.minimalInput) {
@@ -2677,7 +2710,7 @@ class MyInstitutionController  {
             if (sendSurveyFinishMail) {
                 boolean sendMailToSurveyOwner = true
 
-                if (!surveyInfo.isMandatory && OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS) != OrgSetting.SETTING_NOT_FOUND && OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY).rdValue == RDStore.YN_YES) {
+                if (!surveyInfo.isMandatory && OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY) != OrgSetting.SETTING_NOT_FOUND && OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY).rdValue == RDStore.YN_YES) {
                     int countAllResultsIsRefNo = 0
                     int countAllResultsIsRef = 0
                     surveyResults.each { SurveyResult surre ->
@@ -3068,6 +3101,9 @@ class MyInstitutionController  {
                 if(p.roleLinks.org[0]) {
                     oid = genericOIDService.getOID(p.roleLinks.org[0])
                 }
+                else if(p.roleLinks.provider[0]) {
+                    oid = genericOIDService.getOID(p.roleLinks.provider[0])
+                }
                 else if(p.roleLinks.vendor[0]) {
                     oid = genericOIDService.getOID(p.roleLinks.vendor[0])
                 }
@@ -3241,7 +3277,6 @@ class MyInstitutionController  {
             // new: filter preset
             result.comboType = 'Consortium'
             params.orgType = RDStore.OT_INSTITUTION.id
-            params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id
 
             if (params.selectedOrgs) {
                 if (formService.validateToken(params)) {
@@ -3544,7 +3579,6 @@ class MyInstitutionController  {
                 }
             }
         }
-        //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
@@ -3572,22 +3606,20 @@ class MyInstitutionController  {
 
         Map queryParamsProviders = [
                 subOrg      : result.institution,
-                subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
-                paRoleTypes : [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
+                subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]
         ]
 
         Map queryParamsSubs = [
                 subOrg      : result.institution,
-                subRoleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA],
-                paRoleTypes : [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
+                subRoleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA]
         ]
 
-        String queryProviders = '''select distinct(or_pa.org) from OrgRole or_pa 
+        String queryProviders = '''select distinct(pvr.provider) from OrgRole or_pa, ProviderRole pvr 
 join or_pa.sub sub 
 join sub.orgRelations or_sub where
     ( sub = or_sub.sub and or_sub.org = :subOrg ) and
     ( or_sub.roleType in (:subRoleTypes) ) and
-        ( or_pa.roleType in (:paRoleTypes) )'''
+        ( pvr.subscription = sub )'''
 
         String querySubs = '''select distinct(or_pa.sub) from OrgRole or_pa 
 join or_pa.sub sub 
@@ -3597,9 +3629,9 @@ join sub.orgRelations or_sub where
         ( or_pa.roleType in (:paRoleTypes) ) and sub.instanceOf is null'''
 
         if (params.subStatus) {
-            queryProviders +=  " and (sub.status = :subStatus)"
-            querySubs +=  " and (sub.status = :subStatus)"
-            RefdataValue subStatus = RefdataValue.get(params.subStatus)
+            queryProviders +=  " and (sub.status in (:subStatus))"
+            querySubs +=  " and (sub.status in (:subStatus))"
+            List<RefdataValue> subStatus = Params.getRefdataList(params, 'subStatus')
             queryParamsProviders << [subStatus: subStatus]
             queryParamsSubs << [subStatus: subStatus]
         }
@@ -3618,7 +3650,7 @@ join sub.orgRelations or_sub where
             }
         }
 
-        List<Org> providers = Org.executeQuery(queryProviders, queryParamsProviders)
+        List<Provider> providers = Provider.executeQuery(queryProviders, queryParamsProviders)
         result.providers = providers
 
 		prf.setBenchmark('query')
@@ -4305,7 +4337,7 @@ join sub.orgRelations or_sub where
                         }
                         else {
                             if (params.name && ownerType) {
-                                int position = PropertyDefinitionGroup.executeQuery('select max(pdg.order) from PropertyDefinitionGroup pdg where pdg.ownerType = :objType and pdg.tenant = :tenant', [objType: ownerType, tenant: result.institution])[0]
+                                int position = PropertyDefinitionGroup.executeQuery('select coalesce(max(pdg.order), 0) from PropertyDefinitionGroup pdg where pdg.ownerType = :objType and pdg.tenant = :tenant', [objType: ownerType, tenant: result.institution])[0]
                                 propDefGroup = new PropertyDefinitionGroup(
                                         name: params.name,
                                         description: params.description,

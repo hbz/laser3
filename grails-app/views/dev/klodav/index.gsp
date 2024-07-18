@@ -1,12 +1,78 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
-<laser:htmlStart text="Playground" serviceInjection="true" />
+<%@ page import="de.laser.ui.Btn; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<laser:htmlStart text="Playground: Various" serviceInjection="true" />
 
-<br />
-<br />
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb text="Playground" class="active"/>
+</ui:breadcrumbs>
 
-<h1 class="ui header center aligned">
-    Playground
-</h1>
+<ui:h1HeaderWithIcon text="Playground" type="admin"/>
+
+<nav class="ui secondary menu">
+    <g:link controller="dev" action="klodav" class="item active">Various</g:link>
+    <g:link controller="dev" action="icons" class="item"><i class="certificate icon yellow"></i> New Icons</g:link>
+    <g:link controller="dev" action="buttons" class="item"><i class="certificate icon red"></i> New Buttons</g:link>
+</nav>
+
+<div class="ui four column grid">
+    <div class="column">
+        <div class="ui icon info message">
+            <i class="${Icon.UI.INFO}"></i>
+            <div class="content"> INFO </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui icon warning message">
+            <i class="${Icon.UI.WARNING}"></i>
+            <div class="content"> WARNING </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui icon success message">
+            <i class="${Icon.UI.SUCCESS}"></i>
+            <div class="content"> SUCCESS </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui icon error message">
+            <i class="${Icon.UI.ERROR}"></i>
+            <div class="content"> ERROR </div>
+        </div>
+    </div>
+</div>
+
+<div class="ui six column grid">
+    <div class="column">
+        <div class="ui info message">
+            <div class="content"> INFO </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui warning message">
+            <div class="content"> WARNING </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui success message">
+            <div class="content"> SUCCESS </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui error message">
+            <div class="content"> ERROR </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui positive message">
+            <div class="content"> <del>POSITIVE</del> </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui negative message">
+            <div class="content"> <del>NEGATIVE</del> </div>
+        </div>
+    </div>
+</div>
 
 <div class="ui segment">
     <p class="ui header">Icons #1</p>
@@ -34,32 +100,32 @@
     <p class="ui header">Icons #2</p>
     <div class="ui list">
         <div class="item">
-            <i class="icon large handshake"></i>
-            <div class="content"> Anbieter (handshake)</div>
+            <i class="${Icon.PROVIDER} large"></i>
+            <div class="content"> Anbieter (${Icon.PROVIDER})</div>
         </div>
         <div class="item">
-            <i class="icon large boxes"></i>
-            <div class="content"> Lieferanten (boxes)</div>
+            <i class="${Icon.VENDOR} large"></i>
+            <div class="content"> Lieferanten (${Icon.VENDOR})</div>
         </div>
         <div class="item">
-            <i class="icon large university"></i>
-            <div class="content"> Einrichtungen (university)</div>
+            <i class="${Icon.ORG} large"></i>
+            <div class="content"> Einrichtungen (${Icon.ORG})</div>
         </div>
         <div class="item">
-            <i class="icon large cloud"></i>
-            <div class="content"> Plattformen (cloud)</div>
+            <i class="${Icon.PLATFORM} large"></i>
+            <div class="content"> Plattformen (${Icon.PLATFORM})</div>
         </div>
         <div class="item">
-            <i class="icon large clipboard"></i>
-            <div class="content"> Lizenzen (clipboard)</div>
+            <i class="${Icon.SUBSCRIPTION} large"></i>
+            <div class="content"> Lizenzen (${Icon.SUBSCRIPTION})</div>
         </div>
         <div class="item">
-            <i class="icon large balance scale"></i>
-            <div class="content"> Verträge (balance scale)</div>
+            <i class="${Icon.LICENSE} large"></i>
+            <div class="content"> Verträge (${Icon.LICENSE})</div>
         </div>
         <div class="item">
-            <i class="icon large gift"></i>
-            <div class="content"> Pakete (gift)</div>
+            <i class="${Icon.PACKAGE} large"></i>
+            <div class="content"> Pakete (${Icon.PACKAGE})</div>
         </div>
     </div>
 </div>
@@ -68,8 +134,20 @@
     <p class="ui header">Icons #3</p>
     <div class="ui list">
         <div class="item">
-            <i class="icon large forward"></i>
-            <div class="content"> Mehrjahreslaufzeit (forward)</div>
+            <i class="${Icon.SYM.SUBSCRIPTION_IS_MULTIYEAR} large"></i>
+            <div class="content"> Mehrjahreslaufzeit (${Icon.SYM.SUBSCRIPTION_IS_MULTIYEAR})</div>
+        </div>
+        <div class="item">
+            <i class="${Icon.FNC.COST} large"></i>
+            <div class="content"> Kosten (${Icon.FNC.COST})</div>
+        </div>
+        <div class="item">
+            <i class="${Icon.FNC.COST_CONFIG} large"></i>
+            <div class="content"> Kosten (Konfiguration) (${Icon.FNC.COST_CONFIG})</div>
+        </div>
+        <div class="item">
+            <i class="euro sign icon large"></i>
+            <div class="content"> euro sign icon large </div>
         </div>
     </div>
 </div>
@@ -82,12 +160,12 @@
             <div class="content"> internal link</div>
         </div>
         <div class="item">
-            <i class="icon large filter"></i>
+            <i class="${Icon.LNK.FILTERED} large"></i>
             <div class="content"> internal link (redirect to list view with filter)</div>
         </div>
         <div class="item">
-            <i class="icon large external alternate"></i>
-            <div class="content"> external link</div>
+            <i class="${Icon.LNK.EXTERNAL} large"></i>
+            <div class="content"> external link (${Icon.LNK.EXTERNAL})</div>
         </div>
         <div class="item">
             <i class="icon large fake"></i>
@@ -96,13 +174,21 @@
     </div>
 </div>
 
-<pre>
+<div class="ui segment">
+    <p class="ui header">[..]</p>
+
+    <g:link controller="admin" action="systemEventsX" class="${Btn.SIMPLE}">
+        <i class="shoe prints icon"></i> System Events X
+    </g:link>
+
+    <pre>
     springSecurity.errors.login.expired             ${message(code:'springSecurity.errors.login.expired')}
     springSecurity.errors.login.passwordExpired     ${message(code:'springSecurity.errors.login.passwordExpired')}
     springSecurity.errors.login.locked              ${message(code:'springSecurity.errors.login.locked')}
     springSecurity.errors.login.disabled            ${message(code:'springSecurity.errors.login.disabled')}
     springSecurity.errors.login.fail                ${message(code:'springSecurity.errors.login.fail')}
-</pre>
+    </pre>
+</div>
 
 <div class="ui segment">
     <p class="ui header">
@@ -111,19 +197,19 @@
     <div class="ui list">
         <div class="item">
             <div class="ui label">
-                <i class="icon user"></i>
+                <i class="${Icon.AUTH.INST_USER}"></i>
                 <g:message code="cv.roles.INST_USER"/>
             </div>
         </div>
         <div class="item">
             <div class="ui label">
-                <i class="icon user edit"></i>
+                <i class="${Icon.AUTH.INST_EDITOR}"></i>
                 <g:message code="cv.roles.INST_EDITOR"/>
             </div>
         </div>
         <div class="item">
             <div class="ui label">
-                <i class="icon user shield"></i>
+                <i class="${Icon.AUTH.INST_ADM}"></i>
                 <g:message code="cv.roles.INST_ADM"/>
             </div>
         </div>
@@ -131,26 +217,26 @@
     <div class="ui list">
         <div class="item">
             <div class="ui label yellow">
-                <i class="icon user circle"></i>
+                <i class="${Icon.AUTH.ORG_INST_BASIC}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')}
             </div>
         </div>
         <div class="item">
             <div class="ui label yellow">
-                <i class="icon trophy"></i>
+                <i class="${Icon.AUTH.ORG_INST_PRO}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')}
             </div>
         </div>
 
         <div class="item">
             <div class="ui label teal">
-                <i class="icon user circle"></i>
+                <i class="${Icon.AUTH.ORG_CONSORTIUM_BASIC}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')}
             </div>
         </div>
         <div class="item">
             <div class="ui label teal">
-                <i class="icon trophy"></i>
+                <i class="${Icon.AUTH.ORG_CONSORTIUM_PRO}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')}
             </div>
         </div>
@@ -224,25 +310,25 @@
         <i class="icon large kiwi bird"></i> simple color helper
     </p>
     <p>
-        <i class="icon large stop red"></i> fomantic red <br/>
-        <i class="icon large stop sc_red"></i> fallback <br/>
+        <i class="${Icon.UNC.SQUARE} large red"></i> fomantic red <br/>
+        <i class="${Icon.UNC.SQUARE} large sc_red"></i> fallback <br/>
 
-        <i class="icon large stop blue"></i> fomantic blue <br/>
-        <i class="icon large stop sc_blue"></i> fallback <br/>
+        <i class="${Icon.UNC.SQUARE} large blue"></i> fomantic blue <br/>
+        <i class="${Icon.UNC.SQUARE} large sc_blue"></i> fallback <br/>
 
-        <i class="icon large stop yellow"></i> fomantic yellow <br/>
-        <i class="icon large stop sc_yellow"></i> fallback <br/>
+        <i class="${Icon.UNC.SQUARE} large yellow"></i> fomantic yellow <br/>
+        <i class="${Icon.UNC.SQUARE} large sc_yellow"></i> fallback <br/>
 
-        <i class="icon large stop green"></i> fomantic green <br/>
-        <i class="icon large stop olive"></i> fomantic olive <br/>
-        <i class="icon large stop sc_green"></i> fallback <br/>
+        <i class="${Icon.UNC.SQUARE} large green"></i> fomantic green <br/>
+        <i class="${Icon.UNC.SQUARE} large olive"></i> fomantic olive <br/>
+        <i class="${Icon.UNC.SQUARE} large sc_green"></i> fallback <br/>
 
-        <i class="icon large stop orange"></i> fomantic orange <br/>
-        <i class="icon large stop sc_orange"></i> fallback <br/>
+        <i class="${Icon.UNC.SQUARE} large orange"></i> fomantic orange <br/>
+        <i class="${Icon.UNC.SQUARE} large sc_orange"></i> fallback <br/>
 
-        <i class="icon large stop sc_grey"></i> fallback <br/>
+        <i class="${Icon.UNC.SQUARE} large sc_grey"></i> fallback <br/>
 
-        <i class="icon large stop sc_darkgrey"></i> fallback <br/>
+        <i class="${Icon.UNC.SQUARE} large sc_darkgrey"></i> fallback <br/>
     </p>
 
     <p>

@@ -1,4 +1,4 @@
-<%@ page import="java.lang.management.ManagementFactory" %>
+<%@ page import="de.laser.ui.Icon; java.lang.management.ManagementFactory" %>
 
 <laser:htmlStart text="${message(code:'menu.yoda')} ${message(code:'default.dashboard')}" serviceInjection="true" />
 

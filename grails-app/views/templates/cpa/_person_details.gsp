@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <g:if test="${person}">
     <div class="ui divided middle aligned selection list la-flex-list">
 
@@ -16,7 +17,7 @@
                     <button class="ui icon button blue la-modern-button" type="button" onclick="JSPC.app.editPerson(${person.id})"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                        <i aria-hidden="true" class="write icon"></i>
+                        <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                     </button>
                 </div>
             </g:if>
@@ -81,7 +82,7 @@
                 <g:if test="${editable && tmplShowDeleteButton}">
 
                     <g:if test="${showAddContacts}">
-                        <input class="ui icon button" type="button" data-ui="modal"
+                        <input class="${Btn.SIMPLE_ICON}" type="button" data-ui="modal"
                                data-href="#contactFormModal${personRole.prs.id}"
                                value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label')])}">
                         <laser:render template="/contact/formModal" model="['prsId': personRole.prs.id, modalId: 'contactFormModal'+personRole.prs.id]"/>
@@ -96,7 +97,7 @@
                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                        <i class="unlink icon"></i>
+                        <i class="${Icon.CMD.UNLINK}"></i>
                     </g:link>
                 </g:if>
             </div>

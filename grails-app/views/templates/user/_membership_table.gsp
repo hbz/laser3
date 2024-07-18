@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils;" %>
 <laser:serviceInjection />
 
 <div class="ui card">
@@ -51,13 +51,13 @@
                                             data-confirm-tokenMsg="${message(code:'confirm.dialog.unlink.user.affiliation')}"
                                             data-confirm-term-how="unlink"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="unlink icon"></i>
+                                        <i class="${Icon.CMD.UNLINK}"></i>
                                     </g:link>
                             </g:if>
                             <g:else>
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg2', args: [userInstance.getDisplayName()])}">
                                     <button class="ui icon negative button la-modern-button" disabled="disabled">
-                                        <i class="unlink icon"></i>
+                                        <i class="${Icon.CMD.UNLINK}"></i>
                                     </button>
                                 </span>
                             </g:else>

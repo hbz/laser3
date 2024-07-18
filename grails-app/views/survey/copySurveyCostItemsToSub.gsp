@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
 <laser:htmlStart message="surveyInfo.copySurveyCostItems" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -23,7 +23,7 @@
 </ui:h1HeaderWithIcon>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+    <ui:linkWithIcon icon="${Icon.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
@@ -34,7 +34,7 @@
     ${message(code: 'surveyInfo.copySurveyCostItems')}
 </h2>
 
-<g:render template="costItemsByCostItemElementTable"/>
+<g:render template="costItemsByCostItemElementTable" model="${[costItemsByCTE: costItemsByCostItemElement, header: g.message(code: 'costItem.label')+' in '+ g.message(code: 'survey.label')]}"/>
 
 
 <ui:greySegment>
@@ -188,7 +188,7 @@
                     <td>
                         <g:if test="${participant.newSub}">
                             <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:participant.newSub.id]}"
-                                    class="ui button icon"><i class="icon clipboard"></i></g:link>
+                                    class="${Btn.SIMPLE_ICON}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                         </g:if>
                     </td>
                 </tr>
@@ -225,10 +225,10 @@
             </div>
 
             <div class="eight wide field" style="text-align: right;">
-                <button class="ui button positive" type="submit">${message(code: 'copySurveyCostItems.copyCostItems')}</button>
+                <button class="${Btn.POSITIVE}" type="submit">${message(code: 'copySurveyCostItems.copyCostItems')}</button>
                 <br />
                 <br />
-                <button class="ui button positive" name="isVisibleForSubscriber" value="true" type="submit">${message(code: 'copySurveyCostItems.copyCostItems')} (${message(code:'financials.isVisibleForSubscriber')})</button>
+                <button class="${Btn.POSITIVE}" name="isVisibleForSubscriber" value="true" type="submit">${message(code: 'copySurveyCostItems.copyCostItems')} (${message(code:'financials.isVisibleForSubscriber')})</button>
             </div>
         </div>
     </g:form>

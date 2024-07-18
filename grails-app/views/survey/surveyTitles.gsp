@@ -1,4 +1,4 @@
-<%@ page import="de.laser.remote.ApiSource; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDStore" %>
 <laser:htmlStart message="surveyShow.label" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
@@ -13,7 +13,7 @@
 <uiSurvey:status object="${surveyInfo}"/>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="bordered inverted orange clipboard la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+    <ui:linkWithIcon icon="${Icon.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
@@ -51,8 +51,8 @@
 
     <div class="la-inline-lists">
         <g:if test="${!titlesList}">
-            <div class="ui icon positive message">
-                <i class="info icon"></i>
+            <div class="ui icon info message">
+                <i class="${Icon.UI.INFO}"></i>
 
                 <div class="content">
                     <div class="header"></div>
@@ -62,10 +62,10 @@
                         <g:message code="showSurveyInfo.pickAndChoose.Package"/>
                     </p>
                     <br/>
-                    <g:link controller="subscription" class="ui button" action="index" target="_blank" id="${surveyConfig.subscription.id}">
+                    <g:link controller="subscription" class="${Btn.SIMPLE}" action="index" target="_blank" id="${surveyConfig.subscription.id}">
                         ${surveyConfig.subscription.name} (${surveyConfig.subscription.status.getI10n('value')})
                     </g:link>
-                    <g:link controller="subscription" class="ui button" action="linkPackage" target="_blank" id="${surveyConfig.subscription.id}">
+                    <g:link controller="subscription" class="${Btn.SIMPLE}" action="linkPackage" target="_blank" id="${surveyConfig.subscription.id}">
                         <g:message code="subscription.details.linkPackage.label"/>
                     </g:link>
                 </div>

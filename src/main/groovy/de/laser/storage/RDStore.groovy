@@ -28,6 +28,7 @@ class RDStore {
     public final static RefdataValue ADDRESS_TYPE_LIBRARY        = getRefdataValue('Library address', RDConstants.ADDRESS_TYPE)
 
     public final static RefdataValue CCT_EMAIL  = getRefdataValue('E-Mail', RDConstants.CONTACT_CONTENT_TYPE)
+    public final static RefdataValue CCT_MOBILE = getRefdataValue('Mobil', RDConstants.CONTACT_CONTENT_TYPE)
     public final static RefdataValue CCT_PHONE  = getRefdataValue('Phone', RDConstants.CONTACT_CONTENT_TYPE)
     public final static RefdataValue CCT_FAX    = getRefdataValue('Fax', RDConstants.CONTACT_CONTENT_TYPE)
     public final static RefdataValue CCT_URL    = getRefdataValue('Url', RDConstants.CONTACT_CONTENT_TYPE)
@@ -116,9 +117,6 @@ class RDStore {
     public final static RefdataValue OR_PUBLISHER               = getRefdataValue('Publisher', RDConstants.ORGANISATIONAL_ROLE)
     public final static RefdataValue OR_CONTENT_PROVIDER        = getRefdataValue('Content Provider', RDConstants.ORGANISATIONAL_ROLE)
     public final static RefdataValue OR_PACKAGE_CONSORTIA       = getRefdataValue('Package Consortia', RDConstants.ORGANISATIONAL_ROLE)
-
-    public final static RefdataValue O_SECTOR_HIGHER_EDU    = getRefdataValue('Higher Education', RDConstants.ORG_SECTOR)
-    public final static RefdataValue O_SECTOR_PUBLISHER     = getRefdataValue('Publisher', RDConstants.ORG_SECTOR)
 
     public final static RefdataValue O_STATUS_CURRENT       = getRefdataValue('Current', RDConstants.ORG_STATUS)
     public final static RefdataValue O_STATUS_DELETED       = getRefdataValue('Deleted', RDConstants.ORG_STATUS)

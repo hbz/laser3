@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Package; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.FormService; de.laser.SubscriptionPackage; de.laser.Subscription" %>
+<%@ page import="de.laser.ui.Icon; de.laser.Package; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.FormService; de.laser.SubscriptionPackage; de.laser.Subscription" %>
 <laser:serviceInjection/>
 
 <g:if test="${filteredSubscriptions}">
@@ -14,7 +14,7 @@
                             <div class="right floated content">
                                 <button class="ui negative button la-modern-button la-selectable-button unlinkPackages" ${!editable || isUnlinkingRunning ? 'disabled="disabled"' : ''}
                                         data-package="${subPkg.pkg.id}" data-subscription="${subPkg.subscription.id}">
-                                    <i class="unlink icon"></i>
+                                    <i class="${Icon.CMD.UNLINK}"></i>
                                 </button>
                             </div>
                         </div>
@@ -28,14 +28,7 @@
     </g:if>
 
     <g:if test="${isLinkingRunning || isUnlinkingRunning}">
-        <div class="ui icon warning message">
-            <i class="info icon"></i>
-            <div class="content">
-                <div class="header">Info</div>
-
-                <p>${message(code: 'subscriptionsManagement.isLinkingRunning.info')}</p>
-            </div>
-        </div>
+        <ui:msg class="warning" showIcon="true" hideClose="true" header="Info" message="subscriptionsManagement.isLinkingRunning.info" />
     </g:if>
 
     <h3 class="ui header">${message(code: 'subscriptionsManagement.info.package')}</h3>
@@ -231,7 +224,7 @@
                                     class="ui icon button blue la-modern-button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="write icon"></i>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </g:link>
                         </td>
                     </tr>

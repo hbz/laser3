@@ -5,6 +5,7 @@ import de.laser.License
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.ui.Icon
 import de.laser.survey.SurveyResult
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractI10n
@@ -464,7 +465,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
         matches.each { it ->
             if (params.tenant.equals(it.getTenant()?.id?.toString())) {
-                result.add([id: "${it.id}", text: "${it.getI10n('name')}", icon: it.multipleOccurrence ? 'redo icon orange' : ''])
+                result.add([id: "${it.id}", text: "${it.getI10n('name')}", icon: it.multipleOccurrence ? Icon.PROP.MULTIPLE : ''])
             }
         }
 
@@ -596,7 +597,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      * @return a {@link List} of matching property definitions
      */
     static List<PropertyDefinition> findAllPublicAndPrivateProp(List propertyDefinitionList, Org contextOrg){
-        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
+        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in (:defList) and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
                         defList: propertyDefinitionList,
                         tenant: contextOrg
                     ])

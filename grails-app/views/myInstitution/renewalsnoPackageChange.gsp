@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 <laser:htmlStart message="myinst.renewals" />
 
 <ui:breadcrumbs>
@@ -58,8 +59,7 @@
 
             <div class="la-float-right">
                 <g:if test="${entitlements}">
-                    <button type="submit"
-                            class="ui button">${message(code: 'myinst.renewalUpload.accept')}</button>
+                    <button type="submit" class="${Btn.SIMPLE}">${message(code: 'myinst.renewalUpload.accept')}</button>
                 </g:if>
             </div>
             <br /><hr />
@@ -114,7 +114,7 @@
         <div class="la-float-right">
             <g:if test="${entitlements}">
                 <button type="submit"
-                        class="ui button">${message(code: 'myinst.renewalUpload.accept')}</button>
+                        class="${Btn.SIMPLE}">${message(code: 'myinst.renewalUpload.accept')}</button>
             </g:if>
         </div>
     </div>

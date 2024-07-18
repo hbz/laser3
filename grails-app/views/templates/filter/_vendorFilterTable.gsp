@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyVendorResult; de.laser.CustomerTypeService; de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.Vendor; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyVendorResult; de.laser.CustomerTypeService; de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.Vendor; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
 <laser:serviceInjection/>
 
 <table id="${tableID ?: ''}" class="ui sortable celled la-js-responsive-table la-table table ${fixedHeader ?: ''}">
@@ -48,7 +48,7 @@
                             ${message(code: 'surveyResult.commentParticipant')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentParticipant.info')}">
-                                <i class="question circle icon"></i>
+                                <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
                         </g:else>
                     </th>
@@ -57,14 +57,14 @@
                             ${message(code: 'surveyResult.commentOnlyForOwner')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                                <i class="question circle icon"></i>
+                                <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
                         </g:if>
                         <g:else>
                             ${message(code: 'surveyResult.commentOnlyForParticipant')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
-                                <i class="question circle icon"></i>
+                                <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
                         </g:else>
                     </th>
@@ -121,12 +121,12 @@
                     <td class="center aligned">
                         <g:if test="${vendor.status == RDStore.VENDOR_STATUS_CURRENT}">
                             <span class="la-popup-tooltip la-delay" data-position="top right">
-                                <i class="ui icon green circle"></i>
+                                <i class="${Icon.UNC.CIRCLE} green"></i>
                             </span>
                         </g:if>
                         <g:if test="${vendor.status == RDStore.VENDOR_STATUS_RETIRED}">
                             <span class="la-popup-tooltip la-delay" data-position="top right" <g:if test="${vendor.retirementDate}">data-content="<g:message code="org.retirementDate.label"/>: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${vendor.retirementDate}"/>"</g:if>>
-                                <i class="ui icon yellow circle"></i>
+                                <i class="${Icon.UNC.CIRCLE} yellow"></i>
                             </span>
                         </g:if>
                     </td>
@@ -138,7 +138,14 @@
                             <ul class="la-simpleList">
                                 <g:each in="${currentSubscriptions.get(vendor.id)}" var="sub">
                                     <g:if test="${!sub.instanceOf || (sub.instanceOf && !(sub.instanceOf in currentSubscriptions.get(vendor.id)))}">
-                                        <li><g:link controller="subscription" action="show" id="${sub.id}">${sub}</g:link></li>
+                                        <li>
+                                            <g:link controller="subscription" action="show" id="${sub.id}">
+                                                ${sub}
+                                                <g:if test="${sub.instanceOf}">
+                                                    <br>(${sub.getSubscriberRespConsortia()})
+                                                </g:if>
+                                            </g:link>
+                                        </li>
                                     </g:if>
                                 </g:each>
                             </ul>
@@ -169,7 +176,7 @@
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('isMyX')}">
                     <td class="center aligned">
                         <g:if test="${currentVendorIdList && (vendor.id in currentVendorIdList)}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.vendors')}"><i class="icon yellow star"></i></span>
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.vendors')}"><i class="${Icon.UI.MY_OBJECT} yellow"></i></span>
                         </g:if>
                     </td>
                 </g:if>
@@ -178,13 +185,13 @@
                     <td class="right aligned">
                         <g:if test="${editable}">
                             <g:if test="${editable && !(SurveyConfigVendor.findByVendorAndSurveyConfig(vendor, surveyConfig))}">
-                                <g:link type="button" class="ui icon button" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                <g:link type="button" class="${Btn.SIMPLE_ICON}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                         params="[addVendor: vendor.id, surveyConfigID: surveyConfig.id]"><g:message
                                         code="surveyVendors.linkVendor"/></g:link>
 
                             </g:if>
                             <g:else>
-                                <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                <g:link type="button" class="${Btn.NEGATIVE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                         params="[removeVendor: vendor.id, surveyConfigID: surveyConfig.id]"><g:message
                                         code="surveyVendors.unlinkVendor"/></g:link>
 
@@ -195,7 +202,7 @@
                 <g:if test="${tmplConfigItem == 'unLinkSurveyVendor'}">
                     <td class="right aligned">
                         <g:if test="${editable && (SurveyConfigVendor.findByVendorAndSurveyConfig(vendor, surveyConfig))}">
-                            <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                            <g:link type="button" class="${Btn.NEGATIVE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                     params="[removeVendor: vendor.id, surveyConfigID: surveyConfig.id]"><g:message
                                     code="surveyVendors.unlinkVendor"/></g:link>
 
@@ -204,17 +211,23 @@
                 </g:if>
                 <g:if test="${tmplConfigItem == 'addSurveyVendorResult'}">
                     <td class="right aligned">
-                        <g:if test="${editable && (!SurveyVendorResult.findByVendorAndSurveyConfig(vendor, surveyConfig))}">
-                            <g:link type="button" class="ui button" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                        <g:if test="${editable && (!SurveyVendorResult.findBySurveyConfigAndParticipant(surveyConfig, participant))}">
+                            <g:link type="button" class="${Btn.SIMPLE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                     params="${parame+ [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'addSurveyVendor', vendorId: vendor.id]}"><g:message
                                     code="surveyVendors.linkVendor"/></g:link>
                         </g:if>
+                        <g:elseif test="${editable && (SurveyVendorResult.findByVendorAndSurveyConfigAndParticipant(vendor, surveyConfig, participant))}">
+                            <g:link type="button" class="${Btn.NEGATIVE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                    params="${parame+ [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'removeSurveyVendor', vendorId: vendor.id]}"><g:message
+                                    code="surveyVendors.unlinkVendor"/></g:link>
+
+                        </g:elseif>
                     </td>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'removeSurveyVendorResult'}">
                     <td class="right aligned">
-                        <g:if test="${editable && (SurveyVendorResult.findByVendorAndSurveyConfig(vendor, surveyConfig))}">
-                            <g:link type="button" class="ui button negative" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                        <g:if test="${editable && (SurveyVendorResult.findByVendorAndSurveyConfigAndParticipant(vendor, surveyConfig, participant))}">
+                            <g:link type="button" class="${Btn.NEGATIVE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                     params="${parame+ [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'removeSurveyVendor', vendorId: vendor.id]}"><g:message
                                     code="surveyVendors.unlinkVendor"/></g:link>
 
@@ -224,7 +237,7 @@
 
                 <g:if test="${tmplConfigItem == 'surveyVendorsComments'}">
                     <g:set var="surveyVendorResult"
-                           value="${SurveyVendorResult.findByParticipantAndSurveyConfigAndVendor(participant, surveyConfig, pkg)}"/>
+                           value="${SurveyVendorResult.findByParticipantAndSurveyConfigAndVendor(participant, surveyConfig, vendor)}"/>
                     <g:if test="${surveyVendorResult}">
                         <td>
                             <ui:xEditable owner="${surveyVendorResult}" type="textarea" field="comment"/>

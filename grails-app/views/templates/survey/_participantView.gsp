@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyPackageResult; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyConfigPackage; de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyPackageResult; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyConfigPackage; de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition;" %>
 
 
 <div class="ui stackable grid">
@@ -22,7 +22,7 @@
                 ${message(code: 'default.overview.label')}
             </g:link>
 
-            <g:if test="${surveyConfig.subscription && subscription}">
+            <g:if test="${surveyConfig.subscription}">
                         <g:link class="item ${params.viewTab == 'additionalInformation' ? 'active' : ''}"
                                 controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
                                 params="${parame+[viewTab: 'additionalInformation']}">
@@ -145,7 +145,7 @@
 
                 <div class="ui bottom attached tab segment" data-tab="xRechnung">
 
-                    <ui:msg message="surveyOrg.eInvoice.expl" icon="info" noClose="true"/>
+                    <ui:msg message="surveyOrg.eInvoice.expl" class="info" showIcon="true" hideClose="true"/>
 
                     <div class="la-inline-lists">
                         <div class="ui card">
@@ -155,7 +155,7 @@
                                         <g:message code="surveyOrg.eInvoicePortal.label"/>
                                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                               data-content="${message(code: 'surveyOrg.eInvoicePortal.expl')}">
-                                            <i class="question circle icon"></i>
+                                            <i class="${Icon.TOOLTIP.HELP}"></i>
                                         </span>
                                     </dt>
                                     <dd>
@@ -170,7 +170,7 @@
                                         <g:message code="surveyOrg.eInvoiceLeitwegId.label"/>
                                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                               data-content="${message(code: 'surveyOrg.eInvoiceLeitwegId.expl')}">
-                                            <i class="question circle icon"></i>
+                                            <i class="${Icon.TOOLTIP.HELP}"></i>
                                         </span>
                                     </dt>
                                     <dd>
@@ -185,7 +185,7 @@
                                         <g:message code="surveyOrg.eInvoiceLeitkriterium.label"/>
                                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                               data-content="${message(code: 'surveyOrg.eInvoiceLeitkriterium.expl')}">
-                                            <i class="question circle icon"></i>
+                                            <i class="${Icon.TOOLTIP.HELP}"></i>
                                         </span>
                                     </dt>
                                     <dd>
@@ -200,7 +200,7 @@
             </g:if>
 
 
-            <g:if test="${params.viewTab == 'additionalInformation' && surveyConfig.subscription && subscription}">
+            <g:if test="${params.viewTab == 'additionalInformation' && surveyConfig.subscription}">
                 <div class="la-inline-lists">
                     <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig    : surveyConfig,
                                                                                           subscription    : subscription,

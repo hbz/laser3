@@ -1,5 +1,5 @@
 <%--  model: [persons, restrictToOrg] --%>
-<%@ page import="de.laser.survey.SurveyOrg; de.laser.utils.LocaleUtils; de.laser.Org; de.laser.Provider; de.laser.Vendor; de.laser.Person; de.laser.PersonRole; de.laser.I10nTranslation;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyOrg; de.laser.utils.LocaleUtils; de.laser.Org; de.laser.Provider; de.laser.Vendor; de.laser.Person; de.laser.PersonRole; de.laser.I10nTranslation;" %>
 
 <g:set var="languageSuffix" value="${LocaleUtils.getCurrentLang()}"/>
 
@@ -152,7 +152,7 @@
                         <g:set var="org" value="${Org.get(orgId.key)}"/>
                         <div class="ui item ">
                                 <div class="la-flexbox">
-                                    <i class="icon university la-list-icon"></i>
+                                    <i class="${Icon.ORG} la-list-icon"></i>
                                     <g:link controller="organisation" action="addressbook"
                                             id="${org.id}">${org.name} (${org.sortname})</g:link>
                                 </div>
@@ -162,7 +162,7 @@
                         <g:set var="provider" value="${Provider.get(providerId.key)}"/>
                         <div class="ui item ">
                                 <div class="la-flexbox">
-                                    <i class="icon handshake la-list-icon"></i>
+                                    <i class="${Icon.PROVIDER} la-list-icon"></i>
                                     <g:link controller="provider" action="addressbook"
                                             id="${provider.id}">${provider.name} (${provider.sortname})</g:link>
                                 </div>
@@ -172,7 +172,7 @@
                         <g:set var="vendor" value="${Vendor.get(venId.key)}"/>
                         <div class="ui item ">
                                 <div class="la-flexbox">
-                                    <i class="icon shipping fast la-list-icon"></i>
+                                    <i class="${Icon.VENDOR} la-list-icon"></i>
                                     <g:link controller="vendor" action="addressbook"
                                             id="${vendor.id}">${vendor.name} (${vendor.sortname})</g:link>
                                 </div>
@@ -337,7 +337,7 @@
                     <button type="button" onclick="JSPC.app.editPerson(${person.id})" class="ui icon button blue la-modern-button"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                        <i aria-hidden="true" class="write icon"></i>
+                        <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                     </button>
 
                     <g:form style="display:inline" controller="person" action="delete" data-confirm-id="${person.id.toString() + '_form'}">
@@ -348,7 +348,7 @@
                              data-confirm-id="${person.id}"
                              role="button"
                              aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="trash alternate outline icon"></i>
+                            <i class="${Icon.CMD.DELETE}"></i>
                         </div>
                     </g:form>
                 </g:if>

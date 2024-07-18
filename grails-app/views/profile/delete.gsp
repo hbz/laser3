@@ -1,4 +1,4 @@
-<%@ page import="de.laser.auth.User; de.laser.DeletionService" %>
+<%@ page import="de.laser.ui.Btn; de.laser.auth.User; de.laser.DeletionService" %>
 
 <laser:htmlStart message="profile" serviceInjection="true" />
 
@@ -13,18 +13,18 @@
     <g:if test="${delResult}">
 
         <g:if test="${delResult.status == DeletionService.RESULT_CUSTOM}">
-            <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.custom.msg.user" />
+            <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="deletion.custom.msg.user" />
         </g:if>
         <g:if test="${delResult.status == DeletionService.RESULT_BLOCKED}">
-            <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.user" />
+            <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.user" />
         </g:if>
         <g:if test="${delResult.status == DeletionService.RESULT_ERROR}">
-            <ui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
+            <ui:msg class="error" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
         </g:if>
 
         <g:form controller="profile" action="delete" data-confirm-id="deleteProfile_form" params="${[id: user.id, process: true]}">
 
-            <g:link controller="profile" action="index" class="ui button">${message(code: 'default.button.cancel.label')}</g:link>
+            <g:link controller="profile" action="index" class="${Btn.SIMPLE}">${message(code: 'default.button.cancel.label')}</g:link>
 
             <g:if test="${delResult.deletable}">
                 <g:if test="${delResult.status == DeletionService.RESULT_SUBSTITUTE_NEEDED}">
@@ -44,8 +44,8 @@
                         </div>
                     </g:if>
                     <g:else>
-                        <input disabled type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
-                        <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="user.delete.substitute.missing" />
+                        <input disabled type="submit" class="${Btn.NEGATIVE}" value="${message(code:'deletion.user')}" />
+                        <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="user.delete.substitute.missing" />
                     </g:else>
                 </g:if>
                 <g:elseif test="${delResult.status != DeletionService.RESULT_ERROR}">
@@ -56,7 +56,7 @@
                 </g:elseif>
             </g:if>
             <g:else>
-                <input disabled type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
+                <input disabled type="submit" class="${Btn.NEGATIVE}" value="${message(code:'deletion.user')}" />
             </g:else>
 
         </g:form>

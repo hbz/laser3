@@ -43,8 +43,6 @@ import javax.servlet.ServletOutputStream
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Year
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 /**
  * This controller manages AJAX calls which result in object manipulation and / or do not deliver clearly either HTML or JSON.
@@ -61,7 +59,6 @@ class AjaxController {
     DashboardDueDatesService dashboardDueDatesService
     IdentifierService identifierService
     FilterService filterService
-    PendingChangeService pendingChangeService
     PropertyService propertyService
     SubscriptionControllerService subscriptionControllerService
     SubscriptionService subscriptionService
@@ -125,24 +122,24 @@ class AjaxController {
             cols:['name'],
             format:'map'
     ],
-    "CommercialOrgs" : [
-            domain:'Org',
-            countQry:"select count(*) from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
-            rowQry:"select o from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
-            qryParams:[
-                    [
-                            param:'sSearch',
-                            onameClosure: { value ->
-                                String result = '%'
-                                if ( value && ( value.length() > 0 ) )
-                                    result = "%${value.trim().toLowerCase()}%"
-                                result
-                            }
-                    ]
-            ],
-            cols:['name'],
-            format:'map'
-    ]
+//    "CommercialOrgs" : [
+//            domain:'Org',
+//            countQry:"select count(*) from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
+//            rowQry:"select o from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
+//            qryParams:[
+//                    [
+//                            param:'sSearch',
+//                            onameClosure: { value ->
+//                                String result = '%'
+//                                if ( value && ( value.length() > 0 ) )
+//                                    result = "%${value.trim().toLowerCase()}%"
+//                                result
+//                            }
+//                    ]
+//            ],
+//            cols:['name'],
+//            format:'map'
+//    ]
   ]
 
     /**
@@ -1738,109 +1735,6 @@ class AjaxController {
     }
 
     /**
-     * Adds a new object to a given collection. Currently only used for UserController.edit()
-     */
-    @Transactional
-    @Secured(['ROLE_USER'])
-  def addToCollection() {
-    log.debug("AjaxController::addToCollection ${params}");
-
-    def contextObj = resolveOID2(params.__context)
-    Class dc = CodeUtils.getDomainClass( params.__newObjectClass )
-    if ( dc ) {
-
-        if ( contextObj ) {
-            log.debug("Create a new instance of ${params.__newObjectClass}")
-
-            def new_obj = dc.newInstance()
-            PersistentEntity new_obj_pe = CodeUtils.getPersistentEntity(dc.name)
-
-            new_obj_pe.persistentProperties.each { p ->
-                if ( params[p.name] ) {
-                    log.debug("set simple prop ${p.name} = ${params[p.name]}")
-                    new_obj[p.name] = params[p.name]
-                }
-            }
-            new_obj_pe.associations.each { p ->
-                if ( params[p.name] ) {
-                    if ( p.toString().startsWith('one-to-one:') || p.toString().startsWith('many-to-one:') ) { // TODO -- implementation
-                        // Set ref property
-                        log.debug("set assoc ${p.name} to lookup of OID ${params[p.name]}")
-                        // if ( key == __new__ then we need to create a new instance )
-                        def new_assoc = resolveOID2(params[p.name])
-                        if (new_assoc){
-                            new_obj[p.name] = new_assoc
-                        }
-                    }
-                    else {
-                        // Add to collection
-                        log.debug("add to collection ${p.name} for OID ${params[p.name]}")
-                        new_obj[p.name].add(resolveOID2(params[p.name]))
-                    }
-                }
-            }
-
-        if ( params.__recip ) {
-          // log.debug("Set reciprocal property ${params.__recip} to ${contextObj}");
-          new_obj[params.__recip] = contextObj
-        }
-
-        // log.debug("Saving ${new_obj}");
-        try{
-          if ( new_obj.save() ) {
-            log.debug("Saved OK")
-          }
-          else {
-            flash.domainError = new_obj
-            new_obj.errors.each { e ->
-              log.debug("Problem: ${e}")
-            }
-          }
-        }catch(Exception ex){
-
-            flash.domainError = new_obj
-            new_obj.errors.each { e ->
-            log.debug("Problem: ${e}")
-            }
-        }
-      }
-      else {
-        log.debug("Unable to locate instance of context class with oid ${params.__context}");
-      }
-    }
-    else {
-      log.error("Unable to lookup domain class ${params.__newObjectClass}");
-    }
-    redirect(url: request.getHeader('referer'))
-  }
-
-    /**
-     * Resolves the given oid and returns the object if found
-     * @param oid the oid key to resolve
-     * @return the object matching to the given oid, null otherwise
-     */
-    @Secured(['ROLE_USER'])
-  def resolveOID2(String oid) {
-    String[] oid_components = oid.split(':')
-    def result
-
-    Class dc = CodeUtils.getDomainClass(oid_components[0])
-    if (dc) {
-      if (oid_components[1] == '__new__') {
-        result = dc.refdataCreate(oid_components)
-        // log.debug("Result of create ${oid} is ${result?.id}");
-      }
-      else {
-        result = dc.get(oid_components[1])
-      }
-    }
-    else {
-      log.error("resolve OID failed to identify a domain class. Input was ${oid_components}");
-    }
-    result
-  }
-
-    /**
      * Revokes the given affiliation from the given user to the given institution.
      * Expected is a structure userId:orgId:roleId
      * @return redirects to the referer
@@ -1878,7 +1772,7 @@ class AjaxController {
         log.debug("editableSetValue ${params}")
 
         def result = null
-        def target_object = resolveOID2(params.pk)
+        def target_object = genericOIDService.resolveOID(params.pk)
 
         try {
             if (target_object) {
@@ -1970,6 +1864,11 @@ class AjaxController {
                         if (target_object."${params.name}" instanceof Boolean) {
                             params.value = params.value?.equals("1")
                         }
+                        if (target_object instanceof AlternativeName) {
+                            if(!params.value)
+                                binding_properties[params.name] = 'Unknown'
+                            else binding_properties[params.name] = params.value
+                        }
                         if (params.value instanceof String) {
                             String value = params.value.startsWith('www.') ? ('http://' + params.value) : params.value
                             binding_properties[params.name] = value
@@ -2056,13 +1955,30 @@ class AjaxController {
         outs.close()
     }
 
+    @Secured(['ROLE_USER'])
+    def addUserRole() {
+        // TODO -- check permissions
+        // TODO -- check permissions
+        // TODO -- check permissions
+        User user = genericOIDService.resolveOID(params.user) as User
+        Role role = genericOIDService.resolveOID(params.role) as Role
+        if (user && role) {
+            UserRole ur = UserRole.create(user, role)
+
+            if (ur.hasErrors()) {
+                flash.error = "${message(code: 'default.save.error.general.message')}"
+            }
+        }
+        redirect(url: request.getHeader('referer'))
+    }
+
     /**
      * Revokes the given role from the given user
      */
     @Secured(['ROLE_USER'])
     def removeUserRole() {
-        User user = resolveOID2(params.user) as User
-        Role role = resolveOID2(params.role) as Role
+        User user = genericOIDService.resolveOID(params.user) as User
+        Role role = genericOIDService.resolveOID(params.role) as Role
         if (user && role) {
             UserRole.remove(user, role)
         }
@@ -2135,68 +2051,6 @@ class AjaxController {
             redirect(url: request.getHeader('referer'))
             return
         }
-    }
-
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    def dashboardChangesSetAccept() {
-        _setDashboardChangesStatus(RDStore.PENDING_CHANGE_ACCEPTED)
-    }
-
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    def dashboardChangesSetReject() {
-        _setDashboardChangesStatus(RDStore.PENDING_CHANGE_REJECTED)
-    }
-
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    @Transactional
-    private _setDashboardChangesStatus(RefdataValue refdataValue){
-        log.debug("DsetDashboardChangesStatus - refdataValue="+refdataValue.value)
-
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result.institution = contextService.getOrg()
-        flash.error = ''
-
-        if (! (result.user as User).isFormal(result.institution as Org)) {
-            flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
-            response.sendError(HttpStatus.SC_FORBIDDEN)
-            return
-        }
-
-        if (params.id) {
-            PendingChange pc = PendingChange.get(params.long('id'))
-            if (pc){
-                pc.status = refdataValue
-                pc.actionDate = new Date()
-                if(!pc.save()) {
-                    throw new ChangeAcceptException("problems when submitting new pending change status: ${pc.errors}")
-                }
-            } else {
-                flash.error += message(code:'dashboardChanges.err.toChangeStatus.doesNotExist')
-            }
-        } else {
-            flash.error += message(code:'dashboardChanges.err.toChangeStatus.doesNotExist')
-        }
-
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
-        result.acceptedOffset = params.acceptedOffset ? params.int("acceptedOffset") : result.offset
-        result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
-        def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
-        Map<String, Object> pendingChangeConfigMap = [
-                contextOrg: result.institution,
-                consortialView: (result.institution as Org).isCustomerType_Consortium(),
-                periodInDays:periodInDays,
-                max:result.max,
-                acceptedOffset:result.acceptedOffset,
-                pendingOffset: result.pendingOffset
-        ]
-        Map<String, Object> changes = pendingChangeService.getChanges(pendingChangeConfigMap)
-        changes.max = result.max
-        changes.editable = result.editable
-        render template: '/myInstitution/changesWrapper', model: changes
     }
 
     /**

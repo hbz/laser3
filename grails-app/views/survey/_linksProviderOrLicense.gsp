@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.Subscription; de.laser.License" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription; de.laser.License" %>
 <laser:serviceInjection/>
 <div class="content">
     <g:if test="${linkType == 'License'}">
@@ -20,7 +20,7 @@
                             params="${[unlinkLicense: true, surveyConfigID: surveyConfig.id, id: surveyInfo.id]}"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                        <i class="unlink icon"></i>
+                        <i class="${Icon.CMD.UNLINK}"></i>
                     </g:link>
                 </span>
             </g:if>
@@ -47,7 +47,7 @@
                             params="${[unlinkProvider: true, surveyConfigID: surveyConfig.id, id: surveyInfo.id]}"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                        <i class="unlink icon"></i>
+                        <i class="${Icon.CMD.UNLINK}"></i>
                     </g:link>
                 </span>
             </g:if>

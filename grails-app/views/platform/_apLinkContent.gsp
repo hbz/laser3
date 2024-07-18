@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Icon" %>
 <ui:filter simple="true">
     <g:form action="linkAccessPoint" controller="platform" method="get" class="ui small form">
         <input type="hidden" name="platform_id" value="${platformInstance.id}">
@@ -45,12 +46,12 @@
                     <g:link controller="platform" action="removeAccessPoint" id="${platformInstance.id}" params="[oapl_id: oapl.id]" onclick="return confirm('Zugangspunkt entfernen?')"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                        <i class="trash icon red"></i>
+                        <i class="${Icon.CMD.DELETE} red"></i>
                     </g:link>
                 </g:if>
                 <g:else>
                     <g:link controller="platform" action="linkAccessPoint" id="${platformInstance.id}" params="[oapl_id: oapl.id]" onclick="return confirm('Zugangspunkt hinzufügen?')">
-                        <i class="linkify icon"></i>
+                        <i class="${Icon.CMD.LINKIFY}"></i>
                     </g:link>
                 </g:else>
             </td>

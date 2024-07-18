@@ -1,4 +1,4 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
     <g:if test="${institutionalView}">
         <g:set var="entityName" value="${message(code: 'org.institution.label')}"/>
@@ -33,7 +33,7 @@
 
 <g:if test="${missing.size() > 0}">
     <div class="ui icon message warning">
-        <i class="info icon"></i>
+        <i class="${Icon.UI.WARNING}"></i>
         <div class="content">
             <div class="header">${message(code: 'org.eInvoice.info.header')}</div>
             ${message(code: 'org.eInvoice.info.text')}
@@ -65,11 +65,7 @@
                     <dl>
                         <dt><g:message code="default.name.label" /></dt>
                         <dd>
-                            <ui:xEditable
-                                    data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                    data_confirm_term_how="ok"
-                                    class="js-open-confirm-modal-xEditable"
-                                    owner="${orgInstance}" field="name"
+                            <ui:xEditable owner="${orgInstance}" field="name"
                                     overwriteEditable="${editable}"/>
                         </dd>
                     </dl>
@@ -77,44 +73,36 @@
                         <dl>
                             <dt><g:message code="org.sortname.label" /></dt>
                             <dd>
-                                <ui:xEditable
-                                        data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                        data_confirm_term_how="ok"
-                                        class="js-open-confirm-modal-xEditable"
-                                        owner="${orgInstance}" field="sortname" overwriteEditable="${editable && !orgInstance.gokbId}"/>
+                                <ui:xEditable owner="${orgInstance}" field="sortname" overwriteEditable="${editable}"/>
                             </dd>
                         </dl>
                     </g:if>
                     <dl>
                         <dt><g:message code="org.altname.label" /></dt>
                         <dd>
-                            <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion">
+                            <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion la-accordion-showMore">
                                 <g:if test="${orgInstance.altnames}">
-                                    <div class="title" id="altname_title">
-                                        <div data-objId="${genericOIDService.getOID(orgInstance.altnames[0])}">
-                                            <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                          data_confirm_term_how="ok"
-                                                          class="js-open-confirm-modal-xEditable"
-                                                          owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable}"/>
+                                    <div class="item title" id="altname_title">
+                                        <div class="item" data-objId="${genericOIDService.getOID(orgInstance.altnames[0])}">
+                                            <ui:xEditable owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable}"/>
                                             <g:if test="${editable}">
                                                 <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [orgInstance.altnames[0].name])}"
                                                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(orgInstance.altnames[0])}')">
-                                                    <i class="trash alternate outline icon"></i>
+                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                 </ui:remoteLink>
                                             </g:if>
                                         </div>
-                                        <i class="dropdown icon"></i>
+                                        <div class="ui icon blue button la-show-button la-modern-button la-popup-tooltip la-delay"
+                                             data-content="${message(code: 'org.altname.show')}">
+                                            <i class="${Icon.CMD.SHOW_MORE}"></i>
+                                        </div>
                                     </div>
                                     <div class="content">
                                         <g:each in="${orgInstance.altnames.drop(1)}" var="altname">
                                             <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
                                                 <div class="content la-space-right">
-                                                    <ui:xEditable
-                                                            data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                            data_confirm_term_how="ok"
-                                                            class="js-open-confirm-modal-xEditable"
-                                                            owner="${altname}" field="name" overwriteEditable="${editable}"/>
+                                                    <ui:xEditable owner="${altname}" field="name" overwriteEditable="${editable}"/>
                                                 </div>
                                                 <g:if test="${editable}">
                                                     <div class="content la-space-right">
@@ -122,7 +110,7 @@
                                                             <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                            data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                <i class="trash alternate outline icon"></i>
+                                                                <i class="${Icon.CMD.DELETE}"></i>
                                                             </ui:remoteLink>
                                                         </div>
                                                     </div>
@@ -140,11 +128,7 @@
                     <dl>
                         <dt><g:message code="default.url.label"/></dt>
                         <dd>
-                            <ui:xEditable
-                                    data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                    data_confirm_term_how="ok"
-                                    class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                    owner="${orgInstance}" type="url" field="url"  overwriteEditable="${editable}"/>
+                            <ui:xEditable owner="${orgInstance}" type="url" field="url"  overwriteEditable="${editable}"/>
                             <g:if test="${orgInstance.url}">
                                 <ui:linkWithIcon href="${orgInstance.url}" />
                             </g:if>
@@ -155,6 +139,7 @@
                             <dt><g:message code="org.customerType.label"/></dt>
                             <dd>
                                 ${orgInstance.getCustomerTypeI10n()}
+%{--                                <ui:customerTypeIcon org="${orgInstance}" />--}%
                             </dd>
                         </dl>
                     </g:if>
@@ -164,7 +149,7 @@
                                 <g:message code="org.legalPatronName.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.legalPatronName.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -176,7 +161,7 @@
                                 <g:message code="org.urlGov.label"/>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.urlGov.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -198,7 +183,7 @@
                                 <g:message code="org.linkResolverBase.label"/>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.linkResolverBase.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -210,7 +195,7 @@
                                 <g:message code="org.eInvoice.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.eInvoice.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -222,7 +207,7 @@
                                 <g:message code="org.eInvoicePortal.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.eInvoicePortal.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -236,12 +221,6 @@
             <%--
             <div class="ui card">
                 <div class="content">
-                    <dl>
-                        <dt><g:message code="org.sector.label" /></dt>
-                        <dd>
-                            <ui:xEditableRefData owner="${orgInstance}" field="sector" config="${RDConstants.ORG_SECTOR}" overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor}"/>
-                        </dd>
-                    </dl>
                     <dl>
                         <dt>${message(code: 'default.status.label')}</dt>
                         <dd>
@@ -303,7 +282,7 @@
                                                             action="unlinkOrg" params="[id: orgInstance.id, combo: row.id]"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                        <i class="unlink icon"></i>
+                                                        <i class="${Icon.CMD.UNLINK}"></i>
                                                     </g:link>
                                                 </span>
                                             </g:if>
@@ -359,7 +338,7 @@
                                 <g:message code="org.libraryType.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.libraryType.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -407,7 +386,7 @@
                                 <g:message code="org.libraryNetwork.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.libraryNetwork.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -420,7 +399,7 @@
                                 <g:message code="org.funderType.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.funderType.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -432,7 +411,7 @@
                                 <g:message code="org.funderHSK.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.funderHSK.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -444,7 +423,7 @@
                                 <g:message code="address.country.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.country.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -455,7 +434,7 @@
                                 <g:message code="org.region.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.region.expl')}">
-                                    <i class="question circle icon"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -575,9 +554,10 @@
                             <%--
                             <g:if test="${(orgInstance.id == institution.id && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR'))}">
                                 <g:link action="contacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
-                                        class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
+                                        class="${Btn.SIMPLE}">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                             </g:if>
                             --%>
+
                         <g:if test="${PersonRole.executeQuery('select pr from Person p join p.roleLinks pr where pr.org = :org and ((p.isPublic = false and p.tenant = :ctx) or p.isPublic = true)', [org: orgInstance, ctx: institution]) ||
                                 Address.executeQuery('select a from Address a where a.org = :org and (a.tenant = :ctx or a.tenant = null)', [org: orgInstance, ctx: institution])}">
                             <table class="ui compact table">
@@ -591,10 +571,10 @@
                                                             <div class="row">
                                                                 <div class="two wide column">
                                                                     <g:if test="${prs.isPublic}">
-                                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                        <i class="${Icon.UI.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                                     </g:if>
                                                                     <g:else>
-                                                                        <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                        <i class="${Icon.UI.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                     </g:else>
                                                                 </div>
                                                                 <div class="fourteen wide column">
@@ -631,10 +611,10 @@
                                                             <div class="row">
                                                                 <div class="two wide column">
                                                                     <g:if test="${prs.isPublic}">
-                                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                        <i class="${Icon.UI.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                                     </g:if>
                                                                     <g:else>
-                                                                        <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                        <i class="${Icon.UI.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                     </g:else>
                                                                 </div>
                                                                 <div class="fourteen wide column">
@@ -763,10 +743,10 @@
                                                             <div class="row">
                                                                 <div class="two wide column">
                                                                     <g:if test="${person.isPublic}">
-                                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                        <i class="${Icon.UI.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                                     </g:if>
                                                                     <g:else>
-                                                                        <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                        <i class="${Icon.UI.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                     </g:else>
                                                                 </div>
                                                                 <div class="fourteen wide column">
@@ -855,10 +835,10 @@
                                                                 <div class="row">
                                                                     <div class="two wide column">
                                                                         <g:if test="${person.isPublic}">
-                                                                            <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                            <i class="${Icon.UI.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                                         </g:if>
                                                                         <g:else>
-                                                                            <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                            <i class="${Icon.UI.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                                         </g:else>
                                                                     </div>
                                                                     <div class="fourteen wide column">

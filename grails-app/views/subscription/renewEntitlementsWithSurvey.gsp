@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.remote.ApiSource; de.laser.Org" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.remote.ApiSource; de.laser.Org" %>
 <laser:htmlStart message="subscription.details.renewEntitlements.label" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -122,14 +122,14 @@
             <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
                 <g:link controller="survey" action="evaluationParticipant"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: subscriber.id]"
-                        class="ui button">
+                        class="${Btn.SIMPLE}">
                     <g:message code="surveyInfo.backToSurvey"/>
                 </g:link>
             </g:if>
             <g:else>
                 <g:link controller="myInstitution" action="surveyInfos"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]"
-                        class="ui button">
+                        class="${Btn.SIMPLE}">
                     <g:message code="surveyInfo.backToSurvey"/>
                 </g:link>
             </g:else>
@@ -139,9 +139,7 @@
 <br />
 
 <g:if test="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, subscriber).finishDate != null}">
-    <ui:msg class="positive" icon="info" noClose="true">
-        <g:message code="renewEntitlementsWithSurvey.finish.info"/>.
-    </ui:msg>
+    <ui:msg class="success" showIcon="true" hideClose="true" message="renewEntitlementsWithSurvey.finish.info" />
 </g:if>
 
 <g:if test="${participant}">
@@ -177,7 +175,7 @@
 </g:if>
 
 <g:if test="${selectProcess}">
-    <ui:msg class="positive" header="${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.label')}">
+    <ui:msg class="success" header="${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.label')}">
             <g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.selectProcess"
                        args="[selectProcess.processCount, selectProcess.processRows, selectProcess.countSelectTipps, selectProcess.countNotSelectTipps, g.createLink(controller: 'subscription', action: 'renewEntitlementsWithSurvey', params: [id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs'])]"/>
     </ui:msg>
@@ -195,7 +193,7 @@
 
             <h4 class="ui dividing header"><g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.label"/>
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'renewEntitlementsWithSurvey.issueEntitlementSelect.info')}">
-                <i class="question circle icon"></i>
+                <i class="${Icon.TOOLTIP.HELP}"></i>
             </span></h4>
 
             <div class="two fields">
@@ -217,8 +215,8 @@
                         <input type="file" id="kbartPreselect" name="kbartPreselect" accept="text/tab-separated-values"
                                style="display: none;">
 
-                        <div class="ui icon button">
-                            <i class="attach icon"></i>
+                        <div class="${Btn.BASIC_ICON}">
+                            <i class="${Icon.CMD.ATTACHMENT}"></i>
                         </div>
                     </div>
                 </div>
@@ -226,7 +224,7 @@
                 <div class="field">
                     <input type="submit"
                            value="${message(code: 'renewEntitlementsWithSurvey.issueEntitlementSelect.uploadButton')}"
-                           class="fluid ui button"/>
+                           class="${Btn.SIMPLE} fluid"/>
                 </div>
             </div>
         </g:form>
@@ -270,7 +268,7 @@
         <g:message code="renewEntitlementsWithSurvey.currentTitles"/>
             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                   data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitles.mouseover')}">
-                <i class="question circle icon"></i>
+                <i class="${Icon.TOOLTIP.HELP}"></i>
             </span>
         <div class="ui circular label">${countCurrentPermanentTitles}</div>
     </g:link>
@@ -364,14 +362,14 @@
         <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
             <g:link controller="survey" action="evaluationParticipant"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: subscriber.id]"
-                    class="ui button right floated">
+                    class="${Btn.SIMPLE} right floated">
                 <g:message code="surveyInfo.backToSurvey"/>
             </g:link>
         </g:if>
         <g:else>
             <g:link controller="myInstitution" action="surveyInfos"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]"
-                    class="ui button right floated">
+                    class="${Btn.SIMPLE} right floated">
                 <g:message code="surveyInfo.backToSurvey"/>
             </g:link>
         </g:else>

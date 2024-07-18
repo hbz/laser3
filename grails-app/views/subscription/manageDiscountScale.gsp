@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Subscription; de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Subscription; de.laser.finance.CostItem" %>
 <laser:htmlStart message="subscription.details.manageDiscountScale.label" />
 
 <laser:serviceInjection/>
@@ -31,7 +31,7 @@
 <ui:messages data="${flash}"/>
 
 <g:if test="${editable}">
-    <input class="ui button" value="${message(code: 'subscription.details.createDiscountScale.label')}"
+    <input class="${Btn.SIMPLE}" value="${message(code: 'subscription.details.createDiscountScale.label')}"
            data-ui="modal" data-href="#createDiscountScaleModal" type="submit">
 </g:if>
 
@@ -59,7 +59,7 @@
                                     params="${[cmd: 'removeDiscountScale', discountScaleId: discountScale.id, id: subscription.id]}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate outline icon"></i>
+                                <i class="${Icon.CMD.DELETE}"></i>
                             </g:link>
                         </g:if>
                         <g:else>
@@ -67,7 +67,7 @@
                                 <button class="ui disabled button la-modern-button  la-selectable-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </button>
                             </div>
                         </g:else>

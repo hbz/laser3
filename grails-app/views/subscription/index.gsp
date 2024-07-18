@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IssueEntitlementCoverage; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.IssueEntitlementCoverage; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart message="subscription.details.current_ent" serviceInjection="true"/>
 
@@ -26,14 +26,7 @@
 <laser:render template="nav"/>
 
 <g:if test="${permanentTitlesProcessRunning}">
-    <div class="ui icon warning message">
-        <i class="info icon"></i>
-        <div class="content">
-            <div class="header">Info</div>
-
-            <p>${message(code: 'subscription.details.permanentTitlesProcessRunning.info')}</p>
-        </div>
-    </div>
+    <ui:msg class="warning" showIcon="true" hideClose="true" header="Info" message="subscription.details.permanentTitlesProcessRunning.info" />
 </g:if>
 
 <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
@@ -41,24 +34,24 @@
 </g:if>
 
 <g:if test="${enrichmentProcess}">
-    <ui:msg class="positive" header="${message(code: 'subscription.details.issueEntitlementEnrichment.label')}">
+    <ui:msg class="success" header="${message(code: 'subscription.details.issueEntitlementEnrichment.label')}">
         <g:message code="subscription.details.issueEntitlementEnrichment.enrichmentProcess"
                    args="[enrichmentProcess.countIes, enrichmentProcess.processCount, enrichmentProcess.processCountChangesCoverageDates, enrichmentProcess.processCountChangesPrice]"/>
     </ui:msg>
 
     <g:if test="${truncatedRows}">
-        <ui:msg icon="ui exclamation icon" class="error" message="subscription.details.addEntitlements.truncatedRows" args="[truncatedRows]"/>
+        <ui:msg class="error" showIcon="true" message="subscription.details.addEntitlements.truncatedRows" args="[truncatedRows]"/>
     </g:if>
     <g:if test="${errorKBART}">
-        <ui:msg icon="ui exclamation icon" class="error" message="subscription.details.addEntitlements.titleNotMatched" args="[errorCount]"/>
-        <g:link class="ui icon button la-modern-button" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="ui icon download"></i></g:link>
+        <ui:msg class="error" showIcon="true" message="subscription.details.addEntitlements.titleNotMatched" args="[errorCount]"/>
+        <g:link class="ui icon button la-modern-button" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
     </g:if>
 
 </g:if>
 
 <g:if test="${deletedSPs}">
-    <div class="ui exclamation icon negative message">
-        <i class="exclamation icon"></i>
+    <div class="ui icon error message">
+        <i class="${Icon.UI.ERROR}"></i>
         <ul class="list">
             <g:each in="${deletedSPs}" var="sp">
                 <li><g:message code="subscription.details.packagesDeleted.header"
@@ -69,8 +62,8 @@
 </g:if>
 
 <g:if test="${frozenHoldings}">
-    <div class="ui exclamation icon negative message">
-        <i class="exclamation icon"></i>
+    <div class="ui icon error message">
+        <i class="${Icon.UI.ERROR}"></i>
         <ul class="list">
             <g:each in="${frozenHoldings}" var="sp">
                 <li><g:message code="subscription.details.frozenHoldings.header"
@@ -106,7 +99,8 @@
                         <h4 class="ui header"><g:message code="subscription.details.issueEntitlementEnrichment.label"/></h4>
 
                         <ui:msg class="warning" header="${message(code: "message.attention")}"
-                                message="subscription.details.addEntitlements.warning"/>
+                                    message="subscription.details.addEntitlements.warning"/>
+
                         <g:form class="ui form" controller="subscription" action="index"
                                 params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscription.id]}"
                                 method="post" enctype="multipart/form-data">
@@ -119,8 +113,8 @@
                                                accept="text/tab-separated-values, text/plain"
                                                style="display: none;">
 
-                                        <div class="ui icon button">
-                                            <i class="attach icon"></i>
+                                        <div class="${Btn.SIMPLE_ICON}">
+                                            <i class="${Icon.CMD.ATTACHMENT}"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -142,7 +136,7 @@
                                 <div class="field">
                                     <input type="submit"
                                            value="${message(code: 'subscription.details.addEntitlements.preselect')}"
-                                           class="fluid ui button"/>
+                                           class="${Btn.SIMPLE} fluid"/>
                                 </div>
                             </div>
                         </g:form>
@@ -491,7 +485,7 @@
                                                         <div class="right aligned wide column">
                                                         </div>
                                                         <div class="ui icon blue button la-modern-button">
-                                                            <i class="ui angle double down icon"></i>
+                                                            <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                         </div>
                                                         <g:if test="${editable}">
                                                             <g:if test="${subscription.ieGroups.size() > 0}">
@@ -502,7 +496,7 @@
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.tipp.name])}"
                                                                         data-confirm-term-how="delete"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="trash alternate outline icon"></i>
+                                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                                 </g:link>
                                                             </g:if>
                                                             <g:else>
@@ -513,7 +507,7 @@
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.tipp.name])}"
                                                                         data-confirm-term-how="delete"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="trash alternate outline icon"></i>
+                                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                                 </g:link>
                                                             </g:else>
                                                         </g:if>
@@ -571,7 +565,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.coverageDepth}">
                                                                 <div class="item">
-                                                                    <i class="grey icon file alternate right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>
+                                                                    <i class="grey ${Icon.SYM.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>
                                                                     <div class="content">
                                                                         <div class="header">
                                                                             ${message(code: 'tipp.coverageDepth')}
@@ -612,13 +606,12 @@
                                                         <div class="ui list">
                                                             <g:if test="${ie}">
                                                                 <div class="item">
-                                                                    <i class="grey icon edit la-popup-tooltip la-delay"
+                                                                    <i class="grey ${Icon.CMD.EDIT} la-popup-tooltip la-delay"
                                                                        data-content="${message(code: 'issueEntitlement.myNotes')}"></i>
                                                                     <div class="content">
                                                                         <div class="header"><g:message code="issueEntitlement.myNotes"/></div>
                                                                         <div class="description">
-                                                                            <ui:xEditable owner="${ie}" type="text"
-                                                                                          field="notes"/>
+                                                                            <ui:xEditable owner="${ie}" type="text" field="notes"/>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -632,7 +625,7 @@
                                                             <hr>
                                                             <g:if test="${editable}">
                                                                 <button class="ui tiny button addObject" data-objType="priceItem" data-ie="${ie.id}">
-                                                                    <i class="money icon"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
+                                                                    <i class="${Icon.FNC.COST_CONFIG}"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
                                                                 </button>
                                                             </g:if>
 

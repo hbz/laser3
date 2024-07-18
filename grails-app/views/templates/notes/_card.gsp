@@ -1,4 +1,4 @@
-<%@ page import="de.laser.DocContext; de.laser.Doc; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Icon; de.laser.DocContext; de.laser.Doc; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <%
@@ -30,11 +30,6 @@
                                 <a onclick="JSPC.app.editNote(${docctx.owner.id});" class="la-js-toggle-showThis">
                                     ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
                                 </a>
-                                <g:if test="${controllerName != 'organisation' && controllerName != 'survey'}">
-                                    <a onclick="JSPC.app.readNote(${docctx.owner.id});" class="la-js-toggle-hideThis hidden">%{-- ERMS-5172 - workaround --}%
-                                        ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
-                                    </a>
-                                </g:if>
                             </g:if>
                             <g:else>
                                 <a onclick="JSPC.app.readNote(${docctx.owner.id});">
@@ -89,7 +84,7 @@
 %{--                            <g:else>--}%
 %{--                                    <!-- Hidden Fake Button To hold the other Botton in Place -->--}%
 %{--                                    <div class="ui icon mini button la-hidden">--}%
-%{--                                        <i class="fake icon"></i>--}%
+%{--                                        <i class="${Icon.UNC.PLACEHOLDER}"></i>--}%
 %{--                                    </div>--}%
 %{--                            </g:else>--}%
                             <%-- 2 --%>
@@ -100,12 +95,12 @@
                                         params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
                                 <div class="ui icon button la-hidden">
-                                    <i class="fake icon"></i><%-- Hidden Fake Button --%>
+                                    <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>
                                 </div>
                             </g:else>
                         </div>
@@ -144,7 +139,7 @@
                             <div class="four wide column">
 %{--                                <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id}">--}%
 %{--                                    <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />--}%
-%{--                                    <button type="button" class="ui icon blue button la-modern-button" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>--}%
+%{--                                    <button type="button" class="ui icon blue button la-modern-button" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="${Icon.CMD.EDIT}"></i></button>--}%
 %{--                                </g:if>--}%
                             </div>
                         </div>

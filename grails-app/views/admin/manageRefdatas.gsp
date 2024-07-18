@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.RefdataValue; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.RefdataValue; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <laser:htmlStart message="menu.admin.manageRefdatas" />
 
@@ -14,13 +14,13 @@
             <div class="content ui form">
                 <div class="fields">
                     <div class="field">
-                        <button class="ui button" value="" data-href="#addRefdataValueModal" data-ui="modal">${message(code:'refdataValue.create_new.label')}</button>
+                        <button class="${Btn.SIMPLE}" value="" data-href="#addRefdataValueModal" data-ui="modal">${message(code:'refdataValue.create_new.label')}</button>
                     </div>
                     <div class="field">
-                        <button class="ui button" value="" data-href="#addRefdataCategoryModal" data-ui="modal">${message(code:'refdataCategory.create_new.label')}</button>
+                        <button class="${Btn.SIMPLE}" value="" data-href="#addRefdataCategoryModal" data-ui="modal">${message(code:'refdataCategory.create_new.label')}</button>
                     </div>
                     <div class="field">
-                        <g:link class="ui button" action="manageRefdataIntegrityCheck"><i class="icon wrench"></i> ${message(code:'default.integrityCheck.label')}</g:link>
+                        <g:link class="${Btn.SIMPLE}" action="manageRefdataIntegrityCheck"><i class="icon wrench"></i> ${message(code:'default.integrityCheck.label')}</g:link>
                     </div>
                 </div>
             </div>
@@ -75,13 +75,13 @@
                                     <td>
                                         <g:if test="${rdv.isHardData}">
                                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="check circle icon green"></i>
+                                                <i class="${Icon.PROP.HARDDATA}"></i>
                                             </span>
                                         </g:if>
 
                                         <g:if test="${usedRdvList?.contains(rdv.id)}">
                                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataIsUsed.tooltip', args:[rdv.id])}">
-                                                <i class="info circle icon blue"></i>
+                                                <i class="${Icon.PROP.IN_USE}"></i>
                                             </span>
                                         </g:if>
                                     </td>
@@ -108,21 +108,21 @@
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedRdvList?.contains(rdv.id)}">
                                                 <span data-position="top rightla-popup-tooltip la-delay" data-content="${message(code:'refdataValue.exchange.label')}">
-                                                    <button class="ui icon button la-modern-button" data-href="#replaceRefdataValueModal" data-ui="modal"
+                                                    <button class="${Btn.MODERN.SIMPLE_ICON}" data-href="#replaceRefdataValueModal" data-ui="modal"
                                                             data-xcg-rdv="${rdv.class.name}:${rdv.id}"
                                                             data-xcg-rdc="${rdc.class.name}:${rdc.id}"
                                                             data-xcg-debug="${rdv.getI10n('value')} (${rdv.value})"
-                                                    ><i class="exchange icon"></i></button>
+                                                    ><i class="${Icon.CMD.REPLACE}"></i></button>
                                                 </span>
                                             </g:if>
                                         </sec:ifAnyGranted>
 
                                         <g:if test="${! rdv.isHardData && ! usedRdvList?.contains(rdv.id)}">
                                             <g:link controller="admin" action="manageRefdatas"
-                                                    params="${[cmd: 'deleteRefdataValue', rdv: RefdataValue.class.name + ':' + rdv.id]}" class="ui icon negative button la-modern-button"
+                                                    params="${[cmd: 'deleteRefdataValue', rdv: RefdataValue.class.name + ':' + rdv.id]}" class="${Btn.MODERN.NEGATIVE_ICON}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="trash alternate outline icon"></i>
+                                                <i class="${Icon.CMD.DELETE}"></i>
                                             </g:link>
                                         </g:if>
                                     </td>

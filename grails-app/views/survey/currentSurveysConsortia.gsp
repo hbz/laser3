@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart message="currentSurveys.label" serviceInjection="true" />
 
@@ -190,9 +190,8 @@
 
             <div class="field la-field-right-aligned">
                 <g:link controller="survey" action="currentSurveysConsortia"
-                        class="ui reset secondary button">${message(code: 'default.button.reset.label')}</g:link>
-                <input type="submit" class="ui primary button"
-                       value="${message(code: 'default.button.filter.label')}">
+                        class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</g:link>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
             </div>
 
         </div>
@@ -223,7 +222,7 @@
 
             <th rowspan="2" scope="col">
                 <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfigDocs.label')}" data-position="top center">
-                    <i class="file alternate large icon"></i>
+                    <i class="${Icon.DOCUMENT} large"></i>
                 </a>
             </th>
 
@@ -235,7 +234,7 @@
 
             <th scope="col" rowspan="2">
                 <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyCostItems.label')}" data-position="top center">
-                    <i class="money bill large icon"></i>
+                    <i class="${Icon.FNC.COST} large"></i>
                 </a>
             </th>
 
@@ -291,7 +290,7 @@
                     <g:if test="${surveyInfo.isMandatory}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
-                            <i class="yellow icon exclamation triangle"></i>
+                            <i class="${Icon.TOOLTIP.SERIOUS} yellow"></i>
                         </span>
                     </g:if>
                 </td>
@@ -361,7 +360,7 @@
                     %{--<g:if test="${surveyConfig && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION && !surveyConfig.pickAndChoose}">
                         <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]"
-                                class="ui icon button">
+                                class="${Btn.BASIC_ICON}">
                                 --}%%{--<div class="ui circular ${(participantsFinish.size() == participantsTotal.size()) ? "green" : (participantsFinish.size() > 0) ? "yellow" : ""} label">
                                 <g:if
                                         test="${participantsFinish && participantsTotal}">
@@ -373,14 +372,14 @@
                                 <g:else>
                                     0%
                                 </g:else>--}%%{--
-                                <i class="icon blue chart pie"></i>
+                                <i class="${Icon.SURVEY} blue"></i>
                             </div>
                         </g:link>
                     </g:if>--}%
                         <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]"
                                 class="ui icon blue button la-modern-button">
-                            <i class="icon chart pie"></i>
+                            <i class="${Icon.SURVEY}"></i>
                             </div>
                         </g:link>
                 </td>
@@ -390,14 +389,14 @@
                             class="ui button blue icon la-modern-button"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.change.universal')}">
-                        <i class="pencil icon"></i>
+                        <i class="${Icon.CMD.EDIT}"></i>
                     </g:link>
 
                     <g:if test="${editable}">
                         <g:link controller="survey" action="copySurvey" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id, q: surveyConfig?.subscription?.providers ? surveyConfig.subscription.providers[0].name : '']"
                                 class="ui icon blue button la-modern-button">
-                            <i class="icon copy"></i>
+                            <i class="${Icon.CMD.COPY}"></i>
                             </div>
                         </g:link>
                     </g:if>

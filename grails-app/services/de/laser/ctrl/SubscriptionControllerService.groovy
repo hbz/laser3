@@ -92,7 +92,7 @@ class SubscriptionControllerService {
     PackageService packageService
     PendingChangeService pendingChangeService
     PropertyService propertyService
-    OrgTypeService orgTypeService
+    ProviderService providerService
     StatsSyncService statsSyncService
     SubscriptionService subscriptionService
     SubscriptionsQueryService subscriptionsQueryService
@@ -160,7 +160,7 @@ class SubscriptionControllerService {
                 }
             }
             Set<RefdataValue> wekbFunctionTypes = [RDStore.PRS_FUNC_METADATA, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT]
-            result.visiblePrsLinks.addAll(PersonRole.executeQuery('select pr from PersonRole pr where (pr.org in (select oo.org from OrgRole oo where oo.sub = :s and oo.roleType = :provider) or pr.org in (select oo.org from OrgRole oo where oo.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = :s))) and pr.functionType in (:wekbFunctionTypes)', [s: result.subscription, provider: RDStore.OR_PROVIDER, wekbFunctionTypes: wekbFunctionTypes]))
+            result.visiblePrsLinks.addAll(PersonRole.executeQuery('select pr from PersonRole pr where (pr.provider in (select pvr.provider from ProviderRole pvr where pvr.subscription = :s) or pr.provider in (select pkg.provider from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :s)) and pr.functionType in (:wekbFunctionTypes)', [s: result.subscription, wekbFunctionTypes: wekbFunctionTypes]))
             //}
             if(ConfigMapper.getShowStatsInfo()) {
                 prf.setBenchmark('usage')
@@ -3551,9 +3551,9 @@ class SubscriptionControllerService {
                     }
                 }
 
-                Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.getOrg())
+                Set providerIds = providerService.getCurrentProviderIds( contextService.getOrg() )
 
-                result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
+                result.providers = providerIds.isEmpty() ? [] : Provider.findAllByIdInList(providerIds).sort { it?.name }
 
                 List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
                 result.filterSet = tmpQ[2]
@@ -3932,7 +3932,7 @@ class SubscriptionControllerService {
             if(params.order)
                 sort += params.order
         }
-        FilterService.Result fsr = filterService.getOrgComboQuery(orgParams, result.institution as Org)
+        FilterService.Result fsr = filterService.getOrgQuery(orgParams)
         if (fsr.isFilterSet) { orgParams.filterSet = true }
 
         if (params.filterPropDef) {
@@ -3940,8 +3940,7 @@ class SubscriptionControllerService {
             fsr.query = efq.query
             fsr.queryParams = efq.queryParams as Map<String, Object>
         }
-        fsr.query = fsr.query.replaceFirst("select o from ", "select o.id from ")
-        List<Long> filteredOrgIds = Org.executeQuery(fsr.query, fsr.queryParams, orgParams+[id:parentSub.id])
+        List<Long> filteredOrgIds = Org.executeQuery('select o.id '+fsr.query, fsr.queryParams, orgParams+[id:parentSub.id])
 
         Set parentSubs = []
         if(params.showMembersSubWithMultiYear){
@@ -3951,7 +3950,7 @@ class SubscriptionControllerService {
         }
         parentSubs << parentSub
 
-        Set rows = Subscription.executeQuery("select sub,o from OrgRole oo join oo.sub sub join oo.org o where sub.instanceOf in (:parents) "+sort,[parents:parentSubs])
+        Set rows = Subscription.executeQuery("select sub,o from OrgRole oo join oo.sub sub join oo.org o where sub.instanceOf in (:parents) and o != :ctx "+sort,[parents:parentSubs, ctx: result.institution])
         List<Map> filteredSubChilds = []
         rows.each { row ->
             Org subscriber = row[1]

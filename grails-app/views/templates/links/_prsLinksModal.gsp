@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <ui:modal id="prsLinksModal" text="Neue Kontaktperson hinzufügen" hideSubmitButton="true">
 
     <p>${message(code:'myinst.addressBook.visibleOnly')}</p>
@@ -21,12 +22,12 @@
                             <td>
                                 <g:if test="${! p.isPublic}">
                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
-                                        <i class="address card outline icon"></i>
+                                        <i class="${Icon.UI.ACP_PRIVATE}"></i>
                                     </span>
                                 </g:if>
                                 <g:else>
                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
-                                        <i class="address card icon"></i>
+                                        <i class="${Icon.UI.ACP_PUBLIC}"></i>
                                     </span>
                                 </g:else>
                                 ${p}
@@ -51,7 +52,7 @@
                                     <input type="hidden" name="person" value="${p.class.name}:${p.id}" />
                                     <input type="hidden" name="role" value="${role}"/>
                                     <input type="hidden" name="org" value=""/>
-                                    <input type="submit" class="ui positive button" name="save" value="${message(code:'default.button.link.label')}"/>
+                                    <input type="submit" class="${Btn.POSITIVE}" name="save" value="${message(code:'default.button.link.label')}"/>
                                 </g:form>
                             </td>
                         </tr>

@@ -20,6 +20,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class ProviderController {
 
     AddressbookService addressbookService
@@ -82,7 +83,6 @@ class ProviderController {
         }
         result.curatoryGroupTypes = [
                 [value: 'Provider', name: message(code: 'package.curatoryGroup.provider')],
-                [value: 'Vendor', name: message(code: 'package.curatoryGroup.vendor')],
                 [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
         ]
         List<String> queryArgs = []
@@ -109,12 +109,12 @@ class ProviderController {
         }
 
         if(params.containsKey('qp_invoicingVendors')) {
-            queryArgs << "exists (select iv from p.invoicingVendors iv where iv.vendor in (:vendors))"
+            queryArgs << "exists (select iv from p.invoicingVendors iv where iv.vendor.id in (:vendors))"
             queryParams.put('vendors', Params.getLongList(params, 'qp_invoicingVendors'))
         }
 
         if(params.containsKey('qp_electronicBillings')) {
-            queryArgs << "exists (select eb from p.electronicBillings eb where eb.invoiceFormat in (:electronicBillings))"
+            queryArgs << "exists (select eb from p.electronicBillings eb where eb.invoicingFormat in (:electronicBillings))"
             queryParams.put('electronicBillings', Params.getRefdataList(params, 'qp_electronicBillings'))
         }
 
@@ -251,6 +251,9 @@ class ProviderController {
                 licenseConsortiumFilter = 'and l.instanceOf = null'
             }
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, provider)
+            Set<Package> allPackages = provider.packages
+            result.allPackages = allPackages
+            result.allPlatforms = allPackages.findAll { Package pkg -> pkg.nominalPlatform != null}.nominalPlatform.toSet()
             result.packages = Package.executeQuery('select pkg from SubscriptionPackage sp join sp.pkg pkg, OrgRole oo join oo.sub s where pkg.provider = :provider and s = sp.subscription and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Package>
             result.platforms = Platform.executeQuery('select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg, OrgRole oo join oo.sub s where pkg.provider = :provider and oo.sub = sp.subscription and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Platform>
             result.currentSubscriptionsCount = ProviderRole.executeQuery('select count(*) from ProviderRole pvr join pvr.subscription s join s.orgRelations oo where pvr.provider = :provider and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])[0]

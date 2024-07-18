@@ -16,11 +16,13 @@ import de.laser.LinksGenerationService
 import de.laser.OrganisationService
 import de.laser.Package
 import de.laser.Provider
+import de.laser.ProviderService
 import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
 import de.laser.SubscriptionDiscountScale
 import de.laser.SubscriptionService
 import de.laser.Vendor
+import de.laser.VendorService
 import de.laser.auth.Role
 import de.laser.cache.EhcacheWrapper
 import de.laser.finance.PriceItem
@@ -76,10 +78,11 @@ class AjaxJsonController {
     GenericOIDService genericOIDService
     LicenseService licenseService
     LinksGenerationService linksGenerationService
-    OrganisationService organisationService
+    ProviderService providerService
     ReportingGlobalService reportingGlobalService
     ReportingLocalService reportingLocalService
     SubscriptionService subscriptionService
+    VendorService vendorService
 
     /**
      * Test call
@@ -372,16 +375,6 @@ class AjaxJsonController {
         render result as JSON
     }
 
-    /*@Secured(['ROLE_USER'])
-    def getLinkedLicenses() {
-        render controlledListService.getLinkedObjects([destination:params.subscription, sourceType: License.class.name, linkTypes:[RDStore.LINKTYPE_LICENSE], status:params.status]) as JSON
-    }
-
-    @Secured(['ROLE_USER'])
-    def getLinkedSubscriptions() {
-        render controlledListService.getLinkedObjects([source:params.license, destinationType: Subscription.class.name, linkTypes:[RDStore.LINKTYPE_LICENSE], status:params.status]) as JSON
-    }*/
-
     /**
      * Retrieves a list of reference data values belonging to the category linked to the property definition
      * @return a {@link List} of {@link Map}s of structure [value: database id, name: translated name] for dropdown display
@@ -513,54 +506,6 @@ class AjaxJsonController {
                 }
             }
         }
-        render result as JSON
-    }
-
-    /**
-     * Retrieves provider {@link Org}s with their private contacts; the result may be filtered by name
-     * @return a {@link Map} containing entries for a DataTables table output
-     */
-    @Secured(['ROLE_USER'])
-    def getProvidersWithPrivateContacts() {
-        Map<String, Object> result = [:]
-        String fuzzyString = params.sSearch ? ('%' + params.sSearch.trim().toLowerCase() + '%') : '%'
-
-        Map<String, Object> query_params = [
-                name: fuzzyString,
-                status: RDStore.O_STATUS_DELETED
-        ]
-        String countQry = "select count(*) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status)"
-        String rowQry = "select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status) order by o.name asc"
-
-        List cq = Org.executeQuery(countQry,query_params)
-
-        List<Org> rq = Org.executeQuery(rowQry,
-                query_params,
-                [max:params.iDisplayLength?:1000,offset:params.iDisplayStart?:0])
-
-        result.aaData = []
-        result.sEcho = params.sEcho
-        result.iTotalRecords = cq[0]
-        result.iTotalDisplayRecords = cq[0]
-
-        Org currOrg = (Org) genericOIDService.resolveOID(params.oid)
-        List<Person> contacts = Person.findAllByContactTypeAndTenant(RDStore.PERSON_CONTACT_TYPE_PERSONAL, currOrg)
-
-        LinkedHashMap personRoles = [:]
-        PersonRole.findAll().each { PersonRole prs ->
-            personRoles.put(prs.org, prs.prs)
-        }
-        rq.each { Org it ->
-            int ctr = 0
-            LinkedHashMap row = [:]
-            String name = it["name"]
-            if (personRoles.get(it) && contacts.indexOf(personRoles.get(it)) > -1)
-                name += '<span data-tooltip="Persönlicher Kontakt vorhanden"><i class="address book icon"></i></span>'
-            row["${ctr++}"] = name
-            row["DT_RowId"] = "${it.class.name}:${it.id}"
-            result.aaData.add(row)
-        }
-
         render result as JSON
     }
 
@@ -699,15 +644,6 @@ class AjaxJsonController {
     }
 
     /**
-     * Retrieves a list of provider and agency {@link Org}s for dropdown display
-     * @return the result of {@link de.laser.ControlledListService#getProvidersAgencies(grails.web.servlet.mvc.GrailsParameterMap)}
-     */
-    @Secured(['ROLE_USER'])
-    def lookupProvidersAgencies() {
-        render controlledListService.getProvidersAgencies(params) as JSON
-    }
-
-    /**
      * Retrieves a list of {@link Org}s in general for dropdown display
      * @return the result of {@link de.laser.ControlledListService#getOrgs(grails.web.servlet.mvc.GrailsParameterMap)}
      */
@@ -717,7 +653,7 @@ class AjaxJsonController {
     }
 
     /**
-     * Retrieves a list of provider {@link Org}s and their associated {@link Platform}s for dropdown display
+     * Retrieves a list of {@link Provider}s and their associated {@link Platform}s for dropdown display
      * @return a {@link List} of {@link Map}s of structure
      * {
      *   name: provider name,
@@ -732,11 +668,11 @@ class AjaxJsonController {
     def lookupProviderAndPlatforms() {
         List result = []
 
-        List<Org> provider = Org.executeQuery('SELECT o FROM Org o JOIN o.orgType ot WHERE ot = :ot', [ot: RDStore.OT_PROVIDER])
+        List<Provider> provider = Org.executeQuery('SELECT p FROM Provider p', [ot: RDStore.OT_PROVIDER])
         provider.each{ prov ->
             Map<String, Object> pp = [name: prov.name, value: prov.class.name + ":" + prov.id, platforms:[]]
 
-            Platform.findAllByOrg(prov).each { plt ->
+            Platform.findAllByProvider(prov).each { plt ->
                 pp.platforms.add([name: plt.name, value: plt.class.name + ":" + plt.id])
             }
             result.add(pp)
@@ -1019,10 +955,25 @@ class AjaxJsonController {
     def loadProviderForMerge() {
         Map<String, Object> mergeInfo = [:]
         if(params.containsKey('source') && params.source.length() > 0) {
-            mergeInfo = organisationService.mergeProviders(genericOIDService.resolveOID(params.source), null, true)
+            mergeInfo = providerService.mergeProviders(genericOIDService.resolveOID(params.source), null, true)
         }
         else if(params.containsKey('target') && params.target.length() > 0) {
-            mergeInfo = organisationService.mergeProviders(genericOIDService.resolveOID(params.target), null, true)
+            mergeInfo = providerService.mergeProviders(genericOIDService.resolveOID(params.target), null, true)
+        }
+        render mergeInfo as JSON
+    }
+
+    /**
+     * Retrieves the selected organisation for the organisation merge table
+     */
+    @Secured(['ROLE_USER'])
+    def loadVendorForMerge() {
+        Map<String, Object> mergeInfo = [:]
+        if(params.containsKey('source') && params.source.length() > 0) {
+            mergeInfo = vendorService.mergeVendors(genericOIDService.resolveOID(params.source), null, true)
+        }
+        else if(params.containsKey('target') && params.target.length() > 0) {
+            mergeInfo = vendorService.mergeVendors(genericOIDService.resolveOID(params.target), null, true)
         }
         render mergeInfo as JSON
     }

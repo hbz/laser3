@@ -4,7 +4,7 @@
 
 <g:set var="modalID" value="${modalID ?: 'copyFilteredEmailAddresses_ajaxModal'}"/>
 
-<ui:modal id="${modalID}" text="${orgList ? message(code:'menu.institutions.copy_emailaddresses', args:[orgList.size()?:0]) : message(code:'menu.institutions.copy_emailaddresses.button')}" hideSubmitButton="true">
+<ui:modal id="${modalID}" text="${orgList ? message(code:'menu.institutions.copy_emailaddresses', args:[orgList.size()?:0, message(code: 'org.institution.plural')]) : message(code:'menu.institutions.copy_emailaddresses.button')}" hideSubmitButton="true">
 
     <div class="ui form">
         <%--<div class="field">
@@ -42,30 +42,24 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.app.copyToEmailProgram = function () {
-            let emailAdresses = $(".address:visible").map((i, el) => el.innerText.trim()).get().join('; ');
+            let emailAdresses = $(".orgSelector:checked").parents("tr").find("span.address").map((i, el) => el.innerText.trim()).get().join('; ');
             window.location.href = "mailto:" + emailAdresses;
         }
 
         JSPC.app.copyToClipboard = function () {
             let textArea = document.createElement("textarea");
-            textArea.value = $(".address:visible").map((i, el) => el.innerText.trim()).get().join('; ');
+            textArea.value = $(".orgSelector:checked").parents("tr").find("span.address").map((i, el) => el.innerText.trim()).get().join('; ');
             $("body").append(textArea);
             textArea.select();
             document.execCommand("copy");
             textArea.remove();
         }
 
-        $('.orgSelector').change(function() {
-            $('#org'+$(this).val()+' span.address').toggle();
-        });
-
         $('#copyMailToggler').change(function() {
             if ($(this).prop('checked')) {
                 $(".orgSelector").prop('checked', true);
-                $('.address').show();
             } else {
                 $(".orgSelector").prop('checked', false);
-                $('.address').hide();
             }
         });
     </laser:script>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.utils.LocaleUtils; de.laser.survey.SurveyPackageResult" %>
+<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.utils.LocaleUtils; de.laser.survey.SurveyPackageResult" %>
 
 <%
     def elementSign = 'notSet'
@@ -15,9 +15,9 @@
            value="${surveyOrg && surveyPackages ? CostItem.findAllBySurveyOrgAndPkgInList(surveyOrg, surveyPackages) : null}"/>
 
     <g:set var="costItemsSubsc"
-           value="${CostItem.executeQuery('select ci from CostItem as ci left join ci.costItemElement cie where ci.owner in :owner and ci.sub = :sub and ci.isVisibleForSubscriber = true and ci.surveyOrg = null and ci.costItemStatus != :deleted and ci.pkg in (:pkgs)' +
+           value="${subscription ? CostItem.executeQuery('select ci from CostItem as ci left join ci.costItemElement cie where ci.owner in :owner and ci.sub = :sub and ci.isVisibleForSubscriber = true and ci.surveyOrg = null and ci.costItemStatus != :deleted and ci.pkg in (:pkgs)' +
                    ' order by cie.value_' + LocaleUtils.getCurrentLang(),
-                   [owner: [subscription.getConsortia()], sub: subscription, deleted: RDStore.COST_ITEM_DELETED, pkgs: surveyPackages])}"/>
+                   [owner: [subscription.getConsortia()], sub: subscription, deleted: RDStore.COST_ITEM_DELETED, pkgs: surveyPackages]) : null}"/>
 
     <% Set<RefdataValue> costItemElementsNotInSurveyCostItems = [] %>
 
@@ -73,19 +73,19 @@
                                     switch (elementSign) {
                                         case RDStore.CIEC_POSITIVE:
                                             dataTooltip = message(code: 'financials.costItemConfiguration.positive')
-                                            icon = '<i class="plus green circle icon"></i>'
+                                            icon = '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
                                             break
                                         case RDStore.CIEC_NEGATIVE:
                                             dataTooltip = message(code: 'financials.costItemConfiguration.negative')
-                                            icon = '<i class="minus red circle icon"></i>'
+                                            icon = '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
                                             break
                                         case RDStore.CIEC_NEUTRAL:
                                             dataTooltip = message(code: 'financials.costItemConfiguration.neutral')
-                                            icon = '<i class="circle yellow icon"></i>'
+                                            icon = '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
                                             break
                                         default:
                                             dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                            icon = '<i class="question circle icon"></i>'
+                                            icon = '<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
                                             break
                                     }
                                 %>
@@ -145,19 +145,19 @@
                                             switch (elementSign) {
                                                 case RDStore.CIEC_POSITIVE:
                                                     dataTooltip = message(code: 'financials.costItemConfiguration.positive')
-                                                    icon = '<i class="plus green circle icon"></i>'
+                                                    icon = '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
                                                     break
                                                 case RDStore.CIEC_NEGATIVE:
                                                     dataTooltip = message(code: 'financials.costItemConfiguration.negative')
-                                                    icon = '<i class="minus red circle icon"></i>'
+                                                    icon = '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
                                                     break
                                                 case RDStore.CIEC_NEUTRAL:
                                                     dataTooltip = message(code: 'financials.costItemConfiguration.neutral')
-                                                    icon = '<i class="circle yellow icon"></i>'
+                                                    icon = '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
                                                     break
                                                 default:
                                                     dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                                    icon = '<i class="question circle icon"></i>'
+                                                    icon = '<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
                                                     break
                                             }
                                         %>
@@ -206,7 +206,7 @@
                                                  data-position="right center"
                                                  data-variation="tiny"
                                                  data-content="${costItemSurvey.costDescription}">
-                                                <i class="question small circular inverted icon"></i>
+                                                <i class="${Icon.TOOLTIP.HELP}"></i>
                                             </div>
                                         </g:if>
                                     </td>
@@ -260,19 +260,19 @@
                                         switch (elementSign) {
                                             case RDStore.CIEC_POSITIVE:
                                                 dataTooltip = message(code: 'financials.costItemConfiguration.positive')
-                                                icon = '<i class="plus green circle icon"></i>'
+                                                icon = '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
                                                 break
                                             case RDStore.CIEC_NEGATIVE:
                                                 dataTooltip = message(code: 'financials.costItemConfiguration.negative')
-                                                icon = '<i class="minus red circle icon"></i>'
+                                                icon = '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
                                                 break
                                             case RDStore.CIEC_NEUTRAL:
                                                 dataTooltip = message(code: 'financials.costItemConfiguration.neutral')
-                                                icon = '<i class="circle yellow icon"></i>'
+                                                icon = '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
                                                 break
                                             default:
                                                 dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                                icon = '<i class="question circle icon"></i>'
+                                                icon = '<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
                                                 break
                                         }
                                     %>
@@ -325,7 +325,7 @@
                                              data-position="right center"
                                              data-variation="tiny"
                                              data-content="${costItemSurvey.costDescription}">
-                                            <i class="question small circular inverted icon"></i>
+                                            <i class="${Icon.TOOLTIP.HELP}"></i>
                                         </div>
                                     </g:if>
                                 </td>
@@ -386,19 +386,19 @@
                                     switch (elementSign) {
                                         case RDStore.CIEC_POSITIVE:
                                             dataTooltip = message(code: 'financials.costItemConfiguration.positive')
-                                            icon = '<i class="plus green circle icon"></i>'
+                                            icon = '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
                                             break
                                         case RDStore.CIEC_NEGATIVE:
                                             dataTooltip = message(code: 'financials.costItemConfiguration.negative')
-                                            icon = '<i class="minus red circle icon"></i>'
+                                            icon = '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
                                             break
                                         case RDStore.CIEC_NEUTRAL:
                                             dataTooltip = message(code: 'financials.costItemConfiguration.neutral')
-                                            icon = '<i class="circle yellow icon"></i>'
+                                            icon = '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
                                             break
                                         default:
                                             dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                            icon = '<i class="question circle icon"></i>'
+                                            icon = '<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
                                             break
                                     }
                                 %>
@@ -451,7 +451,7 @@
                                          data-position="right center"
                                          data-variation="tiny"
                                          data-content="${costItemSurvey.costDescription}">
-                                        <i class="question small circular inverted icon"></i>
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
                                     </div>
                                 </g:if>
                             </td>

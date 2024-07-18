@@ -249,7 +249,7 @@
           example: "2022-01-01T00:00:00"
         sub:
           $ref: "#/components/schemas/SubscriptionStub"
-        subPkg:
+        pkg:
           $ref: "#/components/schemas/Package_in_CostItem"
         taxCode:
           type: string
@@ -317,6 +317,11 @@
       allOf:
         - $ref: "#/components/schemas/LicenseStub"
       properties:
+        altnames:
+          type: array
+          description: A set of alternative names of the license.
+          items:
+            type: string
         dateCreated:
           type: string
           format: <% print ApiToolkit.DATE_TIME_PATTERN %>
@@ -362,6 +367,11 @@
           description: Public and private properties of the calling institution for this license.
           items:
             $ref: "#/components/schemas/Property"
+        providers:
+          type: array
+          description: Providers related to this license.
+          items:
+            $ref: "#/components/schemas/ProviderStub" # resolved ProviderRole
         subscriptions:
           type: array
           description: Set of subscriptions covered by the given license.
@@ -372,6 +382,11 @@
           description: The license instances following to this license.
           items:
             $ref: "#/components/schemas/LicenseStub"
+        vendors:
+          type: array
+          description: Vendors related to this license.
+          items:
+            $ref: "#/components/schemas/VendorStub" # resolved ProviderRole
 
 
     OrgAccessPoint:
@@ -404,26 +419,16 @@
     Organisation:
       description: |
         "A full organisation record. Important is the distinction between "organisations" and "institutions": organisation is used as a superordinate concept to institution; an institution is thus one type of organisation. The term institution implicates the academic context and
-        means in technical context of LAS:eR that it may organise itself in the app. Only institutions can thus have user accounts. Apart from institutions like university libraries, universities, research institutions etc., organisations may be commercial like providers, editors or agencies."
+        means in technical context of LAS:eR that it may organise itself in the app. Only institutions can thus have user accounts."
       allOf:
         - $ref: "#/components/schemas/OrganisationStub"
       properties:
-        addresses:
-          type: array
-          description: The contact addresses of the given organisation.
-          items:
-            $ref: "#/components/schemas/Address"
-        altNames:
+        altnames:
           type: array
           description: A set of alternative names of the organisation.
           example: ["Bloomsbury Journals (formerly Berg Journals)", "Bloomsbury Publishing Plc"]
           items:
             type: string
-        contacts:
-          type: array
-          description: The virtual contact points of the organisation, e.g. e-mails, phone numbers.
-          items:
-            $ref: "#/components/schemas/Contact"
         country:
           type: string
           description: The country where the organisation is seated. Maps to the RefdataCategory "${RDConstants.COUNTRY}".
@@ -470,11 +475,21 @@
           description: Contacts of the given organisation.
           items:
             $ref: "#/components/schemas/Person" # resolved PersonRole
+        privateAddresses:
+          type: array
+          description: The private contact addresses of the given organisation, coming from the context org's private addressbook
+          items:
+            $ref: "#/components/schemas/Address"
         properties: # mapping attr customProperties and privateProperties
           type: array
           description: Set of public and private properties of the calling institution.
           items:
             $ref: "#/components/schemas/Property"
+        publicAddresses:
+          type: array
+          description: The public contact addresses of the given organisation.
+          items:
+            $ref: "#/components/schemas/Address"
         region:
           type: string
           description: In which German-speaking region/county is the institution seated? Maps to the RefdataCategory "${RDConstants.REGIONS_DE}", "${RDConstants.REGIONS_AT}" and "${RDConstants.REGIONS_CH}".
@@ -485,11 +500,6 @@
           description: Timestamp when the organisation has ceased to be active.
           format: <% print ApiToolkit.DATE_TIME_PATTERN %>
           example: "2021-06-30T11:36:44"
-        sector:
-          type: string
-          description: Sector of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_SECTOR}".
-          enum: <% printRefdataEnum(RDConstants.ORG_SECTOR, 12) %>
-          example: Higher Education
         subjectGroup:
           type: array
           description: A set of subject groups which are aimed by the given organisation. The values map to the RefdataCategory ${RDConstants.SUBJECT_GROUP}.
@@ -505,18 +515,119 @@
           description: Web site of the organisation governing the given one.
           example: "http://www.uni-koeln.de"
 
+    Provider:
+      description: |
+        "A full provider record. Providers are commercial organisations offering titles and / or packages of titles. They may be synced from the we:kb knowledge base or recorded in LAS:eR."
+      allOf:
+        - $ref: "#/components/schemas/ProviderStub"
+      properties:
+        altnames:
+          type: array
+          description: A set of alternative names of the provider.
+          items:
+            type: string
+        electronicBillings:
+          type: array
+          description: A set of electronic invoicing formats which are supported by the given provider. The values map to the RefdataCategory ${RDConstants.VENDOR_INVOICING_FORMAT}.
+          example: ["EDI", "PDF"]
+          items:
+            type: string
+        homepage:
+          type: string
+          description: Web site of the provider.
+        individualInvoiceDesign:
+          type: string #mapped to boolean
+          description: Does the provider design an individual invoice for the customer? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        inhouseInvoicing:
+          type: string #mapped to boolean
+          description: Does the provider making invoices? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        invoiceDispatchs:
+          type: array
+          description: A set of dispatching ways for invoices used by the provider. The values map to the RefdataCategory ${RDConstants.VENDOR_INVOICING_DISPATCH}.
+          example: ["E-Mail", "Peppol"]
+          items:
+            type: string
+        invoicingVendors:
+          type: array
+          description: A set of vendors performing invoicing for the given provider.
+          items:
+            $ref: "#/components/schemas/VendorStub" # resolved InvoicingVendor
+        kbartDownloaderURL:
+          type: string
+          description: Web site of the provider where KBART files of the packages may be downloaded.
+        lastUpdated:
+          type: string
+          description: Timestamp when the provider record has been most recently updated.
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
+          example: "2021-10-05T12:27:47"
+        links:
+          type: array
+          description: Other providers linked to the given one
+          items:
+            $ref: "#/components/schemas/Link_Provider"
+        managementOfCredits:
+          type: string #mapped to boolean
+          description: Does a management of credits take place? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        metadataDownloaderURL:
+          type: string
+          description: Web site of the provider where metadata information may be downloaded.
+        paperInvoice:
+          type: string #mapped to boolean
+          description: Does the provider issue invoices on paper print? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        packages:
+          type: array
+          description: Packages maintained by the given provider.
+          items:
+            $ref: "#/components/schemas/PackageStub"
+        persons: # mapping attr prsLinks
+          type: array
+          description: Contacts of the given provider.
+          items:
+            $ref: "#/components/schemas/Person" # resolved PersonRole
+        platforms:
+          type: array
+          description: Platforms hosted by the given provider.
+          items:
+            $ref: "#/components/schemas/PlatformStub"
+        processingOfCompensationPayments:
+          type: string
+          description: Are compensation payments (i.e. credits/subsequent debts) being processed? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        properties: # mapping attr customProperties and privateProperties
+          type: array
+          description: Set of public and private properties of the calling institution.
+          items:
+            $ref: "#/components/schemas/Property"
+        publicAddresses:
+          type: array
+          description: The public contact addresses of the given provider.
+          items:
+            $ref: "#/components/schemas/Address"
+        privateAddresses:
+          type: array
+          description: The private contact addresses of the given provider, coming from the context org's addressbook
+          items:
+            $ref: "#/components/schemas/Address"
+        retirementDate:
+          type: string
+          description: Timestamp when the provider has ceased to be active.
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
+          example: "2021-06-30T11:36:44"
+
     Package:
       allOf:
-      - $ref: "#components/schemas/PackageStub"
+      - $ref: "#/components/schemas/PackageStub"
       - type: object
         properties:
-          <%-- needs we:kb connection
-          altNames:
+          altnames:
             type: array
             description: A set of alternative names of the package.
-            example: ["OECD iLibrary Books, Papers, Statistics (BPS)", "OECD iLibrary Journals"]
             items:
-              type: string--%>
+              type: string
           breakable:
             type: string
             description: Can the contents of this package be licensed partly or only as a whole? Maps to the RefdataCategory "${RDConstants.Y_N}".
@@ -535,11 +646,11 @@
           nominalPlatform:
             description: The default platform for titles contained in this package.
             $ref: "#/components/schemas/Platform"
-          organisations: # mapping attr orgs
+          provider:
             type: array
-            description: Providers attached to this package.
+            description: The provider attached to this package.
             items:
-              $ref: "#/components/schemas/OrganisationRole_Virtual"
+              $ref: "#/components/schemas/ProviderStub"
           scope:
             type: string
             description: Scope of validity for the given package, i.e. is it a globally offered set of titles or restricted to countries and/or regions? Maps to the RefdataCategory "${RDConstants.PACKAGE_SCOPE}".
@@ -555,6 +666,11 @@
             description: The title stock of this package.
             items:
               $ref: "#/components/schemas/TitleInstancePackagePlatform_in_Package"
+          vendors:
+            type: array
+            description: A set of linked vendors to this package.
+            items:
+              $ref: "#/components/schemas/VendorStub" #resolved PackageVendor
 
 
     Person:
@@ -670,7 +786,7 @@
           type: string
           description: Remark to the given property
           example: An diesem Tag wurde der Analysestadtverbund erschaffen
-        isPublic: # derived to substitute tentant
+        isPublic: # derived to substitute tenant
           type: string
           description: Maps to the RefdataCategory "${RDConstants.Y_N}". If set to *No*, it is a private entry of the calling institution and only the caller can see the property.
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
@@ -690,6 +806,11 @@
       allOf:
         - $ref: "#/components/schemas/SubscriptionStub"
       properties:
+        altnames:
+          type: array
+          description: A set of alternative names of the subscription.
+          items:
+            type: string
         costItems:
           description: A set of cost items linked to this subscription.
           $ref: "#/components/schemas/CostItemCollection" # resolved CostItemCollection
@@ -771,7 +892,7 @@
             $ref: "#/components/schemas/OrgAccessPointCollection"
         organisations: # mapping attr orgRelations
           type: array
-          description: A set of linked organisations to this license. Those can be subscribers, the subscription consortium, providers or agencies related to subscribed titles.
+          description: A set of linked organisations to this subscription. Those can be subscribers or the subscription consortium.
           items:
             $ref: "#/components/schemas/OrganisationRole_Virtual"
         packages:
@@ -789,6 +910,11 @@
           description: Set of public and private properties of this subscription.
           items:
             $ref: "#/components/schemas/Property"
+        providers:
+          type: array
+          description: A set of linked providers to this subscription.
+          items:
+            $ref: "#/components/schemas/ProviderStub" #resolved ProviderRole
         referenceYear:
           type: string
           description: The reference year of the considered subscription.
@@ -799,16 +925,16 @@
           description: The resource type of the titles covered by this subscription. Maps to the RefdataCategory "${RDConstants.SUBSCRIPTION_RESOURCE}".
           enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_RESOURCE, 12) %>
           example: "ebookPackage"
-        status:
-          type: string
-          description: The subscription status. Maps to the RefdataCategory "${RDConstants.SUBSCRIPTION_STATUS}".
-          enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_STATUS+Constants.PERMANENTLY_DELETED, 12) %>
-          example: ${RDStore.SUBSCRIPTION_CURRENT.value}
         successors:
           type: array
           description: The subscription instances following to this subscription.
           items:
             $ref: "#/components/schemas/SubscriptionStub"
+        vendors:
+          type: array
+          description: A set of linked vendors to this subscription.
+          items:
+            $ref: "#/components/schemas/VendorStub" #resolved VendorRole
 
 
     TitleGroup:
@@ -834,6 +960,139 @@
         subscription:
           $ref: "#/components/schemas/SubscriptionStub"
 
+
+    Vendor:
+      description: |
+        "A full vendor record. Vendors are commercial organisations acting as intermediaries for providers. They may be synced from the we:kb knowledge base or recorded in LAS:eR."
+      allOf:
+        - $ref: "#/components/schemas/VendorStub"
+      properties:
+        activationForNewReleases:
+          type: string
+          description: Does the vendor notify the customers about new releases? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        altnames:
+          type: array
+          description: A set of alternative names of the vendor.
+          items:
+            type: string
+        ediOrders:
+          type: string
+          description: Are orders possible via XML file? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        electronicBillings:
+          type: array
+          description: A set of electronic invoicing formats which are supported by the given vendor. The values map to the RefdataCategory ${RDConstants.VENDOR_INVOICING_FORMAT}.
+          example: ["EDI", "PDF"]
+          items:
+            type: string
+        electronicDeliveryDelayNotifications:
+          type: array
+          description: A set of notification channels supported by the vendor. The values map to the RefdataCategory ${RDConstants.VENDOR_ELECTRONIC_DELIVERY_DELAY}.
+          example: ["E-Mail", "EDI"]
+          items:
+            type: string
+        exchangeOfIndividualTitles:
+          type: string
+          description: Are single titles being exchanged in the package? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        forwardingUsageStatisticsFromPublisher:
+          type: string
+          description: Are usage statistics being forwarded from the provider? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        homepage:
+          type: string
+          description: Web site of the vendor.
+        individualInvoiceDesign:
+          type: string #mapped to boolean
+          description: Does the vendor design an individual invoice for the customer? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        invoiceDispatchs:
+          type: array
+          description: A set of dispatching ways for invoices used by the vendor. The values map to the RefdataCategory ${RDConstants.VENDOR_INVOICING_DISPATCH}.
+          example: ["E-Mail", "Peppol"]
+          items:
+            type: string
+        lastUpdated:
+          type: string
+          description: Timestamp when the vendor record has been most recently updated.
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
+          example: "2021-10-05T12:27:47"
+        links:
+          type: array
+          description: Other vendors linked to the given one
+          items:
+            $ref: "#/components/schemas/Link_Vendor"
+        managementOfCredits:
+          type: string #mapped to boolean
+          description: Does a management of credits take place? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        paperInvoice:
+          type: string #mapped to boolean
+          description: Does the vendor issue invoices on paper print? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        packages:
+          type: array
+          description: Packages maintained by the given vendor.
+          items:
+            $ref: "#/components/schemas/PackageStub" #resolved PackageVendor
+        persons: # mapping attr prsLinks
+          type: array
+          description: Contacts of the given vendor.
+          items:
+            $ref: "#/components/schemas/Person" # resolved PersonRole
+        privateAddresses:
+          type: array
+          description: The private contact addresses of the given vendor, belonging to the context organisation.
+          items:
+            $ref: "#/components/schemas/Address"
+        processingOfCompensationPayments:
+          type: string
+          description: Are compensation payments (i.e. credits/subsequent debts) being processed? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        properties: # mapping attr customProperties and privateProperties
+          type: array
+          description: Set of public and private properties of the calling institution.
+          items:
+            $ref: "#/components/schemas/Property"
+        publicAddresses:
+          type: array
+          description: The public contact addresses of the given vendor.
+          items:
+            $ref: "#/components/schemas/Address"
+        prequalificationVOLInfo:
+          type: string
+          description: URL of a research platform for e-books.
+        researchPlatformForEbooks:
+          type: string
+          description: URL of a research platform for e-books.
+        retirementDate:
+          type: string
+          description: Timestamp when the vendor has ceased to be active.
+          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
+          example: "2021-06-30T11:36:44"
+        shippingMetadata:
+          type: string
+          description: Is metadata being shipped by the vendor? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        supportedLibrarySystems:
+          type: array
+          description: A set of library systems supported by the vendor. The values map to the RefdataCategory ${RDConstants.VENDOR_SUPPORTED_LIBRARY_SYSTEM}.
+          example: ["Alma", "Folio", "Sisis"]
+          items:
+            type: string
+        technicalSupport:
+          type: string
+          description: Is a technical support being offered on behalf of the vendor? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        webShopOrders:
+          type: string
+          description: Are orders possible via web shop? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+        xmlOrders:
+          type: string
+          description: Are orders possible via XML file? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
 
 <%-- virtual objects --%>
     CostItemCollection:
@@ -1177,6 +1436,16 @@
         org:
           $ref: "#/components/schemas/OrganisationStub"
 
+    Link_Provider:
+      type: object
+      properties:
+        linktype:
+          type: string
+          description: Type of the link between two provider
+          example: ${RDStore.COMBO_TYPE_FOLLOWS.value}
+        provider:
+          $ref: "#/components/schemas/ProviderStub"
+
     Link_Subscription:
       type: object
       properties:
@@ -1186,6 +1455,16 @@
           example: references
         subscription:
           $ref: "#/components/schemas/SubscriptionStub"
+
+    Link_Vendor:
+      type: object
+      properties:
+        linktype:
+          type: string
+          description: Type of the link between two provider
+          example: ${RDStore.COMBO_TYPE_FOLLOWS.value}
+      vendor:
+        $ref: "#/components/schemas/VendorStub"
 
     MailDomain_in_OrgAccessPoint:
       type: object
@@ -1520,17 +1799,13 @@
           type: string
           description: A global unique identifier to identify the given organisation in LAS:eR.
           example: "org:e6be24ff-98e4-474d-9ef8-f0eafd843d17"
-        gokbId:
-          type: string
-          description: "The identifier of the organisation in the we:kb knowledge base. Naming gokbId is legacy. Only providers or agencies may have we:kb-IDs as they are managed there; institutions have none as they are created and managed in LAS:eR only."
-          example: f6ab152e-ce10-42cd-b9e5-44a2d41fc7f3
         name:
           type: string
           description: Name of the organisation.
           example: Hochschulbibliothekszentrum des Landes Nordrhein-Westfalen
         sortname:
           type: string
-          description: Sort name of the organisation for easier retrieval in lists. Convetion is city, abbreviation.
+          description: Sort name of the organisation for easier retrieval in lists. Convention is city, abbreviation.
           example: Köln, hbz
         identifiers: # mapping attr ids
           type: array
@@ -1540,7 +1815,7 @@
         status:
           type: string
           description: Status of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_STATUS}".
-          enum: <% printRefdataEnum(RDConstants.ORG_STATUS+Constants.PERMANENTLY_DELETED, 12) %>
+          enum: <% printRefdataEnum(RDConstants.ORG_STATUS, 12) %>
           example: ${RDStore.ORG_STATUS_CURRENT.value}
         type:
           type: array
@@ -1548,7 +1823,7 @@
           items:
             type: string
           enum: <% printRefdataEnum(RDConstants.ORG_TYPE, 12) %>
-          example: ["Provider", "Agency"]
+          example: ["Institution"]
 
 
     LicenseStub:
@@ -1641,6 +1916,36 @@
           enum: <% printRefdataEnum(RDConstants.PLATFORM_STATUS, 12) %>
           example: ${RDStore.PLATFORM_STATUS_CURRENT.value}
 
+    ProviderStub:
+      type: object
+      properties:
+        globalUID:
+          type: string
+          description: A global unique identifier to identify the given provider in LAS:eR.
+          example: "provider:ac06387f-2e79-499a-9fa7-140d5395d72e"
+        gokbId:
+          type: string
+          description: The identifier of the provider in the we:kb knowledge base. Naming gokbId is legacy.
+          example: 67e3622a-a51c-4382-87dc-c13410fe53b5
+        name:
+          type: string
+          description: Name of the provider.
+          example: "Eiserfranckh'sche Verlagshandlung"
+        sortname:
+          type: string
+          description: Sort name of the provider for easier retrieval in lists.
+          example: Eiserfranckh
+        identifiers: # mapping attr ids
+          type: array
+          description: Further set of identifiers of the provider.
+          items:
+            $ref: "#/components/schemas/Identifier"
+        status:
+          type: string
+          description: Status of the provider. Maps to the RefdataCategory "${RDConstants.PROVIDER_STATUS}".
+          enum: <% printRefdataEnum(RDConstants.PROVIDER_STATUS+Constants.PERMANENTLY_DELETED, 12) %>
+          example: ${RDStore.PROVIDER_STATUS_CURRENT.value}
+
     SubscriptionStub:
       type: object
       description: A subscription record for an electronic resource.
@@ -1664,6 +1969,11 @@
           description: End date of the subscription running time.
           format: <% print ApiToolkit.DATE_TIME_PATTERN %>
           example: "${ApiToolkit.getEndOfYearRing()}"
+        status:
+          type: string
+          description: The subscription status. Maps to the RefdataCategory "${RDConstants.SUBSCRIPTION_STATUS}".
+          enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_STATUS+Constants.PERMANENTLY_DELETED, 12) %>
+          example: ${RDStore.SUBSCRIPTION_CURRENT.value}
         name:
           type: string
           description: Name of the subscription.
@@ -1778,6 +2088,35 @@
           description: Number of volume for monograph.
           example: XXXIII
 
+    VendorStub:
+      type: object
+      properties:
+        globalUID:
+          type: string
+          description: A global unique identifier to identify the given vendor in LAS:eR.
+          example: "vendor:bd01da62-126a-4fc1-8431-ca6f07a35608"
+        gokbId:
+          type: string
+          description: The identifier of the vendor in the we:kb knowledge base. Naming gokbId is legacy.
+          example: 97a9ba82-de2b-4011-8cdc-e285f8c4c600
+        name:
+          type: string
+          description: Name of the vendor.
+          example: "Zentrale Vergabestelle"
+        sortname:
+          type: string
+          description: Sort name of the vendor for easier retrieval in lists.
+          example: ZVS
+        identifiers: # mapping attr ids
+          type: array
+          description: Further set of identifiers of the vendor.
+          items:
+            $ref: "#/components/schemas/Identifier"
+        status:
+          type: string
+          description: Status of the provider. Maps to the RefdataCategory "${RDConstants.VENDOR_STATUS}".
+          enum: <% printRefdataEnum(RDConstants.VENDOR_STATUS+Constants.PERMANENTLY_DELETED, 12) %>
+          example: ${RDStore.VENDOR_STATUS_CURRENT.value}
 
 <%-- lists --%>
 
@@ -2078,4 +2417,4 @@
           items:
             type: string
           enum: <% printRefdataEnum(RDConstants.ORG_TYPE, 12) %>
-          example: ["Provider", "Agency"]
+          example: ["Institution"]
