@@ -60,7 +60,7 @@
                     </div>
                     <div class="eight wide field" style="text-align: right;">
                         <div class="ui buttons">
-                            <button class="ui button negative js-open-confirm-modal" ${!editable ? 'disabled="disabled"' : ''}
+                            <button class="${Btn.NEGATIVE_CONFIRM}" ${!editable ? 'disabled="disabled"' : ''}
                                     data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.deleteLicenses.button.confirm')}"
                                     data-confirm-term-how="ok"
                                     name="processOption"

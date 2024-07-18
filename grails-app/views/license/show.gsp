@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon;de.laser.Subscription;de.laser.License;de.laser.OrgRole;de.laser.DocContext;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.interfaces.CalculatedType;de.laser.AuditConfig;de.laser.FormService" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon;de.laser.Subscription;de.laser.License;de.laser.OrgRole;de.laser.DocContext;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.interfaces.CalculatedType;de.laser.AuditConfig;de.laser.FormService" %>
 <laser:htmlStart message="license.details.label" serviceInjection="true"/>
 
         <ui:debugInfo>
@@ -247,7 +247,7 @@
                                 <g:if test="${editable}">
                                     <dl>
                                         <dt></dt>
-                                        <dd><input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}"></dd>
+                                        <dd><input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}"></dd>
                                     </dl>
                                 </g:if>
                                 <dl>

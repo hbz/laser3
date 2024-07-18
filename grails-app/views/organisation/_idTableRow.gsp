@@ -1,4 +1,4 @@
-<%@page import="de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.IdentifierNamespace"%>
+<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.IdentifierNamespace"%>
 <tr>
     <td>${tableRowNr}</td>
     <td>
@@ -49,7 +49,7 @@
                 </button>
                 <g:link controller="ajax"
                         action="deleteIdentifier"
-                        class="ui button la-modern-button icon red js-open-confirm-modal"
+                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                         params='${[owner: "${orgInstance.class.name}:${orgInstance.id}", target: "${id.class.name}:${id.id}"]}'
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [id?.ns?.ns+": "+id.value])}"
                         role="button"

@@ -154,7 +154,7 @@
                                                 action="deleteCustomerIdentifier"
                                                 id="${orgInstance.id}"
                                                 params="${[deleteCI:ci.id]}"
-                                                class="ui button icon red la-modern-button js-open-confirm-modal"
+                                                class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.customeridentifier", args: [""+ci.getProvider()+" : "+ci.platform+" "+ci.value])}"
                                                 data-confirm-term-how="delete"
                                                 role="button"

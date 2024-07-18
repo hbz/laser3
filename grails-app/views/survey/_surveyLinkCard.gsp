@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyLinks; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.Subscription; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyLinks; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.Subscription; de.laser.storage.RDStore;" %>
 
 <g:if test="${contextOrg?.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
     <ui:card message="surveyLinks.label" href="#surveyLinks"
@@ -113,7 +113,7 @@
                                             </td>
                                             <td>
                                                 <g:if test="${surveyOrgFound}">
-                                                    <g:link class="ui button small la-modern-button" controller="${newControllerName}" action="${newActionName}" target="_blank"
+                                                    <g:link class="${Btn.MODERN.SIMPLE} small" controller="${newControllerName}" action="${newActionName}" target="_blank"
                                                             params="${newParams}"><g:message code="default.button.show.label"/></g:link>
                                                 </g:if>
                                                 <g:else>

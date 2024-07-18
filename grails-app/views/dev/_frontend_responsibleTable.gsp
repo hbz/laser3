@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <h2 class="ui dividing header">Tabellen<a class="anchor" id="icons"></a></h2>
 <h4 class="ui header">Responsive Tabellen</h4>
 
@@ -128,7 +128,7 @@
         </td>
         <td class="x" data-label="Optionen:">
 
-            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
+            <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.BLUE_ICON}">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
@@ -206,7 +206,7 @@
         </td>
         <td class="x" data-label="Optionen:">
 
-            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
+            <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.BLUE_ICON}">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
@@ -284,7 +284,7 @@
         </td>
         <td class="x" data-label="Optionen:">
 
-            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
+            <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.BLUE_ICON}">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
@@ -362,7 +362,7 @@
         </td>
         <td class="x" data-label="Optionen:">
 
-            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
+            <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.BLUE_ICON}">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
@@ -440,7 +440,7 @@
         </td>
         <td class="x" data-label="Optionen:">
 
-            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
+            <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.BLUE_ICON}">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
@@ -626,7 +626,7 @@
         </td>
         <td class="x" data-label="Optionen:">
 
-            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
+            <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.BLUE_ICON}">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
@@ -704,7 +704,7 @@
         </td>
         <td class="x" data-label="Optionen:">
 
-            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
+            <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.BLUE_ICON}">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
@@ -782,7 +782,7 @@
         </td>
         <td class="x" data-label="Optionen:">
 
-            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
+            <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.BLUE_ICON}">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
@@ -860,7 +860,7 @@
         </td>
         <td class="x" data-label="Optionen:">
 
-            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
+            <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.BLUE_ICON}">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
@@ -938,7 +938,7 @@
         </td>
         <td class="x" data-label="Optionen:">
 
-            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
+            <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.BLUE_ICON}">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">

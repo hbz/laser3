@@ -245,7 +245,7 @@
                 <g:if test="${!subscription}">
                     <div>%{-- needed for css --}%
                         <ui:headerTitleIcon type="Subscription"/>
-                        <g:link class="ui button right floated" controller="public" action="gasco"
+                        <g:link class="${Btn.SIMPLE} right floated" controller="public" action="gasco"
                                 params="${[q: surveyConfig.subscription.name, consortia: "${surveyInfo.owner.class.name}:${surveyInfo.owner.id}"]}">
                             GASCO-Monitor
                         </g:link>

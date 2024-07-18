@@ -78,7 +78,7 @@
     %{--    <div class="ui segment">
             <h4 class="ui header">${message(code: 'subscriptionsManagement.deletePropertyInfo')}</h4>
 
-            <g:link class="ui button negative js-open-confirm-modal"
+            <g:link class="${Btn.NEGATIVE_CONFIRM}"
                     data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.deleteProperty.button.confirm')}"
                     data-confirm-term-how="ok" action="${actionName}" id="${params.id}"
                     params="[processOption: 'deleteAllProperties', propertiesFilterPropDef: propertiesFilterPropDef, tab: params.tab]">${message(code: 'subscriptionsManagement.deleteProperty.button', args: [propertiesFilterPropDef.getI10n('name')])}</g:link>

@@ -167,7 +167,7 @@
 
             <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
             <div class="sixteen wide field" style="text-align: right;">
-                <input type="submit" id="copyElementsSubmit" class="ui button js-click-control" data-confirm-id="copyElements"
+                <input type="submit" id="copyElementsSubmit" class="${Btn.SIMPLE_CLICKCONTROL}" data-confirm-id="copyElements"
                        data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
                        data-confirm-term-how="delete"
                        value="${message(code: 'copyElementsIntoObject.copySubscriber.button')}" ${submitDisabled}/>

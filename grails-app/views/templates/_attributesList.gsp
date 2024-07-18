@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <laser:serviceInjection/>
 <g:if test="${attributes}">
     <div class="ui divided middle aligned selection list la-flex-list">
@@ -16,7 +16,7 @@
                     <g:if test="${attribute[field].id in availableAttributeIds}">
                         <div class="content la-space-right">
                             <div class="ui icon buttons">
-                                <g:link class="ui negative button la-modern-button js-open-confirm-modal"
+                                <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.subjectgroup.organisation", args: [outputString])}"
                                         data-confirm-term-how="delete"
                                         controller="${controllerName}" action="${deleteAction}" params="[id: ownObj.id, field: field, removeObjectOID: genericOIDService.getOID(attribute)]"

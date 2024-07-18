@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.survey.SurveyOrg; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition; de.laser.RefdataCategory; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.survey.SurveyOrg; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition; de.laser.RefdataCategory; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties;" %>
 <laser:serviceInjection/>
 
 <g:if test="${controllerName == 'survey' && actionName == 'show'}">
@@ -137,8 +137,7 @@
                             </div>
 
                             <div class="field" style="margin-bottom:0">
-                                <input type="submit" value="${message(code: 'default.button.add.label')}"
-                                       class="ui button js-wait-wheel"/>
+                                <input type="submit" value="${message(code: 'default.button.add.label')}" class="${Btn.SIMPLE} js-wait-wheel"/>
                             </div>
                         </div>
                     </g:form>

@@ -316,7 +316,7 @@
                             <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 1, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
                         </div>
                         <div class="field la-field-noLabel">
-                            <button class="ui button la-js-closeAll-showMore right floated ">${message(code: "accordion.button.closeAll")}</button>
+                            <ui:showMoreCloseButton />
                         </div>
                     </div>
                 </div>
@@ -336,19 +336,19 @@
             <g:if test="${params.tab != 'stats'}">
                 <div class="eight wide field" style="text-align: left;">
                     <g:if test="${editable && params.tab == 'allTipps'}">
-                        <button type="submit" name="process" id="processButton" value="preliminary" class="ui green button">
+                        <button type="submit" name="process" id="processButton" value="preliminary" class="${Btn.POSITIVE}">
                             ${checkedCount} <g:message code="renewEntitlementsWithSurvey.preliminary"/></button>
                     </g:if>
 
                     <g:if test="${editable && params.tab == 'selectedIEs'}">
-                        <button type="submit" name="process" id="processButton" value="remove" class="ui red button">
+                        <button type="submit" name="process" id="processButton" value="remove" class="${Btn.NEGATIVE}">
                             ${checkedCount}  <g:message code="renewEntitlementsWithSurvey.remove"/></button>
                     </g:if>
                 </div>
             </g:if>
 
             <div class="eight wide field" style="text-align: right;">
-                <button class="ui button la-js-closeAll-showMore right floated">${message(code: "accordion.button.closeAll")}</button>
+                <ui:showMoreCloseButton />
             </div>
         </div>
     </div>

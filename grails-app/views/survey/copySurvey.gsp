@@ -305,7 +305,7 @@
 
                 </tbody>
             </table>
-            <input type="submit" class="ui button js-click-control"
+            <input type="submit" class="${Btn.SIMPLE_CLICKCONTROL}"
                    value="${message(code: 'default.button.copy.label')}"/>
 
         </ui:greySegment>

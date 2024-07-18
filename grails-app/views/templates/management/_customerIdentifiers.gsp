@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <div class="ui segment">
     <h3 class="ui header">
         <g:if test="${controllerName == "subscription"}">
@@ -47,7 +47,7 @@
                                     action="unsetCustomerIdentifier"
                                     id="${subscription.id}"
                                     params="${[deleteCI: pair.id]}"
-                                    class="ui button icon red la-modern-button js-open-confirm-modal"
+                                    class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unset.customeridentifier", args: ["" + pair.getProvider() + " : " + (pair.platform?:'') + " " + (pair.value?:'')])}"
                                     data-confirm-term-how="unset"
                                     role="button"

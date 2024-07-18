@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PersonRole" %>
+<%@ page import="de.laser.ui.Btn; de.laser.PersonRole" %>
 
 <%-- DEPRECATED --%>
 <%-- DEPRECATED --%>
@@ -36,7 +36,7 @@
                 </g:if>
             </div>
             <div class="field wide four">
-                <button class="ui button template-element-delete-${timestamp}" type="button">${message('code':'default.button.remove.label')}</button>
+                <button class="${Btn.SIMPLE} template-element-delete-${timestamp}" type="button">${message('code':'default.button.remove.label')}</button>
             </div>
 
 

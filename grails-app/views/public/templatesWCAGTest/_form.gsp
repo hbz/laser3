@@ -109,7 +109,7 @@
 
 
 
-    <a href="#" class="ui button modalCreateTask" onclick="$('#modalCreateTask').modal('hide')">Schließen</a>
+    <a href="#" class="${Btn.SIMPLE} modalCreateTask" onclick="$('#modalCreateTask').modal('hide')">Schließen</a>
     <input type="submit" class="${Btn.POSITIVE}" name="save" value="Anlegen" onclick="event.preventDefault(); $('#modalCreateTask').find('form').submit()">
 </g:form>
 
