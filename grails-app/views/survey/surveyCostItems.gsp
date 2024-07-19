@@ -361,7 +361,7 @@
                 <br />
                 <br />
                 <button name="deleteCostItems" value="true" type="submit"
-                        class="ui icon negative button js-open-confirm-modal"
+                        class="${Btn.NEGATIVE_CONFIRM}"
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyCostItems")}"
                         data-confirm-term-how="delete"
                         data-confirm-id="processSurveyCostItemsBulk"

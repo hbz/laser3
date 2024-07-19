@@ -68,7 +68,7 @@
                     <g:if test="${delResult.deletable}">
                         <g:if test="${delResult.status == DeletionService.RESULT_SUBSTITUTE_NEEDED}">
                             <g:if test="${substituteList}">
-                                <div class="ui negative button js-open-confirm-modal" data-confirm-id="deleteUserForm"
+                                <div class="${Btn.NEGATIVE_CONFIRM}" data-confirm-id="deleteUserForm"
                                      data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.user", args: [user.displayName ])}"
                                      data-confirm-term-how="delete">
                                         ${message(code:'deletion.user')}
@@ -89,7 +89,7 @@
                             </g:else>
                         </g:if>
                         <g:elseif test="${delResult.status != DeletionService.RESULT_ERROR}">
-                            <div class="ui negative button js-open-confirm-modal" data-confirm-id="deleteUserForm"
+                            <div class="${Btn.NEGATIVE_CONFIRM}" data-confirm-id="deleteUserForm"
                                  data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.user", args: [user.displayName ])}"
                                  data-confirm-term-how="delete">
                                     ${message(code:'deletion.user')}

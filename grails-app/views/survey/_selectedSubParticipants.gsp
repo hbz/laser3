@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig;" %>
 <br />
 
 <div class="four wide column">
@@ -92,7 +92,7 @@
 
         <g:if test="${selectedSubParticipants && editable}">
             <button type="submit" data-confirm-id="deleteSurveyParticipants"
-                    class="ui icon negative button js-open-confirm-modal"
+                    class="${Btn.NEGATIVE_CONFIRM}"
                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.surveyParticipants")}"
                     data-confirm-term-how="unlink"
                     role="button"

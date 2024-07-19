@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.storage.RDStore" %>
 
 <div class="three wide column" data-ajaxTopic="true">
     <div class="ui list"  >
@@ -359,7 +359,7 @@
 
                                 %{--<g:each in="${apisources}" var="gokbAPI">
                                     <g:if test="${provider.gokbId}">
-                                        <a role="button" class="ui icon tiny blue button la-popup-tooltip la-delay"
+                                        <a role="button" class="${Btn.SIMPLE_ICON_TOOLTIP} tiny"
                                            data-content="${message(code: 'wekb')}"
                                            href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/orgContent/?id=' + provider.gokbId : '#'}"
                                            target="_blank"><i class="${Icon.WEKB}"></i>
@@ -374,7 +374,6 @@
                 </div>
             </div>
         </g:if>
-
     %{--<g:if test="${ie && (ie.availabilityStatus || showEmptyFields)}">
         <g:if test="${ie.availabilityStatus?.value == 'Expected'}">
             ${message(code: 'default.on')} <g:formatDate

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 %{--
 <h1>Offene Fragen in Bezug auf WCAG</h1>
 <h2>Icons</h2>
@@ -29,7 +29,7 @@
         class="ui circular label la-js-filter-total hidden">0</span>
 </button>
 <h3>Icons in einem Link ohne zusätzlichen Text</h3>
-<g:link aria-label="Das ist eine Beschreibung für den Accessibility Tree" controller="dev" action="frontend" params="" class="ui icon positive button">
+<g:link aria-label="Das ist eine Beschreibung für den Accessibility Tree" controller="dev" action="frontend" params="" class="${Btn.POSITIVE_ICON}">
     <i aria-hidden="true" class="checkmark icon"></i>
 </g:link>
 <g:message code="default.title.label" /> <g:message code="messageRequiredField" />
