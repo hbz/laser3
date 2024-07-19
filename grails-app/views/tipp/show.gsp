@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.titles.TitleHistoryEventParticipant" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.titles.TitleHistoryEventParticipant" %>
 
 <laser:htmlStart text="${message(code:"tipp.show.label", args:[tipp.name, tipp.pkg.name, tipp.platform.name])}" />
 
@@ -234,7 +234,7 @@
 
             <div class="item">${message(code: 'platform.primaryURL')}:               ${tipp.platform.primaryUrl}
                 <g:if test="${tipp.platform.primaryUrl}">
-                    <a role="button" class="ui icon mini blue button la-modern-button la-popup-tooltip la-delay"
+                    <a role="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} mini la-delay"
                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
                        href="${tipp.platform.primaryUrl?.contains('http') ? tipp.platform.primaryUrl : 'http://' + tipp.platform.primaryUrl}"
                        target="_blank"><i class="${Icon.LNK.EXTERNAL}"></i></a>

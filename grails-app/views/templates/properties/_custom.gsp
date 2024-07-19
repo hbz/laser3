@@ -179,7 +179,7 @@
                                             </ui:remoteLink>
                                         </g:if>
                                         <g:else>
-                                            <ui:remoteLink class="ui icon blue button la-modern-button la-popup-tooltip la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                            <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                               params='[oid: genericOIDService.getOID(prop), editable:"${overwriteEditable}", custom_props_div: "${custom_props_div}", showConsortiaFunctions: "${showConsortiaFunctions}", (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()]'
                                                               data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                               data-content="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
@@ -229,7 +229,7 @@
                                     </ui:remoteLink>
                                 </g:if>
                                 <g:else>
-                                    <ui:remoteLink class="ui icon button blue la-modern-button la-popup-tooltip la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                    <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                       params='[oid: genericOIDService.getOID(prop), editable:"${overwriteEditable}", custom_props_div: "${custom_props_div}", showConsortiaFunctions: "${showConsortiaFunctions}"]'
                                                       data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                       data-content="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"

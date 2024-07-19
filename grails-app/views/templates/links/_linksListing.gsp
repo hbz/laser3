@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription; de.laser.License; de.laser.Links" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription; de.laser.License; de.laser.Links" %>
 <laser:serviceInjection/>
 
 
@@ -93,7 +93,7 @@
                                         <g:else>
                                             <g:if test="${pair.propertySet && pair instanceof License}">
                                                 <div id="derived-license-properties-toggle${link.id}"
-                                                        class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
+                                                        class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
                                                         data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
                                                     <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                 </div>

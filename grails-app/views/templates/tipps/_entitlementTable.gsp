@@ -1,4 +1,4 @@
-<%@page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <div class="eight wide column">
     <g:set var="counter" value="${1}"/>
     <g:set var="sumlistPriceEuro" value="${0}"/>
@@ -126,7 +126,7 @@
                                     </g:link>
                                 </g:if>
                                 <g:elseif test="${side == 'source' && !isContainedByTarget && editable}">
-                                    <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay" action="processAddEntitlements"
+                                    <g:link class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay" action="processAddEntitlements"
                                             params="${[id: subscription.id, singleTitle: tipp.gokbId]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
                                         <i class="${Icon.CMD.ADD}"></i>

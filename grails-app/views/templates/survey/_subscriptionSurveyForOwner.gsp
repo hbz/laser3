@@ -437,7 +437,7 @@
                                                         <td class="right aligned">
                                                             <g:if test="${pair.propertySet}">
                                                                 <div id="derived-license-properties-toggle${link.id}"
-                                                                        class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
+                                                                        class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
                                                                         data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
                                                                     <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                                 </div>

@@ -196,7 +196,7 @@
                                         </ui:remoteLink>
                                     </g:if>
                                     <g:else>
-                                        <ui:remoteLink class="ui icon blue button la-modern-button la-popup-tooltip la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                        <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                           params='[oid: genericOIDService.getOID(prop),
                                                                    editable:"${overwriteEditable}",
                                                                    custom_props_div: "${custom_props_div}",

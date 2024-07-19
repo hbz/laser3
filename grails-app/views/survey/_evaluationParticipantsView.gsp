@@ -564,7 +564,7 @@
                                     params="${[surveyConfigID: surveyConfig.id,
                                                exportXLS   : true,
                                                tab           : 'selectedIEs']}"
-                                    class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
+                                    class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
                                     data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
                                     target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                         </td>
@@ -1147,7 +1147,7 @@
                                     params="${[surveyConfigID: surveyConfig.id,
                                                exportXLS   : true,
                                                tab           : 'selectedIEs']}"
-                                    class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
+                                    class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
                                     data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
                                     target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                         </td>
