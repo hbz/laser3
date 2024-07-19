@@ -128,7 +128,7 @@
                                                             params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'withIE']}"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
                                                             data-confirm-term-how="delete"
-                                                            class="ui icon negative button la-modern-button js-open-confirm-modal ${unlinkDisabled}"
+                                                            class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM} ${unlinkDisabled}"
                                                             role="button"
                                                             aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
                                                         <i aria-hidden="true" class="${Icon.CMD.UNLINK}"></i>
@@ -156,7 +156,7 @@
                                                             params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'onlyIE']}"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name])}"
                                                             data-confirm-term-how="delete"
-                                                            class="ui icon negative button la-modern-button js-open-confirm-modal ${unlinkDisabled}"
+                                                            class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM} ${unlinkDisabled}"
                                                             role="button"
                                                             aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
                                                         <i aria-hidden="true" class="${Icon.CMD.ERASE}"></i>

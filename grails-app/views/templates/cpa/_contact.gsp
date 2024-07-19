@@ -30,7 +30,7 @@
             </g:if>
 
             <g:if test="${editable && tmplShowDeleteButton}">
-				<g:link class="ui icon negative button js-open-confirm-modal la-modern-button"
+				<g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contactItems.addressbook")}"
                         data-confirm-term-how="delete"
                         controller="ajax" action="delete" params="[cmd: 'deleteContact', oid: genericOIDService.getOID(contact)]"

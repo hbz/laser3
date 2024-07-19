@@ -100,7 +100,7 @@
                 <g:if test="${institution.isCustomerType_Consortium() && !subscription.instanceOf}">
                     <div class="field">
                         <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
-                            <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherited')}" class="ui icon green button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="true">
+                            <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherited')}" class="${Btn.MODERN.POSITIVE_ICON_TOOLTIP} la-audit-button" data-inherited="true">
                                 <i aria-hidden="true" class="icon thumbtack"></i>
                             </button>
                         </g:if>

@@ -36,12 +36,12 @@
                             <g:if test="${ReportingFilter.findByToken(fhRCache.token)}">
                             %{--
                             <g:link controller="ajaxHtml" action="reporting" params="${[context: BaseConfig.KEY_MYINST, cmd: 'deleteBookmark', token: "${fhRCache.token}", tab: 'history']}"
-                                    class="ui small icon negative la-modern-button button right floated"><i class="${Icon.CMD.DELETE}"></i></g:link>
+                                    class="${Btn.MODERN.NEGATIVE_ICON} small right floated"><i class="${Icon.CMD.DELETE}"></i></g:link>
                                     --}%
                             </g:if>
                             <g:else>
                                 <g:link controller="ajaxHtml" action="reporting" params="${[context: BaseConfig.KEY_MYINST, cmd: 'addBookmark', token: "${fhRCache.token}", tab: 'history']}"
-                                        class="ui small icon positive la-modern-button button right floated"><i class="${Icon.CMD.ADD}"></i></g:link>
+                                        class="${Btn.MODERN.POSITIVE_ICON} small right floated"><i class="${Icon.CMD.ADD}"></i></g:link>
                             </g:else>
                         </td>
                     </tr>

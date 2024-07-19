@@ -44,7 +44,7 @@
                         <g:if test="${instance.respondsTo('showUIShareButton') && instance.showUIShareButton()}">
                             <g:if test="${docctx.isShared}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
-                                    <g:link controller="ajax" action="toggleShare" class="ui icon button green la-modern-button"
+                                    <g:link controller="ajax" action="toggleShare" class="${Btn.MODERN.POSITIVE_ICON}"
                                             params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
                                         <i class="alternate share icon"></i>
                                     </g:link>

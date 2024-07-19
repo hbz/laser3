@@ -63,7 +63,7 @@
                                         <div class="ui icon button compact la-hidden"><i class="${Icon.UNC.PLACEHOLDER}"></i></div>
                                     </g:else>
                                     <g:if test="${i < typeEntry.value.size()-1}">
-                                        <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveDown', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
+                                        <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveDown', oid:pdgOID, ownerType: typeEntry.key]}" class="${Btn.MODERN.SIMPLE_ICON} compact"
                                                 role="button">
                                             <i class="${Icon.CMD.MOVE_DOWN}"></i>
                                         </g:link>
