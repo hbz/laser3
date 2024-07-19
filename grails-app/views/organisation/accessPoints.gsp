@@ -175,8 +175,7 @@
                             <g:else>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                                       data-content="${message(code: 'accessPoint.list.deleteDisabledInfo', args: [accessPointItem['platformLinkCount'], accessPointItem['subscriptionLinkCount']])}">
-                                    <span class="ui negative icon button la-modern-button disabled"><i class="${Icon.CMD.DELETE}"></i>
-                                    </span>
+                                    <span class="${Btn.MODERN.NEGATIVE_ICON} disabled"><i class="${Icon.CMD.DELETE}"></i></span>
                                 </span>
                             </g:else>
 

@@ -437,7 +437,7 @@
                         </td>
                         <td>
                             <g:if test="${editable}">
-                                <button type="button" class="ui icon tiny button blue la-modern-button"
+                                <button type="button" class="${Btn.MODERN.SIMPLE_ICON} tiny"
                                         data-ownerid="${s.id}"
                                         data-ownerclass="${s.class.name}"
                                         data-doctype="${RDStore.DOC_TYPE_OFFER.value}"
@@ -641,7 +641,7 @@
                         </td>
                         <td>
                             <g:if test="${editable}">
-                                <button type="button" class="ui icon tiny button blue la-modern-button"
+                                <button type="button" class="${Btn.MODERN.SIMPLE_ICON} tiny"
                                         data-ownerid="${s.id}"
                                         data-ownerclass="${s.class.name}"
                                         data-doctype="${RDStore.DOC_TYPE_RENEWAL.value}"

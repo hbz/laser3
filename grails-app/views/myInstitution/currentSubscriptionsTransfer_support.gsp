@@ -608,7 +608,7 @@
                             <ui:xEditable owner="${s}" field="renewalSentDate" type="date"/>
                         </td>
                         <td>
-                            <button type="button" class="ui icon tiny button blue la-modern-button" data-ui="modal"
+                            <button type="button" class="${Btn.MODERN.SIMPLE_ICON} tiny" data-ui="modal"
                                     data-href="${"#modalCreateDocumentRenewal" + s.id}">
                                 <i aria-hidden="true" class="plus small icon"></i>
                             </button>

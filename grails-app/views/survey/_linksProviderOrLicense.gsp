@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription; de.laser.License" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription; de.laser.License" %>
 <laser:serviceInjection/>
 <div class="content">
     <g:if test="${linkType == 'License'}">
@@ -13,7 +13,7 @@
 
             <g:if test="${editable && contextOrg.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
                 <span class="la-popup-tooltip la-delay" data-content="${message(code: 'default.button.unlink.label')}">
-                    <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
+                    <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM} la-selectable-button"
                             data-confirm-tokenMsg="${message(code: "surveyInfo.unlink.license.confirm.dialog")}"
                             data-confirm-term-how="unlink"
                             controller="survey" action="setProviderOrLicenseLink"
@@ -40,7 +40,7 @@
 
             <g:if test="${editable && contextOrg.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
                 <span class="la-popup-tooltip la-delay" data-content="${message(code: 'default.button.unlink.label')}">
-                    <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
+                    <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM} la-selectable-button"
                             data-confirm-tokenMsg="${message(code: "surveyInfo.unlink.provider.confirm.dialog")}"
                             data-confirm-term-how="unlink"
                             controller="survey" action="setProviderOrLicenseLink"

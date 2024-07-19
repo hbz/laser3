@@ -87,7 +87,7 @@
                             </td>
                             <g:if test="${editable}">
                                 <td class="x">
-                                    <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="ui icon button blue la-modern-button trigger-modal"
+                                    <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="${Btn.MODERN.SIMPLE_ICON} trigger-modal"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                         <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
