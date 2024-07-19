@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <g:if test="${contact}">
 	<div class="ui js-copyTriggerParent item contact-details" style="display: flex; flex-flow: row wrap;">
@@ -15,7 +15,7 @@
         <div class="content">
             <g:if test="${contact.contentType == RDStore.CCT_EMAIL}">
                 <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code: 'tooltip.sendMail')}">
-                    <a href="mailto:${contact.content}" class="ui icon blue button la-modern-button">
+                    <a href="mailto:${contact.content}" class="${Btn.MODERN.SIMPLE_ICON}">
                         <i class="${Icon.LNK.EXTERNAL}"></i>
                     </a>
                 </span>
@@ -23,7 +23,7 @@
 
             <g:if test="${contact.contentType == RDStore.CCT_URL}">
                 <span class="la-popup-tooltip la-delay" data-position="top right"  data-content="${message(code: 'tooltip.callUrl')}">
-                    <a href="${contact.content}" target="_blank" class="ui icon blue button la-modern-button">
+                    <a href="${contact.content}" target="_blank" class="${Btn.MODERN.SIMPLE_ICON}">
                         <i class="${Icon.LNK.EXTERNAL}"></i>
                     </a>
                 </span>

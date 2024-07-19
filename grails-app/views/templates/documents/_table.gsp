@@ -188,7 +188,7 @@
                                         </g:else>
                                     </g:if>
                                 </g:if>
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE_ICON}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                 %{-- todo: !docctx.sharedFrom --}%
                                 <g:if test="${userService.hasFormalAffiliation(user, docctx.owner.owner, 'INST_EDITOR') && inOwnerOrg && !docctx.sharedFrom}">
                                     <button type="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="${Icon.CMD.EDIT}"></i></button>
@@ -200,7 +200,7 @@
                                     <%
                                         String redirectId = actionName == 'membersSubscriptionsManagement' && instance.instanceOf ? instance.instanceOf.id : instance.id
                                     %>
-                                    <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                    <g:link controller="${controllerName}" action="deleteDocuments" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
                                             params='[instanceId:"${redirectId}", deleteId:"${docctx.id}", redirectAction:"${actionName}", redirectTab: "${params.tab}"]'

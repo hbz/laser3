@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.Org;de.laser.Person;de.laser.PersonRole;de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.storage.RDConstants;de.laser.ReaderNumber;de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Org;de.laser.Person;de.laser.PersonRole;de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.storage.RDConstants;de.laser.ReaderNumber;de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
 <laser:htmlStart message="menu.institutions.readerNumbers" serviceInjection="true"/>
 
         <g:set var="entityName" value="${message(code: 'org.label')}"/>
@@ -77,7 +77,7 @@
                                             <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                         </a>
                                     </g:if>
-                                    <g:link class="ui icon negative button la-modern-button js-open-confirm-modal" controller="readerNumber" action="delete"
+                                    <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}" controller="readerNumber" action="delete"
                                             data-confirm-tokenMsg="${message(code: 'readerNumber.confirm.delete')}"
                                             data-confirm-term-how="ok" params="${[semester:numbersInstance.getKey().id,org:params.id]}"
                                             role="button"
@@ -122,7 +122,7 @@
                                 <td><ui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/></td>
                                 <td class="x">
                                     <g:if test="${editable}">
-                                        <g:link class="ui icon negative button la-modern-button js-open-confirm-modal" controller="readerNumber" action="delete"
+                                        <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}" controller="readerNumber" action="delete"
                                                 data-confirm-tokenMsg="${message(code: 'readerNumber.confirmRow.delete')}"
                                                 data-confirm-term-how="ok" params="${[dueDate:numbersInstance.getKey(),org:params.id]}"
                                                 role="button"

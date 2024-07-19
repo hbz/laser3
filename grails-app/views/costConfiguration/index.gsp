@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue" %>
 <laser:htmlStart message="menu.institutions.costConfiguration" />
 
 <ui:breadcrumbs>
@@ -51,7 +51,7 @@
                                     </g:link>
                                 </td>
                                 <td>
-                                    <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                    <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItemElementConfiguration", args: [ciec.costItemElement.getI10n("value")])}"
                                             data-confirm-term-how="delete"
                                             controller="costConfiguration" action="deleteCostConfiguration"

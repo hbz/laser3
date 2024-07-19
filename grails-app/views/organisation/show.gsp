@@ -86,7 +86,7 @@
                                         <div class="item" data-objId="${genericOIDService.getOID(orgInstance.altnames[0])}">
                                             <ui:xEditable owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable}"/>
                                             <g:if test="${editable}">
-                                                <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
+                                                <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [orgInstance.altnames[0].name])}"
                                                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(orgInstance.altnames[0])}')">
                                                     <i class="${Icon.CMD.DELETE}"></i>
@@ -107,7 +107,7 @@
                                                 <g:if test="${editable}">
                                                     <div class="content la-space-right">
                                                         <div class="ui buttons">
-                                                            <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
+                                                            <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                            data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
                                                                 <i class="${Icon.CMD.DELETE}"></i>

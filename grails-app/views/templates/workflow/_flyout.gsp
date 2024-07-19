@@ -202,7 +202,7 @@
 %{--                                <div class="ui icon negative button la-modern-button"--}%
 %{--                                     data-cmd="delete:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icon.CMD.DELETE}"></i>--}%
 %{--                                </div>--}%
-                                <div class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                <div class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.checkpoint", args: [cpoint.title])}"
                                         data-confirm-term-how="delete"
                                         data-callback="workflowFlyoutCmd"

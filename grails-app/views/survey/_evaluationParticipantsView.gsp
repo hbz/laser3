@@ -504,14 +504,14 @@
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                            class="ui icon blue tiny button la-modern-button"
+                                                            class="${Btn.MODERN.SIMPLE_ICON} tiny"
                                                             target="_blank"><i class="download small icon"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                                class="ui icon blue tiny button la-modern-button"
+                                                                class="${Btn.MODERN.SIMPLE_ICON} tiny"
                                                                 target="_blank"><i
                                                                 class="download small icon"></i></g:link>
 
@@ -519,7 +519,7 @@
                                                         <laser:render template="/templates/documents/modal"
                                                                       model="[ownobj: subParticipant, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
                                                         <button type="button"
-                                                                class="ui icon blue tiny button la-modern-button"
+                                                                class="${Btn.MODERN.SIMPLE_ICON} tiny"
                                                                 data-ui="modal"
                                                                 data-href="#modalEditDocument_${docctx.id}"
                                                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
@@ -1087,14 +1087,14 @@
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                            class="ui icon blue tiny button la-modern-button"
+                                                            class="${Btn.MODERN.SIMPLE_ICON} tiny"
                                                             target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                                class="ui icon blue tiny button la-modern-button"
+                                                                class="${Btn.MODERN.SIMPLE_ICON} tiny"
                                                                 target="_blank"><i
                                                                 class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
 
@@ -1102,7 +1102,7 @@
                                                         <laser:render template="/templates/documents/modal"
                                                                       model="[ownobj: subParticipant, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
                                                         <button type="button"
-                                                                class="ui icon blue tiny button la-modern-button"
+                                                                class="${Btn.MODERN.SIMPLE_ICON} tiny"
                                                                 data-ui="modal"
                                                                 data-href="#modalEditDocument_${docctx.id}"
                                                                 aria-label="${message(code: 'ariaLabel.change.universal')}">

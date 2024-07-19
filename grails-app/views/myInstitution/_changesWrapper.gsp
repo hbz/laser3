@@ -63,7 +63,7 @@
                                             <i class="checkmark icon"></i>
                                         <!--${message(code: 'default.button.accept.label')}-->
                                         </g:link>
-                                        <g:link controller="pendingChange" action="reject" id="${entry.changeId}" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                        <g:link controller="pendingChange" action="reject" id="${entry.changeId}" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.changes.reject")}"
                                                 data-confirm-term-how="ok"
                                                 role="button"
@@ -87,7 +87,7 @@
                                             <i class="checkmark icon"></i>
                                         <!--${message(code: 'default.button.accept.label')}-->
                                         </g:link>
-                                        <g:link controller="pendingChange" action="reject" id="${entry.changeId}" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                        <g:link controller="pendingChange" action="reject" id="${entry.changeId}" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.changes.reject")}"
                                                 data-confirm-term-how="ok"
                                                 role="button"

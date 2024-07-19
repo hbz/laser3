@@ -99,7 +99,7 @@
                         SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyPropertyConfig.surveyProperty)
                         && ((PropertyStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyPropertyConfig.surveyProperty.id) || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}">
                     <td>
-                        <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
+                        <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyElements", args: [surveyPropertyConfig.surveyProperty.getI10n('name')])}"
                                 data-confirm-term-how="delete"
                                 controller="survey" action="actionsForSurveyProperty"

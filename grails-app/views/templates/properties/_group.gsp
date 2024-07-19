@@ -214,7 +214,7 @@
 
                                 <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
 
-                                <ui:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                <ui:remoteLink class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                                   controller="ajax"
                                                   action="deleteCustomProperty"
                                                   params='[propClass: prop.getClass(),

@@ -149,7 +149,7 @@
                                                             params="[cmd:'delete', deleteIds: pd?.id]"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [fieldValue(bean: pd, field: "name_de")])}"
                                                             data-confirm-term-how="delete"
-                                                            class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                                            class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                         <i class="${Icon.CMD.DELETE}"></i>
@@ -157,7 +157,7 @@
                                                 </g:if>
                                                 <g:else>
                                                     <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
-                                                        <button class="ui icon blue button la-modern-button" data-href="#replacePropertyDefinitionModal" data-ui="modal"
+                                                        <button class="${Btn.MODERN.SIMPLE_ICON}" data-href="#replacePropertyDefinitionModal" data-ui="modal"
                                                                 data-xcg-pd="${pd.class.name}:${pd.id}"
                                                                 data-xcg-type="${pd.type}"
                                                                 data-xcg-rdc="${pd.refdataCategory}"
@@ -169,7 +169,7 @@
                                             </g:if>
                                             <g:elseif test="${changeProperties && pd.countOwnUsages() > 0}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
-                                                    <button class="ui icon blue button la-modern-button" data-href="#replacePropertyDefinitionModal" data-ui="modal"
+                                                    <button class="${Btn.MODERN.SIMPLE_ICON}" data-href="#replacePropertyDefinitionModal" data-ui="modal"
                                                             data-xcg-pd="${pd.class.name}:${pd.id}"
                                                             data-xcg-type="${pd.type}"
                                                             data-xcg-rdc="${pd.refdataCategory}"

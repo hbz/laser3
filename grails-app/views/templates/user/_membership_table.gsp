@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils;" %>
 <laser:serviceInjection />
 
 <div class="ui card">
@@ -47,7 +47,7 @@
                             <g:if test="${! userInstance.isLastInstAdminOf(userInstance.formalOrg)}">
                                     <g:link controller="ajax" action="unsetAffiliation"
                                             params='${[key:"${userInstance.id}:${userInstance.formalOrg.id}:${userInstance.formalRole.id}"]}'
-                                            class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                            class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code:'confirm.dialog.unlink.user.affiliation')}"
                                             data-confirm-term-how="unlink"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
