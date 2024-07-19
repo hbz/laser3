@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.Subscription; de.laser.remote.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.Platform; de.laser.IssueEntitlementGroup" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Subscription; de.laser.remote.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.Platform; de.laser.IssueEntitlementGroup" %>
 
 <laser:htmlStart message="subscription.details.addEntitlements.label" serviceInjection="true" />
 
@@ -233,7 +233,7 @@
                                     </div>
                                     <g:if test="${editable && participantPerpetualAccessToTitle.size() == 0}">
                                         <g:if test="${!blockSubmit}">
-                                            <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
+                                            <g:link class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
                                                     action="processAddEntitlements"
                                                     params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}"
                                                     data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">

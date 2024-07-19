@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.utils.SqlDateUtils; de.laser.survey.SurveyInfo; de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; de.laser.*; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.utils.SqlDateUtils; de.laser.survey.SurveyInfo; de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; de.laser.*; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
 <table class="ui celled table la-js-responsive-table la-table">
     <thead>
@@ -121,7 +121,7 @@
                         </ui:remoteLink>
                     </g:if>
                     <g:if test="${dashDueDate?.isHidden}">
-                        <ui:remoteLink class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
+                        <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
                                           data-content="${message(code:'myinst.dash.due_dates.visibility.off.tooltip')}"
                                           controller="ajax"
                                           action="showDashboardDueDate"
@@ -138,7 +138,7 @@
                         </ui:remoteLink>
                     </g:if>
                     <g:else>
-                        <ui:remoteLink class="ui icon green button la-modern-button la-popup-tooltip la-delay"
+                        <ui:remoteLink class="${Btn.MODERN.POSITIVE_ICON_TOOLTIP}"
                                           data-content="${message(code:'myinst.dash.due_dates.visibility.on.tooltip')}"
                                           controller="ajax"
                                           action="hideDashboardDueDate"
@@ -155,7 +155,7 @@
                 </td>
                 <td class="x">
                 <g:if test="${dashDueDate?.dueDateObject.isDone}">
-                    <ui:remoteLink class="ui green button la-modern-button la-popup-tooltip la-delay"
+                    <ui:remoteLink class="${Btn.MODERN.POSITIVE_ICON_TOOLTIP}"
                                       data-content="${message(code:'myinst.dash.due_dates.status.pending.tooltip')}"
                                       controller="ajax"
                                       action="dashboardDueDateSetIsUndone"
@@ -172,7 +172,7 @@
                     </ui:remoteLink>
                 </g:if>
                 <g:else>
-                    <ui:remoteLink class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
+                    <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
                                       data-content="${message(code:'myinst.dash.due_dates.status.done.tooltip')}"
                                       controller="ajax"
                                       action="dashboardDueDateSetIsDone"

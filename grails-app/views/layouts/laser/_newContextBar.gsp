@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.convenience.Marker; de.laser.Subscription; de.laser.GenericOIDService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.UserSetting; de.laser.auth.User; de.laser.auth.Role; de.laser.Org" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.convenience.Marker; de.laser.Subscription; de.laser.GenericOIDService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.UserSetting; de.laser.auth.User; de.laser.auth.Role; de.laser.Org" %>
 <laser:serviceInjection />
 
 <nav id="contextBar" class="ui fixed menu" aria-label="${message(code:'wcag.label.modeNavigation')}">
@@ -65,7 +65,7 @@
 
             <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='myInstitution' && actionName=='financeImport') || (controllerName=='myInstitution' && actionName=='subscriptionImport') || (controllerName=='dev' && actionName=='frontend')}">
                 <div class="item la-cb-action">
-                    <button class="ui icon button la-toggle-ui" id="help-toggle"><i class="${Icon.UI.HELP}"></i></button>
+                    <button class="${Btn.SIMPLE_ICON} la-toggle-ui" id="help-toggle"><i class="${Icon.UI.HELP}"></i></button>
                 </div>
             </g:if>
 
@@ -76,7 +76,7 @@
             <g:if test="${controllerName in ['finance', 'subscription'] && subscription && isSubscriptionViewValid}">
                 <g:if test="${editable && contextService.getOrg().isCustomerType_Consortium() && subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL]}">
                     <div class="item la-cb-action">
-                        <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionTransfer-toggle"
+                        <button class="${Btn.SIMPLE_ICON_TOOLTIP} la-toggle-ui" id="subscriptionTransfer-toggle"
                                 data-content="${message(code:'statusbar.showSubscriptionTransfer.tooltip')}" data-position="bottom left">
                             <i class="${Icon.SUBSCRIPTION}"></i>
                         </button>
@@ -89,11 +89,11 @@
             <g:if test="${controllerName in ['finance', 'subscription'] && subscription && isSubscriptionViewValid}">
                 <g:if test="${editable && contextService.getOrg().isCustomerType_Consortium() && subscription.getConsortia()?.id == contextService.getOrg().id}">
                     <div class="item la-cb-action">
-%{--                        <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionMembers-toggle"--}%
+%{--                        <button class="${Btn.SIMPLE_ICON_TOOLTIP} la-toggle-ui la-delay" id="subscriptionMembers-toggle"--}%
 %{--                                data-content="${message(code:'consortium.member.plural')} ${message(code:'default.and')} ${message(code:'subscription.member.plural')}" data-position="bottom left">--}%
 %{--                            <i class="${Icon.ORG}"></i>--}%
 %{--                        </button>--}%
-                        <button class="ui icon button la-toggle-ui" id="subscriptionMembers-toggle">
+                        <button class="${Btn.SIMPLE_ICON} la-toggle-ui" id="subscriptionMembers-toggle">
                             <i class="${Icon.ORG}"></i>
                         </button>
                     </div>
@@ -118,13 +118,13 @@
             <g:if test="${controllerName == 'survey' && (actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia')}">
                 <div class="item la-cb-action">
                     <g:if test="${actionName == 'workflowsSurveysConsortia'}">
-                        <g:link action="currentSurveysConsortia" controller="survey" class="ui icon button la-popup-tooltip la-delay"
+                        <g:link action="currentSurveysConsortia" controller="survey" class="${Btn.SIMPLE_ICON_TOOLTIP}"
                                 data-content="${message(code:'statusbar.change.currentSurveysConsortiaView.tooltip')}" data-position="bottom center">
                             <i class="la-tab icon"></i>
                         </g:link>
                     </g:if>
                     <g:else>
-                        <g:link action="workflowsSurveysConsortia" controller="survey" class="ui icon button la-popup-tooltip la-delay"
+                        <g:link action="workflowsSurveysConsortia" controller="survey" class="${Btn.SIMPLE_ICON_TOOLTIP}"
                                 data-content="${message(code:'statusbar.change.workflowsSurveysConsortiaView.tooltip')}" data-position="bottom center">
                             <i class="la-tab slash icon"></i>
                         </g:link>

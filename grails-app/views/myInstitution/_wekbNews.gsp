@@ -232,7 +232,7 @@
                 <span class="${Btn.SIMPLE}" data-obj="vendor">${message(code: 'vendor.plural')}: ${wekbNews.vendor.count}</span>
                 <span class="${Btn.SIMPLE}" data-obj="platform">${message(code: 'platform.plural')}: ${wekbNews.platform.count}</span>
                 <span class="${Btn.SIMPLE}" data-obj="package">${message(code: 'package.plural')}: ${wekbNews.package.count}</span>
-                <span class="${Btn.SIMPLE} la-popup-tooltip la-long-tooltip la-delay" data-obj="all"
+                <span class="${Btn.SIMPLE_TOOLTIP} la-long-tooltip" data-obj="all"
                       data-content="Alle anzeigen: ${message(code: 'provider.label')}, ${message(code: 'vendor.plural')}, ${message(code: 'platform.plural')}, ${message(code: 'package.plural')}">Alle</span>
             </div>
         </div>
@@ -243,7 +243,7 @@
                 <span class="${Btn.SIMPLE}" data-filter="deleted">Gelöschte Objekte: ${wekbNews.counts.deleted}</span>
                 <span class="${Btn.SIMPLE}" data-filter="my"><i class="${Icon.UI.MY_OBJECT}"></i> ${wekbNews.counts.my}</span>
                 <span class="${Btn.SIMPLE}" data-filter="marker"><i class="${Icon.MARKER}"></i> ${wekbNews.counts.marker}</span>
-                <span class="${Btn.SIMPLE} la-popup-tooltip la-long-tooltip la-delay" data-filter="all"
+                <span class="${Btn.SIMPLE_TOOLTIP} la-long-tooltip" data-filter="all"
                       data-content="Alle anzeigen: Neue Objekte, Geänderte Objekte, Gelöschte Objekte, Meine Objekte, Meine Beobachtungsliste">Alle</span>
             </div>
         </div>

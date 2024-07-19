@@ -131,7 +131,7 @@
                                         </g:if>
                                         <g:else>
                                             <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMandatory.label')}" data-position="top left"
-                                                    params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_ICON} la-popup-tooltip la-delay">
+                                                    params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}">
                                                 <i class="la-star slash icon"></i>
                                             </g:link>
                                         </g:else>
@@ -144,7 +144,7 @@
                                             </g:if>
                                             <g:else>
                                                 <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}" data-position="top left"
-                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_ICON} la-popup-tooltip la-delay">
+                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}">
                                                     <i class="la-redo slash icon"></i>
                                                 </g:link>
                                             </g:else>

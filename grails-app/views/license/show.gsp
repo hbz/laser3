@@ -149,7 +149,7 @@
                                                             </g:else>
                                                         </g:if>
                                                     </div>
-                                                    <div class="ui icon blue button la-show-button la-modern-button la-popup-tooltip la-delay"
+                                                    <div class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-show-button"
                                                          data-content="${message(code: 'org.altname.show')}">
                                                         <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                     </div>

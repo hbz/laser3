@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.I10nTranslation" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.I10nTranslation" %>
 
 <laser:htmlStart message="menu.institutions.private_props" serviceInjection="true"/>
 
@@ -126,7 +126,7 @@
                                                 </g:if>
                                                 <g:else>
                                                     <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMandatory.label')}" data-position="left center"
-                                                            params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="ui icon blue button la-modern-button la-popup-tooltip la-delay">
+                                                            params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}">
                                                         <i class="la-star slash icon"></i>
                                                     </g:link>
                                                 </g:else>
@@ -139,7 +139,7 @@
                                                     </g:if>
                                                     <g:else>
                                                         <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}" data-position="left center"
-                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="ui icon blue button la-modern-button la-popup-tooltip la-delay">
+                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}">
                                                             <i class="la-redo slash icon"></i>
                                                         </g:link>
                                                     </g:else>
