@@ -76,17 +76,17 @@
             <thead>
             <tr>
                 <th class="five wide">${message(code: 'accessPoint.ip.format.input')}
-                    &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv4Inputs()">
+                    &nbsp; <button class="${Btn.SIMPLE_ICON} small" onclick="JSPC.app.copyToClipboardIpv4Inputs()">
                     <i class="${Icon.CMD.COPY}"></i>
                     </button>
                 </th>
                 <th class="five wide">${message(code: 'accessPoint.ip.format.range')}
-                    &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv4Ranges()">
+                    &nbsp; <button class="${Btn.SIMPLE_ICON} small" onclick="JSPC.app.copyToClipboardIpv4Ranges()">
                         <i class="${Icon.CMD.COPY}"></i>
                     </button>
                 </th>
                 <th class="five wide">${message(code: 'accessPoint.ip.format.cidr')}
-                    &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv4Cidrs()">
+                    &nbsp; <button class="${Btn.SIMPLE_ICON} small" onclick="JSPC.app.copyToClipboardIpv4Cidrs()">
                         <i class="${Icon.CMD.COPY}"></i>
                     </button>
                 </th>
@@ -103,7 +103,7 @@
                         <g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
                             <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}"
                                     params="[tab: 'IPv4', orgInstance: orgInstance.id]"
-                                    class="ui negative icon button js-open-confirm-modal"
+                                    class="${Btn.NEGATIVE_ICON_CONFIRM}"
                                     data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint.ip', args: [accessPointData.ipInput])}"
                                     data-confirm-term-how="delete"
                                     role="button"
@@ -156,17 +156,17 @@
         <thead>
         <tr>
             <th class="five wide">${message(code: 'accessPoint.ip.format.input')}
-                &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv6Inputs()">
+                &nbsp; <button class="${Btn.SIMPLE_ICON} small" onclick="JSPC.app.copyToClipboardIpv6Inputs()">
                     <i class="${Icon.CMD.COPY}"></i>
                 </button>
             </th>
             <th class="five wide">${message(code: 'accessPoint.ip.format.range')}
-                &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv6Ranges()">
+                &nbsp; <button class="${Btn.SIMPLE_ICON} small" onclick="JSPC.app.copyToClipboardIpv6Ranges()">
                     <i class="${Icon.CMD.COPY}"></i>
                 </button>
             </th>
             <th class="five wide">${message(code: 'accessPoint.ip.format.cidr')}
-                &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv6Cidrs()">
+                &nbsp; <button class="${Btn.SIMPLE_ICON} small" onclick="JSPC.app.copyToClipboardIpv6Cidrs()">
                     <i class="${Icon.CMD.COPY}"></i>
                 </button>
             </th>
@@ -187,7 +187,7 @@
                     <g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
                         <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}"
                                 params="[orgInstance: orgInstance.id, tab: 'IPv6']"
-                                class="ui negative icon button js-open-confirm-modal"
+                                class="${Btn.NEGATIVE_ICON_CONFIRM}"
                                 data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint.ip', args: [accessPointData.ipInput])}"
                                 data-confirm-term-how="delete"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">

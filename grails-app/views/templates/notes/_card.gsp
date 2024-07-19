@@ -99,7 +99,7 @@
                                 </g:link>
                             </g:if>
                             <g:else>
-                                <div class="ui icon button la-hidden">
+                                <div class="${Btn.SIMPLE_ICON} la-hidden">
                                     <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>
                                 </div>
                             </g:else>

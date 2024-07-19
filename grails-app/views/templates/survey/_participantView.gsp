@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyPackageResult; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyConfigPackage; de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyPackageResult; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyConfigPackage; de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition;" %>
 
 
 <div class="ui stackable grid">
@@ -107,7 +107,7 @@
 
                 <div class="ui bottom attached tab segment active" data-tab="contacts">
 
-                    <g:link controller="organisation" action="contacts" id="${participant.id}" class="ui right floated blue button">
+                    <g:link controller="organisation" action="contacts" id="${participant.id}" class="${Btn.SIMPLE} right floated">
                         <g:message code="default.show.label" args="[message(code: 'org.publicContacts.label')]"/>
                     </g:link>
                     <br>
@@ -126,7 +126,7 @@
 
                 <div class="ui bottom attached tab segment" data-tab="addresses">
 
-                    <g:link controller="organisation" action="contacts" id="${participant.id}" class="ui right floated blue button">
+                    <g:link controller="organisation" action="contacts" id="${participant.id}" class="${Btn.SIMPLE} right floated">
                         <g:message code="default.show.label" args="[message(code: 'org.publicContacts.label')]"/>
                     </g:link>
                     <br>

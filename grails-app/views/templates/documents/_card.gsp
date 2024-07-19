@@ -153,7 +153,7 @@
                                 </g:link>
                             </g:if>
                             <g:elseif test="${docctx.shareConf != RDStore.SHARE_CONF_UPLOADER_AND_TARGET}">
-                                <div class="ui icon button la-hidden">
+                                <div class="${Btn.SIMPLE_ICON} la-hidden">
                                     <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>
                                 </div>
                             </g:elseif>
@@ -185,17 +185,17 @@
 %{--                                    </g:link>--}%
 %{--                                </g:if>--}%
 %{--                                <g:else>--}%
-%{--                                    <div class="ui icon button la-hidden">--}%
+%{--                                    <div class="${Btn.SIMPLE_ICON} la-hidden">--}%
 %{--                                        <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>--}%
 %{--                                    </div>--}%
 %{--                                </g:else>--}%
 %{--                                <%-- STOP Second Button --%>--}%
 %{--                            </g:if>--}%
 %{--                            <g:else>--}%
-%{--                                <div class="ui icon button la-hidden">--}%
+%{--                                <div class="${Btn.SIMPLE_ICON} la-hidden">--}%
 %{--                                    <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>--}%
 %{--                                </div>--}%
-%{--                                <div class="ui icon button la-hidden">--}%
+%{--                                <div class="${Btn.SIMPLE_ICON} la-hidden">--}%
 %{--                                    <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>--}%
 %{--                                </div>--}%
 %{--                            </g:else>--}%

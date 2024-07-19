@@ -141,7 +141,7 @@
 
         <g:if test="${surveyParticipantsHasAccess}">
             <laser:render template="/templates/copyEmailaddresses" model="[modalID: 'copyEmailaddresses_participantsWithAccess', orgList: surveyParticipantsHasAccess.org]"/>
-            <a data-ui="modal" class="ui icon button right floated"
+            <a data-ui="modal" class="${Btn.SIMPLE} right floated"
                href="#copyEmailaddresses_participantsWithAccess">
                 <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
             </a>
@@ -727,7 +727,7 @@
 
     <g:if test="${surveyParticipantsHasNotAccess}">
         <laser:render template="/templates/copyEmailaddresses" model="[modalID: 'copyEmailaddresses_participantsWithoutAccess', orgList: surveyParticipantsHasNotAccess.org]"/>
-        <a data-ui="modal" class="ui icon button right floated"
+        <a data-ui="modal" class="${Btn.SIMPLE} right floated"
            href="#copyEmailaddresses_participantsWithoutAccess">
             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
         </a>

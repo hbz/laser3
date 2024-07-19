@@ -208,7 +208,7 @@
             <div class="eight wide column">
                 <g:if test="${entitlements}">
                     <div class="field la-field-right-aligned">
-                        <div class="ui right floated button la-js-editButton la-la-clearfix>"><g:message code="default.button.edit.label"/></div>
+                        <div class="${Btn.SIMPLE} right floated la-js-editButton la-la-clearfix>"><g:message code="default.button.edit.label"/></div>
                     </div>
                 </g:if>
             </div>
@@ -624,7 +624,7 @@
                                                             </div>
                                                             <hr>
                                                             <g:if test="${editable}">
-                                                                <button class="ui tiny button addObject" data-objType="priceItem" data-ie="${ie.id}">
+                                                                <button class="${Btn.SIMPLE} tiny addObject" data-objType="priceItem" data-ie="${ie.id}">
                                                                     <i class="${Icon.FNC.COST_CONFIG}"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
                                                                 </button>
                                                             </g:if>
@@ -647,7 +647,7 @@
                                                                 <g:if test="${editable}">
                                                                     <g:link action="editEntitlementGroupItem"
                                                                             params="${[cmd: 'edit', ie: ie.id, id: subscription.id]}"
-                                                                            class="ui tiny button trigger-modal">
+                                                                            class="${Btn.SIMPLE} tiny trigger-modal">
                                                                         <i class="object group icon"></i>${message(code: 'subscription.details.ieGroups.edit')}
                                                                     </g:link>
                                                                 </g:if>

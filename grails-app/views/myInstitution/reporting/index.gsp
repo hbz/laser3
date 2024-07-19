@@ -21,7 +21,7 @@
                     data-content="${message(code:'reporting.ui.global.history')}" data-position="top right">
                     <i class="icon history"></i>
             </div>
-            <div id="info-toggle" class="ui icon button right floated">
+            <div id="info-toggle" class="${Btn.SIMPLE_ICON} right floated">
                 <i class="${Icon.UI.HELP}"></i>
             </div>
         </div>

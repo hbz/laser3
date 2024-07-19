@@ -303,11 +303,11 @@
                 </label>
                 %{-- Buttons for selection of kind of contact START --}%
                 <div class="ui wrapping spaced buttons">
-                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_EMAIL.id}"><i class="${Icon.SYM.EMAIL}"></i><g:message code="contact.addEmail"/></a>
-                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_FAX.id}"><i class="${Icon.SYM.FAX}"></i><g:message code="contact.addTty"/></a>
-                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_MOBILE.id}"><i class="${Icon.SYM.MOBILE}"></i><g:message code="contact.addMobil"/></a>
-                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_PHONE.id}"><i class="${Icon.SYM.PHONE}"></i><g:message code="contact.addPhone"/></a>
-                    <a class="ui blue button la-js-addContactElement" id="cct-${RDStore.CCT_URL.id}"><i class="${Icon.SYM.URL}"></i><g:message code="contact.addUrl"/></a>
+                    <a class="${Btn.SIMPLE} la-js-addContactElement" id="cct-${RDStore.CCT_EMAIL.id}"><i class="${Icon.SYM.EMAIL}"></i><g:message code="contact.addEmail"/></a>
+                    <a class="${Btn.SIMPLE} la-js-addContactElement" id="cct-${RDStore.CCT_FAX.id}"><i class="${Icon.SYM.FAX}"></i><g:message code="contact.addTty"/></a>
+                    <a class="${Btn.SIMPLE} la-js-addContactElement" id="cct-${RDStore.CCT_MOBILE.id}"><i class="${Icon.SYM.MOBILE}"></i><g:message code="contact.addMobil"/></a>
+                    <a class="${Btn.SIMPLE} la-js-addContactElement" id="cct-${RDStore.CCT_PHONE.id}"><i class="${Icon.SYM.PHONE}"></i><g:message code="contact.addPhone"/></a>
+                    <a class="${Btn.SIMPLE} la-js-addContactElement" id="cct-${RDStore.CCT_URL.id}"><i class="${Icon.SYM.URL}"></i><g:message code="contact.addUrl"/></a>
                 </div>
                 %{-- Buttons for selection of kind of contact END --}%
             </div>

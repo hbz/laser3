@@ -101,7 +101,7 @@
                     <h2 class="ui header">${message(code:'renewalEvaluation.propertiesChanged')}</h2>
 
                     <g:if test="${propertiesChanged}">
-                        <g:link class="ui right floated button" controller="survey" action="showPropertiesChanged"
+                        <g:link class="${Btn.SIMPLE} right floated" controller="survey" action="showPropertiesChanged"
                                 id="${surveyConfig.surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id, tab: params.tab, exportXLSX: true]">
                             Export ${message(code: 'renewalEvaluation.propertiesChanged')}
