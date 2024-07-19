@@ -102,7 +102,7 @@ class FinanceService {
                 }
             }
             Package pkg
-            if (params.newPackage?.contains("${SubscriptionPackage.class.name}:")) {
+            if (params.newPackage?.contains("${de.laser.Package.class.name}:")) {
                 try {
                     if (params.newPackage.split(":")[1] != 'null') {
                         pkg = (Package) genericOIDService.resolveOID(params.newPackage)
