@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5818    19.07.2024  rc-3.4  3.4.3       Andreas Bug         Performanzbremse bei der Suche bei "Meine Lizenzen" aufgehoben
+
 5815    18.07.2024  rc-3.4  3.4.3       Andreas Bug         Umfragen können grundsätzlich abgeschickt werden, wenn keine Teilnahme beabsichtigt ist
 
 5814    18.07.2024  rc-3.4  3.4.3       Andreas Bug         Paketzuordnung wurde bei Neuanlegen eines Kostenpostens nicht erkannt
