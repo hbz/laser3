@@ -55,7 +55,7 @@
                             <%-- 1 --%>
                             <g:if test="${ownobj.respondsTo('showUIShareButton') && ownobj.showUIShareButton()}">
                                 <g:if test="${docctx?.isShared}">
-                                    <ui:remoteLink class="ui icon green button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay"
+                                    <ui:remoteLink class="${Btn.MODERN.POSITIVE_ICON_TOOLTIP} js-no-wait-wheel"
                                                       controller="ajax"
                                                       action="toggleShare"
                                                       params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"notes", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'
@@ -67,7 +67,7 @@
                                     </ui:remoteLink>
                                 </g:if>
                                 <g:else>
-                                    <ui:remoteLink class="ui icon blue button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay js-open-confirm-modal"
+                                    <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP} js-no-wait-wheel"
                                                       controller="ajax"
                                                       action="toggleShare"
                                                       params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"notes", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'

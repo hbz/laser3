@@ -142,7 +142,7 @@
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
                                                         data-confirm-term-how="delete"
                                                         data-content="${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}"
-                                                        class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip"
+                                                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM_TOOLTIP}"
                                                         role="button"
                                                         aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
                                                     <i aria-hidden="true" class="${Icon.CMD.UNLINK}"></i>
@@ -170,7 +170,7 @@
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name])}"
                                                         data-confirm-term-how="delete"
                                                         data-content="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}"
-                                                        class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip"
+                                                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM_TOOLTIP}"
                                                         role="button"
                                                         aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
                                                     <i aria-hidden="true" class="${Icon.CMD.ERASE}"></i>

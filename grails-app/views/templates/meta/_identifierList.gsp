@@ -89,7 +89,7 @@
                                 <g:if test="${showConsortiaFunctions}">
                                     <g:if test="${!ident.instanceOf}">
                                         <g:if test="${! AuditConfig.getConfig(ident)}">
-                                            <ui:remoteLink class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                            <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP}"
                                                               controller="ajax"
                                                               action="toggleIdentifierAuditConfig"
                                                               params='[ownerId: "${object.id}",
@@ -115,7 +115,7 @@
                                             </g:link>
                                         </g:if>
                                         <g:else>
-                                            <ui:remoteLink class="ui icon green button la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                            <ui:remoteLink class="${Btn.MODERN.POSITIVE_ICON_CONFIRM_TOOLTIP}"
                                                               controller="ajax" action="toggleIdentifierAuditConfig"
                                                               params='[ownerId: "${object.id}",
                                                                        ownerClass: "${object.class}",
