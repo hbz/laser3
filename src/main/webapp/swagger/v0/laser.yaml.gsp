@@ -1,4 +1,4 @@
-openapi: 3.0.2
+openapi: 3.1.0
 info:
   title: LAS:eR - API
   description: >
@@ -40,7 +40,7 @@ components:
         type: string
         default: globalUID
       required: true
-      description: Identifier for this query
+      description: Identifier type for this query
 
     q_withoutDefault:
       name: q
@@ -48,7 +48,7 @@ components:
       schema:
         type: string
       required: true
-      description: Identifier for this query
+      description: Identifier type for this query
 
     v:
       name: v

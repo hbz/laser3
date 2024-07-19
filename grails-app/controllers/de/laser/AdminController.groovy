@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.annotations.DebugInfo
+import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
 import de.laser.storage.RDConstants
 import de.laser.utils.AppUtils
@@ -22,6 +23,7 @@ import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugins.mail.MailService
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
 import org.grails.web.json.JSONElement
 import org.hibernate.SessionFactory
@@ -40,6 +42,7 @@ import java.time.LocalDate
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController  {
 
+    CacheService cacheService
     ContextService contextService
     DataConsistencyService dataConsistencyService
     DataloadService dataloadService
@@ -681,10 +684,20 @@ class AdminController  {
     @Transactional
     def manageOrganisations() {
         Map<String, Object> result = [:]
+        EhcacheWrapper cache = cacheService.getTTL300Cache("/admin/manageOrganisations/")
+
+        if(!params.containsKey('cmd')) {
+            result.filterParams = params.clone()
+            cache.put('orgFilterCache', result.filterParams)
+        }
+        else {
+            if(cache && cache.get('orgFilterCache')) {
+                result.filterParams = cache.get('orgFilterCache')
+            }
+        }
         SwissKnife.setPaginationParams(result, params, contextService.getUser())
 
         Org target = params.target ? Org.get(params.long('target')) : null
-
         if (params.cmd == 'changeApiLevel') {
             if (ApiToolkit.getAllApiLevels().contains(params.apiLevel)) {
                 ApiToolkit.setApiLevel(target, params.apiLevel)
