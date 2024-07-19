@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.storage.RDConstants;" %>
 
 <laser:htmlStart message="org.nav.accessPoints" serviceInjection="true" />
         <g:set var="entityName" value="${message(code: 'org.label')}" />
@@ -164,7 +164,7 @@
 
                             <g:if test="${accessPointItem['platformLinkCount'] == 0 && accessPointItem['subscriptionLinkCount'] == 0}">
                                 <g:link action="delete" controller="accessPoint" id="${accessPoint?.id}"
-                                        class="ui negative icon button la-modern-button js-open-confirm-modal"
+                                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint', args: [accessPoint.name])}"
                                         data-confirm-term-how="delete"
                                         role="button"

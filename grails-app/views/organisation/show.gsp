@@ -276,7 +276,7 @@
                                                   ]}" />--%>
                                             <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
                                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.unlink')}">
-                                                    <g:link class="ui negative icon button la-modern-button la-selectable-button js-open-confirm-modal"
+                                                    <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM} la-selectable-button"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
                                                             data-confirm-term-how="unlink"
                                                             action="unlinkOrg" params="[id: orgInstance.id, combo: row.id]"

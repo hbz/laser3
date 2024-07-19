@@ -44,7 +44,7 @@
     </g:if>
     <g:if test="${errorKBART}">
         <ui:msg class="error" showIcon="true" message="subscription.details.addEntitlements.titleNotMatched" args="[errorCount]"/>
-        <g:link class="ui icon button la-modern-button" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+        <g:link class="${Btn.SIMPLE_ICON}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
     </g:if>
 
 </g:if>

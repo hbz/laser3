@@ -531,7 +531,7 @@
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
                                                         <g:link controller="${ajaxCallController ?: controllerName}"
                                                                 action="deleteDocuments"
-                                                                class="ui icon negative tiny button la-modern-button js-open-confirm-modal"
+                                                                class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM} tiny"
                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                                                 data-confirm-term-how="delete"
                                                                 params='[instanceId: "${subParticipant.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
@@ -1114,7 +1114,7 @@
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
                                                         <g:link controller="${ajaxCallController ?: controllerName}"
                                                                 action="deleteDocuments"
-                                                                class="ui icon negative tiny button la-modern-button js-open-confirm-modal"
+                                                                class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM} tiny"
                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                                                 data-confirm-term-how="delete"
                                                                 params='[instanceId: "${subParticipant.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'

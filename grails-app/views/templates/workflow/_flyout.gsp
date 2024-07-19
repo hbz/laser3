@@ -199,7 +199,7 @@
                             </g:if>
 
                             <g:if test="${checkedEditable}"><!-- TODO: workflows-permissions -->
-%{--                                <div class="ui icon negative button la-modern-button"--}%
+%{--                                <div class="${Btn.MODERN.NEGATIVE_ICON}"--}%
 %{--                                     data-cmd="delete:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icon.CMD.DELETE}"></i>--}%
 %{--                                </div>--}%
                                 <div class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"

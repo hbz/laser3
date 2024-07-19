@@ -55,7 +55,7 @@
                                 </g:link>
                                 <div class="ui grid">
                                     <div class="right aligned wide column">
-                                        <g:link controller="pendingChange" action="accept" id="${entry.changeId}" class="ui icon positive button la-modern-button js-open-confirm-modal"
+                                        <g:link controller="pendingChange" action="accept" id="${entry.changeId}" class="${Btn.MODERN.POSITIVE_ICON_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.changes.accept")}"
                                             data-confirm-term-how="ok"
                                             role="button"
@@ -79,7 +79,7 @@
                             <div class="right aligned wide column">
                                 <div class="ui grid">
                                     <div class="right aligned wide column">
-                                        <g:link controller="pendingChange" action="accept" id="${entry.changeId}" class="ui icon positive button la-modern-button js-open-confirm-modal"
+                                        <g:link controller="pendingChange" action="accept" id="${entry.changeId}" class="${Btn.MODERN.POSITIVE_ICON_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.changes.accept")}"
                                             data-confirm-term-how="ok"
                                             role="button"
