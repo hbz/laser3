@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.config.ConfigMapper; de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat; de.laser.PersonRole; de.laser.Contact" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.config.ConfigMapper; de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat; de.laser.PersonRole; de.laser.Contact" %>
 <laser:htmlStart message="package.details" serviceInjection="true"/>
 
 <ui:debugInfo>
@@ -207,7 +207,7 @@ making obsolete package/actions
                                     <div class="ui fluid segment title">
                                         <ui:wekbIconLink type="source" gokbId="${packageInstanceRecord.source.uuid}"/>
                                         ${packageInstanceRecord.source.name}
-                                        <div class="ui icon blue button la-modern-button ${buttonColor} la-popup-tooltip la-delay"
+                                        <div class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
                                              data-content="${message(code: 'platform.details')}">
                                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                                         </div>
@@ -263,7 +263,7 @@ making obsolete package/actions
                                                     <ui:wekbIconLink type="platform" gokbId="${platformInstanceRecord.uuid}"/>
                                                 </div>
                                                 <div class="right aligned column">
-                                                    <div class="ui icon blue button la-modern-button ${buttonColor} la-popup-tooltip la-delay"
+                                                    <div class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
                                                          data-content="${message(code: 'platform.details')}">
                                                         <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                     </div>

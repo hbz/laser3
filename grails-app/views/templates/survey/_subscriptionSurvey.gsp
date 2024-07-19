@@ -9,7 +9,7 @@
             <div class="ui accordion la-accordion-showMore js-propertiesCompareInfo-accordion">
                 <div class="item">
                     <div class="title">
-                        <div class="${Btn.MODERN.SIMPLE_ICON} la-popup-tooltip la-delay right floated"
+                        <div class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay right floated"
                                 data-content="<g:message code="survey.subscription.propertiesChange.show"/>">
                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                         </div>
