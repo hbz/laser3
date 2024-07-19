@@ -27,9 +27,9 @@ class LicenseControllerService {
     DocstoreService docstoreService
     LinksGenerationService linksGenerationService
     LicenseService licenseService
+    SubscriptionsQueryService subscriptionsQueryService
     TaskService taskService
     WorkflowService workflowService
-    SubscriptionsQueryService subscriptionsQueryService
 
 
     //--------------------------------------------- workflows -------------------------------------------------
@@ -121,7 +121,23 @@ class LicenseControllerService {
         if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
             if (! result.license.isVisibleBy(result.user)) {
                 log.debug( "--- NOT VISIBLE ---")
-                return null
+                //perform further check because it may be linked to a subscription and the linking is missing ...
+                List<Links> subLinks = Links.executeQuery('select li from Links li where li.sourceLicense = :lic and li.destinationSubscription in (select oo.sub from OrgRole oo where oo.org = :ctx)', [ctx: result.institution, lic: result.license])
+                if(subLinks) {
+                    //substitute missing link upon call
+                    log.debug("--- SUBSTITUTING ---")
+                    OrgRole substitute = new OrgRole(org: result.institution, lic: result.license)
+                    if(result.institution.isCustomerType_Consortium()) {
+                        substitute.roleType = RDStore.OR_LICENSING_CONSORTIUM
+                    }
+                    else {
+                        if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
+                            substitute.roleType = RDStore.OR_LICENSEE_CONS
+                        else substitute.roleType = RDStore.OR_LICENSEE
+                    }
+                    substitute.save()
+                }
+                else return null
             }
         }
         result.editable = result.license.isEditableBy(result.user)
@@ -161,7 +177,7 @@ class LicenseControllerService {
 
     /**
      * this is very ugly and should be subject of refactor - - but unfortunately, the
-     * {@link SubscriptionsQueryService#myInstitutionCurrentSubscriptionsBaseQuery(java.lang.Object)}
+     * {@link SubscriptionsQueryService#myInstitutionCurrentSubscriptionsBaseQuery(java.util.Map)}
      * requires the {@link GrailsParameterMap} as parameter.
      * @return validOn and defaultSet-parameters of the filter
      */

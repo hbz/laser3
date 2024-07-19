@@ -99,7 +99,8 @@ class ApiPkg {
 		result.identifiers      = ApiCollectionReader.getIdentifierCollection(pkg.ids) // de.laser.Identifier
 		//result.license          = ApiStubReader.requestLicenseStub(pkg.license, context) // de.laser.License
 		result.nominalPlatform  = ApiUnsecuredMapReader.getPlatformMap(pkg.nominalPlatform, context) // de.laser.Platform
-		result.organisations    = ApiCollectionReader.getOrgLinkCollection(pkg.orgs, ApiReader.IGNORE_PACKAGE, context) // de.laser.OrgRole
+		result.provider    		= ApiUnsecuredMapReader.getProviderStubMap(pkg.provider) // de.laser.Provider
+		result.vendors			= ApiCollectionReader.getVendorCollection(pkg.vendors?.vendor) //de.laser.Vendor
 		//result.subscriptions    = ApiStubReader.retrieveSubscriptionPackageStubCollection(pkg.subscriptions, ApiCollectionReader.IGNORE_PACKAGE, context) // de.laser.SubscriptionPackage
 		result.tipps            = ApiCollectionReader.getTippCollection(pkg.tipps, ApiReader.IGNORE_ALL, context) // de.laser.TitleInstancePackagePlatform
 
