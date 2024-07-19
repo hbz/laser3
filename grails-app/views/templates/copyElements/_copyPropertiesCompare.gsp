@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.License; de.laser.SubscriptionController; de.laser.CopyElementsService;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.License; de.laser.SubscriptionController; de.laser.CopyElementsService;" %>
 <laser:serviceInjection/>
 
     <g:if test="${!fromSurvey && !isRenewSub}">
@@ -141,7 +141,7 @@
         </g:else>
 
         <div class="sixteen wide field" style="text-align: right;">
-            <input id="copyElementsSubmit" type="submit" class="ui button js-click-control" value="${submitButtonText}" ${submitDisabled}
+            <input id="copyElementsSubmit" type="submit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${submitButtonText}" ${submitDisabled}
                    data-confirm-id="copyElements"
                    data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
                    data-confirm-term-how="delete"/>

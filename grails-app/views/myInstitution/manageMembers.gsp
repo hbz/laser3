@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ExportClickMeService; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ExportClickMeService; de.laser.storage.RDStore" %>
 
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
     <g:set var="title" value="${message(code: 'menu.my.insts')}"/>
@@ -86,7 +86,7 @@
 
 
         <g:if test="${members && editable}">
-            <input type="submit" class="ui button js-open-confirm-modal" data-confirm-id="manageMembers"
+            <input type="submit" class="${Btn.NEGATIVE_CONFIRM}" data-confirm-id="manageMembers"
                    data-confirm-tokenMsg="${message(code:'members.confirmDelete')}"
                    data-confirm-term-how="unlink" value="${message(code: 'default.button.revoke.label')}"/>
         </g:if>

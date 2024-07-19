@@ -378,7 +378,7 @@
                     </td>
                     <td>
                         <g:link controller="survey" action="show" id="${surveyInfo.id}"
-                                class="ui button blue icon la-modern-button"
+                                class="${Btn.MODERN.SIMPLE_ICON}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
                             <i class="${Icon.CMD.EDIT}"></i>
@@ -387,7 +387,7 @@
                         <g:if test="${editable}">
                             <g:link controller="survey" action="copySurvey" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig.id, q: surveyConfig?.subscription?.providers ? surveyConfig.subscription.providers[0].name : '']"
-                                    class="ui icon blue button la-modern-button">
+                                    class="${Btn.MODERN.SIMPLE_ICON}">
                                 <i class="${Icon.CMD.COPY}"></i>
                                 </div>
                             </g:link>

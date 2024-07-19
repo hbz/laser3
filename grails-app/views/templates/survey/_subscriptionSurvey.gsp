@@ -9,8 +9,7 @@
             <div class="ui accordion la-accordion-showMore js-propertiesCompareInfo-accordion">
                 <div class="item">
                     <div class="title">
-                        <div
-                                class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated"
+                        <div class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} right floated"
                                 data-content="<g:message code="survey.subscription.propertiesChange.show"/>">
                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                         </div>
@@ -52,7 +51,7 @@
         <g:if test="${!subscription}">
             <div>%{-- needed for css --}%
             <ui:headerTitleIcon type="Subscription"/>
-            <g:link class="ui button right floated" controller="public" action="gasco"
+            <g:link class="${Btn.SIMPLE} right floated" controller="public" action="gasco"
                     params="${[q: surveyConfig.subscription.name, consortia: "${surveyInfo.owner.class.name}:${surveyInfo.owner.id}"]}">
                 GASCO-Monitor
             </g:link>
@@ -68,8 +67,7 @@
             <div class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                 <div class="item">
                     <div class="title">
-                        <div
-                                class="ui button icon blue la-modern-button la-delay right floated">
+                        <div class="${Btn.MODERN.SIMPLE_ICON} la-delay right floated">
                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                         </div>
                         <laser:script file="${this.getGroovyPageFileName()}">
@@ -246,7 +244,7 @@
                                                 <td class="right aligned">
                                                     <g:if test="${pair.propertySet}">
                                                         <div id="derived-license-properties-toggle${link.id}"
-                                                             class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
+                                                             class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
                                                              data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
                                                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                         </div>
@@ -299,7 +297,7 @@
                 <div id="statsInfos" class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                     <div class="item">
                         <div class="title">
-                            <div class="ui button icon blue la-modern-button la-delay right floated ">
+                            <div class="${Btn.MODERN.SIMPLE_ICON} la-delay right floated">
                                 <i class="${Icon.CMD.SHOW_MORE}"></i>
                             </div>
 

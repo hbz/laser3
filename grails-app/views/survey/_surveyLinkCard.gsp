@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyLinks; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.Subscription; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyLinks; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.Subscription; de.laser.storage.RDStore;" %>
 
 <g:if test="${contextOrg?.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
     <ui:card message="surveyLinks.label" href="#surveyLinks"
@@ -37,7 +37,7 @@
                                         <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
                                             <span class="la-popup-tooltip la-delay"
                                                   data-content="${message(code: 'default.button.unlink.label')}">
-                                                <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
+                                                <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM} la-selectable-button"
                                                         data-confirm-tokenMsg="${surveyLink.bothDirection ? message(code: "surveyLinks.bothDirection.unlink.confirm.dialog") : message(code: "surveyLinks.unlink.confirm.dialog")}"
                                                         data-confirm-term-how="unlink"
                                                         controller="survey" action="setSurveyLink"
@@ -113,7 +113,7 @@
                                             </td>
                                             <td>
                                                 <g:if test="${surveyOrgFound}">
-                                                    <g:link class="ui button small la-modern-button" controller="${newControllerName}" action="${newActionName}" target="_blank"
+                                                    <g:link class="${Btn.SIMPLE} small" controller="${newControllerName}" action="${newActionName}" target="_blank"
                                                             params="${newParams}"><g:message code="default.button.show.label"/></g:link>
                                                 </g:if>
                                                 <g:else>

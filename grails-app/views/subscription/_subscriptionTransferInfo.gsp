@@ -1,5 +1,5 @@
 <!-- template: meta/subscriptionTransferInfo -->
-<%@ page import="de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
 
 <laser:serviceInjection />
 
@@ -160,7 +160,7 @@
 
                                         <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                    class="ui icon blue tiny button la-modern-button"
+                                                    class="${Btn.MODERN.SIMPLE_ICON} tiny"
                                                     target="_blank">
                                                 <i class="${Icon.CMD.DOWNLOAD} small"></i>
                                             </g:link>
@@ -284,7 +284,7 @@
 
                                         <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                    class="ui icon blue tiny button la-modern-button"
+                                                    class="${Btn.MODERN.SIMPLE_ICON} tiny"
                                                     target="_blank">
                                                 <i class="${Icon.CMD.DOWNLOAD} small"></i>
                                             </g:link>
@@ -326,7 +326,7 @@
                     </td>
                     <td>
                         <g:link controller="subscription" action="subTransfer" id="${s.id}"
-                                class="ui icon button blue la-modern-button"
+                                class="${Btn.MODERN.SIMPLE_ICON}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
                             <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>

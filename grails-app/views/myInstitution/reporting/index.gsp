@@ -1,4 +1,4 @@
-<%@page import="de.laser.ui.Icon; de.laser.config.ConfigMapper; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
+<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.config.ConfigMapper; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
 <laser:htmlStart message="myinst.reporting" serviceInjection="true">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
@@ -155,9 +155,8 @@
         </div>
 
         <g:if test="${filterResult}">
-
             %{-- <sec:ifAnyGranted roles="ROLE_YODA">
-                <g:link controller="yoda" action="systemCache" params="${[key: ReportingCache.CTX_GLOBAL + token]}" target="_blank" class="ui button small right floated"><i class="icon bug"></i> YODA only CACHE</g:link>
+                <g:link controller="yoda" action="systemCache" params="${[key: ReportingCache.CTX_GLOBAL + token]}" target="_blank" class="${Btn.SIMPLE} small right floated"><i class="icon bug"></i> YODA only CACHE</g:link>
             </sec:ifAnyGranted> --}%
 
             <h3 class="ui header">${message(code:'reporting.ui.global.step2')}</h3>

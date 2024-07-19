@@ -98,7 +98,7 @@
                         <ui:sortingDropdown noSelection="${message(code:'default.select.choose.label')}" from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
                     </div>
                      <div class="field la-field-noLabel">
-                        <button class="ui button la-js-closeAll-showMore right floated">${message(code: "accordion.button.closeAll")}</button>
+                         <ui:showMoreCloseButton />
                     </div>
                 </div>
             </div>
@@ -110,7 +110,7 @@
                 </div>
             </div>
             <div class="ui clearing segment la-segmentNotVisable">
-                <button class="ui button la-js-closeAll-showMore right floated">${message(code: "accordion.button.closeAll")}</button>
+                <ui:showMoreCloseButton />
             </div>
 
             <ui:paginate action="surveyTitles" controller="survey" params="${params}" max="${max}" total="${num_tipp_rows}"/>

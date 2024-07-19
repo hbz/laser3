@@ -6,7 +6,7 @@
             <div class="ui accordion la-accordion-showMore js-ie-info-accordion">
                 <div class="item">
                     <div class="title">
-                       <div class="ui button icon blue la-modern-button la-delay right floated">
+                       <div class="${Btn.MODERN.SIMPLE_ICON} la-delay right floated">
                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                         </div>
                         <laser:script file="${this.getGroovyPageFileName()}">

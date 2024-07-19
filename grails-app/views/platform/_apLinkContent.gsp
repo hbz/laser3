@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <ui:filter simple="true">
     <g:form action="linkAccessPoint" controller="platform" method="get" class="ui small form">
         <input type="hidden" name="platform_id" value="${platformInstance.id}">
@@ -25,7 +25,7 @@
                           noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
             <div class="field">
-                <g:submitButton name="submit" class="ui button trash alternate" value="${message(code:'platform.link.accessPoint.button.label')}" onClick="return confirmSubmit()"/>
+                <g:submitButton name="submit" class="${Btn.SIMPLE}" value="${message(code:'platform.link.accessPoint.button.label')}" onClick="return confirmSubmit()"/>
             </div>
         </div>
     </g:form>

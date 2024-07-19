@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.Doc; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Doc; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyConfigDocs.label')})" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -55,7 +55,7 @@
         <ui:greySegment>
 
             <div class="four wide column">
-                <button type="button" class="ui icon button blue la-modern-button right floated" data-ui="modal"
+                <button type="button" class="${Btn.MODERN.SIMPLE_ICON} right floated" data-ui="modal"
                         data-href="#modalCreateDocument"><i class="${Icon.CMD.ADD}"></i></button>
 %{--                <laser:render template="/templates/documents/modal"--}%
 %{--                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>--}%
@@ -104,17 +104,16 @@
                         </td>
                         <td class="x">
                             <g:if test="${docctx.isDocAFile()}">
-
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE_ICON}" target="_blank"><i
                                         class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                 <g:if test="${editable && !docctx.sharedFrom}">
-                                    <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-ui="modal"
+                                    <button type="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}" data-ui="modal"
                                             href="#modalEditDocument_${docctx.id}"
                                             data-content="${message(code: "template.documents.edit")}"
                                             aria-label="${message(code: 'ariaLabel.change.universal')}">
                                         <i class="${Icon.CMD.EDIT}"></i></button>
                                     <g:link controller="${controllerName}" action="deleteDocuments"
-                                            class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                            class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
                                             params='[surveyConfigID: surveyConfig.id, id: surveyInfo.id, deleteId: "${docctx.id}", redirectAction: "${actionName}"]'

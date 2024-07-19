@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 <g:set bean="surveyService" var="surveyService"/>
 
 <h2><g:message
@@ -30,7 +31,7 @@
         id="${subscription.id}"
         params="${[surveyConfigID: surveyConfig.id,
                    tab           : 'selectedIEs']}"
-        class="ui button">
+        class="${Btn.SIMPLE}">
     <g:message code="renewEntitlementsWithSurvey.currentTitlesSelect.button"/>
 </g:link>
 
@@ -45,7 +46,7 @@
         id="${subscription.id}"
         params="${[surveyConfigID: surveyConfig.id,
                    tab           : 'currentPerpetualAccessIEs']}"
-        class="ui button">
+        class="${Btn.SIMPLE}">
     <g:message code="renewEntitlementsWithSurvey.currentTitles.button"/>
 </g:link>
 
@@ -57,7 +58,7 @@
             id="${subscription.id}"
             params="${[surveyConfigID: surveyConfig.id,
                        tab           : 'topUsed']}"
-            class="ui button">
+            class="${Btn.SIMPLE}">
         <g:message code="renewEntitlementsWithSurvey.stats.button"/>
     </g:link>
 

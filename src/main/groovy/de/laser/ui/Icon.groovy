@@ -108,7 +108,7 @@ class Icon {
 
         @UIDoc(usage = 'Only for Cost items')
         public static String COST           = 'money bill icon'
-        @UIDoc(usage = 'Only for cost item configurations')
+        @UIDoc(usage = 'Only for Cost item configurations')
         public static String COST_CONFIG    = 'money bill alternate icon'
 
         @UIDoc(usage = 'Only for Cost items: Configuration signed positive (COLORED)')

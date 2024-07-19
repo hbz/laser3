@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <laser:serviceInjection/>
 
     <table class="ui celled sortable table la-table la-js-responsive-table">
@@ -44,7 +44,7 @@
                         <g:if test="${instance.respondsTo('showUIShareButton') && instance.showUIShareButton()}">
                             <g:if test="${docctx.isShared}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
-                                    <g:link controller="ajax" action="toggleShare" class="ui icon button green la-modern-button"
+                                    <g:link controller="ajax" action="toggleShare" class="${Btn.MODERN.POSITIVE_ICON}"
                                             params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
                                         <i class="alternate share icon"></i>
                                     </g:link>
@@ -52,7 +52,7 @@
                             </g:if>
                             <g:else>
                                 <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
-                                    <g:link controller="ajax" action="toggleShare" class="ui icon button blue la-modern-button"
+                                    <g:link controller="ajax" action="toggleShare" class="${Btn.MODERN.SIMPLE_ICON}"
                                             params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
                                         <i class="la-share slash icon"></i>
                                     </g:link>
@@ -62,11 +62,11 @@
 
                         <g:if test="${! docctx.sharedFrom}">
                         <g:if test="${userService.hasFormalAffiliation(contextService.getUser(), contextService.getOrg(), 'INST_EDITOR')}">
-                            <a onclick="JSPC.app.editNote(${docctx.owner.id});" class="ui icon button blue la-modern-button" role="button"
+                            <a onclick="JSPC.app.editNote(${docctx.owner.id});" class="${Btn.MODERN.SIMPLE_ICON}" role="button"
                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </a>
-                            <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                            <g:link controller="${controllerName}" action="deleteDocuments" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.notes", args: [docctx.owner.title])}"
                                     data-confirm-term-how="delete"
                                     params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'
@@ -76,7 +76,7 @@
                             </g:link>
                         </g:if>
                         <g:else>
-                            <a onclick="JSPC.app.readNote(${docctx.owner.id});" class="ui icon button blue la-modern-button" role="button"
+                            <a onclick="JSPC.app.readNote(${docctx.owner.id});" class="${Btn.MODERN.SIMPLE_ICON}" role="button"
                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="search icon"></i>
                             </a>

@@ -196,7 +196,7 @@
                     </td>
                     <td class="center aligned">
                         <g:if test="${flyoutCheckList.contains(sub.id)}">
-                            <g:link class="flyoutLink ui icon button blue la-modern-button" controller="public" action="gascoFlyout" data-key="${sub.id}">
+                            <g:link class="${Btn.MODERN.SIMPLE_ICON} flyoutLink" controller="public" action="gascoFlyout" data-key="${sub.id}">
                                 <i class="${Icon.UI.INFO}"></i>
                             </g:link>
                         </g:if>
@@ -219,10 +219,10 @@
         <div class="content">
             <div class="filter" style="margin:0 0 1em 0; text-align:right;">
                 <div class="ui buttons mini">
-                    <span class="ui button la-popup-tooltip la-delay" data-content="Vergrößern" onclick="JSPC.app.gasco.ui.zoomIn()">+</span>
-                    <span class="ui button la-popup-tooltip la-delay" data-content="Verkleinern" onclick="JSPC.app.gasco.ui.zoomOut()">-</span>
-                    <span class="ui button la-popup-tooltip la-delay" data-content="Labels ein-/ausblenden" data-filter="label" onclick="JSPC.app.gasco.ui.toggleLabel()">Labels</span>
-                    <span class="ui button la-popup-tooltip la-delay" data-content="Legende ein-/ausblenden" data-filter="legend" onclick="JSPC.app.gasco.ui.toggleLegend()">Legende</span>
+                    <span class="${Btn.SIMPLE_TOOLTIP}" data-content="Vergrößern" onclick="JSPC.app.gasco.ui.zoomIn()">+</span>
+                    <span class="${Btn.SIMPLE_TOOLTIP}" data-content="Verkleinern" onclick="JSPC.app.gasco.ui.zoomOut()">-</span>
+                    <span class="${Btn.SIMPLE_TOOLTIP}" data-content="Labels ein-/ausblenden" data-filter="label" onclick="JSPC.app.gasco.ui.toggleLabel()">Labels</span>
+                    <span class="${Btn.SIMPLE_TOOLTIP}" data-content="Legende ein-/ausblenden" data-filter="legend" onclick="JSPC.app.gasco.ui.toggleLegend()">Legende</span>
                 </div>
             </div>
             <div class="charts"></div>

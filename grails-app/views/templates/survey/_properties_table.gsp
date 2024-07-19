@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.survey.SurveyOrg; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition; de.laser.RefdataCategory; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.survey.SurveyOrg; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition; de.laser.RefdataCategory; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties;" %>
 <laser:serviceInjection/>
 
 <g:if test="${controllerName == 'survey' && actionName == 'show'}">
@@ -76,18 +76,18 @@
                 <td>
                     <g:if test="${editable}">
                         <g:if test="${i == 1 && surveyProperties.size() == 2}">
-                            <g:link class="ui icon blue button compact la-modern-button" action="actionsForSurveyProperty" id="${params.id}"
+                            <g:link class="${Btn.MODERN.SIMPLE_ICON} compact" action="actionsForSurveyProperty" id="${params.id}"
                                     params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icon.CMD.MOVE_UP}"></i>
                             </g:link>
                         </g:if>
                         <g:else>
                             <g:if test="${i > 0}">
-                                <g:link class="ui icon blue button compact la-modern-button" action="actionsForSurveyProperty" id="${params.id}"
+                                <g:link class="${Btn.MODERN.SIMPLE_ICON} compact" action="actionsForSurveyProperty" id="${params.id}"
                                         params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icon.CMD.MOVE_UP}"></i>
                                 </g:link>
                             </g:if>
                             <g:if test="${i < surveyProperties.size()-1}">
-                                <g:link class="ui icon blue button compact la-modern-button" action="actionsForSurveyProperty" id="${params.id}"
+                                <g:link class="${Btn.MODERN.SIMPLE_ICON} compact" action="actionsForSurveyProperty" id="${params.id}"
                                         params="[actionForSurveyProperty: 'moveDown', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icon.CMD.MOVE_DOWN}"></i>
                                 </g:link>
                             </g:if>
@@ -99,7 +99,7 @@
                         SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyPropertyConfig.surveyProperty)
                         && ((PropertyStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyPropertyConfig.surveyProperty.id) || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}">
                     <td>
-                        <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
+                        <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyElements", args: [surveyPropertyConfig.surveyProperty.getI10n('name')])}"
                                 data-confirm-term-how="delete"
                                 controller="survey" action="actionsForSurveyProperty"
@@ -137,8 +137,7 @@
                             </div>
 
                             <div class="field" style="margin-bottom:0">
-                                <input type="submit" value="${message(code: 'default.button.add.label')}"
-                                       class="ui button js-wait-wheel"/>
+                                <input type="submit" value="${message(code: 'default.button.add.label')}" class="${Btn.SIMPLE} js-wait-wheel"/>
                             </div>
                         </div>
                     </g:form>

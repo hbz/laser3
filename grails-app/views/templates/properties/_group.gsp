@@ -1,5 +1,5 @@
 <!-- A: templates/properties/_group -->
-<%@ page import="de.laser.ui.Icon; de.laser.Subscription; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.AuditConfig; de.laser.FormService" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Subscription; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection/>
 <g:if test="${newProp}">
     <ui:errors bean="${newProp}" />
@@ -196,7 +196,7 @@
                                         </ui:remoteLink>
                                     </g:if>
                                     <g:else>
-                                        <ui:remoteLink class="ui icon blue button la-modern-button la-popup-tooltip la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                        <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                           params='[oid: genericOIDService.getOID(prop),
                                                                    editable:"${overwriteEditable}",
                                                                    custom_props_div: "${custom_props_div}",
@@ -214,7 +214,7 @@
 
                                 <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
 
-                                <ui:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                <ui:remoteLink class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                                   controller="ajax"
                                                   action="deleteCustomProperty"
                                                   params='[propClass: prop.getClass(),
@@ -288,7 +288,7 @@
                                 <select class="ui search selection dropdown remotePropertySearch" name="propIdent" data-desc="${prop_desc}" data-oid="${genericOIDService.getOID(propDefGroup)}"></select>
                             </div>
                             <div class="field" style="margin-bottom:0">
-                                <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
+                                <input type="submit" value="${message(code:'default.button.add.label')}" class="${Btn.SIMPLE} js-wait-wheel"/>
                             </div>
                         </div>
 

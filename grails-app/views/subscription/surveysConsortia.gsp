@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyOrg; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.interfaces.CalculatedType; de.laser.survey.SurveyResult" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyOrg; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.interfaces.CalculatedType; de.laser.survey.SurveyResult" %>
 <laser:htmlStart message="subscription.details.surveys.label" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
@@ -162,7 +162,7 @@
                           data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                         <g:link controller="survey" action="show" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]"
-                                class="ui icon button blue la-modern-button"
+                                class="${Btn.MODERN.SIMPLE_ICON}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
                             <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
@@ -172,7 +172,7 @@
 
                     <g:link controller="survey" action="copySurvey" id="${surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id, q: surveyConfig?.subscription?.providers ? surveyConfig.subscription.providers[0].name : '']"
-                            class="ui icon button blue la-modern-button">
+                            class="${Btn.MODERN.SIMPLE_ICON}">
                         <i aria-hidden="true" class="${Icon.CMD.COPY}"></i>
                     </g:link>
                 </td>

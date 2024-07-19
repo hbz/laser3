@@ -1,4 +1,4 @@
-<%@page import="de.laser.ui.Icon; de.laser.storage.RDStore" %>
+<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <%--OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')} @ ${institution}--%>
@@ -24,7 +24,7 @@
                 <g:if test="${overwriteEditable}">
                     <div class="right floated content">
                         <g:link action="deleteTask" controller="ajax"
-                                class="ui icon negative button la-modern-button la-modern-button js-open-confirm-modal"
+                                class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                 data-confirm-term-how="delete"
                                 params='[deleteId:tsk.id, id: params.id, returnToShow: controllerName]'
@@ -65,7 +65,7 @@
             </div>
             <div class="right aligned four wide column la-column-left-lessPadding">
                 <g:link action="deleteTask" controller="ajax"
-                        class="ui icon negative button la-modern-button la-modern-button js-open-confirm-modal"
+                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                         data-confirm-term-how="delete"
                         params='[deleteId:tsk.id, id: params.id, returnToShow: controllerName]'

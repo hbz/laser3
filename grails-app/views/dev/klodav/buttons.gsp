@@ -17,9 +17,9 @@
 <div class="ui info message">
     <p class="ui header">
         Usage
-        <button class="${Btn.MODERN.SIMPLE_ICON} blue" style="float: right"><i class="${Icon.SYM.UNKOWN}"></i></button>
+        <button class="${Btn.MODERN.BASIC_ICON} blue" style="float: right"><i class="${Icon.SYM.UNKOWN}"></i></button>
     </p>
-    <pre>&lt;button class=&quot;&dollar;{Btn.MODERN.SIMPLE_ICON} blue&quot;&gt;&lt;i class=&quot;&dollar;{Icon.SYM.UNKOWN}&quot;&gt;&lt;/i&gt;&lt;/button&gt;</pre>
+    <pre>&lt;button class=&quot;&dollar;{Btn.MODERN.BASIC_ICON} blue&quot;&gt;&lt;i class=&quot;&dollar;{Icon.SYM.UNKOWN}&quot;&gt;&lt;/i&gt;&lt;/button&gt;</pre>
 </div>
 
 <div class="ui segment">
@@ -40,15 +40,14 @@
         <button class="${Btn.POSITIVE_ICON}"><i class="${Icon.CMD.ADD}"></i></button>
         <button class="${Btn.NEGATIVE_ICON}"><i class="${Icon.CMD.REMOVE}"></i></button>
     </p>
+%{--    <p>--}%
+%{--        <button class="${Btn.MODERN.SIMPLE}">MODERN.SIMPLE</button>--}%
+%{--        <button class="${Btn.MODERN.POSITIVE}">MODERN.POSITIVE</button>--}%
+%{--        <button class="${Btn.MODERN.NEGATIVE}">MODERN.NEGATIVE</button>--}%
+%{--    </p>--}%
     <p>
-        <button class="${Btn.MODERN.SIMPLE}">MODERN.SIMPLE</button>
-        <button class="${Btn.MODERN.SIMPLE} blue">MODERN.SIMPLE + blue</button>
-        <button class="${Btn.MODERN.POSITIVE}">MODERN.POSITIVE</button>
-        <button class="${Btn.MODERN.NEGATIVE}">MODERN.NEGATIVE</button>
-    </p>
-    <p>
+        <button class="${Btn.MODERN.BASIC_ICON} blue"><i class="${Icon.UNC.SQUARE}"></i> + blue</button>
         <button class="${Btn.MODERN.SIMPLE_ICON}"><i class="${Icon.UNC.SQUARE}"></i></button>
-        <button class="${Btn.MODERN.SIMPLE_ICON} blue"><i class="${Icon.UNC.SQUARE}"></i> + blue</button>
         <button class="${Btn.MODERN.POSITIVE_ICON}"><i class="${Icon.CMD.ADD}"></i></button>
         <button class="${Btn.MODERN.NEGATIVE_ICON}"><i class="${Icon.CMD.REMOVE}"></i></button>
     </p>

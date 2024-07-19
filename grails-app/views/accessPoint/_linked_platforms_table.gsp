@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <table id="platformTable" class="ui celled la-js-responsive-table la-table table compact">
   <thead>
@@ -21,7 +21,7 @@
       </td>
       <g:if test="${contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC( inContextOrg )}">
         <td class="center aligned">
-          <g:link class="ui negative icon button la-modern-button js-open-confirm-modal" id="${linkedPlatform.aplink.id}"
+          <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}" id="${linkedPlatform.aplink.id}"
                   controller="accessPoint" action="unlinkPlatform"
                   data-confirm-tokenMsg="${message(code: 'confirm.dialog.unlink.accessPoint.platform',
                       args: [accessPoint.name, linkedPlatform.platform.name])}"

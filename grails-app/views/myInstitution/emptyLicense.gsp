@@ -1,4 +1,4 @@
-<%@page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
+<%@page import="de.laser.ui.Btn; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart message="license.new" serviceInjection="true"/>
 
@@ -51,8 +51,8 @@
 
         <div class="field">
             <br />
-            <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
-            <input type="button" class="ui button js-click-control" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
+            <input type="submit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${message(code: 'default.button.create.label')}"/>
+            <input type="button" class="${Btn.SIMPLE_CLICKCONTROL}" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
         </div>
     </ui:form>
 

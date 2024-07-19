@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <g:if test="${orgTypes}">
     <div class="ui divided middle aligned selection list la-flex-list">
         <% List availableOrgTypeIds = availableOrgTypes.collect{ it.id } %>
@@ -11,7 +11,7 @@
                     <g:if test="${type.id in availableOrgTypeIds}">
                         <div class="content la-space-right">
                             <div class="ui icon buttons">
-                                <g:link class="ui negative button la-modern-button js-open-confirm-modal"
+                                <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.organisationtype.organisation", args: [type?.getI10n('value')])}"
                                         data-confirm-term-how="delete"
                                         controller="organisation" action="deleteOrgType" params="[org: org.id, removeOrgType: type.id]"

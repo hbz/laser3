@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Contact; de.laser.storage.RDConstants; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Contact; de.laser.storage.RDConstants; de.laser.RefdataCategory;" %>
 
 
 <div class="three fields contactField">
@@ -27,7 +27,7 @@
         <g:textField class="la-js-contactContent" data-validate="contactContent" id="content" name="content" value="${contactInstance?.content}"/>
     </div>
     <div class="field one wide">
-        <button type="button" class="ui icon negative button la-modern-button removeContactElement">
+        <button type="button" class="${Btn.MODERN.NEGATIVE_ICON} removeContactElement">
             <i class="${Icon.CMD.DELETE}"></i>
         </button>
     </div>

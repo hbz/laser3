@@ -758,19 +758,24 @@ class AjaxHtmlController {
         List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(contextOrg, surveyConfig)
         boolean allResultHaveValue = true
         List<String> notProcessedMandatoryProperties = []
-        surveyResults.each { SurveyResult surre ->
-            SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
-            if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm()) {
-                allResultHaveValue = false
-                notProcessedMandatoryProperties << surre.type.getI10n('name')
+        //see ERMS-5815
+        boolean noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextOrg, surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_NO)
+        if(!noParticipation) {
+            surveyResults.each { SurveyResult surre ->
+                SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
+                if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm()) {
+                    allResultHaveValue = false
+                    notProcessedMandatoryProperties << surre.type.getI10n('name')
+                }
             }
         }
-        boolean noParticipation = false
+        /*
         if(surveyInfo.isMandatory) {
             if(surveyConfig && surveyConfig.subSurveyUseForTransfer){
                 noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextOrg, surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
             }
         }
+        */
             if(notProcessedMandatoryProperties.size() > 0){
                 render message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
             }

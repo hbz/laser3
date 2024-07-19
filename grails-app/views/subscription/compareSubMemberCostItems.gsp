@@ -412,7 +412,7 @@
                                 var="costItemParticipantSub">
                             <g:link controller="finance" action="editCostItem"
                                     params='[sub: "${costItemParticipantSub.sub?.id}", id: "${costItemParticipantSub.id}"]'
-                                    class="ui icon button blue la-modern-button trigger-modal"
+                                    class="${Btn.MODERN.SIMPLE_ICON} trigger-modal"
                                     data-id_suffix="edit_${costItemParticipantSub.id}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">

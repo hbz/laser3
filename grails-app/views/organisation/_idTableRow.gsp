@@ -1,4 +1,4 @@
-<%@page import="de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.IdentifierNamespace"%>
+<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.IdentifierNamespace"%>
 <tr>
     <td>${tableRowNr}</td>
     <td>
@@ -43,13 +43,13 @@
         <td>${id.note}</td>
         <td>
             <g:if test="${editable}">
-                <button class="ui icon button blue la-modern-button" onclick="JSPC.app.IdContoller.editIdentifier(${id.id});"
+                <button class="${Btn.MODERN.SIMPLE_ICON}" onclick="JSPC.app.IdContoller.editIdentifier(${id.id});"
                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                     <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                 </button>
                 <g:link controller="ajax"
                         action="deleteIdentifier"
-                        class="ui button la-modern-button icon red js-open-confirm-modal"
+                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                         params='${[owner: "${orgInstance.class.name}:${orgInstance.id}", target: "${id.class.name}:${id.id}"]}'
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [id?.ns?.ns+": "+id.value])}"
                         role="button"

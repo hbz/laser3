@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants" %>
 <laser:serviceInjection />
 
 <g:set var="institution" value="${contextService.getOrg()}"/>
@@ -77,13 +77,13 @@
 
                     <td class="center aligned">
                         <g:if test="${overwriteEditable}">
-                            <a onclick="JSPC.app.editTask(${taskInstance.id});" class="ui icon button blue la-modern-button"
+                            <a onclick="JSPC.app.editTask(${taskInstance.id});" class="${Btn.MODERN.SIMPLE_ICON}"
                                role="button" aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </a>
                         </g:if>
                         <g:if test="${(user == taskInstance.creator && userIsInstEditorOrRoleAdmin) || contextService.isInstAdm_or_ROLEADMIN()}">
-                            <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
+                            <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                     data-confirm-term-how="delete"
                                     action="deleteTask" controller="ajax" params="[deleteId:taskInstance.id]"

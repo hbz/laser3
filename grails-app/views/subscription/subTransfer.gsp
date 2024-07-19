@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.Doc; de.laser.DocContext; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.storage.RDStore; de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.Doc; de.laser.DocContext; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.storage.RDStore; de.laser.survey.SurveyOrg" %>
 <laser:htmlStart message="subscription.details.subTransfer.label" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
@@ -236,20 +236,20 @@
                                         <g:if test="${!(editable)}">
                                         <%-- 1 --%>
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                    class="ui icon blue button la-modern-button"
+                                                    class="${Btn.MODERN.SIMPLE_ICON}"
                                                     target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                         </g:if>
                                         <g:else>
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                             <%-- 1 --%>
                                                 <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                        class="ui icon blue button la-modern-button"
+                                                        class="${Btn.MODERN.SIMPLE_ICON}"
                                                         target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 
                                             <%-- 2 --%>
                                                 <laser:render template="/templates/documents/modal"
                                                               model="[ownobj: subscription, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
-                                                <button type="button" class="ui icon blue button la-modern-button"
+                                                <button type="button" class="${Btn.MODERN.SIMPLE_ICON}"
                                                         data-ui="modal"
                                                         data-href="#modalEditDocument_${docctx.id}"
                                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
@@ -261,7 +261,7 @@
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
                                                 <g:link controller="${ajaxCallController ?: controllerName}"
                                                         action="deleteDocuments"
-                                                        class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                                         data-confirm-term-how="delete"
                                                         params='[instanceId: "${subscription.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
@@ -314,20 +314,20 @@
                                         <g:if test="${!(editable)}">
                                         <%-- 1 --%>
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                    class="ui icon blue button la-modern-button"
+                                                    class="${Btn.MODERN.SIMPLE_ICON}"
                                                     target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                         </g:if>
                                         <g:else>
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                             <%-- 1 --%>
                                                 <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                        class="ui icon blue button la-modern-button"
+                                                        class="${Btn.MODERN.SIMPLE_ICON}"
                                                         target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 
                                             <%-- 2 --%>
                                                 <laser:render template="/templates/documents/modal"
                                                               model="[ownobj: subscription, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
-                                                <button type="button" class="ui icon blue button la-modern-button"
+                                                <button type="button" class="${Btn.MODERN.SIMPLE_ICON}"
                                                         data-ui="modal"
                                                         data-href="#modalEditDocument_${docctx.id}"
                                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
@@ -339,7 +339,7 @@
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
                                                 <g:link controller="${ajaxCallController ?: controllerName}"
                                                         action="deleteDocuments"
-                                                        class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                                         data-confirm-term-how="delete"
                                                         params='[instanceId: "${subscription.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'

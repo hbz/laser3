@@ -1,4 +1,4 @@
-<%@page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.PendingChangeConfiguration; de.laser.Platform; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.finance.CostItem; de.laser.Org; de.laser.IssueEntitlement" %>
+<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.PendingChangeConfiguration; de.laser.Platform; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.finance.CostItem; de.laser.Org; de.laser.IssueEntitlement" %>
 <laser:serviceInjection />
 
 <div class="ui card">
@@ -91,7 +91,7 @@
                                     <g:if test="${showConsortiaFunctions && !sp.subscription.instanceOf}">
                                         <div class="ui buttons">
                                             <div class="ui simple dropdown negative icon button la-modern-button ${unlinkDisabled}" data-content="${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}">
-                                                <i aria-hidden="true" class="chain broken icon"></i>
+                                                <i aria-hidden="true" class="${Icon.CMD.UNLINK}"></i>
                                                 <div class="menu">
                                                     <g:link controller="subscription" action="unlinkPackage" class="${btnClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'withIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
                                                             data-confirm-term-how="delete" role="button" aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
@@ -128,10 +128,10 @@
                                                             params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'withIE']}"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
                                                             data-confirm-term-how="delete"
-                                                            class="ui icon negative button la-modern-button js-open-confirm-modal ${unlinkDisabled}"
+                                                            class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM} ${unlinkDisabled}"
                                                             role="button"
                                                             aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
-                                                        <i aria-hidden="true" class="chain broken icon"></i>
+                                                        <i aria-hidden="true" class="${Icon.CMD.UNLINK}"></i>
                                                     </g:link>
                                                 </span>
                                             </g:if>
@@ -145,7 +145,7 @@
                                                         class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip"
                                                         role="button"
                                                         aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
-                                                    <i aria-hidden="true" class="chain broken icon"></i>
+                                                    <i aria-hidden="true" class="${Icon.CMD.UNLINK}"></i>
                                                 </g:link>
                                             </g:else>
                                             <div class="or" data-text="|"></div>
@@ -156,7 +156,7 @@
                                                             params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'onlyIE']}"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name])}"
                                                             data-confirm-term-how="delete"
-                                                            class="ui icon negative button la-modern-button js-open-confirm-modal ${unlinkDisabled}"
+                                                            class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM} ${unlinkDisabled}"
                                                             role="button"
                                                             aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
                                                         <i aria-hidden="true" class="${Icon.CMD.ERASE}"></i>
@@ -523,7 +523,7 @@
                                     </tr>
                                     <g:if test="${editmode && !subscription.instanceOf}">
                                         <tr>
-                                            <td colspan="2" class="control-label"><g:submitButton class="ui button btn-primary" name="${message(code:'subscription.packages.submit.label')}"/></td>
+                                            <td colspan="2" class="control-label"><g:submitButton class="${Btn.PRIMARY}" name="${message(code:'subscription.packages.submit.label')}"/></td>
                                             <g:set var="now" value="${new Date()}"/>
                                             <td colspan="2" class="control-label">
                                                 <g:if test="${subscription.endDate < now}">

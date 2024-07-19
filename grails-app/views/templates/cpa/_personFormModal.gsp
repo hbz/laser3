@@ -354,7 +354,7 @@
                                 <g:textField class="la-js-contactContent" data-validate="contactContent" name="content${contact.id}" value="${contact.content}"/>
                         </div>
                         <div class="field one wide">
-                            <button type="button" class="ui icon negative button la-modern-button removeContactElement">
+                            <button type="button" class="${Btn.MODERN.NEGATIVE_ICON} removeContactElement">
                                 <i class="${Icon.CMD.DELETE}"></i>
                             </button>
                         </div>

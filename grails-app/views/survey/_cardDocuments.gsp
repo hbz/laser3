@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.*; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.*; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 <laser:serviceInjection/>
 
 <%
@@ -59,7 +59,7 @@
                         </div>
 
                         <div class="right aligned seven wide column">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE_ICON}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 
                             <g:if test="${!(ownobj instanceof SurveyConfig)}">
                                 <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton()}">
@@ -100,14 +100,14 @@
 %{--                            <g:if test="${(ownobj instanceof SurveyConfig)}"> -- erms-4627 --}%
                             <g:if test="${(ownobj instanceof SurveyConfig && docctx.owner.owner.id == contextService.getOrg().id)}">
                                 <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
-                                <button type="button" class="ui icon blue button la-modern-button"
+                                <button type="button" class="${Btn.MODERN.SIMPLE_ICON}"
                                         data-ui="modal"
                                         data-href="#modalEditDocument_${docctx.id}"
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
                                     <i class="${Icon.CMD.EDIT}"></i></button>
 
                                 <g:link controller="survey" action="deleteDocuments"
-                                        class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                         data-confirm-term-how="delete"
                                         params='[id: surveyInfo.id, deleteId: "${docctx.id}"]'
