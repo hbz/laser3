@@ -187,7 +187,8 @@ class SubscriptionsQueryService {
                             " or exists ( select altname.subscription from AlternativeName altname where altname.subscription = s and genfunc_filter_matcher(altname.name, :name_filter) = true ) " + // filter by altname
                             " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and genfunc_filter_matcher(sp.pkg.name, :name_filter) = true ) " + // filter by pkg
                             " or exists ( select li.sourceLicense from Links li where li.destinationSubscription = s and li.linkType = :linkType and genfunc_filter_matcher(li.sourceLicense.reference, :name_filter) = true ) " + // filter by license
-                            " or exists ( select altname.license from AlternativeName altname, Links li where altname.license = li.sourceLicense and li.destinationSubscription = s and li.linkType = :linkType and genfunc_filter_matcher(altname.name, :name_filter) = true ) " + // filter by license altname
+                            //taken out as hotfix
+                            //" or exists ( select altname.license from AlternativeName altname, Links li where altname.license = li.sourceLicense and li.destinationSubscription = s and li.linkType = :linkType and genfunc_filter_matcher(altname.name, :name_filter) = true ) " + // filter by license altname
                             " or exists ( select pr from ProviderRole as pr where pr.subscription = s and ( " +
                                 " genfunc_filter_matcher(pr.provider.name, :name_filter) = true " +
                                 " or genfunc_filter_matcher(pr.provider.sortname, :name_filter) = true " +
