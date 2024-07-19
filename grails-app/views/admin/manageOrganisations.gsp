@@ -182,7 +182,7 @@
 
                     <td class="x">
                         <g:if test="${org.isCustomerType_Consortium() || org.isCustomerType_Support()}">
-                            <button type="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
+                            <button type="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
                                     data-gascoTarget="${org.id}"
                                     data-gascoEntry="${gascoEntry.class.name}:${gascoEntry.id}"
                                     data-orgName="${org.name}"
@@ -192,7 +192,7 @@
                         </g:if>
 
                         <g:if test="${org.isCustomerType_Inst()}">
-                            <button type="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
+                            <button type="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
                                     data-liTarget="${org.id}"
                                     data-createdBy="${org.createdBy?.id}"
                                     data-legallyObligedBy="${org.legallyObligedBy?.id}"
@@ -202,7 +202,7 @@
                                     data-content="Rechtl. Informationen ändern" data-position="top left"><i class="${Icon.SYM.ORG_LEGAL_INFORMATION}"></i></button>
                         </g:if>
 
-                        <button type="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
+                        <button type="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
                                 data-ctTarget="${org.id}"
                                 data-customerType="${customerType}"
                                 data-orgName="${org.name}"
@@ -210,7 +210,7 @@
                                 data-href="#customerTypeModal"
                                 data-content="Kundentyp ändern" data-position="top left"><i class="user tie icon"></i></button>
 
-                        <button type="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
+                        <button type="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
                                 data-alTarget="${org.id}"
                                 data-apiLevel="${apiLevel}"
                                 data-orgName="${org.name}"

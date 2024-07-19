@@ -233,7 +233,7 @@
                                     </div>
                                     <g:if test="${editable && participantPerpetualAccessToTitle.size() == 0}">
                                         <g:if test="${!blockSubmit}">
-                                            <g:link class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
+                                            <g:link class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
                                                     action="processAddEntitlements"
                                                     params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}"
                                                     data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">

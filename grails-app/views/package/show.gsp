@@ -207,7 +207,7 @@ making obsolete package/actions
                                     <div class="ui fluid segment title">
                                         <ui:wekbIconLink type="source" gokbId="${packageInstanceRecord.source.uuid}"/>
                                         ${packageInstanceRecord.source.name}
-                                        <div class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
+                                        <div class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
                                              data-content="${message(code: 'platform.details')}">
                                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                                         </div>
@@ -263,7 +263,7 @@ making obsolete package/actions
                                                     <ui:wekbIconLink type="platform" gokbId="${platformInstanceRecord.uuid}"/>
                                                 </div>
                                                 <div class="right aligned column">
-                                                    <div class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
+                                                    <div class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
                                                          data-content="${message(code: 'platform.details')}">
                                                         <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                     </div>

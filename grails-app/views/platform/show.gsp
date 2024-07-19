@@ -65,7 +65,7 @@
                             <dd>
                                 <ui:xEditable owner="${platformInstance}" field="primaryUrl" overwriteEditable="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}"/>
                                 <g:if test="${platformInstance.primaryUrl}">
-                                    <a role="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
+                                    <a role="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
                                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
                                        href="${platformInstance.primaryUrl.startsWith('http') ? platformInstance.primaryUrl : 'http://' + platformInstance.primaryUrl}"
                                        target="_blank"><i class="${Icon.LNK.EXTERNAL}"></i></a>

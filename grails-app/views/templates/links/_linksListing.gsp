@@ -93,7 +93,7 @@
                                         <g:else>
                                             <g:if test="${pair.propertySet && pair instanceof License}">
                                                 <div id="derived-license-properties-toggle${link.id}"
-                                                        class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
+                                                        class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
                                                         data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
                                                     <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                 </div>

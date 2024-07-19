@@ -76,7 +76,7 @@
             <g:if test="${controllerName in ['finance', 'subscription'] && subscription && isSubscriptionViewValid}">
                 <g:if test="${editable && contextService.getOrg().isCustomerType_Consortium() && subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL]}">
                     <div class="item la-cb-action">
-                        <button class="${Btn.SIMPLE_ICON_TOOLTIP} la-toggle-ui la-delay" id="subscriptionTransfer-toggle"
+                        <button class="${Btn.SIMPLE_ICON_TOOLTIP} la-toggle-ui" id="subscriptionTransfer-toggle"
                                 data-content="${message(code:'statusbar.showSubscriptionTransfer.tooltip')}" data-position="bottom left">
                             <i class="${Icon.SUBSCRIPTION}"></i>
                         </button>
@@ -118,13 +118,13 @@
             <g:if test="${controllerName == 'survey' && (actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia')}">
                 <div class="item la-cb-action">
                     <g:if test="${actionName == 'workflowsSurveysConsortia'}">
-                        <g:link action="currentSurveysConsortia" controller="survey" class="${Btn.SIMPLE_ICON_TOOLTIP} la-delay"
+                        <g:link action="currentSurveysConsortia" controller="survey" class="${Btn.SIMPLE_ICON_TOOLTIP}"
                                 data-content="${message(code:'statusbar.change.currentSurveysConsortiaView.tooltip')}" data-position="bottom center">
                             <i class="la-tab icon"></i>
                         </g:link>
                     </g:if>
                     <g:else>
-                        <g:link action="workflowsSurveysConsortia" controller="survey" class="${Btn.SIMPLE_ICON_TOOLTIP} la-delay"
+                        <g:link action="workflowsSurveysConsortia" controller="survey" class="${Btn.SIMPLE_ICON_TOOLTIP}"
                                 data-content="${message(code:'statusbar.change.workflowsSurveysConsortiaView.tooltip')}" data-position="bottom center">
                             <i class="la-tab slash icon"></i>
                         </g:link>

@@ -128,7 +128,7 @@
                                     <i class="${Icon.CMD.SHOW_MORE}"></i>
                                 </div>
                                 <g:if test="${(params.tab == 'selectedIEs') && editable && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
-                                    <g:link class="${Btn.MODERN.NEGATIVE_ICON_TOOLTIP} la-delay"
+                                    <g:link class="${Btn.MODERN.NEGATIVE_ICON_TOOLTIP}"
                                             action="processRemoveIssueEntitlementsSurvey"
                                             params="${[id: subscriberSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">

@@ -564,7 +564,7 @@
                                     params="${[surveyConfigID: surveyConfig.id,
                                                exportXLS   : true,
                                                tab           : 'selectedIEs']}"
-                                    class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
+                                    class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
                                     data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
                                     target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                         </td>
@@ -595,7 +595,7 @@
                 <td>
                     <g:link controller="survey" action="evaluationParticipant"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
-                            class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
+                            class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
                             data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                         <i class="${Icon.SURVEY}"></i>
                     </g:link>
@@ -1147,7 +1147,7 @@
                                     params="${[surveyConfigID: surveyConfig.id,
                                                exportXLS   : true,
                                                tab           : 'selectedIEs']}"
-                                    class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
+                                    class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
                                     data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
                                     target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                         </td>
@@ -1179,7 +1179,7 @@
                 <td>
                     <g:link controller="survey" action="evaluationParticipant"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
-                            class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
+                            class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
                             data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                         <i class="${Icon.SURVEY}"></i>
                     </g:link>

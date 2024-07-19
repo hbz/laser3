@@ -107,7 +107,7 @@
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i
                                         class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                 <g:if test="${editable && !docctx.sharedFrom}">
-                                    <button type="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay" data-ui="modal"
+                                    <button type="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}" data-ui="modal"
                                             href="#modalEditDocument_${docctx.id}"
                                             data-content="${message(code: "template.documents.edit")}"
                                             aria-label="${message(code: 'ariaLabel.change.universal')}">

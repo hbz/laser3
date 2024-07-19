@@ -191,7 +191,7 @@
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                 %{-- todo: !docctx.sharedFrom --}%
                                 <g:if test="${userService.hasFormalAffiliation(user, docctx.owner.owner, 'INST_EDITOR') && inOwnerOrg && !docctx.sharedFrom}">
-                                    <button type="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="${Icon.CMD.EDIT}"></i></button>
+                                    <button type="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="${Icon.CMD.EDIT}"></i></button>
                                     <%
                                         securityWorkaroundList.add(docctx as DocContext)
                                     %>

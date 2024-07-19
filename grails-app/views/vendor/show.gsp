@@ -64,7 +64,7 @@
                                                 </ui:remoteLink>
                                             </g:if>
                                         </div>
-                                        <div class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-show-button la-delay"
+                                        <div class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-show-button"
                                              data-content="${message(code: 'org.altname.show')}">
                                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                                         </div>

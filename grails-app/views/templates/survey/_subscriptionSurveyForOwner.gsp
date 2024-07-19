@@ -200,7 +200,7 @@
                             <div class="ui accordion la-accordion-showMore js-propertiesCompareInfo-accordion">
                                 <div class="item">
                                     <div class="title">
-                                        <div class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay right floated"
+                                        <div class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} right floated"
                                                 data-content="<g:message code="survey.subscription.propertiesChange.show"/>">
                                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                                         </div>
@@ -437,7 +437,7 @@
                                                         <td class="right aligned">
                                                             <g:if test="${pair.propertySet}">
                                                                 <div id="derived-license-properties-toggle${link.id}"
-                                                                        class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
+                                                                        class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
                                                                         data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
                                                                     <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                                 </div>

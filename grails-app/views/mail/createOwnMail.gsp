@@ -59,7 +59,7 @@
                         <div class="ui fluid segment  title">
                             <div class="ui stackable equal width grid">
                                 <div class="sixteen wide right aligned  column">
-                                    <div class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-delay"
+                                    <div class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
                                          data-content="${message(code: 'mail.sendMail.additional')}">
                                         <i class="${Icon.CMD.SHOW_MORE}"></i>
                                     </div>
