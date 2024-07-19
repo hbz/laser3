@@ -293,7 +293,7 @@
                               data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                             <g:link controller="survey" action="evaluationParticipant"
                                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
-                                    class="ui icon button blue la-modern-button"
+                                    class="${Btn.MODERN.SIMPLE_ICON}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>

@@ -698,7 +698,7 @@
                                 </div>
                                 <div class="right aligned four wide column">
                                     <g:if test="${inContextOrg}">
-                                        <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForPublic" data-ui="modal">
+                                        <a href="#createPersonModal" class="${Btn.MODERN.SIMPLE_ICON} createContact" id="contactPersonForPublic" data-ui="modal">
                                             <i aria-hidden="true" class="plus icon"></i>
                                         </a>
                                     </g:if>
@@ -822,7 +822,7 @@
                                         <g:message code="org.contactpersons.and.addresses.my"/>
                                     </div>
                                     <div class="right aligned four wide column">
-                                        <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForProvider" data-ui="modal">
+                                        <a href="#createPersonModal" class="${Btn.MODERN.SIMPLE_ICON} createContact" id="contactPersonForProvider" data-ui="modal">
                                             <i aria-hidden="true" class="plus icon"></i>
                                         </a>
                                     </div>

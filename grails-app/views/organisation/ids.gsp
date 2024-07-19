@@ -146,7 +146,7 @@
                                 <td>
                                     %{-- TODO: erms-5495 --}%
                                     <g:if test="${editable_customeridentifier && editable_this_ci}">
-                                        %{--}<button class="ui icon button blue la-modern-button" onclick="JSPC.app.IdContoller.editCustomerIdentifier(${ci.id});"
+                                        %{--}<button class="${Btn.MODERN.SIMPLE_ICON}" onclick="JSPC.app.IdContoller.editCustomerIdentifier(${ci.id});"
                                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                             <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                         </button>--}%

@@ -321,7 +321,7 @@
                                     </td>
                                     <td class="center aligned">
                                         <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                                            <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="${Icon.CMD.EDIT}"></i></button>
+                                            <button class="${Btn.MODERN.SIMPLE_ICON}" data-wfId="${clist.id}"><i class="${Icon.CMD.EDIT}"></i></button>
 
                                             <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [clist.title])}"

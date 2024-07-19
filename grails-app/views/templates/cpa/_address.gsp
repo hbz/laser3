@@ -28,7 +28,7 @@
                     </a>
 
                     <g:set var="oid" value="${address.class.name}:${address.id}" />
-                    <g:link class="ui negative button js-open-confirm-modal la-modern-button"
+                    <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.address.addressbook")}"
                             data-confirm-term-how="delete"
                             controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: oid]"

@@ -156,7 +156,7 @@
 
                             <g:link controller="accessPoint"
                                     action="edit_${accessPoint.accessMethod.value.toLowerCase()}"
-                                    id="${accessPoint.id}" class="ui icon button blue la-modern-button"
+                                    id="${accessPoint.id}" class="${Btn.MODERN.SIMPLE_ICON}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>

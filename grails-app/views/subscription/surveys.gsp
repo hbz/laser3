@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.interfaces.CalculatedType" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.interfaces.CalculatedType" %>
 <laser:htmlStart message="subscription.details.surveys.label" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
@@ -92,7 +92,7 @@
                                   data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                                 <g:link controller="survey" action="evaluationParticipant"
                                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: institution.id]"
-                                        class="ui icon button blue la-modern-button"
+                                        class="${Btn.MODERN.SIMPLE_ICON}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                     <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
@@ -104,7 +104,7 @@
                                   data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                                 <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}"
                                         params="[surveyConfigID: surveyConfig.id]"
-                                        class="ui icon button blue la-modern-button"
+                                        class="${Btn.MODERN.SIMPLE_ICON}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                     <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>

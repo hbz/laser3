@@ -221,7 +221,7 @@
                         </td>
                         <td class="x">
                             <g:link controller="subscription" action="show" id="${sub.id}"
-                                    class="ui icon button blue la-modern-button"
+                                    class="${Btn.MODERN.SIMPLE_ICON}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>

@@ -76,18 +76,18 @@
                 <td>
                     <g:if test="${editable}">
                         <g:if test="${i == 1 && surveyProperties.size() == 2}">
-                            <g:link class="ui icon blue button compact la-modern-button" action="actionsForSurveyProperty" id="${params.id}"
+                            <g:link class="${Btn.MODERN.SIMPLE_ICON} compact" action="actionsForSurveyProperty" id="${params.id}"
                                     params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icon.CMD.MOVE_UP}"></i>
                             </g:link>
                         </g:if>
                         <g:else>
                             <g:if test="${i > 0}">
-                                <g:link class="ui icon blue button compact la-modern-button" action="actionsForSurveyProperty" id="${params.id}"
+                                <g:link class="${Btn.MODERN.SIMPLE_ICON} compact" action="actionsForSurveyProperty" id="${params.id}"
                                         params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icon.CMD.MOVE_UP}"></i>
                                 </g:link>
                             </g:if>
                             <g:if test="${i < surveyProperties.size()-1}">
-                                <g:link class="ui icon blue button compact la-modern-button" action="actionsForSurveyProperty" id="${params.id}"
+                                <g:link class="${Btn.MODERN.SIMPLE_ICON} compact" action="actionsForSurveyProperty" id="${params.id}"
                                         params="[actionForSurveyProperty: 'moveDown', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icon.CMD.MOVE_DOWN}"></i>
                                 </g:link>
                             </g:if>

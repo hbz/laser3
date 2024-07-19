@@ -28,7 +28,7 @@
 
             <g:if test="${overwriteEditable}">
                         <div class="content la-space-right">
-                        <button class="ui icon button blue la-modern-button" type="button" onclick="JSPC.app.editPerson(${person.id})"
+                        <button class="${Btn.MODERN.SIMPLE_ICON}" type="button" onclick="JSPC.app.editPerson(${person.id})"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
                             <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>

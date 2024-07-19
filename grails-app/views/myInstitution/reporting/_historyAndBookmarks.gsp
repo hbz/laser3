@@ -87,7 +87,7 @@
                         </td>
                         <td>
                             <g:link controller="ajaxHtml" action="reporting" params="${[context: BaseConfig.KEY_MYINST, cmd: 'deleteBookmark', token: "${fav.token}", tab: 'bookmark']}"
-                                    class="ui small icon negative la-modern-button button right floated"><i class="${Icon.CMD.DELETE}"></i></g:link>
+                                    class="${Btn.MODERN.NEGATIVE_ICON} small right floated"><i class="${Icon.CMD.DELETE}"></i></g:link>
                         </td>
                     </tr>
                 </g:each>

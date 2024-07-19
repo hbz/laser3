@@ -722,7 +722,7 @@
                                         <g:message code="org.contactpersons.and.addresses.my"/>
                                     </div>
                                     <div class="right aligned four wide column">
-                                        <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForInstitution" data-ui="modal">
+                                        <a href="#createPersonModal" class="${Btn.MODERN.SIMPLE_ICON} createContact" id="contactPersonForInstitution" data-ui="modal">
                                             <i aria-hidden="true" class="plus icon"></i>
                                         </a>
                                     </div>

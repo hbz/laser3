@@ -180,7 +180,7 @@
                                         </g:if>
                                         <g:else>
                                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
-                                                <g:link controller="ajax" action="toggleShare" class="ui icon button blue la-modern-button"
+                                                <g:link controller="ajax" action="toggleShare" class="${Btn.MODERN.SIMPLE_ICON}"
                                                         params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), reload:true, ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
                                                     <i class="la-share slash icon"></i>
                                                 </g:link>

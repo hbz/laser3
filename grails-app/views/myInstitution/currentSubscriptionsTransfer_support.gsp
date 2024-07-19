@@ -417,8 +417,7 @@
                             <ui:xEditable owner="${s}" field="offerRequestedDate" type="date"/>
                         </td>
                         <td>
-                            <button type="button" class="ui icon small button blue la-modern-button" data-ui="modal"
-                                    data-href="${"#modalCreateDocumentOffer" + s.id}">
+                            <button type="button" class="${Btn.MODERN.SIMPLE_ICON} small" data-ui="modal" data-href="${"#modalCreateDocumentOffer" + s.id}">
                                 <i aria-hidden="true" class="plus small icon"></i>
                             </button>
                             <laser:render template="/templates/documents/modal"

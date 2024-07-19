@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.ProviderRole; de.laser.VendorRole; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Subscription;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ProviderRole; de.laser.VendorRole; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Subscription;" %>
 <g:if test="${filteredSubscriptions}">
 
     <g:if test="${controllerName == "subscription"}">
@@ -148,7 +148,7 @@
                     </td>
                     <td class="x">
                         <g:link controller="subscription" action="show" id="${sub.id}"
-                                class="ui icon button blue la-modern-button"
+                                class="${de.laser.ui.Btn.MODERN.SIMPLE_ICON}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
                             <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>

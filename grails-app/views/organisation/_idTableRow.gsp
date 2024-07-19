@@ -43,7 +43,7 @@
         <td>${id.note}</td>
         <td>
             <g:if test="${editable}">
-                <button class="ui icon button blue la-modern-button" onclick="JSPC.app.IdContoller.editIdentifier(${id.id});"
+                <button class="${Btn.MODERN.SIMPLE_ICON}" onclick="JSPC.app.IdContoller.editIdentifier(${id.id});"
                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                     <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                 </button>

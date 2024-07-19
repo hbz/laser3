@@ -174,13 +174,13 @@
                             <g:if test="${checkedEditable}"><!-- TODO: workflows-permissions -->
                                 <g:if test="${ti == 1 && cpoints.size() == 2}">%{-- override layout --}%
                                     <div class="ui icon button compact la-hidden"><i class="${Icon.UNC.PLACEHOLDER}"></i></div>
-                                    <div class="ui icon blue button compact la-modern-button"
+                                    <div class="${Btn.MODERN.SIMPLE_ICON} compact"
                                          data-cmd="moveUp:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icon.CMD.MOVE_UP}"></i>
                                     </div>
                                 </g:if>
                                 <g:else>
                                     <g:if test="${ti > 0}">
-                                        <div class="ui icon blue button compact la-modern-button"
+                                        <div class="${Btn.MODERN.SIMPLE_ICON} compact"
                                              data-cmd="moveUp:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icon.CMD.MOVE_UP}"></i>
                                         </div>
                                     </g:if>
@@ -188,7 +188,7 @@
                                         <div class="ui icon button compact la-hidden"><i class="${Icon.UNC.PLACEHOLDER}"></i></div>
                                     </g:else>
                                     <g:if test="${ti < cpoints.size()-1}">
-                                        <div class="ui icon blue button compact la-modern-button"
+                                        <div class="${Btn.MODERN.SIMPLE_ICON} compact"
                                              data-cmd="moveDown:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icon.CMD.MOVE_DOWN}"></i>
                                         </div>
                                     </g:if>
@@ -258,7 +258,7 @@
                             <div class="ui icon button compact la-hidden"><i class="${Icon.UNC.PLACEHOLDER}"></i></div>
                             <div class="ui icon button compact la-hidden"><i class="${Icon.UNC.PLACEHOLDER}"></i></div>
 
-                            <div class="ui icon blue button compact la-modern-button" id="cpFormToggle"><i class="${Icon.CMD.ADD}"></i></div>
+                            <div class="${Btn.MODERN.SIMPLE_ICON} compact" id="cpFormToggle"><i class="${Icon.CMD.ADD}"></i></div>
                         </div>
                     </div><!-- .row -->
 
