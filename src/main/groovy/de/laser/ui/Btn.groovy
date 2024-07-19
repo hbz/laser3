@@ -10,25 +10,13 @@ class Btn {
 
     class MODERN {
 
-//        public static String PRIMARY            = 'ui button primary la-modern-button'
-//        public static String SECONDARY          = 'ui button secondary la-modern-button'
-
-        public static String BLUE               = 'ui button blue la-modern-button'         // TODO: PRIMARY
-        public static String BLUE_ICON          = 'ui button blue icon la-modern-button'    // TODO: PRIMARY_ICON
-
-        @UIDoc(usage = 'TODO: refactoring; la-modern-button does not work without declared color!')
-        public static String SIMPLE             = 'ui button la-modern-button'              // merge with PRIMARY ?
-        public static String POSITIVE           = 'ui button positive la-modern-button'
-        public static String NEGATIVE           = 'ui button negative la-modern-button'
-
-        @UIDoc(usage = 'Buttons/Links/Inputs with Confirmation Dialog (data-confirm-attributes needed)')
-        public static String NEGATIVE_CONFIRM   = 'ui button negative la-modern-button js-open-confirm-modal'
-
 //        public static String PRIMARY_ICON       = 'ui button primary icon la-modern-button'
 //        public static String SECONDARY_ICON     = 'ui button secondary icon la-modern-button'
 
+        @UIDoc(usage = 'Buttons/Links/Inputs with Icon. Colors by declaration!')
+        public static String BASIC_ICON         = 'ui button icon la-modern-button'
         @UIDoc(usage = 'TODO: refactoring; la-modern-button does not work without declared color!')
-        public static String SIMPLE_ICON        = 'ui button icon la-modern-button'         // merge with PRIMARY_ICON ?
+        public static String SIMPLE_ICON        = 'ui button blue icon la-modern-button'        // TODO: remove blue; merge with PRIMARY_ICON ?
         public static String POSITIVE_ICON      = 'ui button positive icon la-modern-button'
         public static String NEGATIVE_ICON      = 'ui button negative icon la-modern-button'
 

@@ -3,6 +3,7 @@ package de.laser
 import de.laser.annotations.FixedFeature_DoNotModify
 import de.laser.auth.User
 import de.laser.cache.SessionCacheWrapper
+import de.laser.ui.Btn
 import de.laser.ui.Icon
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
@@ -1015,7 +1016,7 @@ class UiTagLib {
     }
 
     def showMoreCloseButton = { attrs, body ->
-        out << '<button class="ui button la-js-closeAll-showMore right floated">'
+        out << '<button class="' + Btn.SIMPLE +' la-js-closeAll-showMore right floated">'
         out << message(code: "accordion.button.closeAll")
         out << '</button>'
     }

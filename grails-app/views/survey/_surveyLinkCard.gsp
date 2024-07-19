@@ -113,7 +113,7 @@
                                             </td>
                                             <td>
                                                 <g:if test="${surveyOrgFound}">
-                                                    <g:link class="${Btn.MODERN.SIMPLE} small" controller="${newControllerName}" action="${newActionName}" target="_blank"
+                                                    <g:link class="${Btn.SIMPLE} small" controller="${newControllerName}" action="${newActionName}" target="_blank"
                                                             params="${newParams}"><g:message code="default.button.show.label"/></g:link>
                                                 </g:if>
                                                 <g:else>
