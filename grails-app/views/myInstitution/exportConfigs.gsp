@@ -53,7 +53,7 @@
                         <td>
                             <g:if test="${editable}">
                                 <g:if test="${i == 1 && clickMeConfigs.size() == 2}">
-                                    <g:link class="${de.laser.ui.Btn.MODERN.SIMPLE_ICON} compact" action="exportConfigsActions"
+                                    <g:link class="${Btn.MODERN.SIMPLE_ICON} compact" action="exportConfigsActions"
                                             params="[cmd: 'moveUp', id: clickMeConfig.id, tab: params.tab]"><i class="${Icon.CMD.MOVE_UP}"></i>
                                     </g:link>
                                 </g:if>
