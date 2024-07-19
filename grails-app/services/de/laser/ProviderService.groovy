@@ -279,11 +279,11 @@ class ProviderService {
 
         List ids            = new ArrayList(provider.ids)
 
-        List providerLinks  = ProviderRole.findAllByProvider(provider)
+        List providerLinks  = new ArrayList(provider.links)
 
         List addresses      = new ArrayList(provider.addresses)
 
-        List prsLinks       = PersonRole.findAllByProvider(provider)
+        List prsLinks       = new ArrayList(provider.prsLinks)
         List docContexts    = new ArrayList(provider.documents)
         List tasks          = Task.findAllByProvider(provider)
         List platforms      = new ArrayList(provider.packages)
@@ -332,6 +332,7 @@ class ProviderService {
                     }
 
                     int updateCount = 0, deleteCount = 0
+                    provider.links.clear()
                     providerLinks.each { ProviderRole pvr ->
                         Map<String, Object> checkParams = [target: replacement]
                         String targetClause = ''
@@ -347,9 +348,11 @@ class ProviderService {
                         if(!providerRoleCheck) {
                             pvr.provider = replacement
                             pvr.save()
+                            updateCount++
                         }
                         else {
                             pvr.delete()
+                            deleteCount++
                         }
                     }
                     log.debug("${updateCount} provider roles updated, ${deleteCount} provider roles deleted because already existent")

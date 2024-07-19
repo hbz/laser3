@@ -2671,21 +2671,29 @@ class MyInstitutionController  {
 
         if(result.minimalInput) {
             boolean allResultHaveValue = true
+            /*
+            see ERMS-5815 - it should not be necessary to fill out answers if(f) no participation is intended - after check with Melanie, this behavior should be generalised
+             */
+            boolean noParticipation = SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_NO
             List<PropertyDefinition> notProcessedMandatoryProperties = []
-            surveyResults.each { SurveyResult surre ->
-                SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
-                if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm()) {
-                    allResultHaveValue = false
-                    notProcessedMandatoryProperties << surre.type.getI10n('name')
+            if(!noParticipation) {
+                surveyResults.each { SurveyResult surre ->
+                    SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
+                    if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm()) {
+                        allResultHaveValue = false
+                        notProcessedMandatoryProperties << surre.type.getI10n('name')
+                    }
                 }
             }
 
-            boolean noParticipation = false
+
+            /*
             if (surveyInfo.isMandatory) {
                 if (surveyConfig && surveyConfig.subSurveyUseForTransfer) {
                     noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
                 }
             }
+            */
 
             if (!noParticipation && notProcessedMandatoryProperties.size() > 0) {
                 flash.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')]) as String
