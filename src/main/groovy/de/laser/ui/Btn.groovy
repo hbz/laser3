@@ -20,6 +20,8 @@ class Btn {
         public static String POSITIVE_ICON      = 'ui button positive icon la-modern-button'
         public static String NEGATIVE_ICON      = 'ui button negative icon la-modern-button'
 
+        @UIDoc(usage = 'Buttons/Links/Inputs (green) with Icon and Js: Confirmation Dialog (data-confirm-attributes needed)')
+        public static String POSITIVE_ICON_CONFIRM  = 'ui button positive icon la-modern-button js-open-confirm-modal'
         @UIDoc(usage = 'Buttons/Links/Inputs (red) with Icon and Js: Confirmation Dialog (data-confirm-attributes needed)')
         public static String NEGATIVE_ICON_CONFIRM  = 'ui button negative icon la-modern-button js-open-confirm-modal'
 

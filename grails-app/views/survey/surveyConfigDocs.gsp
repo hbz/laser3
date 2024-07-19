@@ -104,7 +104,7 @@
                         </td>
                         <td class="x">
                             <g:if test="${docctx.isDocAFile()}">
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE_ICON}" target="_blank"><i
                                         class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                 <g:if test="${editable && !docctx.sharedFrom}">
                                     <button type="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}" data-ui="modal"
@@ -113,7 +113,7 @@
                                             aria-label="${message(code: 'ariaLabel.change.universal')}">
                                         <i class="${Icon.CMD.EDIT}"></i></button>
                                     <g:link controller="${controllerName}" action="deleteDocuments"
-                                            class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                            class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
                                             params='[surveyConfigID: surveyConfig.id, id: surveyInfo.id, deleteId: "${docctx.id}", redirectAction: "${actionName}"]'

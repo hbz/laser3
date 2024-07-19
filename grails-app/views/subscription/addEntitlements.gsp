@@ -228,7 +228,7 @@
                                     <div class="right aligned wide column">
                                     </div>
 
-                                    <div class="ui icon blue button la-modern-button">
+                                    <div class="${Btn.MODERN.SIMPLE_ICON}">
                                         <i class="${Icon.CMD.SHOW_MORE}"></i>
                                     </div>
                                     <g:if test="${editable && participantPerpetualAccessToTitle.size() == 0}">

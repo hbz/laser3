@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.properties.PropertyDefinition;de.laser.*"%>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.properties.PropertyDefinition;de.laser.*"%>
 <laser:htmlStart message="menu.institutions.prop_groups" serviceInjection="true"/>
 
         <ui:breadcrumbs>
@@ -97,7 +97,7 @@
                                             params="${[cmd:'delete', oid:pdgOID]}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.prop_groups", args: [fieldValue(bean: pdGroup, field: "name")])}"
                                             data-confirm-term-how="delete"
-                                            class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                            class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="${Icon.CMD.DELETE}"></i>

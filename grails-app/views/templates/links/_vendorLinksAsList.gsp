@@ -42,7 +42,7 @@
                         </g:if>
                         <g:if test="${! role.isShared && ! role.sharedFrom}">
                             <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.unlinkProviderAgency')}">
-                                <g:link class="ui negative icon button la-modern-button la-selectable-button js-open-confirm-modal" controller="ajax" action="delVendorRole" id="${role.id}"
+                                <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM} la-selectable-button" controller="ajax" action="delVendorRole" id="${role.id}"
                                     data-confirm-tokenMsg = "${message(code:'confirm.dialog.unlink.provider-agency.subscription')}"
                                     data-confirm-term-how = "unlink"
                                     role="button"

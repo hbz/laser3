@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <laser:serviceInjection/>
 
     <table class="ui celled sortable table la-table la-js-responsive-table">
@@ -66,7 +66,7 @@
                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </a>
-                            <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                            <g:link controller="${controllerName}" action="deleteDocuments" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.notes", args: [docctx.owner.title])}"
                                     data-confirm-term-how="delete"
                                     params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'

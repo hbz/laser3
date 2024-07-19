@@ -138,7 +138,7 @@
 %{--                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="${Icon.CMD.EDIT}"></i></button>--}%
                     </g:elseif>
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                        <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
+                        <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [clist.title])}"
                                 data-confirm-term-how="delete"
                                 controller="myInstitution" action="currentWorkflows" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}"]}"

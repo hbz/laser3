@@ -1,5 +1,5 @@
 <!-- _result_tab_cons.gsp -->
-<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.finance.CostItemElementConfiguration;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.FinanceController;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.finance.CostItemElementConfiguration;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.FinanceController;de.laser.finance.CostItem" %>
 
 <laser:serviceInjection />
 
@@ -267,7 +267,7 @@
                                         </g:link>
                                     </span>
                                 </g:else>
-                                <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ showView:'cons', offset: params.offset]" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ showView:'cons', offset: params.offset]" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItem.participant")}"
                                         data-confirm-term-how="delete"
                                         role="button"

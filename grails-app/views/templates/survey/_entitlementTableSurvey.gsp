@@ -124,7 +124,7 @@
 
                                 </div>
 
-                                <div class="ui icon blue button la-modern-button">
+                                <div class="${Btn.MODERN.SIMPLE_ICON}">
                                     <i class="${Icon.CMD.SHOW_MORE}"></i>
                                 </div>
                                 <g:if test="${(params.tab == 'selectedIEs') && editable && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">

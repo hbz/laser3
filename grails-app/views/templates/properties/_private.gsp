@@ -99,7 +99,7 @@
                     </td>
                     <td class="x">
                         <g:if test="${overwriteEditable == true}">
-                            <ui:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal"
+                            <ui:remoteLink class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                               controller="ajax"
                                               action="deletePrivateProperty"
                                               params='[propClass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]'

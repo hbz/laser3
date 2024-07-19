@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <g:if test="${address}">
 	<div class="ui item address-details">
         <div style="display: flex" class="js-copyTriggerParent">
@@ -20,7 +20,7 @@
         <div class="content">
             <g:if test="${editable && tmplShowDeleteButton}">
                 <div class="ui icon buttons">
-                    <a class="ui icon blue button la-modern-button"
+                    <a class="${Btn.MODERN.SIMPLE_ICON}"
                        onclick="JSPC.app.editAddress(${address.id});"
                        role="button"
                        aria-label="${message(code: 'ariaLabel.change.universal')}">

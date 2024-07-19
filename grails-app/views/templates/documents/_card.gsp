@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.*; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.*; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 <%
     List<DocContext> baseItems = []
@@ -88,16 +88,16 @@
 
                         <g:if test="${! (editable || editable2)}">
                             <%-- 1 --%>
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE_ICON}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                         </g:if>
                         <g:else>
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                 <%-- 1 --%>
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE_ICON}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 
                                 <%-- 2 --%>
                                 <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
-                                <button type="button" class="ui icon blue button la-modern-button"
+                                <button type="button" class="${Btn.MODERN.SIMPLE_ICON}"
                                         data-ui="modal"
                                         data-href="#modalEditDocument_${docctx.id}"
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
@@ -106,7 +106,7 @@
                             </g:if>
                             <g:elseif test="${docctx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET}">
                                 <%-- 1 --%>
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE_ICON}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                             </g:elseif>
 
                             <%-- 3 --%>
@@ -143,7 +143,7 @@
 
                             <%-- 4 --%>
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
-                                <g:link controller="${ajaxCallController ?: controllerName}" action="deleteDocuments" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                <g:link controller="${ajaxCallController ?: controllerName}" action="deleteDocuments" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                         data-confirm-term-how="delete"
                                         params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'
@@ -163,11 +163,11 @@
                                 %{-- old --}%
 
 %{--                            <g:if test="${docctx.owner.owner?.id == contextOrg.id}">--}%
-%{--                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>--}%
+%{--                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE_ICON}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>--}%
 
 %{--                                <%-- START First Button --%>--}%
 %{--                                <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />--}%
-%{--                                <button type="button" class="ui icon blue button la-modern-button"--}%
+%{--                                <button type="button" class="${Btn.MODERN.SIMPLE_ICON}"--}%
 %{--                                        data-ui="modal"--}%
 %{--                                        data-href="#modalEditDocument_${docctx.id}"--}%
 %{--                                        aria-label="${message(code: 'ariaLabel.change.universal')}">--}%
@@ -175,7 +175,7 @@
 
 %{--                                <%-- START Second Button --%>--}%
 %{--                                <g:if test="${!docctx.isShared}">--}%
-%{--                                    <g:link controller="${ajaxCallController ?: controllerName}" action="deleteDocuments" class="ui icon negative button la-modern-button js-open-confirm-modal"--}%
+%{--                                    <g:link controller="${ajaxCallController ?: controllerName}" action="deleteDocuments" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"--}%
 %{--                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"--}%
 %{--                                            data-confirm-term-how="delete"--}%
 %{--                                            params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'--}%
@@ -260,12 +260,12 @@
                         </div>
 
                         <div class="five wide right aligned column">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE_ICON}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 
                             %{--
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                 <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
-                                <button type="button" class="ui icon blue button la-modern-button" data-ui="modal"
+                                <button type="button" class="${Btn.MODERN.SIMPLE_ICON}" data-ui="modal"
                                         data-href="#modalEditDocument_${docctx.id}"
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
                                 <i class="${Icon.CMD.EDIT}"></i></button>

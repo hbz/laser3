@@ -44,7 +44,7 @@
     </g:if>
     <g:if test="${errorKBART}">
         <ui:msg class="error" showIcon="true" message="subscription.details.addEntitlements.titleNotMatched" args="[errorCount]"/>
-        <g:link class="ui icon button la-modern-button" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+        <g:link class="${Btn.SIMPLE_ICON}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
     </g:if>
 
 </g:if>
@@ -484,13 +484,13 @@
                                                     <div class="ui right floated buttons">
                                                         <div class="right aligned wide column">
                                                         </div>
-                                                        <div class="ui icon blue button la-modern-button">
+                                                        <div class="${Btn.MODERN.SIMPLE_ICON}">
                                                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                         </div>
                                                         <g:if test="${editable}">
                                                             <g:if test="${subscription.ieGroups.size() > 0}">
                                                                 <g:link action="removeEntitlementWithIEGroups"
-                                                                        class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                                                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                                                         params="${[ieid: ie.id, sub: subscription.id, tab: tab]}"
                                                                         role="button"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.tipp.name])}"
@@ -501,7 +501,7 @@
                                                             </g:if>
                                                             <g:else>
                                                                 <g:link action="removeEntitlement"
-                                                                        class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                                                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                                                         params="${[ieid: ie.id, sub: subscription.id, tab: tab]}"
                                                                         role="button"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.tipp.name])}"
