@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <div class="item">
     <ui:listIcon type="${tipp.titleType}"/>
     <g:if test="${ie}">
@@ -28,7 +28,7 @@
 </g:if>
 <div class="item">
     <g:if test="${controllerName != 'tipp' && tipp.id}">
-        <g:link class="ui icon tiny blue button la-popup-tooltip la-delay"
+        <g:link class="${Btn.SIMPLE_ICON_TOOLTIP} tiny"
                 data-content="${message(code: 'laser')}"
                 target="_blank"
                 controller="tipp" action="show"
@@ -38,7 +38,7 @@
     </g:if>
     <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}" var="gokbAPI">
         <g:if test="${tipp.gokbId}">
-            <a role="button" class="ui icon tiny blue button la-popup-tooltip la-delay"
+            <a role="button" class="${Btn.SIMPLE_ICON_TOOLTIP} tiny"
                data-content="${message(code: 'wekb')}"
                href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/tippContent/?id=' + tipp.gokbId : '#'}"
                target="_blank"><i class="${Icon.WEKB}"></i>

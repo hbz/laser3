@@ -1,10 +1,10 @@
-<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig;" %>
 <br />
 
 <div class="four wide column">
 
         <g:link action="actionSurveyParticipants" params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab, actionSurveyParticipants: 'addSubMembersToSurvey']"
-                class="ui icon button right floated">
+                class="${Btn.SIMPLE} right floated">
             <g:message code="surveyParticipants.addSubMembersToSurvey"/>
         </g:link>
     <br />
@@ -47,7 +47,7 @@
         <div class="four wide column">
             <g:if test="${surveyParticipantsHasAccess}">
 
-                <a data-ui="modal" class="ui icon button right floated"
+                <a data-ui="modal" class="${Btn.SIMPLE} right floated"
                    data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                     <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
                 </a>
@@ -73,7 +73,7 @@
 
         <div class="four wide column">
             <g:if test="${surveyParticipantsHasNotAccess}">
-                <a data-ui="modal" class="ui icon button right floated"
+                <a data-ui="modal" class="${Btn.SIMPLE} right floated"
                    data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                     <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
                 </a>
@@ -92,7 +92,7 @@
 
         <g:if test="${selectedSubParticipants && editable}">
             <button type="submit" data-confirm-id="deleteSurveyParticipants"
-                    class="ui icon negative button js-open-confirm-modal"
+                    class="${Btn.NEGATIVE_CONFIRM}"
                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.surveyParticipants")}"
                     data-confirm-term-how="unlink"
                     role="button"

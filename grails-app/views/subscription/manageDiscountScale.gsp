@@ -55,7 +55,7 @@
                 <td class="x">
                     <g:if test="${editable}">
                         <g:if test="${!Subscription.findByDiscountScale(discountScale)}">
-                            <g:link action="manageDiscountScale" class="ui icon negative button"
+                            <g:link action="manageDiscountScale" class="${Btn.NEGATIVE_ICON}"
                                     params="${[cmd: 'removeDiscountScale', discountScaleId: discountScale.id, id: subscription.id]}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">

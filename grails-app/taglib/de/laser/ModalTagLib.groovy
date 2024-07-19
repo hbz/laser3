@@ -68,7 +68,7 @@ class ModalTagLib {
 
         if (attrs.showDeleteButton) {
 
-            out << '<input type="submit" class="ui negative button" name="delete" value="' + msgDelete + '" onclick="'
+            out << '<input type="submit" class="' + Btn.NEGATIVE + '" name="delete" value="' + msgDelete + '" onclick="'
             out << "return confirm('${g.message(code:'default.button.delete.confirmDeletion.message')}')?"
             out << '$(\'#' + attrs.id + '\').find(\'#' + attrs.deleteFormID + '\').submit():null'
             out << '"/>'
@@ -117,7 +117,7 @@ class ModalTagLib {
 
         if (attrs.showDeleteButton) {
 
-            out << '<input type="submit" class="ui negative button" name="delete" value="' + msgDelete + '" onclick="'
+            out << '<input type="submit" class="' + Btn.NEGATIVE + '" name="delete" value="' + msgDelete + '" onclick="'
             out << "return confirm('${g.message(code:'default.button.delete.confirmDeletion.message')}')?"
             out << '$(\'#' + attrs.id + '\').find(\'#' + attrs.deleteFormID + '\').submit():null'
             out << '"/>'

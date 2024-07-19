@@ -85,7 +85,7 @@
                                                             <g:if test="${showConsortiaFunctions}">
                                                                 <g:if test="${!license.altnames[0].instanceOf}">
                                                                     <g:if test="${! AuditConfig.getConfig(license.altnames[0])}">
-                                                                        <ui:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                                                        <ui:link class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP}"
                                                                                  controller="ajax"
                                                                                  action="toggleAlternativeNameAuditConfig"
                                                                                  params='[ownerId: "${license.id}",
@@ -110,7 +110,7 @@
                                                                         </div>
                                                                     </g:if>
                                                                     <g:else>
-                                                                        <ui:link class="ui icon green button la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                                                        <ui:link class="${Btn.MODERN.POSITIVE_ICON_CONFIRM_TOOLTIP}"
                                                                                  controller="ajax" action="toggleAlternativeNameAuditConfig"
                                                                                  params='[ownerId: "${license.altnames[0].id}",
                                                                                           ownerClass: "${license.altnames[0].class}",
@@ -169,7 +169,7 @@
                                                                 <g:if test="${showConsortiaFunctions}">
                                                                     <g:if test="${!altname.instanceOf}">
                                                                         <g:if test="${! AuditConfig.getConfig(altname)}">
-                                                                            <ui:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                                                            <ui:link class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP}"
                                                                                      controller="ajax"
                                                                                      action="toggleAlternativeNameAuditConfig"
                                                                                      params='[ownerId: "${license.id}",
@@ -194,7 +194,7 @@
                                                                             </div>
                                                                         </g:if>
                                                                         <g:else>
-                                                                            <ui:link class="ui icon green button la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                                                            <ui:link class="${Btn.MODERN.POSITIVE_ICON_CONFIRM_TOOLTIP}"
                                                                                      controller="ajax" action="toggleAlternativeNameAuditConfig"
                                                                                      params='[ownerId: "${altname.id}",
                                                                                               ownerClass: "${altname.class}",

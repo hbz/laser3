@@ -97,10 +97,10 @@
             <g:if test="${blockSubmit}">
                 <ui:msg header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.thread.running" />
             </g:if>
-            <a class="ui left floated button" id="processButton" data-ui="modal" href="#linkToIssueEntitlementGroup" ${blockSubmit ? 'disabled="disabled"' : '' }>
+            <a class="${Btn.SIMPLE} left floated" id="processButton" data-ui="modal" href="#linkToIssueEntitlementGroup" ${blockSubmit ? 'disabled="disabled"' : '' }>
                 ${checkedCount} <g:message code="subscription.details.addEntitlements.add_selectedToIssueEntitlementGroup"/></a>
 
-            <button type="submit" name="process" id="processButton2" value="withoutTitleGroup" ${blockSubmit ? 'disabled="disabled"' : '' } class="ui right floated button">
+            <button type="submit" name="process" id="processButton2" value="withoutTitleGroup" ${blockSubmit ? 'disabled="disabled"' : '' } class="${Btn.SIMPLE} right floated">
                 ${checkedCount} ${message(code: 'subscription.details.addEntitlements.add_selected')}</button>
         </div>
 
@@ -410,10 +410,10 @@
                     <g:if test="${blockSubmit}">
                         <ui:msg header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.thread.running" />
                     </g:if>
-                    <a class="ui left floated button" id="processButton3" data-ui="modal" href="#linkToIssueEntitlementGroup" ${blockSubmit ? 'disabled="disabled"' : '' }>
+                    <a class="${Btn.SIMPLE} left floated" id="processButton3" data-ui="modal" href="#linkToIssueEntitlementGroup" ${blockSubmit ? 'disabled="disabled"' : '' }>
                         ${checkedCount} <g:message code="subscription.details.addEntitlements.add_selectedToIssueEntitlementGroup"/></a>
 
-                    <button type="submit" name="process" id="processButton4" value="withoutTitleGroup" ${blockSubmit ? 'disabled="disabled"' : '' } class="ui right floated button">
+                    <button type="submit" name="process" id="processButton4" value="withoutTitleGroup" ${blockSubmit ? 'disabled="disabled"' : '' } class="${Btn.SIMPLE} right floated">
                         ${checkedCount} ${message(code: 'subscription.details.addEntitlements.add_selected')}</button>
                 </div>
             </g:if>

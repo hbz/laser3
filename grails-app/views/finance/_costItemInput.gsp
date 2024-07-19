@@ -1,5 +1,5 @@
 <!-- _costItemInput.gsp -->
-<%@ page import="de.laser.CustomerTypeService; de.laser.finance.BudgetCode; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.Package; de.laser.UserSetting; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.*; de.laser.interfaces.CalculatedType; de.laser.finance.CostItemElementConfiguration" %>
+<%@ page import="de.laser.ui.Btn; de.laser.CustomerTypeService; de.laser.finance.BudgetCode; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.Package; de.laser.UserSetting; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.*; de.laser.interfaces.CalculatedType; de.laser.finance.CostItemElementConfiguration" %>
 <laser:serviceInjection />
 
         <g:if test="${costItem}">
@@ -118,7 +118,7 @@
                                name="newCostInBillingCurrency" id="newCostInBillingCurrency_${idSuffix}" placeholder="${g.message(code:'financials.invoice_total')}"
                                value="<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" />"/>
 
-                        <div id="calculateBillingCurrency_${idSuffix}" class="ui icon blue button la-long-tooltip calcButton" data-tooltip="${message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div id="calculateBillingCurrency_${idSuffix}" class="${Btn.SIMPLE_ICON} la-long-tooltip calcButton" data-tooltip="${message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
 
@@ -160,7 +160,7 @@
                                placeholder="${g.message(code:'financials.newCosts.exchangeRate')}"
                                value="${value}" />
 
-                        <div  id="calculateExchangeRate_${idSuffix}" class="ui icon blue button la-long-tooltip calcButton" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div  id="calculateExchangeRate_${idSuffix}" class="${Btn.SIMPLE_ICON} la-long-tooltip calcButton" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
@@ -184,7 +184,7 @@
                                placeholder="${message(code:'financials.newCosts.value')}"
                                value="<g:formatNumber number="${costItem?.costInLocalCurrency}" minFractionDigits="2" maxFractionDigits="2"/>" />
 
-                        <div id="calculateLocalCurrency_${idSuffix}" class="ui icon blue button la-long-tooltip calcButton" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div id="calculateLocalCurrency_${idSuffix}" class="${Btn.SIMPLE_ICON} la-long-tooltip calcButton" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
@@ -259,7 +259,7 @@
                                 <input class="la-full-width" readonly="readonly" value="${costItem.sub.getSubscriberRespConsortia().sortname}" />
                             </g:if>
                             <g:elseif test="${costItem?.sub == subscription && subscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
-                                <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="ui blue button la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
+                                <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="${Btn.SIMPLE} la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
                                 <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown multiple search"
                                           from="${validSubChilds}" multiple="multiple"
                                           optionValue="${{it.name ? it.getSubscriberRespConsortia().dropdownNamingConvention(institution) : it.label}}"
@@ -269,7 +269,7 @@
                                 />
                             </g:elseif>
                             <g:else>
-                                <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="ui blue button la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
+                                <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="${Btn.SIMPLE} la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
                                 <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown multiple search"
                                           from="${validSubChilds}" multiple="multiple"
                                           optionValue="${{it.name ? it.getSubscriberRespConsortia().dropdownNamingConvention(institution) : it.label}}"

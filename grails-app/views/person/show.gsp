@@ -384,7 +384,7 @@
                                     id="${personInstance?.id}"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [personInstance])}"
                                     data-confirm-term-how="delete"
-                                    class="ui icon negative button js-open-confirm-modal"
+                                    class="${Btn.NEGATIVE_CONFIRM}"
                                     params="[previousReferer: request.getHeader('referer')]">
                                 ${message(code: 'default.delete.label', args: ["${message(code: 'person')}"])}
                             </g:link>

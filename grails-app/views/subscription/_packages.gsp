@@ -142,7 +142,7 @@
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
                                                         data-confirm-term-how="delete"
                                                         data-content="${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}"
-                                                        class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip"
+                                                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM_TOOLTIP}"
                                                         role="button"
                                                         aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
                                                     <i aria-hidden="true" class="${Icon.CMD.UNLINK}"></i>
@@ -170,7 +170,7 @@
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name])}"
                                                         data-confirm-term-how="delete"
                                                         data-content="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}"
-                                                        class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip"
+                                                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM_TOOLTIP}"
                                                         role="button"
                                                         aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
                                                     <i aria-hidden="true" class="${Icon.CMD.ERASE}"></i>
@@ -181,12 +181,12 @@
                                 </g:if>
 
                                 <g:if test="${subscription.packages.size() > 1}">
-                                    <a class="ui right floated button" data-href="#showPackagesModal" data-ui="modal"><g:message
+                                    <a class="${Btn.SIMPLE} right floated" data-href="#showPackagesModal" data-ui="modal"><g:message
                                             code="subscription.details.details.package.label"/></a>
                                 </g:if>
 
                                 <g:if test="${subscription.packages.size() == 1}">
-                                    <g:link class="ui right floated button" controller="package" action="show"
+                                    <g:link class="${Btn.SIMPLE} right floated" controller="package" action="show"
                                             id="${subscription.packages[0].pkg.id}"><g:message
                                             code="subscription.details.details.package.label"/></g:link>
                                 </g:if>
