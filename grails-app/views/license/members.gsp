@@ -123,7 +123,7 @@
                     </g:if>
                 </td>
                 <td>
-                    <g:link controller="license" action="show" id="${lic.id}" class="ui icon button blue la-modern-button"
+                    <g:link controller="license" action="show" id="${lic.id}" class="${Btn.MODERN.SIMPLE_ICON}"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
                         <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i></g:link>

@@ -44,7 +44,7 @@
                         <g:if test="${instance.respondsTo('showUIShareButton') && instance.showUIShareButton()}">
                             <g:if test="${docctx.isShared}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
-                                    <g:link controller="ajax" action="toggleShare" class="ui icon button green la-modern-button"
+                                    <g:link controller="ajax" action="toggleShare" class="${Btn.MODERN.POSITIVE_ICON}"
                                             params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
                                         <i class="alternate share icon"></i>
                                     </g:link>
@@ -52,7 +52,7 @@
                             </g:if>
                             <g:else>
                                 <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
-                                    <g:link controller="ajax" action="toggleShare" class="ui icon button blue la-modern-button"
+                                    <g:link controller="ajax" action="toggleShare" class="${Btn.MODERN.SIMPLE_ICON}"
                                             params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
                                         <i class="la-share slash icon"></i>
                                     </g:link>
@@ -62,7 +62,7 @@
 
                         <g:if test="${! docctx.sharedFrom}">
                         <g:if test="${userService.hasFormalAffiliation(contextService.getUser(), contextService.getOrg(), 'INST_EDITOR')}">
-                            <a onclick="JSPC.app.editNote(${docctx.owner.id});" class="ui icon button blue la-modern-button" role="button"
+                            <a onclick="JSPC.app.editNote(${docctx.owner.id});" class="${Btn.MODERN.SIMPLE_ICON}" role="button"
                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </a>
@@ -76,7 +76,7 @@
                             </g:link>
                         </g:if>
                         <g:else>
-                            <a onclick="JSPC.app.readNote(${docctx.owner.id});" class="ui icon button blue la-modern-button" role="button"
+                            <a onclick="JSPC.app.readNote(${docctx.owner.id});" class="${Btn.MODERN.SIMPLE_ICON}" role="button"
                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="search icon"></i>
                             </a>

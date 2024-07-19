@@ -467,7 +467,7 @@
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
                         <td>
                             <g:if test="${editable}">
-                                <button type="button" class="ui icon tiny button blue la-modern-button"
+                                <button type="button" class="${Btn.MODERN.SIMPLE_ICON} tiny"
                                         data-ownerid="${subParticipant.id}"
                                         data-ownerclass="${subParticipant.class.name}"
                                         data-doctype="${RDStore.DOC_TYPE_TITLELIST.value}"
@@ -1050,7 +1050,7 @@
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
                         <td>
                             <g:if test="${editable}">
-                                <button type="button" class="ui icon tiny button blue la-modern-button"
+                                <button type="button" class="${Btn.MODERN.SIMPLE_ICON} tiny"
                                         data-ownerid="${subParticipant.id}"
                                         data-ownerclass="${subParticipant.class.name}"
                                         data-doctype="${RDStore.DOC_TYPE_TITLELIST.value}"

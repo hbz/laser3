@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.Org; de.laser.finance.CostItem; de.laser.Subscription; de.laser.Platform; de.laser.Package; java.text.SimpleDateFormat; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.Org; de.laser.finance.CostItem; de.laser.Subscription; de.laser.Platform; de.laser.Package; java.text.SimpleDateFormat; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
 <laser:htmlStart message="subscription.details.linkPackage.heading" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -100,12 +100,12 @@
                 <g:if test="${institution.isCustomerType_Consortium() && !subscription.instanceOf}">
                     <div class="field">
                         <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
-                            <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherited')}" class="ui icon green button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="true">
+                            <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherited')}" class="${Btn.MODERN.POSITIVE_ICON_TOOLTIP} la-audit-button" data-inherited="true">
                                 <i aria-hidden="true" class="icon thumbtack"></i>
                             </button>
                         </g:if>
                         <g:else>
-                            <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherit')}" class="ui icon blue button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="false">
+                            <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherit')}" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-audit-button" data-inherited="false">
                                 <i aria-hidden="true" class="icon la-thumbtack slash"></i>
                             </button>
                         </g:else>

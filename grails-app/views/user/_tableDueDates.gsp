@@ -104,7 +104,7 @@
                 </td>
                 <td class="x">
                     <g:if test="${false}">
-                        <ui:remoteLink class="ui icon  negative button la-modern-button js-open-confirm-modal"
+                        <ui:remoteLink class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
                                           controller="ajax"
                                           action="deleteDashboardDueDate_does_not_exist_yet"
                                           params=''

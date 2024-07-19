@@ -334,7 +334,7 @@
         <g:if test="${showOptions}">
             <td class="x">
                 <g:if test="${editable}">
-                    <button type="button" onclick="JSPC.app.editPerson(${person.id})" class="ui icon button blue la-modern-button"
+                    <button type="button" onclick="JSPC.app.editPerson(${person.id})" class="${Btn.MODERN.SIMPLE_ICON}"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
                         <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>

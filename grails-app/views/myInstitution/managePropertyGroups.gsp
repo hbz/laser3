@@ -47,14 +47,14 @@
                             <td>
                                 <g:if test="${i == 1 && propDefGroups.size() == 2}">%{-- override layout --}%
                                     <div class="ui icon button compact la-hidden"><i class="${Icon.UNC.PLACEHOLDER}"></i></div>
-                                    <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveUp', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
+                                    <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveUp', oid:pdgOID, ownerType: typeEntry.key]}" class="${Btn.MODERN.SIMPLE_ICON} compact"
                                             role="button">
                                         <i class="${Icon.CMD.MOVE_UP}"></i>
                                     </g:link>
                                 </g:if>
                                 <g:elseif test="${typeEntry.value.size() > 1}">
                                     <g:if test="${i > 0}">
-                                        <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveUp', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
+                                        <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveUp', oid:pdgOID, ownerType: typeEntry.key]}" class="${Btn.MODERN.SIMPLE_ICON} compact"
                                                 role="button">
                                             <i class="${Icon.CMD.MOVE_UP}"></i>
                                         </g:link>
@@ -63,7 +63,7 @@
                                         <div class="ui icon button compact la-hidden"><i class="${Icon.UNC.PLACEHOLDER}"></i></div>
                                     </g:else>
                                     <g:if test="${i < typeEntry.value.size()-1}">
-                                        <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveDown', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
+                                        <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveDown', oid:pdgOID, ownerType: typeEntry.key]}" class="${Btn.MODERN.SIMPLE_ICON} compact"
                                                 role="button">
                                             <i class="${Icon.CMD.MOVE_DOWN}"></i>
                                         </g:link>
@@ -87,7 +87,7 @@
                             </td>
                             <g:if test="${editable}">
                                 <td class="x">
-                                    <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="ui icon button blue la-modern-button trigger-modal"
+                                    <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="${Btn.MODERN.SIMPLE_ICON} trigger-modal"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                         <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>

@@ -49,7 +49,7 @@
                             <label for="note">${message(code:'property.audit.menu')}</label>
 
                             <input name="auditNewIdentifier" id="auditNewIdentifier" type="hidden" value="false"/>
-                            <button id="auditNewIdentifierToggle" data-content="${message(code: 'property.audit.off.tooltip')}" class="ui icon blue button la-modern-button la-audit-button la-popup-tooltip la-delay">
+                            <button id="auditNewIdentifierToggle" data-content="${message(code: 'property.audit.off.tooltip')}" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-audit-button">
                                 <i aria-hidden="true" class="icon la-thumbtack slash"></i>
                             </button>
                         </div>

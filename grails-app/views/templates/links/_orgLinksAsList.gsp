@@ -217,7 +217,7 @@
                                                     <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
                                                     <div class="two wide column">
                                                         <div class="ui icon buttons">
-                                                            <g:link class="ui negative  button la-modern-button la-selectable-button js-open-confirm-modal" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
+                                                            <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM} la-selectable-button" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
                                                                     data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
                                                                     data-confirm-how = "unlink">
                                                                 <i class="${Icon.CMD.UNLINK}"></i>
