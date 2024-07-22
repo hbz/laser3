@@ -238,7 +238,7 @@
                             </g:if>
                             <g:else>
                                 <!-- Hidden Fake Button To hold the other Botton in Place -->
-                                <div class="${Btn.SIMPLE_ICON} la-hidden">
+                                <div class="${Btn.ICON.SIMPLE} la-hidden">
                                     <i class="${Icon.UNC.PLACEHOLDER}"></i>
                                 </div>
 

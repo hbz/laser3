@@ -14,7 +14,7 @@
                        placeholder="${message(code: 'template.addDocument.selectFile')}">
                 <input type="file" id="kbartPreselect" name="kbartPreselect" accept="text/tab-separated-values"
                        style="display: none;">
-                <div class="${Btn.SIMPLE_ICON}">
+                <div class="${Btn.ICON.SIMPLE}">
                     <i class="${Icon.CMD.ATTACHMENT}"></i>
                 </div>
             </div>

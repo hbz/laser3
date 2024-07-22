@@ -40,7 +40,7 @@
                         <g:if test="${template.owner}">${template.owner.name}</g:if>
                     </td>
                     <td>
-                        <button type="button" class="${Btn.SIMPLE_ICON_TOOLTIP}"
+                        <button type="button" class="${Btn.ICON.SIMPLE_TOOLTIP}"
                                 data-mailTemplateTarget="${MailTemplate.class.name}:${template.id}"
                                 data-mailTemplateName="${template.name}"
                                 data-mailTemplateSubject="${template.subject}"

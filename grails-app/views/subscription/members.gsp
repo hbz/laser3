@@ -285,7 +285,7 @@
                         <g:if test="${contextService.getUser().isYoda()}">
                             <g:if test="${sub._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION] && sub.instanceOf._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE}">
                                 <g:if test="${sub.orgRelations.find{it.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN}}">
-                                    <g:link class="${Btn.SIMPLE_ICON_TOOLTIP}" data-content="${message(code:'subscription.details.hiddenForSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
+                                    <g:link class="${Btn.ICON.SIMPLE_TOOLTIP}" data-content="${message(code:'subscription.details.hiddenForSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
                                         <i class="ui icon eye"></i>
                                     </g:link>
                                 </g:if>

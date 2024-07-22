@@ -11,7 +11,7 @@
     </div>
     <div class="content">
         <g:if test="${contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC(inContextOrg)}">
-            <a class="${Btn.SIMPLE_ICON} right floated" data-ui="modal" href="#linkPlatformModal">
+            <a class="${Btn.ICON.SIMPLE} right floated" data-ui="modal" href="#linkPlatformModal">
                 <i class="${Icon.CMD.ADD}"></i>
             </a>
 

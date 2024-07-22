@@ -43,7 +43,7 @@
 %{--                                    <ui:booleanIcon value="${user.passwordExpired}"/>--}%
 %{--                                </td>--}%
                                 <td class="x">
-                                    <g:link controller="user" action="edit" id="${user.id}" class="${Btn.SIMPLE_ICON}">
+                                    <g:link controller="user" action="edit" id="${user.id}" class="${Btn.ICON.SIMPLE}">
                                         <i class="${Icon.CMD.EDIT}"></i>
                                     </g:link>
                                 </td>

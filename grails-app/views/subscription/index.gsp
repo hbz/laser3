@@ -44,7 +44,7 @@
     </g:if>
     <g:if test="${errorKBART}">
         <ui:msg class="error" showIcon="true" message="subscription.details.addEntitlements.titleNotMatched" args="[errorCount]"/>
-        <g:link class="${Btn.SIMPLE_ICON}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+        <g:link class="${Btn.ICON.SIMPLE}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
     </g:if>
 
 </g:if>
@@ -113,7 +113,7 @@
                                                accept="text/tab-separated-values, text/plain"
                                                style="display: none;">
 
-                                        <div class="${Btn.SIMPLE_ICON}">
+                                        <div class="${Btn.ICON.SIMPLE}">
                                             <i class="${Icon.CMD.ATTACHMENT}"></i>
                                         </div>
                                     </div>

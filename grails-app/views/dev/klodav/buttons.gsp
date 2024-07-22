@@ -86,33 +86,33 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td> <button class="${Btn.SIMPLE_ICON} yellow"><i class="${Icon.UNC.SQUARE}"></i></button> </td>
-                    <td> Btn.SIMPLE_ICON <br/> yellow </td>
-                    <td> ${Btn.SIMPLE_ICON} (+ yellow) </td>
+                    <td> <button class="${Btn.ICON.SIMPLE} yellow"><i class="${Icon.UNC.SQUARE}"></i></button> </td>
+                    <td> Btn.ICON.SIMPLE <br/> yellow </td>
+                    <td> ${Btn.ICON.SIMPLE} (+ yellow) </td>
                     <td> Colors by declaration; default: blue </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.PRIMARY_ICON}"><i class="${Icon.UNC.SQUARE}"></i></button> </td>
-                    <td> Btn.PRIMARY_ICON </td>
-                    <td> ${Btn.PRIMARY_ICON} </td>
+                    <td> <button class="${Btn.ICON.PRIMARY}"><i class="${Icon.UNC.SQUARE}"></i></button> </td>
+                    <td> Btn.ICON.PRIMARY </td>
+                    <td> ${Btn.ICON.PRIMARY} </td>
                     <td> </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.SECONDARY_ICON}"><i class="${Icon.UNC.SQUARE}"></i></button> </td>
-                    <td> Btn.SECONDARY_ICON </td>
-                    <td> ${Btn.SECONDARY_ICON} </td>
+                    <td> <button class="${Btn.ICON.SECONDARY}"><i class="${Icon.UNC.SQUARE}"></i></button> </td>
+                    <td> Btn.ICON.SECONDARY </td>
+                    <td> ${Btn.ICON.SECONDARY} </td>
                     <td> </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.POSITIVE_ICON}"><i class="${Icon.CMD.ADD}"></i></button> </td>
-                    <td> Btn.POSITIVE_ICON </td>
-                    <td> ${Btn.POSITIVE_ICON} </td>
+                    <td> <button class="${Btn.ICON.POSITIVE}"><i class="${Icon.CMD.ADD}"></i></button> </td>
+                    <td> Btn.ICON.POSITIVE </td>
+                    <td> ${Btn.ICON.POSITIVE} </td>
                     <td> </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.NEGATIVE_ICON}"><i class="${Icon.CMD.REMOVE}"></i></button> </td>
-                    <td> Btn.NEGATIVE_ICON </td>
-                    <td> ${Btn.NEGATIVE_ICON} </td>
+                    <td> <button class="${Btn.ICON.NEGATIVE}"><i class="${Icon.CMD.REMOVE}"></i></button> </td>
+                    <td> Btn.ICON.NEGATIVE </td>
+                    <td> ${Btn.ICON.NEGATIVE} </td>
                     <td> </td>
                 </tr>
                 </tbody>
@@ -184,15 +184,15 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td> <button class="${Btn.NEGATIVE_ICON_CONFIRM}" data-confirm-term-how="delete"><i class="${Icon.CMD.DELETE}"></i></button> </td>
-                    <td> Btn.NEGATIVE_ICON_CONFIRM </td>
-                    <td> ${Btn.NEGATIVE_ICON_CONFIRM} </td>
+                    <td> <button class="${Btn.ICON.NEGATIVE_CONFIRM}" data-confirm-term-how="delete"><i class="${Icon.CMD.DELETE}"></i></button> </td>
+                    <td> Btn.ICON.NEGATIVE_CONFIRM </td>
+                    <td> ${Btn.ICON.NEGATIVE_CONFIRM} </td>
                     <td> Confirmation Dialog (data-confirm-attributes needed) </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.SIMPLE_ICON_TOOLTIP}" data-content="Something to know .."><i class="${Icon.CMD.DOWNLOAD}"></i></button> </td>
-                    <td> Btn.SIMPLE_ICON_TOOLTIP </td>
-                    <td> ${Btn.SIMPLE_ICON_TOOLTIP} </td>
+                    <td> <button class="${Btn.ICON.SIMPLE_TOOLTIP}" data-content="Something to know .."><i class="${Icon.CMD.DOWNLOAD}"></i></button> </td>
+                    <td> Btn.ICON.SIMPLE_TOOLTIP </td>
+                    <td> ${Btn.ICON.SIMPLE_TOOLTIP} </td>
                     <td> Tooltip (data-attributes needed) </td>
                 </tr>
                 </tbody>

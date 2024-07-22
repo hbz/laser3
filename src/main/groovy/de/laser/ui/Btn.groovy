@@ -46,6 +46,23 @@ class Btn {
         public static String NEGATIVE_ICON_CONFIRM_TOOLTIP    = 'ui button negative icon la-modern-button js-open-confirm-modal la-popup-tooltip la-delay'    // todo: remove la-delay
     }
 
+    class ICON {
+
+        public static String SIMPLE_ICON        = 'ui button icon'          // merge with PRIMARY_ICON ?
+        public static String PRIMARY_ICON       = 'ui button primary icon'
+        public static String SECONDARY_ICON     = 'ui button secondary icon'
+        public static String POSITIVE_ICON      = 'ui button positive icon'
+        public static String NEGATIVE_ICON      = 'ui button negative icon'
+
+//    @UIDoc(usage = 'Buttons/Links/Inputs (green) with Icon and Js: Confirmation Dialog (data-confirm-attributes needed)')
+//    public static String POSITIVE_ICON_CONFIRM  = 'ui button positive icon js-open-confirm-modal'
+        @UIDoc(usage = 'Buttons/Links/Inputs (red) with Icon and Js: Confirmation Dialog (data-confirm-attributes needed)')
+        public static String NEGATIVE_ICON_CONFIRM  = 'ui button negative icon js-open-confirm-modal'
+
+        @UIDoc(usage = 'Buttons/Links/Inputs with Icon and Js: Tooltip (data-attributes needed)')
+        public static String SIMPLE_ICON_TOOLTIP    = 'ui button icon la-popup-tooltip la-delay'  // todo: remove la-delay
+    }
+
     // --- WITHOUT ICONS ---
 
     public static String SIMPLE             = 'ui button'               // merge with PRIMARY ?
@@ -67,19 +84,4 @@ class Btn {
     @UIDoc(usage = 'Buttons/Links/Inputs with Js: Tooltip (data-attributes needed)')
     public static String SIMPLE_TOOLTIP         = 'ui button la-popup-tooltip la-delay'  // todo: remove la-delay
 
-    // --- WITH ICONS ---
-
-    public static String SIMPLE_ICON        = 'ui button icon'          // merge with PRIMARY_ICON ?
-    public static String PRIMARY_ICON       = 'ui button primary icon'
-    public static String SECONDARY_ICON     = 'ui button secondary icon'
-    public static String POSITIVE_ICON      = 'ui button positive icon'
-    public static String NEGATIVE_ICON      = 'ui button negative icon'
-
-//    @UIDoc(usage = 'Buttons/Links/Inputs (green) with Icon and Js: Confirmation Dialog (data-confirm-attributes needed)')
-//    public static String POSITIVE_ICON_CONFIRM  = 'ui button positive icon js-open-confirm-modal'
-    @UIDoc(usage = 'Buttons/Links/Inputs (red) with Icon and Js: Confirmation Dialog (data-confirm-attributes needed)')
-    public static String NEGATIVE_ICON_CONFIRM  = 'ui button negative icon js-open-confirm-modal'
-
-    @UIDoc(usage = 'Buttons/Links/Inputs with Icon and Js: Tooltip (data-attributes needed)')
-    public static String SIMPLE_ICON_TOOLTIP    = 'ui button icon la-popup-tooltip la-delay'  // todo: remove la-delay
 }

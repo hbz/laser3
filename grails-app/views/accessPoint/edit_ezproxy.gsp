@@ -91,7 +91,7 @@
                 <td class="center aligned">
                     <g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
                         <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}" params="[orgInstance: orgInstance.id]"
-                                class="${Btn.NEGATIVE_ICON}"
+                                class="${Btn.ICON.NEGATIVE}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
                             <i class="${Icon.CMD.DELETE}"></i>
@@ -156,7 +156,7 @@
             <td class="center aligned">
                 <g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
                     <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}" params="[orgInstance: orgInstance.id]"
-                            class="${Btn.NEGATIVE_ICON}"
+                            class="${Btn.ICON.NEGATIVE}"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
                         <i class="${Icon.CMD.DELETE}"></i>

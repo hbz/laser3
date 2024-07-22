@@ -60,7 +60,7 @@
                     <g:if test="${editable}">
                         <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.issueEntitlementGroup = :titleGroup',[titleGroup:titleGroup])}"/>
                         <g:if test="${!hasCostItems}">
-                            <g:link action="removeEntitlementGroup" class="${Btn.NEGATIVE_ICON}"
+                            <g:link action="removeEntitlementGroup" class="${Btn.ICON.NEGATIVE}"
                                     params="${[titleGroup: titleGroup.id, sub: subscription.id]}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">

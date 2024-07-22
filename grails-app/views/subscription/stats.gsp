@@ -52,7 +52,7 @@
 
                                     </td>
                                     <td>
-                                        <g:link class="${Btn.SIMPLE_ICON}" action="stats" id="${row.memberSubId}" role="button" aria-label="${message(code: 'default.usage.consortiaTableHeader')}"><i class="${Icon.STATS}"></i></g:link>
+                                        <g:link class="${Btn.ICON.SIMPLE}" action="stats" id="${row.memberSubId}" role="button" aria-label="${message(code: 'default.usage.consortiaTableHeader')}"><i class="${Icon.STATS}"></i></g:link>
                                     </td>
                                 </tr>
                             </g:each>

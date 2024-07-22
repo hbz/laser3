@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ui.Btn" %>
 <laser:serviceInjection />
 
-<a href="#systemInfoFlyout" id="showSystemInfo" role="button" aria-label="System Info" class="${Btn.SECONDARY_ICON} la-debugInfos">
+<a href="#systemInfoFlyout" id="showSystemInfo" role="button" aria-label="System Info" class="${Btn.ICON.SECONDARY} la-debugInfos">
     <i aria-hidden="true" class="tools icon"></i>
 </a>
 

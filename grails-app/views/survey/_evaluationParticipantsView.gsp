@@ -605,7 +605,7 @@
                             <g:if test="${participantSub}">
                                 <br/>
                                 <g:link controller="subscription" action="show" id="${participantSub.id}"
-                                        class="${Btn.SIMPLE_ICON} orange"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
+                                        class="${Btn.ICON.SIMPLE} orange"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                             </g:if>
                     </g:if>
                 </td>
@@ -1189,7 +1189,7 @@
                         <g:if test="${participantSub}">
                             <br/>
                             <g:link controller="subscription" action="show" id="${participantSub.id}"
-                                    class="${Btn.SIMPLE_ICON} orange"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
+                                    class="${Btn.ICON.SIMPLE} orange"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                         </g:if>
                     </g:if>
                 </td>

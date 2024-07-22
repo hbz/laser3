@@ -118,7 +118,7 @@
                                name="newCostInBillingCurrency" id="newCostInBillingCurrency_${idSuffix}" placeholder="${g.message(code:'financials.invoice_total')}"
                                value="<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" />"/>
 
-                        <div id="calculateBillingCurrency_${idSuffix}" class="${Btn.SIMPLE_ICON} la-long-tooltip calcButton" data-tooltip="${message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div id="calculateBillingCurrency_${idSuffix}" class="${Btn.ICON.SIMPLE} la-long-tooltip calcButton" data-tooltip="${message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
 
@@ -160,7 +160,7 @@
                                placeholder="${g.message(code:'financials.newCosts.exchangeRate')}"
                                value="${value}" />
 
-                        <div  id="calculateExchangeRate_${idSuffix}" class="${Btn.SIMPLE_ICON} la-long-tooltip calcButton" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div  id="calculateExchangeRate_${idSuffix}" class="${Btn.ICON.SIMPLE} la-long-tooltip calcButton" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
@@ -184,7 +184,7 @@
                                placeholder="${message(code:'financials.newCosts.value')}"
                                value="<g:formatNumber number="${costItem?.costInLocalCurrency}" minFractionDigits="2" maxFractionDigits="2"/>" />
 
-                        <div id="calculateLocalCurrency_${idSuffix}" class="${Btn.SIMPLE_ICON} la-long-tooltip calcButton" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div id="calculateLocalCurrency_${idSuffix}" class="${Btn.ICON.SIMPLE} la-long-tooltip calcButton" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
