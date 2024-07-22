@@ -7,7 +7,7 @@
     <div class="eleven wide column">
             <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
 
-            <g:link class="ui icon button right floated" controller="subscription" action="members"
+            <g:link class="${Btn.SIMPLE} right floated" controller="subscription" action="members"
                     id="${subscription.id}">
                 <strong>${message(code: 'surveyconfig.subOrgs.label')}:</strong>
 
@@ -16,7 +16,7 @@
                 </div>
             </g:link>
 
-            <g:link class="ui icon button right floated" controller="survey" action="surveyParticipants"
+            <g:link class="${Btn.SIMPLE} right floated" controller="survey" action="surveyParticipants"
                     id="${surveyConfig.surveyInfo.id}"
                     params="[surveyConfigID: surveyConfig.id]">
                 <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>

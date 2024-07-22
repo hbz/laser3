@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.ui.Btn
 import de.laser.ui.Icon
 import de.laser.remote.ApiSource
 
@@ -83,7 +84,7 @@ class LinkTagLib {
         }
 
         out << '<a href="' + href + '" target="_blank" aria-label="' + label + '" '
-        out << 'class="ui icon blue button la-modern-button la-popup-tooltip la-delay" '
+        out << 'class="' + Btn.MODERN.SIMPLE_ICON_TOOLTIP + '" '
         out << 'data-position="top right" data-content="' + label + '" '
         out << 'role="button">'
 

@@ -13,15 +13,15 @@
         <laser:render template="/templates/reporting/helper" />%{--js--}%
 
         <div style="margin-right:0.5em">
-            <div id="bookmark-toggle" class="ui icon button right floated disabled la-long-tooltip la-popup-tooltip la-delay"
+            <div id="bookmark-toggle" class="${Btn.ICON.SIMPLE_TOOLTIP} right floated disabled la-long-tooltip"
                     data-content="${message(code:'reporting.ui.global.bookmarks')}" data-position="top right">
                     <i class="icon bookmark"></i>
             </div>
-            <div id="history-toggle" class="ui icon button right floated disabled la-long-tooltip la-popup-tooltip la-delay"
+            <div id="history-toggle" class="${Btn.ICON.SIMPLE_TOOLTIP} right floated disabled la-long-tooltip"
                     data-content="${message(code:'reporting.ui.global.history')}" data-position="top right">
                     <i class="icon history"></i>
             </div>
-            <div id="info-toggle" class="ui icon button right floated">
+            <div id="info-toggle" class="${Btn.ICON.SIMPLE} right floated">
                 <i class="${Icon.UI.HELP}"></i>
             </div>
         </div>

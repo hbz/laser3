@@ -570,7 +570,7 @@
                             <td>
                                 <g:if test="${participant.newSub}">
                                     <g:link controller="subscription" action="show" id="${participant.newSub.id}"
-                                            class="${Btn.SIMPLE_ICON}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
+                                            class="${Btn.ICON.SIMPLE}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                                 </g:if>
 
                                 <g:if test="${surveyConfig.subSurveyUseForTransfer}">

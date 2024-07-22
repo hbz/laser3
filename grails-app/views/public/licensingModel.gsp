@@ -1,4 +1,4 @@
-<%@ page import="de.laser.License; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSetting" %>
+<%@ page import="de.laser.ui.Btn; de.laser.License; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSetting" %>
 <laser:htmlStart text="Plan ">
     <style>
         .ui.table thead tr:first-child > th {
@@ -141,12 +141,12 @@
                     </td>
                     <td class="center aligned">
                         <g:if test="${mpg1 == 'asService' }">
-                            <button id="${mpg1}" class="ui icon blue button la-modal">
+                            <button id="${mpg1}" class="${Btn.SIMPLE} la-modal">
                                 ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
                             </button>
                         </g:if>
                         <g:if test="${mpg1 == 'community' }">
-                            <button id="${mpg1}" class="ui icon blue button la-modal">
+                            <button id="${mpg1}" class="${Btn.SIMPLE} la-modal">
                                 ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
                             </button>
                         </g:if>
@@ -184,17 +184,17 @@
                     </td>
                     <td class="center aligned">
                         <g:if test="${mpg2 === 'management'}">
-                            <button id="${mpg2}" class="ui icon blue button la-modal" >
+                            <button id="${mpg2}" class="${Btn.SIMPLE} la-modal" >
                                 ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
                             </button>
                         </g:if>
                         <g:if test="${mpg2 === 'organisation'}">
-                            <button id="${mpg2}" class="ui icon blue button la-modal" >
+                            <button id="${mpg2}" class="${Btn.SIMPLE} la-modal" >
                                 ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
                             </button>
                         </g:if>
                         <g:if test="${mpg2 === 'reporting'}">
-                            <button id="${mpg2}" class="ui icon blue button la-modal" >
+                            <button id="${mpg2}" class="${Btn.SIMPLE} la-modal" >
                                 ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
                             </button>
                         </g:if>

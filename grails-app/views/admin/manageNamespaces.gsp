@@ -267,7 +267,7 @@
                                         <g:if test="${tooltip}">
                                             <span data-content="Verwendet für ${tooltip.join(', ')}" data-position="left center"
                                                   class="la-long-tooltip la-popup-tooltip la-delay">
-                                                <g:link class="${Btn.SIMPLE_ICON}" controller="admin" action="manageNamespaces"
+                                                <g:link class="${Btn.ICON.SIMPLE}" controller="admin" action="manageNamespaces"
                                                         params="${[cmd: 'details', oid: IdentifierNamespace.class.name + ':' + idNs.id]}"><i class="${Icon.TOOLTIP.HELP}"></i></g:link>
                                             </span>
                                         </g:if>

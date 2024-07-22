@@ -65,10 +65,10 @@
                             class="myTargetsNeu" style="width: 100%;">${mailText}</g:textArea>
             </div>
 
-            <button class="ui icon button right floated" onclick="JSPC.app.copyToClipboard()">
+            <button class="${Btn.SIMPLE} right floated" onclick="JSPC.app.copyToClipboard()">
                 ${message(code: 'menu.institutions.copy_emailaddresses_to_clipboard')}
             </button>
-            <button class="ui icon button right floated" onclick="JSPC.app.copyToEmailProgram()">
+            <button class="${Btn.SIMPLE} right floated" onclick="JSPC.app.copyToEmailProgram()">
                 ${message(code: 'menu.institutions.copy_emailaddresses_to_emailclient')}
             </button>
             <g:if test="${submitButtonValue == 'ReminderMail'}">

@@ -106,7 +106,7 @@
                                 <g:if test="${! AuditConfig.getConfig(prop)}">
 
                                     <g:if test="${prop.type in memberProperties}">
-                                        <ui:remoteLink class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                        <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP}"
                                                           controller="ajax"
                                                           action="togglePropertyAuditConfig"
                                                           params='[propClass: prop.getClass(),
@@ -130,7 +130,7 @@
                                         </ui:remoteLink>
                                     </g:if>
                                     <g:else>
-                                        <ui:remoteLink class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                        <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP}"
                                                           controller="ajax"
                                                           action="togglePropertyAuditConfig"
                                                           params='[propClass: prop.getClass(),
@@ -155,7 +155,7 @@
                                     </g:else>
                                 </g:if>
                                 <g:else>
-                                    <ui:remoteLink class="ui icon green button la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                    <ui:remoteLink class="${Btn.MODERN.POSITIVE_ICON_CONFIRM_TOOLTIP}"
                                                       controller="ajax"
                                                       action="togglePropertyAuditConfig"
                                                       params='[propClass: prop.getClass(),
@@ -238,7 +238,7 @@
                             </g:if>
                             <g:else>
                                 <!-- Hidden Fake Button To hold the other Botton in Place -->
-                                <div class="ui icon button la-hidden">
+                                <div class="${Btn.ICON.SIMPLE} la-hidden">
                                     <i class="${Icon.UNC.PLACEHOLDER}"></i>
                                 </div>
 

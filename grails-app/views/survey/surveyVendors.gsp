@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.Org; de.laser.finance.CostItem; de.laser.Subscription; de.laser.Platform; de.laser.Package; java.text.SimpleDateFormat; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.Org; de.laser.finance.CostItem; de.laser.Subscription; de.laser.Platform; de.laser.Package; java.text.SimpleDateFormat; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
 <laser:htmlStart message="surveyVendors.label" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
@@ -31,7 +31,7 @@
 </h2>
 
 <g:if test="${editable}">
-    <g:link class="ui icon button right floated" controller="survey" action="linkSurveyVendor"
+    <g:link class="${Btn.SIMPLE} right floated" controller="survey" action="linkSurveyVendor"
             id="${surveyInfo.id}"
             params="[surveyConfigID: surveyConfig.id, initial: true]"><g:message code="surveyVendors.linkVendor"/></g:link>
     <br>

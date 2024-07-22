@@ -77,7 +77,7 @@
                     <td class="center aligned">
                         <g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
                             <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}" params="[orgInstance: orgInstance.id]"
-                                    class="ui negative icon button js-open-confirm-modal"
+                                    class="${Btn.ICON.NEGATIVE_CONFIRM}"
                                     data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.generic', args: [accessPointData.mailDomain])}"
                                     data-confirm-term-how="delete"
                                     role="button"

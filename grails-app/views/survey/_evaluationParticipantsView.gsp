@@ -58,7 +58,7 @@
         <g:if test="${propertiesChanged}">
         <h3 class="ui header">${message(code:'renewalEvaluation.propertiesChanged')}</h3>
 
-            <g:link class="ui right floated button" controller="survey" action="showPropertiesChanged"
+            <g:link class="${Btn.SIMPLE} right floated" controller="survey" action="showPropertiesChanged"
                     id="${surveyConfig.surveyInfo.id}"
                     params="[surveyConfigID: surveyConfig.id, tab: params.tab, exportXLSX: true]">
                 Export ${message(code: 'renewalEvaluation.propertiesChanged')}
@@ -141,7 +141,7 @@
 
         <g:if test="${surveyParticipantsHasAccess}">
             <laser:render template="/templates/copyEmailaddresses" model="[modalID: 'copyEmailaddresses_participantsWithAccess', orgList: surveyParticipantsHasAccess.org]"/>
-            <a data-ui="modal" class="ui icon button right floated"
+            <a data-ui="modal" class="${Btn.SIMPLE} right floated"
                href="#copyEmailaddresses_participantsWithAccess">
                 <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
             </a>
@@ -605,7 +605,7 @@
                             <g:if test="${participantSub}">
                                 <br/>
                                 <g:link controller="subscription" action="show" id="${participantSub.id}"
-                                        class="${Btn.SIMPLE_ICON} orange"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
+                                        class="${Btn.ICON.SIMPLE} orange"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                             </g:if>
                     </g:if>
                 </td>
@@ -727,7 +727,7 @@
 
     <g:if test="${surveyParticipantsHasNotAccess}">
         <laser:render template="/templates/copyEmailaddresses" model="[modalID: 'copyEmailaddresses_participantsWithoutAccess', orgList: surveyParticipantsHasNotAccess.org]"/>
-        <a data-ui="modal" class="ui icon button right floated"
+        <a data-ui="modal" class="${Btn.SIMPLE} right floated"
            href="#copyEmailaddresses_participantsWithoutAccess">
             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
         </a>
@@ -1189,7 +1189,7 @@
                         <g:if test="${participantSub}">
                             <br/>
                             <g:link controller="subscription" action="show" id="${participantSub.id}"
-                                    class="${Btn.SIMPLE_ICON} orange"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
+                                    class="${Btn.ICON.SIMPLE} orange"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                         </g:if>
                     </g:if>
                 </td>

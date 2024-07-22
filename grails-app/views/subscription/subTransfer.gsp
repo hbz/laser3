@@ -271,7 +271,7 @@
                                                 </g:link>
                                             </g:if>
                                             <g:else>
-                                                <div class="ui icon button la-hidden">
+                                                <div class="${Btn.ICON.SIMPLE} la-hidden">
                                                     <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>
                                                 </div>
                                             </g:else>
@@ -349,7 +349,7 @@
                                                 </g:link>
                                             </g:if>
                                             <g:else>
-                                                <div class="ui icon button la-hidden">
+                                                <div class="${Btn.ICON.SIMPLE} la-hidden">
                                                     <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>
                                                 </div>
                                             </g:else>

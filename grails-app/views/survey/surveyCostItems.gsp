@@ -71,7 +71,7 @@
                            placeholder="${message(code: 'template.addDocument.selectFile')}">
                     <input type="file" name="costItemsFile" accept="text/tab-separated-values,.txt,.csv"
                            style="display: none;">
-                    <div class="${Btn.SIMPLE_ICON}">
+                    <div class="${Btn.ICON.SIMPLE}">
                         <i class="${Icon.CMD.ATTACHMENT}"></i>
                     </div>
                 </div>
@@ -107,14 +107,14 @@
 
                 <g:if test="${params.tab == 'selectedSubParticipants' && selectedSubParticipants.size() > 0}">
                     <button onclick="JSPC.app.addForAllSurveyCostItem([${(selectedSubParticipants?.id)}])"
-                            class="ui icon button right floated trigger-modal">
+                            class="${Btn.SIMPLE} right floated trigger-modal">
                         <g:message code="surveyCostItems.createInitialCostItem"/>
                     </button>
                 </g:if>
 
                 <g:if test="${params.tab == 'selectedParticipants' && selectedParticipants.size() > 0}">
                     <button onclick="JSPC.app.addForAllSurveyCostItem([${(selectedParticipants?.id)}])"
-                            class="ui icon button right floated trigger-modal">
+                            class="${Btn.SIMPLE} right floated trigger-modal">
                         <g:message code="surveyCostItems.createInitialCostItem"/>
                     </button>
                 </g:if>
@@ -122,7 +122,7 @@
                 <g:if test="${(params.tab == 'selectedSubParticipants' && selectedSubParticipants.size() > 0) || (params.tab == 'selectedParticipants' && selectedParticipants.size() > 0)}">
                 <br>
                 <br>
-                <a class="ui right floated button" data-ui="modal" href="#bulkCostItemsUpload"><g:message code="menu.institutions.financeImport"/></a>
+                <a class="${Btn.SIMPLE} right floated" data-ui="modal" href="#bulkCostItemsUpload"><g:message code="menu.institutions.financeImport"/></a>
                 <br>
                 <br>
                 </g:if>
@@ -260,7 +260,7 @@
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasAccess}">
-                        <a data-ui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
+                        <a data-ui="modal" class="${Btn.SIMPLE} right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
                         </a>
                     </g:if>
@@ -284,7 +284,7 @@
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasNotAccess}">
-                        <a data-ui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
+                        <a data-ui="modal" class="${Btn.SIMPLE} right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
                         </a>
                     </g:if>
@@ -314,7 +314,7 @@
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasAccess}">
-                        <a data-ui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
+                        <a data-ui="modal" class="${Btn.SIMPLE} right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
                         </a>
                     </g:if>
@@ -339,7 +339,7 @@
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasNotAccess}">
-                        <a data-ui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
+                        <a data-ui="modal" class="${Btn.SIMPLE} right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
                         </a>
                     </g:if>
@@ -361,7 +361,7 @@
                 <br />
                 <br />
                 <button name="deleteCostItems" value="true" type="submit"
-                        class="ui icon negative button js-open-confirm-modal"
+                        class="${Btn.NEGATIVE_CONFIRM}"
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyCostItems")}"
                         data-confirm-term-how="delete"
                         data-confirm-id="processSurveyCostItemsBulk"

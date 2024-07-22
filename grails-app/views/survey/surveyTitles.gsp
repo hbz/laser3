@@ -30,12 +30,12 @@
         <div class="column">
             <g:if test="${titlesList && titlesList.size() > 0}">
                 <g:if test="${subscription.packages.size() > 1}">
-                    <a class="ui right floated button" data-href="#showPackagesModal" data-ui="modal">
+                    <a class="${Btn.SIMPLE} right floated" data-href="#showPackagesModal" data-ui="modal">
                         <g:message code="subscription.details.details.package.label"/>
                     </a>
                 </g:if>
                 <g:if test="${subscription.packages.size() == 1}">
-                    <g:link class="ui right floated button" controller="package" action="show" id="${subscription.packages[0].pkg.id}">
+                    <g:link class="${Btn.SIMPLE} right floated" controller="package" action="show" id="${subscription.packages[0].pkg.id}">
                         <g:message code="subscription.details.details.package.label"/>
                     </g:link>
                 </g:if>

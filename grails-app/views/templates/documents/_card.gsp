@@ -113,7 +113,7 @@
                             <g:if test="${!(ownobj instanceof Org) && !(ownobj instanceof Provider) && !(ownobj instanceof Vendor) && ownobj?.showUIShareButton() && userService.hasFormalAffiliation(contextService.getUser(), docctx.owner.owner, 'INST_EDITOR')}">
                                 <g:if test="${docctx?.isShared}">
                                     <span>
-                                        <ui:remoteLink class="ui icon green button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay"
+                                        <ui:remoteLink class="${Btn.MODERN.POSITIVE_ICON_TOOLTIP} js-no-wait-wheel"
                                                        controller="ajax"
                                                        action="toggleShare"
                                                        params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"documents", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?:  actionName]'
@@ -126,7 +126,7 @@
                                     </span>
                                 </g:if>
                                 <g:else>
-                                    <ui:remoteLink class="ui icon blue button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay js-open-confirm-modal"
+                                    <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP} js-no-wait-wheel"
                                                    controller="ajax"
                                                    action="toggleShare"
                                                    params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"documents", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?:  actionName]'
@@ -153,7 +153,7 @@
                                 </g:link>
                             </g:if>
                             <g:elseif test="${docctx.shareConf != RDStore.SHARE_CONF_UPLOADER_AND_TARGET}">
-                                <div class="ui icon button la-hidden">
+                                <div class="${Btn.ICON.SIMPLE} la-hidden">
                                     <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>
                                 </div>
                             </g:elseif>
@@ -185,17 +185,17 @@
 %{--                                    </g:link>--}%
 %{--                                </g:if>--}%
 %{--                                <g:else>--}%
-%{--                                    <div class="ui icon button la-hidden">--}%
+%{--                                    <div class="${Btn.ICON.SIMPLE} la-hidden">--}%
 %{--                                        <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>--}%
 %{--                                    </div>--}%
 %{--                                </g:else>--}%
 %{--                                <%-- STOP Second Button --%>--}%
 %{--                            </g:if>--}%
 %{--                            <g:else>--}%
-%{--                                <div class="ui icon button la-hidden">--}%
+%{--                                <div class="${Btn.ICON.SIMPLE} la-hidden">--}%
 %{--                                    <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>--}%
 %{--                                </div>--}%
-%{--                                <div class="ui icon button la-hidden">--}%
+%{--                                <div class="${Btn.ICON.SIMPLE} la-hidden">--}%
 %{--                                    <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>--}%
 %{--                                </div>--}%
 %{--                            </g:else>--}%
@@ -203,7 +203,7 @@
 %{--                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && userService.hasFormalAffiliation(contextService.getUser(), docctx.owner.owner, 'INST_EDITOR')}">--}%
 %{--                                <g:if test="${docctx?.isShared}">--}%
 %{--                                    <span>--}%
-%{--                                    <ui:remoteLink class="ui icon green button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay"--}%
+%{--                                    <ui:remoteLink class="${Btn.MODERN.POSITIVE_ICON_TOOLTIP} js-no-wait-wheel"--}%
 %{--                                                      controller="ajax"--}%
 %{--                                                      action="toggleShare"--}%
 %{--                                                      params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"documents", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?:  actionName]'--}%
@@ -216,7 +216,7 @@
 %{--                                    </span>--}%
 %{--                                </g:if>--}%
 %{--                                <g:else>--}%
-%{--                                    <ui:remoteLink class="ui icon blue button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay js-open-confirm-modal"--}%
+%{--                                    <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP} js-no-wait-wheel"--}%
 %{--                                                      controller="ajax"--}%
 %{--                                                      action="toggleShare"--}%
 %{--                                                      params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"documents", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?:  actionName]'--}%

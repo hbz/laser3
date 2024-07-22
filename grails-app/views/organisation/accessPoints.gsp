@@ -57,7 +57,7 @@
          data-tab="${accessPointType.value}">
 
         <g:if test="${editable}">
-        <g:link action="create" controller="accessPoint" class="ui right floated icon button" params="[id: orgInstance.id, accessMethod: accessPointType.value]">
+        <g:link action="create" controller="accessPoint" class="${Btn.ICON.SIMPLE} right floated" params="[id: orgInstance.id, accessMethod: accessPointType.value]">
             <i class="${Icon.CMD.ADD}"></i>
         </g:link>
         <br>

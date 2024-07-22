@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.License" %>
+<%@ page import="de.laser.ui.Btn; de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.License" %>
 <laser:serviceInjection/>
 <g:if test="${!(sourceObject && targetObject)}">
     <% if (params) {
@@ -97,7 +97,7 @@
 
         <div class="fields" style="justify-content: flex-end;">
             <div class="six wide field" style="text-align: right;">
-                <input type="submit" class="ui wide button"
+                <input type="submit" class="${Btn.SIMPLE} wide"
                        value="${message(code: 'default.select2.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"/>
             </div>
         </div>

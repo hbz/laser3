@@ -17,11 +17,11 @@
 <div class="ui info message">
     <p class="ui header">
         Usage
-        <button class="${Btn.PRIMARY_ICON}" id="metaToggle1" style="float: right"><i class="${Icon.UI.INFO}"></i></button>
-        <button class="${Btn.SECONDARY_ICON}" id="metaToggle2" style="float: right"><i class="${Icon.UI.HELP}"></i></button>
+        <button class="${Btn.ICON.PRIMARY}" id="metaToggle1" style="float: right"><i class="${Icon.UI.INFO}"></i></button>
+        <button class="${Btn.ICON.SECONDARY}" id="metaToggle2" style="float: right"><i class="${Icon.UI.HELP}"></i></button>
     </p>
-    <pre>&lt;button class=&quot;&dollar;{Btn.SECONDARY_ICON}&quot; id=&quot;metaToggle2&quot;&gt;&lt;i class=&quot;&dollar;{Icon.UI.HELP}&quot;&gt;&lt;/i&gt;&lt;/button&gt;</pre>
-    <pre>&lt;button class=&quot;&dollar;{Btn.PRIMARY_ICON}&quot; id=&quot;metaToggle1&quot;&gt;&lt;i class=&quot;&dollar;{Icon.UI.INFO}&quot;&gt;&lt;/i&gt;&lt;/button&gt;</pre>
+    <pre>&lt;button class=&quot;&dollar;{Btn.ICON.SECONDARY}&quot; id=&quot;metaToggle2&quot;&gt;&lt;i class=&quot;&dollar;{Icon.UI.HELP}&quot;&gt;&lt;/i&gt;&lt;/button&gt;</pre>
+    <pre>&lt;button class=&quot;&dollar;{Btn.ICON.PRIMARY}&quot; id=&quot;metaToggle1&quot;&gt;&lt;i class=&quot;&dollar;{Icon.UI.INFO}&quot;&gt;&lt;/i&gt;&lt;/button&gt;</pre>
 </div>
 
 <div class="ui basic segment">

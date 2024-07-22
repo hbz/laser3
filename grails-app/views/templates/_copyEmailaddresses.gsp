@@ -1,5 +1,5 @@
 <!-- _copyEmailAddresses.gsp -->
-<%@ page import="de.laser.PersonRole; de.laser.Contact; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Provider; de.laser.Vendor" %>
+<%@ page import="de.laser.ui.Btn; de.laser.PersonRole; de.laser.Contact; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Provider; de.laser.Vendor" %>
 <laser:serviceInjection />
 
 <g:set var="modalID" value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
@@ -59,10 +59,10 @@
         <%--<div class="field">
             <g:textArea id="emailAddressesTextArea" name="emailAddresses" readonly="false" rows="5" cols="1" class="myTargetsNeu" style="width: 100%;" />
         </div>--%>
-        <button class="ui icon button right floated test" onclick="JSPC.app.copyToClipboard()">
+        <button class="${Btn.SIMPLE} right floated test" onclick="JSPC.app.copyToClipboard()">
             ${message(code:'menu.institutions.copy_emailaddresses_to_clipboard')}
         </button>
-        <button class="ui icon button right floated test" onclick="JSPC.app.copyToEmailProgram()">
+        <button class="${Btn.SIMPLE} right floated test" onclick="JSPC.app.copyToEmailProgram()">
             ${message(code:'menu.institutions.copy_emailaddresses_to_emailclient')}
         </button>
     </div>

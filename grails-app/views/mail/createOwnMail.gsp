@@ -190,13 +190,13 @@
                     </g:link>
             </g:if>
 
-            <button class="ui icon button right floated" type="submit">
+            <button class="${Btn.SIMPLE} right floated" type="submit">
                 ${message(code: 'mail.sendMail.sendButton')}
             </button>
         </div>
     </g:form>
 
-%{-- <button class="ui icon button right floated" onclick="JSPC.app.copyToEmailProgram()">
+%{-- <button class="${Btn.SIMPLE} right floated" onclick="JSPC.app.copyToEmailProgram()">
      ${message(code: 'menu.institutions.copy_emailaddresses_to_emailclient')}
  </button>--}%
     <br/>

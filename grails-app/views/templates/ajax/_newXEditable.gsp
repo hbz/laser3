@@ -16,7 +16,7 @@
         </div>
         <div class="content la-space-right">
             <g:if test="${ownObj.subscription && showConsortiaFunctions}">
-                <ui:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                <ui:link class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP}"
                          controller="ajax"
                          action="toggleAlternativeNameAuditConfig"
                          params='[ownerId                                  : "${ownObj.subscription.id}",
@@ -34,7 +34,7 @@
                 </ui:link>
             </g:if>
             <g:elseif test="${ownObj.license && showConsortiaFunctions}">
-                <ui:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                <ui:link class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP}"
                          controller="ajax"
                          action="toggleAlternativeNameAuditConfig"
                          params='[ownerId                                  : "${ownObj.license.id}",

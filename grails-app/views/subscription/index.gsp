@@ -44,7 +44,7 @@
     </g:if>
     <g:if test="${errorKBART}">
         <ui:msg class="error" showIcon="true" message="subscription.details.addEntitlements.titleNotMatched" args="[errorCount]"/>
-        <g:link class="${Btn.SIMPLE_ICON}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+        <g:link class="${Btn.ICON.SIMPLE}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
     </g:if>
 
 </g:if>
@@ -113,7 +113,7 @@
                                                accept="text/tab-separated-values, text/plain"
                                                style="display: none;">
 
-                                        <div class="${Btn.SIMPLE_ICON}">
+                                        <div class="${Btn.ICON.SIMPLE}">
                                             <i class="${Icon.CMD.ATTACHMENT}"></i>
                                         </div>
                                     </div>
@@ -208,7 +208,7 @@
             <div class="eight wide column">
                 <g:if test="${entitlements}">
                     <div class="field la-field-right-aligned">
-                        <div class="ui right floated button la-js-editButton la-la-clearfix>"><g:message code="default.button.edit.label"/></div>
+                        <div class="${Btn.SIMPLE} right floated la-js-editButton la-la-clearfix>"><g:message code="default.button.edit.label"/></div>
                     </div>
                 </g:if>
             </div>
@@ -393,7 +393,7 @@
                                 <button data-position="top right"
                                         data-content="${message(code: 'default.button.apply_batch.label')}"
                                         type="submit" onClick="return JSPC.app.confirmSubmit()"
-                                        class="ui icon button la-popup-tooltip la-delay"><g:message code="default.button.apply_batch.label"/>
+                                        class="${Btn.SIMPLE_TOOLTIP}"><g:message code="default.button.apply_batch.label"/>
                                 </button>
                             </div>
                         </div>
@@ -624,7 +624,7 @@
                                                             </div>
                                                             <hr>
                                                             <g:if test="${editable}">
-                                                                <button class="ui tiny button addObject" data-objType="priceItem" data-ie="${ie.id}">
+                                                                <button class="${Btn.SIMPLE} tiny addObject" data-objType="priceItem" data-ie="${ie.id}">
                                                                     <i class="${Icon.FNC.COST_CONFIG}"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
                                                                 </button>
                                                             </g:if>
@@ -647,7 +647,7 @@
                                                                 <g:if test="${editable}">
                                                                     <g:link action="editEntitlementGroupItem"
                                                                             params="${[cmd: 'edit', ie: ie.id, id: subscription.id]}"
-                                                                            class="ui tiny button trigger-modal">
+                                                                            class="${Btn.SIMPLE} tiny trigger-modal">
                                                                         <i class="object group icon"></i>${message(code: 'subscription.details.ieGroups.edit')}
                                                                     </g:link>
                                                                 </g:if>

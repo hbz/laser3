@@ -188,7 +188,7 @@
                         var="gokbAPI">
                     <g:if test="${tipp.pkg.gokbId}">
                         <a role="button"
-                           class="ui icon tiny blue button la-popup-tooltip la-delay"
+                           class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                            data-content="${message(code: 'wekb')}"
                            href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/packageContent/?id=' + tipp.pkg.gokbId : '#'}"
                            target="_blank"><i class="${Icon.WEKB}"></i>
@@ -245,7 +245,7 @@
                     var="gokbAPI">
                 <g:if test="${tipp.platform.gokbId}">
                     <a role="button"
-                       class="ui icon tiny blue button la-popup-tooltip la-delay"
+                       class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                        data-content="${message(code: 'wekb')}"
                        href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/platformContent/?id=' + tipp.platform.gokbId : '#'}"
                        target="_blank"><i class="${Icon.WEKB}"></i>
