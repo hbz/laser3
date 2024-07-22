@@ -128,7 +128,7 @@
                                                             params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'withIE']}"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
                                                             data-confirm-term-how="delete"
-                                                            class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM} ${unlinkDisabled}"
+                                                            class="${Btn.MODERN.NEGATIVE_CONFIRM} ${unlinkDisabled}"
                                                             role="button"
                                                             aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
                                                         <i aria-hidden="true" class="${Icon.CMD.UNLINK}"></i>
@@ -142,7 +142,7 @@
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
                                                         data-confirm-term-how="delete"
                                                         data-content="${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}"
-                                                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM_TOOLTIP}"
+                                                        class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP}"
                                                         role="button"
                                                         aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
                                                     <i aria-hidden="true" class="${Icon.CMD.UNLINK}"></i>
@@ -156,7 +156,7 @@
                                                             params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'onlyIE']}"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name])}"
                                                             data-confirm-term-how="delete"
-                                                            class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM} ${unlinkDisabled}"
+                                                            class="${Btn.MODERN.NEGATIVE_CONFIRM} ${unlinkDisabled}"
                                                             role="button"
                                                             aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
                                                         <i aria-hidden="true" class="${Icon.CMD.ERASE}"></i>
@@ -170,7 +170,7 @@
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name])}"
                                                         data-confirm-term-how="delete"
                                                         data-content="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}"
-                                                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM_TOOLTIP}"
+                                                        class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP}"
                                                         role="button"
                                                         aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
                                                     <i aria-hidden="true" class="${Icon.CMD.ERASE}"></i>

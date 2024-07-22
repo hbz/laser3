@@ -33,7 +33,7 @@
                 </td>
                 <td>
                     <g:if test="${editable}">
-                        <g:link controller="ajax" action="delPrsRole" id="${pr.id}" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                        <g:link controller="ajax" action="delPrsRole" id="${pr.id}" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                 role="button"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                                 data-confirm-term-how="unlink"

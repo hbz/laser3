@@ -234,7 +234,7 @@
 
             <div class="item">${message(code: 'platform.primaryURL')}:               ${tipp.platform.primaryUrl}
                 <g:if test="${tipp.platform.primaryUrl}">
-                    <a role="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} mini"
+                    <a role="button" class="${Btn.MODERN.SIMPLE_TOOLTIP} mini"
                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
                        href="${tipp.platform.primaryUrl?.contains('http') ? tipp.platform.primaryUrl : 'http://' + tipp.platform.primaryUrl}"
                        target="_blank"><i class="${Icon.LNK.EXTERNAL}"></i></a>

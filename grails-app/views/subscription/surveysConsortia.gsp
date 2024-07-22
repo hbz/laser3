@@ -162,7 +162,7 @@
                           data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                         <g:link controller="survey" action="show" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]"
-                                class="${Btn.MODERN.SIMPLE_ICON}"
+                                class="${Btn.MODERN.SIMPLE}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
                             <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
@@ -172,7 +172,7 @@
 
                     <g:link controller="survey" action="copySurvey" id="${surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id, q: surveyConfig?.subscription?.providers ? surveyConfig.subscription.providers[0].name : '']"
-                            class="${Btn.MODERN.SIMPLE_ICON}">
+                            class="${Btn.MODERN.SIMPLE}">
                         <i aria-hidden="true" class="${Icon.CMD.COPY}"></i>
                     </g:link>
                 </td>

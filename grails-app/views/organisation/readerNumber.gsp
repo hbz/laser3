@@ -72,12 +72,12 @@
                             <td class="x">
                                 <g:if test="${editable}">
                                     <g:if test="${missing}">
-                                        <a role="button" class="${Btn.MODERN.SIMPLE_ICON}" data-ui="modal" href="#newForSemester${numbersInstance.getKey().id}"
+                                        <a role="button" class="${Btn.MODERN.SIMPLE}" data-ui="modal" href="#newForSemester${numbersInstance.getKey().id}"
                                            aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                             <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                         </a>
                                     </g:if>
-                                    <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}" controller="readerNumber" action="delete"
+                                    <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="readerNumber" action="delete"
                                             data-confirm-tokenMsg="${message(code: 'readerNumber.confirm.delete')}"
                                             data-confirm-term-how="ok" params="${[semester:numbersInstance.getKey().id,org:params.id]}"
                                             role="button"
@@ -122,7 +122,7 @@
                                 <td><ui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/></td>
                                 <td class="x">
                                     <g:if test="${editable}">
-                                        <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}" controller="readerNumber" action="delete"
+                                        <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="readerNumber" action="delete"
                                                 data-confirm-tokenMsg="${message(code: 'readerNumber.confirmRow.delete')}"
                                                 data-confirm-term-how="ok" params="${[dueDate:numbersInstance.getKey(),org:params.id]}"
                                                 role="button"

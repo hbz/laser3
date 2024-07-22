@@ -9,7 +9,7 @@
                 <g:if test="${editable}">
                     <div class="content la-space-right">
                         <div class="ui buttons">
-                            <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                            <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.frontend", args: [frontend.frontend.getI10n('value')])}"
                                            data-confirm-term-how="delete"
                                            controller="organisation" action="deleteDiscoverySystem" params="[id: org.id, oid: genericOIDService.getOID(frontend)]"
@@ -34,7 +34,7 @@
                 <g:if test="${editable}">
                     <div class="content la-space-right">
                         <div class="ui buttons">
-                            <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                            <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.frontend", args: [index.index.getI10n('value')])}"
                                            data-confirm-term-how="delete"
                                            controller="organisation" action="deleteDiscoverySystem" params="[id: org.id, oid: genericOIDService.getOID(index)]"

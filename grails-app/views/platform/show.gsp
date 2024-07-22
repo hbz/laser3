@@ -65,7 +65,7 @@
                             <dd>
                                 <ui:xEditable owner="${platformInstance}" field="primaryUrl" overwriteEditable="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}"/>
                                 <g:if test="${platformInstance.primaryUrl}">
-                                    <a role="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
+                                    <a role="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
                                        href="${platformInstance.primaryUrl.startsWith('http') ? platformInstance.primaryUrl : 'http://' + platformInstance.primaryUrl}"
                                        target="_blank"><i class="${Icon.LNK.EXTERNAL}"></i></a>
@@ -238,7 +238,7 @@
                                 </td>
                                 <td class="right aligned">
                                 <g:if test="${editable}">
-                                    <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}" controller="accessPoint" action="unlinkPlatform" id="${orgAccessPoint.id}"
+                                    <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="accessPoint" action="unlinkPlatform" id="${orgAccessPoint.id}"
                                             data-confirm-tokenMsg="${message(code: 'confirm.dialog.unlink.accessPoint.platform', args: [orgAccessPoint.oap.name, platformInstance.name])}"
                                             data-confirm-term-how="unlink"
                                             role="button"

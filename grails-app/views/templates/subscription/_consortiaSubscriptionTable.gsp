@@ -259,12 +259,12 @@
                 <g:if test="${'onlyMemberSubs' in tableConfig}">
                     <td>
                         <g:if test="${subCons in linkedSubscriptions}">
-                            <g:link class="${Btn.MODERN.NEGATIVE_ICON_TOOLTIP}" action="linkToSubscription" data-content="${message(code: 'default.button.unlink.label')}" params="${params+[id:license.id, unlink:true, subscription:subCons.id, (FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">
+                            <g:link class="${Btn.MODERN.NEGATIVE_TOOLTIP}" action="linkToSubscription" data-content="${message(code: 'default.button.unlink.label')}" params="${params+[id:license.id, unlink:true, subscription:subCons.id, (FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">
                                 <i class="${Icon.CMD.REMOVE}"></i>
                             </g:link>
                         </g:if>
                         <g:else>
-                            <g:link class="${Btn.MODERN.POSITIVE_ICON_TOOLTIP}" action="linkToSubscription" data-content="${message(code: 'default.button.link.label')}" params="${params+[id:license.id,subscription:subCons.id,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">
+                            <g:link class="${Btn.MODERN.POSITIVE_TOOLTIP}" action="linkToSubscription" data-content="${message(code: 'default.button.link.label')}" params="${params+[id:license.id,subscription:subCons.id,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">
                                 <i class="${Icon.CMD.ADD}"></i>
                             </g:link>
                         </g:else>

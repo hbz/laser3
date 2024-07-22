@@ -262,7 +262,7 @@
                                 </div>
                             </td>
                             <td class="x">
-                                <g:link controller="${objWithoutProp.displayController}" action="show" id="${objWithoutProp.id}" class="${Btn.MODERN.SIMPLE_ICON}"
+                                <g:link controller="${objWithoutProp.displayController}" action="show" id="${objWithoutProp.id}" class="${Btn.MODERN.SIMPLE}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                     <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
@@ -507,7 +507,7 @@
                             </td>
 
                             <td class="x">
-                                <g:link controller="${row.displayController}" action="${row.displayAction}" id="${row.id}" class="${Btn.MODERN.SIMPLE_ICON}"
+                                <g:link controller="${row.displayController}" action="${row.displayAction}" id="${row.id}" class="${Btn.MODERN.SIMPLE}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                     <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>

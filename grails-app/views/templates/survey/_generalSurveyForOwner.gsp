@@ -52,7 +52,7 @@
                         <g:if test="${editable}">
                             <span class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'default.button.delete.label')}">
-                                <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM} la-selectable-button"
+                                <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.generic", args: [message(code: 'surveyconfig.url.label', args: [i + 1])])}"
                                         data-confirm-term-how="delete"
                                         controller="survey" action="addSurveyUrl"

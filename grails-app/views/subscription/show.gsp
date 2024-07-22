@@ -78,7 +78,7 @@
                                                     <g:if test="${showConsortiaFunctions}">
                                                         <g:if test="${!subscription.altnames[0].instanceOf}">
                                                             <g:if test="${! AuditConfig.getConfig(subscription.altnames[0])}">
-                                                                <ui:link class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP}"
+                                                                <ui:link class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
                                                                                controller="ajax"
                                                                                action="toggleAlternativeNameAuditConfig"
                                                                                params='[ownerId: "${subscription.id}",
@@ -95,7 +95,7 @@
                                                                     <i class="icon la-thumbtack slash"></i>
                                                                 </ui:link>
                                                                 <div class="ui buttons">
-                                                                    <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
+                                                                    <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
                                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
                                                                                    data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
                                                                         <i class="${Icon.CMD.DELETE}"></i>
@@ -103,7 +103,7 @@
                                                                 </div>
                                                             </g:if>
                                                             <g:else>
-                                                                <ui:link class="${Btn.MODERN.POSITIVE_ICON_CONFIRM_TOOLTIP}"
+                                                                <ui:link class="${Btn.MODERN.POSITIVE_CONFIRM_TOOLTIP}"
                                                                                controller="ajax" action="toggleAlternativeNameAuditConfig"
                                                                                params='[ownerId: "${subscription.altnames[0].id}",
                                                                                         ownerClass: "${subscription.altnames[0].class}",
@@ -122,7 +122,7 @@
                                                         </g:if>
                                                         <g:else>
                                                             <div class="ui buttons">
-                                                                <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
+                                                                <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
                                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
                                                                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(subscription.altnames[0])}')">
                                                                     <i class="${Icon.CMD.DELETE}"></i>
@@ -134,7 +134,7 @@
                                                         <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
                                                     </g:elseif>
                                                     <g:else>
-                                                        <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
+                                                        <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
                                                                        data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(subscription.altnames[0])}')">
                                                             <i class="${Icon.CMD.DELETE}"></i>
@@ -142,7 +142,7 @@
                                                     </g:else>
                                                 </g:if>
                                             </div>
-                                            <div class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-show-button"
+                                            <div class="${Btn.MODERN.SIMPLE_TOOLTIP} la-show-button"
                                                  data-content="${message(code: 'org.altname.show')}">
                                                 <i class="${Icon.CMD.SHOW_MORE}"></i>
                                             </div>
@@ -162,7 +162,7 @@
                                                         <g:if test="${showConsortiaFunctions}">
                                                             <g:if test="${!altname.instanceOf}">
                                                                 <g:if test="${! AuditConfig.getConfig(altname)}">
-                                                                    <ui:link class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP}"
+                                                                    <ui:link class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
                                                                                    controller="ajax"
                                                                                    action="toggleAlternativeNameAuditConfig"
                                                                                    params='[ownerId: "${subscription.id}",
@@ -179,7 +179,7 @@
                                                                         <i class="icon la-thumbtack slash"></i>
                                                                     </ui:link>
                                                                     <div class="ui buttons">
-                                                                        <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
+                                                                        <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                                        data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
                                                                             <i class="${Icon.CMD.DELETE}"></i>
@@ -187,7 +187,7 @@
                                                                     </div>
                                                                 </g:if>
                                                                 <g:else>
-                                                                    <ui:link class="${Btn.MODERN.POSITIVE_ICON_CONFIRM_TOOLTIP}"
+                                                                    <ui:link class="${Btn.MODERN.POSITIVE_CONFIRM_TOOLTIP}"
                                                                                    controller="ajax" action="toggleAlternativeNameAuditConfig"
                                                                                    params='[ownerId: "${altname.id}",
                                                                                             ownerClass: "${altname.class}",
@@ -206,7 +206,7 @@
                                                             </g:if>
                                                             <g:else>
                                                                 <div class="ui buttons">
-                                                                    <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
+                                                                    <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                                    data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
                                                                         <i class="${Icon.CMD.DELETE}"></i>
@@ -219,7 +219,7 @@
                                                         </g:elseif>
                                                         <g:else>
                                                             <div class="ui buttons">
-                                                                <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
+                                                                <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
                                                                     <i class="${Icon.CMD.DELETE}"></i>

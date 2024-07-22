@@ -484,13 +484,13 @@
                                                     <div class="ui right floated buttons">
                                                         <div class="right aligned wide column">
                                                         </div>
-                                                        <div class="${Btn.MODERN.SIMPLE_ICON}">
+                                                        <div class="${Btn.MODERN.SIMPLE}">
                                                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                         </div>
                                                         <g:if test="${editable}">
                                                             <g:if test="${subscription.ieGroups.size() > 0}">
                                                                 <g:link action="removeEntitlementWithIEGroups"
-                                                                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                                                        class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                                         params="${[ieid: ie.id, sub: subscription.id, tab: tab]}"
                                                                         role="button"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.tipp.name])}"
@@ -501,7 +501,7 @@
                                                             </g:if>
                                                             <g:else>
                                                                 <g:link action="removeEntitlement"
-                                                                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                                                        class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                                         params="${[ieid: ie.id, sub: subscription.id, tab: tab]}"
                                                                         role="button"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.tipp.name])}"

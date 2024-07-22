@@ -76,18 +76,18 @@
                 <td>
                     <g:if test="${editable}">
                         <g:if test="${i == 1 && surveyProperties.size() == 2}">
-                            <g:link class="${Btn.MODERN.SIMPLE_ICON} compact" action="actionsForSurveyProperty" id="${params.id}"
+                            <g:link class="${Btn.MODERN.SIMPLE} compact" action="actionsForSurveyProperty" id="${params.id}"
                                     params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icon.CMD.MOVE_UP}"></i>
                             </g:link>
                         </g:if>
                         <g:else>
                             <g:if test="${i > 0}">
-                                <g:link class="${Btn.MODERN.SIMPLE_ICON} compact" action="actionsForSurveyProperty" id="${params.id}"
+                                <g:link class="${Btn.MODERN.SIMPLE} compact" action="actionsForSurveyProperty" id="${params.id}"
                                         params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icon.CMD.MOVE_UP}"></i>
                                 </g:link>
                             </g:if>
                             <g:if test="${i < surveyProperties.size()-1}">
-                                <g:link class="${Btn.MODERN.SIMPLE_ICON} compact" action="actionsForSurveyProperty" id="${params.id}"
+                                <g:link class="${Btn.MODERN.SIMPLE} compact" action="actionsForSurveyProperty" id="${params.id}"
                                         params="[actionForSurveyProperty: 'moveDown', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icon.CMD.MOVE_DOWN}"></i>
                                 </g:link>
                             </g:if>
@@ -99,7 +99,7 @@
                         SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyPropertyConfig.surveyProperty)
                         && ((PropertyStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyPropertyConfig.surveyProperty.id) || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}">
                     <td>
-                        <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                        <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyElements", args: [surveyPropertyConfig.surveyProperty.getI10n('name')])}"
                                 data-confirm-term-how="delete"
                                 controller="survey" action="actionsForSurveyProperty"

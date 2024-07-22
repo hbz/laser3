@@ -104,7 +104,7 @@
                 </td>
                 <td class="x">
                     <g:if test="${false}">
-                        <ui:remoteLink class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                        <ui:remoteLink class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                           controller="ajax"
                                           action="deleteDashboardDueDate_does_not_exist_yet"
                                           params=''
@@ -121,7 +121,7 @@
                         </ui:remoteLink>
                     </g:if>
                     <g:if test="${dashDueDate?.isHidden}">
-                        <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
+                        <ui:remoteLink class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                           data-content="${message(code:'myinst.dash.due_dates.visibility.off.tooltip')}"
                                           controller="ajax"
                                           action="showDashboardDueDate"
@@ -138,7 +138,7 @@
                         </ui:remoteLink>
                     </g:if>
                     <g:else>
-                        <ui:remoteLink class="${Btn.MODERN.POSITIVE_ICON_TOOLTIP}"
+                        <ui:remoteLink class="${Btn.MODERN.POSITIVE_TOOLTIP}"
                                           data-content="${message(code:'myinst.dash.due_dates.visibility.on.tooltip')}"
                                           controller="ajax"
                                           action="hideDashboardDueDate"
@@ -155,7 +155,7 @@
                 </td>
                 <td class="x">
                 <g:if test="${dashDueDate?.dueDateObject.isDone}">
-                    <ui:remoteLink class="${Btn.MODERN.POSITIVE_ICON_TOOLTIP}"
+                    <ui:remoteLink class="${Btn.MODERN.POSITIVE_TOOLTIP}"
                                       data-content="${message(code:'myinst.dash.due_dates.status.pending.tooltip')}"
                                       controller="ajax"
                                       action="dashboardDueDateSetIsUndone"
@@ -172,7 +172,7 @@
                     </ui:remoteLink>
                 </g:if>
                 <g:else>
-                    <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
+                    <ui:remoteLink class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                       data-content="${message(code:'myinst.dash.due_dates.status.done.tooltip')}"
                                       controller="ajax"
                                       action="dashboardDueDateSetIsDone"

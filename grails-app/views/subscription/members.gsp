@@ -276,7 +276,7 @@
                     </td>
                     <td class="x">
 
-                        <g:link controller="subscription" action="show" id="${sub.id}" class="${Btn.MODERN.SIMPLE_ICON}"
+                        <g:link controller="subscription" action="show" id="${sub.id}" class="${Btn.MODERN.SIMPLE}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
                             <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
@@ -299,7 +299,7 @@
 
                             <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci.id from CostItem ci where ci.sub = :sub and ci.costItemStatus != :deleted and ci.owner = :context',[sub:sub,deleted:RDStore.COST_ITEM_DELETED,context:institution])}"/>
                             <g:if test="${!hasCostItems}">
-                                <g:link class="${Btn.MODERN.NEGATIVE_ICON}" controller="subscription" action="delete" params="${[id:sub.id]}"
+                                <g:link class="${Btn.MODERN.NEGATIVE}" controller="subscription" action="delete" params="${[id:sub.id]}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="${Icon.CMD.DELETE}"></i>
@@ -307,7 +307,7 @@
                             </g:if>
                             <g:else>
                                 <span class="la-popup-tooltip" data-content="${message(code:'subscription.delete.existingCostItems')}">
-                                    <button class="${Btn.MODERN.NEGATIVE_ICON} disabled"
+                                    <button class="${Btn.MODERN.NEGATIVE} disabled"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="${Icon.CMD.DELETE}"></i>

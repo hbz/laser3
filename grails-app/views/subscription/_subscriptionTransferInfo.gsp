@@ -160,7 +160,7 @@
 
                                         <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                    class="${Btn.MODERN.SIMPLE_ICON} tiny"
+                                                    class="${Btn.MODERN.SIMPLE} tiny"
                                                     target="_blank">
                                                 <i class="${Icon.CMD.DOWNLOAD} small"></i>
                                             </g:link>
@@ -284,7 +284,7 @@
 
                                         <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                    class="${Btn.MODERN.SIMPLE_ICON} tiny"
+                                                    class="${Btn.MODERN.SIMPLE} tiny"
                                                     target="_blank">
                                                 <i class="${Icon.CMD.DOWNLOAD} small"></i>
                                             </g:link>
@@ -326,7 +326,7 @@
                     </td>
                     <td>
                         <g:link controller="subscription" action="subTransfer" id="${s.id}"
-                                class="${Btn.MODERN.SIMPLE_ICON}"
+                                class="${Btn.MODERN.SIMPLE}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
                             <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>

@@ -51,7 +51,7 @@
                                     </g:link>
                                 </td>
                                 <td>
-                                    <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                    <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItemElementConfiguration", args: [ciec.costItemElement.getI10n("value")])}"
                                             data-confirm-term-how="delete"
                                             controller="costConfiguration" action="deleteCostConfiguration"

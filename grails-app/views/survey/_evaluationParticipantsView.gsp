@@ -467,7 +467,7 @@
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
                         <td>
                             <g:if test="${editable}">
-                                <button type="button" class="${Btn.MODERN.SIMPLE_ICON} tiny"
+                                <button type="button" class="${Btn.MODERN.SIMPLE} tiny"
                                         data-ownerid="${subParticipant.id}"
                                         data-ownerclass="${subParticipant.class.name}"
                                         data-doctype="${RDStore.DOC_TYPE_TITLELIST.value}"
@@ -504,14 +504,14 @@
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                            class="${Btn.MODERN.SIMPLE_ICON} tiny"
+                                                            class="${Btn.MODERN.SIMPLE} tiny"
                                                             target="_blank"><i class="download small icon"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                                class="${Btn.MODERN.SIMPLE_ICON} tiny"
+                                                                class="${Btn.MODERN.SIMPLE} tiny"
                                                                 target="_blank"><i
                                                                 class="download small icon"></i></g:link>
 
@@ -519,7 +519,7 @@
                                                         <laser:render template="/templates/documents/modal"
                                                                       model="[ownobj: subParticipant, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
                                                         <button type="button"
-                                                                class="${Btn.MODERN.SIMPLE_ICON} tiny"
+                                                                class="${Btn.MODERN.SIMPLE} tiny"
                                                                 data-ui="modal"
                                                                 data-href="#modalEditDocument_${docctx.id}"
                                                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
@@ -531,7 +531,7 @@
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
                                                         <g:link controller="${ajaxCallController ?: controllerName}"
                                                                 action="deleteDocuments"
-                                                                class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM} tiny"
+                                                                class="${Btn.MODERN.NEGATIVE_CONFIRM} tiny"
                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                                                 data-confirm-term-how="delete"
                                                                 params='[instanceId: "${subParticipant.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
@@ -564,7 +564,7 @@
                                     params="${[surveyConfigID: surveyConfig.id,
                                                exportXLS   : true,
                                                tab           : 'selectedIEs']}"
-                                    class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
+                                    class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                     data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
                                     target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                         </td>
@@ -595,7 +595,7 @@
                 <td>
                     <g:link controller="survey" action="evaluationParticipant"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
-                            class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
+                            class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                             data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                         <i class="${Icon.SURVEY}"></i>
                     </g:link>
@@ -1050,7 +1050,7 @@
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
                         <td>
                             <g:if test="${editable}">
-                                <button type="button" class="${Btn.MODERN.SIMPLE_ICON} tiny"
+                                <button type="button" class="${Btn.MODERN.SIMPLE} tiny"
                                         data-ownerid="${subParticipant.id}"
                                         data-ownerclass="${subParticipant.class.name}"
                                         data-doctype="${RDStore.DOC_TYPE_TITLELIST.value}"
@@ -1087,14 +1087,14 @@
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                            class="${Btn.MODERN.SIMPLE_ICON} tiny"
+                                                            class="${Btn.MODERN.SIMPLE} tiny"
                                                             target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                                class="${Btn.MODERN.SIMPLE_ICON} tiny"
+                                                                class="${Btn.MODERN.SIMPLE} tiny"
                                                                 target="_blank"><i
                                                                 class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
 
@@ -1102,7 +1102,7 @@
                                                         <laser:render template="/templates/documents/modal"
                                                                       model="[ownobj: subParticipant, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
                                                         <button type="button"
-                                                                class="${Btn.MODERN.SIMPLE_ICON} tiny"
+                                                                class="${Btn.MODERN.SIMPLE} tiny"
                                                                 data-ui="modal"
                                                                 data-href="#modalEditDocument_${docctx.id}"
                                                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
@@ -1114,7 +1114,7 @@
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
                                                         <g:link controller="${ajaxCallController ?: controllerName}"
                                                                 action="deleteDocuments"
-                                                                class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM} tiny"
+                                                                class="${Btn.MODERN.NEGATIVE_CONFIRM} tiny"
                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                                                 data-confirm-term-how="delete"
                                                                 params='[instanceId: "${subParticipant.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
@@ -1147,7 +1147,7 @@
                                     params="${[surveyConfigID: surveyConfig.id,
                                                exportXLS   : true,
                                                tab           : 'selectedIEs']}"
-                                    class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
+                                    class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                     data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
                                     target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                         </td>
@@ -1179,7 +1179,7 @@
                 <td>
                     <g:link controller="survey" action="evaluationParticipant"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
-                            class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
+                            class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                             data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                         <i class="${Icon.SURVEY}"></i>
                     </g:link>

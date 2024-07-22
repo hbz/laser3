@@ -14,7 +14,7 @@
                     <g:set var="filterCache" value="${fhRCache.readFilterCache()}" />
                     <tr>
                         <td>
-                            <g:link controller="myInstitution" action="reporting" class="${Btn.MODERN.SIMPLE_ICON} large reporting-callLink"
+                            <g:link controller="myInstitution" action="reporting" class="${Btn.MODERN.SIMPLE} large reporting-callLink"
                                     params="${[filter: meta.filter /*, token: fhRCache.token*/ ] + filterCache.map}">
                                 <i class="${BaseConfig.getIcon(meta.filter)}" aria-hidden="true"></i>
                             </g:link>
@@ -36,12 +36,12 @@
                             <g:if test="${ReportingFilter.findByToken(fhRCache.token)}">
                             %{--
                             <g:link controller="ajaxHtml" action="reporting" params="${[context: BaseConfig.KEY_MYINST, cmd: 'deleteBookmark', token: "${fhRCache.token}", tab: 'history']}"
-                                    class="${Btn.MODERN.NEGATIVE_ICON} small right floated"><i class="${Icon.CMD.DELETE}"></i></g:link>
+                                    class="${Btn.MODERN.NEGATIVE} small right floated"><i class="${Icon.CMD.DELETE}"></i></g:link>
                                     --}%
                             </g:if>
                             <g:else>
                                 <g:link controller="ajaxHtml" action="reporting" params="${[context: BaseConfig.KEY_MYINST, cmd: 'addBookmark', token: "${fhRCache.token}", tab: 'history']}"
-                                        class="${Btn.MODERN.POSITIVE_ICON} small right floated"><i class="${Icon.CMD.ADD}"></i></g:link>
+                                        class="${Btn.MODERN.POSITIVE} small right floated"><i class="${Icon.CMD.ADD}"></i></g:link>
                             </g:else>
                         </td>
                     </tr>
@@ -64,7 +64,7 @@
                 <g:each in="${bookmarks}" var="fav">
                     <tr>
                         <td>
-                            <g:link controller="myInstitution" action="reporting" class="${Btn.MODERN.SIMPLE_ICON} large reporting-callLink"
+                            <g:link controller="myInstitution" action="reporting" class="${Btn.MODERN.SIMPLE} large reporting-callLink"
                                 params="${[filter: fav.filter /*, token: fhRCache.token*/ ] + fav.getParsedFilterMap()}">
                                 <i class="${BaseConfig.getIcon(fav.filter)}" aria-hidden="true"></i>
                             </g:link>
@@ -87,7 +87,7 @@
                         </td>
                         <td>
                             <g:link controller="ajaxHtml" action="reporting" params="${[context: BaseConfig.KEY_MYINST, cmd: 'deleteBookmark', token: "${fav.token}", tab: 'bookmark']}"
-                                    class="${Btn.MODERN.NEGATIVE_ICON} small right floated"><i class="${Icon.CMD.DELETE}"></i></g:link>
+                                    class="${Btn.MODERN.NEGATIVE} small right floated"><i class="${Icon.CMD.DELETE}"></i></g:link>
                         </td>
                     </tr>
                 </g:each>

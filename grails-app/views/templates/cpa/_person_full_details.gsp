@@ -28,7 +28,7 @@
 
             <g:if test="${overwriteEditable}">
                         <div class="content la-space-right">
-                        <button class="${Btn.MODERN.SIMPLE_ICON}" type="button" onclick="JSPC.app.editPerson(${person.id})"
+                        <button class="${Btn.MODERN.SIMPLE}" type="button" onclick="JSPC.app.editPerson(${person.id})"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
                             <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
@@ -120,7 +120,7 @@
                             <g:if test="${editable && tmplShowDeleteButton}">
                                 <g:set var="oid" value="${personRoleLink.class.name}:${personRoleLink.id}"/>
                                 <g:if test="${person.roleLinks.size() > 1}">
-                                    <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                    <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.function.contact", args: [personRoleLink.functionType.getI10n('value'), person.toString()])}"
                                             data-confirm-term-how="unlink"
                                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
@@ -130,7 +130,7 @@
                                     </g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                    <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             controller="person"
                                             action="delete"
                                             id="${person.id}"
@@ -162,7 +162,7 @@
                                 <g:set var="oid" value="${personRole.class.name}:${personRole.id}"/>
 
                                 <g:if test="${person.roleLinks.size() > 1}">
-                                    <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                    <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.position.contact", args: [personRole.positionType.getI10n('value'), person.toString()])}"
                                             data-confirm-term-how="unlink"
                                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
@@ -172,7 +172,7 @@
                                     </g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                    <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             controller="person"
                                             action="delete"
                                             id="${person.id}"
@@ -203,7 +203,7 @@
                         <div class="content">
                             <g:if test="${editable && tmplShowDeleteButton}">
                                 <g:set var="oid" value="${personRole.class.name}:${personRole.id}"/>
-                                <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                                         data-confirm-term-how="unlink"
                                         controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
@@ -223,7 +223,7 @@
     <g:if test="${editable && tmplUnlinkedObj}">
         <td class="right aligned">
             <g:set var="oid" value="${tmplUnlinkedObj.class.name}:${tmplUnlinkedObj.id}"/>
-            <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+            <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact")}"
                     data-confirm-term-how="unlink"
                     controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"

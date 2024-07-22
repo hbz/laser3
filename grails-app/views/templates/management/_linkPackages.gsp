@@ -12,7 +12,7 @@
                             <g:link controller="package" action="show" id="${subPkg.pkg.id}">${subPkg.pkg.name} ${raw(subPkg.getIEandPackageSize())}</g:link>
 
                             <div class="right floated content">
-                                <button class="${Btn.MODERN.NEGATIVE_ICON} la-selectable-button unlinkPackages" ${!editable || isUnlinkingRunning ? 'disabled="disabled"' : ''}
+                                <button class="${Btn.MODERN.NEGATIVE} la-selectable-button unlinkPackages" ${!editable || isUnlinkingRunning ? 'disabled="disabled"' : ''}
                                         data-package="${subPkg.pkg.id}" data-subscription="${subPkg.subscription.id}">
                                     <i class="${Icon.CMD.UNLINK}"></i>
                                 </button>
@@ -221,7 +221,7 @@
                         </td>
                         <td class="x">
                             <g:link controller="subscription" action="show" id="${sub.id}"
-                                    class="${Btn.MODERN.SIMPLE_ICON}"
+                                    class="${Btn.MODERN.SIMPLE}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>

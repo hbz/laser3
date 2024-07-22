@@ -117,11 +117,11 @@
 
                                 </div>
 
-                                <div class="${Btn.MODERN.SIMPLE_ICON}">
+                                <div class="${Btn.MODERN.SIMPLE}">
                                     <i class="${Icon.CMD.SHOW_MORE}"></i>
                                 </div>
                                 <g:if test="${(params.tab == 'allTipps') && editable && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
-                                    <g:link class="${Btn.MODERN.NEGATIVE_ICON_TOOLTIP}"
+                                    <g:link class="${Btn.MODERN.NEGATIVE_TOOLTIP}"
                                             action="processRemoveIssueEntitlementsSurvey"
                                             params="${[id: subscriberSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
@@ -131,7 +131,7 @@
 
 
                                 <g:if test="${(params.tab == 'allTipps') && editable && !ieInNewSub && allowedToSelect}">
-                                    <g:link class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
+                                    <g:link class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                             action="processAddIssueEntitlementsSurvey"
                                             params="${[id: subscriberSub.id, singleTitle: tipp.id, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">

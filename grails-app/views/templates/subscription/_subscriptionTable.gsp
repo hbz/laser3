@@ -254,7 +254,7 @@
                                             [sub: s.instanceOf, org: institution, invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY], type: [RDStore.SURVEY_TYPE_RENEWAL]])}" />
                                     <g:if test="${surveysSub}">
                                         <g:link controller="subscription" action="surveys" id="${s.id}"
-                                                class="${Btn.MODERN.POSITIVE_ICON}">
+                                                class="${Btn.MODERN.POSITIVE}">
                                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info3")}">
                                                 <i class="${Icon.SURVEY}"></i>
                                             </span>
@@ -267,7 +267,7 @@
 
                                             <g:if test="${surveysConsortiaSub.surveyInfo?.isCompletedforOwner()}">
                                                 <g:link controller="subscription" action="surveysConsortia" id="${s.id}"
-                                                        class="${Btn.MODERN.POSITIVE_ICON}">
+                                                        class="${Btn.MODERN.POSITIVE}">
                                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                           data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
                                                         <i class="${Icon.SURVEY}"></i>
@@ -275,7 +275,7 @@
                                                 </g:link>
                                             </g:if>
                                             <g:else>
-                                                <g:link controller="subscription" action="surveysConsortia" id="${s.id}" class="${Btn.MODERN.SIMPLE_ICON}">
+                                                <g:link controller="subscription" action="surveysConsortia" id="${s.id}" class="${Btn.MODERN.SIMPLE}">
                                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                           data-content="${message(code: "surveyconfig.isCompletedforOwner.false")}">
                                                         <i class="${Icon.SURVEY}"></i>
@@ -284,7 +284,7 @@
                                             </g:else>
 
 %{--                                        <g:link controller="subscription" action="surveysConsortia" id="${s.id}"
-                                                class="${Btn.MODERN.SIMPLE_ICON}">
+                                                class="${Btn.MODERN.SIMPLE}">
                                             <g:if test="${surveysConsortiaSub.surveyInfo?.isCompletedforOwner()}">
                                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                       data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
@@ -314,12 +314,12 @@
                                 %>
                                 <g:if test="${linkPossible}">
                                     <g:if test="${s in linkedSubscriptions}">
-                                        <g:link class="${Btn.MODERN.NEGATIVE_ICON}" action="linkToSubscription" params="${params+[id:license.id,unlink:true,subscription:s.id]}">
+                                        <g:link class="${Btn.MODERN.NEGATIVE}" action="linkToSubscription" params="${params+[id:license.id,unlink:true,subscription:s.id]}">
                                             <i class="${Icon.CMD.REMOVE}"></i>
                                         </g:link>
                                     </g:if>
                                     <g:else>
-                                        <g:link class="${Btn.MODERN.POSITIVE_ICON}" action="linkToSubscription" params="${params+[id:license.id,subscription:s.id]}">
+                                        <g:link class="${Btn.MODERN.POSITIVE}" action="linkToSubscription" params="${params+[id:license.id,subscription:s.id]}">
                                             <i class="${Icon.CMD.ADD}"></i>
                                         </g:link>
                                     </g:else>

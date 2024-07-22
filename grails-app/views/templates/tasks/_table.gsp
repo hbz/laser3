@@ -77,13 +77,13 @@
 
                     <td class="center aligned">
                         <g:if test="${overwriteEditable}">
-                            <a onclick="JSPC.app.editTask(${taskInstance.id});" class="${Btn.MODERN.SIMPLE_ICON}"
+                            <a onclick="JSPC.app.editTask(${taskInstance.id});" class="${Btn.MODERN.SIMPLE}"
                                role="button" aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </a>
                         </g:if>
                         <g:if test="${(user == taskInstance.creator && userIsInstEditorOrRoleAdmin) || contextService.isInstAdm_or_ROLEADMIN()}">
-                            <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                            <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                     data-confirm-term-how="delete"
                                     action="deleteTask" controller="ajax" params="[deleteId:taskInstance.id]"

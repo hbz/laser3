@@ -174,13 +174,13 @@
                             <g:if test="${checkedEditable}"><!-- TODO: workflows-permissions -->
                                 <g:if test="${ti == 1 && cpoints.size() == 2}">%{-- override layout --}%
                                     <div class="${Btn.ICON.SIMPLE} compact la-hidden"><i class="${Icon.UNC.PLACEHOLDER}"></i></div>
-                                    <div class="${Btn.MODERN.SIMPLE_ICON} compact"
+                                    <div class="${Btn.MODERN.SIMPLE} compact"
                                          data-cmd="moveUp:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icon.CMD.MOVE_UP}"></i>
                                     </div>
                                 </g:if>
                                 <g:else>
                                     <g:if test="${ti > 0}">
-                                        <div class="${Btn.MODERN.SIMPLE_ICON} compact"
+                                        <div class="${Btn.MODERN.SIMPLE} compact"
                                              data-cmd="moveUp:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icon.CMD.MOVE_UP}"></i>
                                         </div>
                                     </g:if>
@@ -188,7 +188,7 @@
                                         <div class="${Btn.ICON.SIMPLE} compact la-hidden"><i class="${Icon.UNC.PLACEHOLDER}"></i></div>
                                     </g:else>
                                     <g:if test="${ti < cpoints.size()-1}">
-                                        <div class="${Btn.MODERN.SIMPLE_ICON} compact"
+                                        <div class="${Btn.MODERN.SIMPLE} compact"
                                              data-cmd="moveDown:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icon.CMD.MOVE_DOWN}"></i>
                                         </div>
                                     </g:if>
@@ -199,10 +199,10 @@
                             </g:if>
 
                             <g:if test="${checkedEditable}"><!-- TODO: workflows-permissions -->
-%{--                                <div class="${Btn.MODERN.NEGATIVE_ICON}"--}%
+%{--                                <div class="${Btn.MODERN.NEGATIVE}"--}%
 %{--                                     data-cmd="delete:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icon.CMD.DELETE}"></i>--}%
 %{--                                </div>--}%
-                                <div class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                <div class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.checkpoint", args: [cpoint.title])}"
                                         data-confirm-term-how="delete"
                                         data-callback="workflowFlyoutCmd"
@@ -258,7 +258,7 @@
                             <div class="${Btn.ICON.SIMPLE} compact la-hidden"><i class="${Icon.UNC.PLACEHOLDER}"></i></div>
                             <div class="${Btn.ICON.SIMPLE} compact la-hidden"><i class="${Icon.UNC.PLACEHOLDER}"></i></div>
 
-                            <div class="${Btn.MODERN.SIMPLE_ICON} compact" id="cpFormToggle"><i class="${Icon.CMD.ADD}"></i></div>
+                            <div class="${Btn.MODERN.SIMPLE} compact" id="cpFormToggle"><i class="${Icon.CMD.ADD}"></i></div>
                         </div>
                     </div><!-- .row -->
 

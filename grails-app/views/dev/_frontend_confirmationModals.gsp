@@ -9,7 +9,7 @@
             data-content="Hier kommt der Tooltip rein"
             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: ['Button auf der YODA/FRONTENDSEITE'])}"
             data-confirm-term-how="delete"
-            class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM_TOOLTIP}"
+            class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP}"
             role="button">
         <i aria-hidden="true" class="${Icon.CMD.DELETE}"></i>
     </g:link>
@@ -53,7 +53,7 @@
             data-confirm-messageUrl="${createLink(controller:'ajax', action:'genericDialogMessage', params:[template:'abc'])}"
             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: ['Button auf der YODA/FRONTENDSEITE'])}"
             data-confirm-term-how="delete"
-            class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM_TOOLTIP}"
+            class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP}"
             role="button">
         <i aria-hidden="true" class="${Icon.CMD.DELETE}"></i>
     </g:link>
@@ -63,7 +63,7 @@
 <h4 class="ui header">Link (Button), der den AJAX-Contoler aufruft</h4>
 <div class="html ui top attached segment example">
     <div class="ui top attached label"></div>
-    <ui:remoteLink class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM_TOOLTIP}"
+    <ui:remoteLink class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP}"
                       controller="dev"
                       action="frontend"
                       params=""

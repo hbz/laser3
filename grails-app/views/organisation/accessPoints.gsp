@@ -156,7 +156,7 @@
 
                             <g:link controller="accessPoint"
                                     action="edit_${accessPoint.accessMethod.value.toLowerCase()}"
-                                    id="${accessPoint.id}" class="${Btn.MODERN.SIMPLE_ICON}"
+                                    id="${accessPoint.id}" class="${Btn.MODERN.SIMPLE}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
@@ -164,7 +164,7 @@
 
                             <g:if test="${accessPointItem['platformLinkCount'] == 0 && accessPointItem['subscriptionLinkCount'] == 0}">
                                 <g:link action="delete" controller="accessPoint" id="${accessPoint?.id}"
-                                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                        class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint', args: [accessPoint.name])}"
                                         data-confirm-term-how="delete"
                                         role="button"
@@ -175,7 +175,7 @@
                             <g:else>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                                       data-content="${message(code: 'accessPoint.list.deleteDisabledInfo', args: [accessPointItem['platformLinkCount'], accessPointItem['subscriptionLinkCount']])}">
-                                    <span class="${Btn.MODERN.NEGATIVE_ICON} disabled"><i class="${Icon.CMD.DELETE}"></i></span>
+                                    <span class="${Btn.MODERN.NEGATIVE} disabled"><i class="${Icon.CMD.DELETE}"></i></span>
                                 </span>
                             </g:else>
 

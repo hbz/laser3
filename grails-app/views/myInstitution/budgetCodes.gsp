@@ -63,7 +63,7 @@
                                         params="${[cmd: 'deleteBudgetCode', bc: BudgetCode.class.name + ':' + bcode.id]}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.budgetcode", args: [fieldValue(bean: bcode, field: "value")])}"
                                         data-confirm-term-how="delete"
-                                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                        class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="${Icon.CMD.DELETE}"></i>

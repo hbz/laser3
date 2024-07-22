@@ -21,7 +21,7 @@
       </td>
       <g:if test="${contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC( inContextOrg )}">
         <td class="center aligned">
-          <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}" id="${linkedPlatform.aplink.id}"
+          <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}" id="${linkedPlatform.aplink.id}"
                   controller="accessPoint" action="unlinkPlatform"
                   data-confirm-tokenMsg="${message(code: 'confirm.dialog.unlink.accessPoint.platform',
                       args: [accessPoint.name, linkedPlatform.platform.name])}"

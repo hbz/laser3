@@ -14,7 +14,7 @@
 
             <g:if test="${overwriteEditable}">
                 <div class="content la-space-right">
-                    <button class="${Btn.MODERN.SIMPLE_ICON}" type="button" onclick="JSPC.app.editPerson(${person.id})"
+                    <button class="${Btn.MODERN.SIMPLE}" type="button" onclick="JSPC.app.editPerson(${person.id})"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
                         <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
@@ -91,7 +91,7 @@
 
                     <g:set var="oid" value="${personRole.class.name}:${personRole.id}"/>
 
-                    <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                    <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                             data-confirm-term-how="unlink"
                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"

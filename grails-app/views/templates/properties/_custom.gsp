@@ -96,7 +96,7 @@
 
                                     <g:if test="${! AuditConfig.getConfig(prop)}">
                                         <g:if test="${prop.type in memberProperties}">
-                                            <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP}"
+                                            <ui:remoteLink class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
                                                               controller="ajax"
                                                               action="togglePropertyAuditConfig"
                                                               params='[propClass: prop.getClass(),
@@ -119,7 +119,7 @@
                                             </ui:remoteLink>
                                         </g:if>
                                         <g:else>
-                                            <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP}"
+                                            <ui:remoteLink class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
                                                               controller="ajax"
                                                               action="togglePropertyAuditConfig"
                                                               params='[propClass: prop.getClass(),
@@ -144,7 +144,7 @@
                                     </g:if>
                                     <g:else>
 
-                                        <ui:remoteLink class="${Btn.MODERN.POSITIVE_ICON_CONFIRM_TOOLTIP}"
+                                        <ui:remoteLink class="${Btn.MODERN.POSITIVE_CONFIRM_TOOLTIP}"
                                                           controller="ajax" action="togglePropertyAuditConfig"
                                                           params='[propClass: prop.getClass(),
                                                                    ownerId: "${ownobj.id}",
@@ -179,7 +179,7 @@
                                             </ui:remoteLink>
                                         </g:if>
                                         <g:else>
-                                            <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                            <ui:remoteLink class="${Btn.MODERN.SIMPLE_TOOLTIP}" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                               params='[oid: genericOIDService.getOID(prop), editable:"${overwriteEditable}", custom_props_div: "${custom_props_div}", showConsortiaFunctions: "${showConsortiaFunctions}", (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()]'
                                                               data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                               data-content="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
@@ -191,7 +191,7 @@
 
                                     <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
 
-                                    <ui:remoteLink class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                    <ui:remoteLink class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                       controller="ajax"
                                                       action="deleteCustomProperty"
                                                       params='[propClass: prop.getClass(),
@@ -229,7 +229,7 @@
                                     </ui:remoteLink>
                                 </g:if>
                                 <g:else>
-                                    <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                    <ui:remoteLink class="${Btn.MODERN.SIMPLE_TOOLTIP}" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                       params='[oid: genericOIDService.getOID(prop), editable:"${overwriteEditable}", custom_props_div: "${custom_props_div}", showConsortiaFunctions: "${showConsortiaFunctions}"]'
                                                       data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                       data-content="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
@@ -238,7 +238,7 @@
                                     </ui:remoteLink>
                                 </g:else>
                                 <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
-                                <ui:remoteLink class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                <ui:remoteLink class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                   controller="ajax"
                                                   action="deleteCustomProperty"
                                                   params='[propClass: prop.getClass(),

@@ -11,7 +11,7 @@
                     <g:if test="${subjectGroup.subjectGroup.id in availableSubjectGroupIds}">
                         <div class="content la-space-right">
                             <div class="ui icon buttons">
-                                <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.subjectgroup.organisation", args: [subjectGroup.subjectGroup.getI10n('value')])}"
                                         data-confirm-term-how="delete"
                                         controller="organisation" action="deleteSubjectGroup" params="[id: org.id, removeOrgSubjectGroup: subjectGroup.id]"

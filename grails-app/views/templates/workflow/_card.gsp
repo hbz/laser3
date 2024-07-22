@@ -17,7 +17,7 @@
                         </div>
                         <div class="right aligned six wide column la-column-left-lessPadding">
                             <g:if test="${workflowService.hasUserPerm_edit()}">
-                                <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [clist.title])}"
                                         data-confirm-term-how="delete"
                                         controller="${clistInfo.targetController}" action="${actionName}" id="${clistInfo.target.id}" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}"]}"

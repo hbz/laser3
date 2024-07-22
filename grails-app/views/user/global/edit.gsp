@@ -236,7 +236,7 @@
                                                 <td class="x">
                                                     <g:if test="${editable}">
                                                         <g:link controller="ajax" action="removeUserRole" params='${[user:"${user.class.name}:${user.id}",role:"${rl.role.class.name}:${rl.role.id}"]}'
-                                                                class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                                                class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                                 role="button"
                                                                 data-confirm-tokenMsg="${message(code:'confirm.dialog.unlink.user.role')}"
                                                                 data-confirm-term-how="unlink"

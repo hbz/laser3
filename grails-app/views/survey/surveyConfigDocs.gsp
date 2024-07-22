@@ -55,7 +55,7 @@
         <ui:greySegment>
 
             <div class="four wide column">
-                <button type="button" class="${Btn.MODERN.SIMPLE_ICON} right floated" data-ui="modal"
+                <button type="button" class="${Btn.MODERN.SIMPLE} right floated" data-ui="modal"
                         data-href="#modalCreateDocument"><i class="${Icon.CMD.ADD}"></i></button>
 %{--                <laser:render template="/templates/documents/modal"--}%
 %{--                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>--}%
@@ -104,16 +104,16 @@
                         </td>
                         <td class="x">
                             <g:if test="${docctx.isDocAFile()}">
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE_ICON}" target="_blank"><i
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i
                                         class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                 <g:if test="${editable && !docctx.sharedFrom}">
-                                    <button type="button" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}" data-ui="modal"
+                                    <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-ui="modal"
                                             href="#modalEditDocument_${docctx.id}"
                                             data-content="${message(code: "template.documents.edit")}"
                                             aria-label="${message(code: 'ariaLabel.change.universal')}">
                                         <i class="${Icon.CMD.EDIT}"></i></button>
                                     <g:link controller="${controllerName}" action="deleteDocuments"
-                                            class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                            class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
                                             params='[surveyConfigID: surveyConfig.id, id: surveyInfo.id, deleteId: "${docctx.id}", redirectAction: "${actionName}"]'

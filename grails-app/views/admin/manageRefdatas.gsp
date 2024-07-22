@@ -108,7 +108,7 @@
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedRdvList?.contains(rdv.id)}">
                                                 <span data-position="top rightla-popup-tooltip la-delay" data-content="${message(code:'refdataValue.exchange.label')}">
-                                                    <button class="${Btn.MODERN.SIMPLE_ICON}" data-href="#replaceRefdataValueModal" data-ui="modal"
+                                                    <button class="${Btn.MODERN.SIMPLE}" data-href="#replaceRefdataValueModal" data-ui="modal"
                                                             data-xcg-rdv="${rdv.class.name}:${rdv.id}"
                                                             data-xcg-rdc="${rdc.class.name}:${rdc.id}"
                                                             data-xcg-debug="${rdv.getI10n('value')} (${rdv.value})"
@@ -119,7 +119,7 @@
 
                                         <g:if test="${! rdv.isHardData && ! usedRdvList?.contains(rdv.id)}">
                                             <g:link controller="admin" action="manageRefdatas"
-                                                    params="${[cmd: 'deleteRefdataValue', rdv: RefdataValue.class.name + ':' + rdv.id]}" class="${Btn.MODERN.NEGATIVE_ICON}"
+                                                    params="${[cmd: 'deleteRefdataValue', rdv: RefdataValue.class.name + ':' + rdv.id]}" class="${Btn.MODERN.NEGATIVE}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                 <i class="${Icon.CMD.DELETE}"></i>

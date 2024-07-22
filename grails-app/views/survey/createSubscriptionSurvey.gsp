@@ -228,7 +228,7 @@
 
                         <td class="x">
                             <g:if test="${editable && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
-                                    <g:link class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
+                                    <g:link class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                             data-content="${message(code: 'survey.toggleSurveySub.add.label', args:[SurveyConfig.countBySubscriptionAndSubSurveyUseForTransfer(s, true), SurveyConfig.countBySubscriptionAndSubSurveyUseForTransfer(s, false)])}"
                                             controller="survey" action="addSubtoSubscriptionSurvey"
                                             params="[sub: s.id]">
