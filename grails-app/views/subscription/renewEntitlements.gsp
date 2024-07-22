@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform" %>
+<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform" %>
 <laser:htmlStart message="default.subscription.label" />
 
 <ui:breadcrumbs>
@@ -27,8 +27,8 @@
         </div>
         <div class="row">
             <div class="sixteen wide column">
-                <button type="submit" name="process" value="preliminary" class="ui green button"><g:message code="subscription.details.renewEntitlements.preliminary"/></button>
-                <button type="submit" name="process" value="finalise" class="ui red button"><g:message code="subscription.details.renewEntitlements.submit"/></button>
+                <button type="submit" name="process" value="preliminary" class="${Btn.POSITIVE}"><g:message code="subscription.details.renewEntitlements.preliminary"/></button>
+                <button type="submit" name="process" value="finalise" class="${Btn.NEGATIVE}"><g:message code="subscription.details.renewEntitlements.submit"/></button>
             </div>
         </div>
     </div>

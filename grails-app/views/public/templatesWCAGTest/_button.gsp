@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn" %>
 <h3 class="ui dividing header">3.1. Link funktioniert als Button mit Tooltip</h3>
-<a role="button" class="ui icon button la-audit-button la-popup-tooltip la-delay" href='https://www.w3.org/' data-content="Das ist der Inhalt des Tooltips">
+<a role="button" class="${Btn.SIMPLE_ICON_TOOLTIP} la-audit-button" href='https://www.w3.org/' data-content="Das ist der Inhalt des Tooltips">
     <i class="icon thumbtack la-js-editmode-icon"></i>
 </a>
 <h3 class="ui dividing header">3.2. Link funktioniert als Button ohne Tooltip</h3>
@@ -49,7 +49,7 @@
                         controller= 'public'
                         action='wcagTest'
                         data-content="Wert wird nicht vererbt"
-                        class="ui icon mini button la-audit-button la-audit-button la-popup-tooltip la-delay meinToggleButton"
+                        class="${Btn.SIMPLE_ICON_TOOLTIP} mini la-audit-button meinToggleButton"
                         params="['toggle': params.toggle=='true'?false:true]"
                     >
                         <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
@@ -104,7 +104,7 @@
                             controller= 'public'
                             action='wcagTest'
                             data-content="Wert wird nicht vererbt"
-                            class="ui icon mini button la-audit-button la-popup-tooltip la-delay meinToggleButton"
+                            class="${Btn.SIMPLE_ICON_TOOLTIP} mini la-audit-button meinToggleButton"
                             aria-labelledby="wcag_mlbbjc4mb"
                             params="['toggle': params.toggle=='true'?false:true]"
                     >
