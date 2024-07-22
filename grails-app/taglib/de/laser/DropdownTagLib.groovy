@@ -51,7 +51,7 @@ class DropdownTagLib {
         String href      = attrs.href ? attrs.href : '#'
 
         if (attrs.tooltip && attrs.tooltip != '') {
-            linkBody = '<div class="la-popup-tooltip la-delay" data-content="' + attrs.tooltip + '">' + linkBody + '</div>'
+            linkBody = '<div class="la-popup-tooltip" data-content="' + attrs.tooltip + '">' + linkBody + '</div>'
         }
         if (this.pageScope.variables?.actionName == attrs.action && !attrs.notActive) {
             cssClass = cssClass + ' active'
@@ -87,7 +87,7 @@ class DropdownTagLib {
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
         String tooltip = attrs.tooltip ?: "Die Funktion '${message}' ist zur Zeit nicht verfügbar!"
 
-        out << '<a href="#" class="item disabled la-popup-tooltip la-delay" data-content="' + tooltip + '">' + message + '</a>'
+        out << '<a href="#" class="item disabled la-popup-tooltip" data-content="' + tooltip + '">' + message + '</a>'
     }
 
     def dropdownWithI18nExplanations = { attrs, body ->

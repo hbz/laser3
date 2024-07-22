@@ -28,7 +28,7 @@
 
     <g:if test="${ie}">
         <div class="item">
-            <i class="grey save icon la-popup-tooltip la-delay"
+            <i class="grey save icon la-popup-tooltip"
                data-content="${message(code: 'issueEntitlement.perpetualAccessBySub.label')}"></i>
 
             <div class="content">
@@ -63,7 +63,7 @@
 
     <g:if test="${(tipp.titleType == 'monograph') && (tipp.firstAuthor || showEmptyFields)}">
         <div class="item">
-            <i class="grey icon user circle la-popup-tooltip la-delay"
+            <i class="grey icon user circle la-popup-tooltip"
                data-content="${message(code: 'tipp.firstAuthor')}"></i>
 
             <div class="content">
@@ -74,7 +74,7 @@
 
     <g:if test="${(tipp.titleType == 'monograph') && (tipp.firstEditor || showEmptyFields)}">
         <div class="item">
-            <i class="grey icon industry circle la-popup-tooltip la-delay"
+            <i class="grey icon industry circle la-popup-tooltip"
                data-content="${message(code: 'tipp.firstEditor')}"></i>
 
             <div class="content">

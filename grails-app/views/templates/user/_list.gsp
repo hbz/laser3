@@ -29,7 +29,7 @@
                 <td>
                     ${fieldValue(bean: us, field: "username")}
                     <g:if test="${! UserRole.findByUser(us)}">
-                        <label class="ui icon label la-popup-tooltip la-delay" data-content="Dieser Account besitzt keine ROLE." data-position="top right">
+                        <label class="ui icon label la-popup-tooltip" data-content="Dieser Account besitzt keine ROLE." data-position="top right">
                             <i class="minus circle icon red"></i>
                         </label>
                     </g:if>
@@ -49,12 +49,12 @@
                 <g:if test="${showUserStatus}">
                     <td class="center aligned">
                         <g:if test="${us.accountExpired}">
-                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.accountExpired.label')}">
+                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'user.accountExpired.label')}">
                                 <i class="${Icon.TOOLTIP.IMPORTANT} large red"></i>
                             </span>
                         </g:if>
                         <g:if test="${us.accountLocked}">
-                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.accountLocked.label')}">
+                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'user.accountLocked.label')}">
                                 <i class="${Icon.TOOLTIP.IMPORTANT} large yellow"></i>
                             </span>
                         </g:if>
@@ -66,7 +66,7 @@
                     </g:if>
                     <g:else>
                         <g:if test="${! us.enabled}">
-                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.accountDisabled.label')}">
+                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'user.accountDisabled.label')}">
                                 <i class="icon minus circle red"></i>
                             </span>
                         </g:if>
@@ -142,7 +142,7 @@
 
                         </g:if>
                         <g:else>
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg1', args: [us.getDisplayName()])}">
+                            <span class="la-popup-tooltip" data-content="${message(code:'user.affiliation.lastAdminForOrg1', args: [us.getDisplayName()])}">
                                 <button class="${Btn.MODERN.NEGATIVE}" disabled="disabled"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">

@@ -33,18 +33,18 @@
                 <th>${message(code:'org.customerType.label')}</th>
                 <th>
                     ${message(code:'org.apiLevel.label')}
-                    <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.apiLevel.tooltip')}">
+                    <span class="la-popup-tooltip la-no-uppercase" data-position="right center" data-content="${message(code:'org.apiLevel.tooltip')}">
                         <i class="${Icon.TOOLTIP.HELP} icon popup"></i>
                     </span>
                 </th>
                 <th>
                     ${message(code:'org.serverAccess.label')}
-                    <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.serverAccess.tooltip')}">
+                    <span class="la-popup-tooltip la-no-uppercase" data-position="right center" data-content="${message(code:'org.serverAccess.tooltip')}">
                         <i class="${Icon.TOOLTIP.HELP} icon popup"></i>
                     </span>
                 </th>
                 <th class="la-no-uppercase">
-                    <span class="la-popup-tooltip la-delay" data-position="left center" data-content="${message(code:'org.legalInformation.tooltip')}">
+                    <span class="la-popup-tooltip" data-position="left center" data-content="${message(code:'org.legalInformation.tooltip')}">
                         <i class="${Icon.SYM.ORG_LEGAL_INFORMATION}"></i>
                     </span>
                 </th>
@@ -63,7 +63,7 @@
                         ${org.sortname}
 
                         <g:if test="${org.status?.value == 'Deleted'}">
-                            <span class="la-popup-tooltip la-delay" data-content="Diese Organisation wurde als 'gelöscht' markiert." data-position="top left">
+                            <span class="la-popup-tooltip" data-content="Diese Organisation wurde als 'gelöscht' markiert." data-position="top left">
                                 <i class="icon minus circle red"></i>
                             </span>
                         </g:if>
@@ -80,7 +80,7 @@
                         <%
                             def gascoEntry = OrgSetting.get(org, OrgSetting.KEYS.GASCO_ENTRY)
                             if (gascoEntry != OrgSetting.SETTING_NOT_FOUND && gascoEntry.getValue()?.value == 'Yes') {
-                                println ' <span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + message(code:'org.gascoEntry.label') + '">'
+                                println ' <span class="la-popup-tooltip" data-position="top right" data-content="' + message(code:'org.gascoEntry.label') + '">'
                                 println ' <i class="' + Icon.GASCO + ' blue"></i>'
                                 println ' </span>'
                                 gascoEntry = gascoEntry.getValue()
@@ -144,19 +144,19 @@
 
                     <td>
                         <g:if test="${org.createdBy && org.legallyObligedBy}">
-                            <span class="la-popup-tooltip la-delay" data-position="top right"
+                            <span class="la-popup-tooltip" data-position="top right"
                                   data-content="${message(code:'org.legalInformation.1.tooltip', args:[org.createdBy, org.legallyObligedBy])}" >
                                 <i class="icon green check circle"></i>
                             </span>
                         </g:if>
                         <g:elseif test="${org.createdBy}">
-                            <span class="la-popup-tooltip la-delay" data-position="top right"
+                            <span class="la-popup-tooltip" data-position="top right"
                                   data-content="${message(code:'org.legalInformation.2.tooltip', args:[org.createdBy])}" >
                                 <i class="icon grey outline circle"></i>
                             </span>
                         </g:elseif>
                         <g:elseif test="${org.legallyObligedBy}">
-                            <span class="la-popup-tooltip la-delay" data-position="top right"
+                            <span class="la-popup-tooltip" data-position="top right"
                                   data-content="${message(code:'org.legalInformation.3.tooltip', args:[org.legallyObligedBy])}" >
                                 <i class="icon red question mark"></i>
                             </span>

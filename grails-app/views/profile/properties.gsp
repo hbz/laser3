@@ -54,7 +54,7 @@
                                         </g:if>
                                     </g:each>
 
-                                    <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${refdataValues.join('/')}">
+                                    <span class="la-popup-tooltip" data-position="top right" data-content="${refdataValues.join('/')}">
                                         <small>${PropertyDefinition.getLocalizedValue(pd.type)}</small>
                                     </span>
                                 </g:if>
@@ -64,7 +64,7 @@
                             </td>
                             <td>
                                 <g:if test="${pd.multipleOccurrence}">
-                                    <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
+                                    <span class="la-popup-tooltip" data-position="top right" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
                                         <i class="${Icon.PROP.MULTIPLE}"></i>
                                     </span>
                                 </g:if>

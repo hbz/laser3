@@ -173,7 +173,7 @@
                                 </g:link>
                             </g:if>
                             <g:else>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                <span class="la-long-tooltip la-popup-tooltip"
                                       data-content="${message(code: 'accessPoint.list.deleteDisabledInfo', args: [accessPointItem['platformLinkCount'], accessPointItem['subscriptionLinkCount']])}">
                                     <span class="${Btn.MODERN.NEGATIVE} disabled"><i class="${Icon.CMD.DELETE}"></i></span>
                                 </span>

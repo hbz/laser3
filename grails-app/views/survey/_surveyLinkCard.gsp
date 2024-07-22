@@ -35,7 +35,7 @@
                                     <td>${surveyLink.bothDirection ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</td>
                                     <td class="right aligned">
                                         <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
-                                            <span class="la-popup-tooltip la-delay"
+                                            <span class="la-popup-tooltip"
                                                   data-content="${message(code: 'default.button.unlink.label')}">
                                                 <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                                                         data-confirm-tokenMsg="${surveyLink.bothDirection ? message(code: "surveyLinks.bothDirection.unlink.confirm.dialog") : message(code: "surveyLinks.unlink.confirm.dialog")}"
@@ -118,7 +118,7 @@
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${editable && surveyLink.targetSurvey.status == RDStore.SURVEY_SURVEY_STARTED}">
-                                                        <span class="la-popup-tooltip la-delay"
+                                                        <span class="la-popup-tooltip"
                                                               data-content="${message(code: 'surveyLinks.participateToSurvey')}">
                                                             <g:link class="ui button small la-modern-button js-open-confirm-modal"
                                                                     data-confirm-tokenMsg = "${message(code: 'surveyLinks.participateToSurvey.confirm.dialog')}"

@@ -128,10 +128,10 @@ class ContextBarTagLib {
 
         out << '<div class="item la-cb-action">'
         if (attrs.id) {
-            out << '<button id="' + attrs.id + '" class="ui icon button ' + status + ' toggle la-toggle-green-red la-popup-tooltip la-delay" '
+            out << '<button id="' + attrs.id + '" class="ui icon button ' + status + ' toggle la-toggle-green-red la-popup-tooltip" '
             // toggle -> JS
         } else {
-            out << '<button class="ui icon button ' + status + ' toggle la-toggle-green-red la-popup-tooltip la-delay" ' // toggle -> JS
+            out << '<button class="ui icon button ' + status + ' toggle la-toggle-green-red la-popup-tooltip" ' // toggle -> JS
         }
         if (attrs.reload) {
             out <<      'data-reload="' + attrs.reload + '" '
@@ -196,7 +196,7 @@ class ContextBarTagLib {
                     out << '<span id="marker-' + obj.id + '">'
                 }
 
-                out <<      '<a class="ui icon label la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
+                out <<      '<a class="ui icon label la-popup-tooltip la-long-tooltip" onclick="' + onClick + '" '
                 out <<          'data-content="' + tt + '" data-position="top right">'
                 out <<              '<i class="' + Icon.MARKER + ' purple' + (isMarked ? '' : ' outline') + '"></i>'
                 out <<      '</a>'
@@ -212,7 +212,7 @@ class ContextBarTagLib {
                     out << '<div class="item la-cb-action" id="marker-' + obj.id + '">'
                 }
 
-                out <<      '<div class="ui icon button purple ' + (isMarked ? 'active' : ' inactive ') + ' la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
+                out <<      '<div class="ui icon button purple ' + (isMarked ? 'active' : ' inactive ') + ' la-popup-tooltip la-long-tooltip" onclick="' + onClick + '" '
                 out <<          'data-content="' + tt + '" data-position="top right">'
                 out <<              '<i class="' + (isMarked ? Icon.MARKER : 'la-bookmark slash icon' ) + '"></i>'
                 out <<      '</div>'

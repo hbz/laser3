@@ -51,7 +51,7 @@
                     </g:link>
                 </g:if>
                 <g:else>
-                    <div class="item disabled"><div class="la-popup-tooltip la-delay" data-content="${message(code: 'default.stats.noStatsForSubscription')}"><g:message code="default.stats.label"/></div></div>
+                    <div class="item disabled"><div class="la-popup-tooltip" data-content="${message(code: 'default.stats.noStatsForSubscription')}"><g:message code="default.stats.label"/></div></div>
                 </g:else>
             </g:if>
 
@@ -153,7 +153,7 @@
                                 <dl>
                                     <dt>
                                         <g:message code="surveyOrg.eInvoicePortal.label"/>
-                                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                               data-content="${message(code: 'surveyOrg.eInvoicePortal.expl')}">
                                             <i class="${Icon.TOOLTIP.HELP}"></i>
                                         </span>
@@ -168,7 +168,7 @@
                                 <dl>
                                     <dt>
                                         <g:message code="surveyOrg.eInvoiceLeitwegId.label"/>
-                                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                               data-content="${message(code: 'surveyOrg.eInvoiceLeitwegId.expl')}">
                                             <i class="${Icon.TOOLTIP.HELP}"></i>
                                         </span>
@@ -183,7 +183,7 @@
                                 <dl>
                                     <dt>
                                         <g:message code="surveyOrg.eInvoiceLeitkriterium.label"/>
-                                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                               data-content="${message(code: 'surveyOrg.eInvoiceLeitkriterium.expl')}">
                                             <i class="${Icon.TOOLTIP.HELP}"></i>
                                         </span>

@@ -36,7 +36,7 @@
                     <g:if test="${surveyConfig.subSurveyUseForTransfer}">
                         <dl>
                             <dt class="control-label">
-                                <div class="ui icon la-popup-tooltip la-delay"
+                                <div class="ui icon la-popup-tooltip"
                                      data-content="${message(code: "surveyconfig.scheduledStartDate.comment")}">
                                     ${message(code: 'surveyconfig.scheduledStartDate.label')}
                                     <i class="${Icon.TOOLTIP.HELP}"></i>
@@ -47,7 +47,7 @@
                         </dl>
                         <dl>
                             <dt class="control-label">
-                                <div class="ui icon la-popup-tooltip la-delay"
+                                <div class="ui icon la-popup-tooltip"
                                      data-content="${message(code: "surveyconfig.scheduledEndDate.comment")}">
                                     ${message(code: 'surveyconfig.scheduledEndDate.label')}
                                     <i class="${Icon.TOOLTIP.HELP}"></i>
@@ -59,7 +59,7 @@
                     </g:if>
                     <dl>
                         <dt class="control-label">
-                            <div class="ui icon la-popup-tooltip la-delay"
+                            <div class="ui icon la-popup-tooltip"
                                  data-content="${message(code: "surveyconfig.internalComment.comment")}">
                                 ${message(code: 'surveyconfig.internalComment.label')}
                                 <i class="${Icon.TOOLTIP.HELP}"></i>
@@ -91,7 +91,7 @@
 
                                 <div class="right aligned">
                                     <g:if test="${editable}">
-                                        <span class="la-popup-tooltip la-delay"
+                                        <span class="la-popup-tooltip"
                                               data-content="${message(code: 'default.button.delete.label')}">
                                             <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.generic", args: [message(code: 'surveyconfig.url.label', args: [i+1])])}"
@@ -121,14 +121,14 @@
                                 params="[surveyConfigID: surveyConfig.id, id: surveyInfo.id]">
                             <div class="ui top attached tabular menu">
                                 <a class="item ${commentTab != 'commentForNewParticipants' ? 'active' : ''}" data-tab="comment">
-                                    <div class="ui icon la-popup-tooltip la-delay"
+                                    <div class="ui icon la-popup-tooltip"
                                          data-content="${message(code: "surveyconfig.comment.comment")}">
                                         ${message(code: 'surveyconfig.comment.label')}
                                         <i class="${Icon.TOOLTIP.HELP}"></i>
                                     </div>
                                 </a>
                                 <a class="item ${commentTab == 'commentForNewParticipants' ? 'active' : ''}" data-tab="commentForNewParticipants">
-                                    <div class="ui icon la-popup-tooltip la-delay"
+                                    <div class="ui icon la-popup-tooltip"
                                          data-content="${message(code: "surveyconfig.commentForNewParticipants.comment")}">
                                         ${message(code: 'surveyconfig.commentForNewParticipants.label')}
                                         <i class="${Icon.TOOLTIP.HELP}"></i>
@@ -260,7 +260,7 @@
                     <div class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                         <div class="item">
                             <div class="title">
-                                <div class="${Btn.MODERN.SIMPLE} la-delay right floated">
+                                <div class="${Btn.MODERN.SIMPLE} right floated">
                                     <i class="${Icon.CMD.SHOW_MORE}"></i>
                                 </div>
                                 <laser:script file="${this.getGroovyPageFileName()}">
@@ -327,7 +327,7 @@
                                                 <g:each in="${subscription.ids?.sort { it.ns.ns }}"
                                                         var="id">
                                                     <div class="item js-copyTriggerParent">
-                                                       <span class="ui small basic image label js-copyTrigger la-popup-tooltip la-delay"
+                                                       <span class="ui small basic image label js-copyTrigger la-popup-tooltip"
                                                              data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
                                                            <i class="la-copy grey icon la-js-copyTriggerIcon" aria-hidden="true"></i>
                                                         ${id.ns.ns}: <div class="detail js-copyTopic">${id.value}</div>
@@ -490,7 +490,7 @@
                         <div id="statsInfos" class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                             <div class="item">
                                 <div class="title">
-                                    <div class="${Btn.MODERN.SIMPLE} la-delay right floated">
+                                    <div class="${Btn.MODERN.SIMPLE} right floated">
                                         <i class="${Icon.CMD.SHOW_MORE}"></i>
                                     </div>
 

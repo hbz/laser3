@@ -44,7 +44,7 @@
                             <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
                                 ${prop.type.getI10n('name')}
                                 <g:if test="${prop.type.getI10n('expl')}">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${prop.type.getI10n('expl')}">
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${prop.type.getI10n('expl')}">
                                         <i class="${Icon.TOOLTIP.HELP}"></i>
                                     </span>
                                 </g:if>
@@ -53,7 +53,7 @@
                                 ${prop.type.getI10n('name')}
                             </g:else>
                             <g:if test="${prop.type.multipleOccurrence}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
+                                <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
                                     <i class="${Icon.PROP.MULTIPLE}"></i>
                                 </span>
                             </g:if>
@@ -169,7 +169,7 @@
                                 <g:if test="${! AuditConfig.getConfig(prop)}">
                                     <g:if test="${(ownobj.instanceOf && !prop.instanceOf) || !ownobj.hasProperty("instanceOf")}">
                                         <g:if test="${prop.isPublic}">
-                                            <ui:remoteLink class="ui orange icon button la-popup-tooltip la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                            <ui:remoteLink class="ui orange icon button la-popup-tooltip" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                               params='[oid: genericOIDService.getOID(prop), editable:"${overwriteEditable}", custom_props_div: "${custom_props_div}", showConsortiaFunctions: "${showConsortiaFunctions}", (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()]'
                                                               data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                               data-content="${message(code:'property.visible.active.tooltip')}" data-position="left center"
@@ -220,7 +220,7 @@
                             </g:if>
                             <g:elseif test="${overwriteEditable && !prop.hasProperty("instanceOf")}">
                                 <g:if test="${prop.isPublic}">
-                                    <ui:remoteLink class="ui orange icon button la-popup-tooltip la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                    <ui:remoteLink class="ui orange icon button la-popup-tooltip" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                       params='[oid: genericOIDService.getOID(prop), editable:"${overwriteEditable}", custom_props_div: "${custom_props_div}", showConsortiaFunctions: "${showConsortiaFunctions}"]'
                                                       data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                       data-content="${message(code:'property.visible.active.tooltip')}" data-position="left center"
@@ -268,14 +268,14 @@
                                 </g:elseif>
                                 <g:if test="${(prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) || AuditConfig.getConfig(prop)}">
                                     <g:if test="${ownobj.isSlaved}">
-                                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
+                                        <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
                                     </g:if>
                                     <g:else>
-                                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit')}" data-position="top right"><i class="icon thumbtack grey"></i></span>
+                                        <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit')}" data-position="top right"><i class="icon thumbtack grey"></i></span>
                                     </g:else>
                                 </g:if>
                                 <g:elseif test="${prop.tenant?.id == consortium?.id && atSubscr}">
-                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.notInherited.fromConsortia')}" data-position="top right"><i class="large icon cart arrow down grey"></i></span>
+                                    <span class="la-popup-tooltip" data-content="${message(code:'property.notInherited.fromConsortia')}" data-position="top right"><i class="large icon cart arrow down grey"></i></span>
                                 </g:elseif>
                             </g:else>
                         </td>

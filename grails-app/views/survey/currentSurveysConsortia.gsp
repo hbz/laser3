@@ -221,19 +221,19 @@
 
 
             <th rowspan="2" scope="col">
-                <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfigDocs.label')}" data-position="top center">
+                <a href="#" class="la-popup-tooltip" data-content="${message(code: 'surveyConfigDocs.label')}" data-position="top center">
                     <i class="${Icon.DOCUMENT} large"></i>
                 </a>
             </th>
 
             <th scope="col" rowspan="2">
-                <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyParticipants.label')}" data-position="top center">
+                <a href="#" class="la-popup-tooltip" data-content="${message(code: 'surveyParticipants.label')}" data-position="top center">
                     <i class="users large icon"></i>
                 </a>
             </th>
 
             <th scope="col" rowspan="2">
-                <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyCostItems.label')}" data-position="top center">
+                <a href="#" class="la-popup-tooltip" data-content="${message(code: 'surveyCostItems.label')}" data-position="top center">
                     <i class="${Icon.FNC.COST} large"></i>
                 </a>
             </th>
@@ -288,7 +288,7 @@
                     </div>
 
                     <g:if test="${surveyInfo.isMandatory}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
                             <i class="${Icon.TOOLTIP.SERIOUS} yellow"></i>
                         </span>

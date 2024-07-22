@@ -134,7 +134,7 @@
                                     <g:each in="${personInstance.roleLinks}" var="link">
                                         <g:if test="${link.functionType}">
                                             <div class="ui item address-details">
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.label')}" data-position="top right" data-variation="tiny">
+                                                <span class="la-popup-tooltip" data-content="${message(code:'org.label')}" data-position="top right" data-variation="tiny">
                                                     <i class="${Icon.ORG} la-list-icon"></i>
                                                 </span>
 
@@ -194,7 +194,7 @@
                                     <g:each in="${personInstance.roleLinks}" var="link">
                                         <g:if test="${link.positionType}">
                                             <div class="ui item address-details">
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.label')}" data-position="top right" data-variation="tiny">
+                                                <span class="la-popup-tooltip" data-content="${message(code:'org.label')}" data-position="top right" data-variation="tiny">
                                                     <i class="${Icon.ORG} la-list-icon"></i>
                                                 </span>
 
@@ -256,22 +256,22 @@
                                             <div class="ui item address-details">
 
                                                 <g:if test="${link.pkg}">
-                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'package.label')}" data-position="top right" data-variation="tiny">
+                                                    <span class="la-popup-tooltip" data-content="${message(code:'package.label')}" data-position="top right" data-variation="tiny">
                                                         <i class="${Icon.ORG} la-list-icon"></i>
                                                     </span>
                                                 </g:if>
                                                 <g:if test="${link.sub}">
-                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'default.subscription.label')}" data-position="top right" data-variation="tiny">
+                                                    <span class="la-popup-tooltip" data-content="${message(code:'default.subscription.label')}" data-position="top right" data-variation="tiny">
                                                         <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                     </span>
                                                 </g:if>
                                                 <g:if test="${link.lic}">
-                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.label')}" data-position="top right" data-variation="tiny">
+                                                    <span class="la-popup-tooltip" data-content="${message(code:'license.label')}" data-position="top right" data-variation="tiny">
                                                         <i class="${Icon.LICENSE} la-list-icon"></i>
                                                     </span>
                                                 </g:if>
                                                 <g:if test="${link.tipp}">
-                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'title.label')}" data-position="top right" data-variation="tiny">
+                                                    <span class="la-popup-tooltip" data-content="${message(code:'title.label')}" data-position="top right" data-variation="tiny">
                                                         <i class="${Icon.TIPP} la-list-icon"></i>
                                                     </span>
                                                 </g:if>
@@ -361,13 +361,13 @@
                                 </g:else>
 
                                 <g:if test="${! personInstance.isPublic}">
-                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
+                                    <span class="la-popup-tooltip" data-content="${message(code:'address.private')}" data-position="top right">
                                         <i class="${Icon.UI.ACP_PRIVATE}"></i>
                                     </span>
                                     *&nbsp;${message(code: 'default.can.not.be.changed')}
                                 </g:if>
                                 <g:else>
-                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
+                                    <span class="la-popup-tooltip" data-content="${message(code:'address.public')}" data-position="top right">
                                         <i class="${Icon.UI.ACP_PUBLIC}"></i>
                                     </span>
                                 </g:else>

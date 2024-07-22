@@ -13,7 +13,7 @@ class LinkTagLib {
     def linkWithIcon = { attrs, body ->
         String icon = attrs.icon ?: Icon.LNK.EXTERNAL // TODO erms-5784 doubles 'icon'
 
-        out << '<span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + message(code: 'tooltip.callUrl') + '" style="bottom:-3px">&nbsp;'
+        out << '<span class="la-popup-tooltip" data-position="top right" data-content="' + message(code: 'tooltip.callUrl') + '" style="bottom:-3px">&nbsp;'
         out << '<a href="' + attrs.href + '" target="_blank" aria-label="' + attrs.href + '">'
         out << '<i class="' + icon + ' icon" aria-hidden="true"></i>'
         out << '</a>'
@@ -58,7 +58,7 @@ class LinkTagLib {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'vendor.label') + ' in der we:kb aufrufen'
         }
-        out << '<span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + label + '" >&nbsp;'
+        out << '<span class="la-popup-tooltip" data-position="top right" data-content="' + label + '" >&nbsp;'
         out << '<a href="' + href + '" target="_blank" aria-label="' + label + '">'
         out << '<i class="' + Icon.WEKB + ' small" aria-hidden="true"></i>'
         out << '</a>'

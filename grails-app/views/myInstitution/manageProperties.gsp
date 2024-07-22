@@ -104,7 +104,7 @@
                         </th>
                         <g:if test="${showConsortiaFunctions && auditable}">
                             <th>
-                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.manageProperties.markForAudit')}"><i class="ui thumbtack icon"></i></span><br />
+                                <span class="la-popup-tooltip" data-content="${message(code:'property.manageProperties.markForAudit')}"><i class="ui thumbtack icon"></i></span><br />
                                 <g:checkBox name="membersAuditListToggler" id="membersAuditListToggler" checked="false"/>
                             </th>
                         </g:if>
@@ -177,9 +177,9 @@
                                                     <%
                                                         if (AuditConfig.getConfig(customProperty)) {
                                                             if (objWithoutProp.isSlaved) {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                                             } else {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                                             }
                                                         }
                                                     %>
@@ -243,9 +243,9 @@
                                                     <%
                                                         if (AuditConfig.getConfig(privateProperty)) {
                                                             if (objWithoutProp.isSlaved) {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                                             } else {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                                             }
                                                         }
                                                     %>
@@ -422,9 +422,9 @@
                                                     <%
                                                         if ((customProperty.hasProperty('instanceOf') && customProperty.instanceOf && AuditConfig.getConfig(customProperty.instanceOf)) || AuditConfig.getConfig(customProperty)) {
                                                             if (row.isSlaved) {
-                                                                print '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                                print '<span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                                             } else {
-                                                                print '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                                print '<span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                                             }
                                                         }
                                                     %>
@@ -485,9 +485,9 @@
                                                     <%
                                                         if ((privateProperty.hasProperty('instanceOf') && privateProperty.instanceOf && AuditConfig.getConfig(privateProperty.instanceOf)) || AuditConfig.getConfig(privateProperty)) {
                                                             if (row.isSlaved) {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                                             } else {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                                             }
                                                         }
                                                     %>

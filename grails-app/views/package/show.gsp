@@ -534,7 +534,7 @@ making obsolete package/actions
                                                 <tr>
                                                     <td>
                                                         <span class="la-flexbox la-minor-object">
-                                                            <i class="la-list-icon la-popup-tooltip la-delay la-consortia icon" data-content="${message(code: 'gasco.filter.consortialAuthority')}"></i><g:link target="_blank" controller="organisation" action="show" id="${personRole.org.id}">${gascoContact.orgDisplay}</g:link>
+                                                            <i class="la-list-icon la-popup-tooltip la-consortia icon" data-content="${message(code: 'gasco.filter.consortialAuthority')}"></i><g:link target="_blank" controller="organisation" action="show" id="${personRole.org.id}">${gascoContact.orgDisplay}</g:link>
                                                         </span>
                                                     </td>
                                                 </tr>
@@ -546,7 +546,7 @@ making obsolete package/actions
                                                                     <div class="row">
                                                                         <div class="two wide column">
                                                                             <g:each in ="${Contact.findAllByPrsAndContentType(person, RDStore.CCT_URL)}" var="prsContact">
-                                                                                <a class="la-break-all" href="${prsContact?.content}" target="_blank"><i class="circular large globe icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${RDStore.PRS_FUNC_GASCO_CONTACT.getI10n('value')}"></i></a>
+                                                                                <a class="la-break-all" href="${prsContact?.content}" target="_blank"><i class="circular large globe icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${RDStore.PRS_FUNC_GASCO_CONTACT.getI10n('value')}"></i></a>
                                                                             </g:each>
                                                                         </div>
                                                                         <div class="twelve wide column">
@@ -563,7 +563,7 @@ making obsolete package/actions
                                                                                 ]}" />
                                                                             <%--<div class="js-copyTriggerParent">
                                                                                 <i class="${Icon.SYM.EMAIL} la-list-icon js-copyTrigger"></i>
-                                                                                <span class="la-popup-tooltip la-delay" data-position="right center " data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
+                                                                                <span class="la-popup-tooltip" data-position="right center " data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
                                                                                     <a class="la-break-all js-copyTopic" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
                                                                                 </span>
                                                                             </div>--%>

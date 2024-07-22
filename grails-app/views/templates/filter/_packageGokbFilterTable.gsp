@@ -71,7 +71,7 @@
                         </g:if>
                         <g:else>
                             ${message(code: 'surveyResult.commentParticipant')}
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentParticipant.info')}">
                                 <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
@@ -80,14 +80,14 @@
                     <th>
                         <g:if test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                             ${message(code: 'surveyResult.commentOnlyForOwner')}
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
                                 <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
                         </g:if>
                         <g:else>
                             ${message(code: 'surveyResult.commentOnlyForParticipant')}
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
                                 <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
@@ -102,7 +102,7 @@
                 </g:if>
                 <g:if test="${tmplConfigItem == 'yodaActions'}">
                     <th class="x center aligned">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="left center" data-content="${message(code: 'menu.yoda.reloadPackages')}">
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="left center" data-content="${message(code: 'menu.yoda.reloadPackages')}">
                             <g:link class="ui icon button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: 'menu.yoda.reloadPackages.confirm')}"
                                     data-confirm-term-how="ok"
@@ -304,7 +304,7 @@
                         <td>
                             <g:if test="${record.source?.automaticUpdates}">
                                 <g:message code="package.index.result.automaticUpdates"/>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                       data-content="${record.source.frequency}">
                                     <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
@@ -395,7 +395,7 @@
                     <g:if test="${tmplConfigItem == 'my'}">
                         <td class="center aligned">
                             <g:if test="${pkg && pkg.id in currentPackageIdSet}">
-                                <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.packages')}">
+                                <span class="la-popup-tooltip" data-content="${message(code: 'menu.my.packages')}">
                                     <i class="${Icon.UI.MY_OBJECT} yellow"></i>
                                 </span>
                             </g:if>
@@ -412,7 +412,7 @@
                         <td class="right aligned">
                             <g:if test="${editable && (!pkgs || !(record.uuid in pkgs))}">
                                 <g:set var="disabled" value="${bulkProcessRunning ? 'disabled' : ''}" />
-                                <button type="button" class="ui icon button la-popup-tooltip la-delay ${disabled}"
+                                <button type="button" class="ui icon button la-popup-tooltip ${disabled}"
                                         data-addUUID="${record.uuid}"
                                         data-packageName="${record.name}"
                                         data-ui="modal"
@@ -474,7 +474,7 @@
                         <td class="x">
                             <g:if test="${pkg}">
                                 <g:if test="${perpetuallySubscribed}">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'subscription.perpetuallySubscribed')}">
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="top center" data-content="${message(code: 'subscription.perpetuallySubscribed')}">
                                         <i class="flag outline icon"></i>
                                     </span>
                                 </g:if>
@@ -483,13 +483,13 @@
                     </g:if>
                     <g:if test="${tmplConfigItem == 'yodaActions'}">
                         <td class="x">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'menu.yoda.reloadPackage')}">
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="top center" data-content="${message(code: 'menu.yoda.reloadPackage')}">
                                 <g:link controller="yoda" action="reloadPackage" params="${[packageUUID: record.uuid]}" class="${Btn.ICON.SIMPLE}">
                                     <i class="icon cloud download alternate"></i>
                                 </g:link>
                             </span>
                             <g:if test="${pkg}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'menu.yoda.retriggerPendingChanges')}">
+                                <span class="la-long-tooltip la-popup-tooltip" data-position="top center" data-content="${message(code: 'menu.yoda.retriggerPendingChanges')}">
                                     <g:if test="${pkg}">
                                         <g:link controller="yoda" action="matchPackageHoldings" params="${[pkgId: pkg.id]}" class="${Btn.ICON.SIMPLE}">
                                             <i class="icon wrench"></i>

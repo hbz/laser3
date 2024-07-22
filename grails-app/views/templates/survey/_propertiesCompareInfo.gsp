@@ -22,7 +22,7 @@
                         <td>
                             ${propKey.getI10n("name")}
                             <g:if test="${propKey.multipleOccurrence}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'default.multipleOccurrence.tooltip')}">
                                     <i class="${Icon.PROP.MULTIPLE}"></i>
                                 </span>
@@ -75,7 +75,7 @@
                                                     </div>
                                                 </g:else>
                                                 <g:if test="${subProperty?.note}">
-                                                    <div class="ui circular label la-long-tooltip la-popup-tooltip la-delay"
+                                                    <div class="ui circular label la-long-tooltip la-popup-tooltip"
                                                          data-content="${subProperty?.note}">${message(code: 'copyElementsIntoObject.note.short')}</div>
                                                 </g:if>
                                             </div>
@@ -87,7 +87,7 @@
                         </g:if>
                         <g:if test="${!(subscriptionParent && subscriptionParent.id in propValues.owner.id)}">
                             <td class="center aligned">
-                                <a class="ui circular label la-popup-tooltip la-delay"
+                                <a class="ui circular label la-popup-tooltip"
                                    data-content="<g:message
                                            code="default.compare.propertyNotSet"/>"><strong>–</strong>
                                 </a>
@@ -139,7 +139,7 @@
                                                     </div>
                                                 </g:else>
                                                 <g:if test="${subProperty?.note}">
-                                                    <div class="ui circular label la-long-tooltip la-popup-tooltip la-delay"
+                                                    <div class="ui circular label la-long-tooltip la-popup-tooltip"
                                                          data-content="${subProperty?.note}">${message(code: 'copyElementsIntoObject.note.short')}</div>
                                                 </g:if>
                                             </div>
@@ -151,7 +151,7 @@
                         </g:if>
                         <g:if test="${!(successorSubscriptionParent && successorSubscriptionParent.id in propValues.owner.id)}">
                             <td class="center aligned">
-                                <a class="ui circular label la-popup-tooltip la-delay"
+                                <a class="ui circular label la-popup-tooltip"
                                    data-content="<g:message
                                            code="default.compare.propertyNotSet"/>"><strong>–</strong>
                                 </a>

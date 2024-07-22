@@ -10,7 +10,7 @@
     <a class="ui item stats-toggle" data-target="stats_provider">
         <span class="">
             ${message(code:'provider.label')}
-            <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip la-delay" data-content="${message(code: 'subscription.plural')}, ${message(code: 'package.plural')}, ${message(code: 'platform.plural')}"></i>
+            <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip" data-content="${message(code: 'subscription.plural')}, ${message(code: 'package.plural')}, ${message(code: 'platform.plural')}"></i>
         </span>
         <span class="ui ${providerMap?.size() ? 'primary' : ''} label"> ${providerMap?.size() ?: 0} </span>
     </a>

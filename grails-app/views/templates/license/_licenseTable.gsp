@@ -17,7 +17,7 @@
                       <g:sortableColumn rowspan="2" params="${params}" property="reference" title="${message(code:'license.slash.name')}" />
                       <g:if test="${'memberLicenses' in licenseFilterTable}">
                           <th rowspan="2" class="center aligned">
-                              <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.incoming.childs')}" data-position="top right">
+                              <span class="la-popup-tooltip" data-content="${message(code:'license.details.incoming.childs')}" data-position="top right">
                                   <i class="${Icon.LICENSE} large"></i>
                               </span>
                           </th>
@@ -53,7 +53,7 @@
                           <th scope="row" class="la-th-column">
                               <g:link action="show" class="la-main-object" controller="license" id="${l.id}">
                                   <g:if test="${l._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}">
-                                      <i class="icon users la-list-icon la-popup-tooltip la-delay" data-content="${tooltip}"></i>
+                                      <i class="icon users la-list-icon la-popup-tooltip" data-content="${tooltip}"></i>
                                   </g:if>
                                   ${l.reference ?: message(code:'missingLicenseReference')}
                               </g:link>
@@ -68,7 +68,7 @@
                               <td>
                                   <g:each in="${l.derivedLicenses}" var="lChild">
                                       <g:link controller="license" action="show" id="${lChild.id}">
-                                          <p><i class="${Icon.LICENSE} la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'license.member')}"></i> ${lChild}</p>
+                                          <p><i class="${Icon.LICENSE} la-list-icon la-popup-tooltip" data-content="${message(code: 'license.member')}"></i> ${lChild}</p>
                                       </g:link>
                                   </g:each>
                               </td>
@@ -112,7 +112,7 @@
                           <g:if test="${'action' in licenseFilterTable}">
                               <td class="x">
                               <g:if test="${(contextCustomerType == CustomerTypeService.ORG_INST_PRO && l._getCalculatedType() == License.TYPE_LOCAL) || (customerTypeService.isConsortium( contextCustomerType ) && l._getCalculatedType() == License.TYPE_CONSORTIAL)}">
-                                  <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.copy.tooltip')}">
+                                  <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'license.details.copy.tooltip')}">
                                       <g:link controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(l), copyObject: true]}" class="${Btn.MODERN.SIMPLE}">
                                           <i class="${Icon.CMD.COPY}"></i>
                                       </g:link>

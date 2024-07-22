@@ -228,7 +228,7 @@
                                 <ui:wekbIconLink type="platform" gokbId="${plt.gokbId}"/>
                             </g:if>
                             <g:else>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.chart.result.noCounterpart.label')}" data-position="top right">
+                                <span class="la-long-tooltip la-popup-tooltip" data-content="${message(code:'reporting.chart.result.noCounterpart.label')}" data-position="top right">
                                     <i class="icon times grey"></i>
                                 </span>
                             </g:else>

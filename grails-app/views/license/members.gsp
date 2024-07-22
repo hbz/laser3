@@ -81,7 +81,7 @@
             <th>${message(code:'sidewide.number')}</th>
             <th>${message(code:'license.member')}</th>
             <th class="la-no-uppercase">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
                       data-content="${message(code: 'default.previous.label')}">
                     <i class="${Icon.LNK.PREV}"></i>
                 </span>
@@ -89,7 +89,7 @@
             <th>${message(code:'default.startDate.label.shy')}</th>
             <th>${message(code:'default.endDate.label.shy')}</th>
             <th class="la-no-uppercase">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
                       data-content="${message(code: 'default.next.label')}">
                     <i class="${Icon.LNK.NEXT}"></i>
                 </span>

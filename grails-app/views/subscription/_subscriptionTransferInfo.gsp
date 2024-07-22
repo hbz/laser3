@@ -19,22 +19,22 @@
                 <th scope="col" rowspan="3" class="center aligned">${message(code: 'subscription.priceIncreaseInfo.label')}</th>
 
                 <th scope="col" rowspan="3" class="center aligned">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'survey.label')}" data-position="top center">
+                    <span class="la-popup-tooltip" data-content="${message(code: 'survey.label')}" data-position="top center">
                         <i class="${Icon.SURVEY} large"></i>
                     </span>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.survey.evaluation.label')}" data-position="top center">
+                    <span class="la-popup-tooltip" data-content="${message(code: 'subscription.survey.evaluation.label')}" data-position="top center">
                         <i class="comments large icon"></i>
                     </span>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.survey.cancellation.label')}" data-position="top center">
+                    <span class="la-popup-tooltip" data-content="${message(code: 'subscription.survey.cancellation.label')}" data-position="top center">
                         <i class="times circle large icon"></i>
                     </span>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.discountScale.label')}" data-position="top center">
+                    <span class="la-popup-tooltip" data-content="${message(code: 'subscription.discountScale.label')}" data-position="top center">
                         <i class="percentage large icon"></i>
                     </span>
                 </th>
@@ -43,7 +43,7 @@
                 <th colspan="3" class="la-smaller-table-head center aligned">Renewal</th>
 
                 <th scope="col" rowspan="3" class="center aligned">
-                    <span class="la-popup-tooltip la-delay"
+                    <span class="la-popup-tooltip"
                             data-content="${message(code: 'subscription.participantTransferWithSurvey.label')}"
                             data-position="top center">
                         <i class="large icons">
@@ -53,7 +53,7 @@
                     </span>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned">
-                    <span class="la-popup-tooltip la-delay"
+                    <span class="la-popup-tooltip"
                        data-content="${message(code: 'renewalEvaluation.exportRenewal')}"
                        data-position="top center">
                         <i class="${Icon.CMD.DOWNLOAD}"></i>
@@ -238,7 +238,7 @@
                             <g:if test="${s.discountScale}">
                                 ${s.discountScale.name} : ${s.discountScale.discount}
                                 <g:if test="${s.discountScale.note}">
-                                    <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${s.discountScale.note}">
+                                    <span data-position="top left" class="la-popup-tooltip" data-content="${s.discountScale.note}">
                                         <i class="${Icon.TOOLTIP.INFO} blue"></i>
                                     </span>
                                 </g:if>

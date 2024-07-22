@@ -208,7 +208,7 @@ class ReportingTagLib {
             }
             if (tmp.icons) {
                 result = result + '&nbsp;&nbsp;&nbsp;'
-                result = result + '<span class="la-popup-tooltip la-delay" data-content="' + tmp.tooltips.join(' / ') + '" data-position="top right">'
+                result = result + '<span class="la-popup-tooltip" data-content="' + tmp.tooltips.join(' / ') + '" data-position="top right">'
                 result = result + tmp.icons.join('')
                 result = result + '</span>'
             }

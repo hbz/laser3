@@ -36,9 +36,9 @@
                             <%
                                 if (AuditConfig.getConfig(object, objProperty)) {
                                     if (object.isSlaved) {
-                                        println '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                        println '<span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                     } else {
-                                        println '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                        println '<span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                     }
                                 }
                             %>
@@ -121,14 +121,14 @@
                                 <g:if test="${object._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_PARTICIPATION]}">
                                     <div class="right aligned wide column">
                                         <g:if test="${role.isShared}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay"
+                                            <span data-position="top left" class="la-popup-tooltip"
                                                   data-content="${message(code: 'property.share.tooltip.on')}">
                                                 <i class="la-share icon"></i>
                                             </span>
 
                                         </g:if>
                                         <g:else>
-                                            <span data-position="top left" class="la-popup-tooltip la-delay"
+                                            <span data-position="top left" class="la-popup-tooltip"
                                                   data-content="${message(code: 'property.share.tooltip.off')}">
                                                 <i class="la-share slash icon"></i>
                                             </span>
@@ -148,7 +148,7 @@
         <tr>
             <td>
                 <strong>
-                    <i class="${Icon.PROVIDER} la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'provider.label')}"></i>${message(code: 'provider.label')} :
+                    <i class="${Icon.PROVIDER} la-list-icon la-popup-tooltip" data-content="${message(code: 'provider.label')}"></i>${message(code: 'provider.label')} :
                 </strong>
             </td>
             <g:each in="${objects}" var="object">
@@ -167,7 +167,7 @@
         <tr>
             <td>
                 <strong>
-                    <i class="${Icon.VENDOR} la-list-icon la-popup-tooltip la-delay" data-content="${message(code:'vendor.label')}"></i> ${message(code:'vendor.label')}:
+                    <i class="${Icon.VENDOR} la-list-icon la-popup-tooltip" data-content="${message(code:'vendor.label')}"></i> ${message(code:'vendor.label')}:
                 </strong>
             </td>
             <g:each in="${objects}" var="object">
@@ -203,13 +203,13 @@
                             <%-- public --%>
                                 <g:each in="${Person.getPublicByOrgAndObjectResp(provider, object, 'Specific subscription editor')}"
                                         var="resp">
-                                    <span class="la-popup-tooltip la-delay"
+                                    <span class="la-popup-tooltip"
                                           data-content="${message(code: 'address.public')}"
                                           data-position="top right">
                                         <i class="${Icon.UI.ACP_PUBLIC}"></i>
                                     </span>
                                     ${resp}
-                                    (<strong><i class="${Icon.PROVIDER} la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'provider.label')}"></i>:</strong>
+                                    (<strong><i class="${Icon.PROVIDER} la-list-icon la-popup-tooltip" data-content="${message(code: 'provider.label')}"></i>:</strong>
                                         <g:link controller="provider" action="show" target="_blank" id="${provider.id}">${fieldValue(bean: provider, field: "name")}
                                         </g:link>)
                                     <br />
@@ -218,13 +218,13 @@
                             <%-- private --%>
                                 <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(provider, object, 'Specific subscription editor', contextOrg)}"
                                         var="resp">
-                                    <span class="la-popup-tooltip la-delay"
+                                    <span class="la-popup-tooltip"
                                           data-content="${message(code: 'address.private')}"
                                           data-position="top right">
                                         <i class="${Icon.UI.ACP_PRIVATE}"></i>
                                     </span>
                                     ${resp}
-                                    (<strong><i class="${Icon.PROVIDER} la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'provider.label')}"></i>:</strong>
+                                    (<strong><i class="${Icon.PROVIDER} la-list-icon la-popup-tooltip" data-content="${message(code: 'provider.label')}"></i>:</strong>
                                     <g:link controller="provider" action="show" target="_blank" id="${provider.id}">${fieldValue(bean: provider, field: "name")}
                                     </g:link>)
                                     <br />
@@ -239,13 +239,13 @@
                         <%-- public --%>
                             <g:each in="${Person.getPublicByOrgAndObjectResp(vendor, object, 'Specific subscription editor')}"
                                     var="resp">
-                                <span class="la-popup-tooltip la-delay"
+                                <span class="la-popup-tooltip"
                                       data-content="${message(code: 'address.public')}"
                                       data-position="top right">
                                     <i class="${Icon.UI.ACP_PUBLIC}"></i>
                                 </span>
                                 ${resp}
-                                (<strong><i class="${Icon.VENDOR} la-list-icon la-popup-tooltip la-delay" data-content="${message(code:'vendor.label')}"></i>:</strong>
+                                (<strong><i class="${Icon.VENDOR} la-list-icon la-popup-tooltip" data-content="${message(code:'vendor.label')}"></i>:</strong>
                                 <g:link controller="vendor" action="show" target="_blank" id="${vendor.id}">${fieldValue(bean: vendor, field: "name")}
                                 </g:link>)
                                 <br />
@@ -254,13 +254,13 @@
                         <%-- private --%>
                             <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(vendor, object, 'Specific subscription editor', contextOrg)}"
                                     var="resp">
-                                <span class="la-popup-tooltip la-delay"
+                                <span class="la-popup-tooltip"
                                       data-content="${message(code: 'address.private')}"
                                       data-position="top right">
                                     <i class="${Icon.UI.ACP_PRIVATE}"></i>
                                 </span>
                                 ${resp}
-                                (<strong><i class="${Icon.VENDOR} la-list-icon la-popup-tooltip la-delay" data-content="${message(code:'vendor.label')}"></i>:</strong>
+                                (<strong><i class="${Icon.VENDOR} la-list-icon la-popup-tooltip" data-content="${message(code:'vendor.label')}"></i>:</strong>
                                 <g:link controller="vendor" action="show" target="_blank" id="${vendor.id}">${fieldValue(bean: vendor, field: "name")}
                                 </g:link>)
                                 <br />

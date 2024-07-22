@@ -32,7 +32,7 @@
                         <td>
                             <g:if test="${isCore}">
                                 ${ns.ns}
-                                <strong data-position="top left" class="la-popup-tooltip la-delay" data-content="Core Namespace">
+                                <strong data-position="top left" class="la-popup-tooltip" data-content="Core Namespace">
                                     <i class="${Icon.TOOLTIP.IMPORTANT} orange" aria-hidden="true"></i>
                                 </strong>
                             </g:if>

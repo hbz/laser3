@@ -86,7 +86,7 @@
                                                 break
                                         }
                                     %>
-                                    <span class="la-popup-tooltip la-delay" data-position="right center"
+                                    <span class="la-popup-tooltip" data-position="right center"
                                           data-content="${dataTooltip}">${raw(icon)}</span>
 
                                     ${costItem.costItemElement?.getI10n('value')}
@@ -158,7 +158,7 @@
                                                         break
                                                 }
                                             %>
-                                            <span class="la-popup-tooltip la-delay" data-position="right center"
+                                            <span class="la-popup-tooltip" data-position="right center"
                                                   data-content="${dataTooltip}">${raw(icon)}</span>
 
                                             ${costItemSurvey.costItemElement?.getI10n('value')}
@@ -199,7 +199,7 @@
                                             <g:if test="${costItemSurvey.costDescription}">
                                                 <br/>
 
-                                                <div class="ui icon la-popup-tooltip la-delay"
+                                                <div class="ui icon la-popup-tooltip"
                                                      data-position="right center"
                                                      data-variation="tiny"
                                                      data-content="${costItemSurvey.costDescription}">
@@ -274,7 +274,7 @@
                                             }
                                         %>
 
-                                        <span class="la-popup-tooltip la-delay" data-position="right center"
+                                        <span class="la-popup-tooltip" data-position="right center"
                                               data-content="${dataTooltip}">${raw(icon)}</span>
 
                                         ${costItemSurvey.costItemElement?.getI10n('value')}
@@ -318,7 +318,7 @@
                                         <g:if test="${costItemSurvey.costDescription}">
                                             <br/>
 
-                                            <div class="ui icon la-popup-tooltip la-delay"
+                                            <div class="ui icon la-popup-tooltip"
                                                  data-position="right center"
                                                  data-variation="tiny"
                                                  data-content="${costItemSurvey.costDescription}">
@@ -367,7 +367,7 @@
                                                 break
                                         }
                                     %>
-                                    <span class="la-popup-tooltip la-delay" data-position="right center"
+                                    <span class="la-popup-tooltip" data-position="right center"
                                           data-content="${dataTooltip}">${raw(icon)}</span>
 
                                     ${costItemSurvey.costItemElement?.getI10n('value')}
@@ -411,7 +411,7 @@
                                     <g:if test="${costItemSurvey.costDescription}">
                                         <br/>
 
-                                        <div class="ui icon la-popup-tooltip la-delay"
+                                        <div class="ui icon la-popup-tooltip"
                                              data-position="right center"
                                              data-variation="tiny"
                                              data-content="${costItemSurvey.costDescription}">

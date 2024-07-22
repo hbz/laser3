@@ -12,7 +12,7 @@
             </g:link>
 
             <g:if test="${editable && contextOrg.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
-                <span class="la-popup-tooltip la-delay" data-content="${message(code: 'default.button.unlink.label')}">
+                <span class="la-popup-tooltip" data-content="${message(code: 'default.button.unlink.label')}">
                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                             data-confirm-tokenMsg="${message(code: "surveyInfo.unlink.license.confirm.dialog")}"
                             data-confirm-term-how="unlink"
@@ -39,7 +39,7 @@
             </g:link>
 
             <g:if test="${editable && contextOrg.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
-                <span class="la-popup-tooltip la-delay" data-content="${message(code: 'default.button.unlink.label')}">
+                <span class="la-popup-tooltip" data-content="${message(code: 'default.button.unlink.label')}">
                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                             data-confirm-tokenMsg="${message(code: "surveyInfo.unlink.provider.confirm.dialog")}"
                             data-confirm-term-how="unlink"

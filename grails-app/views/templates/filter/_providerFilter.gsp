@@ -21,7 +21,7 @@
                 <div class="field">
                     <label for="nameContains">
                         <g:message code="org.search.provider.contains"/>
-                        <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.provider.contains.tooltip')}">
+                        <span data-position="right center" data-variation="tiny" class="la-popup-tooltip" data-content="${message(code:'org.search.provider.contains.tooltip')}">
                             <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </label>
@@ -79,7 +79,7 @@
                 <div class="field">
                     <label for="privateContact">
                         <g:message code="contact.name"/>
-                        <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.contact.tooltip')}">
+                        <span data-position="right center" data-variation="tiny" class="la-popup-tooltip" data-content="${message(code:'org.search.contact.tooltip')}">
                             <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </label>

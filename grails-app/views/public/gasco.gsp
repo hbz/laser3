@@ -140,7 +140,7 @@
                     </td>
                     <td>
                         <g:if test="${gasco_infolink}">
-                            <span class="la-popup-tooltip la-delay" data-position="right center" data-content="Diese URL aufrufen:  ${gasco_infolink}">
+                            <span class="la-popup-tooltip" data-position="right center" data-content="Diese URL aufrufen:  ${gasco_infolink}">
                                 <a class="la-break-all" href="${gasco_infolink}" target="_blank">${gasco_anzeigename ?: sub}</a>
                             </span>
                         </g:if>
@@ -175,15 +175,15 @@
                                         <g:each in="${Contact.findAllByPrsAndContentType( person, RDStore.CCT_URL )}" var="prsContact">
                                             <div class="description">
                                                 <i class="${Icon.SYM.URL} la-list-icon"></i>
-                                                <span class="la-popup-tooltip la-delay " data-position="right center" data-content="Diese URL aufrufen:  ${prsContact?.content}">
+                                                <span class="la-popup-tooltip" data-position="right center" data-content="Diese URL aufrufen:  ${prsContact?.content}">
                                                     <a class="la-break-all" href="${prsContact?.content}" target="_blank">Webseite</a>
                                                 </span>
                                             </div>
                                         </g:each>
                                         <g:each in="${Contact.findAllByPrsAndContentType( person, RDStore.CCT_EMAIL )}" var="prsContact">
                                             <div class="description js-copyTriggerParent">
-                                                <i class="${Icon.SYM.EMAIL} la-list-icon js-copyTrigger la-js-copyTriggerIcon la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}"></i>
-                                                <span class="la-popup-tooltip la-delay" data-position="right center" data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
+                                                <i class="${Icon.SYM.EMAIL} la-list-icon js-copyTrigger la-js-copyTriggerIcon la-popup-tooltip" data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}"></i>
+                                                <span class="la-popup-tooltip" data-position="right center" data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
                                                     <a class="la-break-all js-copyTopic" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
                                                 </span>
                                             </div>
@@ -201,7 +201,7 @@
                             </g:link>
                         </g:if>
                         <g:else>
-                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Leider stehen keine Informationen zur Verfügung. Bitte wenden Sie sich an die Konsortialstelle.">
+                            <span data-position="top right" class="la-popup-tooltip" data-content="Leider stehen keine Informationen zur Verfügung. Bitte wenden Sie sich an die Konsortialstelle.">
                                 <i class="icon grey minus circle"></i>
                             </span>
                         </g:else>

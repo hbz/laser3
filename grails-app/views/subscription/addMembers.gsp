@@ -77,7 +77,7 @@
                                         <input class="hidden" type="radio" id="generateSlavedLics1" name="generateSlavedLics_${subscription.id}" value="all" checked="checked">
                                         <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_all')}</label>
                                     </div>
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'myinst.separate_lics_all.expl')}">
+                                    <span class="la-long-tooltip la-popup-tooltip" data-content="${message(code:'myinst.separate_lics_all.expl')}">
                                         <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
                                     </span>
                                 </div>
@@ -192,7 +192,7 @@
                                                                            name="generateSlavedLics_${nextSub.id}" value="all" checked="checked">
                                                                     <label for="generateSlavedLics1_${nextSub.id}">${message(code: 'myinst.separate_lics_all')}</label>
                                                                 </div>
-                                                                <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                                <span class="la-long-tooltip la-popup-tooltip"
                                                                       data-content="${message(code: 'myinst.separate_lics_all.expl')}">
                                                                     <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
                                                                 </span>

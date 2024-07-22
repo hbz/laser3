@@ -139,7 +139,7 @@
                         <ui:msg class="info" showIcon="true" message="surveyCostItems.bulkOption.info"/>
                     </g:if>
                     <g:else>
-                        <h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip la-delay"
+                        <h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip"
                                                     data-position="right center"
                                                     data-content="${message(code: 'surveyCostItems.bulkOption.info')}">
                             ${message(code: 'surveyCostItems.bulkOption.label')}

@@ -28,20 +28,20 @@ class Btn {
         public static String NEGATIVE_CONFIRM  = 'ui button negative icon la-modern-button js-open-confirm-modal'
 
         @UIDoc(usage = 'Buttons/Links/Inputs with Icon and Js: Tooltip (data-attributes needed). Colors by declaration!')
-        public static String BASIC_TOOLTIP       = 'ui button icon la-modern-button la-popup-tooltip la-delay'             // todo: remove la-delay
+        public static String BASIC_TOOLTIP       = 'ui button icon la-modern-button la-popup-tooltip'
          @UIDoc(usage = 'Buttons/Links/Inputs with Icon and Js: Tooltip (data-attributes needed); TODO: refactoring; la-modern-button does not work without declared color!')
-        public static String SIMPLE_TOOLTIP      = 'ui button blue icon la-modern-button la-popup-tooltip la-delay'        // todo: remove la-delay
+        public static String SIMPLE_TOOLTIP      = 'ui button blue icon la-modern-button la-popup-tooltip'
         @UIDoc(usage = 'Buttons/Links/Inputs (green) with Icon and Js: Tooltip (data-attributes needed)')
-        public static String POSITIVE_TOOLTIP    = 'ui button positive icon la-modern-button la-popup-tooltip la-delay'    // todo: remove la-delay
+        public static String POSITIVE_TOOLTIP    = 'ui button positive icon la-modern-button la-popup-tooltip'
         @UIDoc(usage = 'Buttons/Links/Inputs (red) with Icon and Js: Tooltip (data-attributes needed)')
-        public static String NEGATIVE_TOOLTIP    = 'ui button negative icon la-modern-button la-popup-tooltip la-delay'    // todo: remove la-delay
+        public static String NEGATIVE_TOOLTIP    = 'ui button negative icon la-modern-button la-popup-tooltip'
 
         @UIDoc(usage = 'Buttons/Links/Inputs with Icon and Js: Confirmation Dialog (data-confirm-attributes needed) and Tooltip (data-attributes needed); TODO: refactoring; la-modern-button does not work without declared color!')
-        public static String SIMPLE_CONFIRM_TOOLTIP      = 'ui button blue icon la-modern-button js-open-confirm-modal la-popup-tooltip la-delay'        // todo: remove la-delay
+        public static String SIMPLE_CONFIRM_TOOLTIP      = 'ui button blue icon la-modern-button js-open-confirm-modal la-popup-tooltip'
         @UIDoc(usage = 'Buttons/Links/Inputs (green) with Icon and Js: Confirmation Dialog (data-confirm-attributes needed) and Tooltip (data-attributes needed)')
-        public static String POSITIVE_CONFIRM_TOOLTIP    = 'ui button positive icon la-modern-button js-open-confirm-modal la-popup-tooltip la-delay'    // todo: remove la-delay
+        public static String POSITIVE_CONFIRM_TOOLTIP    = 'ui button positive icon la-modern-button js-open-confirm-modal la-popup-tooltip'
         @UIDoc(usage = 'Buttons/Links/Inputs (red) with Icon and Js: Confirmation Dialog (data-confirm-attributes needed) and Tooltip (data-attributes needed)')
-        public static String NEGATIVE_CONFIRM_TOOLTIP    = 'ui button negative icon la-modern-button js-open-confirm-modal la-popup-tooltip la-delay'    // todo: remove la-delay
+        public static String NEGATIVE_CONFIRM_TOOLTIP    = 'ui button negative icon la-modern-button js-open-confirm-modal la-popup-tooltip'
     }
 
     class ICON {
@@ -58,7 +58,7 @@ class Btn {
         public static String NEGATIVE_CONFIRM  = 'ui button negative icon js-open-confirm-modal'
 
         @UIDoc(usage = 'Buttons/Links/Inputs with Icon and Js: Tooltip (data-attributes needed)')
-        public static String SIMPLE_TOOLTIP    = 'ui button icon la-popup-tooltip la-delay'  // todo: remove la-delay
+        public static String SIMPLE_TOOLTIP    = 'ui button icon la-popup-tooltip'
     }
 
     // --- WITHOUT ICONS ---
@@ -80,6 +80,6 @@ class Btn {
     public static String NEGATIVE_CLICKCONTROL  = 'ui button negative js-click-control'
 
     @UIDoc(usage = 'Buttons/Links/Inputs with Js: Tooltip (data-attributes needed)')
-    public static String SIMPLE_TOOLTIP         = 'ui button la-popup-tooltip la-delay'  // todo: remove la-delay
+    public static String SIMPLE_TOOLTIP         = 'ui button la-popup-tooltip'
 
 }

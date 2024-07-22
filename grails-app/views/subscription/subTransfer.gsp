@@ -171,7 +171,7 @@
                                     <g:if test="${subscription.discountScale}">
                                         ${subscription.discountScale.name} : ${subscription.discountScale.discount}
                                         <g:if test="${subscription.discountScale.note}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay"
+                                            <span data-position="top left" class="la-popup-tooltip"
                                                   data-content="${subscription.discountScale.note}">
                                                 <i class="${Icon.TOOLTIP.INFO} blue"></i>
                                             </span>

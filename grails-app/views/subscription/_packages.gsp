@@ -27,7 +27,7 @@
                             <div class="three wide column">
                                 <div>
                                     <g:if test="${sp.pkg.provider}">
-                                        <i aria-hidden="true" class="${Icon.PROVIDER} grey outline la-popup-tooltip la-delay" data-content="${message(code: 'provider.label')}"></i>
+                                        <i aria-hidden="true" class="${Icon.PROVIDER} grey outline la-popup-tooltip" data-content="${message(code: 'provider.label')}"></i>
                                         <g:link controller="provider" action="show" id="${sp.pkg.provider.id}">${sp.pkg.provider.name}</g:link>
                                         <g:if test="${sp.pkg.provider.homepage}"><ui:linkWithIcon href="${sp.pkg.provider.homepage.startsWith('http') ? sp.pkg.provider.homepage : 'http://' + sp.pkg.provider.homepage}"/></g:if>
                                         <g:if test="${sp.pkg.provider.gokbId}"><ui:wekbIconLink type="provider" gokbId="${sp.pkg.provider.gokbId}"/></g:if>
@@ -36,7 +36,7 @@
                                 <g:each in="${sp.pkg.vendors}" var="pv">
                                     <g:set var="vendorRecord" value="${packageInstanceRecord.vendors.find { rec -> rec.vendorUuid == pv.vendor.gokbId }}"/>
                                     <div>
-                                        <i aria-hidden="true" class="${Icon.VENDOR} grey la-popup-tooltip la-delay" data-content="${message(code: 'vendor.label')}"></i>
+                                        <i aria-hidden="true" class="${Icon.VENDOR} grey la-popup-tooltip" data-content="${message(code: 'vendor.label')}"></i>
                                         <g:link controller="vendor" action="show" id="${pv.vendor.id}">${pv.vendor.name}</g:link>
                                         <g:if test="${vendorRecord.homepage}"><ui:linkWithIcon href="${vendorRecord.homepage.startsWith('http') ? vendorRecord.homepage : 'http://' + vendorRecord.homepage}"/></g:if>
                                         <g:if test="${pv.vendor.gokbId}"><ui:wekbIconLink type="vendor" gokbId="${pv.vendor.gokbId}"/></g:if>
@@ -45,7 +45,7 @@
                             </div>
                             <div class="three wide column">
                                 <g:if test="${sp.pkg.nominalPlatform}">
-                                    <i aria-hidden="true" class="${Icon.PLATFORM} grey la-popup-tooltip la-delay" data-content="${message(code: 'platform.label')}"></i>
+                                    <i aria-hidden="true" class="${Icon.PLATFORM} grey la-popup-tooltip" data-content="${message(code: 'platform.label')}"></i>
                                     <g:link controller="platform" action="show" id="${sp.pkg.nominalPlatform.id}">${sp.pkg.nominalPlatform.name}</g:link>
                                     <ui:linkWithIcon href="${sp.pkg.nominalPlatform.primaryUrl?.startsWith('http') ? sp.pkg.nominalPlatform.primaryUrl : 'http://' + sp.pkg.nominalPlatform.primaryUrl}"/>
                                     <ui:wekbIconLink type="platform" gokbId="${sp.pkg.nominalPlatform.gokbId}"/>
@@ -63,7 +63,7 @@
                             </div>
                             <div class="six wide right aligned column">
                                 <g:if test="${editmode}">
-                                    <div class="ui icon blue button la-modern-button ${buttonColor} la-popup-tooltip la-delay"
+                                    <div class="ui icon blue button la-modern-button ${buttonColor} la-popup-tooltip"
                                          data-content="${message(code:'subscription.packages.config.header')}">
                                         <i class="${Icon.CMD.SHOW_MORE}"></i>
                                     </div>
@@ -122,7 +122,7 @@
                                     <g:else>
                                         <div class="ui buttons">
                                             <g:if test="${unlinkDisabled}">
-                                                <span class="la-popup-tooltip la-delay" data-content="${unlinkDisabledTooltip}">
+                                                <span class="la-popup-tooltip" data-content="${unlinkDisabledTooltip}">
                                                     <g:link controller="subscription"
                                                             action="unlinkPackage"
                                                             params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'withIE']}"
@@ -150,7 +150,7 @@
                                             </g:else>
                                             <div class="or" data-text="|"></div>
                                             <g:if test="${unlinkDisabled}">
-                                                <span class="la-popup-tooltip la-delay" data-content="${unlinkDisabledTooltip}">
+                                                <span class="la-popup-tooltip" data-content="${unlinkDisabledTooltip}">
                                                     <g:link controller="subscription"
                                                             action="unlinkPackage"
                                                             params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'onlyIE']}"
@@ -412,17 +412,17 @@
                                         </th>
                                         <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
                                             <th class="control-label">
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:"subscription.packages.notification.label")}">
+                                                <span class="la-popup-tooltip" data-content="${message(code:"subscription.packages.notification.label")}">
                                                     <i class="ui large icon bullhorn"></i>
                                                 </span>
                                             </th>
                                             <th class="control-label la-border-left" >
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.packages.auditable')}">
+                                                <span class="la-popup-tooltip" data-content="${message(code:'subscription.packages.auditable')}">
                                                     <i class="ui large icon thumbtack"></i>
                                                 </span>
                                             </th>
                                             <th class="control-label">
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.packages.notification.auditable')}">
+                                                <span class="la-popup-tooltip" data-content="${message(code:'subscription.packages.notification.auditable')}">
                                                     <i class="ui large icon bullhorn"></i>
                                                 </span>
                                             </th>
@@ -491,7 +491,7 @@
                                     </g:each>
                                     <tr>
                                         <th class="control-label">
-                                            <g:message code="subscription.packages.freezeHolding"/> <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="${Icon.TOOLTIP.HELP}"></i></span>
+                                            <g:message code="subscription.packages.freezeHolding"/> <span class="la-popup-tooltip" data-content="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="${Icon.TOOLTIP.HELP}"></i></span>
                                         </th>
                                         <td>
                                             <g:if test="${!subscription.instanceOf}">
@@ -538,7 +538,7 @@
                                                         }
                                                     %>
                                                     <g:if test="${!disabled}">
-                                                        <g:link controller="subscription" action="resetHoldingToSubEnd" class="ui button negative js-open-confirm-modal la-popup-tooltip la-delay"
+                                                        <g:link controller="subscription" action="resetHoldingToSubEnd" class="ui button negative js-open-confirm-modal la-popup-tooltip"
                                                                 params="[id: subscription.id, subPkg: sp.id]"
                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.resetSubToEndDate")}"
                                                                 data-confirm-term-how="ok">
@@ -546,7 +546,7 @@
                                                         </g:link>
                                                     </g:if>
                                                     <g:else>
-                                                        <g:link class="ui disabled button negative la-popup-tooltip la-delay"
+                                                        <g:link class="ui disabled button negative la-popup-tooltip"
                                                                 data-content="${message(code: 'subscription.packages.resetToSubEnd.threadRunning')}">
                                                             <g:message code="subscription.packages.resetToSubEnd.label"/>
                                                         </g:link>

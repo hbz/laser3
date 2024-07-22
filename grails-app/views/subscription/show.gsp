@@ -131,7 +131,7 @@
                                                         </g:else>
                                                     </g:if>
                                                     <g:elseif test="${subscription.altnames[0].instanceOf}">
-                                                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
+                                                        <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
                                                     </g:elseif>
                                                     <g:else>
                                                         <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
@@ -215,7 +215,7 @@
                                                             </g:else>
                                                         </g:if>
                                                         <g:elseif test="${altname.instanceOf}">
-                                                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
+                                                            <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
                                                         </g:elseif>
                                                         <g:else>
                                                             <div class="ui buttons">
@@ -228,7 +228,7 @@
                                                         </g:else>
                                                     </g:if>
                                                     <g:elseif test="${altname.instanceOf}">
-                                                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
+                                                        <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
                                                     </g:elseif>
                                                 </div>
                                             </g:each>
@@ -457,7 +457,7 @@
                                                     <g:set var="missingSubMonths"
                                                            value="${missingSubscriptionMonths[reportMetric.split(':')[0]]}"/>
                                                     <g:if test="${missingSubMonths}">
-                                                        <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                        <span class="la-long-tooltip la-popup-tooltip"
                                                               data-html="${message(code: 'default.usage.missingUsageInfo')}: ${missingSubMonths.join(',')}">
                                                             <i class="${Icon.TOOLTIP.SERIOUS} la-popup small"></i>
                                                         </span>
@@ -492,7 +492,7 @@
                                         <tr>
                                             <g:set var="reportMetric" value="${y_axis_labels[counter++]}"/>
                                             <td>${reportMetric}
-                                                <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                <span class="la-long-tooltip la-popup-tooltip"
                                                       data-html="${message(code: 'default.usage.reportUpToInfo')}: ${lastUsagePeriodForReportType[reportMetric.split(':')[0]]}">
                                                     <i class="${Icon.TOOLTIP.INFO} small la-popup"></i>
                                                 </span>
@@ -520,7 +520,7 @@
                                             <g:set var="missing" value="${missingMonths[reportMetric.split(':')[0]]}"/>
                                             <td>
                                                 <g:if test="${missing}">
-                                                    <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                    <span class="la-long-tooltip la-popup-tooltip"
                                                           data-html="${message(code: 'default.usage.missingUsageInfo')}: ${missing.join(',')}">
                                                         <i class="${Icon.TOOLTIP.SERIOUS} la-popup small"></i>
                                                     </span>

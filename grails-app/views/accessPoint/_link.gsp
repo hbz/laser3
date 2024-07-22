@@ -3,7 +3,7 @@
     <div class="content">
         <div class="header">
             <h3>${message(code: 'accessPoint.link.with.platform')}
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: 'accessPoint.platformHelp')}">
+                <span class="la-long-tooltip la-popup-tooltip" data-content="${message(code: 'accessPoint.platformHelp')}">
                     <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
                 </span>
             </h3>
@@ -46,7 +46,7 @@
         <div class="header">
             <h3>
                 ${message(code: 'accessPoint.link.with.subscription')}
-                <span class="la-long-tooltip la-popup-tooltip la-delay"
+                <span class="la-long-tooltip la-popup-tooltip"
                       data-html='${message(code: "accessPoint.linkedSubscriptionHelp")}'>
                     <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
                 </span>

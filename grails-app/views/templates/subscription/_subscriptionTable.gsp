@@ -23,14 +23,14 @@
                             <g:set var="subscriptionHeader" value="${message(code: 'subscription')}"/>
                         </g:else>
                         <th class="center aligned"  rowspan="2" scope="col">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
                                   data-content="${message(code: 'default.previous.label')}">
                                 <i class="${Icon.LNK.PREV}"></i>
                             </span>
                         </th>
                         <g:sortableColumn params="${params}" property="s.name" title="${subscriptionHeader}" rowspan="2" scope="col" />
                         <th class="center aligned" rowspan="2" scope="col">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
                                   data-content="${message(code: 'default.next.label')}">
                                 <i class="${Icon.LNK.NEXT}"></i>
                             </span>
@@ -55,12 +55,12 @@
                         <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label.shy')}"/>
                         <g:if test="${params.orgRole in ['Subscription Consortia']}">
                             <th scope="col" rowspan="2" class="center aligned">
-                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
+                                <span class="la-popup-tooltip" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
                                     <i class="${Icon.ORG} large"></i>
                                 </span>
                             </th>
                             <th scope="col" rowspan="2" class="center aligned">
-                                <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
+                                <span class="la-popup-tooltip" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
                                     <i class="${Icon.FNC.COST} large"></i>
                                 </span>
                             </th>
@@ -255,7 +255,7 @@
                                     <g:if test="${surveysSub}">
                                         <g:link controller="subscription" action="surveys" id="${s.id}"
                                                 class="${Btn.MODERN.POSITIVE}">
-                                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info3")}">
+                                            <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info3")}">
                                                 <i class="${Icon.SURVEY}"></i>
                                             </span>
                                         </g:link>
@@ -268,7 +268,7 @@
                                             <g:if test="${surveysConsortiaSub.surveyInfo?.isCompletedforOwner()}">
                                                 <g:link controller="subscription" action="surveysConsortia" id="${s.id}"
                                                         class="${Btn.MODERN.POSITIVE}">
-                                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                                           data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
                                                         <i class="${Icon.SURVEY}"></i>
                                                     </span>
@@ -276,7 +276,7 @@
                                             </g:if>
                                             <g:else>
                                                 <g:link controller="subscription" action="surveysConsortia" id="${s.id}" class="${Btn.MODERN.SIMPLE}">
-                                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                                           data-content="${message(code: "surveyconfig.isCompletedforOwner.false")}">
                                                         <i class="${Icon.SURVEY}"></i>
                                                     </span>
@@ -286,13 +286,13 @@
 %{--                                        <g:link controller="subscription" action="surveysConsortia" id="${s.id}"
                                                 class="${Btn.MODERN.SIMPLE}">
                                             <g:if test="${surveysConsortiaSub.surveyInfo?.isCompletedforOwner()}">
-                                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                                       data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
                                                     <i class="${Icon.SURVEY} icon blue"></i>
                                                 </span>
                                             </g:if>
                                             <g:else>
-                                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                                       data-content="${message(code: "surveyconfig.isCompletedforOwner.false")}">
                                                     <i class="${Icon.SURVEY} icon open"></i>
                                                 </span>

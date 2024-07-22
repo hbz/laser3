@@ -6,7 +6,7 @@
           <div class="four fields">
               <div class="field">
                   <label for="keyword-search"><g:message code="default.search.text"/>
-                        <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.license')}">
+                        <span data-position="right center" data-variation="tiny" class="la-popup-tooltip" data-content="${message(code:'default.search.tooltip.license')}">
                           <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                   </label>

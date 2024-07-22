@@ -46,7 +46,7 @@
                     <td>
                         <g:if test="${wekb?.baseUrl && provider.gokbId}">
                             <a href="${wekb.baseUrl + '/resource/show/' + provider.gokbId}" target="_blank">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.chart.result.link.unchecked.label')}"
+                                <span class="la-long-tooltip la-popup-tooltip" data-content="${message(code:'reporting.chart.result.link.unchecked.label')}"
                                         data-position="top right">
                                     <i class="${Icon.LNK.EXTERNAL} grey"></i>
                                 </span>

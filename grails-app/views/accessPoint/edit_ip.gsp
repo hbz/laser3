@@ -129,7 +129,7 @@
                     <div class="ui form">
                         <div class="field">
                             <label for="ipv4_ip">${message(code: 'accessPoint.ip.data')}
-                                <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                <span class="la-long-tooltip la-popup-tooltip"
                                       data-content="${message(code: "accessPoint.ip.input")}">
                                     <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span>
                             </label>
@@ -212,7 +212,7 @@
                 <div class="ui form">
                     <div class="field">
                         <label for="ipv6_ip">${message(code: 'accessPoint.ip.data')}
-                            <span class="la-long-tooltip la-popup-tooltip la-delay"
+                            <span class="la-long-tooltip la-popup-tooltip"
                                   data-content="${message(code: "accessPoint.ip.input")}">
                                 <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span>
                         </label>

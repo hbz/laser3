@@ -34,7 +34,7 @@
                         </g:link>
                     </div>
                 </g:if>
-                <i class="large la-list-icon la-popup-tooltip la-delay icon ${icon}" data-content="${tooltip}"></i>
+                <i class="large la-list-icon la-popup-tooltip icon ${icon}" data-content="${tooltip}"></i>
                 <div class="content">
                     <a class="header la-js-toggle-showThis" onclick="JSPC.app.editTask(${tsk.id});">${tsk.title}</a>
                     <div class="description">${message(code:'task.endDate.label')}
@@ -48,13 +48,13 @@
             <div class="twelve wide column summary">
 
                     <g:if test="${tsk.status == RDStore.TASK_STATUS_DONE}">
-                        <i class="large la-list-icon la-popup-tooltip la-delay icon check circle outline"></i>
+                        <i class="large la-list-icon la-popup-tooltip icon check circle outline"></i>
                     </g:if>
                     <g:elseif test="${tsk.status == RDStore.TASK_STATUS_OPEN}">
-                        <i class="large la-list-icon la-popup-tooltip la-delay icon la-open"></i>
+                        <i class="large la-list-icon la-popup-tooltip icon la-open"></i>
                     </g:elseif>
                     <g:elseif test="${tsk.status == RDStore.TASK_STATUS_DEFERRED}">
-                        <i class="large la-list-icon la-popup-tooltip la-delay icon pause circle outline"></i>
+                        <i class="large la-list-icon la-popup-tooltip icon pause circle outline"></i>
                     </g:elseif>
                     <a onclick="JSPC.app.editTask(${tsk.id});">${tsk.title}</a>
 

@@ -143,12 +143,12 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('status')}">
                 <td class="center aligned">
                     <g:if test="${provider.status == RDStore.PROVIDER_STATUS_CURRENT}">
-                        <span class="la-popup-tooltip la-delay" data-position="top right">
+                        <span class="la-popup-tooltip" data-position="top right">
                             <i class="${Icon.UNC.CIRCLE} green"></i>
                         </span>
                     </g:if>
                     <g:if test="${provider.status == RDStore.PROVIDER_STATUS_RETIRED}">
-                        <span class="la-popup-tooltip la-delay" data-position="top right" <g:if test="${provider.retirementDate}">data-content="<g:message code="org.retirementDate.label"/>: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${provider.retirementDate}"/>"</g:if>>
+                        <span class="la-popup-tooltip" data-position="top right" <g:if test="${provider.retirementDate}">data-content="<g:message code="org.retirementDate.label"/>: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${provider.retirementDate}"/>"</g:if>>
                             <i class="${Icon.UNC.CIRCLE} yellow"></i>
                         </span>
                     </g:if>
@@ -177,7 +177,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isMyX')}">
                 <td class="center aligned">
                     <g:if test="${currentProviderIdList && (provider.id in currentProviderIdList)}">
-                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.providers')}"><i class="${Icon.UI.MY_OBJECT} yellow"></i></span>
+                        <span class="la-popup-tooltip" data-content="${message(code: 'menu.my.providers')}"><i class="${Icon.UI.MY_OBJECT} yellow"></i></span>
                     </g:if>
                 </td>
             </g:if>

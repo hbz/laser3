@@ -16,7 +16,7 @@
 </div>
 <g:if test="${(tipp.titleType == 'monograph') && (tipp.editionStatement || showEmptyFields)}">
     <div class="item">
-        <i class="grey ${Icon.CMD.COPY} la-popup-tooltip la-delay"
+        <i class="grey ${Icon.CMD.COPY} la-popup-tooltip"
            data-content="${message(code: 'title.editionStatement.label')}"></i>
 
         <div class="content">

@@ -17,7 +17,7 @@
                 <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="[ownSort: true]" scope="col" rowspan="2"/>
                 <g:sortableColumn property="ci.sub.name" title="${message(code:'default.subscription.label')}" params="[ownSort: true]" scope="col" class="la-smaller-table-head"/>
                 <th class="la-no-uppercase" scope="col" rowspan="2">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="${Icon.FNC.COST_CONFIG}"></i></span>
+                    <span class="la-popup-tooltip" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="${Icon.FNC.COST_CONFIG}"></i></span>
                 </th>
                 <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[ownSort: true]" scope="col" rowspan="2"/>
                 <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[ownSort: true]" scope="col" rowspan="2"/>
@@ -28,7 +28,7 @@
             <g:else>
                 <g:sortableColumn property="costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance" scope="col" rowspan="2"/>
                 <th class="la-no-uppercase" scope="col" rowspan="2">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="${Icon.FNC.COST_CONFIG}"></i></span>
+                    <span class="la-popup-tooltip" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="${Icon.FNC.COST_CONFIG}"></i></span>
                 </th>
                 <g:sortableColumn property="costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance" scope="col" rowspan="2"/>
                 <g:sortableColumn property="costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance" scope="col" rowspan="2"/>
@@ -103,7 +103,7 @@
                         </td>
                     </g:if>
                     <td>
-                        <span class="la-popup-tooltip la-delay" data-position="right center" data-content="${dataTooltip}">${raw(icon)}</span>
+                        <span class="la-popup-tooltip" data-position="right center" data-content="${dataTooltip}">${raw(icon)}</span>
                     </td>
                     <td>
                         <g:formatNumber number="${ci.costInBillingCurrency ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}"/>
@@ -156,7 +156,7 @@
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                     <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                 </g:link>
-                                <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
+                                <span class="la-popup-tooltip" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
                                     <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", showView:"own", offset: params.offset]' class="${Btn.MODERN.SIMPLE} trigger-modal" data-id_suffix="copy_${ci.id}">
                                         <i class="${Icon.CMD.COPY}"></i>
                                     </g:link>
@@ -168,7 +168,7 @@
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                     <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                 </g:link>
-                                <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
+                                <span class="la-popup-tooltip" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
                                     <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"own", offset: params.offset]' class="${Btn.MODERN.SIMPLE} trigger-modal" data-id_suffix="copy_${ci.id}">
                                         <i class="${Icon.CMD.COPY}"></i>
                                     </g:link>

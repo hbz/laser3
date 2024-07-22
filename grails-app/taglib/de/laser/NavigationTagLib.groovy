@@ -295,7 +295,7 @@ class NavigationTagLib {
                 out << '<div class="item disabled"  '
                 out << 'role="menuitem">' + linkBody + '</div>'
             }
-//            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="menuitem">' + linkBody + '</div>'
+//            else out << '<div class="item disabled la-popup-tooltip" data-position="left center" role="menuitem">' + linkBody + '</div>'
         }
     }
 

@@ -38,7 +38,7 @@
             <% /* 1-1 */ %>
             <div class="field">
                 <label for="search-title">${message(code: 'default.search.text')}
-                    <span data-position="right center" class="la-popup-tooltip la-delay"
+                    <span data-position="right center" class="la-popup-tooltip"
                           data-content="${message(code: 'default.search.tooltip.subscription')}">
                         <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
@@ -51,7 +51,7 @@
             <% /* 1-2 */ %>
             <div class="field">
                 <label for="identifier">${message(code: 'default.search.identifier')}
-                    <span data-position="right center" class="la-popup-tooltip la-delay"
+                    <span data-position="right center" class="la-popup-tooltip"
                           data-content="${message(code: 'default.search.tooltip.subscription.identifier')}">
                         <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
@@ -285,25 +285,25 @@
                     </th>
 
                     <th scope="col" rowspan="3" class="center aligned">
-                        <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'survey.label')}" data-position="top center">
+                        <a href="#" class="la-popup-tooltip" data-content="${message(code: 'survey.label')}" data-position="top center">
                             <i class="${Icon.SURVEY} large"></i>
                         </a>
                     </th>
 
                     <th scope="col" rowspan="3" class="center aligned">
-                        <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.survey.evaluation.label')}" data-position="top center">
+                        <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscription.survey.evaluation.label')}" data-position="top center">
                             <i class="comments large icon"></i>
                         </a>
                     </th>
 
                     <th scope="col" rowspan="3" class="center aligned">
-                        <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.survey.cancellation.label')}" data-position="top center">
+                        <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscription.survey.cancellation.label')}" data-position="top center">
                             <i class="times circle large icon"></i>
                         </a>
                     </th>
 
                     <th scope="col" rowspan="3" class="center aligned">
-                        <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.discountScale.label')}" data-position="top center">
+                        <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscription.discountScale.label')}" data-position="top center">
                             <i class="percentage large icon"></i>
                         </a>
                     </th> %{--Discount Scale--}%
@@ -317,7 +317,7 @@
                     </th>
 
                     <th scope="col" rowspan="3" class="center aligned sortable ${params.sort == 'participantTransferWithSurvey' ? ('sorted '+(params.order == 'asc' ? 'desc' : 'asc')) : ''}">
-                        <g:link action="currentSubscriptionsTransfer" params="${params+[sort: 'participantTransferWithSurvey', order: params.order == 'asc' ? 'desc' : 'asc']}" class="la-popup-tooltip la-delay " data-content="${message(code: 'subscription.participantTransferWithSurvey.label')}" data-position="top center">
+                        <g:link action="currentSubscriptionsTransfer" params="${params+[sort: 'participantTransferWithSurvey', order: params.order == 'asc' ? 'desc' : 'asc']}" class="la-popup-tooltip" data-content="${message(code: 'subscription.participantTransferWithSurvey.label')}" data-position="top center">
                             <i class="large icons">
                                 <i class="${Icon.SURVEY}"></i>
                                 <i class="top right corner redo icon"></i>
@@ -571,7 +571,7 @@
                                     <g:if test="${s.discountScale}">
                                         ${s.discountScale.name} : ${s.discountScale.discount}
                                         <g:if test="${s.discountScale.note}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${s.discountScale.note}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${s.discountScale.note}">
                                                 <i class="${Icon.TOOLTIP.INFO} blue"></i>
                                             </span>
                                         </g:if>

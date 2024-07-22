@@ -550,10 +550,10 @@ class XEditableTagLib {
             out << " data-oldvalue=\"${oldValue}\" "
             out << " data-value=\"${oldValue}\" data-autotext=\"never\">"
             if(oldValue)
-                out << '<span class="la-popup-tooltip la-delay" data-position="" data-content="' + oldValue + '"/>'
+                out << '<span class="la-popup-tooltip" data-position="" data-content="' + oldValue + '"/>'
             else if(!oldValue && emptyTooltip)
-                out << '<span class="la-popup-tooltip la-delay" data-position="" data-content="' + emptyTooltip + '"/>'
-            else out << '<span class="la-popup-tooltip la-delay" data-position="" data-content=""/>'
+                out << '<span class="la-popup-tooltip" data-position="" data-content="' + emptyTooltip + '"/>'
+            else out << '<span class="la-popup-tooltip" data-position="" data-content=""/>'
             out << "<i class=\"${attrs.iconClass ?: 'info'} ${oldValue ? 'green' : 'la-light-grey'} icon\"></i>"
             out << '</span>'
 
@@ -563,7 +563,7 @@ class XEditableTagLib {
         else {
 
             if (owner[field]) {
-                out << '<span class="la-popup-tooltip la-delay ui icon" data-position="top right" data-content="'
+                out << '<span class="la-popup-tooltip ui icon" data-position="top right" data-content="'
 
                 if (owner[field] && attrs.type == 'date') {
                     SimpleDateFormat sdf = new SimpleDateFormat(attrs.format ?: message(code: 'default.date.format.notime'))

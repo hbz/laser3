@@ -11,7 +11,7 @@
             ${participationProperty?.getI10n('name')}
 
             <g:if test="${participationProperty?.getI10n('expl')}">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
                       data-content="${participationProperty?.getI10n('expl')}">
                     <i class="${Icon.TOOLTIP.HELP}"></i>
                 </span>
@@ -29,7 +29,7 @@
                 ${surveyProperty.getI10n('name')}
 
                 <g:if test="${surveyProperty?.getI10n('expl')}">
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                    <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
                           data-content="${surveyProperty.getI10n('expl')}">
                         <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
@@ -59,46 +59,46 @@
 
 
                 <g:if test="${!surveyConfig.hasOrgSubscription(participantResult.participant)}">
-                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                    <span data-position="top right" class="la-popup-tooltip"
                           data-content="${message(code: 'surveyResult.newOrg')}">
                         <i class="star black large  icon"></i>
                     </span>
                 </g:if>
 
                 <g:if test="${surveyConfig.checkResultsEditByOrg(participantResult.participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
-                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                    <span data-position="top right" class="la-popup-tooltip"
                           data-content="${message(code: 'surveyResult.processedOrg')}">
                         <i class="edit green icon"></i>
                     </span>
                 </g:if>
                 <g:else>
-                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                    <span data-position="top right" class="la-popup-tooltip"
                           data-content="${message(code: 'surveyResult.notprocessedOrg')}">
                         <i class="edit red icon"></i>
                     </span>
                 </g:else>
 
                 <g:if test="${surveyConfig.isResultsSetFinishByOrg(participantResult.participant)}">
-                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                    <span data-position="top right" class="la-popup-tooltip"
                           data-content="${message(code: 'surveyResult.finishOrg')}">
                         <i class="check green icon"></i>
                     </span>
                 </g:if>
                 <g:else>
-                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                    <span data-position="top right" class="la-popup-tooltip"
                           data-content="${message(code: 'surveyResult.notfinishOrg')}">
                         <i class="x red icon"></i>
                     </span>
                 </g:else>
 
                 <g:if test="${propertiesChangedByParticipant && participantResult.participant.id in propertiesChangedByParticipant.id}">
-                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                    <span data-position="top right" class="la-popup-tooltip"
                           data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
                         <i class="${Icon.TOOLTIP.SERIOUS} yellow"></i>
                     </span>
                 </g:if>
                 <g:if test="${surveyOrg.orgInsertedItself}">
-                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                    <span data-position="top right" class="la-popup-tooltip"
                           data-content="${message(code: 'surveyLinks.newParticipate')}">
                         <i class="paper plane outline large icon"></i>
                     </span>
@@ -113,14 +113,14 @@
                 ${participantResult.resultOfParticipation.getResult()}
 
                 <g:if test="${participantResult.resultOfParticipation.comment}">
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                           data-content="${participantResult.resultOfParticipation.comment}">
                         <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </g:if>
 
                 <g:if test="${surveyOrg && surveyOrg.ownerComment}">
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                           data-content="${surveyOrg.ownerComment}">
                         <i class="${Icon.TOOLTIP.INFO}"></i>
                     </span>
@@ -140,7 +140,7 @@
                               date="${participantResult.newSubPeriodTwoEndDate}"/>
 
                 <g:if test="${participantResult.participantPropertyTwoComment}">
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                           data-content="${participantResult.participantPropertyTwoComment}">
                         <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
@@ -155,7 +155,7 @@
                               date="${participantResult.newSubPeriodThreeEndDate}"/>
 
                 <g:if test="${participantResult.participantPropertyThreeComment}">
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                           data-content="${participantResult.participantPropertyThreeComment}">
                         <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
@@ -170,7 +170,7 @@
                               date="${participantResult.newSubPeriodFourEndDate}"/>
 
                 <g:if test="${participantResult.participantPropertyFourComment}">
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                           data-content="${participantResult.participantPropertyFourComment}">
                         <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
@@ -185,7 +185,7 @@
                               date="${participantResult.newSubPeriodFiveEndDate}"/>
 
                 <g:if test="${participantResult.participantPropertyFiveComment}">
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                           data-content="${participantResult.participantPropertyFiveComment}">
                         <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
@@ -201,7 +201,7 @@
                     ${participantResultProperty.getResult()}
 
                     <g:if test="${participantResultProperty.comment}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${participantResultProperty.comment}">
                             <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
@@ -211,7 +211,7 @@
                            value="${SurveyOrg.findBySurveyConfigAndOrg(participantResultProperty.surveyConfig, participantResultProperty.participant)}"/>
 
                     <g:if test="${surveyOrg && surveyOrg.ownerComment}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${surveyOrg.ownerComment}">
                             <i class="${Icon.TOOLTIP.INFO}"></i>
                         </span>

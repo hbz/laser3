@@ -187,7 +187,7 @@
                     <g:each in="${surveyConfig.getSortedProperties()}" var="surveyProperty">
                         <th>${surveyProperty.getI10n('name')}
                             <g:if test="${surveyProperty.getI10n('expl')}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                       data-content="${surveyProperty.getI10n('expl')}">
                                     <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
@@ -197,7 +197,7 @@
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
                     <th>${message(code: 'surveyResult.commentOnlyForOwner')}
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
                             <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
@@ -292,13 +292,13 @@
 
                         <g:if test="${surveyConfig.surveyProperties}">
                             <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
                                     <i class="edit green icon"></i>
                                 </span>
                             </g:if>
                             <g:else>
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'surveyResult.notprocessedOrg')}">
                                     <i class="edit red icon"></i>
                                 </span>
@@ -306,20 +306,20 @@
                         </g:if>
 
                             <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'surveyResult.finishOrg')}">
                                     <i class="check green icon"></i>
                                 </span>
                             </g:if>
                             <g:else>
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'surveyResult.notfinishOrg')}">
                                     <i class="x red icon"></i>
                                 </span>
                             </g:else>
 
                             <g:if test="${propertiesChangedByParticipant && participant.id in propertiesChangedByParticipant.id}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
                                     <i class="${Icon.TOOLTIP.SERIOUS} yellow"></i>
                                 </span>
@@ -327,14 +327,14 @@
 
 
                             <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'surveyResult.newOrg')}">
                                     <i class="la-sparkles large icon"></i>
                                 </span>
                             </g:if>
 
                             <g:if test="${surveyOrg.orgInsertedItself}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'surveyLinks.newParticipate')}">
                                     <i class="paper plane outline large icon"></i>
                                 </span>
@@ -344,7 +344,7 @@
                                 <a href="${"mailto:${surveyOrg.org.getMailsOfGeneralContactPersons(false).join(';')}?subject=" + mailSubject +
                                         "&body=" + mailBody}">
                                     <span data-position="right center"
-                                          class="la-popup-tooltip la-delay"
+                                          class="la-popup-tooltip"
                                           data-content="Mail senden an Hauptkontakte">
                                         <i class="${Icon.SYM.EMAIL} la-list-icon"></i>
                                     </span>
@@ -769,7 +769,7 @@
                     <g:each in="${surveyConfig.getSortedProperties()}" var="surveyProperty">
                         <th>${surveyProperty.getI10n('name')}
                             <g:if test="${surveyProperty.getI10n('expl')}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                       data-content="${surveyProperty.getI10n('expl')}">
                                     <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
@@ -779,7 +779,7 @@
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
                     <th>${message(code: 'surveyResult.commentOnlyForOwner')}
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
                             <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
@@ -876,13 +876,13 @@
 
                         <g:if test="${surveyConfig.surveyProperties}">
                             <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
                                     <i class="edit green icon"></i>
                                 </span>
                             </g:if>
                             <g:else>
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'surveyResult.notprocessedOrg')}">
                                     <i class="edit red icon"></i>
                                 </span>
@@ -890,34 +890,34 @@
                         </g:if>
 
                             <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'surveyResult.finishOrg')}">
                                     <i class="check green icon"></i>
                                 </span>
                             </g:if>
                             <g:else>
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'surveyResult.notfinishOrg')}">
                                     <i class="x red icon"></i>
                                 </span>
                             </g:else>
 
                             <g:if test="${propertiesChangedByParticipant && participant.id in propertiesChangedByParticipant.id}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
                                     <i class="${Icon.TOOLTIP.SERIOUS} yellow"></i>
                                 </span>
                             </g:if>
 
                             <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'surveyResult.newOrg')}">
                                     <i class="star black large  icon"></i>
                                 </span>
                             </g:if>
 
                             <g:if test="${surveyOrg.orgInsertedItself}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'surveyLinks.newParticipate')}">
                                     <i class="paper plane outline large icon"></i>
                                 </span>
@@ -927,7 +927,7 @@
                                 <a href="${"mailto:${surveyOrg.org.getMailsOfGeneralContactPersons(false).join(';')}?subject=" + mailSubject +
                                         "&body=" + mailBody}">
                                     <span data-position="right center"
-                                          class="la-popup-tooltip la-delay"
+                                          class="la-popup-tooltip"
                                           data-content="Mail senden an Hauptkontakte">
                                         <i class="${Icon.SYM.EMAIL} la-list-icon"></i>
                                     </span>

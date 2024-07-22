@@ -121,7 +121,7 @@
                                 <div class="item">
 
                                     <div class="right floated content">
-                                        <span class="la-popup-tooltip la-delay"
+                                        <span class="la-popup-tooltip"
                                               data-content="Anzahl der allg. Merkmale in der Lizenz"
                                               data-position="top right">
                                             <ui:totalNumber
@@ -174,9 +174,9 @@
                                                 <%
                                                     if (AuditConfig.getConfig(customProperty)) {
                                                         if (subscription.isSlaved) {
-                                                            println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                            println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                                         } else {
-                                                            println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                            println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                                         }
                                                     }
                                                 %>
@@ -207,7 +207,7 @@
                                 <div class="item">
 
                                     <div class="right floated content">
-                                        <span class="la-popup-tooltip la-delay"
+                                        <span class="la-popup-tooltip"
                                               data-content="Anzahl der priv. Merkmale in der Lizenz"
                                               data-position="top right">
                                             <ui:totalNumber
@@ -251,9 +251,9 @@
                                                 <%
                                                     if (AuditConfig.getConfig(privateProperty)) {
                                                         if (subscription.isSlaved) {
-                                                            println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                            println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                                         } else {
-                                                            println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                            println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                                         }
                                                     }
                                                 %>
@@ -440,7 +440,7 @@
 
                             <g:if test="${sub.isSlaved}">
                                 <span data-position="top right"
-                                      class="la-popup-tooltip la-delay"
+                                      class="la-popup-tooltip"
                                       data-content="${message(code: 'license.details.isSlaved.tooltip')}">
                                     <i class="grey la-thumbtack-regular icon"></i>
                                 </span>
@@ -477,7 +477,7 @@
                                     <div class="item">
 
                                         <div class="right floated content">
-                                            <span class="la-popup-tooltip la-delay"
+                                            <span class="la-popup-tooltip"
                                                   data-content="Anzahl der allg. Merkmale in der Lizenz"
                                                   data-position="top right">
                                                 <ui:totalNumber
@@ -519,9 +519,9 @@
                                                     <%
                                                         if (customProperty.hasProperty('instanceOf') && customProperty.instanceOf && AuditConfig.getConfig(customProperty.instanceOf)) {
                                                             if (sub.isSlaved) {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                                             } else {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                                             }
                                                         }
                                                     %>
@@ -549,7 +549,7 @@
 
                                     <div class="item">
                                         <div class="right floated content">
-                                            <span class="la-popup-tooltip la-delay"
+                                            <span class="la-popup-tooltip"
                                                   data-content="Anzahl der priv. Merkmale in der Lizenz"
                                                   data-position="top right">
                                                 <ui:totalNumber
@@ -592,9 +592,9 @@
                                                     <%
                                                         if (privateProperty.hasProperty('instanceOf') && privateProperty.instanceOf && AuditConfig.getConfig(privateProperty.instanceOf)) {
                                                             if (sub.isSlaved) {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                                             } else {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                                             }
                                                         }
                                                     %>

@@ -21,12 +21,12 @@
                         <tr>
                             <td>
                                 <g:if test="${! p.isPublic}">
-                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
+                                    <span class="la-popup-tooltip" data-content="${message(code:'address.private')}" data-position="top right">
                                         <i class="${Icon.UI.ACP_PRIVATE}"></i>
                                     </span>
                                 </g:if>
                                 <g:else>
-                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
+                                    <span class="la-popup-tooltip" data-content="${message(code:'address.public')}" data-position="top right">
                                         <i class="${Icon.UI.ACP_PUBLIC}"></i>
                                     </span>
                                 </g:else>

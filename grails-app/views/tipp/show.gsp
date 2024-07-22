@@ -93,7 +93,7 @@
 
             <div class="la-icon-list">
                 <div class="item">
-                    <i class="grey clipboard check clip icon la-popup-tooltip la-delay"
+                    <i class="grey clipboard check clip icon la-popup-tooltip"
                        data-content="${message(code: 'tipp.accessStartDate.tooltip')}"></i>
 
                     <div class="content">
@@ -103,7 +103,7 @@
                 </div>
 
                 <div class="item">
-                    <i class="grey clipboard check clip icon la-popup-tooltip la-delay"
+                    <i class="grey clipboard check clip icon la-popup-tooltip"
                        data-content="${message(code: 'tipp.accessEndDate.tooltip')}"></i>
 
                     <div class="content">
@@ -159,7 +159,7 @@
 
         <div class="content">
             <div class="item">
-                <i class="grey ${Icon.PACKAGE} la-popup-tooltip la-delay"
+                <i class="grey ${Icon.PACKAGE} la-popup-tooltip"
                    data-content="${message(code: 'package.label')}"></i>
                 <g:link controller="package" action="show"
                         id="${tipp.pkg?.id}">${tipp.pkg?.name}</g:link>
@@ -207,7 +207,7 @@
 
         <div class="content">
             <div class="item">
-                <i class="${Icon.PLATFORM} grey la-popup-tooltip la-delay"
+                <i class="${Icon.PLATFORM} grey la-popup-tooltip"
                    data-content="${message(code: 'platform.label')}"></i>
                 <g:if test="${tipp.platform.name}">
                     <g:link controller="platform" action="show" id="${tipp.platform.id}">

@@ -181,7 +181,7 @@
                                         </g:if>
 
                                         <g:if test="${surveyProperty.surveyProperty.getI10n('expl')}">
-                                            <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                            <span class="la-long-tooltip la-popup-tooltip"
                                                   data-position="right center"
                                                   data-content="${surveyProperty.surveyProperty.getI10n('expl')}">
                                                 <i class="${Icon.TOOLTIP.HELP}"></i>
@@ -328,7 +328,7 @@
                 <div class="field">
                     <label for="q">${message(code: 'default.search.text')}
                         <span data-position="right center" data-variation="tiny"
-                              class="la-popup-tooltip la-delay"
+                              class="la-popup-tooltip"
                               data-content="${message(code: 'default.search.tooltip.subscription')}">
                             <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
@@ -431,14 +431,14 @@
 
 
                         <th scope="col" rowspan="2">
-                            <a href="#" class="la-popup-tooltip la-delay"
+                            <a href="#" class="la-popup-tooltip"
                                data-content="${message(code: 'subscription.numberOfLicenses.label')}"
                                data-position="top center">
                                 <i class="users large icon"></i>
                             </a>
                         </th>
                         <th scope="col" rowspan="2">
-                            <a href="#" class="la-popup-tooltip la-delay"
+                            <a href="#" class="la-popup-tooltip"
                                data-content="${message(code: 'subscription.numberOfCostItems.label')}"
                                data-position="top center">
                                 <i class="${Icon.FNC.COST} large"></i>
@@ -550,7 +550,7 @@
 
                                 <td class="x">
                                     <g:if test="${editableAll}">
-                                        <g:link class="ui icon positive button la-popup-tooltip la-delay"
+                                        <g:link class="ui icon positive button la-popup-tooltip"
                                                 data-content="${message(code: 'survey.toggleSurveySub.add.label', args: [SurveyConfig.countBySubscriptionAndSubSurveyUseForTransfer(s, true), SurveyConfig.countBySubscriptionAndSubSurveyUseForTransfer(s, false)])}"
                                                 controller="survey" action="copySurvey"
                                                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubs: [s.id], workFlow: '2']">

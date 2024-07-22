@@ -3,7 +3,7 @@
 </td>
 <td style="text-align:center">
     <g:if test="${info.size() > 2 && info[1].size() > 0}">
-        <span class="ui circular label la-popup-tooltip la-delay ${info[2]}">${info[1].size()}</span>
+        <span class="ui circular label la-popup-tooltip ${info[2]}">${info[1].size()}</span>
     </g:if>
     <g:else>
         ${info[1].size()}

@@ -55,7 +55,7 @@
                                     </g:link>
                             </g:if>
                             <g:else>
-                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg2', args: [userInstance.getDisplayName()])}">
+                                <span class="la-popup-tooltip" data-content="${message(code:'user.affiliation.lastAdminForOrg2', args: [userInstance.getDisplayName()])}">
                                     <button class="${Btn.MODERN.NEGATIVE}" disabled="disabled">
                                         <i class="${Icon.CMD.UNLINK}"></i>
                                     </button>

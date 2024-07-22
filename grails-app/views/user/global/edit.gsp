@@ -99,7 +99,7 @@
 %{--                                <div class="ui field">--}%
 %{--                                    <label>--}%
 %{--                                        ${message(code:'user.enabled.label')}--}%
-%{--                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.disabled')}">--}%
+%{--                                        <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.disabled')}">--}%
 %{--                                            <i class="${Icon.TOOLTIP.HELP}"></i>--}%
 %{--                                        </span>--}%
 %{--                                    </label>--}%
@@ -108,7 +108,7 @@
                                 <div class="ui field">
                                     <label>
                                         ${message(code:'user.accountExpired.label')}
-                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.expired')}">
+                                        <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.expired')}">
                                             <i class="${Icon.TOOLTIP.HELP}"></i>
                                         </span>
                                     </label>
@@ -117,7 +117,7 @@
                                 <div class="ui field">
                                     <label>
                                         ${message(code:'user.accountLocked.label')}
-                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.locked')}">
+                                        <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.locked')}">
                                             <i class="${Icon.TOOLTIP.HELP}"></i>
                                         </span>
                                     </label>
@@ -126,7 +126,7 @@
 %{--                                <div class="ui field">--}%
 %{--                                    <label>--}%
 %{--                                        ${message(code:'user.passwordExpired.label')}--}%
-%{--                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.passwordExpired')}">--}%
+%{--                                        <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.passwordExpired')}">--}%
 %{--                                            <i class="${Icon.TOOLTIP.HELP}"></i>--}%
 %{--                                        </span>--}%
 %{--                                    </label>--}%

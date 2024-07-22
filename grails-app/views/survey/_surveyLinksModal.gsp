@@ -7,7 +7,7 @@
             <div class="ui grid">
                 <div class="row">
                     <div class="six wide column">
-                        ${message(code: 'surveyLinks.link.info')} <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'surveyLinks.link.info.tooltip')}">
+                        ${message(code: 'surveyLinks.link.info')} <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'surveyLinks.link.info.tooltip')}">
                         <i class="${Icon.TOOLTIP.INFO} blue"></i>
                     </span>
                     </div>

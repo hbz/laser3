@@ -120,7 +120,7 @@
                 <th>${message(code:'default.sortname.label')}</th>
                 <g:sortableColumn params="${params}" property="o.sortname" title="${message(code:'subscriptionDetails.members.members')}"/>
                 <th class="center aligned">
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                    <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
                           data-content="${message(code: 'default.previous.label')}">
                         <i class="${Icon.LNK.PREV}"></i>
                     </span>
@@ -128,21 +128,21 @@
                 <g:sortableColumn params="${params}" property="sub.startDate" title="${message(code:'default.startDate.label.shy')}"/>
                 <g:sortableColumn params="${params}" property="sub.endDate" title="${message(code:'default.endDate.label.shy')}"/>
                 <th class="center aligned">
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                    <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
                           data-content="${message(code: 'default.next.label')}">
                         <i class="${Icon.LNK.NEXT}"></i>
                     </span>
                 </th>
                 <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()}">
                     <th class="center aligned la-no-uppercase">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="${message(code: 'subscription.linktoLicense')}">
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center" data-content="${message(code: 'subscription.linktoLicense')}">
                             <i class="${Icon.LICENSE}"></i>
                         </span>
                     </th>
                 </g:if>
                 <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                     <th class="center aligned la-no-uppercase">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="${message(code: 'subscription.packages.label')}">
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center" data-content="${message(code: 'subscription.packages.label')}">
                             <i class="${Icon.PACKAGE}"></i>
                         </span>
                     </th>
@@ -167,7 +167,7 @@
                             <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
 
                             <g:if test="${sub.isSlaved}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.isSlaved.tooltip')}">
+                                <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'license.details.isSlaved.tooltip')}">
                                     <i class="grey la-thumbtack-regular icon"></i>
                                 </span>
                             </g:if>
@@ -290,7 +290,7 @@
                                     </g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link class="ui icon orange button la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hideToSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
+                                    <g:link class="ui icon orange button la-popup-tooltip" data-content="${message(code:'subscription.details.hideToSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
                                         <i class="ui icon eye"></i>
                                     </g:link>
                                 </g:else>

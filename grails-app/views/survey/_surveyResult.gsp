@@ -4,7 +4,7 @@
     <g:message code="surveyOrg.perennialTerm.available"/>
 
     <g:if test="${surResult.comment}">
-        <span class="la-long-tooltip la-popup-tooltip la-delay"
+        <span class="la-long-tooltip la-popup-tooltip"
               data-position="right center"
               data-content="${surResult.comment}">
             <i class="${Icon.TOOLTIP.HELP}"></i>
@@ -39,7 +39,7 @@
                                 config="${surResult.type.refdataCategory}"/>
     </g:elseif>
     <g:if test="${surResult.comment}">
-        <span class="la-long-tooltip la-popup-tooltip la-delay"
+        <span class="la-long-tooltip la-popup-tooltip"
               data-position="right center"
               data-content="${surResult.comment}">
             <i class="${Icon.TOOLTIP.HELP}"></i>
@@ -47,7 +47,7 @@
     </g:if>
 
     <g:if test="${surResult.type.id == PropertyStore.SURVEY_PROPERTY_PARTICIPATION.id && surResult.getResult() == RDStore.YN_NO.getI10n('value')}">
-        <span class="la-long-tooltip la-popup-tooltip la-delay"
+        <span class="la-long-tooltip la-popup-tooltip"
               data-position="top right"
               data-variation="tiny"
               data-content="${message(code: 'surveyResult.particiption.terminated')}">
