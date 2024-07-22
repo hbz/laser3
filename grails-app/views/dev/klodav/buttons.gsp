@@ -42,7 +42,7 @@
                     <td> <button class="${Btn.SIMPLE} orange">BASIC</button> </td>
                     <td> Btn.SIMPLE <br/> orange </td>
                     <td> ${Btn.SIMPLE} (+ orange) </td>
-                    <td> Colors by declaration; default: blue </td>
+                    <td> Colors by declaration; <span class="ui text blue">default: none</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.PRIMARY}">PRIMARY</button> </td>
@@ -73,7 +73,7 @@
         </div>
 
         <div class="column">
-            <ui:msg class="info" header="de.laser.ui.Btn"  hideClose="true"> Icon only, NO Text </ui:msg>
+            <ui:msg class="info" header="de.laser.ui.Btn.ICON"  hideClose="true"> Icon ONLY </ui:msg>
 
             <table class="ui simple table very compact">
                 <thead>
@@ -89,7 +89,7 @@
                     <td> <button class="${Btn.ICON.SIMPLE} yellow"><i class="${Icon.UNC.SQUARE}"></i></button> </td>
                     <td> Btn.ICON.SIMPLE <br/> yellow </td>
                     <td> ${Btn.ICON.SIMPLE} (+ yellow) </td>
-                    <td> Colors by declaration; default: blue </td>
+                    <td> Colors by declaration; <span class="ui text blue">default: none</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.ICON.PRIMARY}"><i class="${Icon.UNC.SQUARE}"></i></button> </td>
@@ -171,7 +171,7 @@
 
     <div class="ui one column grid">
         <div class="column">
-            <ui:msg class="info" header="de.laser.ui.Btn" hideClose="true"> Icon only, NO Text  + Javascript </ui:msg>
+            <ui:msg class="info" header="de.laser.ui.Btn.ICON" hideClose="true"> Icon ONLY + Javascript </ui:msg>
 
             <table class="ui simple table very compact">
                 <thead>
@@ -205,7 +205,7 @@
 
     <div class="ui one column grid">
         <div class="column">
-            <ui:msg class="info" header="de.laser.ui.Btn.MODERN" hideClose="true"> Icon only, NO Text </ui:msg>
+            <ui:msg class="info" header="de.laser.ui.Btn.MODERN" hideClose="true"> Icon ONLY </ui:msg>
 
             <table class="ui simple table very compact">
                 <thead>
@@ -221,7 +221,7 @@
                     <td> <button class="${Btn.MODERN.BASIC} orange"><i class="${Icon.CMD.REPLACE}"></i></button> </td>
                     <td> Btn.MODERN.BASIC <br/> orange </td>
                     <td> ${Btn.MODERN.BASIC} (+ orange) </td>
-                    <td> Colors by declaration; default: blue (PROBLEM) </td>
+                    <td> Colors by declaration; <span class="ui text red">default: none (BROKEN)</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.MODERN.SIMPLE}"><i class="${Icon.UNC.SQUARE}"></i></button> </td>
@@ -248,7 +248,7 @@
 
     <div class="ui one column grid">
         <div class="column">
-            <ui:msg class="info" header="de.laser.ui.Btn.MODERN" hideClose="true"> Icon only, NO Text + Javascript</ui:msg>
+            <ui:msg class="info" header="de.laser.ui.Btn.MODERN" hideClose="true"> Icon ONLY + Javascript</ui:msg>
 
             <table class="ui simple table very compact">
                 <thead>
@@ -276,7 +276,7 @@
                     <td> <button class="${Btn.MODERN.BASIC_TOOLTIP} yellow" data-content="Something to know .."><i class="${Icon.UI.HELP}"></i></button> </td>
                     <td> Btn.MODERN.BASIC_TOOLTIP <br/> yellow </td>
                     <td> ${Btn.MODERN.BASIC_TOOLTIP} (+ yellow) </td>
-                    <td> Colors by declaration; default: blue (PROBLEM) <br/> Tooltip (data-attributes needed) </td>
+                    <td> Colors by declaration; <span class="ui text red">default: none (BROKEN)</span> <br/> Tooltip (data-attributes needed) </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="Something to know .."><i class="${Icon.UI.INFO}"></i></button> </td>

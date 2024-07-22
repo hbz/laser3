@@ -119,7 +119,7 @@
                         <td>
 
                                 <g:if test="${side == 'target' && isContainedByTarget && editable}">
-                                    <g:link class="ui icon negative button la-popup-tooltip" action="processRemoveEntitlements"
+                                    <g:link class="${Btn.MODERN.NEGATIVE_TOOLTIP}" action="processRemoveEntitlements"
                                             params="${[id: subscription.id, singleTitle: tipp.gokbId, packageId: packageId]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
                                         <i class="${Icon.CMD.REMOVE}"></i>

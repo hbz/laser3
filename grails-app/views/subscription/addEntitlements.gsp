@@ -243,7 +243,7 @@
                                         <g:else>
                                             <div class="la-popup-tooltip"
                                                  data-content="${message(code: 'subscription.details.addEntitlements.thread.running')}">
-                                                <g:link class="ui icon disabled button la-popup-tooltip"
+                                                <g:link class="${Btn.ICON.SIMPLE} disabled"
                                                         action="processAddEntitlements"
                                                         params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}">
                                                     <i class="${Icon.CMD.ADD}"></i>
