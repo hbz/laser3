@@ -16,7 +16,7 @@
                     <g:if test="${attribute[field].id in availableAttributeIds}">
                         <div class="content la-space-right">
                             <div class="ui icon buttons">
-                                <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.subjectgroup.organisation", args: [outputString])}"
                                         data-confirm-term-how="delete"
                                         controller="${controllerName}" action="${deleteAction}" params="[id: ownObj.id, field: field, removeObjectOID: genericOIDService.getOID(attribute)]"

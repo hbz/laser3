@@ -125,26 +125,26 @@
 
                                         <g:if test="${pd.mandatory}">
                                             <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="top left"
-                                                    params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.BASIC_ICON} yellow la-popup-tooltip la-delay">
+                                                    params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.BASIC} yellow la-popup-tooltip la-delay">
                                                 <i class="${Icon.PROP.MANDATORY}"></i>
                                             </g:link>
                                         </g:if>
                                         <g:else>
                                             <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMandatory.label')}" data-position="top left"
-                                                    params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}">
+                                                    params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
                                                 <i class="la-star slash icon"></i>
                                             </g:link>
                                         </g:else>
                                         <g:if test="${!multiplePdList?.contains(pd.id)}">
                                             <g:if test="${pd.multipleOccurrence}">
                                                 <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="top left"
-                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.BASIC_ICON} orange la-popup-tooltip la-delay">
+                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.BASIC} orange la-popup-tooltip la-delay">
                                                     <i class="redo slash icon"></i>
                                                 </g:link>
                                             </g:if>
                                             <g:else>
                                                 <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}" data-position="top left"
-                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}">
+                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
                                                     <i class="la-redo slash icon"></i>
                                                 </g:link>
                                             </g:else>
@@ -152,7 +152,7 @@
 
                                         <g:if test="${(pd.descr == PropertyDefinition.SUB_PROP) && !PropertyDefinition.findByNameAndDescrAndTenant(pd.name, PropertyDefinition.SVY_PROP, null)}">
                                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}">
-                                                <g:link class="${Btn.MODERN.SIMPLE_ICON}" action="transferSubPropToSurProp" params="[propertyDefinition: pd.id]">
+                                                <g:link class="${Btn.MODERN.SIMPLE}" action="transferSubPropToSurProp" params="[propertyDefinition: pd.id]">
                                                     <i class="${Icon.CMD.COPY}"></i>
                                                 </g:link>
                                             </span>
@@ -161,7 +161,7 @@
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedPdList?.contains(pd.id)}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
-                                                    <button class="${Btn.MODERN.SIMPLE_ICON}" data-href="#replacePropertyDefinitionModal" data-ui="modal"
+                                                    <button class="${Btn.MODERN.SIMPLE}" data-href="#replacePropertyDefinitionModal" data-ui="modal"
                                                             data-xcg-pd="${pd.class.name}:${pd.id}"
                                                             data-xcg-type="${pd.type}"
                                                             data-xcg-rdc="${pd.refdataCategory}"
@@ -173,7 +173,7 @@
 
                                         <g:if test="${! pd.isHardData && ! usedPdList?.contains(pd.id)}">
                                             <g:link controller="admin" action="managePropertyDefinitions"
-                                                    params="${[cmd: 'deletePropertyDefinition', pd: pd.id]}" class="${Btn.MODERN.NEGATIVE_ICON}"
+                                                    params="${[cmd: 'deletePropertyDefinition', pd: pd.id]}" class="${Btn.MODERN.NEGATIVE}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                 <i class="${Icon.CMD.DELETE}"></i>

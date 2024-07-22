@@ -378,7 +378,7 @@
                     </g:if>--}%
                         <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]"
-                                class="${Btn.MODERN.SIMPLE_ICON}">
+                                class="${Btn.MODERN.SIMPLE}">
                             <i class="${Icon.SURVEY}"></i>
                             </div>
                         </g:link>
@@ -386,7 +386,7 @@
                 <td>
                     <g:link controller="survey" action="show" id="${surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id]"
-                            class="${Btn.MODERN.SIMPLE_ICON}"
+                            class="${Btn.MODERN.SIMPLE}"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.change.universal')}">
                         <i class="${Icon.CMD.EDIT}"></i>
@@ -395,7 +395,7 @@
                     <g:if test="${editable}">
                         <g:link controller="survey" action="copySurvey" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id, q: surveyConfig?.subscription?.providers ? surveyConfig.subscription.providers[0].name : '']"
-                                class="${Btn.MODERN.SIMPLE_ICON}">
+                                class="${Btn.MODERN.SIMPLE}">
                             <i class="${Icon.CMD.COPY}"></i>
                             </div>
                         </g:link>

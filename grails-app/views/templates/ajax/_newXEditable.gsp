@@ -16,7 +16,7 @@
         </div>
         <div class="content la-space-right">
             <g:if test="${ownObj.subscription && showConsortiaFunctions}">
-                <ui:link class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP}"
+                <ui:link class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
                          controller="ajax"
                          action="toggleAlternativeNameAuditConfig"
                          params='[ownerId                                  : "${ownObj.subscription.id}",
@@ -34,7 +34,7 @@
                 </ui:link>
             </g:if>
             <g:elseif test="${ownObj.license && showConsortiaFunctions}">
-                <ui:link class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP}"
+                <ui:link class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
                          controller="ajax"
                          action="toggleAlternativeNameAuditConfig"
                          params='[ownerId                                  : "${ownObj.license.id}",
@@ -52,7 +52,7 @@
                 </ui:link>
             </g:elseif>
             <div class="ui buttons">
-                <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: ownObj.id]"
+                <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: ownObj.id]"
                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.${wrapper}", args: [ownObj.name])}"
                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${objOID}')">
                     <i class="${Icon.CMD.DELETE}"></i>
@@ -68,7 +68,7 @@
         </div>
         <div class="content la-space-right">
             <div class="ui buttons">
-                <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: wrapper, objId: ownObj.id]"
+                <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: wrapper, objId: ownObj.id]"
                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.${wrapper}", args: [ownObj[field].getI10n('value')])}"
                                data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${objOID}')">
                     <i class="${Icon.CMD.DELETE}"></i>

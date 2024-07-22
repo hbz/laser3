@@ -9,7 +9,7 @@
             <div class="ui accordion la-accordion-showMore js-propertiesCompareInfo-accordion">
                 <div class="item">
                     <div class="title">
-                        <div class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} right floated"
+                        <div class="${Btn.MODERN.SIMPLE_TOOLTIP} right floated"
                                 data-content="<g:message code="survey.subscription.propertiesChange.show"/>">
                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                         </div>
@@ -67,7 +67,7 @@
             <div class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                 <div class="item">
                     <div class="title">
-                        <div class="${Btn.MODERN.SIMPLE_ICON} la-delay right floated">
+                        <div class="${Btn.MODERN.SIMPLE} la-delay right floated">
                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                         </div>
                         <laser:script file="${this.getGroovyPageFileName()}">
@@ -244,7 +244,7 @@
                                                 <td class="right aligned">
                                                     <g:if test="${pair.propertySet}">
                                                         <div id="derived-license-properties-toggle${link.id}"
-                                                             class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
+                                                             class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                                              data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
                                                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                         </div>
@@ -297,7 +297,7 @@
                 <div id="statsInfos" class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                     <div class="item">
                         <div class="title">
-                            <div class="${Btn.MODERN.SIMPLE_ICON} la-delay right floated">
+                            <div class="${Btn.MODERN.SIMPLE} la-delay right floated">
                                 <i class="${Icon.CMD.SHOW_MORE}"></i>
                             </div>
 

@@ -196,7 +196,7 @@
                     </td>
                     <td class="center aligned">
                         <g:if test="${flyoutCheckList.contains(sub.id)}">
-                            <g:link class="${Btn.MODERN.SIMPLE_ICON} flyoutLink" controller="public" action="gascoFlyout" data-key="${sub.id}">
+                            <g:link class="${Btn.MODERN.SIMPLE} flyoutLink" controller="public" action="gascoFlyout" data-key="${sub.id}">
                                 <i class="${Icon.UI.INFO}"></i>
                             </g:link>
                         </g:if>

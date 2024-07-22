@@ -47,7 +47,7 @@
                                     action="unsetCustomerIdentifier"
                                     id="${subscription.id}"
                                     params="${[deleteCI: pair.id]}"
-                                    class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                    class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unset.customeridentifier", args: ["" + pair.getProvider() + " : " + (pair.platform?:'') + " " + (pair.value?:'')])}"
                                     data-confirm-term-how="unset"
                                     role="button"

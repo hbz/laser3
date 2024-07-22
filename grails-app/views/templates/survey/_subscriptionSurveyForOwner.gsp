@@ -93,7 +93,7 @@
                                     <g:if test="${editable}">
                                         <span class="la-popup-tooltip la-delay"
                                               data-content="${message(code: 'default.button.delete.label')}">
-                                            <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM} la-selectable-button"
+                                            <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.generic", args: [message(code: 'surveyconfig.url.label', args: [i+1])])}"
                                                     data-confirm-term-how="delete"
                                                     controller="survey" action="addSurveyUrl"
@@ -200,7 +200,7 @@
                             <div class="ui accordion la-accordion-showMore js-propertiesCompareInfo-accordion">
                                 <div class="item">
                                     <div class="title">
-                                        <div class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} right floated"
+                                        <div class="${Btn.MODERN.SIMPLE_TOOLTIP} right floated"
                                                 data-content="<g:message code="survey.subscription.propertiesChange.show"/>">
                                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                                         </div>
@@ -260,7 +260,7 @@
                     <div class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                         <div class="item">
                             <div class="title">
-                                <div class="${Btn.MODERN.SIMPLE_ICON} la-delay right floated">
+                                <div class="${Btn.MODERN.SIMPLE} la-delay right floated">
                                     <i class="${Icon.CMD.SHOW_MORE}"></i>
                                 </div>
                                 <laser:script file="${this.getGroovyPageFileName()}">
@@ -437,7 +437,7 @@
                                                         <td class="right aligned">
                                                             <g:if test="${pair.propertySet}">
                                                                 <div id="derived-license-properties-toggle${link.id}"
-                                                                        class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"
+                                                                        class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                                                         data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
                                                                     <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                                 </div>
@@ -490,7 +490,7 @@
                         <div id="statsInfos" class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                             <div class="item">
                                 <div class="title">
-                                    <div class="${Btn.MODERN.SIMPLE_ICON} la-delay right floated">
+                                    <div class="${Btn.MODERN.SIMPLE} la-delay right floated">
                                         <i class="${Icon.CMD.SHOW_MORE}"></i>
                                     </div>
 

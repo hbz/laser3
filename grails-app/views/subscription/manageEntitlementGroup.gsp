@@ -51,7 +51,7 @@
                 </td>
                 <td class="x">
 
-                    <g:link action="index" class="${Btn.MODERN.SIMPLE_ICON}" id="${params.id}"
+                    <g:link action="index" class="${Btn.MODERN.SIMPLE}" id="${params.id}"
                             params="[titleGroup: titleGroup.id]"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.change.universal')}">

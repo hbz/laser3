@@ -146,7 +146,7 @@
                                 <td>
                                     %{-- TODO: erms-5495 --}%
                                     <g:if test="${editable_customeridentifier && editable_this_ci}">
-                                        %{--}<button class="${Btn.MODERN.SIMPLE_ICON}" onclick="JSPC.app.IdContoller.editCustomerIdentifier(${ci.id});"
+                                        %{--}<button class="${Btn.MODERN.SIMPLE}" onclick="JSPC.app.IdContoller.editCustomerIdentifier(${ci.id});"
                                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                             <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                         </button>--}%
@@ -154,7 +154,7 @@
                                                 action="deleteCustomerIdentifier"
                                                 id="${orgInstance.id}"
                                                 params="${[deleteCI:ci.id]}"
-                                                class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                                class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.customeridentifier", args: [""+ci.getProvider()+" : "+ci.platform+" "+ci.value])}"
                                                 data-confirm-term-how="delete"
                                                 role="button"

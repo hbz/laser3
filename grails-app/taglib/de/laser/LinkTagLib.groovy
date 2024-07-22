@@ -84,7 +84,7 @@ class LinkTagLib {
         }
 
         out << '<a href="' + href + '" target="_blank" aria-label="' + label + '" '
-        out << 'class="' + Btn.MODERN.SIMPLE_ICON_TOOLTIP + '" '
+        out << 'class="' + Btn.MODERN.SIMPLE_TOOLTIP + '" '
         out << 'data-position="top right" data-content="' + label + '" '
         out << 'role="button">'
 

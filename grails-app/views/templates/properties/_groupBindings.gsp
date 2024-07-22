@@ -104,7 +104,7 @@
                                                   ]'
                                                   onComplete="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#propDefGroupBindingConfig')"
                                                   data-update="propDefGroupBindingConfig"
-                                                  class="${Btn.MODERN.NEGATIVE_ICON}"
+                                                  class="${Btn.MODERN.NEGATIVE}"
                                                       role="button"
                                                       ariaLabel="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="icon times"></i>

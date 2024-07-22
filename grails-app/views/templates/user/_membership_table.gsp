@@ -47,7 +47,7 @@
                             <g:if test="${! userInstance.isLastInstAdminOf(userInstance.formalOrg)}">
                                     <g:link controller="ajax" action="unsetAffiliation"
                                             params='${[key:"${userInstance.id}:${userInstance.formalOrg.id}:${userInstance.formalRole.id}"]}'
-                                            class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                            class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code:'confirm.dialog.unlink.user.affiliation')}"
                                             data-confirm-term-how="unlink"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
@@ -56,7 +56,7 @@
                             </g:if>
                             <g:else>
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg2', args: [userInstance.getDisplayName()])}">
-                                    <button class="${Btn.MODERN.NEGATIVE_ICON}" disabled="disabled">
+                                    <button class="${Btn.MODERN.NEGATIVE}" disabled="disabled">
                                         <i class="${Icon.CMD.UNLINK}"></i>
                                     </button>
                                 </span>

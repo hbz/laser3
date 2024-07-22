@@ -55,7 +55,7 @@
                             <%-- 1 --%>
                             <g:if test="${ownobj.respondsTo('showUIShareButton') && ownobj.showUIShareButton()}">
                                 <g:if test="${docctx?.isShared}">
-                                    <ui:remoteLink class="${Btn.MODERN.POSITIVE_ICON_TOOLTIP} js-no-wait-wheel"
+                                    <ui:remoteLink class="${Btn.MODERN.POSITIVE_TOOLTIP} js-no-wait-wheel"
                                                       controller="ajax"
                                                       action="toggleShare"
                                                       params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"notes", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'
@@ -67,7 +67,7 @@
                                     </ui:remoteLink>
                                 </g:if>
                                 <g:else>
-                                    <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP} js-no-wait-wheel"
+                                    <ui:remoteLink class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP} js-no-wait-wheel"
                                                       controller="ajax"
                                                       action="toggleShare"
                                                       params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"notes", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'
@@ -89,7 +89,7 @@
 %{--                            </g:else>--}%
                             <%-- 2 --%>
                             <g:if test="${!docctx.isShared && (editable || editable2)}">
-                                <g:link controller="${ajaxCallController ?: controllerName}" action="deleteDocuments" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                <g:link controller="${ajaxCallController ?: controllerName}" action="deleteDocuments" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.notes", args: [docctx.owner.title])}"
                                         data-confirm-term-how="delete"
                                         params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'
@@ -139,7 +139,7 @@
                             <div class="four wide column">
 %{--                                <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id}">--}%
 %{--                                    <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />--}%
-%{--                                    <button type="button" class="${Btn.MODERN.SIMPLE_ICON}" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="${Icon.CMD.EDIT}"></i></button>--}%
+%{--                                    <button type="button" class="${Btn.MODERN.SIMPLE}" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="${Icon.CMD.EDIT}"></i></button>--}%
 %{--                                </g:if>--}%
                             </div>
                         </div>

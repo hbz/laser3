@@ -92,7 +92,7 @@
                                   data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                                 <g:link controller="survey" action="evaluationParticipant"
                                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: institution.id]"
-                                        class="${Btn.MODERN.SIMPLE_ICON}"
+                                        class="${Btn.MODERN.SIMPLE}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                     <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
@@ -104,7 +104,7 @@
                                   data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                                 <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}"
                                         params="[surveyConfigID: surveyConfig.id]"
-                                        class="${Btn.MODERN.SIMPLE_ICON}"
+                                        class="${Btn.MODERN.SIMPLE}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                     <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>

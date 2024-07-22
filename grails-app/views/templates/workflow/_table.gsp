@@ -45,13 +45,13 @@
                 </td>
                 <td class="center aligned">
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                        <button class="${Btn.MODERN.SIMPLE_ICON}" data-wfId="${clist.id}"><i class="${Icon.CMD.EDIT}"></i></button>
+                        <button class="${Btn.MODERN.SIMPLE}" data-wfId="${clist.id}"><i class="${Icon.CMD.EDIT}"></i></button>
                     </g:if>
                     <g:elseif test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
-                        <button class="${Btn.MODERN.SIMPLE_ICON}" data-wfId="${clist.id}"><i class="icon search"></i></button>
+                        <button class="${Btn.MODERN.SIMPLE}" data-wfId="${clist.id}"><i class="icon search"></i></button>
                     </g:elseif>
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                        <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                        <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [clist.title])}"
                                 data-confirm-term-how="delete"
                                 controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}"]}"

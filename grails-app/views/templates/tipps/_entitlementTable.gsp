@@ -126,7 +126,7 @@
                                     </g:link>
                                 </g:if>
                                 <g:elseif test="${side == 'source' && !isContainedByTarget && editable}">
-                                    <g:link class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}" action="processAddEntitlements"
+                                    <g:link class="${Btn.MODERN.SIMPLE_TOOLTIP}" action="processAddEntitlements"
                                             params="${[id: subscription.id, singleTitle: tipp.gokbId]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
                                         <i class="${Icon.CMD.ADD}"></i>

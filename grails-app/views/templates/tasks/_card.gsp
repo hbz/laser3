@@ -24,7 +24,7 @@
                 <g:if test="${overwriteEditable}">
                     <div class="right floated content">
                         <g:link action="deleteTask" controller="ajax"
-                                class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                 data-confirm-term-how="delete"
                                 params='[deleteId:tsk.id, id: params.id, returnToShow: controllerName]'
@@ -65,7 +65,7 @@
             </div>
             <div class="right aligned four wide column la-column-left-lessPadding">
                 <g:link action="deleteTask" controller="ajax"
-                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                        class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                         data-confirm-term-how="delete"
                         params='[deleteId:tsk.id, id: params.id, returnToShow: controllerName]'

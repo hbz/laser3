@@ -5,19 +5,19 @@
 
 <div style="text-align:right; margin-right:0.5em">
     <g:if test="${!(queryPart in ['issueEntitlement'])}">
-        <button id="details-export-button" class="${Btn.MODERN.SIMPLE_ICON}" data-href="#detailsExportModal" data-ui="modal">
+        <button id="details-export-button" class="${Btn.MODERN.SIMPLE}" data-href="#detailsExportModal" data-ui="modal">
             <i class="${Icon.CMD.DOWNLOAD}"></i>
         </button>
     </g:if>
 
     <g:if test="${queryPart in ['package', 'platform']}">
-        <button id="details-dtc-button" class="${Btn.MODERN.SIMPLE_ICON}">
+        <button id="details-dtc-button" class="${Btn.MODERN.SIMPLE}">
             <i class="icon th"></i>
         </button>
     </g:if>
 
     <g:if test="${queryPart in ['org', 'member', 'consortium', /* 'provider', 'vendor' */]}"><!-- TODO -->
-        <button id="details-copy-email-button" class="${Btn.MODERN.SIMPLE_ICON}" data-href="#detailsCopyEmailModal" data-ui="modal">
+        <button id="details-copy-email-button" class="${Btn.MODERN.SIMPLE}" data-href="#detailsCopyEmailModal" data-ui="modal">
             <i class="icon envelope"></i>
         </button>
     </g:if>

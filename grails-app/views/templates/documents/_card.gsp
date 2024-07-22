@@ -88,16 +88,16 @@
 
                         <g:if test="${! (editable || editable2)}">
                             <%-- 1 --%>
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE_ICON}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                         </g:if>
                         <g:else>
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                 <%-- 1 --%>
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE_ICON}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 
                                 <%-- 2 --%>
                                 <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
-                                <button type="button" class="${Btn.MODERN.SIMPLE_ICON}"
+                                <button type="button" class="${Btn.MODERN.SIMPLE}"
                                         data-ui="modal"
                                         data-href="#modalEditDocument_${docctx.id}"
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
@@ -106,14 +106,14 @@
                             </g:if>
                             <g:elseif test="${docctx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET}">
                                 <%-- 1 --%>
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE_ICON}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                             </g:elseif>
 
                             <%-- 3 --%>
                             <g:if test="${!(ownobj instanceof Org) && !(ownobj instanceof Provider) && !(ownobj instanceof Vendor) && ownobj?.showUIShareButton() && userService.hasFormalAffiliation(contextService.getUser(), docctx.owner.owner, 'INST_EDITOR')}">
                                 <g:if test="${docctx?.isShared}">
                                     <span>
-                                        <ui:remoteLink class="${Btn.MODERN.POSITIVE_ICON_TOOLTIP} js-no-wait-wheel"
+                                        <ui:remoteLink class="${Btn.MODERN.POSITIVE_TOOLTIP} js-no-wait-wheel"
                                                        controller="ajax"
                                                        action="toggleShare"
                                                        params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"documents", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?:  actionName]'
@@ -126,7 +126,7 @@
                                     </span>
                                 </g:if>
                                 <g:else>
-                                    <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP} js-no-wait-wheel"
+                                    <ui:remoteLink class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP} js-no-wait-wheel"
                                                    controller="ajax"
                                                    action="toggleShare"
                                                    params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"documents", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?:  actionName]'
@@ -143,7 +143,7 @@
 
                             <%-- 4 --%>
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
-                                <g:link controller="${ajaxCallController ?: controllerName}" action="deleteDocuments" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                <g:link controller="${ajaxCallController ?: controllerName}" action="deleteDocuments" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                         data-confirm-term-how="delete"
                                         params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'
@@ -163,11 +163,11 @@
                                 %{-- old --}%
 
 %{--                            <g:if test="${docctx.owner.owner?.id == contextOrg.id}">--}%
-%{--                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE_ICON}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>--}%
+%{--                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>--}%
 
 %{--                                <%-- START First Button --%>--}%
 %{--                                <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />--}%
-%{--                                <button type="button" class="${Btn.MODERN.SIMPLE_ICON}"--}%
+%{--                                <button type="button" class="${Btn.MODERN.SIMPLE}"--}%
 %{--                                        data-ui="modal"--}%
 %{--                                        data-href="#modalEditDocument_${docctx.id}"--}%
 %{--                                        aria-label="${message(code: 'ariaLabel.change.universal')}">--}%
@@ -175,7 +175,7 @@
 
 %{--                                <%-- START Second Button --%>--}%
 %{--                                <g:if test="${!docctx.isShared}">--}%
-%{--                                    <g:link controller="${ajaxCallController ?: controllerName}" action="deleteDocuments" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"--}%
+%{--                                    <g:link controller="${ajaxCallController ?: controllerName}" action="deleteDocuments" class="${Btn.MODERN.NEGATIVE_CONFIRM}"--}%
 %{--                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"--}%
 %{--                                            data-confirm-term-how="delete"--}%
 %{--                                            params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'--}%
@@ -203,7 +203,7 @@
 %{--                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && userService.hasFormalAffiliation(contextService.getUser(), docctx.owner.owner, 'INST_EDITOR')}">--}%
 %{--                                <g:if test="${docctx?.isShared}">--}%
 %{--                                    <span>--}%
-%{--                                    <ui:remoteLink class="${Btn.MODERN.POSITIVE_ICON_TOOLTIP} js-no-wait-wheel"--}%
+%{--                                    <ui:remoteLink class="${Btn.MODERN.POSITIVE_TOOLTIP} js-no-wait-wheel"--}%
 %{--                                                      controller="ajax"--}%
 %{--                                                      action="toggleShare"--}%
 %{--                                                      params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"documents", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?:  actionName]'--}%
@@ -216,7 +216,7 @@
 %{--                                    </span>--}%
 %{--                                </g:if>--}%
 %{--                                <g:else>--}%
-%{--                                    <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP} js-no-wait-wheel"--}%
+%{--                                    <ui:remoteLink class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP} js-no-wait-wheel"--}%
 %{--                                                      controller="ajax"--}%
 %{--                                                      action="toggleShare"--}%
 %{--                                                      params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"documents", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?:  actionName]'--}%
@@ -260,12 +260,12 @@
                         </div>
 
                         <div class="five wide right aligned column">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE_ICON}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 
                             %{--
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                 <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
-                                <button type="button" class="${Btn.MODERN.SIMPLE_ICON}" data-ui="modal"
+                                <button type="button" class="${Btn.MODERN.SIMPLE}" data-ui="modal"
                                         data-href="#modalEditDocument_${docctx.id}"
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
                                 <i class="${Icon.CMD.EDIT}"></i></button>

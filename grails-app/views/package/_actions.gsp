@@ -42,7 +42,7 @@
                 <g:if test="${org.isCustomerType_Consortium()}">
                     <g:hiddenField name="subOID" value="null"/>
                     <div class="field">
-                        <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherit')}" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP} la-audit-button" data-inherited="false">
+                        <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherit')}" class="${Btn.MODERN.SIMPLE_TOOLTIP} la-audit-button" data-inherited="false">
                             <i aria-hidden="true" class="icon la-thumbtack slash"></i>
                         </button>
                     </div>

@@ -106,7 +106,7 @@
                                 <g:if test="${! AuditConfig.getConfig(prop)}">
 
                                     <g:if test="${prop.type in memberProperties}">
-                                        <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP}"
+                                        <ui:remoteLink class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
                                                           controller="ajax"
                                                           action="togglePropertyAuditConfig"
                                                           params='[propClass: prop.getClass(),
@@ -130,7 +130,7 @@
                                         </ui:remoteLink>
                                     </g:if>
                                     <g:else>
-                                        <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP}"
+                                        <ui:remoteLink class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
                                                           controller="ajax"
                                                           action="togglePropertyAuditConfig"
                                                           params='[propClass: prop.getClass(),
@@ -155,7 +155,7 @@
                                     </g:else>
                                 </g:if>
                                 <g:else>
-                                    <ui:remoteLink class="${Btn.MODERN.POSITIVE_ICON_CONFIRM_TOOLTIP}"
+                                    <ui:remoteLink class="${Btn.MODERN.POSITIVE_CONFIRM_TOOLTIP}"
                                                       controller="ajax"
                                                       action="togglePropertyAuditConfig"
                                                       params='[propClass: prop.getClass(),
@@ -196,7 +196,7 @@
                                         </ui:remoteLink>
                                     </g:if>
                                     <g:else>
-                                        <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                        <ui:remoteLink class="${Btn.MODERN.SIMPLE_TOOLTIP}" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                           params='[oid: genericOIDService.getOID(prop),
                                                                    editable:"${overwriteEditable}",
                                                                    custom_props_div: "${custom_props_div}",
@@ -214,7 +214,7 @@
 
                                 <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
 
-                                <ui:remoteLink class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                <ui:remoteLink class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                   controller="ajax"
                                                   action="deleteCustomProperty"
                                                   params='[propClass: prop.getClass(),

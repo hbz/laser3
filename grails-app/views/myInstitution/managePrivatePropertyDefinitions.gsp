@@ -120,26 +120,26 @@
                                             <g:if test="${editable}">
                                                 <g:if test="${pd.mandatory}">
                                                     <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="left center"
-                                                            params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.BASIC_ICON_TOOLTIP} yellow">
+                                                            params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.BASIC_TOOLTIP} yellow">
                                                         <i class="${Icon.PROP.MANDATORY}"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMandatory.label')}" data-position="left center"
-                                                            params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}">
+                                                            params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
                                                         <i class="la-star slash icon"></i>
                                                     </g:link>
                                                 </g:else>
                                                 <g:if test="${!multiplePdList?.contains(pd.id)}">
                                                     <g:if test="${pd.multipleOccurrence}">
                                                         <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="left center"
-                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.BASIC_ICON_TOOLTIP} orange">
+                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.BASIC_TOOLTIP} orange">
                                                             <i class="redo slash icon"></i>
                                                         </g:link>
                                                     </g:if>
                                                     <g:else>
                                                         <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}" data-position="left center"
-                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}">
+                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
                                                             <i class="la-redo slash icon"></i>
                                                         </g:link>
                                                     </g:else>
@@ -149,7 +149,7 @@
                                                             params="[cmd:'delete', deleteIds: pd?.id]"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [fieldValue(bean: pd, field: "name_de")])}"
                                                             data-confirm-term-how="delete"
-                                                            class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                                            class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                         <i class="${Icon.CMD.DELETE}"></i>
@@ -157,7 +157,7 @@
                                                 </g:if>
                                                 <g:else>
                                                     <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
-                                                        <button class="${Btn.MODERN.SIMPLE_ICON}" data-href="#replacePropertyDefinitionModal" data-ui="modal"
+                                                        <button class="${Btn.MODERN.SIMPLE}" data-href="#replacePropertyDefinitionModal" data-ui="modal"
                                                                 data-xcg-pd="${pd.class.name}:${pd.id}"
                                                                 data-xcg-type="${pd.type}"
                                                                 data-xcg-rdc="${pd.refdataCategory}"
@@ -169,7 +169,7 @@
                                             </g:if>
                                             <g:elseif test="${changeProperties && pd.countOwnUsages() > 0}">
                                                 <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
-                                                    <button class="${Btn.MODERN.SIMPLE_ICON}" data-href="#replacePropertyDefinitionModal" data-ui="modal"
+                                                    <button class="${Btn.MODERN.SIMPLE}" data-href="#replacePropertyDefinitionModal" data-ui="modal"
                                                             data-xcg-pd="${pd.class.name}:${pd.id}"
                                                             data-xcg-type="${pd.type}"
                                                             data-xcg-rdc="${pd.refdataCategory}"

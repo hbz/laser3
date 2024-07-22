@@ -152,12 +152,12 @@
                 <td class="x">
                     <g:if test="${editable && tmplShowDeleteButton}">
 
-                        <button type="button" onclick="JSPC.app.editAddress(${address.id})" class="${Btn.MODERN.SIMPLE_ICON}"
+                        <button type="button" onclick="JSPC.app.editAddress(${address.id})" class="${Btn.MODERN.SIMPLE}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
                             <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                         </button>
-                        <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                        <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.address.addressbook")}"
                                 data-confirm-term-how="delete"
                                 controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: genericOIDService.getOID(address)]"

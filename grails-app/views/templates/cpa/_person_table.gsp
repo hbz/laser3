@@ -334,7 +334,7 @@
         <g:if test="${showOptions}">
             <td class="x">
                 <g:if test="${editable}">
-                    <button type="button" onclick="JSPC.app.editPerson(${person.id})" class="${Btn.MODERN.SIMPLE_ICON}"
+                    <button type="button" onclick="JSPC.app.editPerson(${person.id})" class="${Btn.MODERN.SIMPLE}"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
                         <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
@@ -342,7 +342,7 @@
 
                     <g:form style="display:inline" controller="person" action="delete" data-confirm-id="${person.id.toString() + '_form'}">
                         <g:hiddenField id="person_id_${person.id}" name="id" value="${person.id}"/>
-                        <div class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                        <div class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                              data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact.addressbook", args: [person.toString()])}"
                              data-confirm-term-how="delete"
                              data-confirm-id="${person.id}"

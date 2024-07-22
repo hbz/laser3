@@ -37,7 +37,7 @@
                                         <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
                                             <span class="la-popup-tooltip la-delay"
                                                   data-content="${message(code: 'default.button.unlink.label')}">
-                                                <g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM} la-selectable-button"
+                                                <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                                                         data-confirm-tokenMsg="${surveyLink.bothDirection ? message(code: "surveyLinks.bothDirection.unlink.confirm.dialog") : message(code: "surveyLinks.unlink.confirm.dialog")}"
                                                         data-confirm-term-how="unlink"
                                                         controller="survey" action="setSurveyLink"

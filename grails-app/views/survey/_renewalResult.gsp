@@ -240,7 +240,7 @@
             <td class="x">
                 <g:link controller="survey" action="evaluationParticipant"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participantResult.participant.id]"
-                        class="${Btn.MODERN.SIMPLE_ICON}"
+                        class="${Btn.MODERN.SIMPLE}"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                     <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>

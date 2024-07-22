@@ -56,8 +56,8 @@
 
         <div class="field" style="text-align: right">
             <label for="query-export-button">&nbsp;</label>
-            <button id="query-export-button" class="${Btn.MODERN.SIMPLE_ICON}" data-href="#queryExportModal" data-ui="modal" disabled><i class="${Icon.CMD.DOWNLOAD}"></i></button>
-            <button id="query-help-button" class="${Btn.MODERN.SIMPLE_ICON}" data-href="#queryHelpModal" data-ui="modal" disabled><i class="${Icon.UI.HELP}"></i></button>
+            <button id="query-export-button" class="${Btn.MODERN.SIMPLE}" data-href="#queryExportModal" data-ui="modal" disabled><i class="${Icon.CMD.DOWNLOAD}"></i></button>
+            <button id="query-help-button" class="${Btn.MODERN.SIMPLE}" data-href="#queryHelpModal" data-ui="modal" disabled><i class="${Icon.UI.HELP}"></i></button>
         </div>
     </div>
 </div>

@@ -149,10 +149,10 @@ ${currentAnnouncement?.getCleanContent()}
                     </g:if>
                     <g:else>
                         <br />
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'delete']" role="button" class="${Btn.MODERN.NEGATIVE_ICON}"
+                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'delete']" role="button" class="${Btn.MODERN.NEGATIVE}"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
                             <i aria-hidden="true" class="${Icon.CMD.DELETE}"></i></g:link>
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'edit']" role="button" class="${Btn.MODERN.SIMPLE_ICON}"><i aria-hidden="true" class="${Icon.CMD.EDIT}"></i></g:link>
+                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'edit']" role="button" class="${Btn.MODERN.SIMPLE}"><i aria-hidden="true" class="${Icon.CMD.EDIT}"></i></g:link>
 
                         <g:if test="${mailDisabled}">
                             <button class="${Btn.SIMPLE}" disabled="disabled">${message(code:'default.publish.label')}</button>

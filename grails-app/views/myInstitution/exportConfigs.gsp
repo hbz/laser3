@@ -53,18 +53,18 @@
                         <td>
                             <g:if test="${editable}">
                                 <g:if test="${i == 1 && clickMeConfigs.size() == 2}">
-                                    <g:link class="${Btn.MODERN.SIMPLE_ICON} compact" action="exportConfigsActions"
+                                    <g:link class="${Btn.MODERN.SIMPLE} compact" action="exportConfigsActions"
                                             params="[cmd: 'moveUp', id: clickMeConfig.id, tab: params.tab]"><i class="${Icon.CMD.MOVE_UP}"></i>
                                     </g:link>
                                 </g:if>
                                 <g:else>
                                     <g:if test="${i > 0}">
-                                        <g:link class="${Btn.MODERN.SIMPLE_ICON} compact" action="exportConfigsActions"
+                                        <g:link class="${Btn.MODERN.SIMPLE} compact" action="exportConfigsActions"
                                                 params="[cmd: 'moveUp', id: clickMeConfig.id, tab: params.tab]"><i class="${Icon.CMD.MOVE_UP}"></i>
                                         </g:link>
                                     </g:if>
                                     <g:if test="${i < clickMeConfigs.size()-1}">
-                                        <g:link class="${Btn.MODERN.SIMPLE_ICON} compact" action="exportConfigsActions"
+                                        <g:link class="${Btn.MODERN.SIMPLE} compact" action="exportConfigsActions"
                                                 params="[cmd: 'moveDown', id: clickMeConfig.id, tab: params.tab]"><i class="${Icon.CMD.MOVE_DOWN}"></i>
                                         </g:link>
                                     </g:if>
@@ -75,7 +75,7 @@
                         <g:if test="${editable}">
                             <td>
                                 <g:link controller="myInstitution" action="exportConfigsActions"
-                                        params="${[cmd: 'delete', id: clickMeConfig.id, tab: params.tab]}" class="${Btn.MODERN.NEGATIVE_ICON}"
+                                        params="${[cmd: 'delete', id: clickMeConfig.id, tab: params.tab]}" class="${Btn.MODERN.NEGATIVE}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="${Icon.CMD.DELETE}"></i>

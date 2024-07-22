@@ -89,7 +89,7 @@
                                 <g:if test="${showConsortiaFunctions}">
                                     <g:if test="${!ident.instanceOf}">
                                         <g:if test="${! AuditConfig.getConfig(ident)}">
-                                            <ui:remoteLink class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP}"
+                                            <ui:remoteLink class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
                                                               controller="ajax"
                                                               action="toggleIdentifierAuditConfig"
                                                               params='[ownerId: "${object.id}",
@@ -106,7 +106,7 @@
                                             >
                                                 <i class="icon la-thumbtack slash"></i>
                                             </ui:remoteLink>
-                                            <g:link controller="ajax" action="deleteIdentifier" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                            <g:link controller="ajax" action="deleteIdentifier" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                     params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
                                                     role="button"
@@ -115,7 +115,7 @@
                                             </g:link>
                                         </g:if>
                                         <g:else>
-                                            <ui:remoteLink class="${Btn.MODERN.POSITIVE_ICON_CONFIRM_TOOLTIP}"
+                                            <ui:remoteLink class="${Btn.MODERN.POSITIVE_CONFIRM_TOOLTIP}"
                                                               controller="ajax" action="toggleIdentifierAuditConfig"
                                                               params='[ownerId: "${object.id}",
                                                                        ownerClass: "${object.class}",
@@ -134,7 +134,7 @@
                                         </g:else>
                                     </g:if>
                                     <g:else>
-                                        <g:link controller="ajax" action="deleteIdentifier" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                        <g:link controller="ajax" action="deleteIdentifier" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                 params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'
                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
                                                 role="button"
@@ -147,7 +147,7 @@
                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
                                 </g:elseif>
                                 <g:else>
-                                    <g:link controller="ajax" action="deleteIdentifier" class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                                    <g:link controller="ajax" action="deleteIdentifier" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
                                             role="button"

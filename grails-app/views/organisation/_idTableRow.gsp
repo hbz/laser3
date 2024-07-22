@@ -43,13 +43,13 @@
         <td>${id.note}</td>
         <td>
             <g:if test="${editable}">
-                <button class="${Btn.MODERN.SIMPLE_ICON}" onclick="JSPC.app.IdContoller.editIdentifier(${id.id});"
+                <button class="${Btn.MODERN.SIMPLE}" onclick="JSPC.app.IdContoller.editIdentifier(${id.id});"
                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                     <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                 </button>
                 <g:link controller="ajax"
                         action="deleteIdentifier"
-                        class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+                        class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                         params='${[owner: "${orgInstance.class.name}:${orgInstance.id}", target: "${id.class.name}:${id.id}"]}'
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [id?.ns?.ns+": "+id.value])}"
                         role="button"

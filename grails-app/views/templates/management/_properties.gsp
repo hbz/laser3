@@ -284,7 +284,7 @@
 
                     <td class="x">
                         <g:link controller="subscription" action="show" id="${subscription.id}"
-                                class="${Btn.MODERN.SIMPLE_ICON}"
+                                class="${Btn.MODERN.SIMPLE}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
                             <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
@@ -625,7 +625,7 @@
 
                         <td class="x">
                             <g:link controller="subscription" action="show" id="${sub.id}"
-                                    class="${Btn.MODERN.SIMPLE_ICON}"
+                                    class="${Btn.MODERN.SIMPLE}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i></g:link>

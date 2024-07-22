@@ -79,7 +79,7 @@
             <div class="ui right floated buttons">
                 <div class="right aligned wide column">
                 </div>
-                <div class="${Btn.MODERN.SIMPLE_ICON}">
+                <div class="${Btn.MODERN.SIMPLE}">
                     <i class="${Icon.CMD.SHOW_MORE}"></i>
                 </div>
             </div>

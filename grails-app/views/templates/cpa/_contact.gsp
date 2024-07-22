@@ -15,7 +15,7 @@
         <div class="content">
             <g:if test="${contact.contentType == RDStore.CCT_EMAIL}">
                 <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code: 'tooltip.sendMail')}">
-                    <a href="mailto:${contact.content}" class="${Btn.MODERN.SIMPLE_ICON}">
+                    <a href="mailto:${contact.content}" class="${Btn.MODERN.SIMPLE}">
                         <i class="${Icon.LNK.EXTERNAL}"></i>
                     </a>
                 </span>
@@ -23,14 +23,14 @@
 
             <g:if test="${contact.contentType == RDStore.CCT_URL}">
                 <span class="la-popup-tooltip la-delay" data-position="top right"  data-content="${message(code: 'tooltip.callUrl')}">
-                    <a href="${contact.content}" target="_blank" class="${Btn.MODERN.SIMPLE_ICON}">
+                    <a href="${contact.content}" target="_blank" class="${Btn.MODERN.SIMPLE}">
                         <i class="${Icon.LNK.EXTERNAL}"></i>
                     </a>
                 </span>
             </g:if>
 
             <g:if test="${editable && tmplShowDeleteButton}">
-				<g:link class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"
+				<g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contactItems.addressbook")}"
                         data-confirm-term-how="delete"
                         controller="ajax" action="delete" params="[cmd: 'deleteContact', oid: genericOIDService.getOID(contact)]"
