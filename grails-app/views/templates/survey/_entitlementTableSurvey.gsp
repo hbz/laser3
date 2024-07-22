@@ -308,7 +308,7 @@
                                                                     </g:each>
                                                                     <g:if test="${editable && ie.priceItems.size() < 1}">
                                                                         <g:link action="addEmptyPriceItem"
-                                                                                class="ui tiny button"
+                                                                                class="${Btn.SIMPLE} tiny"
                                                                                 params="${[ieid: ie.id, id: subscription.id]}">
                                                                             <i class="${Icon.FNC.COST_CONFIG}"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
                                                                         </g:link>
@@ -331,7 +331,7 @@
                                                                             <g:if test="${editable}">
                                                                                 <g:link action="editEntitlementGroupItem"
                                                                                         params="${[cmd: 'edit', ie: ie.id, id: subscription.id]}"
-                                                                                        class="ui tiny button">
+                                                                                        class="${Btn.SIMPLE} tiny">
                                                                                     <i class="object group icon"></i>${message(code: 'subscription.details.ieGroups.edit')}
                                                                                 </g:link>
                                                                             </g:if>

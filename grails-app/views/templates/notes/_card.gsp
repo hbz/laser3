@@ -83,7 +83,7 @@
                             </g:if>
 %{--                            <g:else>--}%
 %{--                                    <!-- Hidden Fake Button To hold the other Botton in Place -->--}%
-%{--                                    <div class="ui icon mini button la-hidden">--}%
+%{--                                    <div class="${Btn.SIMPLE_ICON} mini la-hidden">--}%
 %{--                                        <i class="${Icon.UNC.PLACEHOLDER}"></i>--}%
 %{--                                    </div>--}%
 %{--                            </g:else>--}%

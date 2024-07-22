@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 <div class="la-icon-list">
 
@@ -85,7 +85,7 @@
 
     <div class="ui grid">
         <div class="right aligned wide column">
-            <a class="ui mini button" onclick="JSPC.app.showAllTitleInfos(${tipp.id}, ${ie ? ie.id : null});">
+            <a class="${Btn.SIMPLE} mini" onclick="JSPC.app.showAllTitleInfos(${tipp.id}, ${ie ? ie.id : null});">
                 <g:message code="title.details"/>
             </a>
         </div>

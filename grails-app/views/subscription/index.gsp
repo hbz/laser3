@@ -393,7 +393,7 @@
                                 <button data-position="top right"
                                         data-content="${message(code: 'default.button.apply_batch.label')}"
                                         type="submit" onClick="return JSPC.app.confirmSubmit()"
-                                        class="ui icon button la-popup-tooltip la-delay"><g:message code="default.button.apply_batch.label"/>
+                                        class="${Btn.SIMPLE_TOOLTIP}"><g:message code="default.button.apply_batch.label"/>
                                 </button>
                             </div>
                         </div>
