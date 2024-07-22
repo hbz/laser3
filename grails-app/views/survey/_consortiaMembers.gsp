@@ -69,7 +69,7 @@
                            placeholder="${message(code: 'template.addDocument.selectFile')}">
                     <input type="file" name="selectMembersWithImport" accept="text/tab-separated-values,.txt,.csv"
                            style="display: none;">
-                    <div class="${Btn.SIMPLE_ICON}">
+                    <div class="${Btn.ICON.SIMPLE}">
                         <i class="${Icon.CMD.ATTACHMENT}"></i>
                     </div>
                 </div>

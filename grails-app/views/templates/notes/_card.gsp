@@ -83,7 +83,7 @@
                             </g:if>
 %{--                            <g:else>--}%
 %{--                                    <!-- Hidden Fake Button To hold the other Botton in Place -->--}%
-%{--                                    <div class="${Btn.SIMPLE_ICON} mini la-hidden">--}%
+%{--                                    <div class="${Btn.ICON.SIMPLE} mini la-hidden">--}%
 %{--                                        <i class="${Icon.UNC.PLACEHOLDER}"></i>--}%
 %{--                                    </div>--}%
 %{--                            </g:else>--}%
@@ -99,7 +99,7 @@
                                 </g:link>
                             </g:if>
                             <g:else>
-                                <div class="${Btn.SIMPLE_ICON} la-hidden">
+                                <div class="${Btn.ICON.SIMPLE} la-hidden">
                                     <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>
                                 </div>
                             </g:else>

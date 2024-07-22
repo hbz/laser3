@@ -29,7 +29,7 @@
         class="ui circular label la-js-filter-total hidden">0</span>
 </button>
 <h3>Icons in einem Link ohne zusätzlichen Text</h3>
-<g:link aria-label="Das ist eine Beschreibung für den Accessibility Tree" controller="dev" action="frontend" params="" class="${Btn.POSITIVE_ICON}">
+<g:link aria-label="Das ist eine Beschreibung für den Accessibility Tree" controller="dev" action="frontend" params="" class="${Btn.ICON.POSITIVE}">
     <i aria-hidden="true" class="checkmark icon"></i>
 </g:link>
 <g:message code="default.title.label" /> <g:message code="messageRequiredField" />

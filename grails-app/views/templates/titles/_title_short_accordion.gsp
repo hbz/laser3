@@ -28,7 +28,7 @@
 </g:if>
 <div class="item">
     <g:if test="${controllerName != 'tipp' && tipp.id}">
-        <g:link class="${Btn.SIMPLE_ICON_TOOLTIP} tiny"
+        <g:link class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                 data-content="${message(code: 'laser')}"
                 target="_blank"
                 controller="tipp" action="show"
@@ -38,7 +38,7 @@
     </g:if>
     <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}" var="gokbAPI">
         <g:if test="${tipp.gokbId}">
-            <a role="button" class="${Btn.SIMPLE_ICON_TOOLTIP} tiny"
+            <a role="button" class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                data-content="${message(code: 'wekb')}"
                href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/tippContent/?id=' + tipp.gokbId : '#'}"
                target="_blank"><i class="${Icon.WEKB}"></i>

@@ -75,7 +75,7 @@
                                                                 ]'
                                                       onComplete="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#propDefGroupBindingConfig')"
                                                       data-update="propDefGroupBindingConfig"
-                                                      class="${Btn.SIMPLE_ICON}">
+                                                      class="${Btn.ICON.SIMPLE}">
                                             Nicht anzeigen
                                         </ui:remoteLink>
                                     </g:if>
@@ -89,7 +89,7 @@
                                                                ]'
                                                       onComplete="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#propDefGroupBindingConfig')"
                                                       data-update="propDefGroupBindingConfig"
-                                                      class="${Btn.SIMPLE_ICON}">
+                                                      class="${Btn.ICON.SIMPLE}">
                                             Anzeigen
                                         </ui:remoteLink>
                                     </g:else>
