@@ -40,7 +40,7 @@
                 <tbody>
                 <tr>
                     <td> <button class="${Btn.SIMPLE} orange">BASIC</button> </td>
-                    <td> Btn.SIMPLE </td>
+                    <td> Btn.SIMPLE <br/> orange </td>
                     <td> ${Btn.SIMPLE} (+ orange) </td>
                     <td> Colors by declaration; default: blue </td>
                 </tr>
@@ -87,7 +87,7 @@
                 <tbody>
                 <tr>
                     <td> <button class="${Btn.SIMPLE_ICON} yellow"><i class="${Icon.UNC.SQUARE}"></i></button> </td>
-                    <td> Btn.SIMPLE_ICON </td>
+                    <td> Btn.SIMPLE_ICON <br/> yellow </td>
                     <td> ${Btn.SIMPLE_ICON} (+ yellow) </td>
                     <td> Colors by declaration; default: blue </td>
                 </tr>
@@ -135,13 +135,13 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td> <button class="${Btn.POSITIVE_CONFIRM}"><i class="${Icon.CMD.LINKIFY}"></i> POSITIVE_CONFIRM</button> </td>
+                    <td> <button class="${Btn.POSITIVE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.ADD}"></i> POSITIVE_CONFIRM</button> </td>
                     <td> Btn.POSITIVE_CONFIRM </td>
                     <td> ${Btn.POSITIVE_CONFIRM} </td>
                     <td> Confirmation Dialog (data-confirm-attributes needed) </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.NEGATIVE_CONFIRM}"><i class="${Icon.CMD.DELETE}"></i> NEGATIVE_CONFIRM</button> </td>
+                    <td> <button class="${Btn.NEGATIVE_CONFIRM}" data-confirm-term-how="delete"><i class="${Icon.CMD.DELETE}"></i> NEGATIVE_CONFIRM</button> </td>
                     <td> Btn.NEGATIVE_CONFIRM </td>
                     <td> ${Btn.NEGATIVE_CONFIRM} </td>
                     <td> Confirmation Dialog (data-confirm-attributes needed) </td>
@@ -159,7 +159,7 @@
                     <td> </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.SIMPLE_TOOLTIP}">SIMPLE_TOOLTIP</button> </td>
+                    <td> <button class="${Btn.SIMPLE_TOOLTIP}" data-content="Something to know ..">SIMPLE_TOOLTIP</button> </td>
                     <td> Btn.SIMPLE_TOOLTIP </td>
                     <td> ${Btn.SIMPLE_TOOLTIP} </td>
                     <td> Tooltip (data-attributes needed) </td>
@@ -184,13 +184,13 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td> <button class="${Btn.NEGATIVE_ICON_CONFIRM}"><i class="${Icon.CMD.DELETE}"></i></button> </td>
+                    <td> <button class="${Btn.NEGATIVE_ICON_CONFIRM}" data-confirm-term-how="delete"><i class="${Icon.CMD.DELETE}"></i></button> </td>
                     <td> Btn.NEGATIVE_ICON_CONFIRM </td>
                     <td> ${Btn.NEGATIVE_ICON_CONFIRM} </td>
                     <td> Confirmation Dialog (data-confirm-attributes needed) </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.SIMPLE_ICON_TOOLTIP}"><i class="${Icon.CMD.DOWNLOAD}"></i></button> </td>
+                    <td> <button class="${Btn.SIMPLE_ICON_TOOLTIP}" data-content="Something to know .."><i class="${Icon.CMD.DOWNLOAD}"></i></button> </td>
                     <td> Btn.SIMPLE_ICON_TOOLTIP </td>
                     <td> ${Btn.SIMPLE_ICON_TOOLTIP} </td>
                     <td> Tooltip (data-attributes needed) </td>
@@ -219,7 +219,7 @@
                 <tbody>
                 <tr>
                     <td> <button class="${Btn.MODERN.BASIC_ICON} orange"><i class="${Icon.CMD.REPLACE}"></i></button> </td>
-                    <td> Btn.MODERN.BASIC_ICON </td>
+                    <td> Btn.MODERN.BASIC_ICON <br/> orange </td>
                     <td> ${Btn.MODERN.BASIC_ICON} (+ orange) </td>
                     <td> Colors by declaration; default: blue (PROBLEM) </td>
                 </tr>
@@ -261,55 +261,55 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td> <button class="${Btn.MODERN.POSITIVE_ICON_CONFIRM}"><i class="${Icon.CMD.ADD}"></i></button> </td>
+                    <td> <button class="${Btn.MODERN.POSITIVE_ICON_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.ADD}"></i></button> </td>
                     <td> Btn.MODERN.POSITIVE_ICON_CONFIRM </td>
                     <td> ${Btn.MODERN.POSITIVE_ICON_CONFIRM} </td>
                     <td> Confirmation Dialog (data-confirm-attributes needed) </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}"><i class="${Icon.CMD.DELETE}"></i></button> </td>
+                    <td> <button class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM}" data-confirm-term-how="delete"><i class="${Icon.CMD.DELETE}"></i></button> </td>
                     <td> Btn.MODERN.NEGATIVE_ICON_CONFIRM </td>
                     <td> ${Btn.MODERN.NEGATIVE_ICON_CONFIRM} </td>
                     <td> Confirmation Dialog (data-confirm-attributes needed) </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.MODERN.BASIC_ICON_TOOLTIP}"><i class="${Icon.UI.HELP}"></i></button> </td>
-                    <td> Btn.MODERN.BASIC_ICON_TOOLTIP </td>
-                    <td> ${Btn.MODERN.BASIC_ICON_TOOLTIP} </td>
-                    <td> Tooltip (data-attributes needed) </td>
+                    <td> <button class="${Btn.MODERN.BASIC_ICON_TOOLTIP} yellow" data-content="Something to know .."><i class="${Icon.UI.HELP}"></i></button> </td>
+                    <td> Btn.MODERN.BASIC_ICON_TOOLTIP <br/> yellow </td>
+                    <td> ${Btn.MODERN.BASIC_ICON_TOOLTIP} (+ yellow) </td>
+                    <td> Colors by declaration; default: blue (PROBLEM) <br/> Tooltip (data-attributes needed) </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}"><i class="${Icon.UI.HELP}"></i></button> </td>
+                    <td> <button class="${Btn.MODERN.SIMPLE_ICON_TOOLTIP}" data-content="Something to know .."><i class="${Icon.UI.INFO}"></i></button> </td>
                     <td> Btn.MODERN.SIMPLE_ICON_TOOLTIP </td>
                     <td> ${Btn.MODERN.SIMPLE_ICON_TOOLTIP} </td>
                     <td> Tooltip (data-attributes needed) </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.MODERN.POSITIVE_ICON_TOOLTIP}"><i class="${Icon.CMD.ATTACHMENT}"></i></button> </td>
+                    <td> <button class="${Btn.MODERN.POSITIVE_ICON_TOOLTIP}" data-content="Something to know .."><i class="${Icon.CMD.ATTACHMENT}"></i></button> </td>
                     <td> Btn.MODERN.POSITIVE_ICON_TOOLTIP </td>
                     <td> ${Btn.MODERN.POSITIVE_ICON_TOOLTIP} </td>
                     <td> Tooltip (data-attributes needed) </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.MODERN.NEGATIVE_ICON_TOOLTIP}"><i class="${Icon.CMD.ERASE}"></i></button> </td>
+                    <td> <button class="${Btn.MODERN.NEGATIVE_ICON_TOOLTIP}" data-content="Something to know .."><i class="${Icon.CMD.ERASE}"></i></button> </td>
                     <td> Btn.MODERN.NEGATIVE_ICON_TOOLTIP </td>
                     <td> ${Btn.MODERN.NEGATIVE_ICON_TOOLTIP} </td>
                     <td> Tooltip (data-attributes needed) </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP}"><i class="${Icon.CMD.COPY}"></i></button> </td>
+                    <td> <button class="${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP}" data-confirm-term-how="ok" data-content="Something to know .."><i class="${Icon.CMD.COPY}"></i></button> </td>
                     <td> Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP </td>
                     <td> ${Btn.MODERN.SIMPLE_ICON_CONFIRM_TOOLTIP} </td>
                     <td> Confirmation Dialog (data-confirm-attributes needed) <br/> Tooltip (data-attributes needed) </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.MODERN.POSITIVE_ICON_CONFIRM_TOOLTIP}"><i class="${Icon.CMD.ADD}"></i></button> </td>
+                    <td> <button class="${Btn.MODERN.POSITIVE_ICON_CONFIRM_TOOLTIP}" data-confirm-term-how="ok" data-content="Something to know .."><i class="${Icon.CMD.ADD}"></i></button> </td>
                     <td> Btn.MODERN.POSITIVE_ICON_CONFIRM_TOOLTIP </td>
                     <td> ${Btn.MODERN.POSITIVE_ICON_CONFIRM_TOOLTIP} </td>
                     <td> Confirmation Dialog (data-confirm-attributes needed) <br/> Tooltip (data-attributes needed) </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM_TOOLTIP}"><i class="${Icon.CMD.DELETE}"></i></button> </td>
+                    <td> <button class="${Btn.MODERN.NEGATIVE_ICON_CONFIRM_TOOLTIP}" data-confirm-term-how="unlink" data-content="Something to know .."><i class="${Icon.CMD.UNLINK}"></i></button> </td>
                     <td> Btn.MODERN.NEGATIVE_ICON_CONFIRM_TOOLTIP </td>
                     <td> ${Btn.MODERN.NEGATIVE_ICON_CONFIRM_TOOLTIP} </td>
                     <td> Confirmation Dialog (data-confirm-attributes needed) <br/> Tooltip (data-attributes needed) </td>
