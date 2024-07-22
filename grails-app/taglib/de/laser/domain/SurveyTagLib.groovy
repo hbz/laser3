@@ -56,7 +56,7 @@ class SurveyTagLib {
         out << '<i aria-hidden="true" class="icon"></i>'
         out << '<span class="la-annual-rings-text">' + startDate + dash + endDate + '</span>'
 
-        out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
+        out << "<a class='ui ${color} circular tiny label la-popup-tooltip'  data-variation='tiny' data-content='Status: ${tooltip}'>"
         out << '       &nbsp;'
         out << '</a>'
         out << '<i aria-hidden="true" class="icon"></i>'
@@ -69,7 +69,7 @@ class SurveyTagLib {
             out << '</div>'
 
 /*            if(object.isMandatory) {
-                out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='right center' data-content='${message(code: "surveyInfo.isMandatory.label.info2")}'>"
+                out << "<span class='la-long-tooltip la-popup-tooltip' data-position='right center' data-content='${message(code: "surveyInfo.isMandatory.label.info2")}'>"
                 out << "<i class='yellow small icon exclamation triangle'></i>"
                 out << "</span>"
             }*/
@@ -134,7 +134,7 @@ class SurveyTagLib {
 
         out << '<span class="la-annual-rings-text">' + startDate + dash + endDate + '</span>'
 
-        out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
+        out << "<a class='ui ${color} circular tiny label la-popup-tooltip'  data-variation='tiny' data-content='Status: ${tooltip}'>"
         out << '       &nbsp;'
         out << '</a>'
 
@@ -152,7 +152,7 @@ class SurveyTagLib {
             out << '</div>'
 
 /*            if(object.isMandatory) {
-                out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='right center' data-content='${message(code: "surveyInfo.isMandatory.label.info2")}'>"
+                out << "<span class='la-long-tooltip la-popup-tooltip' data-position='right center' data-content='${message(code: "surveyInfo.isMandatory.label.info2")}'>"
                 out << "<i class='yellow small icon exclamation triangle'></i>"
                 out << "</span>"
             }*/

@@ -335,7 +335,7 @@
                                 )}" var="email">
                                     <div class="item js-copyTriggerParent">
                                             <span data-position="right center"
-                                                  class="la-popup-tooltip la-delay js-copyTrigger"
+                                                  class="la-popup-tooltip js-copyTrigger"
                                                   data-content="Mail senden an ${personRole.getPrs()?.getFirst_name()} ${personRole.getPrs()?.getLast_name()}">
                                         <ui:contactIcon type="${email.contentType.value}"/>
                                         <a class="js-copyTopic" href="mailto:${email.content}">${email.content}</a>

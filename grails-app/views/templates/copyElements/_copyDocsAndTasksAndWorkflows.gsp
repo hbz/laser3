@@ -127,12 +127,12 @@
                                                 <g:if test="${docctx.getDocType()}">(${docctx.getDocType().getI10n("value")})</g:if>
                                                 <g:if test="${isConsortialObjects}">
                                                     <g:if test="${docctx.isShared}">
-                                                        <span data-position="top left" class="la-popup-tooltip la-delay la-float-right" data-content="${message(code:'property.share.tooltip.on')}">
+                                                        <span data-position="top left" class="la-popup-tooltip la-float-right" data-content="${message(code:'property.share.tooltip.on')}">
                                                             <i class="la-share icon"></i>
                                                         </span>
                                                     </g:if>
                                                     <g:else>
-                                                        <span data-position="top left" class="la-popup-tooltip la-delay la-float-right" data-content="${message(code:'property.share.tooltip.off')}">
+                                                        <span data-position="top left" class="la-popup-tooltip la-float-right" data-content="${message(code:'property.share.tooltip.off')}">
                                                             <i class="la-share slash icon"></i>
                                                         </span>
                                                     </g:else>
@@ -233,12 +233,12 @@
                                                                     date="${docctx.owner.dateCreated}"/>)
                                                             <g:if test="${isConsortialObjects}">
                                                                 <g:if test="${docctx.isShared}">
-                                                                    <span data-position="top left" class="la-popup-tooltip la-delay la-float-right" data-content="${message(code:'property.share.tooltip.on')}">
+                                                                    <span data-position="top left" class="la-popup-tooltip la-float-right" data-content="${message(code:'property.share.tooltip.on')}">
                                                                         <i class="la-share icon"></i>
                                                                     </span>
                                                                 </g:if>
                                                                 <g:else>
-                                                                    <span data-position="top left" class="la-popup-tooltip la-delay la-float-right" data-content="${message(code:'property.share.tooltip.off')}">
+                                                                    <span data-position="top left" class="la-popup-tooltip la-float-right" data-content="${message(code:'property.share.tooltip.off')}">
                                                                         <i class="la-share slash icon"></i>
                                                                     </span>
                                                                 </g:else>

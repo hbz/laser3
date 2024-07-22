@@ -29,7 +29,7 @@
                 <td>
                     ${fieldValue(bean: us, field: "username")}
                     <g:if test="${! UserRole.findByUser(us)}">
-                        <label class="ui icon label la-popup-tooltip la-delay" data-content="Dieser Account besitzt keine ROLE." data-position="top right">
+                        <label class="ui icon label la-popup-tooltip" data-content="Dieser Account besitzt keine ROLE." data-position="top right">
                             <i class="minus circle icon red"></i>
                         </label>
                     </g:if>

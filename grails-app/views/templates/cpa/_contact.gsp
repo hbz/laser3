@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 <g:if test="${contact}">
 	<div class="ui js-copyTriggerParent item contact-details" style="display: flex; flex-flow: row wrap;">
-        <div  style="display: flex; flex-flow: row wrap;" class="js-copyTrigger la-popup-tooltip la-delay"
+        <div  style="display: flex; flex-flow: row wrap;" class="js-copyTrigger la-popup-tooltip"
     data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
             <ui:contactIcon type="${contact.contentType?.value}" />
             <div class="content la-space-right">

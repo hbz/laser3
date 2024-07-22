@@ -11,7 +11,7 @@
                         <g:if test="${editable}">
                             <ui:xEditable owner="${ie}" type="date"
                                           field="accessStartDate"/>
-                            <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip la-delay"
+                            <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip"
                                data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                         </g:if>
                         <g:else>
@@ -28,7 +28,7 @@
                         <g:if test="${editable}">
                             <ui:xEditable owner="${ie}" type="date"
                                           field="accessEndDate"/>
-                            <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip la-delay"
+                            <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip"
                                data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                         </g:if>
                         <g:else>
@@ -47,7 +47,7 @@
 
             <div class="description">
 
-                <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                <i class="grey fitted la-books icon la-popup-tooltip"
                    data-content="${message(code: 'tipp.dateFirstInPrint')}"></i>
                 <g:formatDate format="${message(code: 'default.date.format.notime')}"
                               date="${tipp.dateFirstInPrint}"/>
@@ -58,7 +58,7 @@
 
             <div class="description">
                 <span class='ui grey horizontal divider la-date-devider'></span>
-                <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                <i class="grey fitted la-books icon la-popup-tooltip"
                    data-content="${message(code: 'tipp.dateFirstOnline')}"></i>
                 <g:formatDate format="${message(code: 'default.date.format.notime')}"
                               date="${tipp.dateFirstOnline}"/>
@@ -101,7 +101,7 @@
                             <g:if test="${editable}">
                                 <ui:xEditable owner="${ie}" type="date"
                                               field="accessStartDate"/>
-                                <i class="${Icon.TOOLTIP.HELP} icon la-popup-tooltip la-delay"
+                                <i class="${Icon.TOOLTIP.HELP} icon la-popup-tooltip"
                                    data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                             </g:if>
                             <g:else>
@@ -119,7 +119,7 @@
                             <g:if test="${editable}">
                                 <ui:xEditable owner="${ie}" type="date"
                                               field="accessEndDate"/>
-                                <i class="${Icon.TOOLTIP.HELP} icon la-popup-tooltip la-delay"
+                                <i class="${Icon.TOOLTIP.HELP} icon la-popup-tooltip"
                                    data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                             </g:if>
                             <g:else>
@@ -163,7 +163,7 @@
                     <g:if test="${editable}">
                         <ui:xEditable owner="${ie}" type="date"
                                       field="accessStartDate"/>
-                        <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip la-delay"
+                        <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip"
                            data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                     </g:if>
                     <g:else>
@@ -180,7 +180,7 @@
                     <g:if test="${editable}">
                         <ui:xEditable owner="${ie}" type="date"
                                       field="accessEndDate"/>
-                        <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip la-delay"
+                        <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip"
                            data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                     </g:if>
                     <g:else>
@@ -200,7 +200,7 @@
 
         <div class="description">
 
-            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+            <i class="grey fitted la-books icon la-popup-tooltip"
                data-content="${message(code: 'tipp.dateFirstOnline')}"></i>
             <g:formatDate format="${message(code: 'default.date.format.notime')}"
                           date="${tipp.dateFirstOnline}"/>

@@ -31,11 +31,11 @@
 
         <div class="la-icon-list">
             <div class="item">
-                <i class="grey ${Icon.SYM.DATE} la-popup-tooltip la-delay"
+                <i class="grey ${Icon.SYM.DATE} la-popup-tooltip"
                    data-content="${message(code: 'subscription.details.access_start')}"></i>
                 <g:if test="${editable}">
                     <ui:xEditable owner="${ie}" type="date" field="accessStartDate"/>
-                    <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip la-delay"
+                    <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip"
                        data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                 </g:if>
                 <g:else>
@@ -44,11 +44,11 @@
             </div>
 
             <div class="item">
-                <i class="grey ${Icon.SYM.DATE} la-popup-tooltip la-delay"
+                <i class="grey ${Icon.SYM.DATE} la-popup-tooltip"
                    data-content="${message(code: 'subscription.details.access_end')}"></i>
                 <g:if test="${editable}">
                     <ui:xEditable owner="${ie}" type="date" field="accessEndDate"/>
-                    <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip la-delay"
+                    <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip"
                        data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                 </g:if>
                 <g:else>
@@ -95,7 +95,7 @@
             <g:if test="${ie.ieGroups}">
                 <g:each in="${ie.ieGroups.sort { it.ieGroup.name }}" var="titleGroup">
                     <div class="item">
-                        <i class="grey icon object group la-popup-tooltip la-delay"
+                        <i class="grey icon object group la-popup-tooltip"
                            data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
 
                         <div class="content">
@@ -129,7 +129,7 @@
 
         <div class="la-icon-list">
             <div class="item">
-                <i class="grey clipboard check clip icon la-popup-tooltip la-delay"
+                <i class="grey clipboard check clip icon la-popup-tooltip"
                    data-content="${message(code: 'tipp.accessStartDate.tooltip')}"></i>
 
                 <div class="content">
@@ -139,7 +139,7 @@
             </div>
 
             <div class="item">
-                <i class="grey clipboard check clip icon la-popup-tooltip la-delay"
+                <i class="grey clipboard check clip icon la-popup-tooltip"
                    data-content="${message(code: 'tipp.accessEndDate.tooltip')}"></i>
 
                 <div class="content">

@@ -196,7 +196,7 @@ class IconTagLib {
             }
         }
         if (hideSurroundingMarkup) {
-            out << '<div class="la-inline-flexbox la-popup-tooltip la-delay"'
+            out << '<div class="la-inline-flexbox la-popup-tooltip"'
         }
         if ( (hideTooltip) &&  (hideSurroundingMarkup) ){
             out << ' data-content="' + dc + '" data-position="left center" data-variation="tiny"'

@@ -152,7 +152,7 @@
                         <div class="ui stackable equal width grid la-js-checkItem" data-gokbId="${tipp.gokbId}"
                              data-tippId="${tipp.id}" data-index="${counter}">
                             <g:if test="${participantPerpetualAccessToTitle.size() > 0}">
-                                <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip la-delay"
+                                <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip"
                                       data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitle.collect{it.getPermanentTitleInfo(contextOrg)}.join(',')}"
                                       data-position="left center" data-variation="tiny">
                                     <i class="star icon"></i>
@@ -243,7 +243,7 @@
                                         <g:else>
                                             <div class="la-popup-tooltip"
                                                  data-content="${message(code: 'subscription.details.addEntitlements.thread.running')}">
-                                                <g:link class="ui icon disabled button la-popup-tooltip la-delay"
+                                                <g:link class="ui icon disabled button la-popup-tooltip"
                                                         action="processAddEntitlements"
                                                         params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}">
                                                     <i class="${Icon.CMD.ADD}"></i>
@@ -297,7 +297,7 @@
                                         </g:if>
                                         <g:if test="${covStmt.coverageNote}">
                                             <div class="item">
-                                                <i class="grey icon quote right la-popup-tooltip la-delay"
+                                                <i class="grey icon quote right la-popup-tooltip"
                                                    data-content="${message(code: 'default.note.label')}"></i>
 
                                                 <div class="content">
@@ -313,7 +313,7 @@
                                         </g:if>
                                         <g:if test="${covStmt.coverageDepth}">
                                             <div class="item">
-                                                <i class="grey ${Icon.SYM.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
+                                                <i class="grey ${Icon.SYM.TIPP_COVERAGE_DEPTH} right la-popup-tooltip"
                                                    data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                                                 <div class="content">
@@ -329,7 +329,7 @@
                                         </g:if>
                                         <g:if test="${covStmt.embargo}">
                                             <div class="item">
-                                                <i class="grey icon hand paper right la-popup-tooltip la-delay"
+                                                <i class="grey icon hand paper right la-popup-tooltip"
                                                    data-content="${message(code: 'tipp.embargo')}"></i>
 
                                                 <div class="content">
@@ -350,7 +350,7 @@
 
                             <g:if test="${uploadPriceInfo || preselectCoverageDates}">
                                 <div class="seven wide column">
-                                    <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip la-delay"
+                                    <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip"
                                        data-content="${message(code: 'tipp.tooltip.myArea')}"></i>
 
                                     <div class="ui la-segment-with-icon">

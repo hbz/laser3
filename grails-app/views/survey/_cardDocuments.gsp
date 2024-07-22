@@ -65,7 +65,7 @@
                                 <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton()}">
                                     <g:if test="${docctx?.isShared}">
 
-                                        <ui:remoteLink class="ui icon button green js-no-wait-wheel la-popup-tooltip la-delay"
+                                        <ui:remoteLink class="ui icon button green js-no-wait-wheel la-popup-tooltip"
                                                       controller="ajax" action="toggleShare"
                                                       params='[owner: "${ownobj.class.name}:${ownobj.id}", sharedObject: "${docctx.class.name}:${docctx.id}", tmpl: "documents"]'
                                                       onSuccess=""
@@ -82,7 +82,7 @@
                                         <button class="ui icon button js-open-confirm-modal-copycat js-no-wait-wheel">
                                             <i class="la-share slash icon"></i>
                                         </button>
-                                        <ui:remoteLink class="js-gost la-popup-tooltip la-delay"
+                                        <ui:remoteLink class="js-gost la-popup-tooltip"
                                                       controller="ajax" action="toggleShare"
                                                       params='[owner: "${ownobj.class.name}:${ownobj.id}", sharedObject: "${docctx.class.name}:${docctx.id}", tmpl: "documents"]'
                                                       onSuccess=""

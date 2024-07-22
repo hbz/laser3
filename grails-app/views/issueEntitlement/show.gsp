@@ -128,12 +128,12 @@
 
                 <div class="la-icon-list">
                     <div class="item">
-                        <i class="grey ${Icon.SYM.DATE} la-popup-tooltip la-delay"
+                        <i class="grey ${Icon.SYM.DATE} la-popup-tooltip"
                            data-content="${message(code: 'subscription.details.access_start')}"></i>
                         <g:if test="${editable}">
                             <ui:xEditable owner="${issueEntitlementInstance}" type="date"
                                              field="accessStartDate"/>
-                            <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip la-delay"
+                            <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip"
                                data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                         </g:if>
                         <g:else>
@@ -143,11 +143,11 @@
                     </div>
 
                     <div class="item">
-                        <i class="grey ${Icon.SYM.DATE} la-popup-tooltip la-delay"
+                        <i class="grey ${Icon.SYM.DATE} la-popup-tooltip"
                            data-content="${message(code: 'subscription.details.access_end')}"></i>
                         <g:if test="${editable}">
                             <ui:xEditable owner="${issueEntitlementInstance}" type="date" field="accessEndDate"/>
-                            <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip la-delay"
+                            <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip"
                                data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                         </g:if>
                         <g:else>
@@ -191,7 +191,7 @@
                     <g:if test="${issueEntitlementInstance.ieGroups}">
                         <g:each in="${issueEntitlementInstance.ieGroups.sort { it.ieGroup.name }}" var="titleGroup">
                             <div class="item">
-                                <i class="grey icon object group la-popup-tooltip la-delay"
+                                <i class="grey icon object group la-popup-tooltip"
                                    data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
 
                                 <div class="content">

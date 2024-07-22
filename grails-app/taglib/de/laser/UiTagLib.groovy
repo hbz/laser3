@@ -287,7 +287,7 @@ class UiTagLib {
 
                         if (hasAuditConfig) {
                             if(attrs.withoutOptions) {
-                                out << '<a role="button" data-content="Wert wird vererbt" class="ui icon green button la-modern-button ' + attrs.class + ' la-audit-button la-popup-tooltip la-delay" href="'
+                                out << '<a role="button" data-content="Wert wird vererbt" class="ui icon green button la-modern-button ' + attrs.class + ' la-audit-button la-popup-tooltip" href="'
                                 out << g.createLink(
                                         controller: 'ajax',
                                         action: 'toggleAudit',
@@ -318,7 +318,7 @@ class UiTagLib {
                             }
                         }
                         else {
-                            out << '<a role="button" data-content="Wert wird nicht vererbt" class="ui icon blue button la-modern-button ' + attrs.class + ' la-audit-button la-popup-tooltip la-delay" href="'
+                            out << '<a role="button" data-content="Wert wird nicht vererbt" class="ui icon blue button la-modern-button ' + attrs.class + ' la-audit-button la-popup-tooltip" href="'
                             out << g.createLink(
                                     controller: 'ajax',
                                     action: 'toggleAudit',
@@ -695,7 +695,7 @@ class UiTagLib {
         if ( (startDate) || (endDate) ) {
             out << '<span class="la-annual-rings-text">' + startDate + dash + endDate + '</span>'
         }
-        out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
+        out << "<a class='ui ${color} circular tiny label la-popup-tooltip'  data-variation='tiny' data-content='Status: ${tooltip}'>"
         out << '       &nbsp;'
         out << '</a>'
 
@@ -806,7 +806,7 @@ class UiTagLib {
         }
         out << '<span class="la-annual-rings-text">' + startDate + dash + endDate + '</span>'
 
-        out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
+        out << "<a class='ui ${color} circular tiny label la-popup-tooltip'  data-variation='tiny' data-content='Status: ${tooltip}'>"
         out << '       &nbsp;'
         out << '</a>'
 

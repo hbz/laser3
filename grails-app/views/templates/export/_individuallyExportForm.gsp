@@ -400,7 +400,7 @@
                 <div class="fields">
             </g:if>
             <g:else>
-                <div class="fields disabled la-popup-tooltip la-delay" data-position="left center" data-content="${message(code:'tooltip.onlyFullMembership')}">
+                <div class="fields disabled la-popup-tooltip" data-position="left center" data-content="${message(code:'tooltip.onlyFullMembership')}">
             </g:else>
                 <div class="wide four field">
                     <label for="clickMeConfigName">Export <g:message code="default.config.label"/> <g:message code="default.name.label"/></label>

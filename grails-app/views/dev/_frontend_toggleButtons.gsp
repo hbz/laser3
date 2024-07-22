@@ -11,7 +11,7 @@
     </ul>
     <div class="ui top attached label">WCAG-Proof Icon</div>
 </div>
-<i  tabindex="0" class="la-popup-tooltip la-delay icon thumbtack blue" data-content="1 2 3" ></i>
+<i  tabindex="0" class="la-popup-tooltip icon thumbtack blue" data-content="1 2 3" ></i>
 <h4 class="ui header">Funktions-Button, der ausgeschaltet werden kan, Icon bleibt</h4>
 <div class="html ui top attached segment example">
     <ul>

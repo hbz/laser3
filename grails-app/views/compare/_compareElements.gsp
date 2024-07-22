@@ -148,7 +148,7 @@
         <tr>
             <td>
                 <strong>
-                    <i class="${Icon.PROVIDER} la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'provider.label')}"></i>${message(code: 'provider.label')} :
+                    <i class="${Icon.PROVIDER} la-list-icon la-popup-tooltip" data-content="${message(code: 'provider.label')}"></i>${message(code: 'provider.label')} :
                 </strong>
             </td>
             <g:each in="${objects}" var="object">
@@ -167,7 +167,7 @@
         <tr>
             <td>
                 <strong>
-                    <i class="${Icon.VENDOR} la-list-icon la-popup-tooltip la-delay" data-content="${message(code:'vendor.label')}"></i> ${message(code:'vendor.label')}:
+                    <i class="${Icon.VENDOR} la-list-icon la-popup-tooltip" data-content="${message(code:'vendor.label')}"></i> ${message(code:'vendor.label')}:
                 </strong>
             </td>
             <g:each in="${objects}" var="object">
@@ -209,7 +209,7 @@
                                         <i class="${Icon.UI.ACP_PUBLIC}"></i>
                                     </span>
                                     ${resp}
-                                    (<strong><i class="${Icon.PROVIDER} la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'provider.label')}"></i>:</strong>
+                                    (<strong><i class="${Icon.PROVIDER} la-list-icon la-popup-tooltip" data-content="${message(code: 'provider.label')}"></i>:</strong>
                                         <g:link controller="provider" action="show" target="_blank" id="${provider.id}">${fieldValue(bean: provider, field: "name")}
                                         </g:link>)
                                     <br />
@@ -224,7 +224,7 @@
                                         <i class="${Icon.UI.ACP_PRIVATE}"></i>
                                     </span>
                                     ${resp}
-                                    (<strong><i class="${Icon.PROVIDER} la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'provider.label')}"></i>:</strong>
+                                    (<strong><i class="${Icon.PROVIDER} la-list-icon la-popup-tooltip" data-content="${message(code: 'provider.label')}"></i>:</strong>
                                     <g:link controller="provider" action="show" target="_blank" id="${provider.id}">${fieldValue(bean: provider, field: "name")}
                                     </g:link>)
                                     <br />
@@ -245,7 +245,7 @@
                                     <i class="${Icon.UI.ACP_PUBLIC}"></i>
                                 </span>
                                 ${resp}
-                                (<strong><i class="${Icon.VENDOR} la-list-icon la-popup-tooltip la-delay" data-content="${message(code:'vendor.label')}"></i>:</strong>
+                                (<strong><i class="${Icon.VENDOR} la-list-icon la-popup-tooltip" data-content="${message(code:'vendor.label')}"></i>:</strong>
                                 <g:link controller="vendor" action="show" target="_blank" id="${vendor.id}">${fieldValue(bean: vendor, field: "name")}
                                 </g:link>)
                                 <br />
@@ -260,7 +260,7 @@
                                     <i class="${Icon.UI.ACP_PRIVATE}"></i>
                                 </span>
                                 ${resp}
-                                (<strong><i class="${Icon.VENDOR} la-list-icon la-popup-tooltip la-delay" data-content="${message(code:'vendor.label')}"></i>:</strong>
+                                (<strong><i class="${Icon.VENDOR} la-list-icon la-popup-tooltip" data-content="${message(code:'vendor.label')}"></i>:</strong>
                                 <g:link controller="vendor" action="show" target="_blank" id="${vendor.id}">${fieldValue(bean: vendor, field: "name")}
                                 </g:link>)
                                 <br />

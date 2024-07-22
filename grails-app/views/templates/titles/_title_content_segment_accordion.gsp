@@ -36,7 +36,7 @@
                     </g:if>
                     <g:if test="${covStmt.coverageNote}">
                         <div class="item">
-                            <i class="grey icon quote right la-popup-tooltip la-delay"
+                            <i class="grey icon quote right la-popup-tooltip"
                                data-content="${message(code: 'default.note.label')}"></i>
 
                             <div class="content">
@@ -52,7 +52,7 @@
                     </g:if>
                     <g:if test="${covStmt.coverageDepth}">
                         <div class="item">
-                            <i class="grey ${Icon.SYM.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
+                            <i class="grey ${Icon.SYM.TIPP_COVERAGE_DEPTH} right la-popup-tooltip"
                                data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                             <div class="content">
@@ -68,7 +68,7 @@
                     </g:if>
                     <g:if test="${covStmt.embargo}">
                         <div class="item">
-                            <i class="grey icon hand paper right la-popup-tooltip la-delay"
+                            <i class="grey icon hand paper right la-popup-tooltip"
                                data-content="${message(code: 'tipp.embargo')}"></i>
 
                             <div class="content">

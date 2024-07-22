@@ -87,7 +87,7 @@ class DropdownTagLib {
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
         String tooltip = attrs.tooltip ?: "Die Funktion '${message}' ist zur Zeit nicht verfügbar!"
 
-        out << '<a href="#" class="item disabled la-popup-tooltip la-delay" data-content="' + tooltip + '">' + message + '</a>'
+        out << '<a href="#" class="item disabled la-popup-tooltip" data-content="' + tooltip + '">' + message + '</a>'
     }
 
     def dropdownWithI18nExplanations = { attrs, body ->

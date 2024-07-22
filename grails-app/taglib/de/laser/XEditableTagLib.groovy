@@ -563,7 +563,7 @@ class XEditableTagLib {
         else {
 
             if (owner[field]) {
-                out << '<span class="la-popup-tooltip la-delay ui icon" data-position="top right" data-content="'
+                out << '<span class="la-popup-tooltip ui icon" data-position="top right" data-content="'
 
                 if (owner[field] && attrs.type == 'date') {
                     SimpleDateFormat sdf = new SimpleDateFormat(attrs.format ?: message(code: 'default.date.format.notime'))

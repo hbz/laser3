@@ -125,7 +125,7 @@
 
                                         <g:if test="${pd.mandatory}">
                                             <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="top left"
-                                                    params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.BASIC} yellow la-popup-tooltip la-delay">
+                                                    params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.BASIC} yellow la-popup-tooltip">
                                                 <i class="${Icon.PROP.MANDATORY}"></i>
                                             </g:link>
                                         </g:if>
@@ -138,7 +138,7 @@
                                         <g:if test="${!multiplePdList?.contains(pd.id)}">
                                             <g:if test="${pd.multipleOccurrence}">
                                                 <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="top left"
-                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.BASIC} orange la-popup-tooltip la-delay">
+                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.BASIC} orange la-popup-tooltip">
                                                     <i class="redo slash icon"></i>
                                                 </g:link>
                                             </g:if>

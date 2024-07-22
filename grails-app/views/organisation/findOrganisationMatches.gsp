@@ -60,7 +60,7 @@
 									<td>
 										<div class="ui list">
 											<span class="item js-copyTriggerParent">
-												<span class="ui small basic image label js-copyTrigger la-popup-tooltip la-delay"
+												<span class="ui small basic image label js-copyTrigger la-popup-tooltip"
 													  data-position="top center"
 													  data-content="${message(code: 'globalUID.label')}">
 													<i class="la-copy grey icon la-js-copyTriggerIcon"></i>
@@ -86,7 +86,7 @@
 									<td>
 									<%-- here: switch if in consortia or not --%>
 										<g:if test="${members.get(organisationInstance.id)?.contains(institution.id)}">
-											<g:link class="ui icon negative button la-popup-tooltip la-delay js-open-confirm-modal"
+											<g:link class="ui icon negative button la-popup-tooltip js-open-confirm-modal"
 													data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.consortiaToggle", args: [organisationInstance.name])}"
 													data-confirm-term-how="unlink"
 													data-content="${message(code:'org.consortiaToggle.remove.label')}"

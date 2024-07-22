@@ -260,7 +260,7 @@
                     <div class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                         <div class="item">
                             <div class="title">
-                                <div class="${Btn.MODERN.SIMPLE} la-delay right floated">
+                                <div class="${Btn.MODERN.SIMPLE} right floated">
                                     <i class="${Icon.CMD.SHOW_MORE}"></i>
                                 </div>
                                 <laser:script file="${this.getGroovyPageFileName()}">
@@ -327,7 +327,7 @@
                                                 <g:each in="${subscription.ids?.sort { it.ns.ns }}"
                                                         var="id">
                                                     <div class="item js-copyTriggerParent">
-                                                       <span class="ui small basic image label js-copyTrigger la-popup-tooltip la-delay"
+                                                       <span class="ui small basic image label js-copyTrigger la-popup-tooltip"
                                                              data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
                                                            <i class="la-copy grey icon la-js-copyTriggerIcon" aria-hidden="true"></i>
                                                         ${id.ns.ns}: <div class="detail js-copyTopic">${id.value}</div>
@@ -490,7 +490,7 @@
                         <div id="statsInfos" class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                             <div class="item">
                                 <div class="title">
-                                    <div class="${Btn.MODERN.SIMPLE} la-delay right floated">
+                                    <div class="${Btn.MODERN.SIMPLE} right floated">
                                         <i class="${Icon.CMD.SHOW_MORE}"></i>
                                     </div>
 

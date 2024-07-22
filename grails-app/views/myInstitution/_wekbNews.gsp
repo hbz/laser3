@@ -7,11 +7,11 @@
         <div style="margin:1em 0;padding:0 1em; text-align:right">
             <div class="ui large labels">
                 <a href="#" id="wekb-menu-trigger" class="ui label"><i class="${Icon.WEKB} blue"></i>&nbsp;We:kb-News</a>
-                    <a href="#" class="ui icon label la-popup-tooltip la-delay wekb-flyout-trigger" data-preset="all,my"
+                    <a href="#" class="ui icon label la-popup-tooltip wekb-flyout-trigger" data-preset="all,my"
                        data-content="${message(code: 'menu.my')}" data-position="top right">
                             <i class="${Icon.UI.MY_OBJECT} yellow"></i> ${wekbNews.counts.my}
                     </a>
-                    <a href="#" class="ui icon label la-popup-tooltip la-delay wekb-flyout-trigger" data-preset="all,marker"
+                    <a href="#" class="ui icon label la-popup-tooltip wekb-flyout-trigger" data-preset="all,marker"
                        data-content="${message(code: 'marker.WEKB_CHANGES')}" data-position="top right">
                             <i class="${Icon.MARKER} purple"></i> ${wekbNews.counts.marker}
                     </a>

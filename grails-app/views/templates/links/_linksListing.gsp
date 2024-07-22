@@ -103,7 +103,7 @@
                                         <laser:render template="/templates/links/subLinksModal"
                                                       model="${[tmplText               : message(code: 'subscription.details.editLink'),
                                                                 tmplIcon               : 'write',
-                                                                tmplCss                : 'icon blue la-selectable-button la-popup-tooltip la-delay',
+                                                                tmplCss                : 'icon blue la-selectable-button la-popup-tooltip',
                                                                 tmplID                 : 'editLink',
                                                                 tmplModalID            : "sub_edit_link_${link.id}",
                                                                 subscriptionLicenseLink: subscriptionLicenseLink,

@@ -175,14 +175,14 @@
                                         <g:each in="${Contact.findAllByPrsAndContentType( person, RDStore.CCT_URL )}" var="prsContact">
                                             <div class="description">
                                                 <i class="${Icon.SYM.URL} la-list-icon"></i>
-                                                <span class="la-popup-tooltip la-delay " data-position="right center" data-content="Diese URL aufrufen:  ${prsContact?.content}">
+                                                <span class="la-popup-tooltip" data-position="right center" data-content="Diese URL aufrufen:  ${prsContact?.content}">
                                                     <a class="la-break-all" href="${prsContact?.content}" target="_blank">Webseite</a>
                                                 </span>
                                             </div>
                                         </g:each>
                                         <g:each in="${Contact.findAllByPrsAndContentType( person, RDStore.CCT_EMAIL )}" var="prsContact">
                                             <div class="description js-copyTriggerParent">
-                                                <i class="${Icon.SYM.EMAIL} la-list-icon js-copyTrigger la-js-copyTriggerIcon la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}"></i>
+                                                <i class="${Icon.SYM.EMAIL} la-list-icon js-copyTrigger la-js-copyTriggerIcon la-popup-tooltip" data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}"></i>
                                                 <span class="la-popup-tooltip" data-position="right center" data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
                                                     <a class="la-break-all js-copyTopic" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
                                                 </span>

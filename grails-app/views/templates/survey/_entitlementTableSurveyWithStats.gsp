@@ -44,7 +44,7 @@
                     <td class="titleCell">
 
                         <g:if test="${ieInNewSub}">
-                            <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInSub')}" data-position="left center" data-variation="tiny">
+                            <div class="la-inline-flexbox la-popup-tooltip" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInSub')}" data-position="left center" data-variation="tiny">
                                 <i class="icon redo alternate yellow"></i>
                             </div>
                         </g:if>
@@ -52,13 +52,13 @@
                         <g:if test="${participantPerpetualAccessToTitle}">
                             <g:set var="participantPerpetualAccessToTitleList"
                                    value="${surveyService.listParticipantPerpetualAccessToTitle(subscriber, tipp)}"/>
-                            <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitleList.collect{it.getPermanentTitleInfo(contextOrg)}.join(',')}" data-position="left center" data-variation="tiny">
+                            <div class="la-inline-flexbox la-popup-tooltip" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitleList.collect{it.getPermanentTitleInfo(contextOrg)}.join(',')}" data-position="left center" data-variation="tiny">
                                 <i class="icon redo alternate red"></i>
                             </div>
                         </g:if>
 
                         <g:if test="${!participantPerpetualAccessToTitle && previousSubscription}">
-                            <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInPreviousSubscription')}" data-position="left center" data-variation="tiny">
+                            <div class="la-inline-flexbox la-popup-tooltip" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInPreviousSubscription')}" data-position="left center" data-variation="tiny">
                                 <i class="icon redo alternate orange"></i>
                             </div>
                         </g:if>

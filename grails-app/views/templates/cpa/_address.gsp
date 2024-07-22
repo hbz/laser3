@@ -5,7 +5,7 @@
             <a href="${address.generateGoogleMapURL()}" target="_blank" class="la-popup-tooltip" data-position="top right" data-content="${message(code: 'address.googleMaps.link')}">
                 <i class="ui la-js-copyTriggerIcon js-linkGoogle blue icon building map marker alternate la-list-icon"></i>
             </a>
-            <div class="content la-space-right js-copyTrigger la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
+            <div class="content la-space-right js-copyTrigger la-popup-tooltip" data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
                 <g:if test="${ !hideAddressType}">
                     <strong>
                         <g:each in="${address.type.sort{it?.getI10n('value')}}" var="type">

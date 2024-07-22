@@ -122,13 +122,13 @@
                 <div class="field">
                     <div class="ui linkToChildren checkbox toggle">
                         <g:checkBox name="linkToChildren"/>
-                        <label><i data-content="${message(code:'consortium.member.plural')}" data-position="top center" class="users icon la-popup-tooltip la-delay"></i> <g:message code="subscription.details.linkPackage.label"/></label>
+                        <label><i data-content="${message(code:'consortium.member.plural')}" data-position="top center" class="users icon la-popup-tooltip"></i> <g:message code="subscription.details.linkPackage.label"/></label>
                     </div>
                 </div>
                 <div class="field">
                     <div class="ui createEntitlementsForChildren checkbox toggle">
                         <g:checkBox name="createEntitlementsForChildren"/>
-                        <label><i data-content="${message(code:'consortium.member.plural')}" data-position="top center" class="users icon la-popup-tooltip la-delay"></i> <g:message code="subscription.details.link.with_ents"/></label>
+                        <label><i data-content="${message(code:'consortium.member.plural')}" data-position="top center" class="users icon la-popup-tooltip"></i> <g:message code="subscription.details.link.with_ents"/></label>
                     </div>
                 </div>
             </g:if>
@@ -175,7 +175,7 @@
                             <th class="control-label">
                                 <g:message code="subscription.packages.setting.label"/>
                             </th>
-                            <th class="control-label la-popup-tooltip la-delay"
+                            <th class="control-label la-popup-tooltip"
                                 data-content="${message(code: "subscription.packages.notification.label")}">
                                 <i class="ui large icon bullhorn"></i>
                             </th>
@@ -249,10 +249,10 @@
 
                         <table class="ui table compact la-table-height53px">
                             <tr>
-                                <th class="control-label la-popup-tooltip la-delay" data-contet="${message(code: "subscription.packages.auditable")}">
+                                <th class="control-label la-popup-tooltip" data-contet="${message(code: "subscription.packages.auditable")}">
                                     <i class="ui large icon thumbtack"></i>
                                 </th>
-                                <th class="control-label la-popup-tooltip la-delay" data-content="${message(code: "subscription.packages.notification.auditable")}">
+                                <th class="control-label la-popup-tooltip" data-content="${message(code: "subscription.packages.notification.auditable")}">
                                     <i class="ui large icon bullhorn"></i>
                                 </th>
                             </tr>

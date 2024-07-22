@@ -37,7 +37,7 @@
                         <g:if test="${participantPerpetualAccessToTitle}">
                             <g:set var="participantPerpetualAccessToTitleList"
                                    value="${surveyService.listParticipantPerpetualAccessToTitle(subscriber, tipp)}"/>
-                            <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip la-delay"
+                            <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip"
                                   data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitleList.collect{it.getPermanentTitleInfo(contextOrg)}.join(',')}"
                                   data-position="left center" data-variation="tiny">
                                 <i class="star icon"></i>
@@ -184,7 +184,7 @@
                                     </g:if>
                                     <g:if test="${covStmt.coverageNote}">
                                         <div class="item">
-                                            <i class="grey icon quote right la-popup-tooltip la-delay"
+                                            <i class="grey icon quote right la-popup-tooltip"
                                                data-content="${message(code: 'default.note.label')}"></i>
 
                                             <div class="content">
@@ -200,7 +200,7 @@
                                     </g:if>
                                     <g:if test="${covStmt.coverageDepth}">
                                         <div class="item">
-                                            <i class="grey ${Icon.SYM.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
+                                            <i class="grey ${Icon.SYM.TIPP_COVERAGE_DEPTH} right la-popup-tooltip"
                                                data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                                             <div class="content">
@@ -216,7 +216,7 @@
                                     </g:if>
                                     <g:if test="${covStmt.embargo}">
                                         <div class="item">
-                                            <i class="grey icon hand paper right la-popup-tooltip la-delay"
+                                            <i class="grey icon hand paper right la-popup-tooltip"
                                                data-content="${message(code: 'tipp.embargo')}"></i>
 
                                             <div class="content">
@@ -236,7 +236,7 @@
                         </div>
                         <%-- My Area START--%>
                         %{--                                <div class="seven wide column">
-                                                            <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip la-delay"
+                                                            <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip"
                                                                data-content="${message(code: 'tipp.tooltip.myArea')}"></i>
 
                                                             <div class="ui la-segment-with-icon">
@@ -247,7 +247,7 @@
                                                                 <div class="ui list">
                                                                     <g:if test="${ie}">
                                                                         <div class="item">
-                                                                            <i class="grey save icon la-popup-tooltip la-delay"
+                                                                            <i class="grey save icon la-popup-tooltip"
                                                                                data-content="${message(code: 'issueEntitlement.perpetualAccessBySub.label')}"></i>
 
                                                                             <div class="content">
@@ -262,7 +262,7 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="item">
-                                                                            <i class="grey ${Icon.CMD.EDIT} la-popup-tooltip la-delay"
+                                                                            <i class="grey ${Icon.CMD.EDIT} la-popup-tooltip"
                                                                                data-content="${message(code: 'issueEntitlement.myNotes')}"></i>
                                                                             <div class="content">
                                                                                 <div class="header"><g:message code="issueEntitlement.myNotes"/></div>
@@ -276,7 +276,7 @@
 
                                                                     <g:each in="${ie.priceItems}" var="priceItem" status="i">
                                                                         <div class="item">
-                                                                            <i class="${Icon.FNC.COST_CONFIG} grey la-popup-tooltip la-delay"></i>
+                                                                            <i class="${Icon.FNC.COST_CONFIG} grey la-popup-tooltip"></i>
 
                                                                             <div class="content">
                                                                                 <div class="header"><g:message
@@ -318,7 +318,7 @@
                                                                     <g:if test="${subscription.ieGroups.size() > 0}">
                                                                         <g:each in="${ie.ieGroups.sort { it.ieGroup.name }}" var="titleGroup">
                                                                             <div class="item">
-                                                                                <i class="grey icon object group la-popup-tooltip la-delay"
+                                                                                <i class="grey icon object group la-popup-tooltip"
                                                                                    data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
                                                                                 <div class="content">
                                                                                     <div class="header"><g:message code="subscription.details.ieGroups"/></div>

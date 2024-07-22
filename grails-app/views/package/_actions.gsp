@@ -86,12 +86,12 @@
                         <th class="control-label">
                             <g:message code="subscription.packages.setting.label"/>
                         </th>
-                        <th class="control-label la-popup-tooltip la-delay"
+                        <th class="control-label la-popup-tooltip"
                             data-content="${message(code: "subscription.packages.notification.label")}">
                             <i class="ui large icon bullhorn"></i>
                         </th>
                         <g:if test="${customerTypeService.isConsortium( contextCustomerType )}">
-                            <th class="control-label la-popup-tooltip la-delay"
+                            <th class="control-label la-popup-tooltip"
                                 data-content="${message(code: 'subscription.packages.auditable')}">
                                 <i class="ui large icon thumbtack"></i>
                             </th>

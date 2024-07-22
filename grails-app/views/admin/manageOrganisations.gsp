@@ -33,13 +33,13 @@
                 <th>${message(code:'org.customerType.label')}</th>
                 <th>
                     ${message(code:'org.apiLevel.label')}
-                    <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.apiLevel.tooltip')}">
+                    <span class="la-popup-tooltip la-no-uppercase" data-position="right center" data-content="${message(code:'org.apiLevel.tooltip')}">
                         <i class="${Icon.TOOLTIP.HELP} icon popup"></i>
                     </span>
                 </th>
                 <th>
                     ${message(code:'org.serverAccess.label')}
-                    <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.serverAccess.tooltip')}">
+                    <span class="la-popup-tooltip la-no-uppercase" data-position="right center" data-content="${message(code:'org.serverAccess.tooltip')}">
                         <i class="${Icon.TOOLTIP.HELP} icon popup"></i>
                     </span>
                 </th>

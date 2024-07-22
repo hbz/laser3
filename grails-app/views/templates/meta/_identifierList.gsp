@@ -32,7 +32,7 @@
                             <ui:xEditable owner="${ident}" field="value"/>
                         </g:if>
                         <g:else>
-                            <span class="js-copyTrigger js-copyTopic la-popup-tooltip la-delay"
+                            <span class="js-copyTrigger js-copyTopic la-popup-tooltip"
                                       data-position="top right" data-content="${message(code: 'tooltip.clickToCopySimple')}">
                                     <i class="la-copy grey icon la-js-copyTriggerIcon" aria-hidden="true"></i>
                                     <span class="js-copyTopic">${ident.value}</span>
@@ -48,7 +48,7 @@
                         </g:if>
                     </g:if>
                     <g:else>
-                        <span class="js-copyTrigger la-popup-tooltip la-delay"
+                        <span class="js-copyTrigger la-popup-tooltip"
                                       data-position="top right" data-content="${message(code: 'tooltip.clickToCopySimple')}">
                             <i class="la-copy grey icon la-js-copyTriggerIcon" aria-hidden="true"></i>
                             <span class="js-copyTopic">${ident}</span>

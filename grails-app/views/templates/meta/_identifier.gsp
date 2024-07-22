@@ -37,7 +37,7 @@
                     <div class="two fields">
                         <input name="owner" type="hidden" value="${genericOIDService.getOID(object)}" />
                         <div class="field">
-                            <label for="value">${message(code:'default.identifier.label')} <i id="idExpl" class="${Icon.TOOLTIP.HELP} la-delay la-popup-tooltip" data-content=""></i></label>
+                            <label for="value">${message(code:'default.identifier.label')} <i id="idExpl" class="${Icon.TOOLTIP.HELP} la-popup-tooltip" data-content=""></i></label>
                             <input name="value" id="value" type="text" class="ui" />
                         </div>
                         <div class="field">

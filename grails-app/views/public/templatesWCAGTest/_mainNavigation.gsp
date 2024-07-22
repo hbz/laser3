@@ -55,7 +55,7 @@
                         </div>
                         <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
                     </div>
-                    <a href="#" class="la-search-advanced la-popup-tooltip la-delay"
+                    <a href="#" class="la-search-advanced la-popup-tooltip"
                        data-content="Erweiterte Suche">
                         <i class="large icons">
                             <i class="${Icon.SYM.SEARCH}"></i>

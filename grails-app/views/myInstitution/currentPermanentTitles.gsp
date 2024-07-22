@@ -102,7 +102,7 @@
                                                                 </g:if>
                                                                 <g:if test="${covStmt.coverageNote}">
                                                                     <div class="item">
-                                                                        <i class="grey icon quote right la-popup-tooltip la-delay"
+                                                                        <i class="grey icon quote right la-popup-tooltip"
                                                                            data-content="${message(code: 'default.note.label')}"></i>
 
                                                                         <div class="content">
@@ -118,7 +118,7 @@
                                                                 </g:if>
                                                                 <g:if test="${covStmt.coverageDepth}">
                                                                     <div class="item">
-                                                                        <i class="grey ${Icon.SYM.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
+                                                                        <i class="grey ${Icon.SYM.TIPP_COVERAGE_DEPTH} right la-popup-tooltip"
                                                                            data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                                                                         <div class="content">
@@ -134,7 +134,7 @@
                                                                 </g:if>
                                                                 <g:if test="${covStmt.embargo}">
                                                                     <div class="item">
-                                                                        <i class="grey icon hand paper right la-popup-tooltip la-delay"
+                                                                        <i class="grey icon hand paper right la-popup-tooltip"
                                                                            data-content="${message(code: 'tipp.embargo')}"></i>
 
                                                                         <div class="content">
@@ -154,7 +154,7 @@
                                                     </div>
                                                     <%-- My Area START--%>
                                                     <div class="seven wide column">
-                                                        <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip la-delay"
+                                                        <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip"
                                                            data-content="${message(code: 'menu.my.subscriptions')}"></i>
 
                                                         <div class="ui la-segment-with-icon">

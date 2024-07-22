@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ui.Icon" %>
 <laser:serviceInjection/>
 <div class="item" data-object="${genericOIDService.getOID(priceItem)}">
-    <i class="money grey icon la-popup-tooltip la-delay"></i>
+    <i class="money grey icon la-popup-tooltip"></i>
 
     <div class="content">
         <div class="header"><g:message

@@ -182,7 +182,7 @@
                             <g:if test="${! AuditConfig.getConfig(prop)}">
                                 <g:if test="${(ownobj.instanceOf && !prop.instanceOf) || !ownobj.hasProperty("instanceOf")}">
                                     <g:if test="${prop.isPublic}">
-                                        <ui:remoteLink class="ui orange icon button la-popup-tooltip la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                        <ui:remoteLink class="ui orange icon button la-popup-tooltip" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                           params='[oid: genericOIDService.getOID(prop),
                                                                    editable:"${overwriteEditable}",
                                                                    custom_props_div: "${custom_props_div}",

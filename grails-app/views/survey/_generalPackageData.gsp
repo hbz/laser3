@@ -8,7 +8,7 @@
             <div class="ui accordion la-accordion-showMore js-package-info-accordion">
                 <div class="item">
                     <div class="title">
-                        <div class="${Btn.MODERN.SIMPLE} la-delay right floated">
+                        <div class="${Btn.MODERN.SIMPLE} right floated">
                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                         </div>
                         <laser:script file="${this.getGroovyPageFileName()}">
