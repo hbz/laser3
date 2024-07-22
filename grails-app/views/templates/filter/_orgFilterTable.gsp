@@ -55,7 +55,7 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('legalInformation')}">
                 <th class="la-no-uppercase">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'org.legalInformation.tooltip')}">
+                    <span class="la-popup-tooltip" data-content="${message(code: 'org.legalInformation.tooltip')}">
                         <i class="${Icon.SYM.ORG_LEGAL_INFORMATION}"></i>
                     </span>
                 </th>
@@ -152,7 +152,7 @@
                             <g:if test="${sortOnCostItemsUp}">
                                 <g:link action="surveyCostItems" class="ui icon"
                                         params="${tmpParams + [sortOnCostItemsDown: true]}"><span
-                                        class="la-popup-tooltip la-delay"
+                                        class="la-popup-tooltip"
                                         data-position="top right"
                                         data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
                                     <i class="arrow down circle icon blue"></i>
@@ -161,7 +161,7 @@
                             <g:else>
                                 <g:link action="surveyCostItems" class="ui icon"
                                         params="${tmpParams + [sortOnCostItemsUp: true]}"><span
-                                        class="la-popup-tooltip la-delay"
+                                        class="la-popup-tooltip"
                                         data-position="top right"
                                         data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
                                     <i class="arrow up circle icon blue"></i>
@@ -277,7 +277,7 @@
                             </g:else>
 
                             <g:if test="${surveyOrg && surveyOrg.orgInsertedItself}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'surveyLinks.newParticipate')}">
                                     <i class="paper plane outline large icon"></i>
                                 </span>
@@ -384,12 +384,12 @@
                                 <g:link controller="org" action="show" id="${precedent.id}"><i class="${Icon.LNK.PREV}"></i></g:link>
                             </span>
                         </g:each>
-                        <span class="la-popup-tooltip la-delay" data-position="top right">
+                        <span class="la-popup-tooltip" data-position="top right">
                             <i class="${Icon.UNC.CIRCLE} green"></i>
                         </span>
                     </g:if>
                     <g:if test="${org.status == RDStore.ORG_STATUS_RETIRED}">
-                        <span class="la-popup-tooltip la-delay" data-position="top right" <g:if test="${org.retirementDate}">data-content="<g:message code="org.retirementDate.label"/>: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${org.retirementDate}"/>"</g:if>>
+                        <span class="la-popup-tooltip" data-position="top right" <g:if test="${org.retirementDate}">data-content="<g:message code="org.retirementDate.label"/>: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${org.retirementDate}"/>"</g:if>>
                             <i class="${Icon.UNC.CIRCLE} yellow"></i>
                         </span>
                         <g:set var="successors" value="${Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :org and c.type = :follows',[org: org, follows: RDStore.COMBO_TYPE_FOLLOWS])}"/>
@@ -404,19 +404,19 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('legalInformation')}">
                 <td>
                     <g:if test="${org.createdBy && org.legallyObligedBy}">
-                        <span class="la-popup-tooltip la-delay" data-position="top right"
+                        <span class="la-popup-tooltip" data-position="top right"
                               data-content="${message(code: 'org.legalInformation.1.tooltip', args: [org.createdBy, org.legallyObligedBy])}">
                             <i class="icon green check circle"></i>
                         </span>
                     </g:if>
                     <g:elseif test="${org.createdBy}">
-                        <span class="la-popup-tooltip la-delay" data-position="top right"
+                        <span class="la-popup-tooltip" data-position="top right"
                               data-content="${message(code: 'org.legalInformation.2.tooltip', args: [org.createdBy])}">
                             <i class="icon grey outline circle"></i>
                         </span>
                     </g:elseif>
                     <g:elseif test="${org.legallyObligedBy}">
-                        <span class="la-popup-tooltip la-delay" data-position="top right"
+                        <span class="la-popup-tooltip" data-position="top right"
                               data-content="${message(code: 'org.legalInformation.3.tooltip', args: [org.legallyObligedBy])}">
                             <i class="icon red question mark"></i>
                         </span>
@@ -860,7 +860,7 @@
                                         <td>
                                             <g:if test="${costItem && costItem.costDescription}">
 
-                                                <div class="ui icon la-popup-tooltip la-delay" data-content="${costItem.costDescription}">
+                                                <div class="ui icon la-popup-tooltip" data-content="${costItem.costDescription}">
                                                     <i class="info circular inverted icon"></i>
                                                 </div>
                                             </g:if>
@@ -957,7 +957,7 @@
                                         <td>
                                             <g:if test="${costItem && costItem.costDescription}">
 
-                                                <div class="ui icon la-popup-tooltip la-delay" data-content="${costItem.costDescription}">
+                                                <div class="ui icon la-popup-tooltip" data-content="${costItem.costDescription}">
                                                     <i class="info circular inverted icon"></i>
                                                 </div>
                                             </g:if>
@@ -1003,17 +1003,17 @@
                 <td class="center aligned">
                     <g:if test="${actionName == 'listProvider'}">
                         <g:if test="${currentProviderIdList && (org.id in currentProviderIdList)}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.providers')}"><i class="${Icon.UI.MY_OBJECT} yellow"></i></span>
+                            <span class="la-popup-tooltip" data-content="${message(code: 'menu.my.providers')}"><i class="${Icon.UI.MY_OBJECT} yellow"></i></span>
                         </g:if>
                     </g:if>
                     <g:if test="${actionName == 'listInstitution'}">
                         <g:if test="${currentConsortiaMemberIdList && (org.id in currentConsortiaMemberIdList)}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.insts')}"><i class="${Icon.UI.MY_OBJECT} yellow"></i></span>
+                            <span class="la-popup-tooltip" data-content="${message(code: 'menu.my.insts')}"><i class="${Icon.UI.MY_OBJECT} yellow"></i></span>
                         </g:if>
                     </g:if>
                     <g:if test="${actionName == 'listConsortia'}">
                         <g:if test="${currentConsortiaIdList && (org.id in currentConsortiaIdList)}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.consortia')}"><i class="${Icon.UI.MY_OBJECT} yellow"></i></span>
+                            <span class="la-popup-tooltip" data-content="${message(code: 'menu.my.consortia')}"><i class="${Icon.UI.MY_OBJECT} yellow"></i></span>
                         </g:if>
                     </g:if>
                 </td>

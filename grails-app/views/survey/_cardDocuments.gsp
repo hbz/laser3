@@ -27,7 +27,7 @@
                             <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
 
                             %{--//Vorerst alle Umfrage Dokumente als geteilt nur Kennzeichen--}%
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
+                            <span class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
                                 <i class="green alternate share icon"></i>
                             </span>
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />

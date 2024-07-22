@@ -55,7 +55,7 @@
         <sec:ifAnyGranted roles="ROLE_ADMIN">
             <g:if test="${actionName in ['show']}">
                 <div class="divider"></div>
-                <g:link class="item js-open-confirm-modal la-popup-tooltip la-delay" action="disableAllUsers" id="${params.id}"
+                <g:link class="item js-open-confirm-modal la-popup-tooltip" action="disableAllUsers" id="${params.id}"
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.disable.allInstUsers")}" data-confirm-term-how="ok">
                     <i class="user lock icon"></i> ${message(code:'org.disableAllUsers.label')}
                 </g:link>

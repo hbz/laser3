@@ -68,7 +68,7 @@
                                     <g:if test="${sub.packages}">
                                         <g:each in="${sub.deduplicatedAccessPointsForOrgAndPlatform(contextOrg, platformInstance)}" var="orgap">
                                             <div class="la-flexbox">
-                                                <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code: 'myinst.currentPlatforms.tooltip.thumbtack.content')}">
+                                                <span class="la-popup-tooltip" data-position="top right" data-content="${message(code: 'myinst.currentPlatforms.tooltip.thumbtack.content')}">
                                                     <i class="icon la-thumbtack slash scale la-list-icon"></i>
                                                 </span>
                                                 <g:link controller="accessPoint" action="edit_${orgap.accessMethod.value.toLowerCase()}"

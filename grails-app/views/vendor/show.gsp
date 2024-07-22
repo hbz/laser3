@@ -410,7 +410,7 @@
                                         <td><g:link action="show" id="${pair.id}">${pair.name}</g:link></td>
                                         <td class="right aligned">
                                             <g:if test="${subEditor}">
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.unlink')}">
+                                                <span class="la-popup-tooltip" data-content="${message(code:'license.details.unlink')}">
                                                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.general")}"
                                                             data-confirm-term-how="unlink"

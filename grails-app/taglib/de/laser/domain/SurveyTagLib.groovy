@@ -181,21 +181,21 @@ class SurveyTagLib {
 
             if (finishDate) {
                 if (surveyOwnerView) {
-                    out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right" data-variation="tiny"'
+                    out << '<span class="la-long-tooltip la-popup-tooltip" data-position="top right" data-variation="tiny"'
                     out << ' data-content="' + message(code: "surveyResult.finish.info.consortia") + '">'
                     out <<   ' <i class="check big green icon"></i></span>'
                 } else {
-                    out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right" data-variation="tiny"'
+                    out << '<span class="la-long-tooltip la-popup-tooltip" data-position="top right" data-variation="tiny"'
                     out << ' data-content="' + message(code: "surveyResult.finish.info") + '">'
                     out <<   ' <i class="check big green icon"></i></span>'
                 }
             } else {
                 if (surveyOwnerView) {
-                    out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right" data-variation="tiny"'
+                    out << '<span class="la-long-tooltip la-popup-tooltip" data-position="top right" data-variation="tiny"'
                     out << ' data-content="' + message(code: "surveyResult.noFinish.info.consortia") + '">'
                     out <<   ' <i class="x red icon"></i></span>'
                 } else {
-                    out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right" data-variation="tiny"'
+                    out << '<span class="la-long-tooltip la-popup-tooltip" data-position="top right" data-variation="tiny"'
                     out << ' data-content="' + message(code: "surveyResult.noFinish.info") + '">'
                     out <<   ' <i class="x red icon"></i></span>'
                 }

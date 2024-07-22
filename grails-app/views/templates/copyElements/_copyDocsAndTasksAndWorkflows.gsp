@@ -247,12 +247,12 @@
 %{--                                                        <g:if test="${isConsortialObjects}">
                                                             <div class="right aligned wide column">
                                                                 <g:if test="${docctx.isShared}">
-                                                                    <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
+                                                                    <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
                                                                         <i class="la-share icon"></i>
                                                                     </span>
                                                                 </g:if>
                                                                 <g:else>
-                                                                    <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
+                                                                    <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.off')}">
                                                                         <i class="la-share slash icon"></i>
                                                                     </span>
                                                                 </g:else>

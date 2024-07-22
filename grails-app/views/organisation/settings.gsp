@@ -96,17 +96,17 @@
                                         <td>
                                             ${message(code:"org.setting.${os.key}", default: "${os.key}")}
                                             <g:if test="${OrgSetting.KEYS.NATSTAT_SERVER_ACCESS == os.key}">
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.NATSTAT_SERVER_ACCESS.tooltip')}">
+                                                <span class="la-popup-tooltip" data-content="${message(code:'org.setting.NATSTAT_SERVER_ACCESS.tooltip')}">
                                                     <i class="${Icon.TOOLTIP.HELP}"></i>
                                                 </span>
                                             </g:if>
                                             <g:elseif test="${OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.OAMONITOR_SERVER_ACCESS.tooltip')}">
+                                                <span class="la-popup-tooltip" data-content="${message(code:'org.setting.OAMONITOR_SERVER_ACCESS.tooltip')}">
                                                     <i class="${Icon.TOOLTIP.HELP}"></i>
                                                 </span>
                                             </g:elseif>
                                             <g:elseif test="${OrgSetting.KEYS.EZB_SERVER_ACCESS == os.key}">
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.EZB.tooltip')}">
+                                                <span class="la-popup-tooltip" data-content="${message(code:'org.setting.EZB.tooltip')}">
                                                     <i class="${Icon.TOOLTIP.HELP}"></i>
                                                 </span>
                                             </g:elseif>

@@ -122,7 +122,7 @@
                                     <g:else>
                                         <div class="ui buttons">
                                             <g:if test="${unlinkDisabled}">
-                                                <span class="la-popup-tooltip la-delay" data-content="${unlinkDisabledTooltip}">
+                                                <span class="la-popup-tooltip" data-content="${unlinkDisabledTooltip}">
                                                     <g:link controller="subscription"
                                                             action="unlinkPackage"
                                                             params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'withIE']}"
@@ -150,7 +150,7 @@
                                             </g:else>
                                             <div class="or" data-text="|"></div>
                                             <g:if test="${unlinkDisabled}">
-                                                <span class="la-popup-tooltip la-delay" data-content="${unlinkDisabledTooltip}">
+                                                <span class="la-popup-tooltip" data-content="${unlinkDisabledTooltip}">
                                                     <g:link controller="subscription"
                                                             action="unlinkPackage"
                                                             params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'onlyIE']}"
@@ -412,17 +412,17 @@
                                         </th>
                                         <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
                                             <th class="control-label">
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:"subscription.packages.notification.label")}">
+                                                <span class="la-popup-tooltip" data-content="${message(code:"subscription.packages.notification.label")}">
                                                     <i class="ui large icon bullhorn"></i>
                                                 </span>
                                             </th>
                                             <th class="control-label la-border-left" >
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.packages.auditable')}">
+                                                <span class="la-popup-tooltip" data-content="${message(code:'subscription.packages.auditable')}">
                                                     <i class="ui large icon thumbtack"></i>
                                                 </span>
                                             </th>
                                             <th class="control-label">
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.packages.notification.auditable')}">
+                                                <span class="la-popup-tooltip" data-content="${message(code:'subscription.packages.notification.auditable')}">
                                                     <i class="ui large icon bullhorn"></i>
                                                 </span>
                                             </th>
@@ -491,7 +491,7 @@
                                     </g:each>
                                     <tr>
                                         <th class="control-label">
-                                            <g:message code="subscription.packages.freezeHolding"/> <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="${Icon.TOOLTIP.HELP}"></i></span>
+                                            <g:message code="subscription.packages.freezeHolding"/> <span class="la-popup-tooltip" data-content="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="${Icon.TOOLTIP.HELP}"></i></span>
                                         </th>
                                         <td>
                                             <g:if test="${!subscription.instanceOf}">

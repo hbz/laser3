@@ -17,7 +17,7 @@
                         <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
                             ${prop.type.getI10n('name')}
                             <g:if test="${prop.type.getI10n('expl')}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${prop.type.getI10n('expl')}">
+                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${prop.type.getI10n('expl')}">
                                     <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </g:if>
@@ -28,15 +28,15 @@
                         <%
                             if (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) {
                                 if (ownObj.isSlaved) {
-                                    println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                    println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                 }
                                 else {
-                                    println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                    println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                 }
                             }
                         %>
                         <g:if test="${prop.type.multipleOccurrence}">
-                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
+                            <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
                                 <i class="${Icon.PROP.MULTIPLE}"></i>
                             </span>
                         </g:if>

@@ -71,7 +71,7 @@
                                                 </div>
                                             </g:if>
                                             <g:else>
-                                                <span class="la-popup-tooltip la-delay" data-content="${g.message(code: 'renewalEvaluation.orgsInSurvey')}" data-position="top right"><i class="icon times circle red"></i></span>
+                                                <span class="la-popup-tooltip" data-content="${g.message(code: 'renewalEvaluation.orgsInSurvey')}" data-position="top right"><i class="icon times circle red"></i></span>
                                             </g:else>
                                         </td>
                                     </g:each>

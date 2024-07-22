@@ -51,7 +51,7 @@ class DropdownTagLib {
         String href      = attrs.href ? attrs.href : '#'
 
         if (attrs.tooltip && attrs.tooltip != '') {
-            linkBody = '<div class="la-popup-tooltip la-delay" data-content="' + attrs.tooltip + '">' + linkBody + '</div>'
+            linkBody = '<div class="la-popup-tooltip" data-content="' + attrs.tooltip + '">' + linkBody + '</div>'
         }
         if (this.pageScope.variables?.actionName == attrs.action && !attrs.notActive) {
             cssClass = cssClass + ' active'

@@ -36,9 +36,9 @@
                             <%
                                 if (AuditConfig.getConfig(object, objProperty)) {
                                     if (object.isSlaved) {
-                                        println '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                        println '<span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                     } else {
-                                        println '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                        println '<span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                     }
                                 }
                             %>
@@ -121,14 +121,14 @@
                                 <g:if test="${object._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_PARTICIPATION]}">
                                     <div class="right aligned wide column">
                                         <g:if test="${role.isShared}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay"
+                                            <span data-position="top left" class="la-popup-tooltip"
                                                   data-content="${message(code: 'property.share.tooltip.on')}">
                                                 <i class="la-share icon"></i>
                                             </span>
 
                                         </g:if>
                                         <g:else>
-                                            <span data-position="top left" class="la-popup-tooltip la-delay"
+                                            <span data-position="top left" class="la-popup-tooltip"
                                                   data-content="${message(code: 'property.share.tooltip.off')}">
                                                 <i class="la-share slash icon"></i>
                                             </span>
@@ -203,7 +203,7 @@
                             <%-- public --%>
                                 <g:each in="${Person.getPublicByOrgAndObjectResp(provider, object, 'Specific subscription editor')}"
                                         var="resp">
-                                    <span class="la-popup-tooltip la-delay"
+                                    <span class="la-popup-tooltip"
                                           data-content="${message(code: 'address.public')}"
                                           data-position="top right">
                                         <i class="${Icon.UI.ACP_PUBLIC}"></i>
@@ -218,7 +218,7 @@
                             <%-- private --%>
                                 <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(provider, object, 'Specific subscription editor', contextOrg)}"
                                         var="resp">
-                                    <span class="la-popup-tooltip la-delay"
+                                    <span class="la-popup-tooltip"
                                           data-content="${message(code: 'address.private')}"
                                           data-position="top right">
                                         <i class="${Icon.UI.ACP_PRIVATE}"></i>
@@ -239,7 +239,7 @@
                         <%-- public --%>
                             <g:each in="${Person.getPublicByOrgAndObjectResp(vendor, object, 'Specific subscription editor')}"
                                     var="resp">
-                                <span class="la-popup-tooltip la-delay"
+                                <span class="la-popup-tooltip"
                                       data-content="${message(code: 'address.public')}"
                                       data-position="top right">
                                     <i class="${Icon.UI.ACP_PUBLIC}"></i>
@@ -254,7 +254,7 @@
                         <%-- private --%>
                             <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(vendor, object, 'Specific subscription editor', contextOrg)}"
                                     var="resp">
-                                <span class="la-popup-tooltip la-delay"
+                                <span class="la-popup-tooltip"
                                       data-content="${message(code: 'address.private')}"
                                       data-position="top right">
                                     <i class="${Icon.UI.ACP_PRIVATE}"></i>

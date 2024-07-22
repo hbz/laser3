@@ -80,7 +80,7 @@
                                                         <dd>
                                                             <g:if test="${pkgInfo.packageInstanceRecord.source?.automaticUpdates}">
                                                                 <g:message code="package.index.result.automaticUpdates"/>
-                                                                <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                                <span class="la-long-tooltip la-popup-tooltip"
                                                                       data-position="right center"
                                                                       data-content="${pkgInfo.packageInstanceRecord.source.frequency}">
                                                                     <i class="${Icon.TOOLTIP.HELP}"></i>

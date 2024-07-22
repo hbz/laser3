@@ -45,7 +45,7 @@
 
                             <g:if test="${showConsortiaFunctions}">
                                 <g:if test="${groupedProps.getValue().binding?.isVisibleForConsortiaMembers}">
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: 'financials.isVisibleForSubscriber')}"
                                           style="margin-left:10px">
                                         <i class="ui icon eye orange"></i>

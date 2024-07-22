@@ -80,7 +80,7 @@
             <div class="three fields">
                 <div class="field">
                     <label for="filterCITitle">${message(code:'financials.newCosts.costTitle')}
-                        <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.title.tooltip')}">
+                        <span data-position="right center" class="la-popup-tooltip" data-content="${message(code:'financials.title.tooltip')}">
                             <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </label>

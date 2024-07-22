@@ -24,12 +24,12 @@
                 <td>
                     <g:formatDate format="${message(code:'default.date.format.notime')}" date="${dashDueDate.dueDateObject.date}"/>
                     <g:if test="${SqlDateUtils.isToday(dashDueDate.dueDateObject.date)}">
-                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'myinst.dash.due_date.enddate.isDueToday.label')}" data-position="top right">
+                        <span class="la-popup-tooltip" data-content="${message(code:'myinst.dash.due_date.enddate.isDueToday.label')}" data-position="top right">
                             <i class="${Icon.TOOLTIP.IMPORTANT} yellow"></i>
                         </span>
                     </g:if>
                     <g:elseif test="${SqlDateUtils.isBeforeToday(dashDueDate.dueDateObject.date)}">
-                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'myinst.dash.due_date.enddate.isOverdue.label')}" data-position="top right">
+                        <span class="la-popup-tooltip" data-content="${message(code:'myinst.dash.due_date.enddate.isOverdue.label')}" data-position="top right">
                             <i class="${Icon.TOOLTIP.IMPORTANT} red"></i>
                         </span>
                     </g:elseif>
@@ -57,7 +57,7 @@
                             </g:else>
                         </g:elseif>
                         <g:elseif test="${obj instanceof Task}">
-                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Aufgabe">
+                            <span data-position="top right" class="la-popup-tooltip" data-content="Aufgabe">
                                 <i class="${Icon.TASK} la-list-icon"></i>
                             </span>
                             <g:if test="${obj.subscription}">

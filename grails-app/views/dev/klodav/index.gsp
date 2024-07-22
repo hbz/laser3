@@ -18,7 +18,7 @@
 
 REMINDER
 
-<span class="la-popup-tooltip la-delay"
+<span class="la-popup-tooltip"
       data-content="${message(code: 'surveyLinks.participateToSurvey')}">
     <g:link class="ui button small la-modern-button js-open-confirm-modal"
             data-confirm-tokenMsg = "${message(code: 'surveyLinks.participateToSurvey.confirm.dialog')}"

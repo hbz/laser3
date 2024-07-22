@@ -17,7 +17,7 @@
                       <g:sortableColumn rowspan="2" params="${params}" property="reference" title="${message(code:'license.slash.name')}" />
                       <g:if test="${'memberLicenses' in licenseFilterTable}">
                           <th rowspan="2" class="center aligned">
-                              <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.incoming.childs')}" data-position="top right">
+                              <span class="la-popup-tooltip" data-content="${message(code:'license.details.incoming.childs')}" data-position="top right">
                                   <i class="${Icon.LICENSE} large"></i>
                               </span>
                           </th>
@@ -112,7 +112,7 @@
                           <g:if test="${'action' in licenseFilterTable}">
                               <td class="x">
                               <g:if test="${(contextCustomerType == CustomerTypeService.ORG_INST_PRO && l._getCalculatedType() == License.TYPE_LOCAL) || (customerTypeService.isConsortium( contextCustomerType ) && l._getCalculatedType() == License.TYPE_CONSORTIAL)}">
-                                  <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.copy.tooltip')}">
+                                  <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'license.details.copy.tooltip')}">
                                       <g:link controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(l), copyObject: true]}" class="${Btn.MODERN.SIMPLE}">
                                           <i class="${Icon.CMD.COPY}"></i>
                                       </g:link>

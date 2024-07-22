@@ -36,14 +36,14 @@
             <th rowspan="2" class="center aligned">${message(code:'sidewide.number')}</th>
             <g:sortableColumn property="roleT.org.sortname" params="${params}" title="${message(code:'myinst.consortiaSubscriptions.member')}" rowspan="2" />
             <th class="center aligned la-smaller-table-head"  rowspan="2" >
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
                       data-content="${message(code: 'default.previous.label')}">
                     <i class="${Icon.LNK.PREV}"></i>
                 </span>
             </th>
             <g:sortableColumn property="subT.name" params="${params}" title="${message(code:'default.subscription.label')}" class="la-smaller-table-head" />
             <th class="center aligned la-smaller-table-head" rowspan="2" >
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
                       data-content="${message(code: 'default.next.label')}">
                     <i class="${Icon.LNK.NEXT}"></i>
                 </span>
@@ -61,10 +61,10 @@
             <g:if test="${'withCostItems' in tableConfig}">
                 <th rowspan="2">${message(code:'financials.amountFinal')}</th>
                 <th rowspan="2" class="la-no-uppercase center aligned">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center">
+                    <span class="la-popup-tooltip" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center">
                         <i class="${Icon.FNC.COST_CONFIG}"></i>
                     </span>&nbsp;/&nbsp;
-                    <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                    <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                         <i class="icon eye"></i>
                     </span>
                 </th>
@@ -111,7 +111,7 @@
                         (${subscr.name})
                     </g:link>
                     <g:if test="${subCons.orgRelations.find { OrgRole oo -> oo.org == subscr && oo.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN}}">
-                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isNotVisibleForSubscriber')}">
+                        <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'financials.isNotVisibleForSubscriber')}">
                             <i class="low vision grey icon"></i>
                         </span>
                     </g:if>
@@ -230,11 +230,11 @@
 
                     <td>
                         <g:if test="${ci?.id}">
-                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${dataTooltip}">${raw(icon)}</span>
+                            <span data-position="top left" class="la-popup-tooltip" data-content="${dataTooltip}">${raw(icon)}</span>
                         </g:if>
 
                         <g:if test="${ci?.isVisibleForSubscriber}">
-                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                            <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                                 <i class="icon eye orange"></i>
                             </span>
                         </g:if>

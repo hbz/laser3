@@ -47,7 +47,7 @@
                                 <ui:xEditable owner="${surveyUrl}" field="url" type="text" overwriteEditable="${false}"/>
 
                                 <g:if test="${surveyUrl.urlComment}">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                           data-content="${surveyUrl.urlComment}">
                                         <i class="${Icon.TOOLTIP.INFO}"></i>
                                     </span>

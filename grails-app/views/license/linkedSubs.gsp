@@ -117,7 +117,7 @@
 
             <th>${message(code: 'default.subscription.label')}</th>
             <th>
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
                       data-content="${message(code: 'default.previous.label')}">
                     <i class="${Icon.LNK.PREV}"></i>
                 </span>
@@ -125,7 +125,7 @@
             <th>${message(code:'default.startDate.label.shy')}</th>
             <th>${message(code:'default.endDate.label.shy')}</th>
             <th>
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
                       data-content="${message(code: 'default.next.label')}">
                     <i class="${Icon.LNK.NEXT}"></i>
                 </span>
@@ -162,7 +162,7 @@
                         <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
 
                         <g:if test="${sub.isSlaved}">
-                            <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'license.details.isSlaved.tooltip')}">
+                            <span class="la-popup-tooltip" data-position="top right" data-content="${message(code:'license.details.isSlaved.tooltip')}">
                                 <i class="grey la-thumbtack-regular icon"></i>
                             </span>
                         </g:if>

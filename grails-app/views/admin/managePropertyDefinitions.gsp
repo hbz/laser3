@@ -49,23 +49,23 @@
                                 <tr>
                                     <td>
                                         <g:if test="${pd.isHardData}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.tooltip')}">
                                                 <i class="${Icon.PROP.HARDDATA}"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.multipleOccurrence}">
-                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
+                                            <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
                                                 <i class="${Icon.PROP.MULTIPLE}"></i>
                                             </span>
                                         </g:if>
 
                                         <g:if test="${usedPdList?.contains(pd.id)}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataIsUsed.tooltip', args:[pd.id])}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.dataIsUsed.tooltip', args:[pd.id])}">
                                                 <i class="${Icon.PROP.IN_USE}"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.isUsedForLogic}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
                                                 <i class="${Icon.PROP.LOGIC}"></i>
                                             </span>
                                         </g:if>
@@ -113,7 +113,7 @@
                                     <td>
                                         <g:set var="pdRdc" value="${pd.type?.split('\\.').last()}"/>
                                         <g:if test="${'RefdataValue'.equals(pdRdc)}">
-                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${pd.refdataCategory}">
+                                            <span data-position="top right" class="la-popup-tooltip" data-content="${pd.refdataCategory}">
                                                 <small>${pd.type?.split('\\.').last()}</small>
                                             </span>
                                         </g:if>
@@ -151,7 +151,7 @@
                                         </g:if>
 
                                         <g:if test="${(pd.descr == PropertyDefinition.SUB_PROP) && !PropertyDefinition.findByNameAndDescrAndTenant(pd.name, PropertyDefinition.SVY_PROP, null)}">
-                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}">
+                                            <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}">
                                                 <g:link class="${Btn.MODERN.SIMPLE}" action="transferSubPropToSurProp" params="[propertyDefinition: pd.id]">
                                                     <i class="${Icon.CMD.COPY}"></i>
                                                 </g:link>
@@ -160,7 +160,7 @@
 
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedPdList?.contains(pd.id)}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
+                                                <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'propertyDefinition.exchange.label')}">
                                                     <button class="${Btn.MODERN.SIMPLE}" data-href="#replacePropertyDefinitionModal" data-ui="modal"
                                                             data-xcg-pd="${pd.class.name}:${pd.id}"
                                                             data-xcg-type="${pd.type}"

@@ -17,7 +17,7 @@
                     <g:if test="${orgRole.org.gokbId == null}">
                         <tr>
                             <td>
-                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
+                                <span class="la-popup-tooltip" data-content="${message(code:'address.public')}" data-position="top right">
                                     <i class="${Icon.UI.ACP_PUBLIC}"></i>
                                 </span>
                                 ${p}
@@ -45,7 +45,7 @@
                     <g:if test="${PersonRole.findByPrsAndOrg(p, orgRole.org)}">
                         <tr>
                             <td>
-                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
+                                <span class="la-popup-tooltip" data-content="${message(code:'address.private')}" data-position="top right">
                                     <i class="${Icon.UI.ACP_PRIVATE}"></i>
                                 </span>
                                 ${p}

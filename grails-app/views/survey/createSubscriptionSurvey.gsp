@@ -25,7 +25,7 @@
             <div class="field">
                 <label for="q">${message(code: 'default.search.text')}
                     <span data-position="right center" data-variation="tiny"
-                          class="la-popup-tooltip la-delay"
+                          class="la-popup-tooltip"
                           data-content="${message(code: 'default.search.tooltip.subscription')}">
                         <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
@@ -126,12 +126,12 @@
 
 
                 <th scope="col" rowspan="2">
-                    <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
+                    <a href="#" class="la-popup-tooltip" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
                         <i class="users large icon"></i>
                     </a>
                 </th>
                 <th scope="col" rowspan="2">
-                    <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
+                    <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
                         <i class="${Icon.FNC.COST} large"></i>
                     </a>
                 </th>

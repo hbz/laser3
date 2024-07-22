@@ -246,7 +246,7 @@
                     <div class="eight wide field" style="text-align: left;">
                         <div class="field">
                             <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span
-                                    class="la-long-tooltip la-popup-tooltip la-delay"
+                                    class="la-long-tooltip la-popup-tooltip"
                                     data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="${Icon.TOOLTIP.HELP}"></i></span>
                             </label>
                         </div>

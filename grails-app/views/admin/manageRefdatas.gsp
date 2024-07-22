@@ -74,13 +74,13 @@
                                 <tr>
                                     <td>
                                         <g:if test="${rdv.isHardData}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.tooltip')}">
                                                 <i class="${Icon.PROP.HARDDATA}"></i>
                                             </span>
                                         </g:if>
 
                                         <g:if test="${usedRdvList?.contains(rdv.id)}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataIsUsed.tooltip', args:[rdv.id])}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.dataIsUsed.tooltip', args:[rdv.id])}">
                                                 <i class="${Icon.PROP.IN_USE}"></i>
                                             </span>
                                         </g:if>

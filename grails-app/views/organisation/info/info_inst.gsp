@@ -414,7 +414,7 @@
                         <th scope="col" rowspan="2">${message(code:'financials.newCosts.costTitle')}</th>
                             <th scope="col" class="la-smaller-table-head">${message(code:'default.subscription.label')}</th>
                             <th scope="col" rowspan="2" class="la-no-uppercase">
-                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center">
+                                <span class="la-popup-tooltip" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center">
                                     <i class="${Icon.FNC.COST_CONFIG}"></i>
                                 </span>
                             </th>
@@ -460,7 +460,7 @@
                                                 ${ci.costTitle ?: or.org.designation}
                                             </g:link>
                                             <g:if test="${ci.isVisibleForSubscriber}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                                                <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                                                     <i class="ui icon eye orange"></i>
                                                 </span>
                                             </g:if>
@@ -485,7 +485,7 @@
                                     </g:else>
                                 </td>
                                 <td>
-                                    <span class="la-popup-tooltip la-delay" data-position="right center" data-content="${dataTooltip}">${raw(icon)}</span>
+                                    <span class="la-popup-tooltip" data-position="right center" data-content="${dataTooltip}">${raw(icon)}</span>
                                 </td>
                                 <td>
                                     ${ci.billingCurrency ?: 'EUR'}

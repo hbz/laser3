@@ -13,7 +13,7 @@
             <laser:render template="name" model="${[nameOptions: [], name: '']}"/>
             <div class="field required">
                 <label>URL
-                    <span class="la-long-tooltip la-popup-tooltip la-delay"
+                    <span class="la-long-tooltip la-popup-tooltip"
                           data-content="${message(code: "accessPoint.url.help")}">
                         <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span> <g:message code="messageRequiredField" />
                 </label>
@@ -23,7 +23,7 @@
         <g:elseif test="${accessMethod == RDStore.ACCESS_POINT_TYPE_OA}">
             <div class="field required">
                 <label>${message(code: 'accessPoint.oa.name.label')}
-                    <span class="la-long-tooltip la-popup-tooltip la-delay"
+                    <span class="la-long-tooltip la-popup-tooltip"
                           data-content="${message(code:'accessPoint.oa.help')}">
                         <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span>  <g:message code="messageRequiredField" />
                 </label>
@@ -40,7 +40,7 @@
         <g:elseif test="${accessMethod == RDStore.ACCESS_POINT_TYPE_SHIBBOLETH}">
             <div class="field required">
                 <label>${message(code: 'accessPoint.shibboleth.name.label')}
-                    <span class="la-long-tooltip la-popup-tooltip la-delay"
+                    <span class="la-long-tooltip la-popup-tooltip"
                           data-content="${message(code:'accessPoint.shibboleth.help')}">
                         <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span> <g:message code="messageRequiredField" />
                 </label>

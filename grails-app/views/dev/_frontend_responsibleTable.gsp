@@ -38,13 +38,13 @@
         </th>
 
         <th scope="col" rowspan="2">
-            <a href="#" class="la-popup-tooltip la-delay" data-content="Einrichtung" data-position="top center"
+            <a href="#" class="la-popup-tooltip" data-content="Einrichtung" data-position="top center"
                aria-label="Einrichtung" data-why-id="why-722">
                 <i class="users large icon" aria-hidden="true"></i>
             </a>
         </th>
         <th scope="col" rowspan="2">
-            <a href="#" class="la-popup-tooltip la-delay" data-content="Einrichtungskosten" data-position="top center"
+            <a href="#" class="la-popup-tooltip" data-content="Einrichtungskosten" data-position="top center"
                aria-label="Einrichtungskosten" data-why-id="why-725">
                 <i class="${Icon.FNC.COST} large" aria-hidden="true"></i>
             </a>
@@ -129,7 +129,7 @@
         <td class="x" data-label="Optionen:">
 
             <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.SIMPLE}">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
                     <i class="${Icon.SURVEY}" aria-hidden="true"></i>
@@ -207,7 +207,7 @@
         <td class="x" data-label="Optionen:">
 
             <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.SIMPLE}">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
                     <i class="${Icon.SURVEY}" aria-hidden="true"></i>
@@ -285,7 +285,7 @@
         <td class="x" data-label="Optionen:">
 
             <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.SIMPLE}">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
                     <i class="${Icon.SURVEY}" aria-hidden="true"></i>
@@ -363,7 +363,7 @@
         <td class="x" data-label="Optionen:">
 
             <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.SIMPLE}">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
                     <i class="${Icon.SURVEY}" aria-hidden="true"></i>
@@ -441,7 +441,7 @@
         <td class="x" data-label="Optionen:">
 
             <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.SIMPLE}">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
                     <i class="${Icon.SURVEY}" aria-hidden="true"></i>
@@ -536,13 +536,13 @@
         </th>
 
         <th scope="col" rowspan="2">
-            <a href="#" class="la-popup-tooltip la-delay" data-content="Einrichtung" data-position="top center"
+            <a href="#" class="la-popup-tooltip" data-content="Einrichtung" data-position="top center"
                aria-label="Einrichtung" data-why-id="why-722">
                 <i class="users large icon" aria-hidden="true"></i>
             </a>
         </th>
         <th scope="col" rowspan="2">
-            <a href="#" class="la-popup-tooltip la-delay" data-content="Einrichtungskosten" data-position="top center"
+            <a href="#" class="la-popup-tooltip" data-content="Einrichtungskosten" data-position="top center"
                aria-label="Einrichtungskosten" data-why-id="why-725">
                 <i class="${Icon.FNC.COST} large" aria-hidden="true"></i>
             </a>
@@ -627,7 +627,7 @@
         <td class="x" data-label="Optionen:">
 
             <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.SIMPLE}">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
                     <i class="${Icon.SURVEY}" aria-hidden="true"></i>
@@ -705,7 +705,7 @@
         <td class="x" data-label="Optionen:">
 
             <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.SIMPLE}">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
                     <i class="${Icon.SURVEY}" aria-hidden="true"></i>
@@ -783,7 +783,7 @@
         <td class="x" data-label="Optionen:">
 
             <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.SIMPLE}">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
                     <i class="${Icon.SURVEY}" aria-hidden="true"></i>
@@ -861,7 +861,7 @@
         <td class="x" data-label="Optionen:">
 
             <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.SIMPLE}">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
                     <i class="${Icon.SURVEY}" aria-hidden="true"></i>
@@ -939,7 +939,7 @@
         <td class="x" data-label="Optionen:">
 
             <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.SIMPLE}">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
                     <i class="${Icon.SURVEY}" aria-hidden="true"></i>

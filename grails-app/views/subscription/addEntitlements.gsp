@@ -241,7 +241,7 @@
                                             </g:link>
                                         </g:if>
                                         <g:else>
-                                            <div class="la-popup-tooltip la-delay"
+                                            <div class="la-popup-tooltip"
                                                  data-content="${message(code: 'subscription.details.addEntitlements.thread.running')}">
                                                 <g:link class="ui icon disabled button la-popup-tooltip la-delay"
                                                         action="processAddEntitlements"

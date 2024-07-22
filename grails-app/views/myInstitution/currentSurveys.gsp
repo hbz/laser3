@@ -259,7 +259,7 @@
                 <td>
                     <div class="la-flexbox">
                         <g:if test="${surveyConfig.subSurveyUseForTransfer}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                   data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info2")}">
                                 <i class="grey ${Icon.SURVEY} la-list-icon"></i>
                             </span>
@@ -278,7 +278,7 @@
                     </div>
 
                     <g:if test="${surveyInfo.isMandatory}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
                             <i class="${Icon.TOOLTIP.SERIOUS} yellow"></i>
                         </span>
@@ -309,7 +309,7 @@
                 <td class="x">
 
                     <g:if test="${editable}">
-                            <span class="la-popup-tooltip la-delay"
+                            <span class="la-popup-tooltip"
                                   data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                                 <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]"
                                         class="${Btn.MODERN.SIMPLE}"

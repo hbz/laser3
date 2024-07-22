@@ -29,7 +29,7 @@
             <g:if test="${propKey.getI10n('expl') != null && !propKey.getI10n('expl').contains(' °')}">
                 ${propKey.getI10n('name')}
                 <g:if test="${propKey.getI10n('expl')}">
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                           data-content="${propKey.getI10n('expl')}">
                         <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
@@ -40,7 +40,7 @@
             </g:else>
 
             <g:if test="${propKey.multipleOccurrence}">
-                <span data-position="top right" class="la-popup-tooltip la-delay"
+                <span data-position="top right" class="la-popup-tooltip"
                       data-content="${message(code: 'default.multipleOccurrence.tooltip')}">
                     <i class="${Icon.PROP.MULTIPLE}"></i>
                 </span>
@@ -80,7 +80,7 @@
                                 </g:if>
                             </g:elseif>
                             <g:elseif test="${propValue.type.isRefdataValueType()}">
-                                <span data-position="top left" class="la-popup-tooltip la-delay"
+                                <span data-position="top left" class="la-popup-tooltip"
                                       data-content="${propValue.refValue?.getI10n("value")}">
                                     <g:if test="${object instanceof License}">
                                         <%
@@ -138,7 +138,7 @@
                             <g:if test="${propValues.get(object)?.size() > 1}"><br /></g:if>
                         </g:if>
                         <g:else>
-                                <span data-position="top left" class="la-popup-tooltip la-delay"
+                                <span data-position="top left" class="la-popup-tooltip"
                                   data-content="${message(code: "default.compare.propertyValueNotSet")}"><i
                                 class="close icon"></i></span>
                         </g:else>
@@ -146,14 +146,14 @@
                         <g:if test="${propValue.note}">
                             &nbsp;
                             <span data-position="top left"
-                                  class="ui circular large label la-long-tooltip la-popup-tooltip la-delay"
+                                  class="ui circular large label la-long-tooltip la-popup-tooltip"
                                   data-content="${propValue.note}">${message(code: 'copyElementsIntoObject.note.short')}</span>
 
                         </g:if>
                         <g:if test="${object instanceof License && propValue.paragraph}">
                             &nbsp;
                             <span data-position="top left"
-                                  class="ui circular large label la-long-tooltip la-popup-tooltip la-delay"
+                                  class="ui circular large label la-long-tooltip la-popup-tooltip"
                                   data-content="${propValue.paragraph}">§</span><br />
                         </g:if>
 
@@ -171,20 +171,20 @@
                                 <g:if test="${(propValue.hasProperty('instanceOf') && propValue.instanceOf && AuditConfig.getConfig(propValue.instanceOf)) || AuditConfig.getConfig(propValue)}">
                                     <g:if test="${object.isSlaved}">
                                         &nbsp;
-                                        <span class="la-popup-tooltip la-delay"
+                                        <span class="la-popup-tooltip"
                                               data-content="${message(code: 'property.audit.target.inherit.auto')}"
                                               data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
                                     </g:if>
                                     <g:else>
                                         &nbsp;
-                                        <span class="la-popup-tooltip la-delay"
+                                        <span class="la-popup-tooltip"
                                               data-content="${message(code: 'property.audit.target.inherit')}"
                                               data-position="top right"><i class="icon thumbtack grey"></i></span>
                                     </g:else>
                                 </g:if>
                                 <g:elseif test="${propValue.tenant?.id == consortium?.id && atSubscr}">
                                     &nbsp;
-                                    <span class="la-popup-tooltip la-delay"
+                                    <span class="la-popup-tooltip"
                                           data-content="${message(code: 'property.notInherited.fromConsortia')}"
                                           data-position="top right"><i class="icon cart arrow down grey la-thumbtack-regular"></i>
                                     </span>
@@ -200,7 +200,7 @@
             <g:else>
                 <td>
                     <div class="la-copyElements-flex-item">
-                        <a class="ui circular label la-popup-tooltip la-delay"
+                        <a class="ui circular label la-popup-tooltip"
                            data-content="<g:message code="default.compare.propertyNotSet"/>"><strong>–</strong></a>
                     </div>
                 </td>

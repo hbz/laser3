@@ -4,7 +4,7 @@
     </g:if>
     <g:else>
         <h2 class="ui header">
-            <g:message code="platform.stats.data.header"/> <g:link url="${platformInstanceRecord.wekbUrl}" target="_blank" class="la-popup-tooltip la-delay" data-content="we:kb Link"><i class="${Icon.WEKB}"></i></g:link>
+            <g:message code="platform.stats.data.header"/> <g:link url="${platformInstanceRecord.wekbUrl}" target="_blank" class="la-popup-tooltip" data-content="we:kb Link"><i class="${Icon.WEKB}"></i></g:link>
         </h2>
         <div class="ui grid">
             <div class="eight wide column">

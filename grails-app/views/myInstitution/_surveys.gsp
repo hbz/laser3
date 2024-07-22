@@ -31,7 +31,7 @@
 
                     <g:if test="${surveyInfo.isMandatory}">
                         &nbsp;
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
                             <i class="${Icon.TOOLTIP.SERIOUS} yellow"></i>
                         </span>
@@ -51,7 +51,7 @@
                             </g:link>
 
                             <span class="la-float-right">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center"
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="top center"
                                         data-content="${message(code: "surveyResult.label")} anzeigen">
                                             <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                                     params="[surveyConfigID: surveyConfig.id]"

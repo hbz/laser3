@@ -32,7 +32,7 @@
                     </g:if>
 
                     <g:if test="${surveyPropertyConfig.surveyProperty.getI10n('expl')}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${surveyPropertyConfig.surveyProperty.getI10n('expl')}">
                             <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
@@ -162,7 +162,7 @@
                     </g:if>
                     <g:else>
                         ${message(code: 'surveyResult.commentParticipant')}
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentParticipant.info')}">
                             <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
@@ -171,14 +171,14 @@
                 <th>
                     <g:if test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                         ${message(code: 'surveyResult.commentOnlyForOwner')}
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
                             <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </g:if>
                     <g:else>
                         ${message(code: 'surveyResult.commentOnlyForParticipant')}
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
                             <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
@@ -196,7 +196,7 @@
                         ${surveyResult.type.getI10n('name')}
 
                         <g:if test="${surveyResult.type.getI10n('expl')}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
                                   data-content="${surveyResult.type.getI10n('expl')}">
                                 <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
@@ -205,7 +205,7 @@
                         <g:set var="surveyConfigProperties"
                                value="${SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyResult.surveyConfig, surveyResult.type)}"/>
                         <g:if test="${surveyConfigProperties && surveyConfigProperties.mandatoryProperty}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
                                   data-content="${message(code: 'default.mandatory.tooltip')}">
                                 <i class="${Icon.TOOLTIP.INFO}"></i>
                             </span>

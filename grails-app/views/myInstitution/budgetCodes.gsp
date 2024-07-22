@@ -28,7 +28,7 @@
                 <th>${message(code: 'default.description.label')}</th>
                 <th>
                     ${message(code: 'financials.budgetCode.usage')}
-                    <span data-position="right center" class="la-popup-tooltip la-delay"
+                    <span data-position="right center" class="la-popup-tooltip"
                           data-content="${message(code: 'financials.budgetCode.usage.explanation')}">
                         <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>

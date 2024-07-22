@@ -416,7 +416,7 @@
                     <label></label>
                     <button class="${Btn.POSITIVE} export" value="saveClickMeConfig" name="saveClickMeConfig">Export <g:message code="default.config.label"/> <g:message
                             code="default.button.save"/> </button>
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: 'clickMeConfig.save.info')}">
+                    <span class="la-long-tooltip la-popup-tooltip" data-content="${message(code: 'clickMeConfig.save.info')}">
                         <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
                     </span>
                 </div>

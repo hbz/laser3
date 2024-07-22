@@ -39,18 +39,18 @@
                               title="${message(code: 'default.endDate.label.shy')}"/>
             <th>${message(code: 'surveyProperty.plural.label')}</th>
             <th>
-                <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfigDocs.label')}" data-position="top center">
+                <a href="#" class="la-popup-tooltip" data-content="${message(code: 'surveyConfigDocs.label')}" data-position="top center">
                 <i class="${Icon.DOCUMENT} large"></i>
                 </a>
             </th>
             <th>
-                <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyParticipants.label')}" data-position="top center">
+                <a href="#" class="la-popup-tooltip" data-content="${message(code: 'surveyParticipants.label')}" data-position="top center">
                     <i class="users large icon"></i>
                 </a>
             </th>
 
             <th>
-                <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyCostItems.label')}" data-position="top center">
+                <a href="#" class="la-popup-tooltip" data-content="${message(code: 'surveyCostItems.label')}" data-position="top center">
                     <i class="${Icon.FNC.COST} large"></i>
                 </a>
             </th>
@@ -79,7 +79,7 @@
                 <td>
                     <div class="la-flexbox">
                         <g:if test="${surveyConfig.subSurveyUseForTransfer}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                   data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info2")}">
                                 <i class="${Icon.SURVEY} la-list-icon"></i>
                             </span>
@@ -158,7 +158,7 @@
                         </g:link>
                 </td>
                 <td>
-                    <span class="la-popup-tooltip la-delay"
+                    <span class="la-popup-tooltip"
                           data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                         <g:link controller="survey" action="show" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]"

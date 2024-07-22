@@ -2,7 +2,7 @@
 <g:if test="${address}">
 	<div class="ui item address-details">
         <div style="display: flex" class="js-copyTriggerParent">
-            <a href="${address.generateGoogleMapURL()}" target="_blank" class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code: 'address.googleMaps.link')}">
+            <a href="${address.generateGoogleMapURL()}" target="_blank" class="la-popup-tooltip" data-position="top right" data-content="${message(code: 'address.googleMaps.link')}">
                 <i class="ui la-js-copyTriggerIcon js-linkGoogle blue icon building map marker alternate la-list-icon"></i>
             </a>
             <div class="content la-space-right js-copyTrigger la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">

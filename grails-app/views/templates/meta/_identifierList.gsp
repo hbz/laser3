@@ -21,7 +21,7 @@
                 <td>
                     ${namespace}
                     <g:if test="${ident instanceof Identifier && ident.ns.getI10n('description')}">
-                        <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${ident.ns.getI10n('description')}">
+                        <span data-position="top right" class="la-popup-tooltip" data-content="${ident.ns.getI10n('description')}">
                             <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </g:if>
@@ -144,7 +144,7 @@
                                     </g:else>
                                 </g:if>
                                 <g:elseif test="${ident.instanceOf}">
-                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
+                                    <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
                                 </g:elseif>
                                 <g:else>
                                     <g:link controller="ajax" action="deleteIdentifier" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
@@ -158,7 +158,7 @@
                             </g:if>
                         </g:if>
                         <g:elseif test="${ident instanceof Identifier && ident.instanceOf}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
+                            <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
                         </g:elseif>
                     </td>
                 </g:if><%-- hidden if org[type=institution] --%>

@@ -60,7 +60,7 @@
                         </g:elseif>
                         <g:elseif
                                 test="${changedProperty.subscriptionProperty.type.isRefdataValueType()}">
-                            <span data-position="top left" class="la-popup-tooltip la-delay"
+                            <span data-position="top left" class="la-popup-tooltip"
                                   data-content="${changedProperty.subscriptionProperty.refValue?.getI10n("value")}">
                                 ${changedProperty.subscriptionProperty.refValue?.getI10n("value")}
                             </span>

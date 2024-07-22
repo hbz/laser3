@@ -18,7 +18,7 @@
 
         <dl>
             <dt class="control-label">
-                <div class="ui icon la-popup-tooltip la-delay"
+                <div class="ui icon la-popup-tooltip"
                      data-content="${message(code: "surveyconfig.internalComment.comment")}">
                     ${message(code: 'surveyconfig.internalComment.label')}
                     <i class="${Icon.TOOLTIP.HELP}"></i>
@@ -50,7 +50,7 @@
 
                     <div class="right aligned">
                         <g:if test="${editable}">
-                            <span class="la-popup-tooltip la-delay"
+                            <span class="la-popup-tooltip"
                                   data-content="${message(code: 'default.button.delete.label')}">
                                 <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.generic", args: [message(code: 'surveyconfig.url.label', args: [i + 1])])}"
@@ -81,7 +81,7 @@
                     params="[surveyConfigID: surveyConfig.id, id: surveyInfo.id]">
                 <div class="ui top attached tabular menu">
                     <a class="item active" data-tab="comment">
-                        <div class="ui icon la-popup-tooltip la-delay"
+                        <div class="ui icon la-popup-tooltip"
                              data-content="${message(code: "surveyconfig.comment.comment")}">
                             ${message(code: 'surveyconfig.comment.label')}
                             <i class="${Icon.TOOLTIP.HELP}"></i>

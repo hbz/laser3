@@ -116,7 +116,7 @@
                                         <g:if test="${editable}">
                                             <g:if test="${subscriptionLicenseLink}">
                                                 <div class="ui icon negative buttons">
-                                                    <span class="la-popup-tooltip la-delay"
+                                                    <span class="la-popup-tooltip"
                                                           data-content="${message(code: 'license.details.unlink')}">
                                                         <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.license")}"
@@ -130,7 +130,7 @@
                                                     </span>
                                                     <g:if test="${atConsortialParent}">
                                                         <div class="or" data-text="|"></div>
-                                                        <span class="la-popup-tooltip la-delay"
+                                                        <span class="la-popup-tooltip"
                                                               data-content="${message(code: 'license.details.unlink.child')}">
                                                             <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.child.license")}"
@@ -146,7 +146,7 @@
                                                 </div>
                                             </g:if>
                                             <g:else>
-                                                <span class="la-popup-tooltip la-delay"
+                                                <span class="la-popup-tooltip"
                                                       data-content="${message(code: 'license.details.unlink')}">
                                                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"

@@ -187,7 +187,7 @@
                     <div class="field wide twelve required">
                         <label id="la-js-nameOrFunction" for="last_name">
                             <g:message code="person.last_name.label"/> <g:message code="messageRequiredField" />
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                   data-content="${message(code: 'person.last_name.info')}">
                                 <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>

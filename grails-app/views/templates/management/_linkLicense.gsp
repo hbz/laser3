@@ -73,7 +73,7 @@
             <g:else>
                 <div class="sixteen wide field" style="text-align: right;">
                     <div class="ui buttons">
-                        <span class="la-popup-tooltip la-delay"
+                        <span class="la-popup-tooltip"
                               data-content="${message(code: 'license.details.unlink')}">
                             <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                                     data-confirm-tokenMsg="${message(code: "subscriptionsManagement.deleteLicenses.button.confirm")}"
@@ -155,7 +155,7 @@
 
                                 <g:if test="${sub.isSlaved}">
                                     <span data-position="top right"
-                                          class="la-popup-tooltip la-delay"
+                                          class="la-popup-tooltip"
                                           data-content="${message(code: 'license.details.isSlaved.tooltip')}">
                                         <i class="grey la-thumbtack-regular icon"></i>
                                     </span>

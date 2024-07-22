@@ -46,7 +46,7 @@
                         </g:if>
                         <g:else>
                             ${message(code: 'surveyResult.commentParticipant')}
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentParticipant.info')}">
                                 <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
@@ -55,14 +55,14 @@
                     <th>
                         <g:if test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                             ${message(code: 'surveyResult.commentOnlyForOwner')}
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
                                 <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
                         </g:if>
                         <g:else>
                             ${message(code: 'surveyResult.commentOnlyForParticipant')}
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
                                 <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
@@ -120,12 +120,12 @@
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('status')}">
                     <td class="center aligned">
                         <g:if test="${vendor.status == RDStore.VENDOR_STATUS_CURRENT}">
-                            <span class="la-popup-tooltip la-delay" data-position="top right">
+                            <span class="la-popup-tooltip" data-position="top right">
                                 <i class="${Icon.UNC.CIRCLE} green"></i>
                             </span>
                         </g:if>
                         <g:if test="${vendor.status == RDStore.VENDOR_STATUS_RETIRED}">
-                            <span class="la-popup-tooltip la-delay" data-position="top right" <g:if test="${vendor.retirementDate}">data-content="<g:message code="org.retirementDate.label"/>: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${vendor.retirementDate}"/>"</g:if>>
+                            <span class="la-popup-tooltip" data-position="top right" <g:if test="${vendor.retirementDate}">data-content="<g:message code="org.retirementDate.label"/>: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${vendor.retirementDate}"/>"</g:if>>
                                 <i class="${Icon.UNC.CIRCLE} yellow"></i>
                             </span>
                         </g:if>
@@ -176,7 +176,7 @@
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('isMyX')}">
                     <td class="center aligned">
                         <g:if test="${currentVendorIdList && (vendor.id in currentVendorIdList)}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.vendors')}"><i class="${Icon.UI.MY_OBJECT} yellow"></i></span>
+                            <span class="la-popup-tooltip" data-content="${message(code: 'menu.my.vendors')}"><i class="${Icon.UI.MY_OBJECT} yellow"></i></span>
                         </g:if>
                     </td>
                 </g:if>

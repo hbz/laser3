@@ -192,7 +192,7 @@
                 method="post" enctype="multipart/form-data">
 
             <h4 class="ui dividing header"><g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.label"/>
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'renewEntitlementsWithSurvey.issueEntitlementSelect.info')}">
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${message(code: 'renewEntitlementsWithSurvey.issueEntitlementSelect.info')}">
                 <i class="${Icon.TOOLTIP.HELP}"></i>
             </span></h4>
 
@@ -266,7 +266,7 @@
             class="item ${'currentPerpetualAccessIEs' == params.tab ? 'active' : ''}"
             params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'currentPerpetualAccessIEs']">
         <g:message code="renewEntitlementsWithSurvey.currentTitles"/>
-            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+            <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                   data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitles.mouseover')}">
                 <i class="${Icon.TOOLTIP.HELP}"></i>
             </span>

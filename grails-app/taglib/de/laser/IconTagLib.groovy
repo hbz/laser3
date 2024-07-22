@@ -104,7 +104,7 @@ class IconTagLib {
         String icon = ''
 
         if (showToolTipp) {
-            out << '<span class="la-popup-tooltip la-delay" data-content="' + toolTippContent + '" data-position="left center" data-variation="tiny">'
+            out << '<span class="la-popup-tooltip" data-content="' + toolTippContent + '" data-position="left center" data-variation="tiny">'
         }
 
         switch (attrs.propertyName) {
@@ -234,7 +234,7 @@ class IconTagLib {
                 break
         }
 
-        out << '<span class="la-popup-tooltip la-delay" data-content="' + msg + '" data-position="left center" data-variation="tiny">'
+        out << '<span class="la-popup-tooltip" data-content="' + msg + '" data-position="left center" data-variation="tiny">'
         out << '<i aria-hidden="true" class="' + icon + '"></i>'
         out << '</span>'
     }
@@ -248,7 +248,7 @@ class IconTagLib {
 
             if (ctm.text && ctm.icon) {
                 if (attrs.showTooltip) {
-                    out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right" data-content="' + ctm.text + '">'
+                    out << '<span class="la-long-tooltip la-popup-tooltip" data-position="top right" data-content="' + ctm.text + '">'
                     out << '<i class="' + ctm.icon + '"></i>'
                     out << '</span>'
                 } else {
@@ -266,7 +266,7 @@ class IconTagLib {
         if (attrs.org) {
 //            if (attrs.org.isCustomerType_Inst_Pro()) {
             if (attrs.org.isCustomerType_Pro()) {
-                out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="' + attrs.org.getCustomerTypeI10n() + '">'
+                out << '<span class="la-long-tooltip la-popup-tooltip" data-position="bottom center" data-content="' + attrs.org.getCustomerTypeI10n() + '">'
 
                 String color = attrs.org.isCustomerType_Consortium() ? 'teal' : 'grey'
                 if (attrs.cssClass) {
@@ -290,7 +290,7 @@ class IconTagLib {
                 boolean showText = 'true'.equalsIgnoreCase(attrs.showText as String)
 
                 if (showTooltip) {
-                    markup = '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'template.addDocument.confidentiality') + ': ' + conf + '"'
+                    markup = '<span class="la-popup-tooltip" data-content="' + message(code: 'template.addDocument.confidentiality') + ': ' + conf + '"'
                     markup = markup + '>'
                 }
 
@@ -325,13 +325,13 @@ class IconTagLib {
 
                 switch(docctx.shareConf) {
                     case RDStore.SHARE_CONF_UPLOADER_ORG:
-                        markup = '<span class="ui icon la-popup-tooltip la-delay" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_UPLOADER_ORG.getI10n('value') + '" style="margin-left:1em"> <i class="icon eye slash blue"></i></span>'
+                        markup = '<span class="ui icon la-popup-tooltip" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_UPLOADER_ORG.getI10n('value') + '" style="margin-left:1em"> <i class="icon eye slash blue"></i></span>'
                         break
                     case RDStore.SHARE_CONF_UPLOADER_AND_TARGET:
-                        markup = '<span class="ui icon la-popup-tooltip la-delay" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_UPLOADER_AND_TARGET.getI10n('value') + '" style="margin-left:1em"> <i class="icon eye slash red"></i></span>'
+                        markup = '<span class="ui icon la-popup-tooltip" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_UPLOADER_AND_TARGET.getI10n('value') + '" style="margin-left:1em"> <i class="icon eye slash red"></i></span>'
                         break
                     case RDStore.SHARE_CONF_ALL:
-                        markup = '<span class="ui icon la-popup-tooltip la-delay" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_ALL.getI10n('value') + '" style="margin-left:1em"> <i class="icon eye blue"></i></span>'
+                        markup = '<span class="ui icon la-popup-tooltip" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_ALL.getI10n('value') + '" style="margin-left:1em"> <i class="icon eye blue"></i></span>'
                         break
                 }
 
@@ -345,7 +345,7 @@ class IconTagLib {
 //        String color = attrs.color ? ' ' + attrs.color : ''
         String color = attrs.color ? 'grey' : '' // tmp override
 
-        out << '<span class="la-long-tooltip la-popup-tooltip la-delay"'
+        out << '<span class="la-long-tooltip la-popup-tooltip"'
         out << ' data-position="bottom center" data-content="' + tt +'">'
         out << '<i class="' + Icon.SYM.SUBSCRIPTION_IS_MULTIYEAR + ' ' + color + '"></i>'
         out << '</span>'
@@ -354,7 +354,7 @@ class IconTagLib {
     def markerIcon = { attrs, body ->
         String tooltip = attrs.type ? message(code: 'marker.' + attrs.type ) : message(code: 'marker.label')
 
-        out << '<span class="la-popup-tooltip la-delay" data-content="' + tooltip + '">'
+        out << '<span class="la-popup-tooltip" data-content="' + tooltip + '">'
         out << '<i class="' + Icon.MARKER + (attrs.color ? ' ' + attrs.color : '') + '"></i>'
         out << '</span>'
     }
@@ -364,7 +364,7 @@ class IconTagLib {
     def myXIcon = { attrs, body ->
 
         if (attrs.tooltip) {
-            out << '<span class="la-popup-tooltip la-delay" data-content="' + attrs.tooltip + '">'
+            out << '<span class="la-popup-tooltip" data-content="' + attrs.tooltip + '">'
         } else {
             out << '<span>'
         }
@@ -376,7 +376,7 @@ class IconTagLib {
         String tt = message(code: 'default.usage.label')
         String color = attrs.color ? ' grey' : '' // tmp override
 
-        out << '<span class="la-long-tooltip la-popup-tooltip la-delay"'
+        out << '<span class="la-long-tooltip la-popup-tooltip"'
         out << ' data-position="bottom center" data-content="' + tt +'">'
         out << '<i class="' + Icon.STATS + ' ' + color + '"></i>'
         out << '</span>'

@@ -4,13 +4,13 @@
     <td>
         <g:if test="${showGlobalUid}">
             <g:message code="globalUID.label" />
-            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'globalUID.desc')}">
+            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'globalUID.desc')}">
                 <i class="${Icon.TOOLTIP.HELP}"></i>
             </span>
         </g:if>
         <g:elseif test="${showWekbId}">
             <g:message code="org.wekbId.label" />
-            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'org.wekbId.desc')}">
+            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'org.wekbId.desc')}">
                 <i class="${Icon.TOOLTIP.HELP}"></i>
             </span>
         </g:elseif>
@@ -18,7 +18,7 @@
             ${id.ns.getI10n('name') ?: id.ns.ns}
 
             <g:if test="${id.ns.getI10n('description')}">
-                <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${id.ns.getI10n('description')}">
+                <span data-position="top left" class="la-popup-tooltip" data-content="${id.ns.getI10n('description')}">
                     <i class="${Icon.TOOLTIP.HELP}"></i>
                 </span>
             </g:if>
