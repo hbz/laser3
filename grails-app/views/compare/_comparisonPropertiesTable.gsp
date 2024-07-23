@@ -140,7 +140,7 @@
                         <g:else>
                                 <span data-position="top left" class="la-popup-tooltip"
                                   data-content="${message(code: "default.compare.propertyValueNotSet")}"><i
-                                class="close icon"></i></span>
+                                class="${Icon.SYM.NO}"></i></span>
                         </g:else>
 
                         <g:if test="${propValue.note}">

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.finance.CostItem" %>
 <laser:serviceInjection/>
 
 <g:set var="sumCostInBillingCurrencyAfterTax" value="${0}"/>
@@ -50,13 +50,13 @@
                         <g:if test="${selectedCostItemElementID == costItemElement.id && costItemsByPackage.pkg.id == selectedPackageID}">
                             <g:link controller="survey" action="$actionName"
                                     params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedCostItemElementID: costItemElement.id, selectedPackageID: costItemsByPackage.pkg.id]}">
-                                <i class="check bordered large green icon"></i>
+                                <i class="${Icon.SYM.YES} bordered large green"></i>
                             </g:link>
                         </g:if>
                         <g:else>
                             <g:link controller="survey" action="$actionName"
                                     params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedCostItemElementID: costItemElement.id, selectedPackageID: costItemsByPackage.pkg.id]}">
-                                <i class="close bordered large red icon"></i>
+                                <i class="${Icon.SYM.NO} bordered large red"></i>
                             </g:link>
                         </g:else>
                     </td>

@@ -117,13 +117,13 @@
                     <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndAddress(participant, surveyConfig, address)}">
                         <g:link controller="myInstitution" action="surveyInfos"
                                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: false, addressId: address.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation']">
-                            <i class="check bordered large green icon"></i>
+                            <i class="${Icon.SYM.YES} bordered large green"></i>
                         </g:link>
                     </g:if>
                     <g:else>
                         <g:link controller="myInstitution" action="surveyInfos"
                                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: true, addressId: address.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation']">
-                            <i class="close bordered large red icon"></i>
+                            <i class="${Icon.SYM.NO} bordered large red"></i>
                         </g:link>
                     </g:else>
                 </g:if>
@@ -131,19 +131,19 @@
                     <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndAddress(participant, surveyConfig, address)}">
                         <g:link controller="survey" action="evaluationParticipant"
                                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: false, addressId: address.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', participant: participant.id]">
-                            <i class="check bordered large green icon"></i>
+                            <i class="${Icon.SYM.YES} bordered large green"></i>
                         </g:link>
                     </g:if>
                     <g:else>
                         <g:link controller="survey" action="evaluationParticipant"
                                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: true, addressId: address.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', participant: participant.id]">
-                            <i class="close bordered large red icon"></i>
+                            <i class="${Icon.SYM.NO} bordered large red"></i>
                         </g:link>
                     </g:else>
                 </g:elseif>
                 <g:else>
                     <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndAddress(participant, surveyConfig, address)}">
-                        <i class="check bordered large green icon"></i>
+                        <i class="${Icon.SYM.YES} bordered large green"></i>
                     </g:if>
                 </g:else>
             </td>
