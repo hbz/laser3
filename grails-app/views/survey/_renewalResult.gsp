@@ -81,13 +81,13 @@
                 <g:if test="${surveyConfig.isResultsSetFinishByOrg(participantResult.participant)}">
                     <span data-position="top right" class="la-popup-tooltip"
                           data-content="${message(code: 'surveyResult.finishOrg')}">
-                        <i class="check green icon"></i>
+                        <i class="${Icon.SYM.YES} green"></i>
                     </span>
                 </g:if>
                 <g:else>
                     <span data-position="top right" class="la-popup-tooltip"
                           data-content="${message(code: 'surveyResult.notfinishOrg')}">
-                        <i class="x red icon"></i>
+                        <i class="${Icon.SYM.NO} red"></i>
                     </span>
                 </g:else>
 

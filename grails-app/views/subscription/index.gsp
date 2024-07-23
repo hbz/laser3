@@ -565,7 +565,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.coverageDepth}">
                                                                 <div class="item">
-                                                                    <i class="grey ${Icon.SYM.TIPP_COVERAGE_DEPTH} right la-popup-tooltip" data-content="${message(code: 'tipp.coverageDepth')}"></i>
+                                                                    <i class="grey ${Icon.ATTR.TIPP_COVERAGE_DEPTH} right la-popup-tooltip" data-content="${message(code: 'tipp.coverageDepth')}"></i>
                                                                     <div class="content">
                                                                         <div class="header">
                                                                             ${message(code: 'tipp.coverageDepth')}

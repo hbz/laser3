@@ -3,6 +3,7 @@ package de.laser
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.convenience.Marker
+import de.laser.ui.Btn
 import de.laser.ui.Icon
 import de.laser.interfaces.MarkerSupport
 
@@ -212,7 +213,7 @@ class ContextBarTagLib {
                     out << '<div class="item la-cb-action" id="marker-' + obj.id + '">'
                 }
 
-                out <<      '<div class="ui icon button purple ' + (isMarked ? 'active' : ' inactive ') + ' la-popup-tooltip la-long-tooltip" onclick="' + onClick + '" '
+                out <<      '<div class="' + Btn.ICON.SIMPLE_TOOLTIP + ' purple la-long-tooltip' + (isMarked ? ' active' : ' inactive') + '" onclick="' + onClick + '" '
                 out <<          'data-content="' + tt + '" data-position="top right">'
                 out <<              '<i class="' + (isMarked ? Icon.MARKER : 'la-bookmark slash icon' ) + '"></i>'
                 out <<      '</div>'

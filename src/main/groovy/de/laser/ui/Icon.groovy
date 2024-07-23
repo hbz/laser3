@@ -7,6 +7,20 @@ import de.laser.annotations.UnstableFeature
 class Icon {
     // please do not touch during refactoring ..
 
+    class ATTR {
+        // please do not touch during refactoring ..
+        // spec. domain class attributes/datas
+
+        @UIDoc(usage = 'Only for Org attributes: createdBy / legallyObligedBy')
+        public static String ORG_LEGAL_INFORMATION      = 'hands helping icon'
+
+        @UIDoc(usage = 'Only for Subscription attribute: isMultiYear')
+        public static String SUBSCRIPTION_IS_MULTIYEAR  = 'forward icon'
+
+        @UIDoc(usage = 'Only for TIPP: coverageDepth')
+        public static String TIPP_COVERAGE_DEPTH        = 'file alternate icon'
+    }
+
     class AUTH {
         // please do not touch during refactoring ..
         // roles / perms / customer types
@@ -140,22 +154,17 @@ class Icon {
         @UIDoc(usage = 'Generic symbol for: External Website')
         public static String URL            = 'globe icon'
 
+        @UIDoc(usage = 'Generic symbol for: Yes/Accept (see also NO)')
+        public static String YES    = 'check icon'
+        @UIDoc(usage = 'Generic symbol for: No/Reject (see also YES)')
+        public static String NO     = 'times icon'
+        @UIDoc(usage = 'Generic symbol for: Unkown')
+        public static String UNKOWN         = 'question icon'
+
         @UIDoc(usage = 'Generic symbol for: Search')
         public static String SEARCH         = 'search icon'
         @UIDoc(usage = 'Generic symbol for: Properties')
         public static String PROPERTIES     = 'tags icon'
-        @UIDoc(usage = 'Generic symbol for: Unkown')
-        public static String UNKOWN         = 'question icon'
-
-
-        @UIDoc(usage = 'Only for Org attributes: createdBy / legallyObligedBy')
-        public static String ORG_LEGAL_INFORMATION      = 'hands helping icon'
-
-        @UIDoc(usage = 'Only for Subscription attribute: isMultiYear')
-        public static String SUBSCRIPTION_IS_MULTIYEAR  = 'forward icon'
-
-        @UIDoc(usage = 'Only for TIPP: coverageDepth')
-        public static String TIPP_COVERAGE_DEPTH        = 'file alternate icon'
     }
 
     class UI {

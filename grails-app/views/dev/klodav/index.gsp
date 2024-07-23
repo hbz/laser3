@@ -134,8 +134,8 @@
     <p class="ui header">Icons #3</p>
     <div class="ui list">
         <div class="item">
-            <i class="${Icon.SYM.SUBSCRIPTION_IS_MULTIYEAR} large"></i>
-            <div class="content"> Mehrjahreslaufzeit (${Icon.SYM.SUBSCRIPTION_IS_MULTIYEAR})</div>
+            <i class="${Icon.ATTR.SUBSCRIPTION_IS_MULTIYEAR} large"></i>
+            <div class="content"> Mehrjahreslaufzeit (${Icon.ATTR.SUBSCRIPTION_IS_MULTIYEAR})</div>
         </div>
         <div class="item">
             <i class="${Icon.FNC.COST} large"></i>

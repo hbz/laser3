@@ -30,7 +30,7 @@
 </button>
 <h3>Icons in einem Link ohne zusätzlichen Text</h3>
 <g:link aria-label="Das ist eine Beschreibung für den Accessibility Tree" controller="dev" action="frontend" params="" class="${Btn.ICON.POSITIVE}">
-    <i aria-hidden="true" class="checkmark icon"></i>
+    <i aria-hidden="true" class="${Icon.SYM.YES}"></i>
 </g:link>
 <g:message code="default.title.label" /> <g:message code="messageRequiredField" />
 

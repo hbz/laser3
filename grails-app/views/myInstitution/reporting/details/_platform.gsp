@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.storage.PropertyStore; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.storage.PropertyStore; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 
 <laser:render template="/myInstitution/reporting/details/details_top" />
@@ -229,7 +229,7 @@
                             </g:if>
                             <g:else>
                                 <span class="la-long-tooltip la-popup-tooltip" data-content="${message(code:'reporting.chart.result.noCounterpart.label')}" data-position="top right">
-                                    <i class="icon times grey"></i>
+                                    <i class="${Icon.SYM.NO} grey"></i>
                                 </span>
                             </g:else>
                         </g:if>

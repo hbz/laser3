@@ -22,6 +22,21 @@
     <pre>&lt;button class=&quot;&dollar;{Btn.MODERN.BASIC} blue&quot;&gt;&lt;i class=&quot;&dollar;{Icon.SYM.UNKOWN}&quot;&gt;&lt;/i&gt;&lt;/button&gt;</pre>
 </div>
 
+<div class="ui info message hidden">
+    <p class="ui header">
+        todo
+    </p>
+
+    <ul>
+        <li>Btn.SIMPLE == Btn.PRIMARY ?</li>
+        <li>Btn.BASIC != Btn.MODERN.BASIC</li>
+        <li>Btn.MODERN.BASIC</li>
+        <li>Btn.MODERN.SIMPLE </li>
+        <li>Btn.MODERN.PRIMARY ?</li>
+        <li>Btn.MODERN.SECONDARY ?</li>
+    </ul>
+</div>
+
 <div class="ui segment">
 
     <div class="ui two column grid">
@@ -39,10 +54,10 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td> <button class="${Btn.SIMPLE} orange">BASIC</button> </td>
+                    <td> <button class="${Btn.SIMPLE} orange">SIMPLE</button> </td>
                     <td> Btn.SIMPLE <br/> orange </td>
                     <td> ${Btn.SIMPLE} (+ orange) </td>
-                    <td> Colors by declaration; <span class="ui text blue">default: none</span> </td>
+                    <td> Colors by declaration; <span class="ui text blue">default: none (blue)</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.PRIMARY}">PRIMARY</button> </td>
@@ -89,7 +104,7 @@
                     <td> <button class="${Btn.ICON.SIMPLE} yellow"><i class="${Icon.UNC.SQUARE}"></i></button> </td>
                     <td> Btn.ICON.SIMPLE <br/> yellow </td>
                     <td> ${Btn.ICON.SIMPLE} (+ yellow) </td>
-                    <td> Colors by declaration; <span class="ui text blue">default: none</span> </td>
+                    <td> Colors by declaration; <span class="ui text blue">default: none (blue)</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.ICON.PRIMARY}"><i class="${Icon.UNC.SQUARE}"></i></button> </td>
@@ -138,7 +153,7 @@
                     <td> <button class="${Btn.SIMPLE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.COPY}"></i> SIMPLE_CONFIRM</button> </td>
                     <td> Btn.SIMPLE_CONFIRM </td>
                     <td> ${Btn.SIMPLE_CONFIRM} </td>
-                    <td> Confirmation Dialog (data-confirm-attributes needed) </td>
+                    <td> Colors by declaration; <span class="ui text blue">default: none (blue)</span> <br/> Confirmation Dialog (data-confirm-attributes needed) </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.POSITIVE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.ADD}"></i> POSITIVE_CONFIRM</button> </td>
@@ -153,10 +168,10 @@
                     <td> Confirmation Dialog (data-confirm-attributes needed) </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.SIMPLE_CLICKCONTROL}">SIMPLE_CLICKCONTROL</button> </td>
-                    <td> Btn.SIMPLE_CLICKCONTROL </td>
-                    <td> ${Btn.SIMPLE_CLICKCONTROL} </td>
-                    <td> </td>
+                    <td> <button class="${Btn.SIMPLE_CLICKCONTROL} teal">SIMPLE_CLICKCONTROL</button> </td>
+                    <td> Btn.SIMPLE_CLICKCONTROL <br/> teal </td>
+                    <td> ${Btn.SIMPLE_CLICKCONTROL} (+ teal) </td>
+                    <td> Colors by declaration; <span class="ui text blue">default: none (blue)</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.NEGATIVE_CLICKCONTROL}">NEGATIVE_CLICKCONTROL</button> </td>
@@ -168,7 +183,7 @@
                     <td> <button class="${Btn.SIMPLE_TOOLTIP}" data-content="Something to know ..">SIMPLE_TOOLTIP</button> </td>
                     <td> Btn.SIMPLE_TOOLTIP </td>
                     <td> ${Btn.SIMPLE_TOOLTIP} </td>
-                    <td> Tooltip (data-attributes needed) </td>
+                    <td> Colors by declaration; <span class="ui text blue">default: none (blue)</span> <br/> Tooltip (data-attributes needed) </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.POSITIVE_TOOLTIP}" data-content="Something to know ..">POSITIVE_TOOLTIP</button> </td>
@@ -217,7 +232,7 @@
                     <td> <button class="${Btn.ICON.SIMPLE_TOOLTIP}" data-content="Something to know .."><i class="${Icon.CMD.DOWNLOAD}"></i></button> </td>
                     <td> Btn.ICON.SIMPLE_TOOLTIP </td>
                     <td> ${Btn.ICON.SIMPLE_TOOLTIP} </td>
-                    <td> Tooltip (data-attributes needed) </td>
+                    <td> Colors by declaration; <span class="ui text blue">default: none (blue)</span> <br/> Tooltip (data-attributes needed) </td>
                 </tr>
                 </tbody>
             </table>

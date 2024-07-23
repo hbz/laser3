@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn" %>
 <div id="unlinkPackageModal" class="ui modal">
 
     <div class="header">
@@ -27,11 +27,11 @@
                     </li>
                 </g:each>
                 <g:if test="${conflict_item.action.actionRequired}">
-                    <i class="icon times circle red"></i>
+                    <i class="${Icon.SYM.NO} red"></i>
                     <g:set var="actions_needed" value="true"/>
                 </g:if>
                 <g:else>
-                    <i class="icon check circle green"></i>
+                    <i class="${Icon.SYM.YES} green"></i>
                 </g:else>
             </ul>
         </g:each>
