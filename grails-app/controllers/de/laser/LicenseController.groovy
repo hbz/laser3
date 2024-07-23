@@ -786,4 +786,13 @@ class LicenseController {
         render view: customerTypeService.getCustomerTypeDependingView('copyElementsIntoLicense'), model: result
     }
 
+    @Secured(['ROLE_ADMIN'])
+    def onixTestSuite() {
+        Map<String, Object> result = [user: contextService.getUser(), institution: contextService.getOrg()]
+        //enrich later by input!
+        result.xmlString = licenseService.validateOnixPlDocument()
+        //exportService.generateOnixPlExport(result.license)
+        render view: 'onixTestSuite', model: result
+    }
+
 }
