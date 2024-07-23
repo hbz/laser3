@@ -2,6 +2,10 @@
 
 Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 3.2
+
+- internal refactoring
+
 #### 3.1
 
 - added new attribute: `SubscriptionStub.status`
