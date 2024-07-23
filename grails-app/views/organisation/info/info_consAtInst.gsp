@@ -149,7 +149,7 @@
                                         <th class="nine wide">${message(code:'subscription.label')}</th>
                                         <th class="one wide"><ui:usageIcon /></th>
                                     </g:else>
-                                    <th class="one wide"><ui:multiYearIcon isConsortial="true" /></th>
+                                    <th class="one wide"><ui:multiYearIcon /></th>
                                     <th class="one wide">${message(code:'subscription.referenceYear.label.shy')}</th>
                                     <th class="two wide">${message(code:'subscription.startDate.label')}</th>
                                     <th class="two wide">${message(code:'subscription.endDate.label')}</th>
@@ -249,7 +249,7 @@
                                 <th class="seven wide">${message(code:'subscription.label')}</th>
                                 <th class="two wide">${message(code:'default.status.label')}</th>
                                 <th class="one wide"><ui:usageIcon /></th>
-                                <th class="one wide"><ui:multiYearIcon isConsortial="true" /></th>
+                                <th class="one wide"><ui:multiYearIcon /></th>
                                 <th class="one wide">${message(code:'subscription.referenceYear.label.shy')}</th>
                                 <th class="two wide">${message(code:'subscription.startDate.label')}</th>
                                 <th class="two wide">${message(code:'subscription.endDate.label')}</th>
@@ -318,7 +318,7 @@
                             <tr data-ctype="survey-subsciption" class="hidden">
                                 <th class="six wide">${message(code:'subscription.label')}</th>
                                 <th class="one wide">${message(code:'default.status.label')}</th>
-                                <th class="one wide"><ui:multiYearIcon isConsortial="true" /></th>
+                                <th class="one wide"><ui:multiYearIcon /></th>
                                 <th class="one wide">${message(code:'subscription.referenceYear.label.shy')}</th>
                                 <th class="one wide">${message(code:'subscription.startDate.label')}</th>
                                 <th class="one wide">${message(code:'subscription.endDate.label')}</th>

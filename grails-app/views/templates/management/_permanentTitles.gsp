@@ -42,7 +42,7 @@
                     <th>${message(code: 'default.all')} ${message(code: 'permanentTitle.label')}</th>
                     <th>${message(code: 'default.all')} ${message(code: 'issueEntitlement.label')}</th>
                     <th class="la-no-uppercase">
-                        <ui:multiYearIcon isConsortial="true" />
+                        <ui:multiYearIcon />
                     </th>
                     <th>${message(code:'default.actions.label')}</th>
                 </tr>
