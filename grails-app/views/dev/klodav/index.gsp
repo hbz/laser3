@@ -14,30 +14,6 @@
     <g:link controller="dev" action="buttons" class="item"><i class="certificate icon red"></i> New Buttons</g:link>
 </nav>
 
-##
-
-REMINDER
-
-<span class="la-popup-tooltip"
-      data-content="${message(code: 'surveyLinks.participateToSurvey')}">
-    <g:link class="ui button small la-modern-button js-open-confirm-modal"
-            data-confirm-tokenMsg = "${message(code: 'surveyLinks.participateToSurvey.confirm.dialog')}"
-            data-confirm-term-how="ok"
-            controller="myInstitution" target="_blank"
-            action="surveyLinkOpenNewSurvey"
-            params="${[surveyLink: surveyLink, participant: participant]}"
-            role="button"
-            aria-label="${message(code: 'surveyLinks.participateToSurvey')}">
-        <g:message code="surveyLinks.participateToSurvey"/>
-    </g:link>
-</span>
-
-<i aria-hidden="true" class="chain broken icon"></i>
-<i aria-hidden="true" class="${Icon.CMD.UNLINK}"></i>
-<i aria-hidden="true" class="la-chain broken icon"></i>
-
-##
-
 <div class="ui four column grid">
     <div class="column">
         <div class="ui icon info message">

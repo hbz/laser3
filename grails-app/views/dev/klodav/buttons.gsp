@@ -42,7 +42,7 @@
                     <td> <button class="${Btn.SIMPLE} orange">BASIC</button> </td>
                     <td> Btn.SIMPLE <br/> orange </td>
                     <td> ${Btn.SIMPLE} (+ orange) </td>
-                    <td> Colors by declaration; default: blue </td>
+                    <td> Colors by declaration; <span class="ui text blue">default: none</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.PRIMARY}">PRIMARY</button> </td>
@@ -73,7 +73,7 @@
         </div>
 
         <div class="column">
-            <ui:msg class="info" header="de.laser.ui.Btn"  hideClose="true"> Icon only, NO Text </ui:msg>
+            <ui:msg class="info" header="de.laser.ui.Btn.ICON"  hideClose="true"> Icon ONLY </ui:msg>
 
             <table class="ui simple table very compact">
                 <thead>
@@ -89,7 +89,7 @@
                     <td> <button class="${Btn.ICON.SIMPLE} yellow"><i class="${Icon.UNC.SQUARE}"></i></button> </td>
                     <td> Btn.ICON.SIMPLE <br/> yellow </td>
                     <td> ${Btn.ICON.SIMPLE} (+ yellow) </td>
-                    <td> Colors by declaration; default: blue </td>
+                    <td> Colors by declaration; <span class="ui text blue">default: none</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.ICON.PRIMARY}"><i class="${Icon.UNC.SQUARE}"></i></button> </td>
@@ -135,6 +135,12 @@
                 </thead>
                 <tbody>
                 <tr>
+                    <td> <button class="${Btn.SIMPLE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.COPY}"></i> SIMPLE_CONFIRM</button> </td>
+                    <td> Btn.SIMPLE_CONFIRM </td>
+                    <td> ${Btn.SIMPLE_CONFIRM} </td>
+                    <td> Confirmation Dialog (data-confirm-attributes needed) </td>
+                </tr>
+                <tr>
                     <td> <button class="${Btn.POSITIVE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.ADD}"></i> POSITIVE_CONFIRM</button> </td>
                     <td> Btn.POSITIVE_CONFIRM </td>
                     <td> ${Btn.POSITIVE_CONFIRM} </td>
@@ -164,6 +170,18 @@
                     <td> ${Btn.SIMPLE_TOOLTIP} </td>
                     <td> Tooltip (data-attributes needed) </td>
                 </tr>
+                <tr>
+                    <td> <button class="${Btn.POSITIVE_TOOLTIP}" data-content="Something to know ..">POSITIVE_TOOLTIP</button> </td>
+                    <td> Btn.POSITIVE_TOOLTIP </td>
+                    <td> ${Btn.POSITIVE_TOOLTIP} </td>
+                    <td> Tooltip (data-attributes needed) </td>
+                </tr>
+                <tr>
+                    <td> <button class="${Btn.NEGATIVE_TOOLTIP}" data-content="Something to know ..">NEGATIVE_TOOLTIP</button> </td>
+                    <td> Btn.NEGATIVE_TOOLTIP </td>
+                    <td> ${Btn.NEGATIVE_TOOLTIP} </td>
+                    <td> Tooltip (data-attributes needed) </td>
+                </tr>
                 </tbody>
             </table>
         </div>
@@ -171,7 +189,7 @@
 
     <div class="ui one column grid">
         <div class="column">
-            <ui:msg class="info" header="de.laser.ui.Btn" hideClose="true"> Icon only, NO Text  + Javascript </ui:msg>
+            <ui:msg class="info" header="de.laser.ui.Btn.ICON" hideClose="true"> Icon ONLY + Javascript </ui:msg>
 
             <table class="ui simple table very compact">
                 <thead>
@@ -183,6 +201,12 @@
                 </tr>
                 </thead>
                 <tbody>
+                <tr>
+                    <td> <button class="${Btn.ICON.POSITIVE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.ADD}"></i></button> </td>
+                    <td> Btn.ICON.POSITIVE_CONFIRM </td>
+                    <td> ${Btn.ICON.POSITIVE_CONFIRM} </td>
+                    <td> Confirmation Dialog (data-confirm-attributes needed) </td>
+                </tr>
                 <tr>
                     <td> <button class="${Btn.ICON.NEGATIVE_CONFIRM}" data-confirm-term-how="delete"><i class="${Icon.CMD.DELETE}"></i></button> </td>
                     <td> Btn.ICON.NEGATIVE_CONFIRM </td>
@@ -205,7 +229,7 @@
 
     <div class="ui one column grid">
         <div class="column">
-            <ui:msg class="info" header="de.laser.ui.Btn.MODERN" hideClose="true"> Icon only, NO Text </ui:msg>
+            <ui:msg class="info" header="de.laser.ui.Btn.MODERN" hideClose="true"> Icon ONLY </ui:msg>
 
             <table class="ui simple table very compact">
                 <thead>
@@ -221,7 +245,7 @@
                     <td> <button class="${Btn.MODERN.BASIC} orange"><i class="${Icon.CMD.REPLACE}"></i></button> </td>
                     <td> Btn.MODERN.BASIC <br/> orange </td>
                     <td> ${Btn.MODERN.BASIC} (+ orange) </td>
-                    <td> Colors by declaration; default: blue (PROBLEM) </td>
+                    <td> Colors by declaration; <span class="ui text red">default: none (BROKEN)</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.MODERN.SIMPLE}"><i class="${Icon.UNC.SQUARE}"></i></button> </td>
@@ -248,7 +272,7 @@
 
     <div class="ui one column grid">
         <div class="column">
-            <ui:msg class="info" header="de.laser.ui.Btn.MODERN" hideClose="true"> Icon only, NO Text + Javascript</ui:msg>
+            <ui:msg class="info" header="de.laser.ui.Btn.MODERN" hideClose="true"> Icon ONLY + Javascript</ui:msg>
 
             <table class="ui simple table very compact">
                 <thead>
@@ -260,6 +284,18 @@
                 </tr>
                 </thead>
                 <tbody>
+                <tr>
+                    <td> <button class="${Btn.MODERN.BASIC_CONFIRM} orange" data-confirm-term-how="ok"><i class="${Icon.CMD.COPY}"></i></button> </td>
+                    <td> Btn.MODERN.BASIC_CONFIRM <br/> orange </td>
+                    <td> ${Btn.MODERN.BASIC_CONFIRM} (+ orange) </td>
+                    <td> Colors by declaration; <span class="ui text red">default: none (BROKEN)</span> <br/> Confirmation Dialog (data-confirm-attributes needed) </td>
+                </tr>
+                <tr>
+                    <td> <button class="${Btn.MODERN.SIMPLE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.COPY}"></i></button> </td>
+                    <td> Btn.MODERN.SIMPLE_CONFIRM </td>
+                    <td> ${Btn.MODERN.SIMPLE_CONFIRM} </td>
+                    <td> Confirmation Dialog (data-confirm-attributes needed) </td>
+                </tr>
                 <tr>
                     <td> <button class="${Btn.MODERN.POSITIVE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.ADD}"></i></button> </td>
                     <td> Btn.MODERN.POSITIVE_CONFIRM </td>
@@ -276,7 +312,7 @@
                     <td> <button class="${Btn.MODERN.BASIC_TOOLTIP} yellow" data-content="Something to know .."><i class="${Icon.UI.HELP}"></i></button> </td>
                     <td> Btn.MODERN.BASIC_TOOLTIP <br/> yellow </td>
                     <td> ${Btn.MODERN.BASIC_TOOLTIP} (+ yellow) </td>
-                    <td> Colors by declaration; default: blue (PROBLEM) <br/> Tooltip (data-attributes needed) </td>
+                    <td> Colors by declaration; <span class="ui text red">default: none (BROKEN)</span> <br/> Tooltip (data-attributes needed) </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="Something to know .."><i class="${Icon.UI.INFO}"></i></button> </td>

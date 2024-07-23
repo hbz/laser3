@@ -86,7 +86,7 @@
 									<td>
 									<%-- here: switch if in consortia or not --%>
 										<g:if test="${members.get(organisationInstance.id)?.contains(institution.id)}">
-											<g:link class="ui icon negative button la-popup-tooltip js-open-confirm-modal"
+											<g:link class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP}"
 													data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.consortiaToggle", args: [organisationInstance.name])}"
 													data-confirm-term-how="unlink"
 													data-content="${message(code:'org.consortiaToggle.remove.label')}"

@@ -550,7 +550,7 @@
 
                                 <td class="x">
                                     <g:if test="${editableAll}">
-                                        <g:link class="ui icon positive button la-popup-tooltip"
+                                        <g:link class="${Btn.POSITIVE_TOOLTIP}"
                                                 data-content="${message(code: 'survey.toggleSurveySub.add.label', args: [SurveyConfig.countBySubscriptionAndSubSurveyUseForTransfer(s, true), SurveyConfig.countBySubscriptionAndSubSurveyUseForTransfer(s, false)])}"
                                                 controller="survey" action="copySurvey"
                                                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubs: [s.id], workFlow: '2']">

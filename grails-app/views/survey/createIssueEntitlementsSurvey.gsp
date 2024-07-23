@@ -233,7 +233,7 @@
                         <td class="x">
                             <g:if test="${editable && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
 
-                                    <g:link class="ui icon positive button la-popup-tooltip"
+                                    <g:link class="${Btn.POSITIVE}"
                                             controller="survey" action="addSubtoIssueEntitlementsSurvey"
                                             params="[sub: s.id]">
                                         <g:message code="createSubscriptionSurvey.selectButton"/>

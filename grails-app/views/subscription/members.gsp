@@ -290,7 +290,7 @@
                                     </g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link class="ui icon orange button la-popup-tooltip" data-content="${message(code:'subscription.details.hideToSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
+                                    <g:link class="${Btn.ICON.SIMPLE_TOOLTIP} orange" data-content="${message(code:'subscription.details.hideToSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
                                         <i class="ui icon eye"></i>
                                     </g:link>
                                 </g:else>

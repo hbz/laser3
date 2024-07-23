@@ -15,7 +15,7 @@
 
     <g:if test="${surveyConfig.subscription}">
 
-        <g:link class="ui right floated button la-inline-labeled" controller="subscription" action="members" id="${subscription.id}">
+        <g:link class="${Btn.SIMPLE} right floated la-inline-labeled" controller="subscription" action="members" id="${subscription.id}">
             <strong>${message(code: 'surveyconfig.subOrgs.label')}:</strong>
 
             <div class="ui blue circular label">
@@ -23,7 +23,7 @@
             </div>
         </g:link>
 
-        <g:link class="ui right floated button la-inline-labeled" controller="survey" action="surveyParticipants"
+        <g:link class="${Btn.SIMPLE} right floated la-inline-labeled" controller="survey" action="surveyParticipants"
                 id="${surveyConfig.surveyInfo.id}"
                 params="[surveyConfigID: surveyConfig.id]">
             <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>
@@ -39,7 +39,7 @@
     </g:if>
 
     <g:if test="${!surveyConfig.subscription}">
-        <g:link class="ui right floated button la-inline-labeled" controller="survey" action="surveyParticipants"
+        <g:link class="${Btn.SIMPLE} right floated la-inline-labeled" controller="survey" action="surveyParticipants"
                 id="${surveyConfig.surveyInfo.id}"
                 params="[surveyConfigID: surveyConfig.id]">
             <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>

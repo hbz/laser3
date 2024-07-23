@@ -15,11 +15,11 @@
         <p>Your inbox is getting full, would you like us to enable automatic archiving of old messages?</p>
     </div>
     <div class="actions">
-        <div class="ui red cancel button">
+        <div class="${Btn.ICON.NEGATIVE}">
             <i class="remove icon"></i>
             No
         </div>
-        <div class="ui green ok button">
+        <div class="${Btn.ICON.POSITIVE}">
             <i class="checkmark icon"></i>
             Yes
         </div>
@@ -53,11 +53,11 @@
             &lt;p>Your inbox is getting full, would you like us to enable automatic archiving of old messages?&lt;/p&gt;
                 &lt;/div&gt;
                 &lt;div class="actions"&gt;
-                &lt;div class="ui red cancel button"&gt;
+                &lt;div class="${Btn.ICON.NEGATIVE}"&gt;
             &lt;i class="remove icon">&lt;/i&gt;
                         No
                         &lt;/div>
-                        &lt;div class="ui green ok button"&gt;
+                        &lt;div class="${Btn.ICON.POSITIVE}"&gt;
                         &lt;i class="checkmark icon">&lt;/i&gt;
                         Yes
                     &lt;/div&gt;

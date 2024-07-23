@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.Package; de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.Vendor; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Package; de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.Vendor; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
 <laser:serviceInjection/>
 <g:if test="${'surveySubCostItem' in tmplConfigShow}">
     <g:set var="oldCostItem" value="${0.0}"/>
@@ -844,8 +844,8 @@
                                         </td>
 
                                         <td>
-                                            <button class="ui icon circular button right floated triggerSurveyCostItemModal"
-                                                    href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                                            <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                                    data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                  : params.id,
                                                                                                                 surveyConfigID: surveyConfig.id,
                                                                                                                 participant              : org.id,
                                                                                                                 costItem                 : costItem.id,
@@ -872,8 +872,8 @@
 
                         </g:if>
                         <g:else>
-                            <button class="ui icon circular button right floated triggerSurveyCostItemModal"
-                                    href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                            <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                    data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                  : params.id,
                                                                                                 surveyConfigID: surveyConfig.id,
                                                                                                 participant              : org.id,
                                                                                                 selectedCostItemElementID: selectedCostItemElementID,
@@ -941,8 +941,8 @@
                                         </td>
 
                                         <td>
-                                            <button class="ui icon circular button right floated triggerSurveyCostItemModal"
-                                                    href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                                            <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                                    data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                  : params.id,
                                                                                                                 surveyConfigID: surveyConfig.id,
                                                                                                                 participant              : org.id,
                                                                                                                 costItem                 : costItem.id,
@@ -969,8 +969,8 @@
 
                         </g:if>
                         <g:else>
-                            <button class="ui icon circular button right floated triggerSurveyCostItemModal"
-                                    href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                            <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                    data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                  : params.id,
                                                                                                 surveyConfigID: surveyConfig.id,
                                                                                                 participant              : org.id,
                                                                                                 selectedCostItemElementID: selectedCostItemElementID,
@@ -1094,7 +1094,7 @@
             e.preventDefault();
 
             $.ajax({
-                url: $(this).attr('href')
+                url: $(this).attr('data-href')
             }).done( function (data) {
                 $('.ui.dimmer.modals > #surveyCostItemModal').remove();
                 $('#dynamicModalContainer').empty().html(data);

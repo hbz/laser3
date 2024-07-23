@@ -169,7 +169,7 @@
                                 <g:if test="${! AuditConfig.getConfig(prop)}">
                                     <g:if test="${(ownobj.instanceOf && !prop.instanceOf) || !ownobj.hasProperty("instanceOf")}">
                                         <g:if test="${prop.isPublic}">
-                                            <ui:remoteLink class="ui orange icon button la-popup-tooltip" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                            <ui:remoteLink class="${Btn.ICON.SIMPLE_TOOLTIP} orange" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                               params='[oid: genericOIDService.getOID(prop), editable:"${overwriteEditable}", custom_props_div: "${custom_props_div}", showConsortiaFunctions: "${showConsortiaFunctions}", (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()]'
                                                               data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                               data-content="${message(code:'property.visible.active.tooltip')}" data-position="left center"
@@ -220,7 +220,7 @@
                             </g:if>
                             <g:elseif test="${overwriteEditable && !prop.hasProperty("instanceOf")}">
                                 <g:if test="${prop.isPublic}">
-                                    <ui:remoteLink class="ui orange icon button la-popup-tooltip" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                    <ui:remoteLink class="${Btn.ICON.SIMPLE_TOOLTIP} orange" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                       params='[oid: genericOIDService.getOID(prop), editable:"${overwriteEditable}", custom_props_div: "${custom_props_div}", showConsortiaFunctions: "${showConsortiaFunctions}"]'
                                                       data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                       data-content="${message(code:'property.visible.active.tooltip')}" data-position="left center"
