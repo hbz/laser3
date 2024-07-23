@@ -2,6 +2,7 @@ package de.laser.domain
 
 import de.laser.ContextService
 import de.laser.RefdataValue
+import de.laser.ui.Btn
 import de.laser.ui.Icon
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
@@ -54,7 +55,7 @@ class WorkflowTagLib {
         String cssIcon = cpoint.done ? 'check' : 'circle'
 
         out << '<span class="la-popup-tooltip" data-position="top center" data-html="' + tooltip.encodeAsHTML() + '">'
-        out <<   '<a href="' + g.createLink( controller:'ajaxHtml', action:'workflowModal', params:attrs.params ) + '" class="ui icon button wfModalLink">'
+        out <<   '<a href="' + g.createLink( controller:'ajaxHtml', action:'workflowModal', params:attrs.params ) + '" class="' + Btn.ICON.SIMPLE + ' wfModalLink">'
         out <<     '<i class="ui icon ' + cssColor + ' ' + cssIcon + '" style="margin-left:0;"></i>'
         out <<   '</a>'
         out << '</span>'

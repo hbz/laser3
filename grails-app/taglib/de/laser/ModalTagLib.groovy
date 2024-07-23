@@ -19,7 +19,7 @@ class ModalTagLib {
 
         if (yodaService.showDebugInfo()) {
 
-            out << '<a href="#debugInfo" id="showDebugInfo" role="button" aria-label="Debug Info" class="ui secondary button icon la-debugInfos" data-ui="modal">'
+            out << '<a href="#debugInfo" id="showDebugInfo" role="button" aria-label="Debug Info" class="' + Btn.ICON.SECONDARY + ' la-debugInfos" data-ui="modal">'
             out << '<i aria-hidden="true" class="bug icon"></i>'
             out << '</a>'
 
@@ -64,7 +64,7 @@ class ModalTagLib {
         out << body()
         out << '</div>'
         out << '<div class="actions">'
-        out << '<button class="ui button deny" >' + msgClose + '</button>'
+        out << '<button class="' + Btn.SIMPLE + ' deny" >' + msgClose + '</button>'
 
         if (attrs.showDeleteButton) {
 
@@ -113,7 +113,7 @@ class ModalTagLib {
         out << body()
         out << '</div>'
         out << '<div class="actions">'
-        out << '<button class="ui button deny" >' + msgClose + '</button>'
+        out << '<button class="' + Btn.SIMPLE + ' deny" >' + msgClose + '</button>'
 
         if (attrs.showDeleteButton) {
 
@@ -182,7 +182,7 @@ class ModalTagLib {
         out << '</div>'
 
         out << '<div class="actions">'
-        out << '<button class="ui deny button">' + msgCancel + '</button>'
+        out << '<button class="' + Btn.SIMPLE + ' deny">' + msgCancel + '</button>'
         out << '<button id="js-confirmation-button" class="ui positive right labeled icon button">' + msgDelete
         out << '    <i aria-hidden="true" class="' + Icon.CMD.DELETE + '"></i>'
         out << '</button>'
