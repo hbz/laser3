@@ -43,7 +43,7 @@
                             <td><ui:xEditableBoolean owner="${ciec}" field="useForCostPerUse"/></td>
                             <g:if test="${editable}">
                                 <td>
-                                    <g:link class="button js-open-confirm-modal"
+                                    <g:link class="${Btn.SIMPLE_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code:'confirmation.content.bulkCostConfiguration')}"
                                             data-confirm-term-how="ok"
                                             action="setAllCostItems" params="${[cie:ciec.costItemElement.class.name+":"+ciec.costItemElement.id]}">

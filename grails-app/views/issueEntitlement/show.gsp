@@ -75,7 +75,7 @@
                                     <div class="description">
                                         <g:link controller="issueEntitlement"
                                                 action="show"
-                                                class="ui tiny button la-margin-top-05em"
+                                                class="${Btn.SIMPLE} tiny la-margin-top-05em"
                                                 id="${pt.issueEntitlement.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
                                     </div>
                                 </div>

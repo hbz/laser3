@@ -844,8 +844,8 @@
                                         </td>
 
                                         <td>
-                                            <button class="ui icon circular button right floated triggerSurveyCostItemModal"
-                                                    href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                                            <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                                    data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                  : params.id,
                                                                                                                 surveyConfigID: surveyConfig.id,
                                                                                                                 participant              : org.id,
                                                                                                                 costItem                 : costItem.id,
@@ -872,8 +872,8 @@
 
                         </g:if>
                         <g:else>
-                            <button class="ui icon circular button right floated triggerSurveyCostItemModal"
-                                    href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                            <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                    data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                  : params.id,
                                                                                                 surveyConfigID: surveyConfig.id,
                                                                                                 participant              : org.id,
                                                                                                 selectedCostItemElementID: selectedCostItemElementID,
@@ -941,8 +941,8 @@
                                         </td>
 
                                         <td>
-                                            <button class="ui icon circular button right floated triggerSurveyCostItemModal"
-                                                    href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                                            <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                                    data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                  : params.id,
                                                                                                                 surveyConfigID: surveyConfig.id,
                                                                                                                 participant              : org.id,
                                                                                                                 costItem                 : costItem.id,
@@ -969,8 +969,8 @@
 
                         </g:if>
                         <g:else>
-                            <button class="ui icon circular button right floated triggerSurveyCostItemModal"
-                                    href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                            <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                    data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                  : params.id,
                                                                                                 surveyConfigID: surveyConfig.id,
                                                                                                 participant              : org.id,
                                                                                                 selectedCostItemElementID: selectedCostItemElementID,
@@ -1094,7 +1094,7 @@
             e.preventDefault();
 
             $.ajax({
-                url: $(this).attr('href')
+                url: $(this).attr('data-href')
             }).done( function (data) {
                 $('.ui.dimmer.modals > #surveyCostItemModal').remove();
                 $('#dynamicModalContainer').empty().html(data);

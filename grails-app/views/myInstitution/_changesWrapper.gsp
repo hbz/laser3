@@ -101,7 +101,7 @@
                         </g:elseif>
                         <g:elseif test="${event in PendingChangeConfiguration.COST_ITEM_CHANGES}">
                             <div class="right aligned wide column">
-                                <g:link controller="finance" action="acknowledgeChange" id="${entry.changeId}" class="ui icon primary button la-modern-button js-open-confirm-modal"
+                                <g:link controller="finance" action="acknowledgeChange" id="${entry.changeId}" class="${Btn.MODERN.BASIC_CONFIRM} primary"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.changes.acknowledge")}"
                                         data-confirm-term-how="ok"
                                         role="button"

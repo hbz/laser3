@@ -157,9 +157,9 @@
                     <th><h4 class="ui header">${message(code: 'myinst.renewalSearch.basket')}</h4>
                     </th>
                     <th><g:if test="${basket}">
-                        <button class="ui icon basic negative button" type="submit" name="clearBasket"
-                                value="yes">${message(code: 'myinst.renewalSearch.clearBasket')}<i
-                                class="trash icon"></i></button>
+                        <button class="${Btn.NEGATIVE} basic" type="submit" name="clearBasket" value="yes">
+                            <i class="trash icon"></i> ${message(code: 'myinst.renewalSearch.clearBasket')}
+                        </button>
                     </g:if></th>
                 </tr>
                 </thead>
@@ -173,7 +173,7 @@
                     </g:else>
                     </td>
                     <td><g:if test="${itm.getClass().getName() != Subscription.class.name}">
-                        <button type="submit" class="ui icon basic negative button" name="clearOnlyoneitemBasket"
+                        <button type="submit" class="${Btn.ICON.NEGATIVE} basic" name="clearOnlyoneitemBasket"
                                 value="${itm.id}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">

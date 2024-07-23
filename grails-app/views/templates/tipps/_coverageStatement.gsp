@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.IssueEntitlementCoverage" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.IssueEntitlementCoverage" %>
 <g:set var="overwriteEditable" value="${(overwriteEditable == null) ? editable : overwriteEditable}" />
 <div class="content">
     <div class="la-card-column">
@@ -47,7 +47,11 @@
         <div class="la-card-row">
             <g:if test="${overwriteEditable && (covStmt instanceof IssueEntitlementCoverage) && subscription}">
                 <span class="right floated" >
-                    <g:link controller="subscription" action="removeCoverage" params="${paramData+ [ieCoverage: covStmt.id, id: subscription.id]}" class="ui compact icon button negative tiny removeCoverage"><i class="${Icon.CMD.REMOVE}" data-content="Abdeckung entfernen"></i></g:link>
+                    <g:link controller="subscription" action="removeCoverage" params="${paramData+ [ieCoverage: covStmt.id, id: subscription.id]}"
+                            class="${Btn.ICON.SIMPLE_TOOLTIP} negative compact tiny removeCoverage"
+                            data-content="Abdeckung entfernen">
+                        <i class="${Icon.CMD.REMOVE}"></i>
+                    </g:link>
                 </span>
             </g:if>
         </div>

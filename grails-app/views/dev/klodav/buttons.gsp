@@ -135,6 +135,12 @@
                 </thead>
                 <tbody>
                 <tr>
+                    <td> <button class="${Btn.SIMPLE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.COPY}"></i> SIMPLE_CONFIRM</button> </td>
+                    <td> Btn.SIMPLE_CONFIRM </td>
+                    <td> ${Btn.SIMPLE_CONFIRM} </td>
+                    <td> Confirmation Dialog (data-confirm-attributes needed) </td>
+                </tr>
+                <tr>
                     <td> <button class="${Btn.POSITIVE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.ADD}"></i> POSITIVE_CONFIRM</button> </td>
                     <td> Btn.POSITIVE_CONFIRM </td>
                     <td> ${Btn.POSITIVE_CONFIRM} </td>
@@ -164,6 +170,18 @@
                     <td> ${Btn.SIMPLE_TOOLTIP} </td>
                     <td> Tooltip (data-attributes needed) </td>
                 </tr>
+                <tr>
+                    <td> <button class="${Btn.POSITIVE_TOOLTIP}" data-content="Something to know ..">POSITIVE_TOOLTIP</button> </td>
+                    <td> Btn.POSITIVE_TOOLTIP </td>
+                    <td> ${Btn.POSITIVE_TOOLTIP} </td>
+                    <td> Tooltip (data-attributes needed) </td>
+                </tr>
+                <tr>
+                    <td> <button class="${Btn.NEGATIVE_TOOLTIP}" data-content="Something to know ..">NEGATIVE_TOOLTIP</button> </td>
+                    <td> Btn.NEGATIVE_TOOLTIP </td>
+                    <td> ${Btn.NEGATIVE_TOOLTIP} </td>
+                    <td> Tooltip (data-attributes needed) </td>
+                </tr>
                 </tbody>
             </table>
         </div>
@@ -183,6 +201,12 @@
                 </tr>
                 </thead>
                 <tbody>
+                <tr>
+                    <td> <button class="${Btn.ICON.POSITIVE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.ADD}"></i></button> </td>
+                    <td> Btn.ICON.POSITIVE_CONFIRM </td>
+                    <td> ${Btn.ICON.POSITIVE_CONFIRM} </td>
+                    <td> Confirmation Dialog (data-confirm-attributes needed) </td>
+                </tr>
                 <tr>
                     <td> <button class="${Btn.ICON.NEGATIVE_CONFIRM}" data-confirm-term-how="delete"><i class="${Icon.CMD.DELETE}"></i></button> </td>
                     <td> Btn.ICON.NEGATIVE_CONFIRM </td>
@@ -260,6 +284,18 @@
                 </tr>
                 </thead>
                 <tbody>
+                <tr>
+                    <td> <button class="${Btn.MODERN.BASIC_CONFIRM} orange" data-confirm-term-how="ok"><i class="${Icon.CMD.COPY}"></i></button> </td>
+                    <td> Btn.MODERN.BASIC_CONFIRM <br/> orange </td>
+                    <td> ${Btn.MODERN.BASIC_CONFIRM} (+ orange) </td>
+                    <td> Colors by declaration; <span class="ui text red">default: none (BROKEN)</span> <br/> Confirmation Dialog (data-confirm-attributes needed) </td>
+                </tr>
+                <tr>
+                    <td> <button class="${Btn.MODERN.SIMPLE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.COPY}"></i></button> </td>
+                    <td> Btn.MODERN.SIMPLE_CONFIRM </td>
+                    <td> ${Btn.MODERN.SIMPLE_CONFIRM} </td>
+                    <td> Confirmation Dialog (data-confirm-attributes needed) </td>
+                </tr>
                 <tr>
                     <td> <button class="${Btn.MODERN.POSITIVE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.ADD}"></i></button> </td>
                     <td> Btn.MODERN.POSITIVE_CONFIRM </td>

@@ -63,8 +63,8 @@
                             </g:link>
                         </g:if>
                         <g:else>
-                            <div class="ui icon negative buttons la-popup-tooltip" data-content="${message(code:'subscription.details.manageDiscountScale.linkWithSub')}">
-                                <button class="ui disabled button la-modern-button  la-selectable-button"
+                            <div class="la-popup-tooltip" data-content="${message(code:'subscription.details.manageDiscountScale.linkWithSub')}">
+                                <button class="${Btn.MODERN.NEGATIVE} disabled la-selectable-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="${Icon.CMD.DELETE}"></i>

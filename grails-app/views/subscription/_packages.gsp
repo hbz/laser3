@@ -7,7 +7,7 @@
         <div class="ui accordion la-accordion-showMore">
         <g:each in="${subscription.packages}" var="sp">
             <g:set var="packageInstanceRecord" value="${packageMetadata.get(sp.pkg.gokbId)}"/>
-            <% String buttonColor = ""
+            <% String buttonColor = "blue"
             if(sp.pendingChangeConfig.size() > 0) {
                 buttonColor = "green"
             }%>
@@ -63,7 +63,7 @@
                             </div>
                             <div class="six wide right aligned column">
                                 <g:if test="${editmode}">
-                                    <div class="ui icon blue button la-modern-button ${buttonColor} la-popup-tooltip"
+                                    <div class="${Btn.MODERN.BASIC_TOOLTIP} ${buttonColor}"
                                          data-content="${message(code:'subscription.packages.config.header')}">
                                         <i class="${Icon.CMD.SHOW_MORE}"></i>
                                     </div>
@@ -546,7 +546,7 @@
                                                         </g:link>
                                                     </g:if>
                                                     <g:else>
-                                                        <g:link class="ui disabled button negative la-popup-tooltip"
+                                                        <g:link class="${Btn.NEGATIVE_TOOLTIP} disabled"
                                                                 data-content="${message(code: 'subscription.packages.resetToSubEnd.threadRunning')}">
                                                             <g:message code="subscription.packages.resetToSubEnd.label"/>
                                                         </g:link>
