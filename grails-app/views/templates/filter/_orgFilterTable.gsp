@@ -56,7 +56,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('legalInformation')}">
                 <th class="la-no-uppercase">
                     <span class="la-popup-tooltip" data-content="${message(code: 'org.legalInformation.tooltip')}">
-                        <i class="${Icon.SYM.ORG_LEGAL_INFORMATION}"></i>
+                        <i class="${Icon.ATTR.ORG_LEGAL_INFORMATION}"></i>
                     </span>
                 </th>
             </g:if>
@@ -362,9 +362,9 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('hasInstAdmin')}">
                 <td class="center aligned">
                     <%
-                        String instAdminIcon = '<i class="large red times icon"></i>'
+                        String instAdminIcon = '<i class="' + Icon.SYM.NO + ' large red"></i>'
                         if (org.hasInstAdminEnabled())
-                            instAdminIcon = '<i class="large green check icon"></i>'
+                            instAdminIcon = '<i class="' + Icon.SYM.YES + ' large green"></i>'
                     %>
                     <g:if test="${contextService.isInstAdm_or_ROLEADMIN()}">
                         <br /><g:link controller="organisation" action="users"

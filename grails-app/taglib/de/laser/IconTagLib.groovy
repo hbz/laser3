@@ -347,7 +347,7 @@ class IconTagLib {
 
         out << '<span class="la-long-tooltip la-popup-tooltip"'
         out << ' data-position="bottom center" data-content="' + tt +'">'
-        out << '<i class="' + Icon.SYM.SUBSCRIPTION_IS_MULTIYEAR + ' ' + color + '"></i>'
+        out << '<i class="' + Icon.ATTR.SUBSCRIPTION_IS_MULTIYEAR + ' ' + color + '"></i>'
         out << '</span>'
     }
 

@@ -16,11 +16,11 @@
     </div>
     <div class="actions">
         <div class="${Btn.ICON.NEGATIVE}">
-            <i class="remove icon"></i>
+            <i class="${Icon.SYM.NO}"></i>
             No
         </div>
         <div class="${Btn.ICON.POSITIVE}">
-            <i class="checkmark icon"></i>
+            <i class="${Icon.SYM.YES}"></i>
             Yes
         </div>
     </div>
@@ -54,11 +54,11 @@
                 &lt;/div&gt;
                 &lt;div class="actions"&gt;
                 &lt;div class="${Btn.ICON.NEGATIVE}"&gt;
-            &lt;i class="remove icon">&lt;/i&gt;
+            &lt;i class="${Icon.SYM.NO}">&lt;/i&gt;
                         No
                         &lt;/div>
                         &lt;div class="${Btn.ICON.POSITIVE}"&gt;
-                        &lt;i class="checkmark icon">&lt;/i&gt;
+                        &lt;i class="${Icon.SYM.YES}">&lt;/i&gt;
                         Yes
                     &lt;/div&gt;
                         &lt;/div&gt;

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.PendingChangeConfiguration; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.PendingChangeConfiguration; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <div id="pendingChangesWrapper">
 <%--<div class="la-float-right">
@@ -60,16 +60,14 @@
                                             data-confirm-term-how="ok"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.check.universal')}">
-                                            <i class="checkmark icon"></i>
-                                        <!--${message(code: 'default.button.accept.label')}-->
+                                            <i class="${Icon.SYM.YES}"></i>
                                         </g:link>
                                         <g:link controller="pendingChange" action="reject" id="${entry.changeId}" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.changes.reject")}"
                                                 data-confirm-term-how="ok"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="times icon"></i>
-                                            <!--${message(code: 'default.button.reject.label')}-->
+                                            <i class="${Icon.SYM.NO}"></i>
                                         </g:link>
                                     </div>
                                 </div>
@@ -84,16 +82,14 @@
                                             data-confirm-term-how="ok"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.check.universal')}">
-                                            <i class="checkmark icon"></i>
-                                        <!--${message(code: 'default.button.accept.label')}-->
+                                            <i class="${Icon.SYM.YES}"></i>
                                         </g:link>
                                         <g:link controller="pendingChange" action="reject" id="${entry.changeId}" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.changes.reject")}"
                                                 data-confirm-term-how="ok"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="times icon"></i>
-                                            <!--${message(code: 'default.button.reject.label')}-->
+                                            <i class="${Icon.SYM.NO}"></i>
                                         </g:link>
                                     </div>
                                 </div>

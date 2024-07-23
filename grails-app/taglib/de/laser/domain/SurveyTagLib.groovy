@@ -6,6 +6,7 @@ import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyOrg
+import de.laser.ui.Icon
 
 class SurveyTagLib {
 
@@ -183,21 +184,21 @@ class SurveyTagLib {
                 if (surveyOwnerView) {
                     out << '<span class="la-long-tooltip la-popup-tooltip" data-position="top right" data-variation="tiny"'
                     out << ' data-content="' + message(code: "surveyResult.finish.info.consortia") + '">'
-                    out <<   ' <i class="check big green icon"></i></span>'
+                    out <<   ' <i class="' + Icon.SYM.YES + ' big green"></i></span>'
                 } else {
                     out << '<span class="la-long-tooltip la-popup-tooltip" data-position="top right" data-variation="tiny"'
                     out << ' data-content="' + message(code: "surveyResult.finish.info") + '">'
-                    out <<   ' <i class="check big green icon"></i></span>'
+                    out <<   ' <i class="' + Icon.SYM.YES + ' big green"></i></span>'
                 }
             } else {
                 if (surveyOwnerView) {
                     out << '<span class="la-long-tooltip la-popup-tooltip" data-position="top right" data-variation="tiny"'
                     out << ' data-content="' + message(code: "surveyResult.noFinish.info.consortia") + '">'
-                    out <<   ' <i class="x red icon"></i></span>'
+                    out <<   ' <i class="' + Icon.SYM.NO + ' red"></i></span>'
                 } else {
                     out << '<span class="la-long-tooltip la-popup-tooltip" data-position="top right" data-variation="tiny"'
                     out << ' data-content="' + message(code: "surveyResult.noFinish.info") + '">'
-                    out <<   ' <i class="x red icon"></i></span>'
+                    out <<   ' <i class="' + Icon.SYM.NO + ' red"></i></span>'
                 }
             }
     }

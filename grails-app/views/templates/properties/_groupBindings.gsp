@@ -1,5 +1,5 @@
 <!-- A: templates/properties/_groupBindings -->
-<%@ page import="de.laser.ui.Btn; de.laser.License; de.laser.Org; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.Subscription" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.License; de.laser.Org; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.Subscription" %>
 <laser:serviceInjection />
 
     <div id="propDefGroupBindingConfig">
@@ -107,7 +107,7 @@
                                                   class="${Btn.MODERN.NEGATIVE}"
                                                       role="button"
                                                       ariaLabel="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="icon times"></i>
+                                        <i class="${Icon.SYM.NO}"></i>
                                     </ui:remoteLink>
                                 </g:else>
                             </g:if>
