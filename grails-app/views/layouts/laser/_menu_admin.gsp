@@ -70,6 +70,7 @@
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="dev" action="frontend">Frontend</ui:link>
                 <ui:link addItemAttributes="true" controller="dev" action="klodav">klodav</ui:link>
+                <ui:link addItemAttributes="true" controller="license" action="onixTestSuite">ONIX-PL-Testbereich</ui:link>
             </div>
         </div>
     </div>

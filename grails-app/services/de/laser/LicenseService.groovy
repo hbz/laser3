@@ -2,7 +2,18 @@ package de.laser
 
 import de.laser.helper.Params
 import de.laser.storage.RDStore
+import de.laser.utils.LocaleUtils
+import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
+import groovy.xml.StreamingMarkupBuilder
+import groovy.xml.XmlUtil
+import org.springframework.context.MessageSource
+
+import javax.xml.XMLConstants
+import javax.xml.transform.stream.StreamSource
+import javax.xml.validation.SchemaFactory
+import javax.xml.validation.Validator
+import java.text.SimpleDateFormat
 
 /**
  * This service handles license specific matters
@@ -12,6 +23,8 @@ import grails.gorm.transactions.Transactional
 class LicenseService {
 
     ContextService contextService
+    GrailsApplication grailsApplication
+    MessageSource messageSource
 
     /**
      * Gets a (filtered) list of licenses to which the context institution has reading rights
@@ -166,4 +179,61 @@ class LicenseService {
         visibleVendorRelations
     }
 
+    /*
+    do's: - return type either bool or XML
+    - input arg: License
+     */
+    def validateOnixPlDocument() {
+        /*
+        agenda:
+        - first: create XML document hand-coded
+        - create then a translation script from License into XML; the MarkupBuilder returns
+        - implement validator: move XSD(s) into project or reference them with CDN and apply validator on it (cf. https://stackoverflow.com/questions/55067050/validating-a-xml-doc-in-groovy)
+         */
+        File schemaFile = grailsApplication.mainContext.getResource('files/ONIX_PublicationsLicense_V1.0.xsd').file
+        Validator validator = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(schemaFile).newValidator()
+        Locale locale = LocaleUtils.getCurrentLocale()
+        StreamingMarkupBuilder builder = new StreamingMarkupBuilder()
+        Org institution = contextService.getOrg()
+        SimpleDateFormat onixTimestampFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ")
+        Date now = new Date()
+        def xml = builder.bind {
+            mkp.xmlDeclaration()
+            mkp.declareNamespace(ople: "http://www.editeur.org/ople")
+            ONIXPublicationsLicenseMessage([version: '1.0',xmlns: "http://www.editeur.org/onix-pl"]) {
+                Header {
+                    Sender {
+                        SenderName(messageSource.getMessage('laser', null, locale))
+                        SenderContact('LAS:eR-Support')
+                        SenderEmail('laser@hbz-nrw.de')
+                    }
+                    Addressee {
+                        AddresseeIdentifier {
+                            AddresseeIDType()
+                            IDTypeName('ISIL')
+                            IDValue(institution.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISIL }?.value)
+                        }
+                    }
+                    SentDateTime(onixTimestampFormat.format(now))
+                }
+                PublicationsLicenseExpression {
+                    ExpressionDetail {
+                        ExpressionType('onixPL:LicenseExpression')
+                        ExpressionIdentifier {
+                            ExpressionIDType('onixPL:Proprietary')
+                            IDTypeName('globalUID')
+                            IDValue('license:XXXXXXXX') //license.globalUID
+                        }
+                        ExpressionVersion(1) //license.version
+                        ExpressionStatus('onixPL:Approved') //current => Approved, expired with successor => Replaced, expected => Complete?
+                        //Authority() //no equivalent found
+                        Description('Analysestadtverbund-Grundvertrag') //license.reference
+                        //continue here with Annotation
+                    }
+                }
+            }
+        }
+        validator.validate(new StreamSource(new StringReader(XmlUtil.serialize(xml))))
+        xml.toString()
+    }
 }
