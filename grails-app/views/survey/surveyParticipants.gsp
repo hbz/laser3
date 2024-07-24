@@ -57,7 +57,7 @@
                             id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id, tab: 'selectedSubParticipants']">
                         ${message(code: 'surveyParticipants.selectedSubParticipants')}
-                        <span class="ui floating blue circular label">${selectedSubParticipantsCount}</span>
+                        <ui:bubble float="true" count="${selectedSubParticipantsCount}"/>
                     </g:link>
                 </g:if>
 
@@ -67,7 +67,8 @@
                             id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id, tab: 'selectedParticipants']">
                         ${message(code: 'surveyParticipants.selectedParticipants')}
-                        <span class="ui floating blue circular label">${selectedParticipantsCount}</span></g:link>
+                        <ui:bubble float="true" count="${selectedParticipantsCount}"/>
+                    </g:link>
 
 
                     <g:if test="${surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]}">
@@ -76,7 +77,7 @@
                                 id="${surveyConfig.surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id, tab: 'consortiaMembers']">
                             ${message(code: 'surveyParticipants.consortiaMembers')}
-                            <div class="ui floating blue circular label">${consortiaMembersCount}</div>
+                            <ui:bubble float="true" count="${consortiaMembersCount}"/>
                         </g:link>
                     </g:if>
                 </g:if>

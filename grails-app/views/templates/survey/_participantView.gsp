@@ -36,7 +36,7 @@
                         controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
                         params="${parame+[viewTab: 'invoicingInformation']}">
                     ${message(code: 'surveyOrg.invoicingInformation.short')}
-                    <span class="ui floating blue circular label">${SurveyOrg.countByOrgAndSurveyConfigAndPersonIsNotNull(participant, surveyConfig)}/${SurveyOrg.countByOrgAndSurveyConfigAndAddressIsNotNull(participant, surveyConfig)}</span>
+                    <ui:bubble float="true" count="${SurveyOrg.countByOrgAndSurveyConfigAndPersonIsNotNull(participant, surveyConfig)}/${SurveyOrg.countByOrgAndSurveyConfigAndAddressIsNotNull(participant, surveyConfig)}"/>
                 </g:link>
             </g:if>
 
@@ -62,7 +62,7 @@
 
                         ${message(code: 'surveyconfig.packageSurvey.label')}
 
-                        <span class="ui floating blue circular label">${SurveyPackageResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}/${SurveyConfigPackage.countBySurveyConfig(surveyConfig)}</span>
+                        <ui:bubble float="true" count="${SurveyPackageResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}/${SurveyConfigPackage.countBySurveyConfig(surveyConfig)}"/>
                     </g:link>
             </g:if>
 
@@ -73,7 +73,7 @@
 
                 ${message(code: 'surveyconfig.vendorSurvey.label')}
 
-                <span class="ui floating blue circular label">${SurveyVendorResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}/${SurveyConfigVendor.countBySurveyConfig(surveyConfig)}</span>
+                <ui:bubble float="true" count="${SurveyVendorResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}/${SurveyConfigVendor.countBySurveyConfig(surveyConfig)}"/>
             </g:link>
         </g:if>
 
@@ -91,12 +91,12 @@
                 <div class="ui top attached stackable tabular la-tab-with-js menu">
                     <a class="active item" data-tab="contacts">
                         ${message(code: 'surveyOrg.person.label')}
-                        <span class="ui floating blue circular label">${SurveyOrg.countByOrgAndSurveyConfigAndPersonIsNotNull(participant, surveyConfig)}</span>
+                        <ui:bubble float="true" count="${SurveyOrg.countByOrgAndSurveyConfigAndPersonIsNotNull(participant, surveyConfig)}"/>
                     </a>
 
                     <a class="item" data-tab="addresses">
                         ${message(code: 'surveyOrg.address.label')}
-                        <span class="ui floating blue circular label">${SurveyOrg.countByOrgAndSurveyConfigAndAddressIsNotNull(participant, surveyConfig)}</span>
+                        <ui:bubble float="true" count="${SurveyOrg.countByOrgAndSurveyConfigAndAddressIsNotNull(participant, surveyConfig)}"/>
                     </a>
 
                     <a class="item" data-tab="xRechnung">
@@ -229,13 +229,13 @@
                             controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
                             params="${parame + [viewTab: 'packageSurvey', subTab: 'allPackages']}">
                         ${message(code: 'surveyPackages.all')}
-                        <span class="ui floating blue circular label">${SurveyConfigPackage.countBySurveyConfig(surveyConfig)}</span>
+                        <ui:bubble float="true" count="${SurveyConfigPackage.countBySurveyConfig(surveyConfig)}"/>
                     </g:link>
                     <g:link class="item ${params.viewTab == 'packageSurvey' && params.subTab == 'selectPackages' ? 'active' : ''}"
                             controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
                             params="${parame + [viewTab: 'packageSurvey', subTab: 'selectPackages']}">
                         ${message(code: 'surveyPackages.selectedPackages')}
-                        <span class="ui floating blue circular label">${SurveyPackageResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}</span>
+                        <ui:bubble float="true" count="${SurveyPackageResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}"/>
                     </g:link>
                 </div>
 
@@ -268,13 +268,13 @@
                             controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
                             params="${parame + [viewTab: 'vendorSurvey', subTab: 'allVendors']}">
                         ${message(code: 'surveyVendors.all')}
-                        <span class="ui floating blue circular label">${SurveyConfigVendor.countBySurveyConfig(surveyConfig)}</span>
+                        <ui:bubble float="true" count="${SurveyConfigVendor.countBySurveyConfig(surveyConfig)}"/>
                     </g:link>
                     <g:link class="item ${params.viewTab == 'vendorSurvey' && params.subTab == 'selectVendors' ? 'active' : ''}"
                             controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
                             params="${parame + [viewTab: 'vendorSurvey', subTab: 'selectVendors']}">
                         ${message(code: 'surveyVendors.selectedVendors')}
-                        <span class="ui floating blue circular label">${SurveyVendorResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}</span>
+                        <ui:bubble float="true" count="${SurveyVendorResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}"/>
                     </g:link>
                 </div>
 

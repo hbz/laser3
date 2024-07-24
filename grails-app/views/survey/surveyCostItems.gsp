@@ -88,7 +88,7 @@
                         id="${surveyConfig.surveyInfo.id}"
                         params="[surveyConfigID: surveyConfig.id, tab: 'selectedSubParticipants', selectedCostItemElementID: selectedCostItemElementID]">
                     ${message(code: 'surveyParticipants.selectedSubParticipants')}
-                    <span class="ui floating blue circular label">${selectedSubParticipants?.size() ?: 0}</span>
+                    <ui:bubble float="true" count="${selectedSubParticipants?.size()}"/>
                 </g:link>
 
                 <g:link class="item ${params.tab == 'selectedParticipants' ? 'active' : ''}"
@@ -96,7 +96,7 @@
                         id="${surveyConfig.surveyInfo.id}"
                         params="[surveyConfigID: surveyConfig.id, tab: 'selectedParticipants', selectedCostItemElementID: selectedCostItemElementID]">
                     ${message(code: 'surveyParticipants.selectedParticipants')}
-                    <span class="ui floating blue circular label">${selectedParticipants?.size() ?: 0}</span>
+                    <ui:bubble float="true" count="${selectedParticipants?.size()}"/>
                 </g:link>
 
             </div>

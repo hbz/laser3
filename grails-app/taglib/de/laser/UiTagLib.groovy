@@ -1020,4 +1020,17 @@ class UiTagLib {
         out << message(code: "accordion.button.closeAll")
         out << '</button>'
     }
+
+    def bubble = { attrs, body ->
+        if (attrs.float) {
+            out << '<span class="ui floating circular blue label">'
+            out << (attrs.count ?: '0')
+            out << '</span>'
+        }
+        else {
+            out << '<div class="ui circular blue label">'
+            out << (attrs.count ?: '0')
+            out << '</div>'
+        }
+    }
 }
