@@ -127,17 +127,17 @@
                         <%
                             def accessStatistics = OrgSetting.get(org, OrgSetting.KEYS.NATSTAT_SERVER_ACCESS)
                             if (accessStatistics != OrgSetting.SETTING_NOT_FOUND && accessStatistics.getValue()?.value == 'Yes') {
-                                println '<div><i class="icon lock open"></i> Statistikserver</div>'
+                                println '<div><i class="' + Icon.SYM.IS_PUBLIC + '"></i> Statistikserver</div>'
                             }
 
                             def accessOA = OrgSetting.get(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS)
                             if (accessOA!= OrgSetting.SETTING_NOT_FOUND && accessOA.getValue()?.value == 'Yes') {
-                                println '<div><i class="icon lock open"></i> OAMonitor</div>'
+                                println '<div><i class="' + Icon.SYM.IS_PUBLIC + '"></i> OAMonitor</div>'
                             }
 
                             def accessEZB = OrgSetting.get(org, OrgSetting.KEYS.EZB_SERVER_ACCESS)
                             if (accessEZB!= OrgSetting.SETTING_NOT_FOUND && accessEZB.getValue()?.value == 'Yes') {
-                                println '<div><i class="icon lock open"></i> EZB</div>'
+                                println '<div><i class="' + Icon.SYM.IS_PUBLIC + '"></i> EZB</div>'
                             }
                         %>
                     </td>

@@ -66,7 +66,7 @@ class IconTagLib {
                 icon = 'icon bordered la-package la-object-extended'
                 break
             case 'search':
-                icon = 'icon search'
+                icon = Icon.SYM.SEARCH
                 break
             case 'reporting':
                 icon = Icon.REPORTING + ' bordered inverted teal la-object-extended'
@@ -121,7 +121,7 @@ class IconTagLib {
                 icon = 'box'
                 break
             case 'isPublicForApi':
-                icon = 'lock open'
+                icon = Icon.SYM.IS_PUBLIC
                 break
             case 'hasPerpetualAccess':
                 icon = 'flag outline'
