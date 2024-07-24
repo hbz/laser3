@@ -3,7 +3,7 @@
 	<div class="ui item address-details">
         <div style="display: flex" class="js-copyTriggerParent">
             <a href="${address.generateGoogleMapURL()}" target="_blank" class="la-popup-tooltip" data-position="top right" data-content="${message(code: 'address.googleMaps.link')}">
-                <i class="ui la-js-copyTriggerIcon js-linkGoogle blue icon building map marker alternate la-list-icon"></i>
+                <i class="${Icon.LNK.GOOGLE_MAPS} js-linkGoogle la-list-icon la-js-copyTriggerIcon"></i>
             </a>
             <div class="content la-space-right js-copyTrigger la-popup-tooltip" data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
                 <g:if test="${ !hideAddressType}">

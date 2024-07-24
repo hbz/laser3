@@ -168,7 +168,7 @@
                                       role="button"
                                       ariaLabel="fälligen Termin auf NICHT erledigt sezten"
                     >
-                        <i class="icon check"></i>
+                        <i class="${Icon.SYM.YES}"></i>
                     </ui:remoteLink>
                 </g:if>
                 <g:else>
@@ -183,7 +183,7 @@
                                       role="button"
                                       ariaLabel="${message(code:'ariaLabel.check.universal')}"
                     >
-                        <i class="icon check"></i>
+                        <i class="${Icon.SYM.YES}"></i>
                     </ui:remoteLink>
                 </g:else>
                 </td>

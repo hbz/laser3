@@ -81,7 +81,7 @@
             <tr>
                 <td colspan="2">
                     <span class="la-flexbox la-minor-object">
-                        <i class="icon exclamation triangle orange" style="margin:.1rem .5rem 0 0"></i>
+                        <i class="${Icon.UI.WARNING} circle orange large" style="margin:.1rem .5rem 0 0"></i>
                         <g:link controller="vendor" action="workflows" id="${role.vendor.id}">${message(code:'workflow.vendor.someMore.info')}</g:link>
                     </span>
                 </td>

@@ -13,10 +13,8 @@ class Icon {
 
         @UIDoc(usage = 'Only for Org attributes: createdBy / legallyObligedBy')
         public static String ORG_LEGAL_INFORMATION      = 'hands helping icon'
-
         @UIDoc(usage = 'Only for Subscription attribute: isMultiYear')
         public static String SUBSCRIPTION_IS_MULTIYEAR  = 'forward icon'
-
         @UIDoc(usage = 'Only for TIPP: coverageDepth')
         public static String TIPP_COVERAGE_DEPTH        = 'file alternate icon'
     }
@@ -93,6 +91,10 @@ class Icon {
         public static String EXTERNAL   = 'external alternate icon'
         @UIDoc(usage = 'Only for Links to views with preset filters')
         public static String FILTERED   = 'filter icon'
+        @UIDoc(usage = 'Only for Links to google maps')
+        public static String GOOGLE_MAPS    = 'map marker alternate icon'
+        @UIDoc(usage = 'Only for Links to send emails')
+        public static String MAIL_TO        = 'at icon'
         @UIDoc(usage = 'Only for Links to views for successors of the current object (see also PREV)')
         public static String NEXT       = 'arrow right icon'     // todo: duplicate: ui:anualRings, ui:statusWithRings
         @UIDoc(usage = 'Only for Links to views for predecessors of the current object (see also NEXT)')
@@ -153,6 +155,8 @@ class Icon {
         public static String PHONE          = 'phone icon'
         @UIDoc(usage = 'Generic symbol for: External Website')
         public static String URL            = 'globe icon'
+        @UIDoc(usage = 'Generic symbol for: Public for API/Data transfer')
+        public static String IS_PUBLIC      = 'lock open icon'
 
         @UIDoc(usage = 'Generic symbol for: Yes/Accept (see also NO)')
         public static String YES    = 'check icon'
@@ -196,14 +200,14 @@ class Icon {
         // please do not touch during refactoring ..
         // tooltips
 
-        @UIDoc(usage = 'Only for tooltip trigger: Help')
-        public static String HELP       = 'grey question circle icon'   // COLOR INCLUDED !!
+        @UIDoc(usage = 'Only for tooltip trigger: Help (COLORED)')
+        public static String HELP       = 'grey question circle icon'
         @UIDoc(usage = 'Only for tooltip trigger: Important, possibly warning')
-        public static String IMPORTANT  = 'exclamation circle icon'     // TODO: merge with Icon.TOOLTIP.SERIOUS
+        public static String IMPORTANT  = 'exclamation circle icon'
         @UIDoc(usage = 'Only for tooltip trigger: Info')
         public static String INFO       = 'info circle icon'            // todo: duplicate: Icon.PROP.IN_USE
-        @UIDoc(usage = 'Only for tooltip trigger: Serious, possibly error')
-        public static String SERIOUS    = 'exclamation triangle icon'   // TODO: merge with Icon.TOOLTIP.IMPORTANT
+        @UIDoc(usage = 'Only for tooltip trigger: Error')
+        public static String ERROR    = 'exclamation triangle icon'
     }
 
     class UNC {
@@ -220,6 +224,8 @@ class Icon {
 
     // please do not touch during refactoring ..
     // domain classes / top level objects
+
+    public static String ADDRESS                    = 'map marker alternate icon'
 
     public static String ANNOUNCEMENT               = 'flag icon'
 
@@ -239,13 +245,13 @@ class Icon {
 
     public static String PROVIDER                   = 'handshake icon'
 
-    public static String REPORTING                  = 'chartline icon'
+    public static String REPORTING                  = 'chart pie icon'
 
     public static String STATS                      = 'chart bar icon'
 
     public static String SUBSCRIPTION               = 'clipboard icon'      // todo: duplicate license.licenseCategory, tipp.accessStartDate/tipp.accessEndDate
 
-    public static String SURVEY                     = 'chart pie icon'
+    public static String SURVEY                     = 'poll icon'
 
     public static String TASK                       = 'calendar check outline icon'
 

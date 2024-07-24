@@ -161,7 +161,7 @@
                                     <g:else>
                                         <span data-position="top left" class="la-popup-tooltip"
                                               data-content="${message(code: "default.compare.propertyValueNotSet")}">
-                                            <i class="close icon"></i></span>
+                                            <i class="${Icon.SYM.NO}"></i></span>
                                     </g:else>
                                 </div>
                             </div>
@@ -290,7 +290,7 @@
                                         <g:else>
                                             <span data-position="top left" class="la-popup-tooltip"
                                                   data-content="${message(code: "default.compare.propertyValueNotSet")}">
-                                                <i class="close icon"></i></span>
+                                                <i class="${Icon.SYM.NO}"></i></span>
                                         </g:else>
                                     </div>
 
