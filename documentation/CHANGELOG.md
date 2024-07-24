@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      24.07.2024  rc-3.4  3.4.4       Andreas Bug         überflüssige Verschachtelung in Api-Ausgabe entfernt (nach Mail aus Jülich)
+
 5820    23.07.2024  rc-3.4  3.4.4       Andreas Bug         Einrichtungen konnten nicht über die API abgerufen werden
 
 5819    22.07.2024  rc-3.4  3.4.4       Andreas Bug         falsche Abfrage lud Kundennummer-Schlüsselpaare nicht ein

@@ -507,8 +507,7 @@ class ApiCollectionReader {
         Collection<Object> result = []
 
         list.each { Provider p ->
-            Map<String, Object> tmp = [:]
-            tmp.provider = ApiUnsecuredMapReader.getProviderStubMap(p)
+            Map<String, Object> tmp = ApiUnsecuredMapReader.getProviderStubMap(p)
             result << ApiToolkit.cleanUp(tmp, true, false)
         }
 
@@ -525,8 +524,7 @@ class ApiCollectionReader {
         Collection<Object> result = []
 
         list.each { Vendor v ->
-            Map<String, Object> tmp = [:]
-            tmp.vendor = ApiUnsecuredMapReader.getVendorStubMap(v)
+            Map<String, Object> tmp = ApiUnsecuredMapReader.getVendorStubMap(v)
             result << ApiToolkit.cleanUp(tmp, true, false)
         }
 

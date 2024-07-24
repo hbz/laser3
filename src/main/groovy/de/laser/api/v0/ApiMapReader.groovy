@@ -92,7 +92,7 @@ class ApiMapReader {
             if (ignoreRelation != ApiReader.IGNORE_PACKAGE) {
                 result.package = ApiUnsecuredMapReader.getPackageStubMap(tipp.pkg) // de.laser.Package
             }
-            result.providers        = ApiCollectionReader.getOrgLinkCollection(tipp.orgs, ApiReader.IGNORE_TIPP, context) //de.laser.OrgRole
+            //result.providers        = ApiCollectionReader.getOrgLinkCollection(tipp.orgs, ApiReader.IGNORE_TIPP, context) //de.laser.OrgRole
         }
         if (!(ignoreRelation in [ApiReader.IGNORE_SUBSCRIPTION, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE])) {
             //list here every property which may differ on entitlement level (= GlobalSourceSyncService's controlled properties, see getTippDiff() for the properties to be excluded here)
