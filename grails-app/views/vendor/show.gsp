@@ -455,11 +455,11 @@
                             <div class="ui horizontal relaxed list">
                                 <div class="item">
                                     <strong><g:message code="package.plural" /></strong>
-                                    &nbsp;<div class="ui blue circular label">${allPackages.size()}</div>
+                                    &nbsp;<ui:bubble count="${allPackages.size()}" />
                                 </div>
                                 <div class="item">
                                     <strong><g:message code="provider.plural" /></strong>
-                                    &nbsp;<div class="ui blue circular label">${providers.size()}</div>
+                                    &nbsp;<ui:bubble count="${providers.size()}" />
                                 </div>
                             </div>
                         </div>
@@ -501,19 +501,19 @@
                             <div class="ui horizontal relaxed list">
                                 <div class="item">
                                     <strong><g:message code="org.platforms.label" /></strong>
-                                    &nbsp;<div class="ui blue circular label">${platforms.size()}</div>
+                                    &nbsp;<ui:bubble count="${platforms.size()}" />
                                 </div>
                                 <div class="item">
                                     <strong><g:message code="package.plural" /></strong>
-                                    &nbsp;<div class="ui blue circular label">${packages.size()}</div>
+                                    &nbsp;<ui:bubble count="${packages.size()}" />
                                 </div>
                                 <div class="item">
                                     <strong><g:message code="subscription.plural" /></strong>
-                                    &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}/${subLinks}</div>
+                                    &nbsp;<ui:bubble count="${currentSubscriptionsCount}/${subLinks}" />
                                 </div>
                                 <div class="item">
                                     <strong><g:message code="license.plural" /></strong>
-                                    &nbsp;<div class="ui blue circular label">${currentLicensesCount}/${licLinks}</div>
+                                    &nbsp;<ui:bubble count="${currentLicensesCount}/${licLinks}" />
                                 </div>
                             </div>
                         </div>
@@ -551,7 +551,7 @@
                                     <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: vendor.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id]">
                                         <div class="content la-space-right">
                                             <i class="${Icon.LNK.FILTERED}"></i> <g:message code="subscription.plural.current" />
-                                        &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}</div>
+                                        &nbsp;<ui:bubble count="${currentSubscriptionsCount}" />
                                         </div>
                                     </g:link>
                                 </div>
@@ -559,7 +559,7 @@
                                     <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: vendor.globalUID, status: 'FETCH_ALL']">
                                         <div class="content la-space-right">
                                             <i class="${Icon.LNK.FILTERED}"></i> <g:message code="subscription.plural.total" />
-                                        &nbsp;<div class="ui blue circular label">${subLinks}</div>
+                                        &nbsp;<ui:bubble count="${subLinks}" />
                                         </div>
                                     </g:link>
                                 </div>
@@ -572,7 +572,7 @@
                                     <div class="content la-space-right">
                                         <g:link controller="myInstitution" action="currentLicenses" params="[vendor: vendor.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']">
                                             <i class="${Icon.LNK.FILTERED}"></i> <g:message code="license.plural.current" />
-                                            &nbsp;<div class="ui blue circular label">${currentLicensesCount}</div>
+                                            &nbsp;<ui:bubble count="${currentLicensesCount}" />
                                         </g:link>
                                     </div>
                                 </div>
@@ -580,7 +580,7 @@
                                     <div class="content la-space-right">
                                         <g:link controller="myInstitution" action="currentLicenses" params="[vendor: vendor.id, filterSubmit: 'Filtern']">
                                             <i class="${Icon.LNK.FILTERED}"></i> <g:message code="license.plural.total" />
-                                            &nbsp;<div class="ui blue circular label">${licLinks}</div>
+                                            &nbsp;<ui:bubble count="${licLinks}" />
                                         </g:link>
                                     </div>
                                 </div>

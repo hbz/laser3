@@ -1021,16 +1021,18 @@ class UiTagLib {
         out << '</button>'
     }
 
+    // <ui:bubble count="${list.size()}" float="true" />
+
     def bubble = { attrs, body ->
         if (attrs.float) {
-            out << '<span class="ui floating circular blue label">'
+            out << '<span class="ui circular blue label floating">'
             out << (attrs.count ?: '0')
             out << '</span>'
         }
         else {
-            out << '<div class="ui circular blue label">'
+            out << '<span class="ui circular blue label">'
             out << (attrs.count ?: '0')
-            out << '</div>'
+            out << '</span>'
         }
     }
 }

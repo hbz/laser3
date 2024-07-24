@@ -96,16 +96,12 @@
 
                                                 <g:if test="${pd.descr == PropertyDefinition.LIC_PROP}">
                                                     <g:link controller="myInstitution" action="currentLicenses" params="${[filterPropDef:genericOIDService.getOID(pd),filterSubmit:true]}">
-                                                        <div class="ui blue circular label">
-                                                            ${pd.countOwnUsages()}
-                                                        </div>
+                                                        <ui:bubble count="${pd.countOwnUsages()}" />
                                                     </g:link>
                                                 </g:if>
                                                 <g:elseif test="${pd.descr == PropertyDefinition.SUB_PROP}">
                                                     <g:link controller="myInstitution" action="currentSubscriptions" params="${[filterPropDef:genericOIDService.getOID(pd),status:'FETCH_ALL']}">
-                                                        <div class="ui blue circular label">
-                                                            ${pd.countOwnUsages()}
-                                                        </div>
+                                                        <ui:bubble count="${pd.countOwnUsages()}" />
                                                     </g:link>
                                                 </g:elseif>
                                                 <%-- TODO platforms and orgs do not have property filters yet, they must be built! --%>

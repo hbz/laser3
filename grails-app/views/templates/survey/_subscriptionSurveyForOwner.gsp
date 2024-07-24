@@ -11,9 +11,7 @@
                     id="${subscription.id}">
                 <strong>${message(code: 'surveyconfig.subOrgs.label')}:</strong>
 
-                <div class="ui blue circular label">
-                    ${countParticipants.subMembers}
-                </div>
+                <ui:bubble count="${countParticipants.subMembers}" />
             </g:link>
 
             <g:link class="${Btn.SIMPLE} right floated" controller="survey" action="surveyParticipants"
@@ -21,7 +19,7 @@
                     params="[surveyConfigID: surveyConfig.id]">
                 <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>
 
-                <div class="ui blue circular label">${countParticipants.surveyMembers}</div>
+                <ui:bubble count="${countParticipants.surveyMembers}" />
             </g:link>
 
             <g:if test="${countParticipants.subMembersWithMultiYear > 0}">
