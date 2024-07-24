@@ -985,8 +985,10 @@ SELECT * FROM (
         }
 
         Map<String,Object> propDefs = [:]
+        String sort = params.containsKey('sort') ? params.sort : 'name_de',
+        order = params.containsKey('order') ? params.order : 'asc'
         PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { String it ->
-            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name_de']) // NO private properties!
+            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: sort, order: order]) // NO private properties!
             propDefs.putAt( it, itResult )
         }
 
