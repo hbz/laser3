@@ -8,7 +8,7 @@
 <ui:h1HeaderWithIcon message="myinst.currentPermanentTitles.label" total="${num_tipp_rows}" floated="true"/>
 
 <ui:messages data="${flash}"/>
-${[currentTippCounts, plannedTippCounts, expiredTippCounts, deletedTippCounts, allTippCounts]}
+
 <laser:render template="/templates/titles/top_attached_title_tabs"
               model="${[
                       tt_controller:    controllerName,
