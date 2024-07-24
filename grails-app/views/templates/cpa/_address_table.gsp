@@ -73,7 +73,7 @@
                 <div class="ui item address-details">
                     <div style="display: flex">
                         <a href="${address.generateGoogleMapURL()}" target="_blank" class="la-popup-tooltip" data-position="top right" data-content="${message(code: 'address.googleMaps.link')}">
-                            <i class="ui js-linkGoogle blue icon building map marker alternate la-list-icon"></i>
+                            <i class="${Icon.LNK.GOOGLE_MAPS} js-linkGoogle la-list-icon"></i>
                         </a>
 
                         <g:if test="${address.name}">

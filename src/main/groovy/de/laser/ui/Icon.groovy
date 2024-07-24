@@ -91,6 +91,10 @@ class Icon {
         public static String EXTERNAL   = 'external alternate icon'
         @UIDoc(usage = 'Only for Links to views with preset filters')
         public static String FILTERED   = 'filter icon'
+        @UIDoc(usage = 'Only for Links to google maps')
+        public static String GOOGLE_MAPS    = 'map marker alternate icon'
+        @UIDoc(usage = 'Only for Links to send emails')
+        public static String MAIL_TO        = 'at icon'
         @UIDoc(usage = 'Only for Links to views for successors of the current object (see also PREV)')
         public static String NEXT       = 'arrow right icon'     // todo: duplicate: ui:anualRings, ui:statusWithRings
         @UIDoc(usage = 'Only for Links to views for predecessors of the current object (see also NEXT)')
@@ -221,6 +225,8 @@ class Icon {
     // please do not touch during refactoring ..
     // domain classes / top level objects
 
+    public static String ADDRESS                    = 'map marker alternate icon'
+
     public static String ANNOUNCEMENT               = 'flag icon'
 
     public static String DOCUMENT                   = 'file alternate icon'
@@ -239,13 +245,13 @@ class Icon {
 
     public static String PROVIDER                   = 'handshake icon'
 
-    public static String REPORTING                  = 'chartline icon'
+    public static String REPORTING                  = 'chart pie icon'
 
     public static String STATS                      = 'chart bar icon'
 
     public static String SUBSCRIPTION               = 'clipboard icon'      // todo: duplicate license.licenseCategory, tipp.accessStartDate/tipp.accessEndDate
 
-    public static String SURVEY                     = 'chart pie icon'
+    public static String SURVEY                     = 'poll icon'
 
     public static String TASK                       = 'calendar check outline icon'
 
