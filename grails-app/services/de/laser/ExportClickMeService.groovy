@@ -4738,7 +4738,7 @@ class ExportClickMeService {
             }
         }
 
-        saveClickMeConfig(selectedExportFields, "EXPORT_SURVEY_EVALUATION")
+        saveClickMeConfig(selectedExportFields, "getDefaultExportSurveyEvaluation")
 
         Map<String, List<RefdataValue>> selectedCostItemElements = [selectedCostItemElementsForSurveyCostItems: [], selectedCostItemElementsForSubCostItems: []]
         List<String> removeSelectedCostItemElements = []
