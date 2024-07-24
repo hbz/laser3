@@ -101,7 +101,7 @@
                     <div class="field">
                         <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
                             <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherited')}" class="${Btn.MODERN.POSITIVE_TOOLTIP} la-audit-button" data-inherited="true">
-                                <i aria-hidden="true" class="icon thumbtack"></i>
+                                <i aria-hidden="true" class="${Icon.SYM.INHERITANCE}"></i>
                             </button>
                         </g:if>
                         <g:else>
@@ -250,7 +250,7 @@
                         <table class="ui table compact la-table-height53px">
                             <tr>
                                 <th class="control-label la-popup-tooltip" data-contet="${message(code: "subscription.packages.auditable")}">
-                                    <i class="ui large icon thumbtack"></i>
+                                    <i class="${Icon.SYM.INHERITANCE} large"></i>
                                 </th>
                                 <th class="control-label la-popup-tooltip" data-content="${message(code: "subscription.packages.notification.auditable")}">
                                     <i class="ui large icon bullhorn"></i>

@@ -315,7 +315,7 @@
                                                 <g:else>
                                                     <span class="la-popup-tooltip"
                                                           data-content="${message(code: 'property.audit.target.inherit')}"
-                                                          data-position="top right"><i class="icon thumbtack grey"></i>
+                                                          data-position="top right"><i class="${Icon.SYM.INHERITANCE} grey"></i>
                                                     </span>
                                                 </g:else>
                                             </g:if>

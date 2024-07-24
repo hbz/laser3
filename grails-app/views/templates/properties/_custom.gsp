@@ -162,7 +162,7 @@
                                                           data-update="${custom_props_div}"
                                                           role="button"
                                         >
-                                            <i class="thumbtack icon"></i>
+                                            <i class="${Icon.SYM.INHERITANCE}"></i>
                                         </ui:remoteLink>
                                     </g:else>
                                 </g:if>
@@ -271,7 +271,7 @@
                                         <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
                                     </g:if>
                                     <g:else>
-                                        <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit')}" data-position="top right"><i class="icon thumbtack grey"></i></span>
+                                        <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit')}" data-position="top right"><i class="${Icon.SYM.INHERITANCE} grey"></i></span>
                                     </g:else>
                                 </g:if>
                                 <g:elseif test="${prop.tenant?.id == consortium?.id && atSubscr}">

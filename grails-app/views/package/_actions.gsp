@@ -93,7 +93,7 @@
                         <g:if test="${customerTypeService.isConsortium( contextCustomerType )}">
                             <th class="control-label la-popup-tooltip"
                                 data-content="${message(code: 'subscription.packages.auditable')}">
-                                <i class="ui large icon thumbtack"></i>
+                                <i class="${Icon.SYM.INHERITANCE} large"></i>
                             </th>
                         </g:if>
                     </tr>

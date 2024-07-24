@@ -418,7 +418,7 @@
                                             </th>
                                             <th class="control-label la-border-left" >
                                                 <span class="la-popup-tooltip" data-content="${message(code:'subscription.packages.auditable')}">
-                                                    <i class="ui large icon thumbtack"></i>
+                                                    <i class="${Icon.SYM.INHERITANCE} large"></i>
                                                 </span>
                                             </th>
                                             <th class="control-label">

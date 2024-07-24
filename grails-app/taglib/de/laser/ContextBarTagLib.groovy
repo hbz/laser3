@@ -95,7 +95,7 @@ class ContextBarTagLib {
             icon = Icon.AUTH.ROLE_ADMIN
         }
 
-        if (icon) {
+        if (icon != Icon.SYM.UNKOWN) {
             out << '<div class="item la-cb-context">'
             out <<     '<span class="ui label" data-display="' + text + '">'
             out <<         '<i class="' + icon + ' ' + color + '"></i>'

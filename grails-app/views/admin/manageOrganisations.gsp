@@ -216,7 +216,7 @@
                                 data-orgName="${org.name}"
                                 data-ui="modal"
                                 data-href="#apiLevelModal"
-                                data-content="API-Zugriff ändern" data-position="top left"><i class="key icon"></i></button>
+                                data-content="API-Zugriff ändern" data-position="top left"><i class="${Icon.SYM.IS_PUBLIC}"></i></button>
                     </td>
                 </tr>
             </g:each>
