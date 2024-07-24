@@ -196,14 +196,14 @@ class Icon {
         // please do not touch during refactoring ..
         // tooltips
 
-        @UIDoc(usage = 'Only for tooltip trigger: Help')
-        public static String HELP       = 'grey question circle icon'   // COLOR INCLUDED !!
+        @UIDoc(usage = 'Only for tooltip trigger: Help (COLORED)')
+        public static String HELP       = 'grey question circle icon'
         @UIDoc(usage = 'Only for tooltip trigger: Important, possibly warning')
-        public static String IMPORTANT  = 'exclamation circle icon'     // TODO: merge with Icon.TOOLTIP.SERIOUS
+        public static String IMPORTANT  = 'exclamation circle icon'
         @UIDoc(usage = 'Only for tooltip trigger: Info')
         public static String INFO       = 'info circle icon'            // todo: duplicate: Icon.PROP.IN_USE
-        @UIDoc(usage = 'Only for tooltip trigger: Serious, possibly error')
-        public static String SERIOUS    = 'exclamation triangle icon'   // TODO: merge with Icon.TOOLTIP.IMPORTANT
+        @UIDoc(usage = 'Only for tooltip trigger: Error')
+        public static String ERROR    = 'exclamation triangle icon'
     }
 
     class UNC {

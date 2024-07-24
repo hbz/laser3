@@ -280,7 +280,7 @@
                     <g:if test="${surveyInfo.isMandatory}">
                         <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
-                            <i class="${Icon.TOOLTIP.SERIOUS} yellow"></i>
+                            <i class="${Icon.TOOLTIP.IMPORTANT} yellow"></i>
                         </span>
                     </g:if>
                 </td>

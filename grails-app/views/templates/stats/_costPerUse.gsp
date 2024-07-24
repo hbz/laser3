@@ -122,7 +122,7 @@
                                     <g:message code="default.usage.costPerUse.result" args="${[formatNumber(number: costs.get(datePoint), type:"currency", currencySymbol:"EUR"), sums.(metricType).get(datePoint)]}"/>
                                 </g:if>
                                 <g:else>
-                                    <span class="la-long-tooltip la-popup-tooltip" data-tooltip="${message(code: 'default.usage.missingUsageInfo')}"><i class="${Icon.TOOLTIP.SERIOUS} la-popup small"></i></span>
+                                    <span class="la-long-tooltip la-popup-tooltip" data-tooltip="${message(code: 'default.usage.missingUsageInfo')}"><i class="${Icon.TOOLTIP.IMPORTANT} la-popup small"></i></span>
                                 </g:else>
                             </td>
                         </g:each>
