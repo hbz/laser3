@@ -868,7 +868,7 @@ class UiTagLib {
         String linkBody = (text && message) ? text + " - " + message : text + message
         String cssClass = ((this.pageScope.variables?.actionName == attrs.action && (attrs.tab == params.tab || attrs.tab == params[attrs.subTab])) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
-        String counts = (attrs.counts >= 0) ? '<span class="ui '  + ' circular label">' + attrs.counts + '</span>' : null
+        String counts = (attrs.counts >= 0) ? '<span class="ui circular label">' + attrs.counts + '</span>' : null
 
         linkBody = counts ? linkBody + counts : linkBody
 
@@ -1021,16 +1021,18 @@ class UiTagLib {
         out << '</button>'
     }
 
-    // <ui:bubble count="${list.size()}" float="true" />
+    // <ui:bubble count="${list.size()}" grey="true" float="true" />
 
     def bubble = { attrs, body ->
+        String color = attrs.grey ? '' : 'blue'
+
         if (attrs.float) {
-            out << '<span class="ui circular blue label floating">'
+            out << '<span class="ui circular label floating' + color + '">'
             out << (attrs.count ?: '0')
             out << '</span>'
         }
         else {
-            out << '<span class="ui circular blue label">'
+            out << '<span class="ui circular label' + color + '">'
             out << (attrs.count ?: '0')
             out << '</span>'
         }

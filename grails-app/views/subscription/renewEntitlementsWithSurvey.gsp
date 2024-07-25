@@ -246,7 +246,7 @@
         <laser:render template="/templates/filter/tipp_ieFilter" model="[notShow: params.tab == 'allTipps', fillDropdownsWithPackage: params.tab == 'allTipps']"/>
 
 <h3 class="ui icon header la-clear-before la-noMargin-top">
-    <span class="ui circular label">${num_rows?:0}</span> <g:message code="title.filter.result"/>
+    <ui:bubble count="${num_rows}" grey="true"/> <g:message code="title.filter.result"/>
 </h3>
 
 <div id="downloadWrapper"></div>

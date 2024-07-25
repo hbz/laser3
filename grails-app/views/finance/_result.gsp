@@ -7,17 +7,17 @@
                 <g:each in="${dataToDisplay}" var="view">
                     <g:if test="${view == 'own'}">
                         <div class="item" data-tab="own">
-                            <g:message code="financials.tab.ownCosts"/> <span class="ui circular label">${own.count}</span>
+                            <g:message code="financials.tab.ownCosts"/> <ui:bubble count="${own.count}" grey="true"/>
                         </div>
                     </g:if>
                     <g:if test="${view in ['cons','consAtSubscr']}">
                         <div class="item" data-tab="cons">
-                            <g:message code="financials.tab.consCosts"/> <span class="ui circular label">${cons.count}</span>
+                            <g:message code="financials.tab.consCosts"/> <ui:bubble count="${cons.count}" grey="true"/>
                         </div>
                     </g:if>
                     <g:if test="${view == 'subscr'}">
                         <div class="item" data-tab="subscr">
-                            <g:message code="financials.tab.subscrCosts"/> <span class="ui circular label">${subscr.count}</span>
+                            <g:message code="financials.tab.subscrCosts"/> <ui:bubble count="${subscr.count}" grey="true"/>
                         </div>
                     </g:if>
                 </g:each>

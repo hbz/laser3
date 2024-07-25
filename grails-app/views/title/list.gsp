@@ -26,7 +26,7 @@
         <laser:render template="/templates/filter/tipp_ieFilter"/>
 
         <h3 class="ui icon header la-clear-before la-noMargin-top">
-            <span class="ui circular label">${num_tipp_rows}</span> <g:message code="title.filter.result"/>
+            <ui:bubble count="${num_tipp_rows}" grey="true"/> <g:message code="title.filter.result"/>
         </h3>
 
 <div class="ui form">
