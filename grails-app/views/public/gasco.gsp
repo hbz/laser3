@@ -151,7 +151,7 @@
                         <g:each in="${sub.packages}" var="subPkg" status="j">
                             <div class="la-flexbox">
                                 <i class="${Icon.PACKAGE} la-list-icon"></i>
-                                <g:link controller="public" action="gascoDetailsIssueEntitlements" id="${subPkg.id}">${subPkg.pkg}</g:link>
+                                <g:link controller="public" action="gascoDetails" id="${subPkg.id}">${subPkg.pkg}</g:link>
                             </div>
                         </g:each>
                     </td>
