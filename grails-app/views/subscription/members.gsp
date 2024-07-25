@@ -286,12 +286,12 @@
                             <g:if test="${sub._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION] && sub.instanceOf._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE}">
                                 <g:if test="${sub.orgRelations.find{it.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN}}">
                                     <g:link class="${Btn.ICON.SIMPLE_TOOLTIP}" data-content="${message(code:'subscription.details.hiddenForSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
-                                        <i class="ui icon eye"></i>
+                                        <i class="icon eye"></i>
                                     </g:link>
                                 </g:if>
                                 <g:else>
                                     <g:link class="${Btn.ICON.SIMPLE_TOOLTIP} orange" data-content="${message(code:'subscription.details.hideToSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
-                                        <i class="ui icon eye"></i>
+                                        <i class="icon eye"></i>
                                     </g:link>
                                 </g:else>
                             </g:if>

@@ -236,6 +236,8 @@ class Icon {
 
     public static String DOCUMENT                   = 'file alternate icon'
 
+    public static String DUE_DATE                   = 'bell icon'
+
     public static String GASCO                      = 'layer group icon'
 
     public static String LICENSE                    = 'balance scale icon'

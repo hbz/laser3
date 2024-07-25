@@ -9,7 +9,7 @@
             <div class="content">
                 <div class="header"><g:message code="default.warning.emph" /></div>
                 <p><g:message code="menu.institutions.replace_prop.header"/></p>
-            </div>
+            </div> 
         </div>
 
         <ui:msg class="info" showIcon="true" header="${message(code:'default.notice')}" hideClose="true">

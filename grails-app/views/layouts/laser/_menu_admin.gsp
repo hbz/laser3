@@ -11,7 +11,7 @@
 
         <div class="item" role="menuitem" aria-haspopup="true">
             <div class="title">
-                <i class="ui icon keyboard outline"></i> ${message(code:'menu.admin.sysAdmin')} <i class="dropdown icon"></i>
+                <i class="icon keyboard outline"></i> ${message(code:'menu.admin.sysAdmin')} <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="admin" action="appInfo">${message(code:'menu.admin.appInfo')}</ui:link>
@@ -65,7 +65,7 @@
 
         <div class="item" role="menuitem" aria-haspopup="true">
             <div class="title">
-                <i class="ui icon code"></i> <span class="text">Developer</span> <i class="dropdown icon"></i>
+                <i class="icon code"></i> <span class="text">Developer</span> <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="dev" action="frontend">Frontend</ui:link>

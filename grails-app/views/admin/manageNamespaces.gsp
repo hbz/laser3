@@ -101,7 +101,7 @@
 
             <g:each in="${detailsStats}" var="list">
                 <g:if test="${list && list.value}">
-                    <p><strong><i class="ui icon angle right"></i> ${list.key}</strong></p>
+                    <p><strong><i class="icon angle right"></i> ${list.key}</strong></p>
                     <div class="ui list">
                         <g:each in="${list.value}" var="entry" status="i">
                             <div class="item" <%= ((i+1)%10)==0 ? 'style="margin-bottom:1.2em"':''%>>

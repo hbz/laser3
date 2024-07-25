@@ -12,7 +12,7 @@
                 <g:if test="${propDefGroup.ownerType in [License.class.name, Subscription.class.name]}">
                     <g:if test="${propDefGroupBinding?.isVisibleForConsortiaMembers}">
                         <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
-                            <i class="ui icon eye orange"></i>
+                            <i class="icon eye orange"></i>
                         </span>
                     </g:if>
                 </g:if>

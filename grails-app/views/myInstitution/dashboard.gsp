@@ -151,7 +151,7 @@
     %>
     <div class="ui secondary stackable pointing tabular la-tab-with-js menu">
         <a class="${us_dashboard_tab.value == 'Due Dates' ? 'active item':'item'}" data-tab="duedates">
-            <i class="bell icon large"></i>
+            <i class="${Icon.DUE_DATE} large"></i>
             ${dueDatesCount} ${message(code:'myinst.dash.due_dates.label')}
         </a>
 

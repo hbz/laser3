@@ -134,7 +134,7 @@
                                           role="button"
                                           ariaLabel="Termin wieder auf Ihrem Dashboard anzeigen lassen"
                         >
-                            <i class="icon bell slash"></i>
+                            <i class="${Icon.DUE_DATE} slash"></i>
                         </ui:remoteLink>
                     </g:if>
                     <g:else>
@@ -149,7 +149,7 @@
                                           role="button"
                                           ariaLabel="Termin nicht auf Ihrem Dashboard anzeigen lassen"
                         >
-                            <i class="icon bell"></i>
+                            <i class="${Icon.DUE_DATE}"></i>
                         </ui:remoteLink>
                     </g:else>
                 </td>
