@@ -135,7 +135,7 @@
                 <th>${message(code:'org.institution.label')}</th>
             </g:if>
             <th class="la-no-uppercase">
-                <ui:multiYearIcon isConsortial="true" />
+                <ui:multiYearIcon/>
             </th>
         </tr>
     </thead>
