@@ -17,8 +17,7 @@
 
         <g:if test="${ie && (ie.tipp.medium || showEmptyFields)}">
             <div class="item">
-                <i class="grey medium icon la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.medium')}"></i>
+                <i class="grey medium icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.medium')}"></i>
 
                 <div class="content">
                     <div class="header">
@@ -34,8 +33,7 @@
         <g:else>
             <g:if test="${(tipp.medium || showEmptyFields)}">
                 <div class="item">
-                    <i class="grey medium icon la-popup-tooltip la-delay"
-                       data-content="${message(code: 'tipp.medium')}"></i>
+                    <i class="grey medium icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.medium')}"></i>
 
                     <div class="content">
                         <div class="header">
@@ -53,8 +51,7 @@
         <%-- status is not nullable any more, see ERMS-4918 --%>
         <g:if test="${ie}">
             <div class="item">
-                <i class="grey key icon la-popup-tooltip la-delay"
-                   data-content="${message(code: 'default.status.label')}"></i>
+                <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.status.label')}"></i>
 
                 <div class="content">
                     <div class="header">
@@ -70,8 +67,7 @@
         <g:else>
             <%--<g:if test="${(tipp.status || showEmptyFields)}">--%>
                 <div class="item">
-                    <i class="grey key icon la-popup-tooltip la-delay"
-                       data-content="${message(code: 'default.status.label')}"></i>
+                    <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.status.label')}"></i>
 
                     <div class="content">
                         <div class="header">
@@ -88,8 +84,7 @@
 
         <g:if test="${(tipp.titleType == 'monograph') && (tipp.volume || showEmptyFields)}">
             <div class="item">
-                <i class="grey icon la-books la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.volume')}"></i>
+                <i class="grey icon la-books la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
 
                 <div class="content">
                     <div class="header">
@@ -105,8 +100,7 @@
 
         <g:if test="${(tipp.titleType == 'monograph') && (tipp.firstAuthor || showEmptyFields)}">
             <div class="item">
-                <i class="grey icon user circle la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.firstAuthor')}"></i>
+                <i class="grey icon user circle la-popup-tooltip la-delay" data-content="${message(code: 'tipp.firstAuthor')}"></i>
 
                 <div class="content">
                     <div class="header">
@@ -123,8 +117,7 @@
 
         <g:if test="${(tipp.titleType == 'monograph') && (tipp.firstEditor || showEmptyFields)}">
             <div class="item">
-                <i class="grey icon industry circle la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.firstEditor')}"></i>
+                <i class="grey icon industry circle la-popup-tooltip la-delay" data-content="${message(code: 'tipp.firstEditor')}"></i>
 
                 <div class="content">
                     <div class="header">
@@ -140,8 +133,7 @@
 
 %{--        <g:if test="${(tipp.titleType == 'monograph') && (tipp.editionStatement || showEmptyFields)}">
             <div class="item">
-                <i class="grey icon copy la-popup-tooltip la-delay"
-                   data-content="${message(code: 'title.editionStatement.label')}"></i>
+                <i class="grey icon copy la-popup-tooltip la-delay" data-content="${message(code: 'title.editionStatement.label')}"></i>
 
                 <div class="content">
                     <div class="header">
@@ -157,8 +149,7 @@
 
         <g:if test="${(tipp.titleType == 'monograph') && (tipp.editionNumber || showEmptyFields)}">
             <div class="item">
-                <i class="grey icon copy la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.editionNumber.tooltip')}"></i>
+                <i class="grey icon copy la-popup-tooltip la-delay" data-content="${message(code: 'tipp.editionNumber.tooltip')}"></i>
 
                 <div class="content">
                     <div class="header">
@@ -174,8 +165,7 @@
 
         <g:if test="${(tipp.titleType == 'monograph') && (tipp.summaryOfContent || showEmptyFields)}">
             <div class="item">
-                <i class="grey icon desktop la-popup-tooltip la-delay"
-                   data-content="${message(code: 'title.summaryOfContent.label')}"></i>
+                <i class="grey icon desktop la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
 
                 <div class="content">
                     <div class="header">
@@ -191,8 +181,7 @@
 
         <g:if test="${(tipp.seriesName || showEmptyFields)}">
             <div class="item">
-                <i class="grey icon list la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.seriesName')}"></i>
+                <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'tipp.seriesName')}"></i>
 
                 <div class="content">
                     <div class="header">
@@ -211,8 +200,7 @@
     <div class="ui list" >
         <g:if test="${(tipp.subjectReference || showEmptyFields)}">
             <div class="item">
-                <i class="grey icon comment alternate la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.subjectReference')}"></i>
+                <i class="grey icon comment alternate la-popup-tooltip la-delay" data-content="${message(code: 'tipp.subjectReference')}"></i>
 
                 <div class="content">
                     <div class="header">
@@ -228,8 +216,7 @@
 
         <g:if test="${(tipp.delayedOA || showEmptyFields)}">
             <div class="item">
-                <i class="grey lock open icon la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.delayedOA')}"></i>
+                <i class="grey lock open icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.delayedOA')}"></i>
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.delayedOA') + ':'}
@@ -244,8 +231,7 @@
 
         <g:if test="${(tipp.hybridOA || showEmptyFields)}">
             <div class="item">
-                <i class="grey lock open alternate icon la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.hybridOA')}"></i>
+                <i class="grey lock open alternate icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.hybridOA')}"></i>
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.hybridOA') + ':'}
@@ -260,8 +246,7 @@
 
         <g:if test="${(tipp.ddcs || showEmptyFields)}">
             <div class="item">
-                <i class="grey sort numeric down icon la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.ddc')}"></i>
+                <i class="grey sort numeric down icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.ddc')}"></i>
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.ddc') + ':'}
@@ -279,8 +264,7 @@
 
         <g:if test="${(tipp.languages || showEmptyFields)}">
             <div class="item">
-                <i class="grey language icon la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.language')}"></i>
+                <i class="grey language icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.language')}"></i>
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.language') + ':'}
@@ -297,8 +281,7 @@
 
         <g:if test="${(tipp.publisherName || showEmptyFields)}">
             <div class="item">
-                <i class="grey building icon la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.publisher')}"></i>
+                <i class="grey building icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.publisher')}"></i>
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.publisher') + ':'}
@@ -312,8 +295,7 @@
 
         <g:if test="${(tipp.accessType || showEmptyFields)}">
             <div class="item">
-                <i class="grey lock open icon la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.accessType')}"></i>
+                <i class="grey lock open icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.accessType')}"></i>
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.accessType') + ':'}
@@ -327,8 +309,7 @@
 
         <g:if test="${(tipp.openAccess || showEmptyFields)}">
             <div class="item">
-                <i class="ellipsis vertical grey icon la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.openAccess')}"></i>
+                <i class="ellipsis vertical grey icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.openAccess')}"></i>
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.openAccess') + ':'}
@@ -343,8 +324,7 @@
         <g:set var="providers" value="${tipp.getPublishers()}"/>
         <g:if test="${(providers || showEmptyFields)}">
             <div class="item">
-                <i class="grey university icon la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.provider')}"></i>
+                <i class="grey university icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.provider')}"></i>
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.provider') + ':'}
@@ -354,8 +334,13 @@
                             <div class="ui list">
                                 <g:each in="${providers}" var="provider">
 
-                                    <g:link controller="organisation" action="show" target="_blank"
-                                            id="${provider.id}">${provider.name}</g:link>
+                                    <g:if test="${isPublic_gascoDetails}">
+                                        ${provider.name}
+                                    </g:if>
+                                    <g:else>%{-- else=default --}%
+                                        <g:link controller="organisation" action="show" id="${provider.id}" target="_blank">${provider.name}</g:link>
+                                    </g:else>
+
 
                                 %{--<g:each in="${apisources}" var="gokbAPI">
                                     <g:if test="${provider.gokbId}">
@@ -392,15 +377,18 @@
         <g:if test="${showPackage}">
             <g:if test="${tipp.pkg.id}">
                 <div class="item">
-                    <i class="grey icon gift scale la-popup-tooltip la-delay"
-                       data-content="${message(code: 'package.label')}"></i>
+                    <i class="grey icon gift scale la-popup-tooltip la-delay" data-content="${message(code: 'package.label')}"></i>
                     <div class="content">
                         <div class="header">
                             ${message(code: 'package.label')}
                         </div>
                         <div class="description">
-                            <g:link controller="package" action="show" target="_blank"
-                                    id="${tipp.pkg.id}">${tipp.pkg.name}</g:link>
+                            <g:if test="${isPublic_gascoDetails}">
+                                ${tipp.pkg.name}
+                            </g:if>
+                            <g:else>%{-- else=default --}%
+                                <g:link controller="package" action="show" id="${tipp.pkg.id}" target="_blank">${tipp.pkg.name}</g:link>
+                            </g:else>
                         </div>
                     </div>
                 </div>
@@ -416,13 +404,18 @@
                             ${message(code: 'tipp.platform')}
                         </div>
                         <div class="description">
-                            <g:if test="${tipp.platform.name}">
-                                <g:link controller="platform" action="show" target="_blank" id="${tipp.platform.id}">
-                                    ${tipp.platform.name}
-                                </g:link>
+                            <g:if test="${isPublic_gascoDetails}">
+                                ${tipp.platform.name ?: message(code: 'default.unknown')}
                             </g:if>
-                            <g:else>
-                                ${message(code: 'default.unknown')}
+                            <g:else>%{-- else=default --}%
+                                <g:if test="${tipp.platform.name}">
+                                    <g:link controller="platform" action="show" id="${tipp.platform.id}" target="_blank">
+                                        ${tipp.platform.name}
+                                    </g:link>
+                                </g:if>
+                                <g:else>
+                                    ${message(code: 'default.unknown')}
+                                </g:else>
                             </g:else>
                         </div>
                     </div>

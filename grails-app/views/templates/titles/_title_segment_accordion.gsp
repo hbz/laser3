@@ -45,8 +45,7 @@
         </div>
 
         <div class="column">
-            <laser:render template="/templates/tipps/coverages_accordion"
-                          model="${[ie: null, tipp: tipp, overwriteEditable: false]}"/>
+            <laser:render template="/templates/tipps/coverages_accordion" model="${[ie: null, tipp: tipp, overwriteEditable: false]}"/>
         </div>
 
         <div class="four wide column">
