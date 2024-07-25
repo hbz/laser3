@@ -1,29 +1,20 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.OrgRole; de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
+<%@ page import="de.laser.IssueEntitlement; de.laser.TitleInstancePackagePlatform;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
 
-<laser:htmlStart message="gasco.title" />
+<laser:htmlStart message="menu.public.gasco_monitor" />
 
-    <br />
-    <br />
-
-    <h2 class="ui title">
-        ${subscription}
-        <g:if test="${tippsCount}">
-            &nbsp;&nbsp;
-            (${tipps?.size()} von ${tippsCount})
-        </g:if>
-    </h2>
+    <ui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${subscription}" type="gasco" total="${issueEntitlementsCount}"/>
 
     <ui:filter simple="true">
         <form class="ui form">
             <div class="fields">
 
                 <div class="field">
-                    <label for="q">Suche nach Name</label>
+                    <label for="q">Suche nach Titel</label>
                     <input type="text" id="q" name="q" placeholder="${message(code:'default.search.ph')}" value="${params.q}" />
                 </div>
 
                 <div class="field">
-                    <label for="idns">Suche nach Identifikatoren</label>
+                    <label for="idns">Identifikator-Typ</label>
                     <g:select id="idns" name="idns"
                               from="${idnsPreset}" optionKey="id" optionValue="ns"
                               value="${params.idns}"
@@ -33,12 +24,11 @@
                 </div>
 
                 <div class="field">
-                    <label>&nbsp;</label>
-                    <input type="text" name="idv" placeholder="${message(code:'default.search.ph')}" value="${params.idv}" />
+                    <label for="idv">Identifikator</label>
+                    <input type="text" id="idv" name="idv" placeholder="Identifikator eingeben" value="${params.idv}" />
                 </div>
 
-                <div class="field">
-                    <label>&nbsp;</label>
+                <div class="field la-field-right-aligned">
                     <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
 
                     <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}" />
@@ -48,71 +38,21 @@
         </form>
     </ui:filter>
 
-    <table class="ui celled la-js-responsive-table la-table table">
-        <thead>
-        <tr>
-            <th>${message(code:'sidewide.number')}</th>
-            <th>${message(code:'issueEntitlement.label')}</th>
-            <th>${message(code:'default.identifiers.label')}</th>
-        </tr>
-        </thead>
-        <tbody>
+    <h3 class="ui icon header la-clear-before la-noMargin-top">
+        <span class="ui circular label">${issueEntitlementsFilterCount}</span> <g:message code="title.filter.result"/>
+    </h3>
 
-            <g:each in="${tipps}" var="tipp" status="counter">
-                <tr>
-                    <td>${counter + 1}</td>
-                    <td>
-                        <ui:listIcon type="${tipp.titleType}"/>
-                        <strong>${tipp.name}</strong>
-                        <br />
+    <div class="ui grid">
+        <div class="row">
+            <div class="column">
+                <laser:render template="/templates/tipps/table_accordion"
+                              model="[tipps: issueEntitlements?.tipp, showPackage: false, showPlattform: true]"/>
+            </div>
+        </div>
+    </div>
 
-                        <g:if test="${tipp.hostPlatformURL}">
-                            <ui:linkWithIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
-                        </g:if>
-                        <br />
-
-                        ${message(code:'tipp.platform')}:
-                        <g:if test="${tipp.platform.name}">
-                            ${tipp.platform.name}
-                        </g:if>
-                        <g:else>
-                            ${message(code:'default.unknown')}
-                        </g:else>
-                        <br />
-
-                        ${message(code:'package.label')}:
-                        <g:if test="${tipp.pkg}"><!-- TODO: show all packages -->
-                            ${tipp.pkg}
-                        </g:if>
-                        <g:else>
-                            ${message(code:'default.unknown')}
-                        </g:else>
-                        <br />
-                    </td>
-
-                    <td>
-                        <g:each in="${tipp.ids?.sort{it?.ns?.ns}}" var="title_id">
-                            ${title_id.ns.ns}: <strong>${title_id.value}</strong>
-                            <br />
-                        </g:each>
-                    </td>
-                </tr>
-            </g:each>
-
-        </tbody>
-    </table>
-
-<style>
-.ui.table thead tr:first-child>th {
-    top: 48px!important;
-}
-</style>
-<sec:ifAnyGranted roles="ROLE_USER">
-    <style>
-    .ui.table thead tr:first-child>th {
-        top: 90px!important;
-    }
-    </style>
-</sec:ifAnyGranted>
+<g:if test="${issueEntitlements}">
+    <ui:paginate action="gascoDetails" controller="public" params="${params}" max="${max}" total="${issueEntitlementsCount}"/>
+</g:if>
 
 <laser:htmlEnd />
