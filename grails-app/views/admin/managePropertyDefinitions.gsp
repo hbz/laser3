@@ -33,16 +33,16 @@
                 <div class="content">
                     <table class="ui celled la-js-responsive-table la-table compact table">
                         <thead>
-                        <tr>
-                            <th></th>
-                            <th>${message(code:'propertyDefinition.key.label')}</th>
-                            <th>${message(code:'propertyDefinition.name.de.label')}</th>
-                            <th>${message(code:'propertyDefinition.name.en.label')}</th>
-                            <th>${message(code:'propertyDefinition.expl.de.label')}</th>
-                            <th>${message(code:'propertyDefinition.expl.en.label')}</th>
-                            <th></th>
-                            <th class="la-action-info">${message(code:'default.actions.label')}</th>
-                        </tr>
+                            <tr>
+                                <th></th>
+                                <g:sortableColumn property="name" title="${message(code:'propertyDefinition.key.label')}"/>
+                                <g:sortableColumn property="name_de" title="${message(code:'propertyDefinition.name.de.label')}"/>
+                                <g:sortableColumn property="name_en" title="${message(code:'propertyDefinition.name.en.label')}"/>
+                                <th>${message(code:'propertyDefinition.expl.de.label')}</th>
+                                <th>${message(code:'propertyDefinition.expl.en.label')}</th>
+                                <th></th>
+                                <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                            </tr>
                         </thead>
                         <tbody>
                             <g:each in="${entry.value}" var="pd">

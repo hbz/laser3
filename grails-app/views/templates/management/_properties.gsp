@@ -410,7 +410,7 @@
                     <th>${message(code: 'default.endDate.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th class="la-no-uppercase">
-                        <ui:multiYearIcon isConsortial="true" />
+                        <ui:multiYearIcon />
                     </th>
                     <th>${message(code: 'subscriptionsManagement.propertySelected')}: ${propertiesFilterPropDef.getI10n('name')}</th>
                     <th></th>

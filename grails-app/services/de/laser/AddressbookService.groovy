@@ -208,7 +208,7 @@ class AddressbookService {
                 qParams.tenant = contextService.getOrg()
                 break
             case "contacts":
-                qParts << 'a.tenant is null'
+                qParts << 'a.tenant = null'
                 break
         }
 
