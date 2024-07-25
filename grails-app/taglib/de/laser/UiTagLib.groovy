@@ -1024,7 +1024,7 @@ class UiTagLib {
     // <ui:bubble count="${list.size()}" grey="true" float="true" />
 
     def bubble = { attrs, body ->
-        String color = attrs.grey ? '' : 'blue'
+        String color = attrs.grey ? '' : ' blue'
 
         if (attrs.float) {
             out << '<span class="ui circular label floating' + color + '">'
