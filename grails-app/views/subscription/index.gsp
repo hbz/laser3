@@ -161,9 +161,7 @@
             <g:link controller="subscription" action="index" id="${subscription.id}"
                     class="item ${params.titleGroup ? '' : 'active'}">
                 Alle
-                <span class="ui blue circular label">
-                    ${num_ies_rows}
-                </span>
+                <ui:bubble count="${num_ies_rows}" />
             </g:link>
 
             <g:each in="${subscription.ieGroups.sort { it.name }}" var="titleGroup">
@@ -171,9 +169,7 @@
                         params="[titleGroup: titleGroup.id]"
                         class="item ${(params.titleGroup == titleGroup.id.toString()) ? 'active' : ''}">
                     ${titleGroup.name}
-                    <span class="ui blue circular label">
-                        ${titleGroup.countCurrentTitles()}
-                    </span>
+                    <ui:bubble count="${titleGroup.countCurrentTitles()}" />
                 </g:link>
             </g:each>
         </div>
@@ -201,7 +197,7 @@
         <div class="row">
             <div class="eight wide column">
                 <h3 class="ui icon header la-clear-before la-noMargin-top">
-                    <span class="ui circular label">${num_ies_rows}</span> <g:message code="title.filter.result"/>
+                    <ui:bubble count="${num_ies_rows}" grey="true"/> <g:message code="title.filter.result"/>
                 </h3>
             </div>
 

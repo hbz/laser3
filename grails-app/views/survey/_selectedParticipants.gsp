@@ -19,7 +19,7 @@
     <br/>
 
     <h3 class="ui icon header la-clear-before la-noMargin-top">
-        <span class="ui circular label">${selectedParticipants.size()}</span> <g:message code="surveyParticipants.selectedParticipants"/>
+        <ui:bubble count="${selectedParticipants.size()}" grey="true"/> <g:message code="surveyParticipants.selectedParticipants"/>
     </h3>
 
     <br/><br/>

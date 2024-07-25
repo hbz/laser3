@@ -273,7 +273,7 @@ class UiTagLib {
                             }
                             else {
                                 out << '<span class="la-popup-tooltip" data-content="Wert wird geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
+                                out << '<i aria-hidden="true" class="' + Icon.SYM.INHERITANCE + ' grey"></i>'
                                 out << '</span>'
                             }
                         }
@@ -294,12 +294,12 @@ class UiTagLib {
                                         params: ['owner': oid, 'property': [objAttr], keep: true],
                                 )
                                 out << '">'
-                                out << '<i aria-hidden="true" class="icon thumbtack"></i>'
+                                out << '<i aria-hidden="true" class="' + Icon.SYM.INHERITANCE + '"></i>'
                                 out << '</a>'
                             }
                             else {
                                 out << '<div class="ui simple dropdown icon green button la-modern-button ' + attrs.class + ' la-audit-button" data-content="Wert wird vererbt">'
-                                out   << '<i aria-hidden="true" class="icon thumbtack"></i>'
+                                out   << '<i aria-hidden="true" class="' + Icon.SYM.INHERITANCE + '"></i>'
                                 out   << '<div class="menu">'
                                 out << g.link( 'Vererbung deaktivieren. Wert für Einrichtung <strong>löschen</strong>',
                                         controller: 'ajax',
@@ -356,7 +356,7 @@ class UiTagLib {
                             }
                             else {
                                 out << '<span class="la-popup-tooltip" data-content="Wert wird geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
+                                out << '<i aria-hidden="true" class="' + Icon.SYM.INHERITANCE + ' grey"></i>'
                                 out << '</span>'
                             }
                         }
@@ -374,7 +374,7 @@ class UiTagLib {
                             }
                             else {
                                 out << '<span class="la-popup-tooltip" data-content="Wert wird geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
+                                out << '<i aria-hidden="true" class="' + Icon.SYM.INHERITANCE + ' grey"></i>'
                                 out << '</span>'
                             }
                         }
@@ -868,7 +868,7 @@ class UiTagLib {
         String linkBody = (text && message) ? text + " - " + message : text + message
         String cssClass = ((this.pageScope.variables?.actionName == attrs.action && (attrs.tab == params.tab || attrs.tab == params[attrs.subTab])) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
-        String counts = (attrs.counts >= 0) ? '<span class="ui '  + ' circular label">' + attrs.counts + '</span>' : null
+        String counts = (attrs.counts >= 0) ? '<span class="ui circular label">' + attrs.counts + '</span>' : null
 
         linkBody = counts ? linkBody + counts : linkBody
 
@@ -1019,5 +1019,22 @@ class UiTagLib {
         out << '<button class="' + Btn.SIMPLE +' la-js-closeAll-showMore right floated">'
         out << message(code: "accordion.button.closeAll")
         out << '</button>'
+    }
+
+    // <ui:bubble count="${list.size()}" grey="true" float="true" />
+
+    def bubble = { attrs, body ->
+        String color = attrs.grey ? '' : 'blue'
+
+        if (attrs.float) {
+            out << '<span class="ui circular label floating' + color + '">'
+            out << (attrs.count ?: '0')
+            out << '</span>'
+        }
+        else {
+            out << '<span class="ui circular label' + color + '">'
+            out << (attrs.count ?: '0')
+            out << '</span>'
+        }
     }
 }

@@ -11,7 +11,7 @@
                 <g:link controller="survey" action="surveyParticipants"
                         id="${surveyConfig.surveyInfo.id}"
                         params="[surveyConfigID: surveyConfig.id]">
-                    <div class="ui blue circular label">${countParticipants.surveyMembers}</div>
+                    <ui:bubble count="${countParticipants.surveyMembers}" />
                 </g:link>
             </div>
         </div>

@@ -322,9 +322,7 @@
                         <g:if test="${surveyConfig}">
                             <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig.id]" class="ui icon">
-                                <div class="ui blue circular label">
-                                    ${surveyConfig.getCurrentDocs().size() ?: 0}
-                                </div>
+                                <ui:bubble count="${surveyConfig.getCurrentDocs().size()}" />
                             </g:link>
                         </g:if>
                     </td>

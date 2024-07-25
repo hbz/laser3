@@ -39,7 +39,7 @@
     </ui:filter>
 
     <h3 class="ui icon header la-clear-before la-noMargin-top">
-        <span class="ui circular label">${issueEntitlementsFilterCount}</span> <g:message code="title.filter.result"/>
+        <ui:bubble count="${issueEntitlementsFilterCount}" grey="true"/> <g:message code="title.filter.result"/>
     </h3>
 
     <div class="ui grid">

@@ -45,7 +45,7 @@
         ${surveyConfig.getConfigNameShort()}
     </g:else>:
 
-        ${message(code: "openParticipantsAgain.label")} <div class="ui blue circular label">${participantsFinishTotal}</div>
+        ${message(code: "openParticipantsAgain.label")} <ui:bubble count="${participantsFinishTotal}" />
 </h2>
 <br />
 

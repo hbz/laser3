@@ -33,7 +33,7 @@
     <br/>
 
     <h3 class="ui icon header la-clear-before la-noMargin-top">
-        <span class="ui circular label">${consortiaMembers.size()}</span> <g:message code="surveyParticipants.consortiaMembers"/>
+        <ui:bubble count="${consortiaMembers.size()}" grey="true"/> <g:message code="surveyParticipants.consortiaMembers"/>
     </h3>
 
     <br/><br/>

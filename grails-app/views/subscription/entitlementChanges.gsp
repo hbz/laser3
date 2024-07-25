@@ -26,18 +26,14 @@
     <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}" params="[tab: 'changes', eventType: params.eventType]"
             class="item ${params.tab == "changes" ? 'active' : ''}">
         <g:message code="myinst.menu.pendingChanges.label"/>
-        <span class="ui blue circular label">
-            ${countPendingChanges}
-        </span>
+        <ui:bubble count="${countPendingChanges}" />
     </g:link>
 
     <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}"
             params="[tab: 'acceptedChanges', eventType: params.eventType]"
             class="item ${params.tab == "acceptedChanges" ? 'active' : ''}">
         <g:message code="myinst.menu.acceptedChanges.label"/>
-        <span class="ui blue circular label">
-            ${countAcceptedChanges}
-        </span>
+        <ui:bubble count="${countAcceptedChanges}" />
     </g:link>
 
 </div>
@@ -87,9 +83,7 @@
                         params="[eventType: event, tab: params.tab]"
                         class="item ${params.eventType == event ? 'active' : ''}">
                     <g:message code="subscription.packages.tabs.${event}"/>
-                    <span class="ui circular label">
-                        ${currentCount}
-                    </span>
+                    <ui:bubble count="${currentCount}" grey="true"/>
                 </g:link>
             </g:if>
         </g:each>

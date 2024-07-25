@@ -88,8 +88,7 @@
                         <g:if test="${!(subscriptionParent && subscriptionParent.id in propValues.owner.id)}">
                             <td class="center aligned">
                                 <a class="ui circular label la-popup-tooltip"
-                                   data-content="<g:message
-                                           code="default.compare.propertyNotSet"/>"><strong>–</strong>
+                                   data-content="<g:message code="default.compare.propertyNotSet"/>"><strong>–</strong>
                                 </a>
                             </td>
                         </g:if>
@@ -152,8 +151,7 @@
                         <g:if test="${!(successorSubscriptionParent && successorSubscriptionParent.id in propValues.owner.id)}">
                             <td class="center aligned">
                                 <a class="ui circular label la-popup-tooltip"
-                                   data-content="<g:message
-                                           code="default.compare.propertyNotSet"/>"><strong>–</strong>
+                                   data-content="<g:message code="default.compare.propertyNotSet"/>"><strong>–</strong>
                                 </a>
                             </td>
                         </g:if>

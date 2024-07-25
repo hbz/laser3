@@ -11,6 +11,8 @@ class Icon {
         // please do not touch during refactoring ..
         // spec. domain class attributes/datas
 
+        @UIDoc(usage = 'Only for Document attribute: confidentiality')
+        public static String DOCUMENT_CONFIDENTIALITY   = 'lock icon'
         @UIDoc(usage = 'Only for Org attributes: createdBy / legallyObligedBy')
         public static String ORG_LEGAL_INFORMATION      = 'hands helping icon'
         @UIDoc(usage = 'Only for Subscription attribute: isMultiYear')
@@ -155,6 +157,9 @@ class Icon {
         public static String PHONE          = 'phone icon'
         @UIDoc(usage = 'Generic symbol for: External Website')
         public static String URL            = 'globe icon'
+
+        @UIDoc(usage = 'Generic symbol for: Inheritance')
+        public static String INHERITANCE    = 'thumbtack icon'
         @UIDoc(usage = 'Generic symbol for: Public for API/Data transfer')
         public static String IS_PUBLIC      = 'lock open icon'
 

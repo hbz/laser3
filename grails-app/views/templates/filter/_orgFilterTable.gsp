@@ -544,36 +544,28 @@
                         <g:if test="${actionName == 'manageMembers'}">
                             <g:link controller="myInstitution" action="manageConsortiaSubscriptions"
                                     params="${[member: org.id, status: RDStore.SUBSCRIPTION_CURRENT.id, validOn: params.subValidOn, filterSet: true, filterPvd: params.list('filterPvd')]}">
-                                <div class="ui blue circular label">
-                                    ${numberOfSubscriptions}
-                                </div>
+                                <ui:bubble count="${numberOfSubscriptions}" />
                             </g:link>
                         </g:if>
                         <g:elseif test="${actionName == 'currentConsortia'}">
                             <g:link controller="myInstitution" action="currentSubscriptions"
                                     params="${[consortia: genericOIDService.getOID(org), status: RDStore.SUBSCRIPTION_CURRENT.id, validOn: params.subValidOn, filterSet: true]}"
                                     title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
-                                <div class="ui blue circular label">
-                                    ${numberOfSubscriptions}
-                                </div>
+                                <ui:bubble count="${numberOfSubscriptions}" />
                             </g:link>
                         </g:elseif>
                         <g:elseif test="${actionName == 'currentProviders'}">
                             <g:link controller="myInstitution" action="currentSubscriptions"
                                     params="${[identifier: org.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id, isSiteReloaded: 'yes']}"
                                     title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
-                                <div class="ui blue circular label">
-                                    ${numberOfSubscriptions}
-                                </div>
+                                <ui:bubble count="${numberOfSubscriptions}" />
                             </g:link>
                         </g:elseif>
                         <g:else>
                             <g:link controller="myInstitution" action="currentSubscriptions"
                                     params="${[identifier: org.globalUID]}"
                                     title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
-                                <div class="ui blue circular label">
-                                    ${numberOfSubscriptions}
-                                </div>
+                                <ui:bubble count="${numberOfSubscriptions}" />
                             </g:link>
                         </g:else>
                     </div>

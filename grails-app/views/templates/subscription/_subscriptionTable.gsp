@@ -213,23 +213,19 @@
                             <td>
                                 <g:if test="${childSubIds.size() > 0}">
                                     <g:link controller="subscription" action="members" params="${[id:s.id]}">
-                                        <div class="ui blue circular label">${childSubIds.size()}</div>
+                                        <ui:bubble count="${childSubIds.size()}" />
                                     </g:link>
                                 </g:if>
                                 <g:else>
                                     <g:link controller="subscription" action="addMembers" params="${[id:s.id]}">
-                                        <div class="ui blue circular label">
-                                            ${childSubIds.size()}
-                                        </div>
+                                        <ui:bubble count="${childSubIds.size()}" />
                                     </g:link>
                                 </g:else>
                             </td>
                             <td>
                                 <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
                                     <g:if test="${institution.isCustomerType_Consortium()}">
-                                        <div class="ui blue circular label">
-                                            ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(*) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
-                                        </div>
+                                        <ui:bubble count="${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(*) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}" />
                                     </g:if>
                                 </g:link>
                             </td>

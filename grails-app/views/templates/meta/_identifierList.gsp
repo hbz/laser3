@@ -129,7 +129,7 @@
                                                               data-update="objIdentifierPanel"
                                                               role="button"
                                             >
-                                                <i class="thumbtack icon"></i>
+                                                <i class="${Icon.SYM.INHERITANCE}"></i>
                                             </ui:remoteLink>
                                         </g:else>
                                     </g:if>

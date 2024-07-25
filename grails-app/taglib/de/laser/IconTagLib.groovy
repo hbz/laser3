@@ -296,13 +296,13 @@ class IconTagLib {
 
                 switch (doc.confidentiality) {
                     case RDStore.DOC_CONF_PUBLIC:
-                        markup = markup + '<i class="icon lock open olive" style="margin-right: 0px"></i> '
+                        markup = markup + '<i class="' + Icon.ATTR.DOCUMENT_CONFIDENTIALITY + ' olive" style="margin-right: 0px"></i> '
                         break;
                     case RDStore.DOC_CONF_INTERNAL:
-                        markup = markup + '<i class="icon lock yellow"  style="margin-right: 0px"></i> '
+                        markup = markup + '<i class="' + Icon.ATTR.DOCUMENT_CONFIDENTIALITY + ' yellow" style="margin-right: 0px"></i> '
                         break;
                     case RDStore.DOC_CONF_STRICTLY:
-                        markup = markup + '<i class="icon lock orange"  style="margin-right: 0px"></i> '
+                        markup = markup + '<i class="' + Icon.ATTR.DOCUMENT_CONFIDENTIALITY + ' orange" style="margin-right: 0px"></i> '
                         break;
                     default:
                         markup = markup + ''

@@ -50,9 +50,7 @@
                     <td>
                         <g:link controller="finance" action="index"
                                 params="[filterCIBudgetCode: bcode.id, submit: message(code:'default.filter.label')]">
-                            <div class="ui blue circular label">
-                                ${costItemGroups.get(bcode) ?: 0}
-                            </div>
+                            <ui:bubble count="${costItemGroups.get(bcode)}" />
                         </g:link>
                     </td>
                     <g:if test="${editable}">

@@ -220,14 +220,12 @@
                     <td>
                         <g:if test="${childSubCount > 0}">
                             <g:link controller="subscription" action="members" params="${[id:sub.id]}">
-                                <div class="ui blue circular label">${childSubCount}</div>
+                                <ui:bubble count="${childSubCount}" />
                             </g:link>
                         </g:if>
                         <g:else>
                             <g:link controller="subscription" action="addMembers" params="${[id:sub.id]}">
-                                <div class="ui blue circular label">
-                                    ${childSubCount}
-                                </div>
+                                <ui:bubble count="${childSubCount}" />
                             </g:link>
                         </g:else>
                     </td>
