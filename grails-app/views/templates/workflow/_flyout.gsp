@@ -118,7 +118,7 @@
 
                     <div class="row">
                         <div class="two wide column wf-centered">
-                            <i class="icon large ${WorkflowHelper.getCssIconAndColorByStatus(cpoint.done ? RDStore.WF_TASK_STATUS_DONE : RDStore.WF_TASK_STATUS_OPEN)}"></i>
+                            <i class="${WorkflowHelper.getCssIconAndColorByStatus(cpoint.done ? RDStore.WF_TASK_STATUS_DONE : RDStore.WF_TASK_STATUS_OPEN)} large"></i>
                         </div>
                         <div class="ten wide column">
 

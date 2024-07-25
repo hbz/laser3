@@ -19,6 +19,9 @@ class Icon {
         public static String SUBSCRIPTION_IS_MULTIYEAR  = 'forward icon'
         @UIDoc(usage = 'Only for TIPP: coverageDepth')
         public static String TIPP_COVERAGE_DEPTH        = 'file alternate icon'
+
+        @UIDoc(usage = 'Only for Workflow: checkpoint')
+        public static String WORKFLOW_CHECKPOINT        = 'circle icon'
     }
 
     class AUTH {
@@ -163,12 +166,17 @@ class Icon {
         @UIDoc(usage = 'Generic symbol for: Public for API/Data transfer')
         public static String IS_PUBLIC      = 'lock open icon'
 
-        @UIDoc(usage = 'Generic symbol for: Yes/Accept (see also NO)')
+        @UIDoc(usage = 'Generic symbol for: Yes/Accept/Done (see also NO)')
         public static String YES    = 'check icon'
-        @UIDoc(usage = 'Generic symbol for: No/Reject (see also YES)')
+        @UIDoc(usage = 'Generic symbol for: No/Reject/Incomplete (see also YES)')
         public static String NO     = 'times icon'
         @UIDoc(usage = 'Generic symbol for: Unkown')
         public static String UNKOWN         = 'question icon'
+
+        @UIDoc(usage = 'Generic symbol for: Checkbox/Option false (see also CHECKBOX_CHECKED)')
+        public static String CHECKBOX           = 'square outline icon'
+        @UIDoc(usage = 'Generic symbol for: Checkbox/Option true (see also CHECKBOX)')
+        public static String CHECKBOX_CHECKED   = 'square outline check icon'
 
         @UIDoc(usage = 'Generic symbol for: Search')
         public static String SEARCH         = 'search icon'

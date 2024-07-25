@@ -1274,10 +1274,10 @@ class AjaxHtmlController {
                 result.checkpoint     = WfCheckpoint.get( key[4] )
 
                 if (result.checkpoint.done) {
-                    result.tmplModalTitle = '<i class="icon ' + WorkflowHelper.getCssIconAndColorByStatus( RDStore.WF_TASK_STATUS_DONE ) + '"></i>&nbsp;' + result.checkpoint.title
+                    result.tmplModalTitle = '<i class="' + WorkflowHelper.getCssIconAndColorByStatus( RDStore.WF_TASK_STATUS_DONE ) + '"></i>&nbsp;' + result.checkpoint.title
                 }
                 else {
-                    result.tmplModalTitle = '<i class="icon ' + WorkflowHelper.getCssIconAndColorByStatus( RDStore.WF_TASK_STATUS_OPEN ) + '"></i>&nbsp;' + result.checkpoint.title
+                    result.tmplModalTitle = '<i class="' + WorkflowHelper.getCssIconAndColorByStatus( RDStore.WF_TASK_STATUS_OPEN ) + '"></i>&nbsp;' + result.checkpoint.title
                 }
             }
         }

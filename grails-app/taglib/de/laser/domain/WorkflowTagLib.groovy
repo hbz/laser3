@@ -26,7 +26,7 @@ class WorkflowTagLib {
         if (attrs.checklist) {
             checklist = attrs.checklist as WfChecklist
             info = checklist.getInfo()
-            out << '<i class="icon ' + iconSize + ' ' + WorkflowHelper.getCssIconAndColorByStatus(info.status as RefdataValue) + '"></i>'
+            out << '<i class="' + WorkflowHelper.getCssIconAndColorByStatus(info.status as RefdataValue) + ' ' + iconSize + '"></i>'
         }
     }
 
@@ -44,19 +44,18 @@ class WorkflowTagLib {
                 '<i class="' + Icon.SYM.DATE + ' la-light-grey"></i> ' + message(code:'workflow.checkpoint.noDate')
         ))
         fields.add( (cpoint.done == true ?
-                '<i class="icon check square outline"></i> ' + message(code:'workflow.checkpoint.done') :
-                '<i class="icon square outline la-light-grey"></i> ' + message(code:'workflow.checkpoint.open')
+                '<i class="' + Icon.SYM.CHECKBOX_CHECKED + '"></i> ' + message(code:'workflow.checkpoint.done') :
+                '<i class="' + Icon.SYM.CHECKBOX + ' la-light-grey"></i> ' + message(code:'workflow.checkpoint.open')
         ))
 
         tooltip = tooltip + '<p>' + fields.join('<br/>') + '</p>'
 
         String cssColor = WorkflowHelper.getCssColorByStatus( cpoint.done ? RDStore.WF_TASK_STATUS_DONE : RDStore.WF_TASK_STATUS_OPEN )
-//        String cssIcon = WorkflowHelper.getCssIconByTaskPriority( RDStore.WF_TASK_PRIORITY_NORMAL )
-        String cssIcon = cpoint.done ? 'check' : 'circle'
+        String cssIcon = cpoint.done ? Icon.SYM.YES : Icon.ATTR.WORKFLOW_CHECKPOINT
 
         out << '<span class="la-popup-tooltip" data-position="top center" data-html="' + tooltip.encodeAsHTML() + '">'
         out <<   '<a href="' + g.createLink( controller:'ajaxHtml', action:'workflowModal', params:attrs.params ) + '" class="' + Btn.ICON.SIMPLE + ' wfModalLink">'
-        out <<     '<i class="icon ' + cssColor + ' ' + cssIcon + '" style="margin-left:0;"></i>'
+        out <<     '<i class="' + cssIcon + ' ' + cssColor + '" style="margin-left:0;"></i>'
         out <<   '</a>'
         out << '</span>'
     }

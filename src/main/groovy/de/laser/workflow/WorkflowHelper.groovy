@@ -2,6 +2,7 @@ package de.laser.workflow
 
 import de.laser.RefdataValue
 import de.laser.storage.RDStore
+import de.laser.ui.Icon
 
 /**
  * Helper class supporting the display of reports
@@ -20,7 +21,7 @@ class WorkflowHelper {
             case [ RDStore.WF_WORKFLOW_STATUS_CANCELED, RDStore.WF_TASK_STATUS_CANCELED ]:
                 return 'orange'
                 break
-            case [ RDStore.WF_WORKFLOW_STATUS_DONE,RDStore.WF_TASK_STATUS_DONE ]:
+            case [ RDStore.WF_WORKFLOW_STATUS_DONE, RDStore.WF_TASK_STATUS_DONE ]:
                 return 'green'
                 break
 
@@ -33,38 +34,20 @@ class WorkflowHelper {
 
         switch (status) {
             case RDStore.WF_WORKFLOW_STATUS_OPEN:
-                return 'tasks la-light-grey'
+                return Icon.WORKFLOW + ' la-light-grey'
                 break
             case RDStore.WF_TASK_STATUS_OPEN:
-                return 'circle la-light-grey'
+                return Icon.ATTR.WORKFLOW_CHECKPOINT + ' la-light-grey'
                 break
             case [ RDStore.WF_WORKFLOW_STATUS_CANCELED, RDStore.WF_TASK_STATUS_CANCELED ]:
-                return 'x icon orange'
+                return Icon.SYM.NO + ' orange'
                 break
-            case [ RDStore.WF_WORKFLOW_STATUS_DONE,RDStore.WF_TASK_STATUS_DONE ]:
-                return 'check green'
+            case [ RDStore.WF_WORKFLOW_STATUS_DONE, RDStore.WF_TASK_STATUS_DONE ]:
+                return Icon.SYM.YES + ' green'
                 break
 
             default:
                 return ''
-        }
-    }
-
-    static String getCssIconByTaskPriority(RefdataValue priority) {
-
-        switch (priority) {
-            case RDStore.WF_TASK_PRIORITY_IMPORTANT:
-                return 'arrow circle up'
-                break
-            case RDStore.WF_TASK_PRIORITY_OPTIONAL:
-                return 'arrow circle down'
-                break
-            case RDStore.WF_TASK_PRIORITY_NORMAL:
-                return 'circle'
-                break
-
-            default:
-                return ' '
         }
     }
 }
