@@ -107,7 +107,7 @@
                             <ui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from"/>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SYM.INHERITANCE}"></i></span></label>
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
                                     <ui:select name="audit_valid_from" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
@@ -120,7 +120,7 @@
                             <ui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to"/>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SYM.INHERITANCE}"></i></span></label>
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
                                     <ui:select class="ui dropdown"  name="audit_valid_to" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
@@ -133,7 +133,7 @@
                             <ui:datepicker label="subscription.referenceYear.label" id="reference_year" name="reference_year" type="year"/>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SYM.INHERITANCE}"></i></span></label>
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
                                     <ui:select class="ui dropdown" name="audit_reference_year" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
@@ -156,7 +156,7 @@
                             </div>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SYM.INHERITANCE}"></i></span></label>
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
                                     <ui:select class="ui dropdown" name="audit_process_status" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
@@ -177,7 +177,7 @@
                             </div>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SYM.INHERITANCE}"></i></span></label>
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
                                     <ui:select class="ui dropdown" name="audit_process_kind" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
@@ -196,7 +196,7 @@
                             </div>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SYM.INHERITANCE}"></i></span></label>
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
                                     <ui:select class="ui dropdown" name="audit_process_form" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
@@ -215,7 +215,7 @@
                             </div>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SYM.INHERITANCE}"></i></span></label>
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
                                     <ui:select class="ui dropdown" name="audit_process_resource" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
@@ -234,7 +234,7 @@
                             </div>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SYM.INHERITANCE}"></i></span></label>
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
                                     <ui:select class="ui dropdown" name="audit_isPublicForApi" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
@@ -255,7 +255,7 @@
                             </div>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SYM.INHERITANCE}"></i></span></label>
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
                                     <ui:select class="ui dropdown" name="audit_hasPerpetualAccess" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
@@ -274,7 +274,7 @@
                             </div>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SYM.INHERITANCE}"></i></span></label>
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
                                     <ui:select class="ui dropdown" name="audit_hasPublishComponent" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
@@ -293,7 +293,7 @@
                             </div>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SYM.INHERITANCE}"></i></span></label>
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
                                     <ui:select class="ui dropdown" name="audit_process_holding" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>

@@ -175,7 +175,7 @@
                                                       data-update="${custom_props_div}"
                                                       role="button"
                                     >
-                                        <i class="${Icon.SYM.INHERITANCE} icon"></i>
+                                        <i class="${Icon.SIG.INHERITANCE} icon"></i>
                                     </ui:remoteLink>
                                 </g:else>
                             </g:if>
@@ -239,7 +239,7 @@
                             <g:else>
                                 <!-- Hidden Fake Button To hold the other Botton in Place -->
                                 <div class="${Btn.ICON.SIMPLE} la-hidden">
-                                    <i class="${Icon.UNC.PLACEHOLDER}"></i>
+                                    <icon:placeholder />
                                 </div>
 
                             </g:else>
@@ -250,7 +250,7 @@
                                     <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
                                 </g:if>
                                 <g:else>
-                                    <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit')}" data-position="top right"><i class="${Icon.SYM.INHERITANCE} grey"></i></span>
+                                    <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit')}" data-position="top right"><i class="${Icon.SIG.INHERITANCE} grey"></i></span>
                                 </g:else>
                             </g:if>
                             <g:elseif test="${prop.tenant?.id == consortium?.id && atSubscr}">

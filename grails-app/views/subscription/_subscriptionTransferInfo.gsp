@@ -320,7 +320,7 @@
                                 params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION,
                                          id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id,
                                          modalText: 'Export: ('+ g.message(code: 'subscription.referenceYear.label')+': '+ surveyConfig.subscription.referenceYear+')']">
-                                <i class="download small icon"></i>
+                                <i class="${Icon.CMD.DOWNLOAD} small"></i>
                             </g:link>
                         </g:if>
                     </td>

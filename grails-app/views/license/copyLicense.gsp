@@ -22,31 +22,29 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
 
 <div class="ui tablet stackable steps la-clear-before">
     <div class="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS , CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
-        <i class="icon"></i>
         <div class="content">
             <div class="title">
                 ${message(code: 'copyElementsIntoObject.general_data.label')}
             </div>
             <div class="description">
                 <i class="${Icon.SYM.DATE}"></i>                ${message(code: 'subscription.periodOfValidity.label')} <br />
-                <i class="ellipsis vertical icon"></i>          ${message(code: 'license.status.label')} <br />
+                <i class="${Icon.SYM.STATUS}"></i>              ${message(code: 'license.status.label')} <br />
                 <i class="cloud icon"></i>                      ${message(code: 'default.url.label')} <br />
                 <i class="clipboard list icon"></i>             ${message(code: 'license.licenseCategory.label')} <br />
                 <i class="${Icon.SYM.IS_PUBLIC}"></i>           ${message(code: 'license.isPublicForApi.label')} <br />
                 <i class="${Icon.ORG}"></i>                     ${message(code: 'subscription.organisations.label')} <br />
-                <i class="barcode icon"></i>                    ${message(code: 'default.identifiers.label')} <br />
-                <i class="exchange icon"></i>                   ${message(code: 'license.linkedObjects')}
+                <i class="${Icon.IDENTIFIER}"></i>              ${message(code: 'default.identifiers.label')} <br />
+                <i class="${Icon.SYM.LINKED_OBJECTS}"></i>      ${message(code: 'license.linkedObjects')}
             </div>
         </div>
     </div>
     <div class="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
-        <i class="icon"></i>
         <div class="content">
             <div class="title">
                 ${message(code: 'copyElementsIntoObject.attachements.label')}
             </div>
             <div class="description">
-                <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
+                <i class="${Icon.SYM.NOTE}"></i>      ${message(code: 'default.notes.label')} <br />
                 <i class="${Icon.TASK}"></i>          ${message(code: 'menu.institutions.tasks')} <br />
                 <i class="${Icon.DOCUMENT}"></i>      ${message(code: 'default.documents.label')} <br />
                 <i class="${Icon.WORKFLOW}"></i>      ${message(code: 'workflow.plural')}

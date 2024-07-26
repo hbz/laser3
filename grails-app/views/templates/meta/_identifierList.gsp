@@ -129,7 +129,7 @@
                                                               data-update="objIdentifierPanel"
                                                               role="button"
                                             >
-                                                <i class="${Icon.SYM.INHERITANCE}"></i>
+                                                <i class="${Icon.SIG.INHERITANCE}"></i>
                                             </ui:remoteLink>
                                         </g:else>
                                     </g:if>

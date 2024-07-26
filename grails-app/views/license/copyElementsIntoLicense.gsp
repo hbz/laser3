@@ -29,12 +29,12 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
             </div>
             <div class="description">
                 <i class="${Icon.SYM.DATE}"></i>                ${message(code: 'subscription.periodOfValidity.label')}
-                <i class="ellipsis vertical icon"></i>          ${message(code: 'license.status.label')}
+                <i class="${Icon.SYM.STATUS}"></i>              ${message(code: 'license.status.label')}
                 <i class="cloud icon"></i>                      ${message(code: 'default.url.label')} <br />
                 <i class="clipboard list icon"></i>             ${message(code: 'license.licenseCategory.label')}
                 <i class="${Icon.SYM.IS_PUBLIC}"></i>           ${message(code: 'license.isPublicForApi.label')}
                 <i class="${Icon.ORG}"></i>                     ${message(code: 'subscription.organisations.label')} <br />
-                <i class="barcode icon"></i>                    ${message(code: 'default.identifiers.label')}
+                <i class="${Icon.IDENTIFIER}"></i>              ${message(code: 'default.identifiers.label')}
             </div>
         </div>
     </ui:complexSubNavItem>
@@ -48,7 +48,7 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
                 ${message(code: 'copyElementsIntoObject.attachements.label')}
             </div>
             <div class="description">
-                <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
+                <i class="${Icon.SYM.NOTE}"></i>      ${message(code: 'default.notes.label')} <br />
                 <i class="${Icon.TASK}"></i>          ${message(code: 'menu.institutions.tasks')} <br />
                 <i class="${Icon.DOCUMENT}"></i>      ${message(code: 'default.documents.label')} <br />
                 <i class="${Icon.WORKFLOW}"></i>      ${message(code: 'workflow.plural')}

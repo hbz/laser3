@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ui.Icon; de.laser.ui.Btn" %>
 <h3 class="ui dividing header">3.1. Link funktioniert als Button mit Tooltip</h3>
 <a role="button" class="${Btn.ICON.SIMPLE_TOOLTIP} la-audit-button" href='https://www.w3.org/' data-content="Das ist der Inhalt des Tooltips">
-    <i class="${Icon.SYM.INHERITANCE} la-js-editmode-icon"></i>
+    <i class="${Icon.SIG.INHERITANCE} la-js-editmode-icon"></i>
 </a>
 <h3 class="ui dividing header">3.2. Link funktioniert als Button ohne Tooltip</h3>
 <g:link aria-label="Das ist eine Beschreibung für den Accessibility Tree" controller="public" action="wcagTest" params="" class="${Btn.ICON.POSITIVE}">

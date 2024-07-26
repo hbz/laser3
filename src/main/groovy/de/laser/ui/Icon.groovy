@@ -15,8 +15,22 @@ class Icon {
         public static String DOCUMENT_CONFIDENTIALITY   = 'lock icon'
         @UIDoc(usage = 'Only for Org attributes: createdBy / legallyObligedBy')
         public static String ORG_LEGAL_INFORMATION      = 'hands helping icon'
+
+        @UIDoc(usage = 'Only for Org attributes: createdBy=true / legallyObligedBy=true (COLORED)')
+        public static String ORG_LEGAL_INFORMATION_11   = 'green check circle icon'
+        @UIDoc(usage = 'Only for Org attributes: createdBy=true  / legallyObligedBy (COLORED)')
+        public static String ORG_LEGAL_INFORMATION_10   = 'grey outline circle icon'
+        @UIDoc(usage = 'Only for Org attributes: createdBy / legallyObligedBy=true (COLORED)')
+        public static String ORG_LEGAL_INFORMATION_01   = 'red question mark icon'
+
         @UIDoc(usage = 'Only for Subscription attribute: isMultiYear')
         public static String SUBSCRIPTION_IS_MULTIYEAR  = 'forward icon'
+
+        @UIDoc(usage = 'Only for Survey: All results processed by org (COLORED)')
+        public static String SURVEY_RESULTS_PROCESSED        = 'edit green icon'
+        @UIDoc(usage = 'Only for Survey: Not all results processed by org (COLORED)')
+        public static String SURVEY_RESULTS_NOT_PROCESSED    = 'edit red icon'
+
         @UIDoc(usage = 'Only for TIPP: coverageDepth')
         public static String TIPP_COVERAGE_DEPTH        = 'file alternate icon'
 
@@ -148,6 +162,19 @@ class Icon {
         // please do not touch during refactoring ..
         // convenient symbols
 
+        @UIDoc(usage = 'Generic symbol for: Yes/Accept/Done (see also NO)')
+        public static String YES    = 'check icon'
+        @UIDoc(usage = 'Generic symbol for: No/Reject/Incomplete (see also YES)')
+        public static String NO     = 'times icon'
+        @UIDoc(usage = 'Generic symbol for: Unkown')
+        public static String UNKOWN         = 'question icon'
+
+        @UIDoc(usage = 'Generic symbol for: Checkbox/Option false (see also CHECKBOX_CHECKED)')
+        public static String CHECKBOX           = 'square outline icon'
+        @UIDoc(usage = 'Generic symbol for: Checkbox/Option true (see also CHECKBOX)')
+        public static String CHECKBOX_CHECKED   = 'square outline check icon'
+
+
         @UIDoc(usage = 'Generic symbol for: Date')
         public static String DATE           = 'calendar alternate outline icon'
         @UIDoc(usage = 'Generic symbol for: Email')
@@ -161,27 +188,27 @@ class Icon {
         @UIDoc(usage = 'Generic symbol for: External Website')
         public static String URL            = 'globe icon'
 
-        @UIDoc(usage = 'Generic symbol for: Inheritance')
-        public static String INHERITANCE    = 'thumbtack icon'
-        @UIDoc(usage = 'Generic symbol for: Public for API/Data transfer')
-        public static String IS_PUBLIC      = 'lock open icon'
+        @UIDoc(usage = 'Generic symbol for: Linked objects')
+        public static String LINKED_OBJECTS = 'linkify icon'
+        @UIDoc(usage = 'Generic symbol for: Status')
+        public static String STATUS         = 'traffic light icon'
+        @UIDoc(usage = 'Generic symbol for: Alternative name')
+        public static String ALTNAME        = 'tag icon'
 
-        @UIDoc(usage = 'Generic symbol for: Yes/Accept/Done (see also NO)')
-        public static String YES    = 'check icon'
-        @UIDoc(usage = 'Generic symbol for: No/Reject/Incomplete (see also YES)')
-        public static String NO     = 'times icon'
-        @UIDoc(usage = 'Generic symbol for: Unkown')
-        public static String UNKOWN         = 'question icon'
-
-        @UIDoc(usage = 'Generic symbol for: Checkbox/Option false (see also CHECKBOX_CHECKED)')
-        public static String CHECKBOX           = 'square outline icon'
-        @UIDoc(usage = 'Generic symbol for: Checkbox/Option true (see also CHECKBOX)')
-        public static String CHECKBOX_CHECKED   = 'square outline check icon'
-
-        @UIDoc(usage = 'Generic symbol for: Search')
-        public static String SEARCH         = 'search icon'
+        @UIDoc(usage = 'Generic symbol for: Note')
+        public static String NOTE           = 'sticky note outline icon'
         @UIDoc(usage = 'Generic symbol for: Properties')
         public static String PROPERTIES     = 'tags icon'
+
+        @UIDoc(usage = 'Generic symbol for: Public for API/Data transfer')
+        public static String IS_PUBLIC      = 'lock open icon'
+        @UIDoc(usage = 'Generic symbol for: Search')
+        public static String SEARCH         = 'search icon'
+
+        @UIDoc(usage = 'Generic icon / Caution: free to use')
+        public static String CIRCLE         = 'circle icon'
+        @UIDoc(usage = 'Generic icon / Caution: free to use')
+        public static String SQUARE         = 'square icon'
     }
 
     class UI {
@@ -205,8 +232,10 @@ class Icon {
         // please do not touch during refactoring ..
         // assignment
 
+        @UIDoc(usage = 'Assignment symbol for: Inheritance')
+        public static String INHERITANCE    = 'thumbtack icon'
         @UIDoc(usage = 'Assignment symbol for: Is my object')
-        public static String MY_OBJECT      = 'star icon'                   // todo: duplicate: survey/renew? > Icon.PROP.MANDATORY
+        public static String MY_OBJECT      = 'star icon'               // todo: duplicate: survey/renew? > Icon.PROP.MANDATORY
     }
 
     class TOOLTIP {
@@ -221,18 +250,6 @@ class Icon {
         public static String INFO       = 'info circle icon'            // todo: duplicate: Icon.PROP.IN_USE
         @UIDoc(usage = 'Only for tooltip trigger: Error')
         public static String ERROR    = 'exclamation triangle icon'
-    }
-
-    class UNC {
-        // please do not touch during refactoring ..
-        // unclassified => none/lower semantics
-
-        @UIDoc(usage = 'Layout helper / mostly wrapped with class="hidden"')
-        public static String PLACEHOLDER    = 'coffee icon'
-        @UIDoc(usage = 'Uncategorized icon / free to use')
-        public static String CIRCLE         = 'circle icon'
-        @UIDoc(usage = 'Uncategorized icon / free to use')
-        public static String SQUARE         = 'square icon'
     }
 
     // please do not touch during refactoring ..
@@ -251,7 +268,11 @@ class Icon {
 
     public static String DUE_DATE                   = 'bell icon'
 
+    public static String FINANCE                    = 'euro sign icon'
+
     public static String GASCO                      = 'layer group icon'
+
+    public static String IDENTIFIER                 = 'barcode icon'
 
     public static String LICENSE                    = 'balance scale icon'
 

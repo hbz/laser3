@@ -65,7 +65,7 @@
                 <tr data-type="altnames" data-element="copyObject.takeAltname">
                     <td data-element="source">
                         <div>
-                            <strong><i class="tag icon"></i>&nbsp;${message(code: 'org.altname.label')}:</strong><br />
+                            <strong><i class="${Icon.SYM.ALTNAME}"></i>&nbsp;${message(code: 'org.altname.label')}:</strong><br />
                             <g:each in="${sourceAltnames}" var="altname">
                                 <div data-oid="${genericOIDService.getOID(altname)}">
                                     ${altname.name}<br />
@@ -98,14 +98,14 @@
                     <g:if test="${!copyObject}">
                         <td data-element="target">
                             <div>
-                                <strong><i class="tag icon"></i>&nbsp;${message(code: 'org.altname.label')}:</strong><br />
+                                <strong><i class="${Icon.SYM.ALTNAME}"></i>&nbsp;${message(code: 'org.altname.label')}:</strong><br />
                                 <g:each in="${targetAltnames}" var="altname">
                                     <div data-oid="${genericOIDService.getOID(altname)}">
                                         ${altname.name}<br />
                                     </div>
                                     <%
                                         if (AuditConfig.getConfig(altname)) {
-                                            println '<span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SYM.INHERITANCE + ' grey"></i></span>'
+                                            println '<span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
                                         }
                                     %>
                                 </g:each>
@@ -168,7 +168,7 @@
                                                     if (targetObject.isSlaved) {
                                                         println '<span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                                     } else {
-                                                        println '<span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SYM.INHERITANCE + ' grey"></i></span>'
+                                                        println '<span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
                                                     }
                                                 }
                                             %>
@@ -672,7 +672,7 @@
                 <tr data-type="identifiers" data-element="copyObject.takeIdentifier">
                     <td data-element="source">
                         <div>
-                            <strong><i class="barcode icon"></i>&nbsp;${message(code: 'default.identifiers.label')}:</strong><br />
+                            <strong><i class="${Icon.IDENTIFIER}"></i>&nbsp;${message(code: 'default.identifiers.label')}:</strong><br />
                             <g:each in="${sourceIdentifiers}" var="ident">
                                 <div data-oid="${genericOIDService.getOID(ident)}">
                                 <strong>${ident.ns.ns}:</strong>&nbsp;${ident.value}<br />
@@ -705,14 +705,14 @@
                     <g:if test="${!copyObject}">
                         <td data-element="target">
                             <div>
-                            <strong><i class="barcode icon"></i>&nbsp;${message(code: 'default.identifiers.label')}:</strong><br />
+                            <strong><i class="${Icon.IDENTIFIER}"></i>&nbsp;${message(code: 'default.identifiers.label')}:</strong><br />
                             <g:each in="${targetIdentifiers}" var="ident">
                                 <div data-oid="${genericOIDService.getOID(ident)}">
                                     <strong>${ident.ns.ns}:</strong>&nbsp;${ident.value}<br />
                                 </div>
                                 <%
                                     if (AuditConfig.getConfig(ident)) {
-                                        println '<span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SYM.INHERITANCE + ' grey"></i></span>'
+                                        println '<span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
                                     }
                                 %>
                             </g:each>
@@ -736,7 +736,7 @@
                 <tr data-type="links" data-element="copyObject.takeLink">
                     <td data-element="source">
                         <div>
-                            <strong><i class="exchange icon"></i>&nbsp
+                            <strong><i class="${Icon.SYM.LINKED_OBJECTS}"></i>&nbsp
                                 <g:if test="${sourceObject instanceof Subscription}">${message(code: 'subscription.linkedObjects')}</g:if>
                                 <g:elseif test="${sourceObject instanceof License}">${message(code: 'license.linkedObjects')}</g:elseif>:
                             </strong><br />
@@ -773,7 +773,7 @@
                     <g:if test="${!copyObject}">
                         <td data-element="target">
                             <div>
-                                <strong><i class="exchange icon"></i>&nbsp
+                                <strong><i class="${Icon.SYM.LINKED_OBJECTS}"></i>&nbsp
                                     <g:if test="${sourceObject instanceof Subscription}">${message(code: 'subscription.linkedObjects')}</g:if>
                                     <g:elseif test="${sourceObject instanceof License}">${message(code: 'license.linkedObjects')}</g:elseif>:
                                 </strong><br />

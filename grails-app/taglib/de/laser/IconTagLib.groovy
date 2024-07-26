@@ -39,21 +39,19 @@ class IconTagLib {
             case 'database':
                 icon = 'icon bordered la-object-database'
                 break
-            case 'ebook':
-            case 'monograph':
+            case [ 'ebook', 'monograph' ]:
                 icon = 'icon bordered la-object-ebook'
                 break
             case 'file':
                 icon = Icon.DOCUMENT + ' bordered inverted blue la-object-extended'
                 break
             case 'finance':
-                icon = 'icon euro sign bordered inverted teal la-object-extended'
+                icon = Icon.FINANCE + ' bordered inverted teal la-object-extended'
                 break
             case 'help':
                 icon = Icon.UI.HELP + ' bordered inverted grey la-object-extended'
                 break
-            case 'journal':
-            case 'serial':
+            case [ 'journal', 'serial' ]:
                 icon = 'icon bordered la-object-journal'
                 break
             case 'gasco':
@@ -109,7 +107,7 @@ class IconTagLib {
 
         switch (attrs.propertyName) {
             case 'status':
-                icon = 'ellipsis vertical'
+                icon = Icon.SYM.STATUS
                 break
             case 'kind':
                 icon = 'image outline'
@@ -387,13 +385,13 @@ class IconTagLib {
         String icon = Icon.SYM.UNKOWN
 
         if (attrs.value === true) {
-            icon = Icon.UNC.CIRCLE + ' green'
+            icon = Icon.SYM.CIRCLE + ' green'
         }
         else if(attrs.value === false) {
-            icon = Icon.UNC.CIRCLE + ' red'
+            icon = Icon.SYM.CIRCLE + ' red'
         }
         else if (attrs.value === null) {
-            icon = Icon.UNC.CIRCLE + ' grey'
+            icon = Icon.SYM.CIRCLE + ' grey'
         }
         out << '<i class="' + icon + '"></i>'
     }

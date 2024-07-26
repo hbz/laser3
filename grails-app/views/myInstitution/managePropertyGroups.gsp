@@ -46,7 +46,7 @@
                         <tr>
                             <td>
                                 <g:if test="${i == 1 && propDefGroups.size() == 2}">%{-- override layout --}%
-                                    <div class="${Btn.ICON.SIMPLE} compact la-hidden"><i class="${Icon.UNC.PLACEHOLDER}"></i></div>
+                                    <div class="${Btn.ICON.SIMPLE} compact la-hidden"><icon:placeholder /></div>
                                     <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveUp', oid:pdgOID, ownerType: typeEntry.key]}" class="${Btn.MODERN.SIMPLE} compact"
                                             role="button">
                                         <i class="${Icon.CMD.MOVE_UP}"></i>
@@ -60,7 +60,7 @@
                                         </g:link>
                                     </g:if>
                                     <g:else>
-                                        <div class="${Btn.ICON.SIMPLE} compact la-hidden"><i class="${Icon.UNC.PLACEHOLDER}"></i></div>
+                                        <div class="${Btn.ICON.SIMPLE} compact la-hidden"><icon:placeholder /></div>
                                     </g:else>
                                     <g:if test="${i < typeEntry.value.size()-1}">
                                         <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveDown', oid:pdgOID, ownerType: typeEntry.key]}" class="${Btn.MODERN.SIMPLE} compact"
@@ -69,7 +69,7 @@
                                         </g:link>
                                     </g:if>
                                     <g:else>
-                                        <div class="${Btn.ICON.SIMPLE} compact la-hidden"><i class="${Icon.UNC.PLACEHOLDER}"></i></div>
+                                        <div class="${Btn.ICON.SIMPLE} compact la-hidden"><icon:placeholder /></div>
                                     </g:else>
                                 </g:elseif>
                             </td>

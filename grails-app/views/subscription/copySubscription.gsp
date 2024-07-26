@@ -21,35 +21,33 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
 
 <div class="ui tablet stackable steps la-clear-before">
     <div class="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS , CopyElementsService.WORKFLOW_PROPERTIES, CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS, CopyElementsService.WORKFLOW_SUBSCRIBER] ? 'completed' : '')} step">
-        <i class="icon"></i>
             <div class="content" >
                 <div class="title">
                     ${message(code: 'copyElementsIntoObject.general_data.label')}
                 </div>
                 <div class="description">
-                    <i class="tag icon"></i>            ${message(code:'org.altname.label')} <br />
+                    <i class="${Icon.SYM.ALTNAME}"></i>         ${message(code: 'org.altname.label')} <br />
                     <i class="image outline icon"></i>  ${message(code:'subscription.kind.label')} <br />
                     <i class="dolly icon"></i>          ${message(code:'subscription.form.label')} <br />
                     <i class="box icon"></i>            ${message(code:'subscription.resource.label')} <br />
-                    <i class="${Icon.SYM.IS_PUBLIC}"></i>   ${message(code:'subscription.isPublicForApi.label')} <br />
+                    <i class="${Icon.SYM.IS_PUBLIC}"></i>       ${message(code: 'subscription.isPublicForApi.label')} <br />
                     <i class="flag outline icon"></i>   ${message(code:'subscription.hasPerpetualAccess.label')} <br />
                     <i class="comment icon"></i>        ${message(code:'subscription.hasPublishComponent.label')} <br />
-                    <i class="${Icon.LICENSE}"></i>         ${message(code: 'license.label')} <br />
-                    <i class="${Icon.ORG}"></i>             ${message(code: 'subscription.organisations.label')} <br />
-                    <i class="${Icon.ACP_PUBLIC}"></i>   ${message(code: 'subscription.specificSubscriptionEditors')} <br />
-                    <i class="barcode icon"></i>        ${message(code: 'default.identifiers.label')} <br />
-                    <i class="exchange icon"></i>       ${message(code: 'subscription.linkedObjects')}
+                    <i class="${Icon.LICENSE}"></i>             ${message(code: 'license.label')} <br />
+                    <i class="${Icon.ORG}"></i>                 ${message(code: 'subscription.organisations.label')} <br />
+                    <i class="${Icon.ACP_PUBLIC}"></i>          ${message(code: 'subscription.specificSubscriptionEditors')} <br />
+                    <i class="${Icon.IDENTIFIER}"></i>          ${message(code: 'default.identifiers.label')} <br />
+                    <i class="${Icon.SYM.LINKED_OBJECTS}"></i>  ${message(code: 'subscription.linkedObjects')}
                 </div>
-        </div>
+            </div>
     </div>
     <div class="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PROPERTIES, CopyElementsService.WORKFLOW_SUBSCRIBER] ? 'completed' : '')} step">
-        <i class="icon"></i>
         <div class="content">
             <div class="title">
                 ${message(code: 'copyElementsIntoObject.attachements.label')}
             </div>
             <div class="description">
-                <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
+                <i class="${Icon.SYM.NOTE}"></i>      ${message(code: 'default.notes.label')} <br />
                 <i class="${Icon.TASK}"></i>          ${message(code: 'menu.institutions.tasks')} <br />
                 <i class="${Icon.DOCUMENT}"></i>      ${message(code: 'default.documents.label')} <br />
                 <i class="${Icon.WORKFLOW}"></i>      ${message(code: 'workflow.plural')}
@@ -58,7 +56,6 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
     </div>
     <g:if test="${isConsortialObjects && contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <div class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PROPERTIES, CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS] ? 'completed' : '')} step">
-            <i class="icon"></i>
             <div class="content">
                 <div class="title">
                     ${message(code: 'consortium.subscriber')}
@@ -70,7 +67,6 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
         </div>
     </g:if>
     <div class="${workFlowPart == CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
-        <i class="icon"></i>
         <div class="content" >
             <div class="title">${message(code: 'copyElementsIntoObject.inventory.label')}</div>
             <div class="description">
@@ -81,7 +77,6 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
         </div>
     </div>
     <div class="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES ? 'active' : ''} step">
-        <i class="icon"></i>
         <div class="content">
             <div class="title">
                 ${message(code: 'properties')}

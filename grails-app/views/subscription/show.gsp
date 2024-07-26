@@ -116,7 +116,7 @@
                                                                                data-confirm-term-how="inherit"
                                                                                role="button"
                                                                 >
-                                                                    <i class="${Icon.SYM.INHERITANCE}"></i>
+                                                                    <i class="${Icon.SIG.INHERITANCE}"></i>
                                                                 </ui:link>
                                                             </g:else>
                                                         </g:if>
@@ -200,7 +200,7 @@
                                                                                    data-confirm-term-how="inherit"
                                                                                    role="button"
                                                                     >
-                                                                        <i class="${Icon.SYM.INHERITANCE}"></i>
+                                                                        <i class="${Icon.SIG.INHERITANCE}"></i>
                                                                     </ui:link>
                                                                 </g:else>
                                                             </g:if>
