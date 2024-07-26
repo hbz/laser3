@@ -119,7 +119,7 @@ class Icon {
         @UIDoc(usage = 'Only for Property attribute: isUsedForLogic (COLORED)')
         public static String LOGIC      = 'cube icon red'
         @UIDoc(usage = 'Only for Property attribute: mandatory (Default color: yellow)')
-        public static String MANDATORY  = 'star icon'               // todo: duplicate: survey/renew? > Icon.UI.MY_OBJECT
+        public static String MANDATORY  = 'star icon'               // todo: duplicate: survey/renew? > Icon.SIG.MY_OBJECT
         @UIDoc(usage = 'Only for Property attribute: multipleOccurrence (COLORED)')
         public static String MULTIPLE   = 'redo icon orange'        // todo: duplicate: currentSubscriptionsTransfer
     }
@@ -199,14 +199,14 @@ class Icon {
         public static String SUCCESS    = 'check icon'
         @UIDoc(usage = 'Mandatory symbol for: Error')
         public static String ERROR      = 'exclamation triangle icon'
+    }
 
-        @UIDoc(usage = 'Mandatory symbol for Address/Contact/Person: Is public')
-        public static String ACP_PUBLIC     = 'address card icon'
-        @UIDoc(usage = 'Mandatory symbol for Address/Contact/Person: Is private')
-        public static String ACP_PRIVATE    = 'address card outline icon'
+    class SIG {
+        // please do not touch during refactoring ..
+        // assignment
 
-        @UIDoc(usage = 'Mandatory symbol for: Is my object')
-        public static String MY_OBJECT  = 'star icon'                   // todo: duplicate: survey/renew? > Icon.PROP.MANDATORY
+        @UIDoc(usage = 'Assignment symbol for: Is my object')
+        public static String MY_OBJECT      = 'star icon'                   // todo: duplicate: survey/renew? > Icon.PROP.MANDATORY
     }
 
     class TOOLTIP {
@@ -225,7 +225,7 @@ class Icon {
 
     class UNC {
         // please do not touch during refactoring ..
-        // uncategorized => none/lower semantics
+        // unclassified => none/lower semantics
 
         @UIDoc(usage = 'Layout helper / mostly wrapped with class="hidden"')
         public static String PLACEHOLDER    = 'coffee icon'
@@ -237,6 +237,11 @@ class Icon {
 
     // please do not touch during refactoring ..
     // domain classes / top level objects
+
+    @UIDoc(usage = 'Symbol for public Address/Contact/Person')
+    public static String ACP_PUBLIC                 = 'address card icon'
+    @UIDoc(usage = 'Symbol for private Address/Contact/Person')
+    public static String ACP_PRIVATE                = 'address card outline icon'
 
     public static String ADDRESS                    = 'map marker alternate icon'
 

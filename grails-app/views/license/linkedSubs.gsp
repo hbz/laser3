@@ -179,7 +179,7 @@
                             <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(subscr, 'General contact person', institution)}" var="gcp">
                                 <div class="item">
                                     ${gcp}
-                                    (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')} <i class="${Icon.UI.ACP_PRIVATE}" style="display:inline-block"></i>)
+                                    (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')} <i class="${Icon.ACP_PRIVATE}" style="display:inline-block"></i>)
                                 </div>
                             </g:each>
                             <g:each in="${Person.getPublicByOrgAndObjectResp(subscr, sub, 'Specific subscription editor')}" var="sse">
@@ -191,7 +191,7 @@
                             <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(subscr, sub, 'Specific subscription editor', institution)}" var="sse">
                                 <div class="item">
                                     ${sse}
-                                    (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')} <i class="${Icon.UI.ACP_PRIVATE}" style="display:inline-block"></i>)
+                                    (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')} <i class="${Icon.ACP_PRIVATE}" style="display:inline-block"></i>)
                                 </div>
                             </g:each>
                         </div>

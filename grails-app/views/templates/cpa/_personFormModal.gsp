@@ -163,7 +163,7 @@
             <div class="ui blue buttons" style="width: 100%">
                 <div class="ui active button" id="la-js-buttonSurname">
                     <h2 class="ui icon inverted header">
-                        <i class="${Icon.UI.ACP_PRIVATE}"></i>
+                        <i class="${Icon.ACP_PRIVATE}"></i>
                         <div class="content">
                             <g:message code='contact.surname' />
                         </div>
