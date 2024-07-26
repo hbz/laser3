@@ -108,7 +108,7 @@
                                         <g:each in="${Person.getPublicByOrgAndFunc(role.vendor, 'General contact person')}" var="func">
                                             <div class="row">
                                                 <div class="two wide column">
-                                                    <i class="${Icon.UI.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
+                                                    <i class="${Icon.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
                                                 </div>
                                                 <div class="thirteen wide column">
                                                     <div class="ui  label">
@@ -147,7 +147,7 @@
                                                             <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + role.vendor.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
                                                         </g:if>
                                                         <g:else>
-                                                            <i class="${Icon.UI.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
+                                                            <i class="${Icon.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
                                                         </g:else>
                                                     </div>
                                                     <div class="thirteen wide column">
@@ -177,7 +177,7 @@
                                                             <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + role.vendor.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
                                                         </g:if>
                                                         <g:else>
-                                                            <i class="${Icon.UI.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
+                                                            <i class="${Icon.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
                                                         </g:else>
                                                     </div>
                                                     <div class="thirteen wide column">
@@ -207,7 +207,7 @@
                                                             <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + role.vendor.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
                                                         </g:if>
                                                         <g:else>
-                                                            <i class="${Icon.UI.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
+                                                            <i class="${Icon.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
                                                         </g:else>
                                                     </div>
                                                     <div class="thirteen wide column">
@@ -234,7 +234,7 @@
                                         <g:each in="${Person.getPublicByOrgAndObjectResp(role.vendor, roleObject, roleRespValue)}" var="resp">
                                             <div class="row">
                                                 <div class="two wide column">
-                                                    <i class="${Icon.UI.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
+                                                    <i class="${Icon.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
                                                 </div>
                                                 <div class="thirteen wide column">
                                                     <div class="ui  label">
@@ -286,7 +286,7 @@
                                         <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person', contextOrg)}" var="func">
                                             <div class="row">
                                                 <div class="two wide column">
-                                                    <i class="${Icon.UI.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
+                                                    <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
                                                 </div>
                                                 <div class="thirteen wide column">
                                                     <div class="ui  label">
@@ -312,7 +312,7 @@
                                             <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Technical Support', contextOrg)}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
-                                                        <i class="${Icon.UI.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
+                                                        <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
                                                     </div>
                                                     <div class="thirteen wide column">
                                                         <div class="ui  label">
@@ -337,7 +337,7 @@
                                             <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Service Support', contextOrg)}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
-                                                        <i class="${Icon.UI.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
+                                                        <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
                                                     </div>
                                                     <div class="thirteen wide column">
                                                         <div class="ui  label">
@@ -362,7 +362,7 @@
                                             <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Metadata Contact', contextOrg)}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
-                                                        <i class="${Icon.UI.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
+                                                        <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
                                                     </div>
                                                     <div class="thirteen wide column">
                                                         <div class="ui  label">
@@ -388,7 +388,7 @@
                                         <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, roleObject, roleRespValue, contextOrg)}" var="resp">
                                             <div class="row">
                                                <div class="two wide column">
-                                                    <i class="${Icon.UI.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}" ></i>
+                                                    <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}" ></i>
                                                </div>
                                                 <div class="twelve wide column">
                                                     <div class="ui  label">

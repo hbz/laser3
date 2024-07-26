@@ -291,9 +291,6 @@ class RDStore {
     public final static RefdataValue VENDOR_STATUS_REMOVED     = getRefdataValue('Removed', RDConstants.VENDOR_STATUS)
     public final static RefdataValue VENDOR_STATUS_RETIRED     = getRefdataValue('Retired', RDConstants.VENDOR_STATUS)
 
-    //public final static RefdataValue WF_CONDITION_STATUS_OPEN    = getRefdataValue('open', RDConstants.WF_CONDITION_STATUS)
-    //public final static RefdataValue WF_CONDITION_STATUS_DONE    = getRefdataValue('done', RDConstants.WF_CONDITION_STATUS)
-
     public final static RefdataValue WF_TASK_PRIORITY_NORMAL     = getRefdataValue('normal', RDConstants.WF_TASK_PRIORITY)
     public final static RefdataValue WF_TASK_PRIORITY_IMPORTANT  = getRefdataValue('important', RDConstants.WF_TASK_PRIORITY)
     public final static RefdataValue WF_TASK_PRIORITY_OPTIONAL   = getRefdataValue('optional', RDConstants.WF_TASK_PRIORITY)
@@ -301,9 +298,6 @@ class RDStore {
     public final static RefdataValue WF_TASK_STATUS_OPEN         = getRefdataValue('open', RDConstants.WF_TASK_STATUS)
     public final static RefdataValue WF_TASK_STATUS_CANCELED     = getRefdataValue('canceled', RDConstants.WF_TASK_STATUS)
     public final static RefdataValue WF_TASK_STATUS_DONE         = getRefdataValue('done', RDConstants.WF_TASK_STATUS)
-
-    public final static RefdataValue WF_WORKFLOW_STATE_ACTIVE    = getRefdataValue('active', RDConstants.WF_WORKFLOW_STATE)
-    public final static RefdataValue WF_WORKFLOW_STATE_TEST      = getRefdataValue('test', RDConstants.WF_WORKFLOW_STATE)
 
     public final static RefdataValue WF_WORKFLOW_TARGET_ROLE_ALL            = getRefdataValue('all', RDConstants.WF_WORKFLOW_TARGET_ROLE)
     public final static RefdataValue WF_WORKFLOW_TARGET_ROLE_CONSORTIUM     = getRefdataValue('consortium', RDConstants.WF_WORKFLOW_TARGET_ROLE)

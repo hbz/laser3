@@ -63,7 +63,7 @@
                             </div>
                         </div>
                         <div class="item">
-                            <i class="${Icon.UI.ACP_PUBLIC} la-list-icon"></i>
+                            <i class="${Icon.ACP_PUBLIC} la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
                             </div>
@@ -119,7 +119,7 @@
     %>
     <div class="ui secondary stackable pointing tabular la-tab-with-js menu">
         <a class="${us_dashboard_tab.value == 'Due Dates' ? 'active item':'item'}" data-tab="duedates">
-            <i class="bell icon large"></i>
+            <i class="${Icon.DUE_DATE} large"></i>
             ${dueDatesCount} ${message(code:'myinst.dash.due_dates.label')}
         </a>
 

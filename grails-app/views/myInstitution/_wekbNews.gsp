@@ -9,7 +9,7 @@
                 <a href="#" id="wekb-menu-trigger" class="ui label"><i class="${Icon.WEKB} blue"></i>&nbsp;We:kb-News</a>
                     <a href="#" class="ui icon label la-popup-tooltip wekb-flyout-trigger" data-preset="all,my"
                        data-content="${message(code: 'menu.my')}" data-position="top right">
-                            <i class="${Icon.UI.MY_OBJECT} yellow"></i> ${wekbNews.counts.my}
+                            <i class="${Icon.SIG.MY_OBJECT} yellow"></i> ${wekbNews.counts.my}
                     </a>
                     <a href="#" class="ui icon label la-popup-tooltip wekb-flyout-trigger" data-preset="all,marker"
                        data-content="${message(code: 'marker.WEKB_CHANGES')}" data-position="top right">
@@ -37,7 +37,7 @@
                                     <a href="#" class="wekb-flyout-trigger" data-preset="provider,created">Neu: ${wekbNews.provider.created.size()}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="provider,updated">Geändert: ${wekbNews.provider.countUpdated}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="provider,deleted">Gelöscht: ${wekbNews.provider.deleted.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="provider,my"><i class="${Icon.UI.MY_OBJECT}"></i>${wekbNews.provider.my.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="provider,my"><i class="${Icon.SIG.MY_OBJECT}"></i>${wekbNews.provider.my.size()}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="provider,marker"><i class="${Icon.MARKER}"></i>${wekbNews.provider.marker.size()}</a> <br/>
                             </div>
                         </div>
@@ -57,7 +57,7 @@
                                     <a href="#" class="wekb-flyout-trigger" data-preset="vendor,created">Neu: ${wekbNews.vendor.created.size()}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="vendor,updated">Geändert: ${wekbNews.vendor.countUpdated}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="vendor,deleted">Gelöscht: ${wekbNews.vendor.deleted.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="vendor,my"><i class="${Icon.UI.MY_OBJECT}"></i>${wekbNews.vendor.my.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="vendor,my"><i class="${Icon.SIG.MY_OBJECT}"></i>${wekbNews.vendor.my.size()}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="vendor,marker"><i class="${Icon.MARKER}"></i>${wekbNews.vendor.marker.size()}</a> <br/>
                             </div>
                         </div>
@@ -77,7 +77,7 @@
                                     <a href="#" class="wekb-flyout-trigger" data-preset="platform,created">Neu: ${wekbNews.platform.created.size()}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="platform,updated">Geändert: ${wekbNews.platform.countUpdated}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="platform,deleted">Gelöscht: ${wekbNews.platform.deleted.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,my"><i class="${Icon.UI.MY_OBJECT}"></i>${wekbNews.platform.my.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,my"><i class="${Icon.SIG.MY_OBJECT}"></i>${wekbNews.platform.my.size()}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="platform,marker"><i class="${Icon.MARKER}"></i>${wekbNews.platform.marker.size()}</a> <br/>
                             </div>
                         </div>
@@ -97,7 +97,7 @@
                                     <a href="#" class="wekb-flyout-trigger" data-preset="package,created">Neu: ${wekbNews.package.created.size()}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="package,updated">Geändert: ${wekbNews.package.countUpdated}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="package,deleted">Gelöscht: ${wekbNews.package.deleted.size()}</a> <br/>
-                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,my"><i class="${Icon.UI.MY_OBJECT}"></i>${wekbNews.package.my.size()}</a> <br/>
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,my"><i class="${Icon.SIG.MY_OBJECT}"></i>${wekbNews.package.my.size()}</a> <br/>
                                     <a href="#" class="wekb-flyout-trigger" data-preset="package,marker"><i class="${Icon.MARKER}"></i>${wekbNews.package.marker.size()}</a> <br/>
                             </div>
                         </div>
@@ -241,7 +241,7 @@
                 <span class="${Btn.SIMPLE}" data-filter="created">Neue Objekte: ${wekbNews.counts.created}</span>
                 <span class="${Btn.SIMPLE}" data-filter="updated">Geänderte Objekte: ${wekbNews.counts.updated}</span>
                 <span class="${Btn.SIMPLE}" data-filter="deleted">Gelöschte Objekte: ${wekbNews.counts.deleted}</span>
-                <span class="${Btn.SIMPLE}" data-filter="my"><i class="${Icon.UI.MY_OBJECT}"></i> ${wekbNews.counts.my}</span>
+                <span class="${Btn.SIMPLE}" data-filter="my"><i class="${Icon.SIG.MY_OBJECT}"></i> ${wekbNews.counts.my}</span>
                 <span class="${Btn.SIMPLE}" data-filter="marker"><i class="${Icon.MARKER}"></i> ${wekbNews.counts.marker}</span>
                 <span class="${Btn.SIMPLE_TOOLTIP} la-long-tooltip" data-filter="all"
                       data-content="Alle anzeigen: Neue Objekte, Geänderte Objekte, Gelöschte Objekte, Meine Objekte, Meine Beobachtungsliste">Alle</span>

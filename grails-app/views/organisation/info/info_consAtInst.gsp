@@ -166,7 +166,7 @@
 
                                                 <g:if test="${OrgRole.findBySubAndOrgAndRoleType(sub, orgInstance, RDStore.OR_SUBSCRIBER_CONS_HIDDEN)}">
                                                     <span class="ui icon la-popup-tooltip" data-content="${message(code:'subscription.details.hiddenForSubscriber')}" style="margin-left:1em">
-                                                        <i class="ui icon eye slash orange"></i>
+                                                        <i class="icon eye slash orange"></i>
                                                     </span>
                                                 </g:if>
                                             </div>
@@ -445,7 +445,7 @@
                                             </g:link>
                                             <g:if test="${ci.isVisibleForSubscriber}">
                                                 <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
-                                                    <i class="ui icon eye orange"></i>
+                                                    <i class="icon eye orange"></i>
                                                 </span>
                                             </g:if>
                                         </g:if>

@@ -36,7 +36,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                     <i class="comment icon"></i>        ${message(code:'subscription.hasPublishComponent.label')} <br />
                     <i class="${Icon.LICENSE}"></i>         ${message(code: 'license.label')} <br />
                     <i class="${Icon.ORG}"></i>             ${message(code: 'subscription.organisations.label')} <br />
-                    <i class="${Icon.UI.ACP_PUBLIC}"></i>   ${message(code: 'subscription.specificSubscriptionEditors')} <br />
+                    <i class="${Icon.ACP_PUBLIC}"></i>   ${message(code: 'subscription.specificSubscriptionEditors')} <br />
                     <i class="barcode icon"></i>        ${message(code: 'default.identifiers.label')} <br />
                     <i class="exchange icon"></i>       ${message(code: 'subscription.linkedObjects')}
                 </div>

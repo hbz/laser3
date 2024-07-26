@@ -79,7 +79,7 @@
 								<td class="center aligned">
 									<g:if test="${platformInstance && myPlatformIds.contains(platformInstance.id)}">
 										<span class="la-popup-tooltip" data-content="${message(code: 'menu.my.platforms')}">
-											<i class="${Icon.UI.MY_OBJECT} yellow"></i>
+											<i class="${Icon.SIG.MY_OBJECT} yellow"></i>
 										</span>
 									</g:if>
 								</td>

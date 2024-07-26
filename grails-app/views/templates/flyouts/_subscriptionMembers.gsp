@@ -41,7 +41,7 @@
                         <td>
                             <g:if test="${OrgRole.findBySubAndOrgAndRoleType(sub, subInst, RDStore.OR_SUBSCRIBER_CONS_HIDDEN)}">
                                 <span class="ui icon la-popup-tooltip" data-content="${message(code:'subscription.details.hiddenForSubscriber')}">
-                                    <i class="ui icon eye slash orange"></i>
+                                    <i class="icon eye slash orange"></i>
                                 </span>
                             </g:if>
                         </td>

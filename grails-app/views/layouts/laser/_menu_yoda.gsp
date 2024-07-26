@@ -12,7 +12,7 @@
 
         <div class="item " role="menuitem" aria-haspopup="true">
             <div class="title">
-                <i class="ui icon keyboard outline"></i> ${message(code:'menu.yoda.engine')} <i class="dropdown icon"></i>
+                <i class="icon keyboard outline"></i> ${message(code:'menu.yoda.engine')} <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="yoda" action="systemSettings"><i class="icon toggle on"></i>${message(code:'menu.yoda.systemSettings')}</ui:link>
