@@ -272,7 +272,7 @@
                                             </g:if>
                                             <g:else>
                                                 <div class="${Btn.ICON.SIMPLE} la-hidden">
-                                                    <ui:placeholder /><%-- Hidden Fake Button --%>
+                                                    <icon:placeholder /><%-- Hidden Fake Button --%>
                                                 </div>
                                             </g:else>
                                         </g:else>%{-- (editable || editable2) --}%
@@ -350,7 +350,7 @@
                                             </g:if>
                                             <g:else>
                                                 <div class="${Btn.ICON.SIMPLE} la-hidden">
-                                                    <ui:placeholder /><%-- Hidden Fake Button --%>
+                                                    <icon:placeholder /><%-- Hidden Fake Button --%>
                                                 </div>
                                             </g:else>
                                         </g:else>%{-- (editable || editable2) --}%

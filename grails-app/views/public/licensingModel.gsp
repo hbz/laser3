@@ -105,7 +105,7 @@
             <tr>
                 <th class="two wide center aligned" colspan="2">
                     <a href="mailto:laser@hbz-nrw.de" class="ui huge first button" style="color: white">
-                        Beratung vereinbaren <ui:arrow />
+                        Beratung vereinbaren <icon:arrow />
                     </a>
                 </th>
             </tr>

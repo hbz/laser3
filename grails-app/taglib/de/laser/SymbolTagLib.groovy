@@ -2,7 +2,9 @@ package de.laser
 
 class SymbolTagLib {
 
-    static namespace = 'ui'
+    // simple static icons
+
+    static namespace = 'icon'
 
     // Layout helper / mostly wrapped with class="hidden"
     def placeholder = { attrs, body ->

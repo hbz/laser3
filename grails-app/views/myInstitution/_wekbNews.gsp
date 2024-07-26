@@ -302,13 +302,13 @@
                                 <ui:myXIcon tooltip="${message(code: "${cfg[4]}")}" color="yellow"/>
                             </g:if>
                             <g:else>
-                                <ui:placeholder />
+                                <icon:placeholder />
                             </g:else>
                             <g:if test="${isObjMarker}">
                                 <ui:markerIcon type="WEKB_CHANGES" color="purple" />
                             </g:if>
                             <g:else>
-                                <ui:placeholder />
+                                <icon:placeholder />
                             </g:else>
                         </div>
                         <div class="column four wide center aligned">${obj.lastUpdatedDisplay}</div>
