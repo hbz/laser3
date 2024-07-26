@@ -68,13 +68,13 @@
                 <g:if test="${surveyConfig.checkResultsEditByOrg(participantResult.participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                     <span data-position="top right" class="la-popup-tooltip"
                           data-content="${message(code: 'surveyResult.processedOrg')}">
-                        <i class="edit green icon"></i>
+                        <i class="${Icon.ATTR.SURVEY_RESULTS_PROCESSED}"></i>
                     </span>
                 </g:if>
                 <g:else>
                     <span data-position="top right" class="la-popup-tooltip"
                           data-content="${message(code: 'surveyResult.notprocessedOrg')}">
-                        <i class="edit red icon"></i>
+                        <i class="${Icon.ATTR.SURVEY_RESULTS_NOT_PROCESSED}"></i>
                     </span>
                 </g:else>
 

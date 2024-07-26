@@ -292,13 +292,13 @@
                             <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                 <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
-                                    <i class="edit green icon"></i>
+                                    <i class="${Icon.ATTR.SURVEY_RESULTS_PROCESSED}"></i>
                                 </span>
                             </g:if>
                             <g:else>
                                 <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'surveyResult.notprocessedOrg')}">
-                                    <i class="edit red icon"></i>
+                                    <i class="${Icon.ATTR.SURVEY_RESULTS_NOT_PROCESSED}"></i>
                                 </span>
                             </g:else>
                         </g:if>
@@ -503,15 +503,14 @@
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                             class="${Btn.MODERN.SIMPLE} tiny"
-                                                            target="_blank"><i class="download small icon"></i></g:link>
+                                                            target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                                 class="${Btn.MODERN.SIMPLE} tiny"
-                                                                target="_blank"><i
-                                                                class="download small icon"></i></g:link>
+                                                                target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
 
                                                     <%-- 2 --%>
                                                         <laser:render template="/templates/documents/modal"
@@ -876,13 +875,13 @@
                             <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                 <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
-                                    <i class="edit green icon"></i>
+                                    <i class="${Icon.ATTR.SURVEY_RESULTS_PROCESSED}"></i>
                                 </span>
                             </g:if>
                             <g:else>
                                 <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'surveyResult.notprocessedOrg')}">
-                                    <i class="edit red icon"></i>
+                                    <i class="${Icon.ATTR.SURVEY_RESULTS_NOT_PROCESSED}"></i>
                                 </span>
                             </g:else>
                         </g:if>

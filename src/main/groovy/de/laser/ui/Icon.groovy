@@ -25,6 +25,12 @@ class Icon {
 
         @UIDoc(usage = 'Only for Subscription attribute: isMultiYear')
         public static String SUBSCRIPTION_IS_MULTIYEAR  = 'forward icon'
+
+        @UIDoc(usage = 'Only for Survey: All results processed by org (COLORED)')
+        public static String SURVEY_RESULTS_PROCESSED        = 'edit green icon'
+        @UIDoc(usage = 'Only for Survey: Not all results processed by org (COLORED)')
+        public static String SURVEY_RESULTS_NOT_PROCESSED    = 'edit red icon'
+
         @UIDoc(usage = 'Only for TIPP: coverageDepth')
         public static String TIPP_COVERAGE_DEPTH        = 'file alternate icon'
 
