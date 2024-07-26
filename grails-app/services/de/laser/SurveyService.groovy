@@ -2356,7 +2356,6 @@ class SurveyService {
                 }
 
                 if(params.setEInvoiceValuesFromOrg) {
-                    println("Test")
                     result.surveyOrg.eInvoicePortal = participant.eInvoicePortal
                     result.surveyOrg.eInvoiceLeitwegId = participant.getLeitID()?.value
                     result.surveyOrg.eInvoiceLeitkriterium = participant.getLeitkriterium()?.value
