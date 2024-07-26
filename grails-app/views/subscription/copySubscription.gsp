@@ -27,18 +27,18 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                     ${message(code: 'copyElementsIntoObject.general_data.label')}
                 </div>
                 <div class="description">
-                    <i class="tag icon"></i>            ${message(code:'org.altname.label')} <br />
+                    <i class="${Icon.SYM.ALTNAME}"></i>         ${message(code: 'org.altname.label')} <br />
                     <i class="image outline icon"></i>  ${message(code:'subscription.kind.label')} <br />
                     <i class="dolly icon"></i>          ${message(code:'subscription.form.label')} <br />
                     <i class="box icon"></i>            ${message(code:'subscription.resource.label')} <br />
-                    <i class="${Icon.SYM.IS_PUBLIC}"></i>   ${message(code:'subscription.isPublicForApi.label')} <br />
+                    <i class="${Icon.SYM.IS_PUBLIC}"></i>       ${message(code: 'subscription.isPublicForApi.label')} <br />
                     <i class="flag outline icon"></i>   ${message(code:'subscription.hasPerpetualAccess.label')} <br />
                     <i class="comment icon"></i>        ${message(code:'subscription.hasPublishComponent.label')} <br />
-                    <i class="${Icon.LICENSE}"></i>         ${message(code: 'license.label')} <br />
-                    <i class="${Icon.ORG}"></i>             ${message(code: 'subscription.organisations.label')} <br />
-                    <i class="${Icon.ACP_PUBLIC}"></i>  ${message(code: 'subscription.specificSubscriptionEditors')} <br />
-                    <i class="${Icon.IDENTIFIER}"></i>  ${message(code: 'default.identifiers.label')} <br />
-                    <i class="exchange icon"></i>       ${message(code: 'subscription.linkedObjects')}
+                    <i class="${Icon.LICENSE}"></i>             ${message(code: 'license.label')} <br />
+                    <i class="${Icon.ORG}"></i>                 ${message(code: 'subscription.organisations.label')} <br />
+                    <i class="${Icon.ACP_PUBLIC}"></i>          ${message(code: 'subscription.specificSubscriptionEditors')} <br />
+                    <i class="${Icon.IDENTIFIER}"></i>          ${message(code: 'default.identifiers.label')} <br />
+                    <i class="${Icon.SYM.LINKED_OBJECTS}"></i>  ${message(code: 'subscription.linkedObjects')}
                 </div>
         </div>
     </div>

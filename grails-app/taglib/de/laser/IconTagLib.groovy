@@ -107,7 +107,7 @@ class IconTagLib {
 
         switch (attrs.propertyName) {
             case 'status':
-                icon = 'ellipsis vertical'
+                icon = Icon.SYM.STATUS
                 break
             case 'kind':
                 icon = 'image outline'

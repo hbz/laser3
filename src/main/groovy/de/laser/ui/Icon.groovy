@@ -156,6 +156,19 @@ class Icon {
         // please do not touch during refactoring ..
         // convenient symbols
 
+        @UIDoc(usage = 'Generic symbol for: Yes/Accept/Done (see also NO)')
+        public static String YES    = 'check icon'
+        @UIDoc(usage = 'Generic symbol for: No/Reject/Incomplete (see also YES)')
+        public static String NO     = 'times icon'
+        @UIDoc(usage = 'Generic symbol for: Unkown')
+        public static String UNKOWN         = 'question icon'
+
+        @UIDoc(usage = 'Generic symbol for: Checkbox/Option false (see also CHECKBOX_CHECKED)')
+        public static String CHECKBOX           = 'square outline icon'
+        @UIDoc(usage = 'Generic symbol for: Checkbox/Option true (see also CHECKBOX)')
+        public static String CHECKBOX_CHECKED   = 'square outline check icon'
+
+
         @UIDoc(usage = 'Generic symbol for: Date')
         public static String DATE           = 'calendar alternate outline icon'
         @UIDoc(usage = 'Generic symbol for: Email')
@@ -169,26 +182,22 @@ class Icon {
         @UIDoc(usage = 'Generic symbol for: External Website')
         public static String URL            = 'globe icon'
 
-        @UIDoc(usage = 'Generic symbol for: Public for API/Data transfer')
-        public static String IS_PUBLIC      = 'lock open icon'
-        @UIDoc(usage = 'Generic symbol for: Search')
-        public static String SEARCH         = 'search icon'
+        @UIDoc(usage = 'Generic symbol for: Linked objects')
+        public static String LINKED_OBJECTS = 'linkify icon'
+        @UIDoc(usage = 'Generic symbol for: Status')
+        public static String STATUS         = 'traffic light icon'
+        @UIDoc(usage = 'Generic symbol for: Alternative name')
+        public static String ALTNAME        = 'tag icon'
+
         @UIDoc(usage = 'Generic symbol for: Note')
         public static String NOTE           = 'sticky note outline icon'
         @UIDoc(usage = 'Generic symbol for: Properties')
         public static String PROPERTIES     = 'tags icon'
 
-        @UIDoc(usage = 'Generic symbol for: Yes/Accept/Done (see also NO)')
-        public static String YES    = 'check icon'
-        @UIDoc(usage = 'Generic symbol for: No/Reject/Incomplete (see also YES)')
-        public static String NO     = 'times icon'
-        @UIDoc(usage = 'Generic symbol for: Unkown')
-        public static String UNKOWN         = 'question icon'
-
-        @UIDoc(usage = 'Generic symbol for: Checkbox/Option false (see also CHECKBOX_CHECKED)')
-        public static String CHECKBOX           = 'square outline icon'
-        @UIDoc(usage = 'Generic symbol for: Checkbox/Option true (see also CHECKBOX)')
-        public static String CHECKBOX_CHECKED   = 'square outline check icon'
+        @UIDoc(usage = 'Generic symbol for: Public for API/Data transfer')
+        public static String IS_PUBLIC      = 'lock open icon'
+        @UIDoc(usage = 'Generic symbol for: Search')
+        public static String SEARCH         = 'search icon'
 
         @UIDoc(usage = 'Generic icon / Caution: free to use')
         public static String CIRCLE         = 'circle icon'

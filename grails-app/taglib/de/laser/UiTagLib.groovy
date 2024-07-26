@@ -166,7 +166,7 @@ class UiTagLib {
             out << content
 
             boolean phraseCheck = true
-            for (String bad : ['</div>', '<input', '</li>']) {
+            for (String bad : ['</p>, </div>', '<input', '</li>']) {
                 if (phraseCheck && content.contains(bad)) {
                     phraseCheck = false
                     break

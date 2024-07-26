@@ -60,15 +60,15 @@
                         <i class="image outline icon"></i>  ${message(code:'subscription.kind.label')}
                         <i class="dolly icon"></i>          ${message(code:'subscription.form.label')}
                         <i class="box icon"></i>            ${message(code:'subscription.resource.label')} <br />
-                        <i class="${Icon.SYM.IS_PUBLIC}"></i>   ${message(code:'subscription.isPublicForApi.label')}
+                        <i class="${Icon.SYM.IS_PUBLIC}"></i>       ${message(code: 'subscription.isPublicForApi.label')}
                         <i class="flag outline icon"></i>   ${message(code:'subscription.hasPerpetualAccess.label')}
                         <i class="comment icon"></i>        ${message(code:'subscription.hasPublishComponent.label')} <br />
                         <i class="pizza slice icon"></i>    ${message(code:'subscription.holdingSelection.label')}
-                        <i class="${Icon.LICENSE}"></i>         ${message(code: 'license.label')}
-                        <i class="${Icon.ORG}"></i>             ${message(code: 'subscription.organisations.label')} <br />
-                        <i class="${Icon.ACP_PUBLIC}"></i>   ${message(code: 'subscription.specificSubscriptionEditors')}
-                        <i class="${Icon.IDENTIFIER}"></i>        ${message(code: 'default.identifiers.label')}
-                        <i class="exchange icon"></i>       ${message(code: 'subscription.linkedObjects')}
+                        <i class="${Icon.LICENSE}"></i>             ${message(code: 'license.label')}
+                        <i class="${Icon.ORG}"></i>                 ${message(code: 'subscription.organisations.label')} <br />
+                        <i class="${Icon.ACP_PUBLIC}"></i>          ${message(code: 'subscription.specificSubscriptionEditors')}
+                        <i class="${Icon.IDENTIFIER}"></i>          ${message(code: 'default.identifiers.label')}
+                        <i class="${Icon.SYM.LINKED_OBJECTS}"></i>  ${message(code: 'subscription.linkedObjects')}
                     </div>
                 </div>
             </div>
@@ -141,11 +141,11 @@
                     </div>
                     <div class="description">
                         <i class="${Icon.SYM.DATE}"></i>                    ${message(code: 'subscription.periodOfValidity.label')}
-                        <i class="ellipsis vertical icon"></i>              ${message(code:'subscription.status.label')}
+                        <i class="${Icon.SYM.STATUS}"></i>                  ${message(code: 'subscription.status.label')}
                         <i class="image outline icon"></i>                  ${message(code:'subscription.kind.label')} <br />
                         <i class="dolly icon"></i>                          ${message(code:'subscription.form.label')}
                         <i class="box icon"></i>                            ${message(code:'subscription.resource.label')}
-                        <i class="${Icon.SYM.IS_PUBLIC}"></i>               ${message(code:'subscription.isPublicForApi.label')} <br />
+                        <i class="${Icon.SYM.IS_PUBLIC}"></i>               ${message(code: 'subscription.isPublicForApi.label')} <br />
                         <i class="flag outline icon"></i>                   ${message(code:'subscription.hasPerpetualAccess.label')}
                         <i class="comment icon"></i>                        ${message(code:'subscription.hasPublishComponent.label')}
                         <i class="pizza slice icon"></i>                    ${message(code:'subscription.holdingSelection.label')}
