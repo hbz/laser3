@@ -48,7 +48,7 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
                 ${message(code: 'copyElementsIntoObject.attachements.label')}
             </div>
             <div class="description">
-                <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
+                <i class="${Icon.SYM.NOTE}"></i>      ${message(code: 'default.notes.label')} <br />
                 <i class="${Icon.TASK}"></i>          ${message(code: 'menu.institutions.tasks')} <br />
                 <i class="${Icon.DOCUMENT}"></i>      ${message(code: 'default.documents.label')} <br />
                 <i class="${Icon.WORKFLOW}"></i>      ${message(code: 'workflow.plural')}

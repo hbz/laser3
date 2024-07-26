@@ -173,6 +173,8 @@ class Icon {
         public static String IS_PUBLIC      = 'lock open icon'
         @UIDoc(usage = 'Generic symbol for: Search')
         public static String SEARCH         = 'search icon'
+        @UIDoc(usage = 'Generic symbol for: Note')
+        public static String NOTE           = 'sticky note outline icon'
         @UIDoc(usage = 'Generic symbol for: Properties')
         public static String PROPERTIES     = 'tags icon'
 

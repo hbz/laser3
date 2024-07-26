@@ -166,7 +166,7 @@
                 %{--ANNOUNCEMENTS:--}%
                 <tr data-element="copyObject.takeAnnouncements">
                     <td data-element="source">
-                        <div class="la-min-height"><strong><i class="sticky note outline icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong></div>
+                        <div class="la-min-height"><strong><i class="${Icon.SYM.NOTE}"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong></div>
                         <g:each in="${sourceDocuments}" var="docctx">
                             <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
                                 <div data-id="${docctx.id}" class="la-element la-min-height ">
@@ -216,7 +216,7 @@
                     </td>
                         <g:if test="${!copyObject && targetObject}">
                                     <td data-element="target">
-                                        <div class="la-min-height"><strong><i class="sticky note outline icon"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong></div>
+                                        <div class="la-min-height"><strong><i class="${Icon.SYM.NOTE}"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong></div>
                                         <g:if test="${targetObject}">
                                                 <g:each in="${targetDocuments}" var="docctx">
                                                     <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
