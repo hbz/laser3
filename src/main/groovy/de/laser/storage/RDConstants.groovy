@@ -199,15 +199,10 @@ class RDConstants {
 
     public static final String WF_WORKFLOW_TARGET_ROLE  = 'workflow.workflow.target.role'
     public static final String WF_WORKFLOW_TARGET_TYPE  = 'workflow.workflow.target.type'
-    public static final String WF_WORKFLOW_STATE        = 'workflow.workflow.state'
     public static final String WF_WORKFLOW_STATUS       = 'workflow.workflow.status'
 
-    public static final String WF_CONDITION_TYPE    = 'workflow.condition.type'
-    public static final String WF_TASK_PRIORITY     = 'workflow.task.priority'
-    public static final String WF_TASK_STATUS       = 'workflow.task.status'
-
-    //public static final String WF_CONDITION_STATUS  = 'workflow.condition.status'
-    //public static final String WF_CONDITION_TYPE    = 'workflow.condition.type'
+    public static final String WF_TASK_PRIORITY         = 'workflow.task.priority'
+    public static final String WF_TASK_STATUS           = 'workflow.task.status'
 
     public static final String Y_N                    = 'y.n'
     public static final String Y_N_O                  = 'y.n.o'

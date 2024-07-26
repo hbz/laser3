@@ -198,10 +198,8 @@ vendor.ordering.supported.library.system,Unterstützte Bibliothekssysteme,Suppor
 vendor.ordering.electronic.delivery.delay,elektronischer Benachrichtigungskanal,Electronic notification channel
 vendor.invoicing.format,Elektronisches Rechnungsformat,Electronic invoice format
 vendor.invoicing.dispatch,Rechnungsübermittlungsweg,Invoice dispatch
-workflow.condition.type,Typ,Type
 workflow.task.priority,Priorität,Priority
 workflow.task.status,Status,Status
-workflow.workflow.state,Verfügbarkeit,Availability
 workflow.workflow.status,Status,Status
 workflow.workflow.target.role,Verfügbar für folgende Nutzer,Usable by customer type
 workflow.workflow.target.type,Verfügbar für folgende Objekte,Usable for object type
