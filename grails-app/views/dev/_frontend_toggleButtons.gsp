@@ -6,12 +6,12 @@
     <ul>
         <li><code>tabindex="0"</code><strong> – für den Screenreader</strong>
         <li><code>class="la-popup-tooltip"</code> <strong> – für die Aktivierung des Tooltips mit Jvascript</strong>
-        <li><code>class="${Icon.SYM.INHERITANCE} blue"</code> <strong> – für Gestaltung</strong>
+        <li><code>class="${Icon.SIG.INHERITANCE} blue"</code> <strong> – für Gestaltung</strong>
         <li><code>data-content="1 2 3"</code>
     </ul>
     <div class="ui top attached label">WCAG-Proof Icon</div>
 </div>
-<i tabindex="0" class="${Icon.SYM.INHERITANCE} la-popup-tooltip blue" data-content="1 2 3"></i>
+<i tabindex="0" class="${Icon.SIG.INHERITANCE} la-popup-tooltip blue" data-content="1 2 3"></i>
 <h4 class="ui header">Funktions-Button, der ausgeschaltet werden kan, Icon bleibt</h4>
 <div class="html ui top attached segment example">
     <ul>
@@ -30,7 +30,7 @@
 </div>
 <dd class="la-js-editmode-container">
     <a role="button" class="${Btn.ICON.SIMPLE_TOOLTIP} la-audit-button" href='' data-content="4 5 6">
-        <i class="${Icon.SYM.INHERITANCE} la-js-editmode-icon"></i>
+        <i class="${Icon.SIG.INHERITANCE} la-js-editmode-icon"></i>
     </a>
 </dd><br />
 
@@ -48,7 +48,7 @@
 </div>
 
 <a role="button" class="${Btn.ICON.SIMPLE_TOOLTIP} la-audit-button" href='https://www.spiegel.de' data-content="10 11 12">
-    <i class="${Icon.SYM.INHERITANCE} la-js-editmode-icon"></i>
+    <i class="${Icon.SIG.INHERITANCE} la-js-editmode-icon"></i>
 </a><br /><br />
 <h4 class="ui header">Funktions-Button, der NICHT ausgeschaltet werden kann, Icon und Button verschwinden NICHT</h4>
 <div class="html ui top attached segment example">
@@ -65,5 +65,5 @@
 </div>
 
 <a role="button" class="${Btn.ICON.SIMPLE_TOOLTIP} mini la-audit-button la-js-dont-hide-button" href='https://www.spiegel.de' data-content="13 14 15">
-    <i class="${Icon.SYM.INHERITANCE}"></i>
+    <i class="${Icon.SIG.INHERITANCE}"></i>
 </a><br /><br />

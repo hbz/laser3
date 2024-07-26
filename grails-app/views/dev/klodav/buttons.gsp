@@ -101,19 +101,19 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td> <button class="${Btn.ICON.SIMPLE} yellow"><i class="${Icon.UNC.SQUARE}"></i></button> </td>
+                    <td> <button class="${Btn.ICON.SIMPLE} yellow"><i class="${Icon.SYM.SQUARE}"></i></button> </td>
                     <td> Btn.ICON.SIMPLE <br/> yellow </td>
                     <td> ${Btn.ICON.SIMPLE} (+ yellow) </td>
                     <td> Colors by declaration; <span class="ui text blue">default: none (blue)</span> </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.ICON.PRIMARY}"><i class="${Icon.UNC.SQUARE}"></i></button> </td>
+                    <td> <button class="${Btn.ICON.PRIMARY}"><i class="${Icon.SYM.SQUARE}"></i></button> </td>
                     <td> Btn.ICON.PRIMARY </td>
                     <td> ${Btn.ICON.PRIMARY} </td>
                     <td> </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.ICON.SECONDARY}"><i class="${Icon.UNC.SQUARE}"></i></button> </td>
+                    <td> <button class="${Btn.ICON.SECONDARY}"><i class="${Icon.SYM.SQUARE}"></i></button> </td>
                     <td> Btn.ICON.SECONDARY </td>
                     <td> ${Btn.ICON.SECONDARY} </td>
                     <td> </td>
@@ -263,7 +263,7 @@
                     <td> Colors by declaration; <span class="ui text red">default: none (BROKEN)</span> </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.MODERN.SIMPLE}"><i class="${Icon.UNC.SQUARE}"></i></button> </td>
+                    <td> <button class="${Btn.MODERN.SIMPLE}"><i class="${Icon.SYM.SQUARE}"></i></button> </td>
                     <td> Btn.MODERN.SIMPLE </td>
                     <td> ${Btn.MODERN.SIMPLE} </td>
                     <td> </td>

@@ -38,7 +38,7 @@
                                     if (object.isSlaved) {
                                         println '<span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                     } else {
-                                        println '<span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SYM.INHERITANCE + ' grey"></i></span>'
+                                        println '<span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
                                     }
                                 }
                             %>

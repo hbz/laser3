@@ -55,7 +55,7 @@
         </tr>
         <tr>
             <td>
-                <i aria-hidden="true" class="${Icon.SYM.INHERITANCE}"></i>
+                <i aria-hidden="true" class="${Icon.SIG.INHERITANCE}"></i>
             </td>
             <td>
                 Wert wird vererbt

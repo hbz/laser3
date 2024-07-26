@@ -179,7 +179,7 @@
                                         &nbsp;
                                         <span class="la-popup-tooltip"
                                               data-content="${message(code: 'property.audit.target.inherit')}"
-                                              data-position="top right"><i class="${Icon.SYM.INHERITANCE} grey"></i></span>
+                                              data-position="top right"><i class="${Icon.SIG.INHERITANCE} grey"></i></span>
                                     </g:else>
                                 </g:if>
                                 <g:elseif test="${propValue.tenant?.id == consortium?.id && atSubscr}">

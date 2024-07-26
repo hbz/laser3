@@ -104,7 +104,7 @@
                         </th>
                         <g:if test="${showConsortiaFunctions && auditable}">
                             <th>
-                                <span class="la-popup-tooltip" data-content="${message(code:'property.manageProperties.markForAudit')}"><i class="${Icon.SYM.INHERITANCE}"></i></span><br />
+                                <span class="la-popup-tooltip" data-content="${message(code:'property.manageProperties.markForAudit')}"><i class="${Icon.SIG.INHERITANCE}"></i></span><br />
                                 <g:checkBox name="membersAuditListToggler" id="membersAuditListToggler" checked="false"/>
                             </th>
                         </g:if>
@@ -179,7 +179,7 @@
                                                             if (objWithoutProp.isSlaved) {
                                                                 println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                                             } else {
-                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SYM.INHERITANCE + ' grey"></i></span>'
+                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
                                                             }
                                                         }
                                                     %>
@@ -245,7 +245,7 @@
                                                             if (objWithoutProp.isSlaved) {
                                                                 println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                                             } else {
-                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SYM.INHERITANCE + ' grey"></i></span>'
+                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
                                                             }
                                                         }
                                                     %>
@@ -424,7 +424,7 @@
                                                             if (row.isSlaved) {
                                                                 print '<span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                                             } else {
-                                                                print '<span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SYM.INHERITANCE + ' grey"></i></span>'
+                                                                print '<span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
                                                             }
                                                         }
                                                     %>
@@ -487,7 +487,7 @@
                                                             if (row.isSlaved) {
                                                                 println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
                                                             } else {
-                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SYM.INHERITANCE + ' grey"></i></span>'
+                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
                                                             }
                                                         }
                                                     %>

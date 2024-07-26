@@ -169,10 +169,12 @@ class Icon {
         @UIDoc(usage = 'Generic symbol for: External Website')
         public static String URL            = 'globe icon'
 
-        @UIDoc(usage = 'Generic symbol for: Inheritance')
-        public static String INHERITANCE    = 'thumbtack icon'
         @UIDoc(usage = 'Generic symbol for: Public for API/Data transfer')
         public static String IS_PUBLIC      = 'lock open icon'
+        @UIDoc(usage = 'Generic symbol for: Search')
+        public static String SEARCH         = 'search icon'
+        @UIDoc(usage = 'Generic symbol for: Properties')
+        public static String PROPERTIES     = 'tags icon'
 
         @UIDoc(usage = 'Generic symbol for: Yes/Accept/Done (see also NO)')
         public static String YES    = 'check icon'
@@ -186,10 +188,10 @@ class Icon {
         @UIDoc(usage = 'Generic symbol for: Checkbox/Option true (see also CHECKBOX)')
         public static String CHECKBOX_CHECKED   = 'square outline check icon'
 
-        @UIDoc(usage = 'Generic symbol for: Search')
-        public static String SEARCH         = 'search icon'
-        @UIDoc(usage = 'Generic symbol for: Properties')
-        public static String PROPERTIES     = 'tags icon'
+        @UIDoc(usage = 'Generic icon / Caution: free to use')
+        public static String CIRCLE         = 'circle icon'
+        @UIDoc(usage = 'Generic icon / Caution: free to use')
+        public static String SQUARE         = 'square icon'
     }
 
     class UI {
@@ -213,8 +215,10 @@ class Icon {
         // please do not touch during refactoring ..
         // assignment
 
+        @UIDoc(usage = 'Assignment symbol for: Inheritance')
+        public static String INHERITANCE    = 'thumbtack icon'
         @UIDoc(usage = 'Assignment symbol for: Is my object')
-        public static String MY_OBJECT      = 'star icon'                   // todo: duplicate: survey/renew? > Icon.PROP.MANDATORY
+        public static String MY_OBJECT      = 'star icon'               // todo: duplicate: survey/renew? > Icon.PROP.MANDATORY
     }
 
     class TOOLTIP {
@@ -229,15 +233,6 @@ class Icon {
         public static String INFO       = 'info circle icon'            // todo: duplicate: Icon.PROP.IN_USE
         @UIDoc(usage = 'Only for tooltip trigger: Error')
         public static String ERROR    = 'exclamation triangle icon'
-    }
-
-    class UNC {
-        // please do not touch during refactoring ..
-        // unclassified => none/lower semantics
-        @UIDoc(usage = 'Uncategorized icon / free to use')
-        public static String CIRCLE         = 'circle icon'
-        @UIDoc(usage = 'Uncategorized icon / free to use')
-        public static String SQUARE         = 'square icon'
     }
 
     // please do not touch during refactoring ..

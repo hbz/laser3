@@ -385,12 +385,12 @@
                             </span>
                         </g:each>
                         <span class="la-popup-tooltip" data-position="top right">
-                            <i class="${Icon.UNC.CIRCLE} green"></i>
+                            <i class="${Icon.SYM.CIRCLE} green"></i>
                         </span>
                     </g:if>
                     <g:if test="${org.status == RDStore.ORG_STATUS_RETIRED}">
                         <span class="la-popup-tooltip" data-position="top right" <g:if test="${org.retirementDate}">data-content="<g:message code="org.retirementDate.label"/>: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${org.retirementDate}"/>"</g:if>>
-                            <i class="${Icon.UNC.CIRCLE} yellow"></i>
+                            <i class="${Icon.SYM.CIRCLE} yellow"></i>
                         </span>
                         <g:set var="successors" value="${Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :org and c.type = :follows',[org: org, follows: RDStore.COMBO_TYPE_FOLLOWS])}"/>
                         <g:each in="${successors}" var="successor">
