@@ -62,9 +62,9 @@
                         <i class="image outline icon"></i>                  ${message(code:'subscription.kind.label')} <br />
                         <i class="dolly icon"></i>                          ${message(code:'subscription.form.label')} <br />
                         <i class="box icon"></i>                            ${message(code:'subscription.resource.label')} <br />
-                        <i class="${Icon.LICENSE}"></i>               ${message(code: 'license.label')} <br />
-                        <i class="${Icon.ACP_PUBLIC}"></i>             ${message(code: 'subscription.specificSubscriptionEditors')} <br />
-                        <i class="barcode icon"></i>                        ${message(code: 'default.identifiers.label')} <br />
+                        <i class="${Icon.LICENSE}"></i>             ${message(code: 'license.label')} <br />
+                        <i class="${Icon.ACP_PUBLIC}"></i>          ${message(code: 'subscription.specificSubscriptionEditors')} <br />
+                        <i class="${Icon.IDENTIFIER}"></i>          ${message(code: 'default.identifiers.label')} <br />
                         <i class="exchange icon"></i>                       ${message(code: 'subscription.linkedObjects')}
                     </div>
                 </div>
@@ -122,14 +122,14 @@
                         ${message(code: 'copyElementsIntoObject.general_data.label')}
                     </div>
                     <div class="description">
-                        <i class="${Icon.SYM.DATE}"></i>                   ${message(code: 'subscription.periodOfValidity.label')} <br />
+                        <i class="${Icon.SYM.DATE}"></i>                    ${message(code: 'subscription.periodOfValidity.label')} <br />
                         <i class="ellipsis vertical icon"></i>              ${message(code:'subscription.status.label')}
                         <i class="image outline icon"></i>                  ${message(code:'subscription.kind.label')}
                         <i class="dolly icon"></i>                          ${message(code:'subscription.form.label')} <br />
                         <i class="box icon"></i>                            ${message(code:'subscription.resource.label')}
-                        <i class="${Icon.LICENSE}"></i>               ${message(code: 'license.label')} <br />
-                        <i class="${Icon.ACP_PUBLIC}"></i>             ${message(code: 'subscription.specificSubscriptionEditors')}
-                        <i class="barcode icon"></i>                        ${message(code: 'default.identifiers.label')} <br />
+                        <i class="${Icon.LICENSE}"></i>                     ${message(code: 'license.label')} <br />
+                        <i class="${Icon.ACP_PUBLIC}"></i>                  ${message(code: 'subscription.specificSubscriptionEditors')}
+                        <i class="${Icon.IDENTIFIER}"></i>                  ${message(code: 'default.identifiers.label')} <br />
                         <i class="exchange icon"></i>                       ${message(code: 'subscription.linkedObjects')}
                     </div>
                 </div>

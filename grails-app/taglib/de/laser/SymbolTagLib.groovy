@@ -2,7 +2,8 @@ package de.laser
 
 class SymbolTagLib {
 
-    // simple static icons
+    // -- simple static icons
+    // -- no size, no color, ..
 
     static namespace = 'icon'
 

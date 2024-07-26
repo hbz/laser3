@@ -672,7 +672,7 @@
                 <tr data-type="identifiers" data-element="copyObject.takeIdentifier">
                     <td data-element="source">
                         <div>
-                            <strong><i class="barcode icon"></i>&nbsp;${message(code: 'default.identifiers.label')}:</strong><br />
+                            <strong><i class="${Icon.IDENTIFIER}"></i>&nbsp;${message(code: 'default.identifiers.label')}:</strong><br />
                             <g:each in="${sourceIdentifiers}" var="ident">
                                 <div data-oid="${genericOIDService.getOID(ident)}">
                                 <strong>${ident.ns.ns}:</strong>&nbsp;${ident.value}<br />
@@ -705,7 +705,7 @@
                     <g:if test="${!copyObject}">
                         <td data-element="target">
                             <div>
-                            <strong><i class="barcode icon"></i>&nbsp;${message(code: 'default.identifiers.label')}:</strong><br />
+                            <strong><i class="${Icon.IDENTIFIER}"></i>&nbsp;${message(code: 'default.identifiers.label')}:</strong><br />
                             <g:each in="${targetIdentifiers}" var="ident">
                                 <div data-oid="${genericOIDService.getOID(ident)}">
                                     <strong>${ident.ns.ns}:</strong>&nbsp;${ident.value}<br />

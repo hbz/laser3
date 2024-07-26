@@ -67,7 +67,7 @@
                         <i class="${Icon.LICENSE}"></i>         ${message(code: 'license.label')}
                         <i class="${Icon.ORG}"></i>             ${message(code: 'subscription.organisations.label')} <br />
                         <i class="${Icon.ACP_PUBLIC}"></i>   ${message(code: 'subscription.specificSubscriptionEditors')}
-                        <i class="barcode icon"></i>        ${message(code: 'default.identifiers.label')}
+                        <i class="${Icon.IDENTIFIER}"></i>        ${message(code: 'default.identifiers.label')}
                         <i class="exchange icon"></i>       ${message(code: 'subscription.linkedObjects')}
                     </div>
                 </div>
@@ -151,8 +151,8 @@
                         <i class="pizza slice icon"></i>                    ${message(code:'subscription.holdingSelection.label')}
                         <i class="${Icon.LICENSE}"></i>                     ${message(code: 'license.label')} <br />
                         <i class="${Icon.ORG}"></i>                         ${message(code: 'subscription.organisations.label')}
-                        <i class="${Icon.ACP_PUBLIC}"></i>               ${message(code: 'subscription.specificSubscriptionEditors')} <br />
-                        <i class="barcode icon"></i>                        ${message(code: 'default.identifiers.label')}
+                        <i class="${Icon.ACP_PUBLIC}"></i>                  ${message(code: 'subscription.specificSubscriptionEditors')} <br />
+                        <i class="${Icon.IDENTIFIER}"></i>                  ${message(code: 'default.identifiers.label')}
                     </div>
                 </div>
             </ui:complexSubNavItem>

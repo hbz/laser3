@@ -257,6 +257,8 @@ class Icon {
 
     public static String GASCO                      = 'layer group icon'
 
+    public static String IDENTIFIER                 = 'barcode icon'
+
     public static String LICENSE                    = 'balance scale icon'
 
     public static String MARKER                     = 'bookmark icon'       // todo: duplicate > reporting.history/bookmarks

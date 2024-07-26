@@ -34,7 +34,7 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
                 <i class="clipboard list icon"></i>             ${message(code: 'license.licenseCategory.label')}
                 <i class="${Icon.SYM.IS_PUBLIC}"></i>           ${message(code: 'license.isPublicForApi.label')}
                 <i class="${Icon.ORG}"></i>                     ${message(code: 'subscription.organisations.label')} <br />
-                <i class="barcode icon"></i>                    ${message(code: 'default.identifiers.label')}
+                <i class="${Icon.IDENTIFIER}"></i>              ${message(code: 'default.identifiers.label')}
             </div>
         </div>
     </ui:complexSubNavItem>

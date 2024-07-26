@@ -277,7 +277,7 @@
         <g:if test="${objects[0].hasProperty("ids")}">
             <tr>
                 <td data-element="copyObject.takeIdentifier.source">
-                    <strong><i class="barcode icon"></i>&nbsp;${message(code: 'default.identifiers.label')}:
+                    <strong><i class="${Icon.IDENTIFIER}"></i>&nbsp;${message(code: 'default.identifiers.label')}:
                     </strong><br />
                 </td>
                 <g:each in="${objects}" var="object">
