@@ -39,21 +39,19 @@ class IconTagLib {
             case 'database':
                 icon = 'icon bordered la-object-database'
                 break
-            case 'ebook':
-            case 'monograph':
+            case [ 'ebook', 'monograph' ]:
                 icon = 'icon bordered la-object-ebook'
                 break
             case 'file':
                 icon = Icon.DOCUMENT + ' bordered inverted blue la-object-extended'
                 break
             case 'finance':
-                icon = 'icon euro sign bordered inverted teal la-object-extended'
+                icon = Icon.FINANCE + ' bordered inverted teal la-object-extended'
                 break
             case 'help':
                 icon = Icon.UI.HELP + ' bordered inverted grey la-object-extended'
                 break
-            case 'journal':
-            case 'serial':
+            case [ 'journal', 'serial' ]:
                 icon = 'icon bordered la-object-journal'
                 break
             case 'gasco':

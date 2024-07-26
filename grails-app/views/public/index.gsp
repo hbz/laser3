@@ -56,7 +56,7 @@
                                 ${message(code: 'landingpage.hero.h2',args: [message(code: 'Umfragen')]) as String}
                             </h2>
                             <g:link controller="public" action="licensingModel" class="ui massive white button">
-                                ${message(code: 'landingpage.hero.button.licensingModel')}<i class="right arrow icon"></i>
+                                ${message(code: 'landingpage.hero.button.licensingModel')} <ui:arrow />
                             </g:link>
                         </div>
                     </div>
@@ -91,11 +91,10 @@
 
             <div class="ui center aligned segment">
                 <a href="mailto:laser@hbz-nrw.de" class="ui huge secondary button">
-                    ${message(code: 'landingpage.feature.button')}<i class="right arrow icon"></i>
+                    ${message(code: 'landingpage.feature.button')} <ui:arrow />
                 </a>
                 <g:link controller="home" action="index" class="ui huge blue button">
-                    ${message(code: 'landingpage.login')}
-                    <i class="right arrow icon"></i>
+                    ${message(code: 'landingpage.login')} <ui:arrow />
                 </g:link>
             </div>
         </main>

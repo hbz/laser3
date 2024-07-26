@@ -405,20 +405,20 @@
                 <td>
                     <g:if test="${org.createdBy && org.legallyObligedBy}">
                         <span class="la-popup-tooltip" data-position="top right"
-                              data-content="${message(code: 'org.legalInformation.1.tooltip', args: [org.createdBy, org.legallyObligedBy])}">
-                            <i class="icon green check circle"></i>
+                              data-content="${message(code: 'org.legalInformation.11.tooltip', args: [org.createdBy, org.legallyObligedBy])}">
+                            <i class="${Icon.ATTR.ORG_LEGAL_INFORMATION_11}"></i>
                         </span>
                     </g:if>
                     <g:elseif test="${org.createdBy}">
                         <span class="la-popup-tooltip" data-position="top right"
-                              data-content="${message(code: 'org.legalInformation.2.tooltip', args: [org.createdBy])}">
-                            <i class="icon grey outline circle"></i>
+                              data-content="${message(code: 'org.legalInformation.10.tooltip', args: [org.createdBy])}">
+                            <i class="${Icon.ATTR.ORG_LEGAL_INFORMATION_10}"></i>
                         </span>
                     </g:elseif>
                     <g:elseif test="${org.legallyObligedBy}">
                         <span class="la-popup-tooltip" data-position="top right"
-                              data-content="${message(code: 'org.legalInformation.3.tooltip', args: [org.legallyObligedBy])}">
-                            <i class="icon red question mark"></i>
+                              data-content="${message(code: 'org.legalInformation.01.tooltip', args: [org.legallyObligedBy])}">
+                            <i class="${Icon.ATTR.ORG_LEGAL_INFORMATION_01}"></i>
                         </span>
                     </g:elseif>
                 </td>

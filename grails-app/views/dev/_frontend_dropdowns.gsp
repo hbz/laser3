@@ -59,8 +59,8 @@
 
     <div class="html ui top attached segment">
         <ui>
-            <li>selectOnKeydown: false <i class="icon arrow right"></i>nur wichtig für Tastaturbenutzung: eine Auswahl durch Tastaturbenutzung erfolgt NICHT</li>
-            <li>clearable: true  <i class="icon arrow right"></i> die Auswahl kann durch das Kreuz gelöscht werden </li>
+            <li>selectOnKeydown: false <ui:arrow /> nur wichtig für Tastaturbenutzung: eine Auswahl durch Tastaturbenutzung erfolgt NICHT</li>
+            <li>clearable: true <ui:arrow /> die Auswahl kann durch das Kreuz gelöscht werden </li>
         </ui>
         <br />
         <div class="field">
@@ -99,10 +99,10 @@
 
     <div class="html ui top attached segment">
         <ui>
-            <li>forceSelection: false <i class="icon arrow right"></i> Forsiert eine Auswahl NICHT bei blur,
+            <li>forceSelection: false <ui:arrow /> Forsiert eine Auswahl NICHT bei blur,
                 <ul><li>das heißt: ich suche etwas und bekomme etwas dazu vorgeschlagen, ich verlasse das input und der Vorschlag wird NICHT übernommen</li></ul></li>
-            <li>selectOnKeydown: false <i class="icon arrow right"></i>nur wichtig für Tastaturbenutzung: eine Auswahl durch Tastaturbenutzung erfolgt NICHT</li>
-            <li>clearable: true  <i class="icon arrow right"></i> die Auswahl kann durch das Kreuz gelöscht werden </li>
+            <li>selectOnKeydown: false <ui:arrow /> nur wichtig für Tastaturbenutzung: eine Auswahl durch Tastaturbenutzung erfolgt NICHT</li>
+            <li>clearable: true <ui:arrow /> die Auswahl kann durch das Kreuz gelöscht werden </li>
         </ui>
         <br />
         <div class="field">
@@ -138,13 +138,13 @@
 
     <div class="html ui top attached segment">
         <ui>
-            <li>forceSelection: false <i class="icon arrow right"></i> Forsiert eine Auswahl NICHT bei blur,
+            <li>forceSelection: false <ui:arrow /> Forsiert eine Auswahl NICHT bei blur,
                 <ul><li>das heißt: ich suche etwas und bekomme etwas dazu vorgeschlagen, ich verlasse das input und der Vorschlag wird NICHT übernommen</li></ul></li>
-            <li>selectOnKeydown: false <i class="icon arrow right"></i>nur wichtig für Tastaturbenutzung: eine Auswahl durch Tastaturbenutzung erfolgt NICHT</li>
-            <li>clearable: true  <i class="icon arrow right"></i> die Auswahl kann durch das Kreuz gelöscht werden </li>
+            <li>selectOnKeydown: false <ui:arrow /> nur wichtig für Tastaturbenutzung: eine Auswahl durch Tastaturbenutzung erfolgt NICHT</li>
+            <li>clearable: true <ui:arrow /> die Auswahl kann durch das Kreuz gelöscht werden </li>
             <li>onChange: function(value, text, $choice){
             (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
-            }  <i class="icon arrow right"></i> bei einer Auswahl wird die Klasse des Dropdowns geändert und damit farblich markiert </li>
+            }  <ui:arrow /> bei einer Auswahl wird die Klasse des Dropdowns geändert und damit farblich markiert </li>
         </ui>
         <br />
         <div class="field">

@@ -154,7 +154,7 @@
                             </g:if>
                             <g:elseif test="${docctx.shareConf != RDStore.SHARE_CONF_UPLOADER_AND_TARGET}">
                                 <div class="${Btn.ICON.SIMPLE} la-hidden">
-                                    <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>
+                                    <ui:placeholder /><%-- Hidden Fake Button --%>
                                 </div>
                             </g:elseif>
                         </g:else>%{-- (editable || editable2) --}%
@@ -186,17 +186,17 @@
 %{--                                </g:if>--}%
 %{--                                <g:else>--}%
 %{--                                    <div class="${Btn.ICON.SIMPLE} la-hidden">--}%
-%{--                                        <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>--}%
+%{--                                        <ui:placeholder /><%-- Hidden Fake Button --%>--}%
 %{--                                    </div>--}%
 %{--                                </g:else>--}%
 %{--                                <%-- STOP Second Button --%>--}%
 %{--                            </g:if>--}%
 %{--                            <g:else>--}%
 %{--                                <div class="${Btn.ICON.SIMPLE} la-hidden">--}%
-%{--                                    <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>--}%
+%{--                                    <ui:placeholder /><%-- Hidden Fake Button --%>--}%
 %{--                                </div>--}%
 %{--                                <div class="${Btn.ICON.SIMPLE} la-hidden">--}%
-%{--                                    <i class="${Icon.UNC.PLACEHOLDER}"></i><%-- Hidden Fake Button --%>--}%
+%{--                                    <ui:placeholder /><%-- Hidden Fake Button --%>--}%
 %{--                                </div>--}%
 %{--                            </g:else>--}%
 %{--                            <%-- START Third Button --%>--}%

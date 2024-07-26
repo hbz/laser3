@@ -69,7 +69,7 @@
                             </div>
                         </div>
                         <div class="item">
-                            <i class="euro sign icon la-list-icon"></i>
+                            <i class="${Icon.FINANCE} la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem controller="myInstitution" action="finance" message="menu.institutions.finance" />
                             </div>

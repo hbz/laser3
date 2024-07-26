@@ -15,6 +15,14 @@ class Icon {
         public static String DOCUMENT_CONFIDENTIALITY   = 'lock icon'
         @UIDoc(usage = 'Only for Org attributes: createdBy / legallyObligedBy')
         public static String ORG_LEGAL_INFORMATION      = 'hands helping icon'
+
+        @UIDoc(usage = 'Only for Org attributes: createdBy=true / legallyObligedBy=true (COLORED)')
+        public static String ORG_LEGAL_INFORMATION_11   = 'green check circle icon'
+        @UIDoc(usage = 'Only for Org attributes: createdBy=true  / legallyObligedBy (COLORED)')
+        public static String ORG_LEGAL_INFORMATION_10   = 'grey outline circle icon'
+        @UIDoc(usage = 'Only for Org attributes: createdBy / legallyObligedBy=true (COLORED)')
+        public static String ORG_LEGAL_INFORMATION_01   = 'red question mark icon'
+
         @UIDoc(usage = 'Only for Subscription attribute: isMultiYear')
         public static String SUBSCRIPTION_IS_MULTIYEAR  = 'forward icon'
         @UIDoc(usage = 'Only for TIPP: coverageDepth')
@@ -226,9 +234,6 @@ class Icon {
     class UNC {
         // please do not touch during refactoring ..
         // unclassified => none/lower semantics
-
-        @UIDoc(usage = 'Layout helper / mostly wrapped with class="hidden"')
-        public static String PLACEHOLDER    = 'coffee icon'
         @UIDoc(usage = 'Uncategorized icon / free to use')
         public static String CIRCLE         = 'circle icon'
         @UIDoc(usage = 'Uncategorized icon / free to use')
@@ -250,6 +255,8 @@ class Icon {
     public static String DOCUMENT                   = 'file alternate icon'
 
     public static String DUE_DATE                   = 'bell icon'
+
+    public static String FINANCE                    = 'euro sign icon'
 
     public static String GASCO                      = 'layer group icon'
 
