@@ -2354,6 +2354,15 @@ class SurveyService {
                         result.surveyOrg.save()
                     }
                 }
+
+                if(params.setEInvoiceValuesFromOrg) {
+                    println("Test")
+                    result.surveyOrg.eInvoicePortal = participant.eInvoicePortal
+                    result.surveyOrg.eInvoiceLeitwegId = participant.getLeitID()?.value
+                    result.surveyOrg.eInvoiceLeitkriterium = participant.getLeitkriterium()?.value
+                    result.surveyOrg.save()
+                }
+
             }
 
             params.sort = params.sort ?: 'sortname'
