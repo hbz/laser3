@@ -98,7 +98,7 @@
                                 <span data-position="top right"
                                       class="la-popup-tooltip"
                                       data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                    <i class="grey la-thumbtack-regular icon"></i>
+                                    <i class="${Icon.SIG.INHERITANCE_AUTO}"></i>
                                 </span>
                             </g:if>
 

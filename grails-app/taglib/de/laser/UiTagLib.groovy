@@ -268,7 +268,7 @@ class UiTagLib {
                         if (hasAuditConfig) {
                             if (obj.isSlaved) {
                                 out << '<span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon grey la-thumbtack-regular"></i>'
+                                out << '<i aria-hidden="true" class="' + Icon.SIG.INHERITANCE_AUTO + '"></i>'
                                 out << '</span>'
                             }
                             else {
@@ -351,7 +351,7 @@ class UiTagLib {
                         if (auditService.getAuditConfig(obj.instanceOf, objAttr)) {
                             if (obj.isSlaved) {
                                 out << '<span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon grey la-thumbtack-regular"></i>'
+                                out << '<i aria-hidden="true" class="' + Icon.SIG.INHERITANCE_AUTO + '"></i>'
                                 out << '</span>'
                             }
                             else {
@@ -369,7 +369,7 @@ class UiTagLib {
 
                             if (obj.isSlaved) {
                                 out << '<span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon grey la-thumbtack-regular"></i>'
+                                out << '<i aria-hidden="true" class="' + Icon.SIG.INHERITANCE_AUTO + '"></i>'
                                 out << '</span>'
                             }
                             else {

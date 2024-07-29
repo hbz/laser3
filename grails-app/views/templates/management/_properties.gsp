@@ -174,7 +174,7 @@
                                                 <%
                                                     if (AuditConfig.getConfig(customProperty)) {
                                                         if (subscription.isSlaved) {
-                                                            println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                            println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE_AUTO + '"></i></span>'
                                                         } else {
                                                             println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
                                                         }
@@ -251,7 +251,7 @@
                                                 <%
                                                     if (AuditConfig.getConfig(privateProperty)) {
                                                         if (subscription.isSlaved) {
-                                                            println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                            println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE_AUTO + '"></i></span>'
                                                         } else {
                                                             println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
                                                         }
@@ -442,7 +442,7 @@
                                 <span data-position="top right"
                                       class="la-popup-tooltip"
                                       data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                    <i class="grey la-thumbtack-regular icon"></i>
+                                    <i class="${Icon.SIG.INHERITANCE_AUTO}"></i>
                                 </span>
                             </g:if>
 
@@ -519,7 +519,7 @@
                                                     <%
                                                         if (customProperty.hasProperty('instanceOf') && customProperty.instanceOf && AuditConfig.getConfig(customProperty.instanceOf)) {
                                                             if (sub.isSlaved) {
-                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE_AUTO + '"></i></span>'
                                                             } else {
                                                                 println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
                                                             }
@@ -592,7 +592,7 @@
                                                     <%
                                                         if (privateProperty.hasProperty('instanceOf') && privateProperty.instanceOf && AuditConfig.getConfig(privateProperty.instanceOf)) {
                                                             if (sub.isSlaved) {
-                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE_AUTO + '"></i></span>'
                                                             } else {
                                                                 println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
                                                             }

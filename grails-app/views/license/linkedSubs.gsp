@@ -163,7 +163,7 @@
 
                         <g:if test="${sub.isSlaved}">
                             <span class="la-popup-tooltip" data-position="top right" data-content="${message(code:'license.details.isSlaved.tooltip')}">
-                                <i class="grey la-thumbtack-regular icon"></i>
+                                <i class="${Icon.SIG.INHERITANCE_AUTO}"></i>
                             </span>
                         </g:if>
 

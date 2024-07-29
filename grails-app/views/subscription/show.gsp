@@ -131,7 +131,7 @@
                                                         </g:else>
                                                     </g:if>
                                                     <g:elseif test="${subscription.altnames[0].instanceOf}">
-                                                        <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
+                                                        <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="${Icon.SIG.INHERITANCE_AUTO}"></i></span>
                                                     </g:elseif>
                                                     <g:else>
                                                         <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
@@ -215,7 +215,7 @@
                                                             </g:else>
                                                         </g:if>
                                                         <g:elseif test="${altname.instanceOf}">
-                                                            <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
+                                                            <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="${Icon.SIG.INHERITANCE_AUTO}"></i></span>
                                                         </g:elseif>
                                                         <g:else>
                                                             <div class="ui buttons">
@@ -228,7 +228,7 @@
                                                         </g:else>
                                                     </g:if>
                                                     <g:elseif test="${altname.instanceOf}">
-                                                        <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
+                                                        <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="${Icon.SIG.INHERITANCE_AUTO}"></i></span>
                                                     </g:elseif>
                                                 </div>
                                             </g:each>

@@ -173,7 +173,7 @@
                                         &nbsp;
                                         <span class="la-popup-tooltip"
                                               data-content="${message(code: 'property.audit.target.inherit.auto')}"
-                                              data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
+                                              data-position="top right"><i class="${Icon.SIG.INHERITANCE_AUTO}"></i></span>
                                     </g:if>
                                     <g:else>
                                         &nbsp;
