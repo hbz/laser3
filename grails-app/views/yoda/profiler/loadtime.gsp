@@ -14,6 +14,7 @@
         <g:link controller="yoda" action="profilerLoadtime" class="item active">Ladezeiten</g:link>
         <g:link controller="yoda" action="profilerActivity" class="item">Nutzerzahlen</g:link>
         <g:link controller="yoda" action="profilerTimeline" class="item">Seitenaufrufe</g:link>
+        <g:link controller="yoda" action="profilerCurrent" class="item">..</g:link>
 
         <div style="position:absolute; right:0">
             <g:select name="archive" id="archive" class="ui dropdown"

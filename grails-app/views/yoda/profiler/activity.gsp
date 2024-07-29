@@ -14,6 +14,7 @@
         <g:link controller="yoda" action="profilerLoadtime" class="item">Ladezeiten</g:link>
         <g:link controller="yoda" action="profilerActivity" class="item active">Nutzerzahlen</g:link>
         <g:link controller="yoda" action="profilerTimeline" class="item">Seitenaufrufe</g:link>
+        <g:link controller="yoda" action="profilerCurrent" class="item">..</g:link>
     </nav>
 
     <table class="ui celled la-js-responsive-table la-table compact wide table">
