@@ -57,15 +57,15 @@ Todo: Websocket communication is broken after upgrading from Grails 4 to Grails 
 
 * #### Apache Commons IO
 
-    *org.apache.commons.io* is only used in one file.
+    *org.apache.commons.io* is only used in one file (Api).
 
 * #### GPars
 
-    *org.codehaus.gpars:gpars* is outdated and only used in ~~one file~~ two files.
+    *org.codehaus.gpars:gpars* is outdated and only used in ~~one file~~ two files (StatsSync, Yoda)
 
 * #### Juniversalchardet
 
-    *com.github.albfernandez:juniversalchardet* is ~~only used in one file.~~ used in two files.
+    *com.github.albfernandez:juniversalchardet* is ~~only used in one file.~~ used in three files  (AjaxHtml, MyInstitution, Survey).
 
 
 

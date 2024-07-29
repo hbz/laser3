@@ -110,7 +110,6 @@ dependencies {
     implementation 'org.grails.plugins:database-migration:4.2.1', {         // 2023
         exclude module: 'spring-boot-cli'
     }
-    implementation 'org.grails.plugins:grails-executor:0.4'                 // 2016 : [deprecated]
     implementation 'org.grails.plugins:mail:3.0.0'                          // 2021
     implementation 'org.grails.plugins:quartz:3.0.0'                        // 2024
     implementation 'org.grails.plugins:wkhtmltopdf:1.0.0.RC9'               // 2018
@@ -130,7 +129,6 @@ dependencies {
     implementation 'org.codehaus.janino:janino:3.1.12'                      // 2024 : logback
     implementation 'org.liquibase:liquibase-core:4.19.0'                    // 2023 : + org.grails.plugins:database-migration // [freeze - not 4.19.1]
     implementation 'org.quartz-scheduler:quartz:2.3.2'                      // 2019
-//    implementation 'org.slf4j:slf4j-simple:1.7.36'                          // 2022
 
     // --------------------------------------------------
 
@@ -232,6 +230,7 @@ assets {
             'echarts/**',
             'spring-websocket/**', // tmp deactivated
             'swagger-ui/**',
+            'swagger-ui-old/**'
     ]
 }
 
