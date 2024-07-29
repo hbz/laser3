@@ -183,20 +183,43 @@ class LicenseService {
     do's: - return type either bool or XML
     - input arg: License
      */
-    def validateOnixPlDocument() {
+    String validateOnixPlDocument() {
         /*
         agenda:
         - first: create XML document hand-coded
         - create then a translation script from License into XML; the MarkupBuilder returns
+        - the translation script gets as input a Map in which inputParameters are being specified; those inputParameters are being processed upon creation of the XML
         - implement validator: move XSD(s) into project or reference them with CDN and apply validator on it (cf. https://stackoverflow.com/questions/55067050/validating-a-xml-doc-in-groovy)
+
+        LAS:eR structure enhancements:
+        - new field paragraphNumber for LicenseProperty (optional on LAS:eR side, mandatory for ex/import, throw exception if not set!)
+
+        generic dos:
+        - RDConstants.YN and derivates and RDConstants.PERMISSIONS: implement helper; TermStatusCode is base for RefdataCategory RDConstants.PERMISSIONS
+        - paragraph reference: create method for paragraph extraction
+
+        structure:
+        - elements may contain references to definitions; internal labels are being used as referrers
+        - definitions contain explanations (e.g. a LicenseStartDate is being referred to in LicenseDefinition but explained fully in TimePointDefinition)
          */
         File schemaFile = grailsApplication.mainContext.getResource('files/ONIX_PublicationsLicense_V1.0.xsd').file
         Validator validator = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(schemaFile).newValidator()
         Locale locale = LocaleUtils.getCurrentLocale()
-        StreamingMarkupBuilder builder = new StreamingMarkupBuilder()
         Org institution = contextService.getOrg()
-        SimpleDateFormat onixTimestampFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ")
         Date now = new Date()
+        String xml = createHardCodedTestFile_v0()
+        //def xml = createHardCodedTestFile_v1()
+        validator.validate(new StreamSource(new StringReader(xml)))
+        xml
+    }
+
+    /**
+     * experiment sandbox 1
+     * @return
+     */
+    String createHardCodedTestFile_v0() {
+        SimpleDateFormat onixTimestampFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ")
+        StreamingMarkupBuilder builder = new StreamingMarkupBuilder()
         def xml = builder.bind {
             mkp.xmlDeclaration()
             mkp.declareNamespace(ople: "http://www.editeur.org/ople")
@@ -257,22 +280,22 @@ class LicenseService {
                         orgRole.roleType == Licensee maps to onixPL:Licensee
                          */
                         LicenseRelatedAgent {
+                            LicenseAgentRelator('onixPL:Licensor')
+                            RelatedAgent('Bloomsbury') //licensor provider.name
+                        }
+                        LicenseRelatedAgent {
                             LicenseAgentRelator('onixPL:LicenseeRepresentative')
-                            RelatedAgent('Lizenzierungskonsortium des Analysestadtverbundes')
+                            RelatedAgent('Licensing Consortium') //take the RefdataValue
                         }
                         LicenseRelatedAgent {
                             LicenseAgentRelator('onixPL:LicenseeConsortium')
-                            RelatedAgent('Universitätsbibliothek Eichlinghausen')
-                        }
-                        LicenseRelatedAgent {
-                            LicenseAgentRelator('onixPL:LicenseeConsortium')
-                            RelatedAgent('Friedrich-Vieweg-Hochschule')
+                            RelatedAgent('Licensee Consortial') //take the RefdataValue
                         }
                         LicenseRelatedAgent {
                             LicenseAgentRelator('onixPL:LicenseeConsortium')
                             RelatedAgent('Helen Louise Brownston university Shawinigan')
                         }
-                        //other user-related properties: Authorized Users, Walk-In User, Simuser
+                        //other user-related properties: Authorized Users, Walk-In User, Simuser; see definition in AgentDefinition
                         LicenseRelatedAgent {
                             LicenseAgentRelator('onixPL:AuthorizedUsers')
                             RelatedAgent('Authorized Users')
@@ -284,12 +307,13 @@ class LicenseService {
                         }
                         LicenseRelatedTimePoint {
                             LicenseTimePointRelator('onixPL:LicenseStartDate')
-                            RelatedTimePoint('2012-02-16') //or dd.mm.yyyy? Schema does not make any restrictions on that point
+                            RelatedTimePoint('LicenseStartDate')
                         }
                         /*
                         if exists
                         LicenseRelatedTimePoint {
                             LicenseTimePointRelator('onixPL:LicenseEndDate')
+                            RelatedTimePoint('LicenseEndDate')
                         }
                         */
                         LicenseRelatedPlace {
@@ -299,7 +323,16 @@ class LicenseService {
                         }
                     }
                     Definitions {
-                        //LicenseRelatedAgents more expanded ==> again OrgRoles!
+                        //LicenseRelatedAgents explained ==> again OrgRoles!
+                        AgentDefinition {
+                            AgentLabel('Bloomsbury')
+                            AgentType('onixPL:Organization')
+                            AgentIdentifier {
+                                AgentIDType('onixPL:Proprietary')
+                                IDTypeName('wekbId')
+                                IDValue('wekb UUID')
+                            }
+                        }
                         AgentDefinition {
                             AgentLabel('Licensing Consortium') //take the RefdataValue label
                             AgentType('onixPL:Organization')
@@ -351,11 +384,24 @@ class LicenseService {
                         AgentDefinition {
                             AgentLabel('Authorized Users')
                             AgentType('onixPL:Person')
+                            //the value of Authorized Users cannot be used because it is free text; include paragraphs here
                             AgentRelatedAgent {
-                                AgentAgentRelator('onixPL:IsA')
-                                RelatedAgent('Biblitoheksnutzer:in') //free-text value of property Authorized User
+                                AgentAgentRelator('onixPL:IsOneOf')
+                                //!!! mark here the ___existence___ of the following properties: Walk-In User, (Simuser)
+                                RelatedAgent('onixPL:WalkInUser')
                             }
                         }
+                        /*
+                        not mappable because Walk-In Users in LAS:eR keeps note only about the existence of walk-in users, not how they are called in the license text
+                        AgentDefinition {
+                            AgentLabel('Walk-In Users')
+                            AgentType('onixPL:Person')
+                            AgentRelatedAgent {
+                                AgentAgentRelator('onixPL:IsA')
+                                RelatedAgent('Angehörige der Universität') //free-text value of property Walk-In User
+                            }
+                        }
+                        */
                         ResourceDefinition {
                             ResourceLabel('Subscription')
                             ResourceType('onixPL:LicensedContent') //supplying; ResourceType has no controlled list behind
@@ -368,7 +414,13 @@ class LicenseService {
                         }
                         //(all other) properties with type date
                         TimePointDefinition {
-
+                            TimePointLabel('ArchivalCopyTimePoint')
+                            Description('On request') //maps refdata value of license property Archival Copy: Time
+                        }
+                        DocumentDefinition {
+                            DocumentLabel('Continuing Access: Title Transfer')
+                            DocumentType('onixPL:WebResource')
+                            Description('Licese Property Value submitted in LAS:eR ERMS')
                         }
                     }
                     //optional 0-1
@@ -391,11 +443,59 @@ class LicenseService {
                     }
                     //optional 0-1
                     SupplyTerms {
-
+                        SupplyTerm {
+                            //license property Accessibility compliance
+                            SupplyTermType('onixPL:ComplianceWithAccessibilityStandards')
+                            TermStatus('onixPL:Yes') //or no or uncertain
+                            LicenseDocumentReference {
+                                //the reference
+                            }
+                        }
+                        SupplyTerm {
+                            //license property Continuing Access: Title Transfer
+                            SupplyTermType('onixPL:ComplianceWithProjectTransferCode')
+                            //is the only way to map this/such property value ...
+                            OtherDocumentReference {
+                                DocumentLabel('Continuing Access: Title Transfer') //licenseProp.name
+                                DocumentText('Regelung vorhanden') //licenseProp.value
+                            }
+                        }
                     }
                     //optional 0-1
-                    ContinuingTermsAccess {
-
+                    ContinuingAccessTerms {
+                        //license property Post Cancellation Online Access
+                        ContinuingAccessTerm {
+                            ContinuingAccessTermType('onixPL:PostCancellationOnlineAccess')
+                            TermStatus('onixPL:Yes') //maps reference values; implement helper; TermStatusCode is base for RefdataCategory RDConstants.PERMISSIONS
+                            //license property Continuing Access: Payment Note
+                            Annotation {
+                                AnnotationType('onixPL:PaymentNote')
+                                AnnotationText('Hosting Fee')
+                            }
+                            //license property Continuing Access: Restrictions
+                            Annotation {
+                                AnnotationType('onixPL:PostCancellationOnlineAccessHoldingsNote')
+                                AnnotationText('Restrictions hold') //reference paragraph here
+                            }
+                        }
+                        ContinuingAccessTerm {
+                            //license property Archival Copy: Permission
+                            ContinuingAccessTermType('onixPL:PostCancellationFileSupply')
+                            TermStatus('onixPL:Yes')
+                            //license property Archival Copy Content
+                            Annotation {
+                                AnnotationType('onixPL:PostCancellationFileSupplyNote')
+                                AnnotationText('With Metadata') //reference paragraph here
+                            }
+                            //license property Archival Copy: Cost
+                            Annotation {
+                                AnnotationType('onixPL:PaymentNote')
+                                AnnotationText('With Charge')
+                            }
+                            ContinuingAccessTermRelatedTimePoint {
+                                RelatedTimePoint('ArchivalCopyTimePoint')
+                            }
+                        }
                     }
                     //optional 0-1
                     PaymentTerms {
@@ -403,19 +503,46 @@ class LicenseService {
                     }
                     //optional 0-1
                     GeneralTerms {
-
+                        GeneralTerm {
+                            GeneralTermType()
+                            GeneralTermQuantity {
+                                GeneralTermQuantityType('onixPL:PeriodForCureOfBreach')
+                                //extractor script "30 Tage" -> 30 and onixPL:Days; throw exception if mapping failed with indicating correct values
+                                QuantityDetail {
+                                    Value(30)
+                                    QuantityUnit('onixPL:Days')
+                                }
+                            }
+                        }
                     }
                     //optional 0-1; possible container for LicenseProperty.paragraph-s
-                    //not possible to implement because mandatory data is missing: DocumentLabel (I cannot ensure an underlying document is available); SortNumber (is mostly not given)
+                    //not possible to implement properly because mandatory data is missing: DocumentLabel (I cannot ensure an underlying document is available); SortNumber (is mostly not given)
+                    //DocumentLabel: substituted by LicenseProperty paragraph, SortNumber: substituted by 0; may be removed completely if no productive use is possible, proposal character!
                     /*
                     LicenseDocumentText {
-
+                        DocumentLabel('LicenseProperty Governing law')
+                        TextElement(id: 'lp_governing_law_01') { //"lp_${toSnakeCase(lp.name)}_property count number"
+                            SortNumber(1) //property count number; dummy value because LAS:eR data structure does not offer storage, then, it cannot be expected that users fill it properly
+                            Text('The parties agree that this Agreement shall be governed by and construed in accordance with the laws of Germany.')
+                        }
                     }
                     */
                 }
             }
         }
-        validator.validate(new StreamSource(new StringReader(XmlUtil.serialize(xml))))
-        xml.toString()
+        XmlUtil.serialize(xml)
+    }
+
+    /**
+     * experiment sandbox 2
+     * @return
+     */
+    String createHardCodedTestFile_v1() {
+        SimpleDateFormat onixTimestampFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ")
+        StreamingMarkupBuilder builder = new StreamingMarkupBuilder()
+        def xml = builder.bind {
+
+        }
+        XmlUtil.serialize(xml)
     }
 }

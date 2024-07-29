@@ -25,12 +25,15 @@
                 </div>
             </div>
 
+        <g:link class="${Btn.SIMPLE}" action="manageRefdatas" params="[sort: 'desc']">Nach Schlüssel sortieren</g:link>
+        <g:link class="${Btn.SIMPLE}" action="manageRefdatas" params="[sort: 'desc_de']">Nach deutschem Namen sortieren</g:link>
+
         <div class="ui styled fluid accordion">
             <g:each in="${rdCategories}" var="rdc">
 
                 <div class="title">
                     <i class="dropdown icon"></i>
-                    ${rdc.getI10n('desc')}
+                    ${rdc.getI10n('desc')} (${rdc.desc})
                 </div>
                 <div class="content">
 
