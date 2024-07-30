@@ -77,18 +77,18 @@
                     <g:if test="${editable}">
                         <g:if test="${i == 1 && surveyProperties.size() == 2}">
                             <ui:remoteLink class="${Btn.MODERN.SIMPLE} compact" action="actionsForSurveyProperty" id="${params.id}" data-update="${props_div}"
-                                    params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="icon arrow up"></i>
+                                    params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icon.CMD.MOVE_UP}"></i>
                             </ui:remoteLink>
                         </g:if>
                         <g:else>
                             <g:if test="${i > 0}">
                                 <ui:remoteLink class="${Btn.MODERN.SIMPLE} compact" action="actionsForSurveyProperty" id="${params.id}" data-update="${props_div}"
-                                        params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id, props_div: props_div, pdg_id: pdg?.id]"><i class="icon arrow up"></i>
+                                        params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id, props_div: props_div, pdg_id: pdg?.id]"><i class="${Icon.CMD.MOVE_UP}"></i>
                                 </ui:remoteLink>
                             </g:if>
                             <g:if test="${i < surveyProperties.size()-1}">
                                 <ui:remoteLink class="${Btn.MODERN.SIMPLE} compact" action="actionsForSurveyProperty" id="${params.id}" data-update="${props_div}"
-                                        params="[actionForSurveyProperty: 'moveDown', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id, props_div: props_div, pdg_id: pdg?.id]"><i class="icon arrow down"></i>
+                                        params="[actionForSurveyProperty: 'moveDown', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id, props_div: props_div, pdg_id: pdg?.id]"><i class="${Icon.CMD.MOVE_UP}"></i>
                                 </ui:remoteLink>
                             </g:if>
                         </g:else>
@@ -108,7 +108,7 @@
                                 params="[actionForSurveyProperty: 'deleteSurveyPropFromConfig', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, props_div: props_div, pdg_id: pdg?.id]"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="${Icon.CMD.DELETE} icon"></i>
+                            <i class="${Icon.CMD.DELETE}"></i>
                         </ui:remoteLink>
                     </td>
                 </g:if>
