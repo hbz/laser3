@@ -1092,9 +1092,11 @@ SELECT * FROM (
 
         def (usedRdvList, attrMap) = refdataService.getUsageDetails()
 
+        String sort = params.containsKey('sort') ? params.sort : 'desc_' + LocaleUtils.getCurrentLang()
+
         [
             editable    : true,
-            rdCategories: RefdataCategory.where{}.sort('desc_' + LocaleUtils.getCurrentLang()),
+            rdCategories: RefdataCategory.findAll(sort: sort),
             attrMap     : attrMap,
             usedRdvList : usedRdvList
         ]
