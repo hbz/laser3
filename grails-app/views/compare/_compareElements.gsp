@@ -36,9 +36,9 @@
                             <%
                                 if (AuditConfig.getConfig(object, objProperty)) {
                                     if (object.isSlaved) {
-                                        println '<span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE_AUTO + '"></i></span>'
+                                        println ui.auditIcon(type: 'auto')
                                     } else {
-                                        println '<span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
+                                        println ui.auditIcon(type: 'default')
                                     }
                                 }
                             %>

@@ -123,11 +123,7 @@
                             <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
 
                             <g:if test="${sub.isSlaved}">
-                                <span data-position="top right"
-                                      class="la-popup-tooltip"
-                                      data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                    <i class="${Icon.SIG.INHERITANCE_AUTO}"></i>
-                                </span>
+                                <ui:auditIcon type="auto2" />
                             </g:if>
 
                             <ui:customerTypeProIcon org="${subscr}" />

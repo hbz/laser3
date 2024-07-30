@@ -175,7 +175,7 @@
                                                       data-update="${custom_props_div}"
                                                       role="button"
                                     >
-                                        <i class="${Icon.SIG.INHERITANCE} icon"></i>
+                                        <i class="${Icon.SIG.INHERITANCE}"></i>
                                     </ui:remoteLink>
                                 </g:else>
                             </g:if>
@@ -247,10 +247,10 @@
                         <g:else>
                             <g:if test="${prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)}">
                                 <g:if test="${ownobj.isSlaved}">
-                                    <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="${Icon.SIG.INHERITANCE_AUTO}"></i></span>
+                                    <ui:auditIcon type="auto" />
                                 </g:if>
                                 <g:else>
-                                    <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit')}" data-position="top right"><i class="${Icon.SIG.INHERITANCE} grey"></i></span>
+                                    <ui:auditIcon type="default" />
                                 </g:else>
                             </g:if>
                             <g:elseif test="${prop.tenant?.id == consortium?.id && atSubscr}">

@@ -177,9 +177,9 @@
                                                     <%
                                                         if (AuditConfig.getConfig(customProperty)) {
                                                             if (objWithoutProp.isSlaved) {
-                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE_AUTO + '"></i></span>'
+                                                                println '&nbsp;' + ui.auditIcon(type: 'auto')
                                                             } else {
-                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
+                                                                println '&nbsp;' + ui.auditIcon(type: 'default')
                                                             }
                                                         }
                                                     %>
@@ -243,9 +243,9 @@
                                                     <%
                                                         if (AuditConfig.getConfig(privateProperty)) {
                                                             if (objWithoutProp.isSlaved) {
-                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE_AUTO + '"></i></span>'
+                                                                println '&nbsp;' + ui.auditIcon(type: 'auto')
                                                             } else {
-                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
+                                                                println '&nbsp;' + ui.auditIcon(type: 'default')
                                                             }
                                                         }
                                                     %>
@@ -422,9 +422,9 @@
                                                     <%
                                                         if ((customProperty.hasProperty('instanceOf') && customProperty.instanceOf && AuditConfig.getConfig(customProperty.instanceOf)) || AuditConfig.getConfig(customProperty)) {
                                                             if (row.isSlaved) {
-                                                                print '<span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE_AUTO + '"></i></span>'
+                                                                print ui.auditIcon(type: 'auto')
                                                             } else {
-                                                                print '<span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
+                                                                print ui.auditIcon(type: 'default')
                                                             }
                                                         }
                                                     %>
@@ -485,9 +485,9 @@
                                                     <%
                                                         if ((privateProperty.hasProperty('instanceOf') && privateProperty.instanceOf && AuditConfig.getConfig(privateProperty.instanceOf)) || AuditConfig.getConfig(privateProperty)) {
                                                             if (row.isSlaved) {
-                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE_AUTO + '"></i></span>'
+                                                                println '&nbsp;' + ui.auditIcon(type: 'auto')
                                                             } else {
-                                                                println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
+                                                                println '&nbsp;' + ui.auditIcon(type: 'default')
                                                             }
                                                         }
                                                     %>

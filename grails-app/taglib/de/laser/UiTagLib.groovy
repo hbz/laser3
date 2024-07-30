@@ -391,6 +391,35 @@ class UiTagLib {
         }
     }
 
+    // <ui:auditIcon type="default|auto|auto2" />
+
+    def auditIcon = { attrs, body ->  // TODO - in progress
+
+        if (! ['default', 'auto', 'auto2'].contains(attrs.type)) {
+            out << "[auditIconWithTooltip: missing/faulty attribute 'type']"
+        }
+        else {
+            if (attrs.type == 'default') {
+                // Wert wird geerbt
+                out << '<span class="la-popup-tooltip" data-content="' + message(code:'property.audit.target.inherit') + '" data-position="top right">'
+                out << '<i class="' + Icon.SIG.INHERITANCE + ' grey"></i>'
+                out << '</span>'
+            }
+            else if (attrs.type == 'auto') {
+                // Wert wird automatisch geerbt
+                out << '<span class="la-popup-tooltip" data-content="' + message(code: 'property.audit.target.inherit.auto') + '" data-position="top right">'
+                out << '<i class="' + Icon.SIG.INHERITANCE_AUTO + '"></i>'
+                out << '</span>'
+            }
+            else if (attrs.type == 'auto2') { // TODO: merge with 'auto'
+                // Änderungen werden automatisch übernommen
+                out << '<span class="la-popup-tooltip" data-content="' + message(code: 'license.details.isSlaved.tooltip') + '" data-position="top right">'
+                out << '<i class="' + Icon.SIG.INHERITANCE_AUTO + '"></i>'
+                out << '</span>'
+            }
+        }
+    }
+
     // <ui:modeSwitch controller="controller" action="action" params="params" />
 
     def modeSwitch = { attrs, body ->
