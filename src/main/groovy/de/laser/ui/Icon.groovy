@@ -13,6 +13,10 @@ class Icon {
 
         @UIDoc(usage = 'Only for Document attribute: confidentiality')
         public static String DOCUMENT_CONFIDENTIALITY   = 'lock icon'
+
+        @UIDoc(usage = 'Only for License attribute: licenseCategory')
+        public static String LICENSE_CATEGORY           = 'stamp icon'
+
         @UIDoc(usage = 'Only for Org attributes: createdBy / legallyObligedBy')
         public static String ORG_LEGAL_INFORMATION      = 'hands helping icon'
 
@@ -204,6 +208,9 @@ class Icon {
         public static String IS_PUBLIC      = 'lock open icon'
         @UIDoc(usage = 'Generic symbol for: Search')
         public static String SEARCH         = 'search icon'
+
+        @UIDoc(usage = 'Generic symbol for: Pointing hand')
+        public static String POINTING_HAND  = 'hand point right icon'
 
         @UIDoc(usage = 'Generic icon / Caution: free to use')
         public static String CIRCLE         = 'circle icon'

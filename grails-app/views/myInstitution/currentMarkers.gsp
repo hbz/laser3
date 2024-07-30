@@ -33,7 +33,7 @@
 </ui:filter>
 
 <ui:msg class="info" hideClose="true">
-    <i class="icon hand point right"></i> <strong>Hinweis:</strong> Ihre persönlichen Beobachtungslisten sind für andere Nutzer Ihrer Einrichtung nicht sichtbar.
+    <i class="${Icon.SYM.POINTING_HAND}"></i> <strong>Hinweis:</strong> Ihre persönlichen Beobachtungslisten sind für andere Nutzer Ihrer Einrichtung nicht sichtbar.
 </ui:msg>
 
 <g:each in="${myMarkedObjects}" var="objCat">

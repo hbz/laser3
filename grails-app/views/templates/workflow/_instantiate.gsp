@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.workflow.*; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.Subscription; de.laser.workflow.*; de.laser.storage.RDStore;" %>
 
 <%
     Set<WfChecklist> wfTemplateList = WfChecklist.getAllTemplatesByOwnerAndObjType(contextService.getOrg(), target)
@@ -84,7 +84,7 @@
 
                         <div class="ui message info" style="margin-top:1.5em;text-align:left;font-size:14px;font-weight:normal;display:block">
                             <div class="content">
-                                <i class="hand point right outline icon"></i>
+                                <i class="${Icon.SYM.POINTING_HAND}"></i>
                                 Bei einer Kopie werden Informationen aus den Feldern
                                 <strong>Kommentar</strong>, <strong>Vorlage</strong>, <strong>Aufgabe erledigt</strong> und <strong>Datumsangabe</strong>
                                 nicht übernommen.
