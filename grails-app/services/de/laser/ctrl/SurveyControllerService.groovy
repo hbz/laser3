@@ -194,6 +194,8 @@ class SurveyControllerService {
 
             }
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.surveyConfig)
+            result.showSurveyPropertiesForOwer = true
+
             [result: result, status: STATUS_OK]
         }
 
@@ -2374,7 +2376,7 @@ class SurveyControllerService {
                     case "deleteSurveyPropFromConfig":
                         if (params.surveyPropertyConfigId) {
                             SurveyConfigProperties surveyConfigProp = SurveyConfigProperties.get(params.surveyPropertyConfigId)
-                            SurveyInfo surveyInfo = surveyConfigProp.surveyConfig.surveyInfo
+                            //SurveyInfo surveyInfo = surveyConfigProp.surveyConfig.surveyInfo
                             try {
                                 surveyConfigProp.delete()
                                 //result.message = messageSource.getMessage("default.deleted.message", args: [messageSource.getMessage("surveyProperty.label"), ''])

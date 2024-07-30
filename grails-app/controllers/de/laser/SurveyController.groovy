@@ -7,6 +7,7 @@ import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.SurveyControllerService
 import de.laser.helper.Params
 import de.laser.helper.Profiler
+import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.SubscriptionProperty
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
