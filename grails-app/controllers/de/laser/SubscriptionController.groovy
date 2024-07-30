@@ -739,7 +739,7 @@ class SubscriptionController {
 
             row.add(org.sortname)
             row.add(org.name)
-            row.add(org.libraryType.getI10n('value'))
+            row.add(org.libraryType?.getI10n('value'))
             Subscription subscription = result.subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
             if(subscription){
                 row.add(subscription.getLabel())
