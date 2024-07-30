@@ -56,19 +56,6 @@ configurations {
         extendsFrom developmentOnly
     }
 }
-configurations {
-    configureEach {
-        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-            // override dependency from org.grails.plugins:cache
-            if (details.requested.name in ['asset-pipeline-core']) {
-                details.useVersion '4.4.0' // upgrade from 3.x : [freeze] 4.5.* fails
-            }
-            if (details.requested.name in ['asset-pipeline-grails']) {
-                details.useVersion '4.5.1' // upgrade from 3.x
-            }
-        }
-    }
-}
 
 dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -105,6 +92,8 @@ dependencies {
     implementation 'org.elasticsearch:elasticsearch:7.17.22'                                // 2024
     implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.22'  // 2024
 
+    implementation 'org.grails:grails-shell:6.1.2'                          // 2024 : + org.grails.plugins:database-migration
+
     implementation 'org.grails.plugins:spring-security-core:6.1.1'          // 2024
     implementation 'org.grails.plugins:audit-logging:4.0.3'                 // 2021
     implementation 'org.grails.plugins:database-migration:4.2.1', {         // 2023
@@ -132,7 +121,9 @@ dependencies {
 
     // --------------------------------------------------
 
-    implementation 'org.grails:grails-shell:6.1.2'                          // 2024 : + org.grails.plugins:database-migration
+    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-gradle:4.4.0'       // 2024 : [freeze - not 4.5.*] -- JS Closure uglify JS Exception
+    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-core:4.4.0'         // 2024 : [freeze - not 4.5.*] -- java.lang.ClassNotFoundException: org.graalvm.polyglot.Context
+    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-grails:4.5.1'       // 2024 -- No such property: asset for class: de.laser.system.AssetsTagLib
 
     runtimeOnly 'org.apache.tomcat:tomcat-jdbc'
     runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1'                             // 2018 : [?]
