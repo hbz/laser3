@@ -2343,7 +2343,7 @@ class SurveyService {
         List<SurveyPackageResult> surveyPackageResultList = SurveyPackageResult.findAllBySurveyConfigAndParticipant(surveyConfig, participant)
 
         if(surveyPackageResultList){
-            List<CostItem> costItemList = CostItem.findAllBySurveyOrgAndPkgInListAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), surveyPackageResultList.pkg)
+            List<CostItem> costItemList = CostItem.findAllBySurveyOrgAndPkgInList(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), surveyPackageResultList.pkg)
             costItemList.each { CostItem costItem ->
 
                 sumCostInBillingCurrency = sumCostInBillingCurrency+ costItem.costInBillingCurrency
