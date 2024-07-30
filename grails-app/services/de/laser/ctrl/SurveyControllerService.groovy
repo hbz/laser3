@@ -2660,6 +2660,18 @@ class SurveyControllerService {
 
                     SurveyConfigProperties.executeUpdate("delete from SurveyConfigProperties scp where scp.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
+                    SurveyPackageResult.executeUpdate("delete from SurveyPackageResult sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
+
+                    SurveyVendorResult.executeUpdate("delete from SurveyVendorResult sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
+
+                    SurveyConfigPackage.executeUpdate("delete from SurveyConfigPackage sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
+
+                    SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
+
+                    SurveyUrl.executeUpdate("delete from SurveyUrl surU where surU.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
+
+                    SurveyLinks.executeUpdate("delete from SurveyLinks srL where srL.sourceSurvey.id = :surveyInfo or srL.targetSurvey.id = :surveyInfo", [surveyInfo: surveyInfo.id])
+
                     SurveyConfig.executeUpdate("delete from SurveyConfig sc where sc.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
                     surveyInfo.delete()
