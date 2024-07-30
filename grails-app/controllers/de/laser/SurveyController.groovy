@@ -1108,7 +1108,7 @@ class SurveyController {
             row.add((deal != IdentifierNamespace.UNKNOWN && deal != null) ? deal : '')
             row.add(org.sortname)
             row.add(org.name)
-            row.add(org.libraryType.getI10n('value'))
+            row.add(org.libraryType?.getI10n('value'))
 
             SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, result.surveyConfig)
             if(surveyOrg){
@@ -1171,6 +1171,46 @@ class SurveyController {
                 return
             }
         }else {
+
+            if(params.actionForSurveyProperty in ['addSurveyPropToConfig', 'deleteSurveyPropFromConfig', 'moveUp', 'moveDown']) {
+                ctrlResult.result.surveyConfig.refresh()
+
+                Map<String, Object> modelMap = [
+                        editable                : ctrlResult.result.editable,
+                        surveyInfo              : ctrlResult.result.surveyInfo,
+                        surveyConfig            : ctrlResult.result.surveyConfig,
+                        error                   : ctrlResult.result.error,
+                        props_div               : "${params.props_div}", // JS markup id
+                ]
+
+                LinkedHashSet<SurveyConfigProperties> surveyProperties = null
+
+                if(params.props_div == 'survey_private_properties'){
+                    modelMap.surveyProperties = ctrlResult.result.surveyConfig.getPrivateSurveyConfigProperties()
+                    modelMap.selectablePrivateProperties = true
+                }
+                else if(params.props_div == 'survey_grouped_custom_properties'){
+                    PropertyDefinitionGroup pdg = PropertyDefinitionGroup.get(Long.valueOf(params.pdg_id))
+                    if(pdg) {
+                        modelMap.surveyProperties = ctrlResult.result.surveyConfig.getSurveyConfigPropertiesByPropDefGroup(pdg)
+                        modelMap.pdg = pdg
+                    }
+                }
+                else if(params.props_div == 'survey_orphaned_properties'){
+                    def allPropDefGroups = ctrlResult.result.surveyConfig.getCalculatedPropDefGroups(ctrlResult.result.surveyInfo.owner)
+                    List groupedProperties = []
+                    allPropDefGroups.sorted?.each{ def entry ->
+                        PropertyDefinitionGroup pdg = entry[1]
+                        groupedProperties <<  ctrlResult.result.surveyConfig.getSurveyConfigPropertiesByPropDefGroup(pdg)
+                    }
+
+                    modelMap.surveyProperties = ctrlResult.result.surveyConfig.getOrphanedSurveyConfigProperties(groupedProperties)
+                }
+
+                modelMap.showSurveyPropertiesForOwer = true
+                render(template: "/templates/survey/properties_table", model: modelMap)
+                return
+            }
             if(ctrlResult.result.error)
                 flash.error = ctrlResult.result.error
 
