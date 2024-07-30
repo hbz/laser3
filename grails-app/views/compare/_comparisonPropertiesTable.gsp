@@ -171,15 +171,11 @@
                                 <g:if test="${(propValue.hasProperty('instanceOf') && propValue.instanceOf && AuditConfig.getConfig(propValue.instanceOf)) || AuditConfig.getConfig(propValue)}">
                                     <g:if test="${object.isSlaved}">
                                         &nbsp;
-                                        <span class="la-popup-tooltip"
-                                              data-content="${message(code: 'property.audit.target.inherit.auto')}"
-                                              data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
+                                        <ui:auditIcon type="auto" />
                                     </g:if>
                                     <g:else>
                                         &nbsp;
-                                        <span class="la-popup-tooltip"
-                                              data-content="${message(code: 'property.audit.target.inherit')}"
-                                              data-position="top right"><i class="${Icon.SIG.INHERITANCE} grey"></i></span>
+                                        <ui:auditIcon type="default" />
                                     </g:else>
                                 </g:if>
                                 <g:elseif test="${propValue.tenant?.id == consortium?.id && atSubscr}">

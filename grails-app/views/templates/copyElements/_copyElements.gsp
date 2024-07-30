@@ -105,7 +105,7 @@
                                     </div>
                                     <%
                                         if (AuditConfig.getConfig(altname)) {
-                                            println '<span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
+                                            println ui.auditIcon(type: 'default')
                                         }
                                     %>
                                 </g:each>
@@ -166,9 +166,9 @@
                                             <%
                                                 if (AuditConfig.getConfig(targetObject, objProperty)) {
                                                     if (targetObject.isSlaved) {
-                                                        println '<span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                        println ui.auditIcon(type: 'auto')
                                                     } else {
-                                                        println '<span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
+                                                        println ui.auditIcon(type: 'default')
                                                     }
                                                 }
                                             %>
@@ -712,7 +712,7 @@
                                 </div>
                                 <%
                                     if (AuditConfig.getConfig(ident)) {
-                                        println '<span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
+                                        println ui.auditIcon(type: 'default')
                                     }
                                 %>
                             </g:each>

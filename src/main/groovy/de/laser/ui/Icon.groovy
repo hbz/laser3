@@ -13,6 +13,10 @@ class Icon {
 
         @UIDoc(usage = 'Only for Document attribute: confidentiality')
         public static String DOCUMENT_CONFIDENTIALITY   = 'lock icon'
+
+        @UIDoc(usage = 'Only for License attribute: licenseCategory')
+        public static String LICENSE_CATEGORY           = 'stamp icon'
+
         @UIDoc(usage = 'Only for Org attributes: createdBy / legallyObligedBy')
         public static String ORG_LEGAL_INFORMATION      = 'hands helping icon'
 
@@ -205,6 +209,9 @@ class Icon {
         @UIDoc(usage = 'Generic symbol for: Search')
         public static String SEARCH         = 'search icon'
 
+        @UIDoc(usage = 'Generic symbol for: Pointing hand')
+        public static String POINTING_HAND  = 'hand point right icon'
+
         @UIDoc(usage = 'Generic icon / Caution: free to use')
         public static String CIRCLE         = 'circle icon'
         @UIDoc(usage = 'Generic icon / Caution: free to use')
@@ -233,7 +240,10 @@ class Icon {
         // assignment
 
         @UIDoc(usage = 'Assignment symbol for: Inheritance')
-        public static String INHERITANCE    = 'thumbtack icon'
+        public static String INHERITANCE        = 'thumbtack icon'
+        @UIDoc(usage = 'Assignment symbol for: Inheritance set auto (COLORED)')
+        public static String INHERITANCE_AUTO   = 'la-thumbtack-regular grey icon'
+
         @UIDoc(usage = 'Assignment symbol for: Is my object')
         public static String MY_OBJECT      = 'star icon'               // todo: duplicate: survey/renew? > Icon.PROP.MANDATORY
     }

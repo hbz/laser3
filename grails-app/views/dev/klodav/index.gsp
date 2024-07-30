@@ -78,20 +78,20 @@
     <p class="ui header">Icons #1</p>
     <div class="ui list">
         <div class="item">
-            <i class="icon large poll"></i>
-            <div class="content"> Umfragen (poll) </div>
+            <i class="${Icon.SURVEY} large"></i>
+            <div class="content"> Umfragen (${Icon.SURVEY}) </div>
         </div>
         <div class="item">
             <i class="icon large chartline"></i>
             <div class="content"> Dashboard (chartline) </div>
         </div>
         <div class="item">
-            <i class="icon large chart pie"></i>
-            <div class="content"> Reporting (chart pie)</div>
+            <i class="${Icon.REPORTING} large"></i>
+            <div class="content"> Reporting (${Icon.REPORTING})</div>
         </div>
         <div class="item">
-            <i class="icon large chart bar"></i>
-            <div class="content"> Statistik (chart bar)</div>
+            <i class="${Icon.STATS} large"></i>
+            <div class="content"> Statistik (${Icon.STATS})</div>
         </div>
     </div>
 </div>

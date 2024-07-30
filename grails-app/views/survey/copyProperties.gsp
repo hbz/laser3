@@ -327,16 +327,10 @@
 
                                         <g:if test="${participant.oldCustomProperty.hasProperty('instanceOf') && participant.oldCustomProperty.instanceOf && AuditConfig.getConfig(participant.oldCustomProperty.instanceOf)}">
                                             <g:if test="${participant.oldSub.isSlaved}">
-                                                <span class="la-popup-tooltip"
-                                                      data-content="${message(code: 'property.audit.target.inherit.auto')}"
-                                                      data-position="top right"><i
-                                                        class="icon grey la-thumbtack-regular"></i></span>
+                                                <ui:auditIcon type="auto" />
                                             </g:if>
                                             <g:else>
-                                                <span class="la-popup-tooltip"
-                                                      data-content="${message(code: 'property.audit.target.inherit')}"
-                                                      data-position="top right"><i
-                                                        class="${Icon.SIG.INHERITANCE} grey"></i></span>
+                                                <ui:auditIcon type="default" />
                                             </g:else>
                                         </g:if>
 
@@ -495,16 +489,10 @@
 
                                         <g:if test="${participant.newCustomProperty.hasProperty('instanceOf') && participant.newCustomProperty.instanceOf && AuditConfig.getConfig(participant.newCustomProperty.instanceOf)}">
                                             <g:if test="${participant.newSub.isSlaved}">
-                                                <span class="la-popup-tooltip"
-                                                      data-content="${message(code: 'property.audit.target.inherit.auto')}"
-                                                      data-position="top right"><i
-                                                        class="icon grey la-thumbtack-regular"></i></span>
+                                                <ui:auditIcon type="auto" />
                                             </g:if>
                                             <g:else>
-                                                <span class="la-popup-tooltip"
-                                                      data-content="${message(code: 'property.audit.target.inherit')}"
-                                                      data-position="top right"><i
-                                                        class="${Icon.SIG.INHERITANCE} grey"></i></span>
+                                                <ui:auditIcon type="default" />
                                             </g:else>
                                         </g:if>
 

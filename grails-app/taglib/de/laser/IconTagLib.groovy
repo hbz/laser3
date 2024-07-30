@@ -29,9 +29,9 @@ class IconTagLib {
             case 'affiliation':
                 Role fr = contextService.getUser().formalRole
                 if (fr) {
-                    if (fr.authority == Role.INST_USER)   { icon = Icon.AUTH.INST_USER + ' bordered inverted grey la-object-extended' }
-                    if (fr.authority == Role.INST_EDITOR) { icon = Icon.AUTH.INST_EDITOR + ' bordered inverted grey la-object-extended' }
-                    if (fr.authority == Role.INST_ADM)    { icon = Icon.AUTH.INST_ADM + ' bordered inverted grey la-object-extended' }
+                    if (fr.authority == Role.INST_USER)   { icon = Icon.AUTH.INST_USER      + ' bordered inverted grey la-object-extended' }
+                    if (fr.authority == Role.INST_EDITOR) { icon = Icon.AUTH.INST_EDITOR    + ' bordered inverted grey la-object-extended' }
+                    if (fr.authority == Role.INST_ADM)    { icon = Icon.AUTH.INST_ADM       + ' bordered inverted grey la-object-extended' }
                 } else {
                     icon = 'icon user slash bordered inverted grey la-object-extended'
                 }
@@ -195,11 +195,9 @@ class IconTagLib {
         }
         if (hideSurroundingMarkup) {
             out << '<div class="la-inline-flexbox la-popup-tooltip"'
-        }
-        if ( (hideTooltip) &&  (hideSurroundingMarkup) ){
-            out << ' data-content="' + dc + '" data-position="left center" data-variation="tiny"'
-        }
-        if (hideSurroundingMarkup) {
+            if (hideTooltip){
+                out << ' data-content="' + dc + '" data-position="left center" data-variation="tiny"'
+            }
             out << '>'
         }
         out << '<i aria-hidden="true" class="icon ' + icon + ' la-list-icon"></i>'
@@ -343,8 +341,7 @@ class IconTagLib {
 //        String color = attrs.color ? ' ' + attrs.color : ''
         String color = attrs.color ? 'grey' : '' // tmp override
 
-        out << '<span class="la-long-tooltip la-popup-tooltip"'
-        out << ' data-position="bottom center" data-content="' + tt +'">'
+        out << '<span class="la-long-tooltip la-popup-tooltip" data-position="bottom center" data-content="' + tt +'">'
         out << '<i class="' + Icon.ATTR.SUBSCRIPTION_IS_MULTIYEAR + ' ' + color + '"></i>'
         out << '</span>'
     }
@@ -374,8 +371,7 @@ class IconTagLib {
         String tt = message(code: 'default.usage.label')
         String color = attrs.color ? ' grey' : '' // tmp override
 
-        out << '<span class="la-long-tooltip la-popup-tooltip"'
-        out << ' data-position="bottom center" data-content="' + tt +'">'
+        out << '<span class="la-long-tooltip la-popup-tooltip" data-position="bottom center" data-content="' + tt +'">'
         out << '<i class="' + Icon.STATS + ' ' + color + '"></i>'
         out << '</span>'
     }

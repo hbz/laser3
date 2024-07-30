@@ -5,6 +5,7 @@ import de.laser.annotations.DebugInfo
 import de.laser.auth.Role
 import de.laser.auth.UserRole
 import de.laser.base.AbstractJob
+import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.properties.LicenseProperty
@@ -20,6 +21,7 @@ import de.laser.reporting.report.ReportingCache
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import de.laser.stats.LaserStatsCursor
+import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyResult
@@ -251,6 +253,16 @@ class YodaController {
         }
 
         result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def profilerCurrent() {
+        Map result = [:]
+
+        EhcacheWrapper ttl1800 = BeanStore.getCacheService().getTTL1800Cache( SystemActivityProfiler.CACHE_KEY_ACTIVE_USER )
+        result.users = SystemActivityProfiler.getActiveUsers(1000 * 60 * 10).collect { u -> [u, ttl1800.get(u)] }
+
+        render view: '/yoda/profiler/current', model: result
     }
 
     /**

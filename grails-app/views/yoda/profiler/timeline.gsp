@@ -14,6 +14,7 @@
         <g:link controller="yoda" action="profilerLoadtime" class="item">Ladezeiten</g:link>
         <g:link controller="yoda" action="profilerActivity" class="item">Nutzerzahlen</g:link>
         <g:link controller="yoda" action="profilerTimeline" class="item active">Seitenaufrufe</g:link>
+        <g:link controller="yoda" action="profilerCurrent" class="item">..</g:link>
 
         <div style="position:absolute; right:0">
             <div class="ui toggle checkbox">

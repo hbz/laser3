@@ -25,10 +25,10 @@
             <g:else>
                 <div class="ui message info" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
                     <div class="content">
-                        <i class="hand point right outline icon"></i>
+                        <i class="${Icon.SYM.POINTING_HAND}"></i>
                         Ihre Änderungen werden direkt/ohne explizites Speichern wirksam.
                         <br />
-                        <i class="hand point right outline icon"></i>
+                        <i class="${Icon.SYM.POINTING_HAND}"></i>
                         Bei einer Kopie werden Informationen aus den Feldern
                         <strong>Kommentar</strong>, <strong>Vorlage</strong>, <strong>Aufgabe erledigt</strong> und <strong>Datumsangabe</strong>
                         nicht übernommen.

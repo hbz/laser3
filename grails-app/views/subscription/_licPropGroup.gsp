@@ -28,10 +28,10 @@
                         <%
                             if (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) {
                                 if (ownObj.isSlaved) {
-                                    println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                    println '&nbsp;' + ui.auditIcon(type: 'auto')
                                 }
                                 else {
-                                    println '&nbsp; <span class="la-popup-tooltip" data-content="Wert wird geerbt." data-position="top right"><i class="' + Icon.SIG.INHERITANCE + ' grey"></i></span>'
+                                    println '&nbsp;' + ui.auditIcon(type: 'default')
                                 }
                             }
                         %>

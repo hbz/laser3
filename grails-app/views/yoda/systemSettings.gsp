@@ -13,7 +13,7 @@
     <g:set var="systemInsightEnabled" value="${SystemSetting.findByName('SystemInsight').value == 'true'}" />
 
     <ui:msg class="info" hideClose="true">
-        <i class="icon hand point right"></i> ${message(code: 'system.maintenanceMode.info.TMP', args: [HeartbeatJob.HEARTBEAT_IN_SECONDS])}
+        <i class="${Icon.SYM.POINTING_HAND}"></i> ${message(code: 'system.maintenanceMode.info.TMP', args: [HeartbeatJob.HEARTBEAT_IN_SECONDS])}
     </ui:msg>
 
     <table class="ui celled la-js-responsive-table la-table table">
