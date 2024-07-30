@@ -391,17 +391,6 @@ class LicenseService {
                                 RelatedAgent('onixPL:WalkInUser')
                             }
                         }
-                        /*
-                        not mappable because Walk-In Users in LAS:eR keeps note only about the existence of walk-in users, not how they are called in the license text
-                        AgentDefinition {
-                            AgentLabel('Walk-In Users')
-                            AgentType('onixPL:Person')
-                            AgentRelatedAgent {
-                                AgentAgentRelator('onixPL:IsA')
-                                RelatedAgent('Angehörige der Universität') //free-text value of property Walk-In User
-                            }
-                        }
-                        */
                         ResourceDefinition {
                             ResourceLabel('Subscription')
                             ResourceType('onixPL:LicensedContent') //supplying; ResourceType has no controlled list behind
