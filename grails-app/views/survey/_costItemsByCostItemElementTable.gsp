@@ -28,8 +28,8 @@
             <g:set var="sumCostInBillingCurrencyByElement" value="${0}"/>
             <g:each in="${ctByCostItemElement.value}" var="costItem">
                 <g:set var="sumCostInBillingCurrencyAfterTaxByElement"
-                       value="${sumCostInBillingCurrencyAfterTaxByElement + costItem.costInBillingCurrencyAfterTax}"/>
-                <g:set var="sumCostInBillingCurrencyByElement" value="${sumCostInBillingCurrencyByElement + costItem.costInBillingCurrency}"/>
+                       value="${sumCostInBillingCurrencyAfterTaxByElement + (costItem.costInBillingCurrencyAfterTax ?: 0)}"/>
+                <g:set var="sumCostInBillingCurrencyByElement" value="${sumCostInBillingCurrencyByElement + (costItem.costInBillingCurrency ?: 0)}"/>
             </g:each>
 
             <g:set var="sumCostInBillingCurrencyAfterTax" value="${sumCostInBillingCurrencyAfterTax + sumCostInBillingCurrencyAfterTaxByElement}"/>
