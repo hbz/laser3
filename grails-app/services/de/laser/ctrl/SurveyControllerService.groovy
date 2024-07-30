@@ -192,6 +192,8 @@ class SurveyControllerService {
 
             }
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.surveyConfig)
+            result.showSurveyPropertiesForOwer = true
+
             [result: result, status: STATUS_OK]
         }
 
@@ -242,9 +244,9 @@ class SurveyControllerService {
             // new: filter preset
             params.orgType = RDStore.OT_INSTITUTION.id
 
-            if (params.tab == 'selectedParticipants') {
+           /* if (params.tab == 'selectedParticipants') {
                 params.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id)
-            }
+            }*/
 
             result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
@@ -254,7 +256,7 @@ class SurveyControllerService {
             GrailsParameterMap cloneParams = params.clone()
             cloneParams.removeAll { it.value != '' }
             cloneParams.orgType = RDStore.OT_INSTITUTION.id
-            cloneParams.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id)
+            //cloneParams.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id)
             cloneParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
             cloneParams.sub = result.subscription
 
@@ -2372,7 +2374,7 @@ class SurveyControllerService {
                     case "deleteSurveyPropFromConfig":
                         if (params.surveyPropertyConfigId) {
                             SurveyConfigProperties surveyConfigProp = SurveyConfigProperties.get(params.surveyPropertyConfigId)
-                            SurveyInfo surveyInfo = surveyConfigProp.surveyConfig.surveyInfo
+                            //SurveyInfo surveyInfo = surveyConfigProp.surveyConfig.surveyInfo
                             try {
                                 surveyConfigProp.delete()
                                 //result.message = messageSource.getMessage("default.deleted.message", args: [messageSource.getMessage("surveyProperty.label"), ''])
