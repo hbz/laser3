@@ -116,7 +116,7 @@
 
 <ui:modal id="createSurveyPropertyModal" message="surveyProperty.create_new.label">
 
-    <g:form class="ui form" action="actionsForSurveyProperty" method="post" params="[surveyInfo: surveyInfo?.id, actionForSurveyProperty: 'createSurveyProperty']">
+    <g:form class="ui form" action="actionsForSurveyProperty" method="post" params="[id: surveyInfo?.id, actionForSurveyProperty: 'createSurveyProperty']">
 
         <div class="field">
             <label for="pd_name" class="property-label">Name</label>
