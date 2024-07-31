@@ -37,7 +37,7 @@
                     <td class="center aligned">
                         <g:if test="${docctx.sharedFrom}">
                             <span class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
-                                <i class="grey alternate share icon"></i>
+                                <i class="${Icon.SIG.SHARED_OBJECT} grey"></i>
                             </span>
                         </g:if>
 
@@ -46,7 +46,7 @@
                                 <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
                                     <g:link controller="ajax" action="toggleShare" class="${Btn.MODERN.POSITIVE}"
                                             params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
-                                        <i class="alternate share icon"></i>
+                                        <i class="${Icon.SIG.SHARED_OBJECT}"></i>
                                     </g:link>
                                 </span>
                             </g:if>

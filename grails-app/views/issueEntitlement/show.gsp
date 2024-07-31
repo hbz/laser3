@@ -191,8 +191,7 @@
                     <g:if test="${issueEntitlementInstance.ieGroups}">
                         <g:each in="${issueEntitlementInstance.ieGroups.sort { it.ieGroup.name }}" var="titleGroup">
                             <div class="item">
-                                <i class="grey icon object group la-popup-tooltip"
-                                   data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
+                                <i class="${Icon.IE_GROUP} grey la-popup-tooltip" data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
 
                                 <div class="content">
                                     <g:link controller="subscription" action="index"

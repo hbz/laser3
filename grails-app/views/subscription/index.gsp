@@ -629,7 +629,7 @@
                                                             <g:if test="${subscription.ieGroups.size() > 0}">
                                                                 <g:each in="${ie.ieGroups.sort { it.ieGroup.name }}" var="titleGroup">
                                                                     <div class="item">
-                                                                        <i class="grey icon object group la-popup-tooltip"
+                                                                        <i class="${Icon.IE_GROUP} grey la-popup-tooltip"
                                                                            data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
                                                                         <div class="content">
                                                                             <div class="header"><g:message code="subscription.details.ieGroups"/></div>
@@ -644,7 +644,7 @@
                                                                     <g:link action="editEntitlementGroupItem"
                                                                             params="${[cmd: 'edit', ie: ie.id, id: subscription.id]}"
                                                                             class="${Btn.SIMPLE} tiny trigger-modal">
-                                                                        <i class="object group icon"></i>${message(code: 'subscription.details.ieGroups.edit')}
+                                                                        <i class="${Icon.IE_GROUP}"></i>${message(code: 'subscription.details.ieGroups.edit')}
                                                                     </g:link>
                                                                 </g:if>
                                                             </g:if>

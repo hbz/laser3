@@ -99,7 +99,7 @@
                             <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
                             %{--//Vorerst alle Umfrage Dokumente als geteilt nur Kennzeichen--}%
                             <span class="la-popup-tooltip" data-content="${message(code: 'property.share.tooltip.on')}">
-                                <i class="green alternate share icon"></i>
+                                <i class="${Icon.SIG.SHARED_OBJECT} green"></i>
                             </span>
                         </td>
                         <td class="x">

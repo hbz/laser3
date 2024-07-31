@@ -246,6 +246,9 @@ class Icon {
 
         @UIDoc(usage = 'Assignment symbol for: Is my object')
         public static String MY_OBJECT      = 'star icon'               // todo: duplicate: survey/renew? > Icon.PROP.MANDATORY
+
+        @UIDoc(usage = 'Assignment symbol for: Shared object')
+        public static String SHARED_OBJECT  = 'share alternate icon'
     }
 
     class TOOLTIP {
@@ -283,6 +286,8 @@ class Icon {
     public static String GASCO                      = 'layer group icon'
 
     public static String IDENTIFIER                 = 'barcode icon'
+
+    public static String IE_GROUP                   = 'object group icon'
 
     public static String LICENSE                    = 'balance scale icon'
 
