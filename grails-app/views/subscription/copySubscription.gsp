@@ -72,7 +72,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
             <div class="description">
                 <i class="${Icon.PACKAGE}"></i>    ${message(code: 'package.label')} <br />
                 <i class="${Icon.TIPP}"></i>       ${message(code: 'title')} <br />
-                <i class="icon object group"></i>   ${message(code: 'subscription.details.ieGroups')}
+                <i class="${Icon.IE_GROUP}"></i>   ${message(code: 'subscription.details.ieGroups')}
             </div>
         </div>
     </div>

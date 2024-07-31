@@ -121,16 +121,14 @@
                                 <g:if test="${object._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_PARTICIPATION]}">
                                     <div class="right aligned wide column">
                                         <g:if test="${role.isShared}">
-                                            <span data-position="top left" class="la-popup-tooltip"
-                                                  data-content="${message(code: 'property.share.tooltip.on')}">
-                                                <i class="la-share icon"></i>
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code: 'property.share.tooltip.on')}">
+                                                <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
                                             </span>
 
                                         </g:if>
                                         <g:else>
-                                            <span data-position="top left" class="la-popup-tooltip"
-                                                  data-content="${message(code: 'property.share.tooltip.off')}">
-                                                <i class="la-share slash icon"></i>
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code: 'property.share.tooltip.off')}">
+                                                <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
                                             </span>
                                         </g:else>
 

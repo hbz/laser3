@@ -28,7 +28,7 @@
 
                             %{--//Vorerst alle Umfrage Dokumente als geteilt nur Kennzeichen--}%
                             <span class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
-                                <i class="green alternate share icon"></i>
+                                <i class="${Icon.SIG.SHARED_OBJECT_ON} green"></i>
                             </span>
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <g:if test="${supportedMimeType}">
@@ -74,13 +74,13 @@
                                                       data-position="top right"
                                                       data-content="${message(code: 'property.share.tooltip.on')}"
                                                         role="button">
-                                            <i class="la-share icon"></i>
+                                            <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
                                         </ui:remoteLink>
 
                                     </g:if>
                                     <g:else>
                                         <button class="ui icon button js-open-confirm-modal-copycat js-no-wait-wheel">
-                                            <i class="la-share slash icon"></i>
+                                            <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
                                         </button>
                                         <ui:remoteLink class="js-gost la-popup-tooltip"
                                                       controller="ajax" action="toggleShare"

@@ -156,10 +156,10 @@
                             print "&nbsp;&nbsp;&nbsp;&nbsp; ${dc.id} : "
 
                             if (dc.isShared) {
-                                print " <i class='ui icon share alternate square'></i> "
+                                print " <i class='${Icon.SIG.SHARED_OBJECT} square'></i> "
                             }
                             if (dc.sharedFrom) {
-                                print " <i class='ui icon share alternate'></i> "
+                                print " <i class='${Icon.SIG.SHARED_OBJECT_ON}'></i> "
                             }
 
                             if (dc.license) {
