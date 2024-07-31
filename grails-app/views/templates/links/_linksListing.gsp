@@ -139,7 +139,7 @@
                                                                     params="${[license: link.sourceLicense.id, id: subscription.id, unlinkWithChildren: true]}"
                                                                     role="button"
                                                                     aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                                <i class="la-share slash icon"></i>
+                                                                <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
                                                             </g:link>
                                                         </span>
                                                     </g:if>

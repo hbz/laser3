@@ -136,7 +136,7 @@
                                                    data-done=""
                                                    data-update="container-documents"
                                                    role="button">
-                                        <i class="la-share slash icon"></i>
+                                        <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
                                     </ui:remoteLink>
                                 </g:else>
                             </g:if>
@@ -226,7 +226,7 @@
 %{--                                                      data-done=""--}%
 %{--                                                      data-update="container-documents"--}%
 %{--                                                      role="button">--}%
-%{--                                        <i class="la-share slash icon"></i>--}%
+%{--                                        <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>--}%
 %{--                                    </ui:remoteLink>--}%
 %{--                                </g:else>--}%
 %{--                            </g:if>--}%

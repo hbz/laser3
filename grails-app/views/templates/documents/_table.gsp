@@ -166,7 +166,7 @@
                                 <g:if test="${instance?.respondsTo('showUIShareButton')}">
                                     <g:if test="${docctx.sharedFrom}">
                                         <span class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
-                                            <i class="${Icon.SIG.SHARED_OBJECT} grey"></i>
+                                            <i class="${Icon.SIG.SHARED_OBJECT_ON} grey"></i>
                                         </span>
                                     </g:if>
                                     <g:if test="${instance?.showUIShareButton()}">
@@ -174,7 +174,7 @@
                                             <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
                                                 <g:link controller="ajax" action="toggleShare" class="${Btn.MODERN.POSITIVE}"
                                                         params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), reload:true, ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
-                                                    <i class="${Icon.SIG.SHARED_OBJECT}"></i>
+                                                    <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
                                                 </g:link>
                                             </span>
                                         </g:if>
@@ -182,7 +182,7 @@
                                             <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.off')}">
                                                 <g:link controller="ajax" action="toggleShare" class="${Btn.MODERN.SIMPLE}"
                                                         params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), reload:true, ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
-                                                    <i class="la-share slash icon"></i>
+                                                    <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
                                                 </g:link>
                                             </span>
                                         </g:else>

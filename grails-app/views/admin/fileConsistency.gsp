@@ -159,7 +159,7 @@
                                 print " <i class='${Icon.SIG.SHARED_OBJECT} square'></i> "
                             }
                             if (dc.sharedFrom) {
-                                print " <i class='${Icon.SIG.SHARED_OBJECT}'></i> "
+                                print " <i class='${Icon.SIG.SHARED_OBJECT_ON}'></i> "
                             }
 
                             if (dc.license) {

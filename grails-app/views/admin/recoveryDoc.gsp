@@ -44,7 +44,7 @@
                                         print " <i class='${Icon.SIG.SHARED_OBJECT} square'></i> "
                                     }
                                     if (dc.sharedFrom) {
-                                        print " <i class='${Icon.SIG.SHARED_OBJECT}'></i> "
+                                        print " <i class='${Icon.SIG.SHARED_OBJECT_ON}'></i> "
                                     }
 
                                     if (dc.license) {
@@ -115,7 +115,7 @@
                                                 print " <i class='${Icon.SIG.SHARED_OBJECT} square'></i> "
                                             }
                                             if (dc.sharedFrom) {
-                                                print " <i class='${Icon.SIG.SHARED_OBJECT}'></i> "
+                                                print " <i class='${Icon.SIG.SHARED_OBJECT_ON}'></i> "
                                             }
                                             if (dc.license) {
                                                 println "License ${dc.license.id} - ${dc.license.reference}, ${dc.license.sortableReference} &nbsp;&nbsp; " +

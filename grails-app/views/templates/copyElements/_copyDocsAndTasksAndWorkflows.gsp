@@ -128,12 +128,12 @@
                                                 <g:if test="${isConsortialObjects}">
                                                     <g:if test="${docctx.isShared}">
                                                         <span data-position="top left" class="la-popup-tooltip la-float-right" data-content="${message(code:'property.share.tooltip.on')}">
-                                                            <i class="la-share icon"></i>
+                                                            <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
                                                         </span>
                                                     </g:if>
                                                     <g:else>
                                                         <span data-position="top left" class="la-popup-tooltip la-float-right" data-content="${message(code:'property.share.tooltip.off')}">
-                                                            <i class="la-share slash icon"></i>
+                                                            <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
                                                         </span>
                                                     </g:else>
                                                 </g:if>
@@ -234,12 +234,12 @@
                                                             <g:if test="${isConsortialObjects}">
                                                                 <g:if test="${docctx.isShared}">
                                                                     <span data-position="top left" class="la-popup-tooltip la-float-right" data-content="${message(code:'property.share.tooltip.on')}">
-                                                                        <i class="la-share icon"></i>
+                                                                        <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
                                                                     </span>
                                                                 </g:if>
                                                                 <g:else>
                                                                     <span data-position="top left" class="la-popup-tooltip la-float-right" data-content="${message(code:'property.share.tooltip.off')}">
-                                                                        <i class="la-share slash icon"></i>
+                                                                        <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
                                                                     </span>
                                                                 </g:else>
                                                             </g:if>
@@ -248,12 +248,12 @@
                                                             <div class="right aligned wide column">
                                                                 <g:if test="${docctx.isShared}">
                                                                     <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
-                                                                        <i class="la-share icon"></i>
+                                                                        <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
                                                                     </span>
                                                                 </g:if>
                                                                 <g:else>
                                                                     <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.off')}">
-                                                                        <i class="la-share slash icon"></i>
+                                                                        <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
                                                                     </span>
                                                                 </g:else>
 

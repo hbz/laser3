@@ -359,16 +359,14 @@
                                         <g:if test="${isConsortialObjects}">
                                             <div class="right aligned wide column">
                                                 <g:if test="${target_role.isShared}">
-                                                    <span data-position="top left" class="la-popup-tooltip"
-                                                          data-content="${message(code: 'property.share.tooltip.on')}">
-                                                        <i class="la-share icon"></i>
+                                                    <span data-position="top left" class="la-popup-tooltip" data-content="${message(code: 'property.share.tooltip.on')}">
+                                                        <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
                                                     </span>
 
                                                 </g:if>
                                                 <g:else>
-                                                    <span data-position="top left" class="la-popup-tooltip"
-                                                          data-content="${message(code: 'property.share.tooltip.off')}">
-                                                        <i class="la-share slash icon"></i>
+                                                    <span data-position="top left" class="la-popup-tooltip" data-content="${message(code: 'property.share.tooltip.off')}">
+                                                        <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
                                                     </span>
                                                 </g:else>
                                             </div>
@@ -451,16 +449,14 @@
                                         <g:if test="${isConsortialObjects}">
                                             <div class="right aligned wide column">
                                                 <g:if test="${target_role.isShared}">
-                                                    <span data-position="top left" class="la-popup-tooltip"
-                                                          data-content="${message(code: 'property.share.tooltip.on')}">
-                                                        <i class="la-share icon"></i>
+                                                    <span data-position="top left" class="la-popup-tooltip" data-content="${message(code: 'property.share.tooltip.on')}">
+                                                        <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
                                                     </span>
 
                                                 </g:if>
                                                 <g:else>
-                                                    <span data-position="top left" class="la-popup-tooltip"
-                                                          data-content="${message(code: 'property.share.tooltip.off')}">
-                                                        <i class="la-share slash icon"></i>
+                                                    <span data-position="top left" class="la-popup-tooltip" data-content="${message(code: 'property.share.tooltip.off')}">
+                                                        <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
                                                     </span>
                                                 </g:else>
                                             </div>
