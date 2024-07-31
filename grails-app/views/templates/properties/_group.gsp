@@ -13,6 +13,7 @@
             <col class="la-prop-col-1">
             <col class="la-prop-col-2">
             <g:if test="${propDefGroup.ownerType == License.class.name}">
+                <col>
                 <col class="la-prop-col-3">
             </g:if>
             <col class="la-prop-col-4">
@@ -23,6 +24,7 @@
                 <th>${message(code:'property.table.property')}</th>
                 <th>${message(code:'default.value.label')}</th>
                 <g:if test="${propDefGroup.ownerType == License.class.name}">
+                    <th>${message(code:'property.table.paragraphNumber')}</th>
                     <th>${message(code:'property.table.paragraph')}</th>
                 </g:if>
                 <th>${message(code:'property.table.notes')}</th>
@@ -92,6 +94,9 @@
                         </g:elseif>
                     </td>
                     <g:if test="${propDefGroup.ownerType == License.class.name}">
+                        <td>
+                            <ui:xEditable owner="${prop}" type="text" field="paragraphNumber" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
+                        </td>
                         <td>
                             <ui:xEditable owner="${prop}" type="textarea" field="paragraph" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </td>
@@ -268,10 +273,10 @@
             <tr>
                 <g:if test="${propDefGroup}">
                     <g:if test="${propDefGroup.ownerType == License.class.name}">
-                        <td colspan="5">
+                        <td colspan="6">
                     </g:if>
                     <g:else>
-                        <td colspan="4">
+                        <td colspan="5">
                     </g:else>
                 </g:if>
                 <g:else>

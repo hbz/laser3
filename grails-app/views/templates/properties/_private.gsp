@@ -21,6 +21,7 @@
             <col class="la-prop-col-1">
             <col class="la-prop-col-2">
             <g:if test="${ownobj instanceof License}">
+                <col>
                 <col class="la-prop-col-3">
             </g:if>
             <col class="la-prop-col-4">
@@ -31,6 +32,7 @@
                 <th>${message(code:'property.table.property')}</th>
                 <th>${message(code:'default.value.label')}</th>
                 <g:if test="${ownobj instanceof License}">
+                    <th>${message(code:'property.table.paragraphNumber')}</th>
                     <th>${message(code:'property.table.paragraph')}</th>
                 </g:if>
                 <th>${message(code:'property.table.notes')}</th>
@@ -91,6 +93,9 @@
                     </td>
                     <g:if test="${ownobj instanceof License}">
                         <td>
+                            <ui:xEditable owner="${prop}" type="text" field="paragraphNumber" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
+                        </td>
+                        <td>
                             <ui:xEditable owner="${prop}" type="textarea" field="paragraph" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </td>
                     </g:if>
@@ -123,7 +128,7 @@
         <tfoot>
             <tr>
                 <g:if test="${privateProperties}">
-                    <td colspan="4">
+                    <td colspan="5">
                 </g:if>
                 <g:else>
                     <td>
