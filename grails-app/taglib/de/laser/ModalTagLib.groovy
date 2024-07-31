@@ -77,7 +77,8 @@ class ModalTagLib {
         if (attrs.hideSubmitButton == true || attrs.hideSubmitButton == 'true') {
         }
         else {
-            out << '<input type="submit" class="' + Btn.POSITIVE + '" name="save" form="' + attrs.form + '" value="' + msgSave + '" />'
+            // todo: Btn.POSITIVE = JS-Trigger
+            out << '<input type="submit" class="ui button green"" name="save" form="' + attrs.form + '" value="' + msgSave + '" />'
         }
 
         out << '</div>'
@@ -127,9 +128,11 @@ class ModalTagLib {
         }
         else {
             if (attrs.formID) {
-                out << '<input type="submit" class="' + Btn.POSITIVE + '" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'#' + attrs.formID + '\').submit()"/>'
+                // todo: Btn.POSITIVE = JS-Trigger
+                out << '<input type="submit" class="ui button green" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'#' + attrs.formID + '\').submit()"/>'
             } else {
-                out << '<input type="submit" class="' + Btn.POSITIVE + '" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'form\').submit()"/>'
+                // todo: Btn.POSITIVE = JS-Trigger
+                out << '<input type="submit" class="ui button green" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'form\').submit()"/>'
             }
         }
 
