@@ -48,3 +48,21 @@
 
     </g:form>
 </ui:modal>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('#customeridentifier').form({
+        on: 'blur',
+        inline: true,
+        fields: {
+            value: {
+                identifier: 'value',
+                rules: [
+                    {
+                        type: 'empty',
+                        prompt: '${message(code: 'validation.needsToBeFilledOut')}'
+                    }
+                ]
+            }
+        }
+    });
+</laser:script>
