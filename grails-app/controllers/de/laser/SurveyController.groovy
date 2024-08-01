@@ -1199,7 +1199,7 @@ class SurveyController {
                 }
                 else if(params.props_div == 'survey_orphaned_properties'){
                     def allPropDefGroups = ctrlResult.result.surveyConfig.getCalculatedPropDefGroups(ctrlResult.result.surveyInfo.owner)
-                    List groupedProperties = []
+                    LinkedHashSet groupedProperties = []
                     allPropDefGroups.sorted?.each{ def entry ->
                         PropertyDefinitionGroup pdg = entry[1]
                         groupedProperties <<  ctrlResult.result.surveyConfig.getSurveyConfigPropertiesByPropDefGroup(pdg)
