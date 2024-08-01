@@ -17,9 +17,9 @@
 <div class="ui info message">
     <p class="ui header">
         Usage
-        <button class="${Btn.MODERN.BASIC} blue" style="float: right"><i class="${Icon.SYM.UNKOWN}"></i></button>
+        <button class="${Btn.MODERN.SIMPLE}" style="float: right"><i class="${Icon.SYM.UNKOWN}"></i></button>
     </p>
-    <pre>&lt;button class=&quot;&dollar;{Btn.MODERN.BASIC} blue&quot;&gt;&lt;i class=&quot;&dollar;{Icon.SYM.UNKOWN}&quot;&gt;&lt;/i&gt;&lt;/button&gt;</pre>
+    <pre>&lt;button class=&quot;&dollar;{Btn.MODERN.SIMPLE}&quot;&gt;&lt;i class=&quot;&dollar;{Icon.SYM.UNKOWN}&quot;&gt;&lt;/i&gt;&lt;/button&gt;</pre>
 </div>
 
 <div class="ui info message hidden">
@@ -29,9 +29,6 @@
 
     <ul>
         <li>Btn.SIMPLE == Btn.PRIMARY ?</li>
-        <li>Btn.BASIC != Btn.MODERN.BASIC</li>
-        <li>Btn.MODERN.BASIC</li>
-        <li>Btn.MODERN.SIMPLE </li>
         <li>Btn.MODERN.PRIMARY ?</li>
         <li>Btn.MODERN.SECONDARY ?</li>
     </ul>
@@ -153,7 +150,7 @@
                     <td> <button class="${Btn.SIMPLE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.COPY}"></i> SIMPLE_CONFIRM</button> </td>
                     <td> Btn.SIMPLE_CONFIRM </td>
                     <td> ${Btn.SIMPLE_CONFIRM} </td>
-                    <td> Colors by declaration; <span class="ui text blue">default: none (blue)</span> <br/> Confirmation Dialog (data-confirm-attributes needed) </td>
+                    <td> Confirmation Dialog (data-confirm-attributes needed) <br /> Colors by declaration; <span class="ui text blue">default: none (blue)</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.POSITIVE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.ADD}"></i> POSITIVE_CONFIRM</button> </td>
@@ -183,7 +180,7 @@
                     <td> <button class="${Btn.SIMPLE_TOOLTIP}" data-content="Something to know ..">SIMPLE_TOOLTIP</button> </td>
                     <td> Btn.SIMPLE_TOOLTIP </td>
                     <td> ${Btn.SIMPLE_TOOLTIP} </td>
-                    <td> Colors by declaration; <span class="ui text blue">default: none (blue)</span> <br/> Tooltip (data-attributes needed) </td>
+                    <td> Tooltip (data-attributes needed) <br /> Colors by declaration; <span class="ui text blue">default: none (blue)</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.POSITIVE_TOOLTIP}" data-content="Something to know ..">POSITIVE_TOOLTIP</button> </td>
@@ -232,7 +229,7 @@
                     <td> <button class="${Btn.ICON.SIMPLE_TOOLTIP}" data-content="Something to know .."><i class="${Icon.CMD.DOWNLOAD}"></i></button> </td>
                     <td> Btn.ICON.SIMPLE_TOOLTIP </td>
                     <td> ${Btn.ICON.SIMPLE_TOOLTIP} </td>
-                    <td> Colors by declaration; <span class="ui text blue">default: none (blue)</span> <br/> Tooltip (data-attributes needed) </td>
+                    <td> Tooltip (data-attributes needed) <br /> Colors by declaration; <span class="ui text blue">default: none (blue)</span> </td>
                 </tr>
                 </tbody>
             </table>
@@ -257,16 +254,10 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td> <button class="${Btn.MODERN.BASIC} orange"><i class="${Icon.CMD.REPLACE}"></i></button> </td>
-                    <td> Btn.MODERN.BASIC <br/> orange </td>
-                    <td> ${Btn.MODERN.BASIC} (+ orange) </td>
-                    <td> Colors by declaration; <span class="ui text red">default: none (BROKEN)</span> </td>
-                </tr>
-                <tr>
-                    <td> <button class="${Btn.MODERN.SIMPLE}"><i class="${Icon.SYM.SQUARE}"></i></button> </td>
+                    <td> <button class="${Btn.MODERN.SIMPLE}"><i class="${Icon.CMD.REPLACE}"></i></button> </td>
                     <td> Btn.MODERN.SIMPLE </td>
                     <td> ${Btn.MODERN.SIMPLE} </td>
-                    <td> </td>
+                    <td> Colors by declaration; <span class="ui text blue">default: none (blue)</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.MODERN.POSITIVE}"><i class="${Icon.CMD.ADD}"></i></button> </td>
@@ -300,16 +291,10 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td> <button class="${Btn.MODERN.BASIC_CONFIRM} orange" data-confirm-term-how="ok"><i class="${Icon.CMD.COPY}"></i></button> </td>
-                    <td> Btn.MODERN.BASIC_CONFIRM <br/> orange </td>
-                    <td> ${Btn.MODERN.BASIC_CONFIRM} (+ orange) </td>
-                    <td> Colors by declaration; <span class="ui text red">default: none (BROKEN)</span> <br/> Confirmation Dialog (data-confirm-attributes needed) </td>
-                </tr>
-                <tr>
-                    <td> <button class="${Btn.MODERN.SIMPLE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.COPY}"></i></button> </td>
-                    <td> Btn.MODERN.SIMPLE_CONFIRM </td>
-                    <td> ${Btn.MODERN.SIMPLE_CONFIRM} </td>
-                    <td> Confirmation Dialog (data-confirm-attributes needed) </td>
+                    <td> <button class="${Btn.MODERN.SIMPLE_CONFIRM} orange" data-confirm-term-how="ok"><i class="${Icon.CMD.COPY}"></i></button> </td>
+                    <td> Btn.MODERN.SIMPLE_CONFIRM <br/> orange </td>
+                    <td> ${Btn.MODERN.SIMPLE_CONFIRM} (+ orange) </td>
+                    <td> Confirmation Dialog (data-confirm-attributes needed) <br /> Colors by declaration; <span class="ui text blue">default: none (blue)</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.MODERN.POSITIVE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.ADD}"></i></button> </td>
@@ -324,16 +309,10 @@
                     <td> Confirmation Dialog (data-confirm-attributes needed) <br /> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.MODERN.BASIC_TOOLTIP} yellow" data-content="Something to know .."><i class="${Icon.UI.HELP}"></i></button> </td>
-                    <td> Btn.MODERN.BASIC_TOOLTIP <br/> yellow </td>
-                    <td> ${Btn.MODERN.BASIC_TOOLTIP} (+ yellow) </td>
-                    <td> Colors by declaration; <span class="ui text red">default: none (BROKEN)</span> <br/> Tooltip (data-attributes needed) </td>
-                </tr>
-                <tr>
-                    <td> <button class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="Something to know .."><i class="${Icon.UI.INFO}"></i></button> </td>
-                    <td> Btn.MODERN.SIMPLE_TOOLTIP </td>
-                    <td> ${Btn.MODERN.SIMPLE_TOOLTIP} </td>
-                    <td> Tooltip (data-attributes needed) </td>
+                    <td> <button class="${Btn.MODERN.SIMPLE_TOOLTIP} yellow" data-content="Something to know .."><i class="${Icon.UI.HELP}"></i></button> </td>
+                    <td> Btn.MODERN.SIMPLE_TOOLTIP <br/> yellow </td>
+                    <td> ${Btn.MODERN.SIMPLE_TOOLTIP} (+ yellow) </td>
+                    <td> Tooltip (data-attributes needed) <br /> Colors by declaration; <span class="ui text blue">default: none (blue)</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.MODERN.POSITIVE_TOOLTIP}" data-content="Something to know .."><i class="${Icon.CMD.ATTACHMENT}"></i></button> </td>
@@ -351,7 +330,7 @@
                     <td> <button class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}" data-confirm-term-how="ok" data-content="Something to know .."><i class="${Icon.CMD.COPY}"></i></button> </td>
                     <td> Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP </td>
                     <td> ${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP} </td>
-                    <td> Confirmation Dialog (data-confirm-attributes needed) <br/> Tooltip (data-attributes needed) </td>
+                    <td> Confirmation Dialog (data-confirm-attributes needed) <br/> Tooltip (data-attributes needed) <br /> Colors by declaration; <span class="ui text blue">default: none (blue)</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.MODERN.POSITIVE_CONFIRM_TOOLTIP}" data-confirm-term-how="ok" data-content="Something to know .."><i class="${Icon.CMD.ADD}"></i></button> </td>

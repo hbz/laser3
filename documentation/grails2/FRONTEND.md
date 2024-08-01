@@ -80,7 +80,7 @@ Mind the convention of data-confirm-id in form element and inner button element
 ```
 <g:form controller="person" action="delete" data-confirm-id="${person?.id?.toString()+ '_form'}">
     <g:hiddenField name="id" value="${person?.id}" />
-        <g:link class="ui icon button blue la-modern-button" controller="person" action="show" id="${person?.id}">
+        <g:link class="ui icon button la-modern-button" controller="person" action="show" id="${person?.id}">
             <i aria-hidden="true" class="write icon"></i>
         </g:link>
         <div class="ui icon negative button la-modern-button js-open-confirm-modal"

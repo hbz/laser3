@@ -318,3 +318,18 @@ body.survey_copyElementsIntoSurvey nav.tabular .item .content .description
 .icon.teal.la-list-icon:before {
     color: #00b5ad;
 }
+
+
+/* --- NEW DEFAULT for la-modern-button --- */
+
+.ui.buttons .button.la-modern-button,
+.ui.button.la-modern-button {
+    color: #004678;
+    background-color: transparent;
+}
+
+.ui.buttons .button.la-modern-button:hover,
+.ui.button.la-modern-button:hover {
+    background-color: #004678;
+    color: #FFFFFF;
+}
