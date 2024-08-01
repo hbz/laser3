@@ -70,12 +70,15 @@ class RenewSubscriptionService extends AbstractLockableService {
                             copySub.issueEntitlements = null
                             copySub.documents = null
                             copySub.orgRelations = null
+                            copySub.providerRelations = null
+                            copySub.vendorRelations = null
                             copySub.prsLinks = null
                             copySub.derivedSubscriptions = null
                             copySub.propertySet = null
                             copySub.costItems = null
                             copySub.ieGroups = null
                             copySub.discountScales = null
+                            copySub.altnames = null
 
                             use(TimeCategory) {
                                 copySub.startDate = subscription.endDate + 1.day
@@ -114,6 +117,40 @@ class RenewSubscriptionService extends AbstractLockableService {
 
                                     if (!newOrgRole.save()) {
                                         log.error("Problem saving OrgRole ${newOrgRole.errors}")
+                                        fail = true
+                                    }
+                                }
+
+                                //ProviderRoles
+                                subscription.providerRelations.each { ProviderRole pvr ->
+                                    def newProviderRoleProperties = pvr.properties
+                                    ProviderRole newProviderRole = new ProviderRole()
+                                    InvokerHelper.setProperties(newProviderRole, newProviderRoleProperties)
+                                    //Vererbung ausschalten
+                                    //newProviderRole.sharedFrom = null
+                                    //newProviderRole.isShared = false
+                                    newProviderRole.subscription = copySub
+                                    newProviderRole.id = null
+
+                                    if (!newProviderRole.save()) {
+                                        log.error("Problem saving ProviderRole ${newProviderRole.errors}")
+                                        fail = true
+                                    }
+                                }
+
+                                //VendorRoles
+                                subscription.vendorRelations.each { VendorRole vr ->
+                                    def newVendorRoleProperties = vr.properties
+                                    VendorRole newVendorRole = new VendorRole()
+                                    InvokerHelper.setProperties(newVendorRole, newVendorRoleProperties)
+                                    //Vererbung ausschalten
+                                    //newVendorRole.sharedFrom = null
+                                    //newVendorRole.isShared = false
+                                    newVendorRole.subscription = copySub
+                                    newVendorRole.id = null
+
+                                    if (!newVendorRole.save()) {
+                                        log.error("Problem saving VendorRole ${newVendorRole.errors}")
                                         fail = true
                                     }
                                 }
@@ -266,6 +303,19 @@ class RenewSubscriptionService extends AbstractLockableService {
 
                                     if (!newSubscriptionDiscountScale.save()) {
                                         log.error("Problem saving SubscriptionDiscountScale ${newSubscriptionDiscountScale.errors}")
+                                        fail = true
+                                    }
+                                }
+
+                                //Altnames
+                                subscription.altnames.each { AlternativeName altname ->
+                                    def altnameProperties = altname.properties
+                                    AlternativeName newAltName = new AlternativeName()
+                                    InvokerHelper.setProperties(newAltName, altnameProperties)
+                                    newAltName.subscription = copySub
+
+                                    if(!newAltName.save()) {
+                                        log.error("Problem saving AlternativeName ${newAltName.errors}")
                                         fail = true
                                     }
                                 }
