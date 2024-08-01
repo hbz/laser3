@@ -14,32 +14,26 @@ class Btn {
 //        public static String SECONDARY     = 'ui button secondary icon la-modern-button'
 
         @UIDoc(usage = 'Buttons/Links/Inputs with Icon. Colors by declaration!')
-        public static String BASIC          = 'ui button icon la-modern-button'
-        @UIDoc(usage = 'TODO: refactoring; la-modern-button does not work without declared color!')
-        public static String SIMPLE         = 'ui button blue icon la-modern-button'        // TODO: remove blue; merge with PRIMARY ?
+        public static String SIMPLE         = 'ui button icon la-modern-button'        // TODO: remove blue; merge with PRIMARY ?
         public static String POSITIVE       = 'ui button positive icon la-modern-button'
         public static String NEGATIVE       = 'ui button negative icon la-modern-button'
 
         @UIDoc(usage = 'Buttons/Links/Inputs with Icon and Js: Confirmation Dialog (data-confirm-attributes needed). Colors by declaration!')
-        public static String BASIC_CONFIRM     = 'ui button icon la-modern-button js-open-confirm-modal'
-        @UIDoc(usage = 'Buttons/Links/Inputs (green) with Icon and Js: Confirmation Dialog (data-confirm-attributes needed); TODO: refactoring; la-modern-button does not work without declared color!')    // not used yet
-        public static String SIMPLE_CONFIRM    = 'ui button blue icon la-modern-button js-open-confirm-modal'                                                                                               // not used yet
+        public static String SIMPLE_CONFIRM    = 'ui button icon la-modern-button js-open-confirm-modal'                                                                                               // not used yet
         @UIDoc(usage = 'Buttons/Links/Inputs (green) with Icon and Js: Confirmation Dialog (data-confirm-attributes needed)')
         public static String POSITIVE_CONFIRM  = 'ui button positive icon la-modern-button js-open-confirm-modal'
         @UIDoc(usage = 'Buttons/Links/Inputs (red) with Icon and Js: Confirmation Dialog (data-confirm-attributes needed)')
         public static String NEGATIVE_CONFIRM  = 'ui button negative icon la-modern-button js-open-confirm-modal'
 
         @UIDoc(usage = 'Buttons/Links/Inputs with Icon and Js: Tooltip (data-attributes needed). Colors by declaration!')
-        public static String BASIC_TOOLTIP       = 'ui button icon la-modern-button la-popup-tooltip'
-         @UIDoc(usage = 'Buttons/Links/Inputs with Icon and Js: Tooltip (data-attributes needed); TODO: refactoring; la-modern-button does not work without declared color!')
-        public static String SIMPLE_TOOLTIP      = 'ui button blue icon la-modern-button la-popup-tooltip'
+        public static String SIMPLE_TOOLTIP      = 'ui button icon la-modern-button la-popup-tooltip'
         @UIDoc(usage = 'Buttons/Links/Inputs (green) with Icon and Js: Tooltip (data-attributes needed)')
         public static String POSITIVE_TOOLTIP    = 'ui button positive icon la-modern-button la-popup-tooltip'
         @UIDoc(usage = 'Buttons/Links/Inputs (red) with Icon and Js: Tooltip (data-attributes needed)')
         public static String NEGATIVE_TOOLTIP    = 'ui button negative icon la-modern-button la-popup-tooltip'
 
-        @UIDoc(usage = 'Buttons/Links/Inputs with Icon and Js: Confirmation Dialog (data-confirm-attributes needed) and Tooltip (data-attributes needed); TODO: refactoring; la-modern-button does not work without declared color!')
-        public static String SIMPLE_CONFIRM_TOOLTIP      = 'ui button blue icon la-modern-button js-open-confirm-modal la-popup-tooltip'
+        @UIDoc(usage = 'Buttons/Links/Inputs with Icon and Js: Confirmation Dialog (data-confirm-attributes needed) and Tooltip (data-attributes needed). Colors by declaration!')
+        public static String SIMPLE_CONFIRM_TOOLTIP      = 'ui button icon la-modern-button js-open-confirm-modal la-popup-tooltip'
         @UIDoc(usage = 'Buttons/Links/Inputs (green) with Icon and Js: Confirmation Dialog (data-confirm-attributes needed) and Tooltip (data-attributes needed)')
         public static String POSITIVE_CONFIRM_TOOLTIP    = 'ui button positive icon la-modern-button js-open-confirm-modal la-popup-tooltip'
         @UIDoc(usage = 'Buttons/Links/Inputs (red) with Icon and Js: Confirmation Dialog (data-confirm-attributes needed) and Tooltip (data-attributes needed)')
