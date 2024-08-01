@@ -309,7 +309,7 @@ class UiTagLib {
                             }
                         }
                         else {
-                            out << '<a role="button" data-content="Wert wird nicht vererbt" class="ui icon blue button la-modern-button ' + attrs.class + ' la-audit-button la-popup-tooltip" href="'
+                            out << '<a role="button" data-content="Wert wird nicht vererbt" class="ui icon button la-modern-button ' + attrs.class + ' la-audit-button la-popup-tooltip" href="'
                             out << g.createLink(
                                     controller: 'ajax',
                                     action: 'toggleAudit',
