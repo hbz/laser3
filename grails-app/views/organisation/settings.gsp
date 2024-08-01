@@ -25,7 +25,7 @@
                 <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'mail']" tab="mail" text="${message(code: 'org.setting.tab.mail')}"/>
             </g:if>
             <%--<ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'general']" tab="general" text="${message(code: 'org.setting.tab.general')}"/>--%>
-            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || (OrgSetting.get(contextService.getOrg(), OrgSetting.KEYS.API_LEVEL) != OrgSetting.SETTING_NOT_FOUND && OrgSetting.get(contextService.getOrg(), OrgSetting.KEYS.API_LEVEL).getValue() == 'API_LEVEL_READ') || contextService._hasPerm('FAKE')}">
+            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || (OrgSetting.get(contextService.getOrg(), OrgSetting.KEYS.API_LEVEL) != OrgSetting.SETTING_NOT_FOUND && OrgSetting.get(contextService.getOrg(), OrgSetting.KEYS.API_LEVEL).getValue() in ['API_LEVEL_READ', 'API_LEVEL_INVOICETOOL', 'API_LEVEL_EZB', 'API_LEVEL_OAMONITOR']) || contextService._hasPerm('FAKE')}">
                 <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'api']" tab="api" text="${message(code: 'org.setting.tab.api')}"/>
             </g:if>
             <%-- deactivated U.F.N. as of [ticket=5385], November 8th, 2023 --%>

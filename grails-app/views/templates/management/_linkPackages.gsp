@@ -146,7 +146,7 @@
                     <th>${message(code: 'default.status.label')}</th>
                     <th>${message(code: 'subscription.packages.label')}</th>
                     <th class="la-no-uppercase">
-                        <ui:multiYearIcon isConsortial="true" />
+                        <ui:multiYearIcon />
                     </th>
                     <th>${message(code:'default.actions.label')}</th>
                 </tr>

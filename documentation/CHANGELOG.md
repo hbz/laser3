@@ -7,6 +7,20 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5835    01.08.2024  rc-3.4  3.4.4       Andreas Bug         Lieferanten-Reiter hatten keine IDs
+
+5834    01.08.2024  rc-3.4  3.4.4       Andreas Bug         fehlende we:kb-ID-Exports nachgereicht
+
+5831    31.07.2024  rc-3.4  3.4.4       Andreas Feature     Erweiterung des Kundennummernmodals um Prüfung des Wertes
+
+5824    25.07.2024  rc-3.4  3.4.4       David   Feature     Gasco-Seite: Interne Links unterbinden
+
+--      24.07.2024  rc-3.4  3.4.4       Andreas Bug         überflüssige Verschachtelung in Api-Ausgabe entfernt (nach Mail aus Jülich)
+
+5820    23.07.2024  rc-3.4  3.4.4       Andreas Bug         Einrichtungen konnten nicht über die API abgerufen werden
+
+5819    22.07.2024  rc-3.4  3.4.4       Andreas Bug         falsche Abfrage lud Kundennummer-Schlüsselpaare nicht ein
+
 5818    19.07.2024  rc-3.4  3.4.3       Andreas Bug         Performanzbremse bei der Suche bei "Meine Lizenzen" aufgehoben
 
 5815    18.07.2024  rc-3.4  3.4.3       Andreas Bug         Umfragen können grundsätzlich abgeschickt werden, wenn keine Teilnahme beabsichtigt ist

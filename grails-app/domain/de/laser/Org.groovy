@@ -798,6 +798,15 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         return Identifier.findByOrgAndNs(this, IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID))
     }
 
+    /**
+     * Gets the Leitkriterium for this institution; the Leitkriterium is necessary for the North-Rhine Westphalia billing system.
+     * See <a href="https://www.land.nrw/de/e-rechnung-nrw">the pages of the NRW billing system (page in German)</a>
+     * @return the {@link Identifier} of the {@link IdentifierNamespace#LEIT_KR}
+     */
+    Identifier getLeitkriterium() {
+        return Identifier.findByOrgAndNs(this, IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR))
+    }
+
     boolean isInfoAccessibleFor(Org ctx) {
         if (this.isCustomerType_Inst() && ctx.isCustomerType_Pro()) {
             return (this.id == ctx.id) || (ctx.isCustomerType_Consortium() && Combo.findByToOrgAndFromOrgAndType(ctx, this, RDStore.COMBO_TYPE_CONSORTIUM))
