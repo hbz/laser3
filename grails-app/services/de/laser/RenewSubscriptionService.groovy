@@ -53,7 +53,6 @@ class RenewSubscriptionService extends AbstractLockableService {
             log.info("Current subscriptions reached end date and are now (${currentDate}) to renew: " + currentSubsIds)
 
             if (currentSubsIds) {
-                Subscription.withTransaction {
                     currentSubsIds.each { Long id ->
                         Subscription subscription = Subscription.get(id)
                         if ((subscription._getCalculatedType() == CalculatedType.TYPE_LOCAL) && subscription.isAllowToAutomaticRenewAnnually() && !subscription._getCalculatedSuccessor()) {
@@ -325,19 +324,19 @@ class RenewSubscriptionService extends AbstractLockableService {
                                     if (dctx.owner.title != AUTOMATIC_RENEW_ANNUALLY_DOC_TITLE) {
                                         //Because of autoTimestampEventListener.withoutTimestamps closure the old dateCreated and lastUpdated of doc are not overwritten (see gorm doc ->  Automatic timestamping)
                                         //Because the timestamp handling is only disabled for the duration of the closure, you must flush the session during the closure execution!
-                                        autoTimestampEventListener.withoutTimestamps {
+                                        //autoTimestampEventListener.withoutTimestamps {
                                             Doc newDoc = new Doc()
                                             InvokerHelper.setProperties(newDoc, dctx.owner.properties)
 
-                                            if (newDoc.save(flush: true)) {
+                                            if (newDoc.save()) {
                                                 DocContext newDocContext = new DocContext()
                                                 InvokerHelper.setProperties(newDocContext, dctx.properties)
                                                 newDocContext.subscription = copySub
                                                 newDocContext.owner = newDoc
-                                                newDocContext.dateCreated = new Date()
-                                                newDocContext.lastUpdated = new Date()
+                                                //newDocContext.dateCreated = new Date()
+                                                //newDocContext.lastUpdated = new Date()
 
-                                                if (!newDocContext.save(flush: true)) {
+                                                if (!newDocContext.save()) {
                                                     log.error("Problem saving DocContext ${newDocContext.errors}")
                                                     fail = true
                                                 } else {
@@ -361,7 +360,7 @@ class RenewSubscriptionService extends AbstractLockableService {
                                                 log.error("Problem saving Doc ${newDoc.errors}")
                                                 fail = true
                                             }
-                                        }
+                                        //}
                                     }
                                 }
 
@@ -427,7 +426,6 @@ class RenewSubscriptionService extends AbstractLockableService {
                             }
                         }
                     }
-                }
             }
 
             if (renewFailSubIds.size() > 0 || renewSuccessSubIds.size() > 0 ) {
