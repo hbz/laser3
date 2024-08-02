@@ -18,7 +18,7 @@
 
 <ui:messages data="${flash}"/>
 
-<ui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.addressBook.visible"/>
+<ui:msg class="info" header="${message(code: 'message.information')}" message="myinst.addressBook.visible"/>
 
 <ui:filter>
     <g:form action="addressbook" controller="vendor" method="get" params="[id: vendor.id]" class="ui small form">
@@ -106,7 +106,7 @@
 </div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.app.personCreate = function (contactFor, provider) {
+    JSPC.app.personCreate = function (contactFor, vendor) {
         var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&vendor='+vendor+'&showAddresses=true&showContacts=true';
         JSPC.app.createPersonModal(url)
     }
@@ -127,7 +127,7 @@
             }
         });
     }
-    JSPC.app.addressCreate = function (addressFor, providerId) {
+    JSPC.app.addressCreate = function (addressFor, vendorId) {
         let url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?addressFor=' + addressFor+'&vendorId='+vendorId;
         let func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
         func();

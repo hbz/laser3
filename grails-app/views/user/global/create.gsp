@@ -101,7 +101,7 @@
 
         $("#newUser").submit(function(e){
             e.preventDefault();
-            $(".validateNotEmpty").each(function(k) {
+            $(".validateNotEmpty, .validateMailAddress").each(function(k) {
                 if($(this).val().length === 0) {
                     JSPC.app.addError($(this),'<span id="'+$(this).attr('id')+'Error">'+$('[for="'+$(this).attr('id')+'"]').text()+' <g:message code="validation.needsToBeFilledOut"/></span>');
                 }
@@ -135,20 +135,12 @@
                 $("#userSubmit").attr("disabled",true);
             }
         }
-
         JSPC.app.removeError = function (element,errorSpan) {
             errorSpan.remove();
             element.parent("div").removeClass("error");
             if($(".error").length === 0)
                 $("#userSubmit").removeAttr("disabled");
         }
-        // dropdowns not wished to be clearable
-        $('.ui.search.dropdown.la-not-clearable').dropdown({
-            forceSelection: false,
-            selectOnKeydown: false,
-            fullTextSearch: 'exact',
-            clearable: false,
-        });
 </laser:script>
 
 <laser:htmlEnd />
