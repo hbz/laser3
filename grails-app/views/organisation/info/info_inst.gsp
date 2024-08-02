@@ -461,7 +461,7 @@
                                             </g:link>
                                             <g:if test="${ci.isVisibleForSubscriber}">
                                                 <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
-                                                    <i class="icon eye orange"></i>
+                                                    <i class="${Icon.SIG.VISIBLE_ON} orange"></i>
                                                 </span>
                                             </g:if>
                                         </g:if>

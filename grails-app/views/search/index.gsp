@@ -239,7 +239,7 @@
                                 </g:else>
 
                                 <g:link controller="search" action="index" params="${removeFacet(params, facet, fv)}">
-                                    <i class="delete icon"></i>
+                                    <i class="${Icon.SYM.NO}"></i>
                                 </g:link>
                             </span>
                         </g:each>
