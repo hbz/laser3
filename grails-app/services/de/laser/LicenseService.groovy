@@ -358,11 +358,7 @@ class LicenseService {
                             AgentLabel('Authorized Users')
                             AgentType('onixPL:Person')
                             //the value of Authorized Users cannot be used because it is free text; include paragraphs here
-                            AgentRelatedAgent {
-                                AgentAgentRelator('onixPL:IsOneOf')
-                                //!!! mark here the ___existence___ of the following properties: Walk-In User, (Simuser)
-                                RelatedAgent('onixPL:WalkInUser')
-                            }
+                            LicenseTextLink(href: '')
                         }
                         ResourceDefinition {
                             ResourceLabel('Subscription')
@@ -389,10 +385,29 @@ class LicenseService {
                     }
                     //mandatory 1
                     UsageTerms {
+                        //covers Authorized Users, Alumni Access Walk-In User
+                        //multiple Usage statements per each status
                         Usage {
-                            UsageType()
-                            UsageStatus()
+                            UsageType('onixPL:Use')
+                            UsageStatus('onixPL:Permitted')
                             User()
+                            /*
+
+                                //!!! mark here the ___existence___ of the following properties: Walk-In User, (Simuser)
+                                RelatedAgent('onixPL:WalkInUser')
+                             */
+                            UsedResource()
+                        }
+                        //multiple Usage statements per each status
+                        Usage {
+                            UsageType('onixPL:Use')
+                            UsageStatus('onixPL:Prohibited')
+                            User()
+                            /*
+
+                                //!!! mark here the ___existence___ of the following properties: Walk-In User, (Simuser)
+                                RelatedAgent('onixPL:WalkInUser')
+                             */
                             UsedResource()
                         }
                     }
@@ -479,9 +494,13 @@ class LicenseService {
                             SortNumber(0)
                             Text('4. Kurs-Dossiers und elektronische Bereitstellung 4.2 Zugriffsberechtigte Einrichtungen dürfen lizenzierte Dokumente für Personen, denen die Nutzung des ursprünglichen PDF-Formates nicht möglich ist (z.B. Sehbehinderte), in andere Formate (audio, Braille u.ä.) konvertieren und bereitstellen. Sie werden in diesem Fall gebeten, die konvertierten Dateien dem Distributor zum Verfügung zu stellen, damit sie diesem Personenkreis weltweit zugänglich gemacht werden können.')
                         }
-                        TextElement('id: lp_all_rights_reserved_indicator_01') {
+                        TextElement(id: 'lp_all_rights_reserved_indicator_01') {
                             SortNumber(0)
                             Text('EBSCO hereby grants to the Licensee a nontransferable and non-exclusive right to use the Databases and Services made available by EBSCO according to the terms and conditions of this Agreement.')
+                        }
+                        TextElement(id: 'lp_alumni_access_01') {
+                            SortNumber(0)
+                            Text('1.3.2 [...] Soweit im Nutzungsvertrag nicht abweichend geregelt, sind berechtigte Nutzer nur solche Personen, die [...] zu diesem [dem Kunden] in einem Dienst-, Arbeits- oder Ausbildungsverhältnis stehen. Eine unmittelbare oder mittelbare Nutzung durch andere Personen ist nicht zulässig. (siehe AGB, S. 1)')
                         }
                     }
                 }

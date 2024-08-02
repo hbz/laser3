@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5835    01.08.2024  rc-3.4  3.4.4       Andreas Bug         Lieferanten-Reiter hatten keine IDs
+
+5834    01.08.2024  rc-3.4  3.4.4       Andreas Bug         fehlende we:kb-ID-Exports nachgereicht
+
 5831    31.07.2024  rc-3.4  3.4.4       Andreas Feature     Erweiterung des Kundennummernmodals um Prüfung des Wertes
 
 5824    25.07.2024  rc-3.4  3.4.4       David   Feature     Gasco-Seite: Interne Links unterbinden
