@@ -115,7 +115,7 @@
                                                       ]}"/>
                                         <g:if test="${editable}">
                                             <g:if test="${subscriptionLicenseLink}">
-                                                <div class="ui icon negative buttons">
+                                                <div class="ui buttons">
                                                     <span class="la-popup-tooltip"
                                                           data-content="${message(code: 'license.details.unlink')}">
                                                         <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
