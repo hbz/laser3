@@ -157,12 +157,12 @@
                                 </g:else>
                             </g:if>
                             <g:else>
-                                <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                <g:link controller="ajax" action="deleteIdentifier" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </g:link>
                             </g:else>
                         </g:if>
