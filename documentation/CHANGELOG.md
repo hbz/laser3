@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5842    02.08.2024  rc-3.4  3.4.5       David   Bug         500er bei leerem Dateifeld bei "neue Dokumente"
+
+5836    02.08.2024  rc-3.4  3.4.5       David   Bug         Nutzer ohne Email-Adresse erstellt, obwohl eigentlich Pflichtfeld
+
 5835    01.08.2024  rc-3.4  3.4.4       Andreas Bug         Lieferanten-Reiter hatten keine IDs
 
 5834    01.08.2024  rc-3.4  3.4.4       Andreas Bug         fehlende we:kb-ID-Exports nachgereicht

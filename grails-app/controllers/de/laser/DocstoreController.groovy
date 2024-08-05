@@ -61,16 +61,17 @@ class DocstoreController  {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def uploadDocument() {
-        Doc.withTransaction { TransactionStatus ts ->
-            log.debug("upload document....");
+        log.debug('upload document ..')
 
-            //process file
-            def input_file = request.getFile("upload_file")
-            if (input_file.size == 0) {
-                flash.error = message(code: 'template.emptyDocument.file') as String
-                redirect(url: request.getHeader('referer'))
-                return
-            }
+        //process file
+        def input_file = request.getFile("upload_file")
+        if (input_file.size == 0) {
+            flash.error = message(code: 'template.emptyDocument.file') as String
+            redirect(url: request.getHeader('referer'))
+            return
+        }
+
+        Doc.withTransaction { TransactionStatus ts ->
             //get input stream of file object
             def input_stream = input_file?.inputStream
             String original_filename = request.getFile("upload_file")?.originalFilename
