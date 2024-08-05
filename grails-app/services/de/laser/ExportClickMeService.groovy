@@ -3400,8 +3400,8 @@ class ExportClickMeService {
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
         Org contextOrg = contextService.getOrg()
 
-        EXPORT_SURVEY_EVALUATION.keySet().each {
-            EXPORT_SURVEY_EVALUATION.get(it).fields.each {
+        getDefaultExportSurveyEvaluation().keySet().each {
+            getDefaultExportSurveyEvaluation().get(it).fields.each {
 
                 if((surveyConfig.pickAndChoose || !surveyConfig.subscription) && it.key.startsWith('costItem')){
                     //do nothing
@@ -3486,7 +3486,7 @@ class ExportClickMeService {
     Map<String, Object> getExportSurveyEvaluationFieldsForUI(SurveyConfig surveyConfig) {
 
         Map<String, Object> fields = [:]
-        fields.putAll(EXPORT_SURVEY_EVALUATION)
+        fields.putAll(getDefaultExportSurveyEvaluation())
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
         Org contextOrg = contextService.getOrg()
