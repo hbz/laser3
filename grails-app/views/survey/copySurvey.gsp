@@ -75,6 +75,73 @@
                     </td>
                 </tr>
                 <tr>
+                    <td><g:checkBox name="copySurvey.copyPackageSurvey" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copyPackageSurvey')}</td>
+                    <td>
+                        ${surveyConfig.packageSurvey ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:checkBox name="copySurvey.copyVendorSurvey" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copyVendorSurvey')}</td>
+                    <td>
+                        ${surveyConfig.vendorSurvey ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:checkBox name="copySurvey.copyInvoicingInformation" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copyInvoicingInformation')}</td>
+                    <td>
+                        ${surveyConfig.invoicingInformation ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:checkBox name="copySurvey.copyPackages" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copyPackages')}</td>
+                    <td>
+                        <table class="ui sortable celled la-js-responsive-table la-table table">
+
+                            <thead>
+                            <tr>
+                                <th>${message(code: 'sidewide.number')}</th>
+                                <th>${message(code: 'default.name.label')}</th>
+                                <th>${message(code: 'default.status.label')}</th>
+                            </tr></thead><tbody>
+                        <g:each in="${surveyConfig.surveyPackages.sort { it.pkg.name }}" var="surveyPkg" status="i">
+                            <tr>
+                                <td class="center aligned">${i + 1}</td>
+                                <td>${surveyPkg.pkg.name}</td>
+                                <td>${surveyPkg.pkg.packageStatus?.getI10n('value')}</td>
+                            </tr>
+                        </g:each>
+                        </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:checkBox name="copySurvey.copyVendors" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copyVendors')}</td>
+                    <td>
+                        <table class="ui sortable celled la-js-responsive-table la-table table">
+
+                            <thead>
+                            <tr>
+                                <th>${message(code: 'sidewide.number')}</th>
+                                <th>${message(code: 'default.name.label')}</th>
+                                <th>${message(code: 'default.status.label')}</th>
+                            </tr></thead><tbody>
+                        <g:each in="${surveyConfig.surveyVendors.sort { it.vendor.name }}" var="surveyVendor" status="i">
+                            <tr>
+                                <td class="center aligned">${i + 1}</td>
+                                <td>${surveyVendor.vendor.name}</td>
+                                <td>${surveyVendor.vendor.status?.getI10n('value')}</td>
+                            </tr>
+                        </g:each>
+                        </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
                     <td><g:checkBox name="copySurvey.copyComment" value="${true}"/></td>
                     <td>${message(code: 'copySurvey.copyComment')}</td>
                     <td>
