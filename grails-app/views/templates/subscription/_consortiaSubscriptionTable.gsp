@@ -65,7 +65,7 @@
                         <i class="${Icon.FNC.COST_CONFIG}"></i>
                     </span>&nbsp;/&nbsp;
                     <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
-                        <i class="icon eye"></i>
+                        <i class="${Icon.SIG.VISIBLE_ON}"></i>
                     </span>
                 </th>
             </g:if>
@@ -235,7 +235,7 @@
 
                         <g:if test="${ci?.isVisibleForSubscriber}">
                             <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
-                                <i class="icon eye orange"></i>
+                                <i class="${Icon.SIG.VISIBLE_ON} orange"></i>
                             </span>
                         </g:if>
                     </td>

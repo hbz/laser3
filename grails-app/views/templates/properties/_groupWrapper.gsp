@@ -1,5 +1,5 @@
 <!-- A: templates/properties/_groupWrapper -->
-<%@ page import="de.laser.CustomerTypeService; de.laser.Subscription; de.laser.License; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.License; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*" %>
 <laser:serviceInjection />
 <%-- SHOW --%>
 <%--<div class="ui card la-dl-no-table">--%>
@@ -12,7 +12,7 @@
                 <g:if test="${propDefGroup.ownerType in [License.class.name, Subscription.class.name]}">
                     <g:if test="${propDefGroupBinding?.isVisibleForConsortiaMembers}">
                         <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
-                            <i class="icon eye orange"></i>
+                            <i class="${Icon.SIG.VISIBLE_ON} orange"></i>
                         </span>
                     </g:if>
                 </g:if>

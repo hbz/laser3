@@ -27,8 +27,15 @@ class Icon {
         @UIDoc(usage = 'Only for Org attributes: createdBy / legallyObligedBy=true (COLORED)')
         public static String ORG_LEGAL_INFORMATION_01   = 'red question mark icon'
 
+        @UIDoc(usage = 'Only for Subscription transfer: discount scale')
+        public static String SUBSCRIPTION_DISCOUNT_SCALE    = 'percentage icon'
         @UIDoc(usage = 'Only for Subscription attribute: isMultiYear')
-        public static String SUBSCRIPTION_IS_MULTIYEAR  = 'forward icon'
+        public static String SUBSCRIPTION_IS_MULTIYEAR      = 'forward icon'
+
+        @UIDoc(usage = 'Only for Subscription transfer: survey cancellation')
+        public static String SURVEY_CANCELLATION   = 'times circle icon'
+        @UIDoc(usage = 'Only for Subscription transfer: survey evaluation')
+        public static String SURVEY_EVALUTAION     = 'vote yea icon'
 
         @UIDoc(usage = 'Only for Survey: All results processed by org (COLORED)')
         public static String SURVEY_RESULTS_PROCESSED        = 'edit green icon'
@@ -247,6 +254,9 @@ class Icon {
         @UIDoc(usage = 'Assignment symbol for: Is my object')
         public static String MY_OBJECT      = 'star icon'               // todo: duplicate: survey/renew? > Icon.PROP.MANDATORY
 
+        @UIDoc(usage = 'Assignment symbol for: New object')
+        public static String NEW_OBJECT     = 'certificate icon'
+
         @UIDoc(usage = 'Assignment symbol for: Shared object')          // todo: merge with SHARED_OBJECT_ON
         public static String SHARED_OBJECT      = 'share alternate icon'
 
@@ -254,6 +264,11 @@ class Icon {
         public static String SHARED_OBJECT_ON   = 'la-share icon'
         @UIDoc(usage = 'Assignment symbol for: Shared object - OFF')
         public static String SHARED_OBJECT_OFF  = 'la-share slash icon'
+
+        @UIDoc(usage = 'Assignment symbol for: Object is visible - ON/YES')
+        public static String VISIBLE_ON     = 'eye outline icon'
+        @UIDoc(usage = 'Assignment symbol for: Object is visible - OFF/NO')
+        public static String VISIBLE_OFF    = 'eye outline slash icon'
     }
 
     class TOOLTIP {

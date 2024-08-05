@@ -10,7 +10,7 @@
                 <g:if test="${editable}">
                     <g:if test="${type.id in availableOrgTypeIds}">
                         <div class="content la-space-right">
-                            <div class="ui icon buttons">
+                            <div class="ui buttons">
                                 <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.organisationtype.organisation", args: [type?.getI10n('value')])}"
                                         data-confirm-term-how="delete"

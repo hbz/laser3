@@ -246,7 +246,7 @@
                                                 <g:if test="${editmode}">
                                                     <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, role.provider, roleRespValue)}" />
                                                     <div class="two wide column">
-                                                        <div class="ui icon buttons">
+                                                        <div class="ui buttons">
                                                             <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
                                                                     data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
                                                                     data-confirm-how = "unlink">
@@ -400,7 +400,7 @@
                                                 <g:if test="${editmode}">
                                                     <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, role.provider, roleRespValue)}" />
                                                     <div class="two wide column">
-                                                        <div class="ui icon buttons">
+                                                        <div class="ui buttons">
                                                             <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
                                                                     data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
                                                                     data-confirm-how = "unlink">

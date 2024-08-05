@@ -197,7 +197,7 @@
                                                           data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                           data-content="${message(code:'property.visible.active.tooltip')}" data-position="left center"
                                                           data-update="${custom_props_div}">
-                                            <i class="icon eye"></i>
+                                            <i class="${Icon.SIG.VISIBLE_ON}"></i>
                                         </ui:remoteLink>
                                     </g:if>
                                     <g:else>
@@ -212,7 +212,7 @@
                                                           data-content="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
                                                           data-update="${custom_props_div}"
                                         >
-                                            <i class="icon eye slash"></i>
+                                            <i class="${Icon.SIG.VISIBLE_OFF}"></i>
                                         </ui:remoteLink>
                                     </g:else>
                                 </g:if>
