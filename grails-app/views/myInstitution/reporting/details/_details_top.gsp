@@ -18,7 +18,7 @@
 
     <g:if test="${queryPart in ['org', 'member', 'consortium', /* 'provider', 'vendor' */]}"><!-- TODO -->
         <button id="details-copy-email-button" class="${Btn.MODERN.SIMPLE}" data-href="#detailsCopyEmailModal" data-ui="modal">
-            <i class="icon envelope"></i>
+            <i class="${Icon.SYM.EMAIL}"></i>
         </button>
     </g:if>
 </div>

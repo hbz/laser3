@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.config.ConfigMapper" %>
+<%@ page import="de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.config.ConfigMapper" %>
 <style>
         /** inline style here with intention:
             flex layout helps footer to stick at bottom when main high not high enough
@@ -99,21 +99,21 @@
 
                <div class="ui inverted link list">
                    <div class="item">
-                       <i class="universal access icon"></i>
+                       <i class="${Icon.SYM.UNIVERSAL_ACCESS}"></i>
                        <a target="_blank" class="content" href="https://www.hbz-nrw.de/barrierefreiheit">
                             ${message(code: 'landingpage.footer.4.link1')}
                        </a>
                    </div>
                 <g:if test="${ConfigMapper.getLaserSystemId() == 'LAS:eR-Productive' || ConfigMapper.getLaserSystemId() == 'local'}">
                    <div class="item">
-                        <i class="universal access icon"></i>
+                        <i class="${Icon.SYM.UNIVERSAL_ACCESS}"></i>
                        <g:link controller="public" action="wcagFeedbackForm" class="content">
                            ${message(code: 'landingpage.footer.4.link2')}
                        </g:link>
                    </div>
                 </g:if>
                    <div class="item">
-                       <i class="universal access icon"></i>
+                       <i class="${Icon.SYM.UNIVERSAL_ACCESS}"></i>
                         <g:link target="_blank" controller="public" action="wcagEasyLanguage" class="content">
                             ${message(code: 'landingpage.footer.4.link4')}
                         </g:link>
