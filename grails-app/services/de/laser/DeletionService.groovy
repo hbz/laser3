@@ -428,8 +428,7 @@ class DeletionService {
                     //cost items
                     sub.costItems.clear()
                     deletedCosts.each { tmp ->
-                        tmp.sub = null
-                        tmp.save()
+                        deleteCostItem(tmp)
                     }
 
                     // private properties
