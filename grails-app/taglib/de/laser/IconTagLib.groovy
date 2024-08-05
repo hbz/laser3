@@ -321,13 +321,13 @@ class IconTagLib {
 
                 switch(docctx.shareConf) {
                     case RDStore.SHARE_CONF_UPLOADER_ORG:
-                        markup = '<span class="ui icon la-popup-tooltip" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_UPLOADER_ORG.getI10n('value') + '" style="margin-left:1em"> <i class="icon eye slash blue"></i></span>'
+                        markup = '<span class="la-popup-tooltip" data-content="' + message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_UPLOADER_ORG.getI10n('value') + '" style="margin-left:1em"> <i class="icon eye slash blue"></i></span>'
                         break
                     case RDStore.SHARE_CONF_UPLOADER_AND_TARGET:
-                        markup = '<span class="ui icon la-popup-tooltip" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_UPLOADER_AND_TARGET.getI10n('value') + '" style="margin-left:1em"> <i class="icon eye slash red"></i></span>'
+                        markup = '<span class="la-popup-tooltip" data-content="' + message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_UPLOADER_AND_TARGET.getI10n('value') + '" style="margin-left:1em"> <i class="icon eye slash red"></i></span>'
                         break
                     case RDStore.SHARE_CONF_ALL:
-                        markup = '<span class="ui icon la-popup-tooltip" data-content="'+ message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_ALL.getI10n('value') + '" style="margin-left:1em"> <i class="icon eye blue"></i></span>'
+                        markup = '<span class="la-popup-tooltip" data-content="' + message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_ALL.getI10n('value') + '" style="margin-left:1em"> <i class="icon eye blue"></i></span>'
                         break
                 }
 

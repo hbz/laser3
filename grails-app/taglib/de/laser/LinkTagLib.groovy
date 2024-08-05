@@ -11,11 +11,9 @@ class LinkTagLib {
     static namespace = 'ui'
 
     def linkWithIcon = { attrs, body ->
-        String icon = attrs.icon ?: Icon.LNK.EXTERNAL // TODO erms-5784 doubles 'icon'
-
         out << '<span class="la-popup-tooltip" data-position="top right" data-content="' + message(code: 'tooltip.callUrl') + '" style="bottom:-3px">&nbsp;'
         out << '<a href="' + attrs.href + '" target="_blank" aria-label="' + attrs.href + '">'
-        out << '<i class="' + icon + ' icon" aria-hidden="true"></i>'
+        out << '<i class="' + (attrs.icon ?: Icon.LNK.EXTERNAL) + '" aria-hidden="true"></i>'
         out << '</a>'
         out << '</span>'
     }
