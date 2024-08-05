@@ -27,8 +27,15 @@ class Icon {
         @UIDoc(usage = 'Only for Org attributes: createdBy / legallyObligedBy=true (COLORED)')
         public static String ORG_LEGAL_INFORMATION_01   = 'red question mark icon'
 
+        @UIDoc(usage = 'Only for Subscription transfer: discount scale')
+        public static String SUBSCRIPTION_DISCOUNT_SCALE    = 'percentage icon'
         @UIDoc(usage = 'Only for Subscription attribute: isMultiYear')
-        public static String SUBSCRIPTION_IS_MULTIYEAR  = 'forward icon'
+        public static String SUBSCRIPTION_IS_MULTIYEAR      = 'forward icon'
+
+        @UIDoc(usage = 'Only for Subscription transfer: survey cancellation')
+        public static String SURVEY_CANCELLATION   = 'times circle icon'
+        @UIDoc(usage = 'Only for Subscription transfer: survey evaluation')
+        public static String SURVEY_EVALUTAION     = 'vote yea icon'
 
         @UIDoc(usage = 'Only for Survey: All results processed by org (COLORED)')
         public static String SURVEY_RESULTS_PROCESSED        = 'edit green icon'

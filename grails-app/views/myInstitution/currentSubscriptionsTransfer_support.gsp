@@ -292,19 +292,19 @@
 
                     <th scope="col" rowspan="3" class="center aligned">
                         <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscription.survey.evaluation.label')}" data-position="top center">
-                            <i class="comments large icon"></i>
+                            <i class="${Icon.ATTR.SURVEY_EVALUTAION}"></i>
                         </a>
                     </th>
 
                     <th scope="col" rowspan="3" class="center aligned">
                         <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscription.survey.cancellation.label')}" data-position="top center">
-                            <i class="times circle large icon"></i>
+                            <i class="${Icon.ATTR.SURVEY_CANCELLATION}"></i>
                         </a>
                     </th>
 
                     <th scope="col" rowspan="3" class="center aligned">
                         <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscription.discountScale.label')}" data-position="top center">
-                            <i class="percentage large icon"></i>
+                            <i class="${Icon.ATTR.SUBSCRIPTION_DISCOUNT_SCALE}"></i>
                         </a>
                     </th> %{--Discount Scale--}%
 
