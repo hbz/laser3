@@ -57,7 +57,7 @@
         <tbody>
             <%-- Those are the rights settings the DMS needs to cope with. See the following documentation which is currently a requirement specification, too, and serves as base for ERMS-2393 --%>
             <%
-                Set documentSet = instance.documents
+                Set documentSet = instance.documents.findAll { doc -> doc.status != RDStore.DOC_CTX_STATUS_DELETED }
                 if(instance instanceof Org && inContextOrg) {
                     //get all documents which has been attached to this org
                     documentSet.addAll(docstoreService.getTargettedDocuments(instance))
