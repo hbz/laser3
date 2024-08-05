@@ -1009,9 +1009,14 @@ class YodaController {
      * @return redirects back to the dashboard
      */
     @Secured(['ROLE_YODA'])
-    def reloadwekbNews() {
-        log.info('--> reloadwekbNews')
-        wekbNewsService.updateCache()
+    def manageWekbNews() {
+        log.info('--> manageWekbNews: ' + params.cmd)
+        if (params.cmd == 'update') {
+            wekbNewsService.updateCache()
+        }
+        else if (params.cmd == 'clear') {
+            wekbNewsService.clearCache()
+        }
         redirect controller: 'myInstitution', action: 'dashboard'
     }
 
