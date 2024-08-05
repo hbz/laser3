@@ -208,7 +208,7 @@
                                         <div class="ui list">
                                             <g:each in="${packageInstanceRecord.altname}" var="altname">
                                               <div class="item">
-                                                  <i class="box open grey icon"></i>
+                                                  <i class="${Icon.SYM.ALTNAME} grey"></i>
                                                   <div class="content">
                                                     ${altname}
                                                   </div>

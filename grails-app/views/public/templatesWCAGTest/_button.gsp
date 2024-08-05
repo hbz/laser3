@@ -10,8 +10,8 @@
 
 
 <h3 class="ui dividing header">3.3. Button mit Text und für den Accessibility-Tree verstecktem Icon</h3>
-<button class="ui  button blue"> Filter
-        <i class="cocktail icon"></i>
+<button class="${Btn.SIMPLE}"> Filter
+        <i class="filter icon"></i>
         <span aria-label="Anzahl der gesetzten Filter" class="ui circular label">111</span>
 </button>
 

@@ -199,6 +199,9 @@ class Icon {
         @UIDoc(usage = 'Generic symbol for: External Website')
         public static String URL            = 'globe icon'
 
+        @UIDoc(usage = 'Generic symbol for: Public for API/Data transfer')
+        public static String IS_PUBLIC      = 'lock open icon'
+
         @UIDoc(usage = 'Generic symbol for: Linked objects')
         public static String LINKED_OBJECTS = 'linkify icon'
         @UIDoc(usage = 'Generic symbol for: Status')
@@ -211,10 +214,10 @@ class Icon {
         @UIDoc(usage = 'Generic symbol for: Properties')
         public static String PROPERTIES     = 'tags icon'
 
-        @UIDoc(usage = 'Generic symbol for: Public for API/Data transfer')
-        public static String IS_PUBLIC      = 'lock open icon'
         @UIDoc(usage = 'Generic symbol for: Search')
-        public static String SEARCH         = 'search icon'
+        public static String SEARCH             = 'search icon'
+        @UIDoc(usage = 'Generic symbol for: Universal access')
+        public static String UNIVERSAL_ACCESS   = 'universal access icon'
 
         @UIDoc(usage = 'Generic symbol for: Pointing hand')
         public static String POINTING_HAND  = 'hand point right icon'

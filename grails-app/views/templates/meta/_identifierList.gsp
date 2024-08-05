@@ -111,7 +111,7 @@
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="${Icon.CMD.DELETE} outline"></i>
+                                                <i class="${Icon.CMD.DELETE}"></i>
                                             </g:link>
                                         </g:if>
                                         <g:else>
@@ -139,7 +139,7 @@
                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="${Icon.CMD.DELETE} outline"></i>
+                                            <i class="${Icon.CMD.DELETE}"></i>
                                         </g:link>
                                     </g:else>
                                 </g:if>
@@ -152,7 +152,7 @@
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="${Icon.CMD.DELETE} outline"></i>
+                                        <i class="${Icon.CMD.DELETE}"></i>
                                     </g:link>
                                 </g:else>
                             </g:if>

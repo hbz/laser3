@@ -54,8 +54,7 @@
                                              overwriteEditable="${false}"
                                              class="la-overflow la-ellipsis"/>
                             <g:if test="${changedProperty.subscriptionProperty.value}">
-                                <ui:linkWithIcon
-                                        href="${changedProperty.subscriptionProperty.value}"/>
+                                <ui:linkWithIcon href="${changedProperty.subscriptionProperty.value}"/>
                             </g:if>
                         </g:elseif>
                         <g:elseif

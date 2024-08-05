@@ -118,6 +118,11 @@ class WekbNewsService {
         ttl1800.put('wekbNews', result)
     }
 
+    void clearCache() {
+        EhcacheWrapper ttl1800 = cacheService.getTTL1800Cache(CACHE_KEY)
+        ttl1800.remove('wekbNews')
+    }
+
     /**
      * Fetches the changes of the last given amount of days and assembles the counts of:
      * <ul>
