@@ -669,12 +669,12 @@ class AjaxHtmlController {
                 result.contactPersonForProviderPublic = result.personInstance.isPublic
             }
             else if(result.vendor != null || params.containsKey('vendor')) {
-                Vendor ven = Provider.get(params.long('vendor'))
+                Vendor ven = Vendor.get(params.long('vendor'))
                 if(ven)
-                    result.provider = ven
+                    result.vendor = ven
                 result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
                 result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
-                result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForVendor.label")]) + ' (' + result.provider.toString() + ')'
+                result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForVendor.label")]) + ' (' + result.vendor.toString() + ')'
                 result.contactPersonForVendorPublic = result.personInstance.isPublic
             }
             else {
