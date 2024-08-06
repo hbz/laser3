@@ -1280,6 +1280,16 @@ class SurveyService {
                         mandatoryProperty: surveyConfigProperty.mandatoryProperty).save()
             }
         }
+        if (params.copySurvey.copyPackages) {
+            oldSurveyConfig.surveyPackages.each { SurveyConfigPackage surveyConfigPackage ->
+                new SurveyConfigPackage(surveyConfig: newSurveyConfig, pkg: surveyConfigPackage.pkg).save()
+            }
+        }
+        if (params.copySurvey.copyVendors) {
+            oldSurveyConfig.surveyVendors.each { SurveyConfigVendor surveyConfigVendor ->
+                new SurveyConfigVendor(surveyConfig: newSurveyConfig, vendor: surveyConfigVendor.vendor).save()
+            }
+        }
     }
 
     /**

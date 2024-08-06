@@ -2981,6 +2981,9 @@ class SurveyControllerService {
                                     subSurveyUseForTransfer: (baseSurveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL) ? (SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(sub, true) ? false : true) : false,
                                     scheduledStartDate: params.copySurvey.copyScheduledDates ? baseSurveyConfig.scheduledStartDate : null,
                                     scheduledEndDate: params.copySurvey.copyScheduledDates ? baseSurveyConfig.scheduledEndDate : null,
+                                    vendorSurvey: (params.copySurvey.copyVendorSurvey ? baseSurveyConfig.vendorSurvey : false),
+                                    packageSurvey: (params.copySurvey.copyPackageSurvey ? baseSurveyConfig.packageSurvey : false),
+                                    invoicingInformation: (params.copySurvey.copyInvoicingInformation ? baseSurveyConfig.invoicingInformation : false)
                             ).save()
 
                             surveyService.copySurveyConfigCharacteristic(baseSurveyConfig, newSurveyConfig, params)
@@ -3007,10 +3010,14 @@ class SurveyControllerService {
                                 surveyInfo: newSurveyInfo,
                                 comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
                                 commentForNewParticipants: params.copySurvey.copySurveyConfigCommentForNewParticipants ? baseSurveyConfig.commentForNewParticipants : null,
-                                configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
+                                configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1,
+                                vendorSurvey: (params.copySurvey.copyVendorSurvey ? baseSurveyConfig.vendorSurvey : false),
+                                packageSurvey: (params.copySurvey.copyPackageSurvey ? baseSurveyConfig.packageSurvey : false),
+                                invoicingInformation: (params.copySurvey.copyInvoicingInformation ? baseSurveyConfig.invoicingInformation : false)
                         ).save()
                         surveyService.copySurveyConfigCharacteristic(baseSurveyConfig, newSurveyConfig, params)
                     result.newSurveyInfo = newSurveyInfo
+                    result.newSurveyConfig = newSurveyConfig
                 }
             }
             [result: result, status: STATUS_OK]
