@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5845    05.08.2024  rc-3.4  3.4.5       Andreas Bug         Zeile zur Massenbearbeitung blieb stehen
+
+5841    05.08.2024  rc-3.4  3.4.5       Andreas Bug         Identifier von Anbieter und Lieferanten waren nicht bearbeitbar
+
+5839    05.08.2024  rc-3.4  3.4.5       Andreas Bug         gelöschte Kosten konnten nicht abgeräumt werden
+
+5837/5838    05.08.2024  rc-3.4  3.4.5       Andreas Bug         Variablenfehler behoben
+
 5842    02.08.2024  rc-3.4  3.4.5       David   Bug         500er bei leerem Dateifeld bei "neue Dokumente"
 
 5836    02.08.2024  rc-3.4  3.4.5       David   Bug         Nutzer ohne Email-Adresse erstellt, obwohl eigentlich Pflichtfeld
