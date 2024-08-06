@@ -37,6 +37,8 @@ class Icon {
         @UIDoc(usage = 'Only for Subscription transfer: survey evaluation')
         public static String SURVEY_EVALUTAION     = 'vote yea icon'
 
+        @UIDoc(usage = 'Only for Survey: Participants')
+        public static String SURVEY_PARTICIPANTS   = 'users icon'
         @UIDoc(usage = 'Only for Survey: All results processed by org (COLORED)')
         public static String SURVEY_RESULTS_PROCESSED        = 'edit green icon'
         @UIDoc(usage = 'Only for Survey: Not all results processed by org (COLORED)')
