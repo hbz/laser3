@@ -475,7 +475,7 @@
                             <g:if test="${pkg}">
                                 <g:if test="${perpetuallySubscribed}">
                                     <span class="la-long-tooltip la-popup-tooltip" data-position="top center" data-content="${message(code: 'subscription.perpetuallySubscribed')}">
-                                        <i class="flag outline icon"></i>
+                                        <i class="${Icon.ATTR.SUBSCRIPTION_HAS_PERPETUAL_ACCESS}"></i>
                                     </span>
                                 </g:if>
                             </g:if>

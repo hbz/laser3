@@ -29,8 +29,23 @@ class Icon {
 
         @UIDoc(usage = 'Only for Subscription transfer: discount scale')
         public static String SUBSCRIPTION_DISCOUNT_SCALE    = 'percentage icon'
+
+        @UIDoc(usage = 'Only for Subscription attribute: form (TODO)')
+        public static String SUBSCRIPTION_FORM              = 'dolly icon'              // todo: change icon
+
+        @UIDoc(usage = 'Only for Subscription attribute: hasPerpetualAccess (TODO)')
+        public static String SUBSCRIPTION_HAS_PERPETUAL_ACCESS  = 'flag outline icon'   // todo: change icon
+        @UIDoc(usage = 'Only for Subscription attribute: hasPublishComponent (TODO)')
+        public static String SUBSCRIPTION_HAS_PUBLISH_COMPONENT = 'comment icon'        // todo: change icon
+        @UIDoc(usage = 'Only for Subscription attribute: holdingSelection (TODO)')
+        public static String SUBSCRIPTION_HOLDING_SELECTION     = 'pizza slice icon'    // todo: change icon
+
         @UIDoc(usage = 'Only for Subscription attribute: isMultiYear')
         public static String SUBSCRIPTION_IS_MULTIYEAR      = 'forward icon'
+        @UIDoc(usage = 'Only for Subscription attribute: kind (TODO)')
+        public static String SUBSCRIPTION_KIND              = 'image outline icon'  // todo: change icon
+        @UIDoc(usage = 'Only for Subscription attribute: resource (TODO)')
+        public static String SUBSCRIPTION_RESOURCE          = 'box icon'            // todo: change icon
 
         @UIDoc(usage = 'Only for Subscription transfer: survey cancellation')
         public static String SURVEY_CANCELLATION   = 'times circle icon'
