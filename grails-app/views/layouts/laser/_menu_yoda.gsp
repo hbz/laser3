@@ -146,7 +146,7 @@
 
         <div class="item" role="menuitem" aria-haspopup="true">
             <div class="title">
-                <i class="icon database"></i> ${message(code:'menu.admin.dataManagement')} <i class="dropdown icon"></i>
+                <icon:database /> ${message(code:'menu.admin.dataManagement')} <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="package" action="getDuplicatePackages">List Package Duplicates</ui:link>

@@ -2,7 +2,7 @@
 <laser:htmlStart message="wcagEasyLanguage" />
 
     <h1 class="ui header">
-        <i class="${Icon.SYM.UNIVERSAL_ACCESS}"></i>
+        <icon:universalAccess />
         <span class="content">
             In leichter Sprache
         </span>

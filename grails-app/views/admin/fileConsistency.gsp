@@ -41,7 +41,7 @@
             </tbody>
         </table>
 
-        <h3 class="ui header"><i class="ui database icon"></i><span class="content">Objekte: Doc</span></h3>
+        <h3 class="ui header"><icon:database /><span class="content">Objekte: Doc</span></h3>
 
          <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
             <thead>
@@ -92,7 +92,7 @@
             </tbody>
          </table>
 
-        <h3 class="ui header"><i class="ui database icon"></i><span class="content">Objekte: DocContext</span></h3>
+        <h3 class="ui header"><icon:database /><span class="content">Objekte: DocContext</span></h3>
 
         <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
             <thead>

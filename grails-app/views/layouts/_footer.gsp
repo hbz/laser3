@@ -99,21 +99,21 @@
 
                <div class="ui inverted link list">
                    <div class="item">
-                       <i class="${Icon.SYM.UNIVERSAL_ACCESS}"></i>
+                       <icon:universalAccess />
                        <a target="_blank" class="content" href="https://www.hbz-nrw.de/barrierefreiheit">
                             ${message(code: 'landingpage.footer.4.link1')}
                        </a>
                    </div>
                 <g:if test="${ConfigMapper.getLaserSystemId() == 'LAS:eR-Productive' || ConfigMapper.getLaserSystemId() == 'local'}">
                    <div class="item">
-                        <i class="${Icon.SYM.UNIVERSAL_ACCESS}"></i>
+                        <icon:universalAccess />
                        <g:link controller="public" action="wcagFeedbackForm" class="content">
                            ${message(code: 'landingpage.footer.4.link2')}
                        </g:link>
                    </div>
                 </g:if>
                    <div class="item">
-                       <i class="${Icon.SYM.UNIVERSAL_ACCESS}"></i>
+                       <icon:universalAccess />
                         <g:link target="_blank" controller="public" action="wcagEasyLanguage" class="content">
                             ${message(code: 'landingpage.footer.4.link4')}
                         </g:link>

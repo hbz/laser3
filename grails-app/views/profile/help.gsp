@@ -64,21 +64,21 @@
             <g:message code="help.technicalHelp.spellcheck.content"/>:
         </p>
         <div class="item">
-            <i class="large internet explorer middle aligned icon"></i>
+            <icon:help_ie />
             <div class="content">
                 <div class="description">Microsoft Edge</div>
                 <a href="https://support.microsoft.com/de-de/office/microsoft-editor-pr%C3%BCft-die-grammatik-und-mehr-in-dokumenten-%D0%B5-mails-und-im-internet-91ecbe1b-d021-4e9e-a82e-abc4cd7163d7" target="_blank" class="header">https://support.microsoft.com/de-de/office/microsoft-editor-pr%C3%BCft-die-grammatik-und-mehr-in-dokumenten-%D0%B5-mails-und-im-internet-91ecbe1b-d021-4e9e-a82e-abc4cd7163d7</a>
             </div>
         </div>
         <div class="item">
-            <i class="large chrome middle aligned icon"></i>
+            <icon:help_chrome />
             <div class="content">
                 <div class="description">Google Chrome</div>
                 <a href="https://support.google.com/chrome/answer/12027911?hl=de" class="header" target="_blank">https://support.google.com/chrome/answer/12027911?hl=de</a>
             </div>
         </div>
         <div class="item">
-            <i class="large firefox middle aligned icon"></i>
+            <icon:help_firefox />
             <div class="content">
                 <div class="description">Firefox</div>
                 <a href="https://support.mozilla.org/de/kb/Rechtschreibpruefung-nutzen" target="_blank" class="header">https://support.mozilla.org/de/kb/Rechtschreibpruefung-nutzen</a>
@@ -96,21 +96,21 @@
             <g:message code="help.technicalHelp.browsercache.content"/>:
         </p>
         <div class="item">
-            <i class="large internet explorer middle aligned icon"></i>
+            <icon:help_ie />
             <div class="content">
                 <div class="description">Internet Explorer</div>
                 <a href="https://support.microsoft.com/de-de/help/17438/windows-internet-explorer-view-delete-browsing-history" class="header" target="_blank">https://support.microsoft.com/de-de/help/17438/windows-internet-explorer-view-delete-browsing-history</a>
             </div>
         </div>
         <div class="item">
-            <i class="large chrome middle aligned icon"></i>
+            <icon:help_chrome />
             <div class="content">
                 <div class="description">Google Chrome</div>
                 <a href="https://support.google.com/chrome/answer/2392709?hl=de&ref_topic=7438008" class="header" target="_blank">https://support.google.com/chrome/answer/2392709?hl=de&ref_topic=7438008</a>
             </div>
         </div>
         <div class="item">
-            <i class="large firefox middle aligned icon"></i>
+            <icon:help_firefox />
             <div class="content">
                 <div class="description">Firefox</div>
                 <a href="https://support.mozilla.org/de/kb/Wie-Sie-den-Cache-leeren-konnen#w_cache-manuell-leeren" target="_blank" class="header">https://support.mozilla.org/de/kb/Wie-Sie-den-Cache-leeren-konnen#w_cache-manuell-leeren</a>
@@ -162,21 +162,21 @@
 %{--            <div class="ui relaxed divided list">--}%
 %{--                <p><g:message code="help.technicalHelp.browsercache.content"/>:</p>--}%
 %{--                <div class="item">--}%
-%{--                    <i class="large internet explorer middle aligned icon"></i>--}%
+%{--                    <icon:help_ie />--}%
 %{--                    <div class="content">--}%
 %{--                        <div class="description">Internet Explorer</div>--}%
 %{--                        <a href="https://support.microsoft.com/de-de/help/17438/windows-internet-explorer-view-delete-browsing-history" class="header" target="_blank">https://support.microsoft.com/de-de/help/17438/windows-internet-explorer-view-delete-browsing-history</a>--}%
 %{--                    </div>--}%
 %{--                </div>--}%
 %{--                <div class="item">--}%
-%{--                    <i class="large chrome middle aligned icon"></i>--}%
+%{--                    <icon:help_chrome />--}%
 %{--                    <div class="content">--}%
 %{--                        <div class="description">Google Chrome</div>--}%
 %{--                        <a href="https://support.google.com/chrome/answer/2392709?hl=de&ref_topic=7438008" class="header" target="_blank">https://support.google.com/chrome/answer/2392709?hl=de&ref_topic=7438008</a>--}%
 %{--                    </div>--}%
 %{--                </div>--}%
 %{--                <div class="item">--}%
-%{--                    <i class="large firefox middle aligned icon"></i>--}%
+%{--                    <icon:help_firefox />--}%
 %{--                    <div class="content">--}%
 %{--                        <div class="description">Firefox</div>--}%
 %{--                        <a href="https://support.mozilla.org/de/kb/Wie-Sie-den-Cache-leeren-konnen#w_cache-manuell-leeren" target="_blank" class="header">https://support.mozilla.org/de/kb/Wie-Sie-den-Cache-leeren-konnen#w_cache-manuell-leeren</a>--}%

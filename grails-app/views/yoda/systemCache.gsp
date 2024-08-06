@@ -21,7 +21,7 @@
         <dl>
             <g:each in="${contextService.getSessionCache().list()}" var="entry">
                 <dt style="margin-top:0.5em">
-                    <g:link controller="yoda" action="systemCache" params="${[cmd:'get', type:'session', key:entry.key]}" target="_blank"><i class="icon database"></i> ${entry.key}</g:link>
+                    <g:link controller="yoda" action="systemCache" params="${[cmd:'get', type:'session', key:entry.key]}" target="_blank"><icon:database /> ${entry.key}</g:link>
                 </dt>
                 <dd>
                      ${entry.value} <em>(${entry.value.class?.name})</em>

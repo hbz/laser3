@@ -254,7 +254,7 @@
 
 <div class="ui segment">
     <p class="ui header">
-        <i class="icon large database"></i> granted permissions
+        <icon:database /> granted permissions
     </p>
     <p>
     <pre>
