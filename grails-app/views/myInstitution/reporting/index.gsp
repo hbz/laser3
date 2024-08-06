@@ -156,7 +156,7 @@
 
         <g:if test="${filterResult}">
             %{-- <sec:ifAnyGranted roles="ROLE_YODA">
-                <g:link controller="yoda" action="systemCache" params="${[key: ReportingCache.CTX_GLOBAL + token]}" target="_blank" class="${Btn.SIMPLE} small right floated"><i class="icon bug"></i> YODA only CACHE</g:link>
+                <g:link controller="yoda" action="systemCache" params="${[key: ReportingCache.CTX_GLOBAL + token]}" target="_blank" class="${Btn.SIMPLE} small right floated"><icon:bug /> YODA only CACHE</g:link>
             </sec:ifAnyGranted> --}%
 
             <h3 class="ui header">${message(code:'reporting.ui.global.step2')}</h3>

@@ -149,16 +149,16 @@
                         %{--
                             <td>
                                 <g:if test="${docctx.org}">
-                                    <g:link controller="organisation" action="show" params="[id:docctx.org.id]"><i class="${Icon.ORG} icon small"></i> ${docctx.org.name}</g:link>
+                                    <g:link controller="organisation" action="show" params="[id:docctx.org.id]"><i class="${Icon.ORG} small"></i> ${docctx.org.name}</g:link>
                                 </g:if>
                                 <g:elseif test="${docctx.license}">
-                                    <g:link controller="license" action="show" params="[id:docctx.license.id]"><i class="${Icon.LICENSE} icon small"></i> ${docctx.license.reference}</g:link>
+                                    <g:link controller="license" action="show" params="[id:docctx.license.id]"><i class="${Icon.LICENSE} small"></i> ${docctx.license.reference}</g:link>
                                 </g:elseif>
                                 <g:elseif test="${docctx.subscription}">
                                     <g:link controller="subscription" action="show" params="[id:docctx.subscription.id]"><i class="folder open icon small"></i> ${docctx.subscription.name}</g:link>
                                 </g:elseif>
                                 <g:elseif test="${docctx.pkg}">
-                                    <g:link controller="package" action="show" params="[id:docctx.pkg.id]"><i class="${Icon.PACKAGE} icon small"></i> ${docctx.pkg.name}</g:link>
+                                    <g:link controller="package" action="show" params="[id:docctx.pkg.id]"><i class="${Icon.PACKAGE} small"></i> ${docctx.pkg.name}</g:link>
                                 </g:elseif>
                             </td>
                         --}%

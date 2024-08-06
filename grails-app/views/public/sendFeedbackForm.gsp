@@ -2,7 +2,7 @@
 <laser:htmlStart message="feedback.title" />
 
     <h1 class="ui header la-clear-before la-noMargin-top">
-        <i class="${Icon.SYM.UNIVERSAL_ACCESS}"></i>
+        <icon:universalAccess />
         <span class="content">
             Vielen Dank für Ihr Feedback!
         </span>

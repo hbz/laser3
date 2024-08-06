@@ -162,7 +162,7 @@
 
 <div class="ui segment">
     <p class="ui header">
-        <i class="icon large users"></i> roles
+        <i class="icon users"></i> roles
     </p>
     <div class="ui list">
         <div class="item">
@@ -215,7 +215,7 @@
 
 <div class="ui segment">
     <p class="ui header">
-        <i class="icon large user lock"></i> user roles
+        <i class="icon user lock"></i> user roles
     </p>
     <p>
         <g:set var="contextUser" value="${contextService.getUser()}" />
@@ -254,7 +254,7 @@
 
 <div class="ui segment">
     <p class="ui header">
-        <i class="icon large database"></i> granted permissions
+        <icon:database /> granted permissions
     </p>
     <p>
     <pre>
@@ -265,7 +265,7 @@
 
 <div class="ui segment">
     <p class="ui header">
-        <i class="icon large kiwi bird"></i> simple color helper
+        <i class="icon kiwi bird"></i> simple color helper
     </p>
     <p>
         <i class="${Icon.SYM.SQUARE} large red"></i> fomantic red <br/>

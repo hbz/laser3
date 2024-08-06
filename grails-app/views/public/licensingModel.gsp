@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.License; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSetting" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.License; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSetting" %>
 <laser:htmlStart text="Plan ">
     <style>
         .ui.table thead tr:first-child > th {
@@ -134,20 +134,20 @@
                         </div>
                     </td>
                     <td class="four wide center aligned">
-                        <i class="large green checkmark icon"></i>
+                        <i class="${Icon.SYM.YES} green large"></i>
                     </td>
                     <td class="four wide center aligned warning">
-                        <i class="large green checkmark icon"></i>
+                        <i class="${Icon.SYM.YES} green large"></i>
                     </td>
                     <td class="center aligned">
                         <g:if test="${mpg1 == 'asService' }">
                             <button id="${mpg1}" class="${Btn.SIMPLE} la-modal">
-                                ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
+                                ${message(code:'licensingModel.button.watch')} <icon:video />
                             </button>
                         </g:if>
                         <g:if test="${mpg1 == 'community' }">
                             <button id="${mpg1}" class="${Btn.SIMPLE} la-modal">
-                                ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
+                                ${message(code:'licensingModel.button.watch')} <icon:video />
                             </button>
                         </g:if>
                     </td>
@@ -180,22 +180,22 @@
 
                      </td>
                     <td class="four wide center aligned warning">
-                        <i class="large green checkmark icon"></i>
+                        <i class="${Icon.SYM.YES} green large"></i>
                     </td>
                     <td class="center aligned">
                         <g:if test="${mpg2 === 'management'}">
-                            <button id="${mpg2}" class="${Btn.SIMPLE} la-modal" >
-                                ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
+                            <button id="${mpg2}" class="${Btn.SIMPLE} la-modal">
+                                ${message(code:'licensingModel.button.watch')} <icon:video />
                             </button>
                         </g:if>
                         <g:if test="${mpg2 === 'organisation'}">
-                            <button id="${mpg2}" class="${Btn.SIMPLE} la-modal" >
-                                ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
+                            <button id="${mpg2}" class="${Btn.SIMPLE} la-modal">
+                                ${message(code:'licensingModel.button.watch')} <icon:video />
                             </button>
                         </g:if>
                         <g:if test="${mpg2 === 'reporting'}">
-                            <button id="${mpg2}" class="${Btn.SIMPLE} la-modal" >
-                                ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
+                            <button id="${mpg2}" class="${Btn.SIMPLE} la-modal">
+                                ${message(code:'licensingModel.button.watch')} <icon:video />
                             </button>
                         </g:if>
                     </td>

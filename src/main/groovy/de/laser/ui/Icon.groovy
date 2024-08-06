@@ -29,14 +29,31 @@ class Icon {
 
         @UIDoc(usage = 'Only for Subscription transfer: discount scale')
         public static String SUBSCRIPTION_DISCOUNT_SCALE    = 'percentage icon'
+
+        @UIDoc(usage = 'Only for Subscription attribute: form (TODO)')
+        public static String SUBSCRIPTION_FORM              = 'dolly icon'              // todo: change icon
+
+        @UIDoc(usage = 'Only for Subscription attribute: hasPerpetualAccess (TODO)')
+        public static String SUBSCRIPTION_HAS_PERPETUAL_ACCESS  = 'flag outline icon'   // todo: change icon
+        @UIDoc(usage = 'Only for Subscription attribute: hasPublishComponent (TODO)')
+        public static String SUBSCRIPTION_HAS_PUBLISH_COMPONENT = 'comment icon'        // todo: change icon
+        @UIDoc(usage = 'Only for Subscription attribute: holdingSelection (TODO)')
+        public static String SUBSCRIPTION_HOLDING_SELECTION     = 'pizza slice icon'    // todo: change icon
+
         @UIDoc(usage = 'Only for Subscription attribute: isMultiYear')
         public static String SUBSCRIPTION_IS_MULTIYEAR      = 'forward icon'
+        @UIDoc(usage = 'Only for Subscription attribute: kind (TODO)')
+        public static String SUBSCRIPTION_KIND              = 'image outline icon'  // todo: change icon
+        @UIDoc(usage = 'Only for Subscription attribute: resource (TODO)')
+        public static String SUBSCRIPTION_RESOURCE          = 'box icon'            // todo: change icon
 
         @UIDoc(usage = 'Only for Subscription transfer: survey cancellation')
         public static String SURVEY_CANCELLATION   = 'times circle icon'
         @UIDoc(usage = 'Only for Subscription transfer: survey evaluation')
         public static String SURVEY_EVALUTAION     = 'vote yea icon'
 
+        @UIDoc(usage = 'Only for Survey: Participants')
+        public static String SURVEY_PARTICIPANTS   = 'users icon'
         @UIDoc(usage = 'Only for Survey: All results processed by org (COLORED)')
         public static String SURVEY_RESULTS_PROCESSED        = 'edit green icon'
         @UIDoc(usage = 'Only for Survey: Not all results processed by org (COLORED)')
@@ -215,12 +232,7 @@ class Icon {
         public static String PROPERTIES     = 'tags icon'
 
         @UIDoc(usage = 'Generic symbol for: Search')
-        public static String SEARCH             = 'search icon'
-        @UIDoc(usage = 'Generic symbol for: Universal access')
-        public static String UNIVERSAL_ACCESS   = 'universal access icon'
-
-        @UIDoc(usage = 'Generic symbol for: Pointing hand')
-        public static String POINTING_HAND  = 'hand point right icon'
+        public static String SEARCH         = 'search icon'
 
         @UIDoc(usage = 'Generic icon / Caution: free to use')
         public static String CIRCLE         = 'circle icon'

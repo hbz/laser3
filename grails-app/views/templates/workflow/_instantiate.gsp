@@ -84,7 +84,7 @@
 
                         <div class="ui message info" style="margin-top:1.5em;text-align:left;font-size:14px;font-weight:normal;display:block">
                             <div class="content">
-                                <i class="${Icon.SYM.POINTING_HAND}"></i>
+                                <icon:pointingHand />
                                 Bei einer Kopie werden Informationen aus den Feldern
                                 <strong>Kommentar</strong>, <strong>Vorlage</strong>, <strong>Aufgabe erledigt</strong> und <strong>Datumsangabe</strong>
                                 nicht übernommen.

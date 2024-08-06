@@ -51,7 +51,7 @@
                     </td>
                     <td>
                         <g:if test="${taskInstance.responsibleOrg?.id == institution.id || taskInstance.responsibleUser?.id == user.id}">
-                            <i class="${Icon.SYM.POINTING_HAND} sc_grey"></i>
+                            <i class="${Icon.SIG.MY_OBJECT} yellow"></i>
                         </g:if>
                         <g:if test="${taskInstance.responsibleOrg}"> ${taskInstance.responsibleOrg.name} <br /> </g:if>
                         <g:if test="${taskInstance.responsibleUser}"> ${taskInstance.responsibleUser.display} </g:if>
@@ -61,7 +61,7 @@
                     </td>
                     <td>
                         <g:if test="${taskInstance.creator?.id == user.id}">
-                            <i class="${Icon.SYM.POINTING_HAND} sc_grey"></i>
+                            <i class="${Icon.SIG.MY_OBJECT} yellow"></i>
                         </g:if>
                         ${taskInstance.creator.display}
                     </td>

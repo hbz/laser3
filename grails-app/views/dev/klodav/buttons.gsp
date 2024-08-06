@@ -38,7 +38,7 @@
 
     <div class="ui two column grid">
         <div class="column">
-            <ui:msg class="info" header="de.laser.ui.Btn" hideClose="true"> <i class="${Icon.SYM.POINTING_HAND}"></i> Text (Icon optional) </ui:msg>
+            <ui:msg class="info" header="de.laser.ui.Btn" hideClose="true"> <icon:pointingHand /> Text (Icon optional) </ui:msg>
 
             <table class="ui simple table very compact">
                 <thead>
@@ -85,7 +85,7 @@
         </div>
 
         <div class="column">
-            <ui:msg class="info" header="de.laser.ui.Btn.ICON"  hideClose="true"> <i class="${Icon.SYM.POINTING_HAND}"></i> Icon ONLY </ui:msg>
+            <ui:msg class="info" header="de.laser.ui.Btn.ICON"  hideClose="true"> <icon:pointingHand /> Icon ONLY </ui:msg>
 
             <table class="ui simple table very compact">
                 <thead>
@@ -134,7 +134,7 @@
 
     <div class="ui one column grid">
         <div class="column">
-            <ui:msg class="info" header="de.laser.ui.Btn"  hideClose="true"> <i class="${Icon.SYM.POINTING_HAND}"></i> Text (Icon optional) + Javascript </ui:msg>
+            <ui:msg class="info" header="de.laser.ui.Btn"  hideClose="true"> <icon:pointingHand /> Text (Icon optional) + Javascript </ui:msg>
 
             <table class="ui simple table very compact">
                 <thead>
@@ -201,7 +201,7 @@
 
     <div class="ui one column grid">
         <div class="column">
-            <ui:msg class="info" header="de.laser.ui.Btn.ICON" hideClose="true"> <i class="${Icon.SYM.POINTING_HAND}"></i> Icon ONLY + Javascript </ui:msg>
+            <ui:msg class="info" header="de.laser.ui.Btn.ICON" hideClose="true"> <icon:pointingHand /> Icon ONLY + Javascript </ui:msg>
 
             <table class="ui simple table very compact">
                 <thead>
@@ -241,7 +241,7 @@
 
     <div class="ui one column grid">
         <div class="column">
-            <ui:msg class="info" header="de.laser.ui.Btn.MODERN" hideClose="true"> <i class="${Icon.SYM.POINTING_HAND}"></i> Icon ONLY </ui:msg>
+            <ui:msg class="info" header="de.laser.ui.Btn.MODERN" hideClose="true"> <icon:pointingHand /> Icon ONLY </ui:msg>
 
             <table class="ui simple table very compact">
                 <thead>
@@ -278,7 +278,7 @@
 
     <div class="ui one column grid">
         <div class="column">
-            <ui:msg class="info" header="de.laser.ui.Btn.MODERN" hideClose="true"> <i class="${Icon.SYM.POINTING_HAND}"></i> Icon ONLY + Javascript</ui:msg>
+            <ui:msg class="info" header="de.laser.ui.Btn.MODERN" hideClose="true"> <icon:pointingHand /> Icon ONLY + Javascript</ui:msg>
 
             <table class="ui simple table very compact">
                 <thead>
