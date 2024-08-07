@@ -475,14 +475,14 @@ class MyInstitutionController  {
             qry_params = psq.queryParams
         }
 
-        if (params.licensor) {
-            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType = :licAgncy and o.org.id in (:licensors) ) ) "
-            List<Long> licensors = Params.getLongList(params, 'licensor')
-            qry_params += [licAgncy:RDStore.OR_LICENSOR, licensors:licensors]
+        if (params.provider) {
+            base_qry += " and ( exists ( select pvr from l.providerRelations as pvr where pvr.provider.id in (:providers) ) ) "
+            List<Long> providers = Params.getLongList(params, 'provider')
+            qry_params += [providers:providers]
         }
 
         if (params.vendor) {
-            base_qry += " and ( exists ( select vr from VendorRole as vr where vr.license = l and vr.vendor.id in (:vendors) ) ) "
+            base_qry += " and ( exists ( select vr from l.vendorRelations as vr where vr.vendor.id in (:vendors) ) ) "
             List<Long> vendors = Params.getLongList(params, 'vendor')
             qry_params += [vendors: vendors]
         }
@@ -583,9 +583,9 @@ class MyInstitutionController  {
                 [consList: ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']]
         )
         prf.setBenchmark('get licensors')
-        Set<Org> licensors = orgTypeService.getOrgsForTypeLicensor()
-        Map<String,Set<Org>> orgs = [consortia:consortia,licensors:licensors]
+        Map<String,Set<Org>> orgs = [consortia:consortia]
         result.orgs = orgs
+        result.providers = Provider.findAll([sort: 'sortname'])
         result.vendors = Vendor.findAll([sort: 'sortname'])
 
 		List bm = prf.stopBenchmark()
