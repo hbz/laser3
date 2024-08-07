@@ -386,7 +386,7 @@ class LicenseService {
                     //mandatory 1
                     UsageTerms {
                         //covers Authorized Users, Alumni Access Walk-In User
-                        //multiple Usage statements per each status
+                        //multiple Usage statements per each status; include user if status applicable
                         Usage {
                             UsageType('onixPL:Use')
                             UsageStatus('onixPL:Permitted')
@@ -396,19 +396,21 @@ class LicenseService {
                                 //!!! mark here the ___existence___ of the following properties: Walk-In User, (Simuser)
                                 RelatedAgent('onixPL:WalkInUser')
                              */
-                            UsedResource()
+                            UsedResource('Subscription')
                         }
                         //multiple Usage statements per each status
                         Usage {
                             UsageType('onixPL:Use')
                             UsageStatus('onixPL:Prohibited')
-                            User()
+                            //base: license #4060, tenant is HeBIS-Konsortium
+                            LicenseTextLink(href: 'lp_alumni_access_01')
+                            User('onixPL:LicenseAlumnus')
                             /*
 
                                 //!!! mark here the ___existence___ of the following properties: Walk-In User, (Simuser)
                                 RelatedAgent('onixPL:WalkInUser')
                              */
-                            UsedResource()
+                            UsedResource('Subscription')
                         }
                     }
                     //optional 0-1
@@ -473,6 +475,10 @@ class LicenseService {
                             LicenseTextLink(href: 'lp_all_rights_reserved_indicator_01')
                         }
                         GeneralTerm {
+                            GeneralTermType('onixPL:ApplicableCopyrightLaw')
+                            LicenseTextLink(href: 'lp_applicable_copyright_law_01')
+                        }
+                        GeneralTerm {
                             GeneralTermType()
                             GeneralTermQuantity {
                                 GeneralTermQuantityType('onixPL:PeriodForCureOfBreach')
@@ -500,7 +506,16 @@ class LicenseService {
                         }
                         TextElement(id: 'lp_alumni_access_01') {
                             SortNumber(0)
-                            Text('1.3.2 [...] Soweit im Nutzungsvertrag nicht abweichend geregelt, sind berechtigte Nutzer nur solche Personen, die [...] zu diesem [dem Kunden] in einem Dienst-, Arbeits- oder Ausbildungsverhältnis stehen. Eine unmittelbare oder mittelbare Nutzung durch andere Personen ist nicht zulässig. (siehe AGB, S. 1)')
+                            Text('FRAME WORK AGREEMENT\n' +
+                                    'VI. General, No. E. (Seite 8)\n' +
+                                    '\n' +
+                                    'For purposes of this Agreement, "EBSCO" is EBSCO Publishing, Inc.; the "Licensee" is the entity or institution that makes available databases and services offered by EBSCO; the "Sites" are the Internet websites offered or operated by Licensee from which Authorized Users can obtain access to EBSCO\'s Databases and Services; and the "Authorized User(s)" are employees, students, registered patrons, walk-in patrons.\n' +
+                                    '\n' +
+                                    '"Authorized User(s)" do not include alumni of the Licensee.')
+                        }
+                        TextElement(id: 'lp_applicable_copyright_law_01') {
+                            SortNumber(0)
+                            Text('§ 3 Abs. 2: This Licence shall be deemed to complement and extend the rights of Licensee, the lnstitutions and Authorised Users under the German Copyright Law and other applicable legislation in Germany')
                         }
                     }
                 }
