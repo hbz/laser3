@@ -19,7 +19,7 @@
 <br />
 <br />
 
-<a href="${resource(dir: 'files', file: 'Verzeichnis_Verarbeitungstaetigkeiten_LASeR_V1.8.pdf')}" class="${Btn.SIMPLE}" target="_blank"  onclick="$('#modalDsgvo').modal('hide')">
+<a href="${resource(dir: 'files', file: 'Verzeichnis_Verarbeitungstaetigkeiten_LASeR_V1.9.pdf')}" class="${Btn.SIMPLE}" target="_blank"  onclick="$('#modalDsgvo').modal('hide')">
     <icon:pdf /> ${message(code:'vdv')}
 </a>
 
