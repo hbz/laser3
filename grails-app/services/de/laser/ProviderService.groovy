@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.auth.User
+import de.laser.convenience.Marker
 import de.laser.helper.Params
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.ProviderProperty
@@ -292,6 +293,8 @@ class ProviderService {
         List customProperties       = new ArrayList(provider.propertySet.findAll { it.type.tenant == null })
         List privateProperties      = new ArrayList(provider.propertySet.findAll { it.type.tenant != null })
 
+        List markers        = Marker.findAllByProv(provider)
+
         // collecting information
 
         result.info = []
@@ -311,6 +314,7 @@ class ProviderService {
         result.info << ['Allgemeine Merkmale', customProperties]
         result.info << ['Private Merkmale', privateProperties]
 
+        result.info << ['Marker', markers]
 
         // checking constraints and/or processing
 
@@ -359,7 +363,7 @@ class ProviderService {
 
                     // addresses
                     provider.addresses.clear()
-                    log.debug("${Address.executeUpdate('update Address a set a.provider = :target where a.org = :source', genericParams)} addresses updated")
+                    log.debug("${Address.executeUpdate('update Address a set a.provider = :target where a.provider = :source', genericParams)} addresses updated")
 
                     // custom properties
                     provider.propertySet.clear()
@@ -380,6 +384,10 @@ class ProviderService {
                     // invoicing vendors
                     provider.invoicingVendors.clear()
                     log.debug("${InvoicingVendor.executeUpdate('update InvoicingVendor iv set iv.provider = :target where iv.provider = :source', genericParams)} invoicing vendors updated")
+
+                    markers.each { Marker mkr ->
+                        mkr.prov = replacement
+                    }
 
                     // persons
                     List<Person> targetPersons = Person.executeQuery('select pr.prs from PersonRole pr where pr.provider = :target', [target: replacement])
