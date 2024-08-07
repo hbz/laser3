@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils;de.laser.Links;de.laser.storage.RDStore;de.laser.Person;de.laser.RefdataValue;de.laser.storage.RDConstants;de.laser.Contact;de.laser.Identifier" %>
+<%@ page import="de.laser.ui.Icon; de.laser.utils.DateUtils;de.laser.Links;de.laser.storage.RDStore;de.laser.Person;de.laser.RefdataValue;de.laser.storage.RDConstants;de.laser.Contact;de.laser.Identifier" %>
 <laser:serviceInjection/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
@@ -69,7 +69,7 @@
                                     ${ident.value}
                                 </g:if>
                                 <g:else>${ident.value}</g:else>
-                                <g:if test="${ident.ns.urlPrefix}"><a target="_blank" href="${ident.ns.urlPrefix}${ident.value}"><i title="${ident.ns.getI10n('name')} Link" class="external alternate icon"></i></a></g:if>
+                                <g:if test="${ident.ns.urlPrefix}"><a target="_blank" href="${ident.ns.urlPrefix}${ident.value}"><i title="${ident.ns.getI10n('name')} Link" class="${Icon.LNK.EXTERNAL}"></i></a></g:if>
                             </g:if>
                             <g:else>
                                 ${ident}

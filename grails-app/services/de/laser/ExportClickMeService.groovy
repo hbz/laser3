@@ -185,7 +185,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields : [
                                 'subscription.name'                  : [field: 'sub.name', label: 'Name', message: 'subscription.name.label'],
-                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true'],
+                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'altname.plural', defaultChecked: 'true'],
                                 'subscription.startDate'             : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
                                 'subscription.endDate'               : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label'],
                                 'subscription.manualCancellationDate': [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -211,7 +211,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields : [
                                 'subscription.name'                  : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true'],
+                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'altname.plural', defaultChecked: 'true'],
                                 'subscription.startDate'             : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                                 'subscription.endDate'               : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                                 'subscription.manualCancellationDate': [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -363,7 +363,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields: [
                                 'subscription.name'                         : [field: 'name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                                'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                                'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'altname.plural', defaultChecked: 'true' ],
                                 'subscription.startDate'                    : [field: 'startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                                 'subscription.endDate'                      : [field: 'endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                                 'subscription.manualCancellationDate'       : [field: 'manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -507,7 +507,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields: [
                                 'subscription.name'                         : [field: 'name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                                'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                                'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'altname.plural', defaultChecked: 'true' ],
                                 'subscription.startDate'                    : [field: 'startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                                 'subscription.endDate'                      : [field: 'endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                                 'subscription.manualCancellationDate'       : [field: 'manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -614,7 +614,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields: [
                                 'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                                'subscription.altnames'                     : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                                'subscription.altnames'                     : [field: 'sub.altnames', label: 'Alternative names', message: 'altname.plural', defaultChecked: 'true' ],
                                 'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                                 'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                                 'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -765,7 +765,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields : [
                                 'subscription.name'                  : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true'],
+                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'altname.plural', defaultChecked: 'true'],
                                 'subscription.startDate'             : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                                 'subscription.endDate'               : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                                 'subscription.manualCancellationDate': [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -906,7 +906,7 @@ class ExportClickMeService {
                         message: 'license.label',
                         fields : [
                                 'license.reference'      : [field: 'reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true'],
-                                'license.altnames'       : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true'],
+                                'license.altnames'       : [field: 'altnames', label: 'Alternative names', message: 'altname.plural', defaultChecked: 'true'],
                                 'license.status'         : [field: 'status', label: 'Status', message: 'exportClickMe.license.status', defaultChecked: 'true'],
                                 'license.licenseCategory': [field: 'licenseCategory', label: 'License Category', message: 'license.licenseCategory.label', defaultChecked: 'true'],
                                 'license.startDate'      : [field: 'startDate', label: 'Start Date', message: 'exportClickMe.license.startDate', defaultChecked: 'true'],
@@ -991,7 +991,7 @@ class ExportClickMeService {
                         message: 'license.label',
                         fields: [
                                 'license.reference'       : [field: 'reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true'],
-                                'license.altnames'        : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                                'license.altnames'        : [field: 'altnames', label: 'Alternative names', message: 'altname.plural', defaultChecked: 'true' ],
                                 'license.status'          : [field: 'status', label: 'Status', message: 'exportClickMe.license.status', defaultChecked: 'true'],
                                 'license.licenseCategory' : [field: 'licenseCategory', label: 'License Category', message: 'license.licenseCategory.label', defaultChecked: 'true'],
                                 'license.startDate'       : [field: 'startDate', label: 'Start Date', message: 'exportClickMe.license.startDate', defaultChecked: 'true'],
@@ -1398,7 +1398,7 @@ class ExportClickMeService {
                         fields: [
                                 'provider.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
                                 'provider.sortname'              : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                                'provider.altnames'              : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                                'provider.altnames'              : [field: 'altnames', label: 'Alternative names', message: 'altname.plural', defaultChecked: 'true' ],
                                 'provider.status'                : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: true],
                                 'provider.homepage'              : [field: 'homepage', label: 'Homepage URL', message: 'org.homepage.label', defaultChecked: true],
                                 'provider.metadataDownloaderURL' : [field: 'metadataDownloaderURL', label: 'Metadata Downloader URL', message: 'org.metadataDownloaderURL.label', defaultChecked: true],

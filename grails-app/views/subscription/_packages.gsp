@@ -413,7 +413,7 @@
                                         <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
                                             <th class="control-label">
                                                 <span class="la-popup-tooltip" data-content="${message(code:"subscription.packages.notification.label")}">
-                                                    <i class="ui large icon bullhorn"></i>
+                                                    <i class="large icon bullhorn"></i>
                                                 </span>
                                             </th>
                                             <th class="control-label la-border-left" >
@@ -423,7 +423,7 @@
                                             </th>
                                             <th class="control-label">
                                                 <span class="la-popup-tooltip" data-content="${message(code:'subscription.packages.notification.auditable')}">
-                                                    <i class="ui large icon bullhorn"></i>
+                                                    <i class="large icon bullhorn"></i>
                                                 </span>
                                             </th>
                                         </g:if>

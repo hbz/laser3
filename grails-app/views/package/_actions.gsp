@@ -88,7 +88,7 @@
                         </th>
                         <th class="control-label la-popup-tooltip"
                             data-content="${message(code: "subscription.packages.notification.label")}">
-                            <i class="ui large icon bullhorn"></i>
+                            <i class="large icon bullhorn"></i>
                         </th>
                         <g:if test="${customerTypeService.isConsortium( contextCustomerType )}">
                             <th class="control-label la-popup-tooltip"
