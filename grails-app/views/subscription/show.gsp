@@ -238,10 +238,7 @@
                             </dd>
                         </dl>
                         <g:if test="${editable}">
-                            <dl>
-                                <dt></dt>
-                                <dd><input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} addListValue" data-objtype="altname" value="${message(code:'org.altname.add')}"></dd>
-                            </dl>
+                            <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} addListValue" data-objtype="altname" value="${message(code:'org.altname.add')}">
                         </g:if>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.startDate.label')}</dt>
