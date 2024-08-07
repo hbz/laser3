@@ -69,7 +69,8 @@
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'accessType']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateAccessType')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'openAccess']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateOpenAccess')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'titleNamespace']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateTitleNamespace')}</ui:link>
-                        <ui:link addItemAttributes="true" controller="yoda" action="reloadwekbNews" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateWekbNews')}</ui:link>
+                        <ui:link addItemAttributes="true" controller="yoda" action="manageWekbNews" params="[cmd:'update']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateWekbNews')}</ui:link>
+                        <ui:link addItemAttributes="true" controller="yoda" action="manageWekbNews" params="[cmd:'clear']" onclick="return confirm('${message(code:'confirm.start.clear')}')">${message(code:'menu.yoda.clearWekbNews')}</ui:link>
 %{--                    </div>--}%
 %{--                </div>--}%
 
@@ -145,7 +146,7 @@
 
         <div class="item" role="menuitem" aria-haspopup="true">
             <div class="title">
-                <i class="icon database"></i> ${message(code:'menu.admin.dataManagement')} <i class="dropdown icon"></i>
+                <icon:database /> ${message(code:'menu.admin.dataManagement')} <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="package" action="getDuplicatePackages">List Package Duplicates</ui:link>

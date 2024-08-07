@@ -41,10 +41,10 @@
                                     print "${dc.id} : "
 
                                     if (dc.isShared) {
-                                        print " <i class='ui icon share alternate square'></i> "
+                                        print " <i class='${Icon.SIG.SHARED_OBJECT} square'></i> "
                                     }
                                     if (dc.sharedFrom) {
-                                        print " <i class='ui icon share alternate'></i> "
+                                        print " <i class='${Icon.SIG.SHARED_OBJECT_ON}'></i> "
                                     }
 
                                     if (dc.license) {
@@ -112,12 +112,11 @@
                                             print "${dc.id} : "
 
                                             if (dc.isShared) {
-                                                print " <i class='ui icon share alternate square'></i> "
+                                                print " <i class='${Icon.SIG.SHARED_OBJECT} square'></i> "
                                             }
                                             if (dc.sharedFrom) {
-                                                print " <i class='ui icon share alternate'></i> "
+                                                print " <i class='${Icon.SIG.SHARED_OBJECT_ON}'></i> "
                                             }
-
                                             if (dc.license) {
                                                 println "License ${dc.license.id} - ${dc.license.reference}, ${dc.license.sortableReference} &nbsp;&nbsp; " +
                                                         link(action: 'show', controller: 'lic', id: dc.license.id) { '<i class="' + Icon.LNK.EXTERNAL + '"></i>' }

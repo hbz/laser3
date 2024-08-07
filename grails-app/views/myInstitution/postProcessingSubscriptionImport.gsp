@@ -76,7 +76,7 @@
 
                                 <g:if test="${errors}">
                                 <div class="item red">
-                                    <i class="bug icon red"></i><g:message code="default.error"/>:
+                                    <icon:bug /><g:message code="default.error"/>:
                                     <div class="content">
                                         <div class="description">
                                             <ul>

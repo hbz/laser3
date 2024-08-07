@@ -149,7 +149,7 @@
                                                     <g:if test="${editable}">
                                                         <g:set var="oid" value="${link.class.name}:${link.id}" />
                                                         <g:if test="${personInstance.roleLinks?.size() > 1}">
-                                                            <div class="ui icon buttons">
+                                                            <div class="ui buttons">
                                                                 <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: [link.functionType?.getI10n('value')])}"
                                                                         data-confirm-term-how="delete"
@@ -161,7 +161,7 @@
                                                             </div>
                                                         </g:if>
                                                         <g:else>
-                                                            <div class="ui icon buttons">
+                                                            <div class="ui buttons">
                                                                 <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                                         controller="person"
                                                                         action="delete"
@@ -209,7 +209,7 @@
                                                     <g:if test="${editable}">
                                                         <g:set var="oid" value="${link.class.name}:${link.id}" />
                                                         <g:if test="${personInstance.roleLinks?.size() > 1}">
-                                                            <div class="ui icon buttons">
+                                                            <div class="ui buttons">
                                                                 <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                                         data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.function', args: [link.positionType?.getI10n('value')])}"
                                                                         data-confirm-term-how="unlink"
@@ -221,7 +221,7 @@
                                                             </div>
                                                         </g:if>
                                                         <g:else>
-                                                            <div class="ui icon buttons">
+                                                            <div class="ui buttons">
                                                                 <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                                         controller="person"
                                                                         action="delete"
@@ -299,7 +299,7 @@
 
                                                 <div class="content">
                                                     <g:if test="${editable}">
-                                                        <div class="ui icon buttons">
+                                                        <div class="ui buttons">
                                                             <g:set var="oid" value="${link.class.name}:${link.id}" />
                                                             <g:link class="${Btn.MODERN.NEGATIVE}" controller="person" action="deletePersonRole" id="${personInstance.id}" params="[oid: oid]"
                                                                     role="button"

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.License; de.laser.SubscriptionController; de.laser.CopyElementsService;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.License; de.laser.SubscriptionController; de.laser.CopyElementsService;" %>
 <laser:serviceInjection/>
 
     <g:if test="${!fromSurvey && !isRenewSub}">
@@ -48,7 +48,7 @@
                                     <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: 'financials.isVisibleForSubscriber')}"
                                           style="margin-left:10px">
-                                        <i class="icon eye orange"></i>
+                                        <i class="${Icon.SIG.VISIBLE_ON} orange"></i>
                                     </span>
                                 </g:if>
                             </g:if>

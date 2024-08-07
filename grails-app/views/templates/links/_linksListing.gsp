@@ -115,7 +115,7 @@
                                                       ]}"/>
                                         <g:if test="${editable}">
                                             <g:if test="${subscriptionLicenseLink}">
-                                                <div class="ui icon negative buttons">
+                                                <div class="ui buttons">
                                                     <span class="la-popup-tooltip"
                                                           data-content="${message(code: 'license.details.unlink')}">
                                                         <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
@@ -139,7 +139,7 @@
                                                                     params="${[license: link.sourceLicense.id, id: subscription.id, unlinkWithChildren: true]}"
                                                                     role="button"
                                                                     aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                                <i class="la-share slash icon"></i>
+                                                                <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
                                                             </g:link>
                                                         </span>
                                                     </g:if>

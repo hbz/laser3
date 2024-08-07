@@ -2956,6 +2956,7 @@ class ExportClickMeService {
                 IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
                     exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
                 }
+                exportFields.put("participant.uuid", [field: 'globalUID', label: 'Laser-UUID',  message: null])
 
                 Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx)', contextParams).each { Platform plat ->
                     exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
@@ -3111,6 +3112,8 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_PROVIDER_NS).each {
             exportFields.put("vendorIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
+        exportFields.put("vendor.uuid", [field: 'globalUID', label: 'Laser-UUID',  message: null])
+        exportFields.put("vendor.wekbId", [field: 'gokbId', label: 'we:kb-ID',  message: null])
 
         Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx)', contextParams).each { Platform plat ->
             exportFields.put("vendorCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
@@ -3148,6 +3151,7 @@ class ExportClickMeService {
             fields.vendorIdentifiers.fields << ["vendorIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
         fields.vendorIdentifiers.fields << ['vendor.uuid':[field: 'globalUID', label: 'Laser-UUID',  message: null]]
+        fields.vendorIdentifiers.fields << ['vendor.wekbId':[field: 'gokbId', label: 'we:kb-ID',  message: null]]
         fields.vendorCustomerIdentifiers.fields.clear()
         Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx) order by plat.name', contextParams).each { Platform plat ->
             fields.vendorCustomerIdentifiers.fields << ["vendorCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
@@ -3193,6 +3197,8 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_PROVIDER_NS).each {
             exportFields.put("providerIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
+        exportFields.put("provider.uuid", [field: 'globalUID', label: 'Laser-UUID',  message: null])
+        exportFields.put("provider.wekbId", [field: 'gokbId', label: 'we:kb-ID',  message: null])
 
         Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx)', contextParams).each { Platform plat ->
             exportFields.put("providerCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
@@ -3230,6 +3236,7 @@ class ExportClickMeService {
             fields.providerIdentifiers.fields << ["providerIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
         fields.providerIdentifiers.fields << ['provider.uuid':[field: 'globalUID', label: 'Laser-UUID',  message: null]]
+        fields.providerIdentifiers.fields << ['provider.wekbId':[field: 'gokbId', label: 'we:kb-ID',  message: null]]
         fields.providerCustomerIdentifiers.fields.clear()
         Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx) order by plat.name', contextParams).each { Platform plat ->
             fields.providerCustomerIdentifiers.fields << ["providerCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
@@ -3393,8 +3400,8 @@ class ExportClickMeService {
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
         Org contextOrg = contextService.getOrg()
 
-        EXPORT_SURVEY_EVALUATION.keySet().each {
-            EXPORT_SURVEY_EVALUATION.get(it).fields.each {
+        getDefaultExportSurveyEvaluation().keySet().each {
+            getDefaultExportSurveyEvaluation().get(it).fields.each {
 
                 if((surveyConfig.pickAndChoose || !surveyConfig.subscription) && it.key.startsWith('costItem')){
                     //do nothing
@@ -3479,7 +3486,7 @@ class ExportClickMeService {
     Map<String, Object> getExportSurveyEvaluationFieldsForUI(SurveyConfig surveyConfig) {
 
         Map<String, Object> fields = [:]
-        fields.putAll(EXPORT_SURVEY_EVALUATION)
+        fields.putAll(getDefaultExportSurveyEvaluation())
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
         Org contextOrg = contextService.getOrg()
@@ -3743,6 +3750,7 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
             fields.tippIdentifiers.fields << ["tippIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
+        fields.tippIdentifiers.fields << ['tipp.wekbId':[field: 'gokbId', label: 'we:kb-ID',  message: null]]
 
         fields
     }
@@ -3765,6 +3773,7 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
             exportFields.put("tippIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns, sqlCol: it.ns])
         }
+        exportFields.put('tipp.wekbId', [field: 'gokbId', label: 'we:kb-ID', sqlCol: 'tipp_gokb_id'])
 
         exportFields
     }
@@ -4396,7 +4405,6 @@ class ExportClickMeService {
         Locale locale = LocaleUtils.getCurrentLocale()
 
         String sheetTitle
-        Map wekbRecords = [:]
 
         String nameOfClickMeMap = ''
 

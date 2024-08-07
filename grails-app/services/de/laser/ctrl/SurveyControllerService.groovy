@@ -192,6 +192,8 @@ class SurveyControllerService {
 
             }
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.surveyConfig)
+            result.showSurveyPropertiesForOwer = true
+
             [result: result, status: STATUS_OK]
         }
 
@@ -242,9 +244,9 @@ class SurveyControllerService {
             // new: filter preset
             params.orgType = RDStore.OT_INSTITUTION.id
 
-            if (params.tab == 'selectedParticipants') {
+           /* if (params.tab == 'selectedParticipants') {
                 params.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id)
-            }
+            }*/
 
             result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
@@ -254,7 +256,7 @@ class SurveyControllerService {
             GrailsParameterMap cloneParams = params.clone()
             cloneParams.removeAll { it.value != '' }
             cloneParams.orgType = RDStore.OT_INSTITUTION.id
-            cloneParams.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id)
+            //cloneParams.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id)
             cloneParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
             cloneParams.sub = result.subscription
 
@@ -2372,7 +2374,7 @@ class SurveyControllerService {
                     case "deleteSurveyPropFromConfig":
                         if (params.surveyPropertyConfigId) {
                             SurveyConfigProperties surveyConfigProp = SurveyConfigProperties.get(params.surveyPropertyConfigId)
-                            SurveyInfo surveyInfo = surveyConfigProp.surveyConfig.surveyInfo
+                            //SurveyInfo surveyInfo = surveyConfigProp.surveyConfig.surveyInfo
                             try {
                                 surveyConfigProp.delete()
                                 //result.message = messageSource.getMessage("default.deleted.message", args: [messageSource.getMessage("surveyProperty.label"), ''])
@@ -2655,6 +2657,18 @@ class SurveyControllerService {
                     Task.executeUpdate("delete from Task ta where ta.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
                     SurveyConfigProperties.executeUpdate("delete from SurveyConfigProperties scp where scp.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
+
+                    SurveyPackageResult.executeUpdate("delete from SurveyPackageResult sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
+
+                    SurveyVendorResult.executeUpdate("delete from SurveyVendorResult sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
+
+                    SurveyConfigPackage.executeUpdate("delete from SurveyConfigPackage sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
+
+                    SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
+
+                    SurveyUrl.executeUpdate("delete from SurveyUrl surU where surU.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
+
+                    SurveyLinks.executeUpdate("delete from SurveyLinks srL where srL.sourceSurvey.id = :surveyInfo or srL.targetSurvey.id = :surveyInfo", [surveyInfo: surveyInfo.id])
 
                     SurveyConfig.executeUpdate("delete from SurveyConfig sc where sc.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
@@ -2967,6 +2981,9 @@ class SurveyControllerService {
                                     subSurveyUseForTransfer: (baseSurveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL) ? (SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(sub, true) ? false : true) : false,
                                     scheduledStartDate: params.copySurvey.copyScheduledDates ? baseSurveyConfig.scheduledStartDate : null,
                                     scheduledEndDate: params.copySurvey.copyScheduledDates ? baseSurveyConfig.scheduledEndDate : null,
+                                    vendorSurvey: (params.copySurvey.copyVendorSurvey ? baseSurveyConfig.vendorSurvey : false),
+                                    packageSurvey: (params.copySurvey.copyPackageSurvey ? baseSurveyConfig.packageSurvey : false),
+                                    invoicingInformation: (params.copySurvey.copyInvoicingInformation ? baseSurveyConfig.invoicingInformation : false)
                             ).save()
 
                             surveyService.copySurveyConfigCharacteristic(baseSurveyConfig, newSurveyConfig, params)
@@ -2993,10 +3010,14 @@ class SurveyControllerService {
                                 surveyInfo: newSurveyInfo,
                                 comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
                                 commentForNewParticipants: params.copySurvey.copySurveyConfigCommentForNewParticipants ? baseSurveyConfig.commentForNewParticipants : null,
-                                configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
+                                configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1,
+                                vendorSurvey: (params.copySurvey.copyVendorSurvey ? baseSurveyConfig.vendorSurvey : false),
+                                packageSurvey: (params.copySurvey.copyPackageSurvey ? baseSurveyConfig.packageSurvey : false),
+                                invoicingInformation: (params.copySurvey.copyInvoicingInformation ? baseSurveyConfig.invoicingInformation : false)
                         ).save()
                         surveyService.copySurveyConfigCharacteristic(baseSurveyConfig, newSurveyConfig, params)
                     result.newSurveyInfo = newSurveyInfo
+                    result.newSurveyConfig = newSurveyConfig
                 }
             }
             [result: result, status: STATUS_OK]

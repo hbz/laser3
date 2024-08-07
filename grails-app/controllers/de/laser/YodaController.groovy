@@ -260,7 +260,7 @@ class YodaController {
         Map result = [:]
 
         EhcacheWrapper ttl1800 = BeanStore.getCacheService().getTTL1800Cache( SystemActivityProfiler.CACHE_KEY_ACTIVE_USER )
-        result.users = SystemActivityProfiler.getActiveUsers(1000 * 60 * 10).collect { u -> [u, ttl1800.get(u)] }
+        result.users = SystemActivityProfiler.getActiveUsers(1000 * 60 * 10).collect { u -> ttl1800.get(u) }
 
         render view: '/yoda/profiler/current', model: result
     }
@@ -1009,9 +1009,14 @@ class YodaController {
      * @return redirects back to the dashboard
      */
     @Secured(['ROLE_YODA'])
-    def reloadwekbNews() {
-        log.info('--> reloadwekbNews')
-        wekbNewsService.updateCache()
+    def manageWekbNews() {
+        log.info('--> manageWekbNews: ' + params.cmd)
+        if (params.cmd == 'update') {
+            wekbNewsService.updateCache()
+        }
+        else if (params.cmd == 'clear') {
+            wekbNewsService.clearCache()
+        }
         redirect controller: 'myInstitution', action: 'dashboard'
     }
 

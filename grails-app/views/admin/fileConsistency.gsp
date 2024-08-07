@@ -41,7 +41,7 @@
             </tbody>
         </table>
 
-        <h3 class="ui header"><i class="ui database icon"></i><span class="content">Objekte: Doc</span></h3>
+        <h3 class="ui header"><icon:database /><span class="content">Objekte: Doc</span></h3>
 
          <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
             <thead>
@@ -92,7 +92,7 @@
             </tbody>
          </table>
 
-        <h3 class="ui header"><i class="ui database icon"></i><span class="content">Objekte: DocContext</span></h3>
+        <h3 class="ui header"><icon:database /><span class="content">Objekte: DocContext</span></h3>
 
         <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
             <thead>
@@ -156,10 +156,10 @@
                             print "&nbsp;&nbsp;&nbsp;&nbsp; ${dc.id} : "
 
                             if (dc.isShared) {
-                                print " <i class='ui icon share alternate square'></i> "
+                                print " <i class='${Icon.SIG.SHARED_OBJECT} square'></i> "
                             }
                             if (dc.sharedFrom) {
-                                print " <i class='ui icon share alternate'></i> "
+                                print " <i class='${Icon.SIG.SHARED_OBJECT_ON}'></i> "
                             }
 
                             if (dc.license) {

@@ -204,9 +204,6 @@ class LicenseService {
          */
         File schemaFile = grailsApplication.mainContext.getResource('files/ONIX_PublicationsLicense_V1.0.xsd').file
         Validator validator = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(schemaFile).newValidator()
-        Locale locale = LocaleUtils.getCurrentLocale()
-        Org institution = contextService.getOrg()
-        Date now = new Date()
         String xml = createHardCodedTestFile_v0()
         //def xml = createHardCodedTestFile_v1()
         validator.validate(new StreamSource(new StringReader(xml)))
@@ -220,6 +217,9 @@ class LicenseService {
     String createHardCodedTestFile_v0() {
         SimpleDateFormat onixTimestampFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ")
         StreamingMarkupBuilder builder = new StreamingMarkupBuilder()
+        Locale locale = LocaleUtils.getCurrentLocale()
+        Org institution = contextService.getOrg()
+        Date now = new Date()
         def xml = builder.bind {
             mkp.xmlDeclaration()
             mkp.declareNamespace(ople: "http://www.editeur.org/ople")
@@ -253,22 +253,6 @@ class LicenseService {
                     LicenseDetail {
                         Description('Analysestadtverbund-Grundvertrag')
                         LicenseStatus('onixPL:ActiveLicense') //current => ActiveLicense, expired => NoLongerActive, expected => ProposedLicense?
-                        //LicenseRenewalType() //n/a
-                        /*
-                        Notes cannot be mapped into Annotations; probably, I have to include LicenseProperties here ...?
-                        Annotation {
-                            AnnotationType()
-                            controlled list:
-                            [onixPL:AcknowledgmentToInclude, onixPL:AcknowledgementWording, onixPL:AmbiguityInLicenseText, onixPL:ErrorInLicenseText, onixPL:FeesPayableNote, onixPL:Interpretation,
-                            onixPL:NewTitleAccessNote, onixPL:PaymentNote, onixPL:PostCancellationFileSupplyHoldingsNote, onixPL:PostCancellationFileSupplyNote, onixPL:PostCancellationOnlineAccessHoldingsNote,
-                            onixPL:PostCancellationOnlineAccessSupplyNote, onixPL:PriceBasisNote, onixPL:PriceIncreaseCap, onixPL:ReferencedText, onixPL:SpecialConditions, onixPL:TitleSubstitutionNote,
-                            onixPL:TransferredTitleNote, onixPL:VariationsFromModel, onixPL:ERMI:ArchiveCopyFormat, onixPL:ERMI:CitationRequirementDetail, onixPL:ERMI:ConcurrentUserNote, onixPL:ERMI:DistanceEducationNote,
-                            onixPL:ERMI:DistanceEducationStatus, onixPL:ERMI:LocalText, onixPL:ERMI:MaintenanceWindow, onixPL:ERMI:Note, onixPL:ERMI:OtherUseRestrictionNote, onixPL:ERMI:OtherUserRestrictionNote,
-                            onixPL:ERMI:PerpetualAccessHoldings, onixPL:ERMI:TerminationRequirementsNote, onixPL:ERMI:TermsNote, onixPL:ERMI:Text, onixPL:ERMI:UptimeGuarantee, onixPL:ERMI:Value, onixPL:ERMI:WalkInUserTermNote]
-
-                            Authority('hbz')
-                            AnnotationText('Dieses Dokument beschreibt die Gründung des Analysestadtverbundes, dessen Rahmenvertrag sich jede neue Analysestadt anzuschließen hat.')
-                        }*/
                         //if doc.doctype can be mapped to one of: onixPL:Addendum, onixPL:License, onixPL:LicenseMainTerms, onixPL:LicenseSchedule, onixPL:LicenseSummary
                         LicenseDocument {
                             LicenseDocumentType('onixPL:License') //doc.doctype with mapping
@@ -285,20 +269,11 @@ class LicenseService {
                         }
                         LicenseRelatedAgent {
                             LicenseAgentRelator('onixPL:LicenseeRepresentative')
-                            RelatedAgent('Licensing Consortium') //take the RefdataValue
+                            RelatedAgent('Licensing Consortium') //take the RefdataValue and use this as further reference in the document
                         }
                         LicenseRelatedAgent {
                             LicenseAgentRelator('onixPL:LicenseeConsortium')
-                            RelatedAgent('Licensee Consortial') //take the RefdataValue
-                        }
-                        LicenseRelatedAgent {
-                            LicenseAgentRelator('onixPL:LicenseeConsortium')
-                            RelatedAgent('Helen Louise Brownston university Shawinigan')
-                        }
-                        //other user-related properties: Authorized Users, Walk-In User, Simuser; see definition in AgentDefinition
-                        LicenseRelatedAgent {
-                            LicenseAgentRelator('onixPL:AuthorizedUsers')
-                            RelatedAgent('Authorized Users')
+                            RelatedAgent('Licensee Consortial') //take the RefdataValue and use this as further reference in the document
                         }
                         LicenseRelatedResource {
                             LicenseResourceRelator('onixPL:LicensedContent')
@@ -316,27 +291,25 @@ class LicenseService {
                             RelatedTimePoint('LicenseEndDate')
                         }
                         */
-                        LicenseRelatedPlace {
-                            //LicenseProperty Governing jurisdiction
-                            LicensePlaceRelator('onixPL:PlaceOfJurisdiction')
-                            RelatedPlace('Zeidel')
-                        }
                     }
                     Definitions {
-                        //LicenseRelatedAgents explained ==> again OrgRoles!
+                        //define here the people and organisations taking part in the license: OrgRoles in detail, moreover Walk-In User and other related parties
                         AgentDefinition {
-                            AgentLabel('Bloomsbury')
+                            AgentLabel('Licensor') //map ProviderRole to Licensor
                             AgentType('onixPL:Organization')
                             AgentIdentifier {
                                 AgentIDType('onixPL:Proprietary')
                                 IDTypeName('wekbId')
                                 IDValue('wekb UUID')
                             }
+                            AgentName {
+                                AgentNameType('onixPL:RegisteredName')
+                                Name('Bloomsbury') //provider.name
+                            }
                         }
                         AgentDefinition {
-                            AgentLabel('Licensing Consortium') //take the RefdataValue label
+                            AgentLabel('Licensing Consortium') //use this as internal document referrer
                             AgentType('onixPL:Organization')
-                            //Authority() n/a
                             AgentIdentifier {
                                 AgentIDType('onixPL:Proprietary')
                                 IDTypeName('globalUID')
@@ -358,7 +331,7 @@ class LicenseService {
                             }
                         }
                         AgentDefinition {
-                            AgentLabel('Licensee Consortial') //take the RefdataValue label
+                            AgentLabel('Licensee Consortial') //use this as internal document referrer
                             AgentType('onixPL:Organization')
                             //Authority() n/a
                             AgentIdentifier {
@@ -385,23 +358,8 @@ class LicenseService {
                             AgentLabel('Authorized Users')
                             AgentType('onixPL:Person')
                             //the value of Authorized Users cannot be used because it is free text; include paragraphs here
-                            AgentRelatedAgent {
-                                AgentAgentRelator('onixPL:IsOneOf')
-                                //!!! mark here the ___existence___ of the following properties: Walk-In User, (Simuser)
-                                RelatedAgent('onixPL:WalkInUser')
-                            }
+                            LicenseTextLink(href: '')
                         }
-                        /*
-                        not mappable because Walk-In Users in LAS:eR keeps note only about the existence of walk-in users, not how they are called in the license text
-                        AgentDefinition {
-                            AgentLabel('Walk-In Users')
-                            AgentType('onixPL:Person')
-                            AgentRelatedAgent {
-                                AgentAgentRelator('onixPL:IsA')
-                                RelatedAgent('Angehörige der Universität') //free-text value of property Walk-In User
-                            }
-                        }
-                        */
                         ResourceDefinition {
                             ResourceLabel('Subscription')
                             ResourceType('onixPL:LicensedContent') //supplying; ResourceType has no controlled list behind
@@ -418,9 +376,7 @@ class LicenseService {
                             Description('On request') //maps refdata value of license property Archival Copy: Time
                         }
                         DocumentDefinition {
-                            DocumentLabel('Continuing Access: Title Transfer')
-                            DocumentType('onixPL:WebResource')
-                            Description('Licese Property Value submitted in LAS:eR ERMS')
+
                         }
                     }
                     //optional 0-1
@@ -429,15 +385,29 @@ class LicenseService {
                     }
                     //mandatory 1
                     UsageTerms {
+                        //covers Authorized Users, Alumni Access Walk-In User
+                        //multiple Usage statements per each status
                         Usage {
-                            UsageType()
-                            /*onixPL:Access, onixPL:AccessByRobot, onixPL:AccessByStreaming, onixPL:Copy, onixPL:Deposit, onixPL:DepositInPerpetuity
-                            onixPL:DisableOrOverrideProtection, onixPL:Include, onixPL:MakeAvailable, onixPL:MakeAvailableByStreaming, onixPL:MakeDerivedWork, onixPL:MakeDigitalCopy
-                            onixPL:MakeTemporaryDigitalCopy, onixPL:Modify, onixPL:Perform onixPL:Photocopy, onixPL:PrintCopy, onixPL:ProvideIntegratedAccess, onixPL:ProvideIntegratedIndex, onixPL:Reformat
-                            onixPL:RemoveObscureOrModify, onixPL:Sell, onixPL:SupplyCopy, onixPL:SystematicallyCopy, onixPL:Use, onixPL:UseForDataMining
-                            */
-                            UsageStatus()
+                            UsageType('onixPL:Use')
+                            UsageStatus('onixPL:Permitted')
                             User()
+                            /*
+
+                                //!!! mark here the ___existence___ of the following properties: Walk-In User, (Simuser)
+                                RelatedAgent('onixPL:WalkInUser')
+                             */
+                            UsedResource()
+                        }
+                        //multiple Usage statements per each status
+                        Usage {
+                            UsageType('onixPL:Use')
+                            UsageStatus('onixPL:Prohibited')
+                            User()
+                            /*
+
+                                //!!! mark here the ___existence___ of the following properties: Walk-In User, (Simuser)
+                                RelatedAgent('onixPL:WalkInUser')
+                             */
                             UsedResource()
                         }
                     }
@@ -447,18 +417,12 @@ class LicenseService {
                             //license property Accessibility compliance
                             SupplyTermType('onixPL:ComplianceWithAccessibilityStandards')
                             TermStatus('onixPL:Yes') //or no or uncertain
-                            LicenseDocumentReference {
-                                //the reference
-                            }
+                            //the reference
+                            LicenseTextLink(href: 'lp_accessibility_compliance_01')
                         }
                         SupplyTerm {
                             //license property Continuing Access: Title Transfer
                             SupplyTermType('onixPL:ComplianceWithProjectTransferCode')
-                            //is the only way to map this/such property value ...
-                            OtherDocumentReference {
-                                DocumentLabel('Continuing Access: Title Transfer') //licenseProp.name
-                                DocumentText('Regelung vorhanden') //licenseProp.value
-                            }
                         }
                     }
                     //optional 0-1
@@ -504,6 +468,11 @@ class LicenseService {
                     //optional 0-1
                     GeneralTerms {
                         GeneralTerm {
+                            GeneralTermType('onixPL:AllRightsReserved')
+                            TermStatus('onixPL:Yes')
+                            LicenseTextLink(href: 'lp_all_rights_reserved_indicator_01')
+                        }
+                        GeneralTerm {
                             GeneralTermType()
                             GeneralTermQuantity {
                                 GeneralTermQuantityType('onixPL:PeriodForCureOfBreach')
@@ -518,15 +487,22 @@ class LicenseService {
                     //optional 0-1; possible container for LicenseProperty.paragraph-s
                     //not possible to implement properly because mandatory data is missing: DocumentLabel (I cannot ensure an underlying document is available); SortNumber (is mostly not given)
                     //DocumentLabel: substituted by LicenseProperty paragraph, SortNumber: substituted by 0; may be removed completely if no productive use is possible, proposal character!
-                    /*
                     LicenseDocumentText {
-                        DocumentLabel('LicenseProperty Governing law')
-                        TextElement(id: 'lp_governing_law_01') { //"lp_${toSnakeCase(lp.name)}_property count number"
-                            SortNumber(1) //property count number; dummy value because LAS:eR data structure does not offer storage, then, it cannot be expected that users fill it properly
-                            Text('The parties agree that this Agreement shall be governed by and construed in accordance with the laws of Germany.')
+                        DocumentLabel('license.reference')
+                        TextElement(id: 'lp_accessibility_compliance_01') { //"lp_${toSnakeCase(lp.name)}_property count number"
+                            //property count number; dummy value 0 if not existent
+                            SortNumber(0)
+                            Text('4. Kurs-Dossiers und elektronische Bereitstellung 4.2 Zugriffsberechtigte Einrichtungen dürfen lizenzierte Dokumente für Personen, denen die Nutzung des ursprünglichen PDF-Formates nicht möglich ist (z.B. Sehbehinderte), in andere Formate (audio, Braille u.ä.) konvertieren und bereitstellen. Sie werden in diesem Fall gebeten, die konvertierten Dateien dem Distributor zum Verfügung zu stellen, damit sie diesem Personenkreis weltweit zugänglich gemacht werden können.')
+                        }
+                        TextElement(id: 'lp_all_rights_reserved_indicator_01') {
+                            SortNumber(0)
+                            Text('EBSCO hereby grants to the Licensee a nontransferable and non-exclusive right to use the Databases and Services made available by EBSCO according to the terms and conditions of this Agreement.')
+                        }
+                        TextElement(id: 'lp_alumni_access_01') {
+                            SortNumber(0)
+                            Text('1.3.2 [...] Soweit im Nutzungsvertrag nicht abweichend geregelt, sind berechtigte Nutzer nur solche Personen, die [...] zu diesem [dem Kunden] in einem Dienst-, Arbeits- oder Ausbildungsverhältnis stehen. Eine unmittelbare oder mittelbare Nutzung durch andere Personen ist nicht zulässig. (siehe AGB, S. 1)')
                         }
                     }
-                    */
                 }
             }
         }

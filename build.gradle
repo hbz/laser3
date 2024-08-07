@@ -1,6 +1,6 @@
 import java.text.SimpleDateFormat
 
-version '3.4.4'
+version '3.4.5'
 group 'de.laser'
 
 // ---[ build script ]---
@@ -26,7 +26,6 @@ buildscript {
 
 // ---[ applying plugins ]---
 
-apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'war'
 apply plugin: 'org.grails.grails-web'
@@ -89,8 +88,8 @@ dependencies {
 
     // --------------------------------------------------
 
-    implementation 'org.elasticsearch:elasticsearch:7.17.22'                                // 2024
-    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.22'  // 2024
+    implementation 'org.elasticsearch:elasticsearch:7.17.23'                                // 2024
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.23'  // 2024
 
     implementation 'org.grails:grails-shell:6.1.2'                          // 2024 : + org.grails.plugins:database-migration
 

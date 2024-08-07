@@ -40,7 +40,7 @@
         <th scope="col" rowspan="2">
             <a href="#" class="la-popup-tooltip" data-content="Einrichtung" data-position="top center"
                aria-label="Einrichtung" data-why-id="why-722">
-                <i class="users large icon" aria-hidden="true"></i>
+                <i class="${Icon.ORG} large" aria-hidden="true"></i>
             </a>
         </th>
         <th scope="col" rowspan="2">
@@ -538,7 +538,7 @@
         <th scope="col" rowspan="2">
             <a href="#" class="la-popup-tooltip" data-content="Einrichtung" data-position="top center"
                aria-label="Einrichtung" data-why-id="why-722">
-                <i class="users large icon" aria-hidden="true"></i>
+                <i class="${Icon.ORG} large" aria-hidden="true"></i>
             </a>
         </th>
         <th scope="col" rowspan="2">

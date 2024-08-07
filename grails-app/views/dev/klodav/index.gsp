@@ -10,9 +10,13 @@
 
 <nav class="ui secondary menu">
     <g:link controller="dev" action="klodav" class="item active">Various</g:link>
-    <g:link controller="dev" action="icons" class="item"><i class="certificate icon yellow"></i> New Icons</g:link>
-    <g:link controller="dev" action="buttons" class="item"><i class="certificate icon red"></i> New Buttons</g:link>
+    <g:link controller="dev" action="icons" class="item"><i class="${Icon.SIG.NEW_OBJECT} yellow"></i> New Icons</g:link>
+    <g:link controller="dev" action="buttons" class="item"><i class="${Icon.SIG.NEW_OBJECT} orange"></i> New Buttons</g:link>
 </nav>
+
+<hr>
+
+<hr>
 
 <div class="ui four column grid">
     <div class="column">
@@ -158,7 +162,7 @@
 
 <div class="ui segment">
     <p class="ui header">
-        <i class="icon large users"></i> roles
+        <i class="icon users"></i> roles
     </p>
     <div class="ui list">
         <div class="item">
@@ -206,24 +210,12 @@
                 ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')}
             </div>
         </div>
-        <div class="item">
-            <div class="ui label">
-                <i class="icon certificate"></i>
-                ?
-            </div>
-        </div>
-        <div class="item">
-            <div class="ui label">
-                <i class="icon tag"></i>
-                ?
-            </div>
-        </div>
     </div>
 </div>
 
 <div class="ui segment">
     <p class="ui header">
-        <i class="icon large user lock"></i> user roles
+        <i class="icon user lock"></i> user roles
     </p>
     <p>
         <g:set var="contextUser" value="${contextService.getUser()}" />
@@ -262,7 +254,7 @@
 
 <div class="ui segment">
     <p class="ui header">
-        <i class="icon large database"></i> granted permissions
+        <icon:database /> granted permissions
     </p>
     <p>
     <pre>
@@ -273,7 +265,7 @@
 
 <div class="ui segment">
     <p class="ui header">
-        <i class="icon large kiwi bird"></i> simple color helper
+        <i class="icon kiwi bird"></i> simple color helper
     </p>
     <p>
         <i class="${Icon.SYM.SQUARE} large red"></i> fomantic red <br/>

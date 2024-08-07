@@ -151,6 +151,11 @@
                                                  data-content="${propValue.note}">${message(code: 'copyElementsIntoObject.note.short')}</div>
                                         </g:if>
 
+                                        <g:if test="${sourceObject instanceof License && propValue.paragraphNumber}">
+                                            <div class="ui circular large label la-long-tooltip la-popup-tooltip"
+                                                 data-content="${propValue.paragraphNumber}">#</div><br />
+                                        </g:if>
+
                                         <g:if test="${sourceObject instanceof License && propValue.paragraph}">
                                             <div class="ui circular large label la-long-tooltip la-popup-tooltip"
                                                  data-content="${propValue.paragraph}">§</div><br />
@@ -281,6 +286,10 @@
                                                  data-content="${propValue.note}">${message(code: 'copyElementsIntoObject.note.short')}</div>
                                         </g:if>
 
+                                            <g:if test="${targetObject instanceof License && propValue.paragraphNumber}">
+                                                <div class="ui circular large label la-long-tooltip la-popup-tooltip"
+                                                     data-content="${propValue.paragraphNumber}">#</div><br />
+                                            </g:if>
                                             <g:if test="${targetObject instanceof License && propValue.paragraph}">
                                                 <div class="ui circular large label la-long-tooltip la-popup-tooltip"
                                                      data-content="${propValue.paragraph}">§</div><br />

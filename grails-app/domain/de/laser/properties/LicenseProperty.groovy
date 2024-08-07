@@ -29,6 +29,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
 
     License owner
     LicenseProperty instanceOf
+    String paragraphNumber
     String paragraph
 
     Date dateCreated
@@ -46,6 +47,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         note        column: 'lp_note', type: 'text'
         dateValue   column: 'lp_date_value'
         instanceOf  column: 'lp_instance_of_fk', index: 'lp_instance_of_idx'
+        paragraphNumber column: 'lp_paragraph_number'
         paragraph   column: 'lp_paragraph', type: 'text'
         owner       column: 'lp_owner_fk', index:'lcp_owner_idx'
         type        column: 'lp_type_fk', index: 'lp_type_idx'
@@ -65,6 +67,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         note        (nullable: true)
         dateValue   (nullable: true)
         instanceOf  (nullable: true)
+        paragraphNumber (nullable: true)
         paragraph   (nullable: true)
 
         lastUpdated (nullable: true)
@@ -82,7 +85,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
      */
     @Override
     Collection<String> getLogIncluded() {
-        [ 'stringValue', 'intValue', 'decValue', 'refValue', 'paragraph', 'note', 'dateValue' ]
+        [ 'stringValue', 'intValue', 'decValue', 'refValue', 'paragraphNumber', 'paragraph', 'note', 'dateValue' ]
     }
 
     /**
@@ -123,14 +126,15 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     }
 
     /**
-     * Extends the superclass method by the license paragraph
+     * Extends the superclass method by the license paragraph and paragraph number
      * @param newProp the new license property to be processed
-     * @return the property enriched with this copy base's values and the paragraph
+     * @return the property enriched with this copy base's values, the paragraph and its number
      */
     @Override
     def copyInto(AbstractPropertyWithCalculatedLastUpdated newProp){
         newProp = super.copyInto(newProp)
 
+        newProp.paragraphNumber = paragraphNumber
         newProp.paragraph = paragraph
         newProp
     }

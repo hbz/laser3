@@ -194,6 +194,15 @@
                                 </dl>
                             </div>
                         </div><!-- .card -->
+
+                        <g:if test="${editable}">
+                            <g:link controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                                    params="${parame + [viewTab: 'invoicingInformation', setEInvoiceValuesFromOrg: true]}" class="ui right floated blue button">
+                                <g:message code="surveyOrg.setEInvoiceValuesFromOrg"/>
+                            </g:link>
+                            <br>
+                            <br>
+                        </g:if>
                     </div>
                 </div>
 

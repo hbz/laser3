@@ -58,6 +58,7 @@
             <%-- Those are the rights settings the DMS needs to cope with. See the following documentation which is currently a requirement specification, too, and serves as base for ERMS-2393 --%>
             <%
                 Set documentSet = instance.documents
+                boolean showBulkDelete = false
                 if(instance instanceof Org && inContextOrg) {
                     //get all documents which has been attached to this org
                     documentSet.addAll(docstoreService.getTargettedDocuments(instance))
@@ -108,6 +109,7 @@
                     }
                 %>
                 <g:if test="${docctx.isDocAFile() && visible && (docctx.status != RDStore.DOC_CTX_STATUS_DELETED)}">
+                    <% showBulkDelete = true %>
                     <tr>
                         <g:if test="${!(controllerName == 'subscription' && actionName == 'membersSubscriptionsManagement')}">
                             <td class="center aligned">
@@ -147,16 +149,16 @@
                         %{--
                             <td>
                                 <g:if test="${docctx.org}">
-                                    <g:link controller="organisation" action="show" params="[id:docctx.org.id]"><i class="${Icon.ORG} icon small"></i> ${docctx.org.name}</g:link>
+                                    <g:link controller="organisation" action="show" params="[id:docctx.org.id]"><i class="${Icon.ORG} small"></i> ${docctx.org.name}</g:link>
                                 </g:if>
                                 <g:elseif test="${docctx.license}">
-                                    <g:link controller="license" action="show" params="[id:docctx.license.id]"><i class="${Icon.LICENSE} icon small"></i> ${docctx.license.reference}</g:link>
+                                    <g:link controller="license" action="show" params="[id:docctx.license.id]"><i class="${Icon.LICENSE} small"></i> ${docctx.license.reference}</g:link>
                                 </g:elseif>
                                 <g:elseif test="${docctx.subscription}">
                                     <g:link controller="subscription" action="show" params="[id:docctx.subscription.id]"><i class="folder open icon small"></i> ${docctx.subscription.name}</g:link>
                                 </g:elseif>
                                 <g:elseif test="${docctx.pkg}">
-                                    <g:link controller="package" action="show" params="[id:docctx.pkg.id]"><i class="${Icon.PACKAGE} icon small"></i> ${docctx.pkg.name}</g:link>
+                                    <g:link controller="package" action="show" params="[id:docctx.pkg.id]"><i class="${Icon.PACKAGE} small"></i> ${docctx.pkg.name}</g:link>
                                 </g:elseif>
                             </td>
                         --}%
@@ -166,7 +168,7 @@
                                 <g:if test="${instance?.respondsTo('showUIShareButton')}">
                                     <g:if test="${docctx.sharedFrom}">
                                         <span class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
-                                            <i class="grey alternate share icon"></i>
+                                            <i class="${Icon.SIG.SHARED_OBJECT_ON} grey"></i>
                                         </span>
                                     </g:if>
                                     <g:if test="${instance?.showUIShareButton()}">
@@ -174,7 +176,7 @@
                                             <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
                                                 <g:link controller="ajax" action="toggleShare" class="${Btn.MODERN.POSITIVE}"
                                                         params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), reload:true, ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
-                                                    <i class="alternate share icon"></i>
+                                                    <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
                                                 </g:link>
                                             </span>
                                         </g:if>
@@ -182,7 +184,7 @@
                                             <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.off')}">
                                                 <g:link controller="ajax" action="toggleShare" class="${Btn.MODERN.SIMPLE}"
                                                         params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), reload:true, ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
-                                                    <i class="la-share slash icon"></i>
+                                                    <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
                                                 </g:link>
                                             </span>
                                         </g:else>
@@ -216,7 +218,7 @@
             </g:each>
         </tbody>
         <g:if test="${!(controllerName == 'subscription' && actionName == 'membersSubscriptionsManagement')}">
-        <g:if test="${editable && documentSet}">
+        <g:if test="${editable && documentSet && showBulkDelete}">
             <tfoot>
                 <tr>
                     <td class="center aligned">

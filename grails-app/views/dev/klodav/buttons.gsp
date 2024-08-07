@@ -10,16 +10,16 @@
 
 <nav class="ui secondary menu">
     <g:link controller="dev" action="klodav" class="item">Various</g:link>
-    <g:link controller="dev" action="icons" class="item"><i class="certificate icon yellow"></i> New Icons</g:link>
-    <g:link controller="dev" action="buttons" class="item active"><i class="certificate icon red"></i> New Buttons</g:link>
+    <g:link controller="dev" action="icons" class="item"><i class="${Icon.SIG.NEW_OBJECT} yellow"></i> New Icons</g:link>
+    <g:link controller="dev" action="buttons" class="item active"><i class="${Icon.SIG.NEW_OBJECT} orange"></i> New Buttons</g:link>
 </nav>
 
 <div class="ui info message">
     <p class="ui header">
         Usage
-        <button class="${Btn.MODERN.BASIC} blue" style="float: right"><i class="${Icon.SYM.UNKOWN}"></i></button>
+        <button class="${Btn.MODERN.SIMPLE}" style="float: right"><i class="${Icon.SYM.UNKOWN}"></i></button>
     </p>
-    <pre>&lt;button class=&quot;&dollar;{Btn.MODERN.BASIC} blue&quot;&gt;&lt;i class=&quot;&dollar;{Icon.SYM.UNKOWN}&quot;&gt;&lt;/i&gt;&lt;/button&gt;</pre>
+    <pre>&lt;button class=&quot;&dollar;{Btn.MODERN.SIMPLE}&quot;&gt;&lt;i class=&quot;&dollar;{Icon.SYM.UNKOWN}&quot;&gt;&lt;/i&gt;&lt;/button&gt;</pre>
 </div>
 
 <div class="ui info message hidden">
@@ -29,9 +29,6 @@
 
     <ul>
         <li>Btn.SIMPLE == Btn.PRIMARY ?</li>
-        <li>Btn.BASIC != Btn.MODERN.BASIC</li>
-        <li>Btn.MODERN.BASIC</li>
-        <li>Btn.MODERN.SIMPLE </li>
         <li>Btn.MODERN.PRIMARY ?</li>
         <li>Btn.MODERN.SECONDARY ?</li>
     </ul>
@@ -41,7 +38,7 @@
 
     <div class="ui two column grid">
         <div class="column">
-            <ui:msg class="info" header="de.laser.ui.Btn" hideClose="true"> Text (Icon optional) </ui:msg>
+            <ui:msg class="info" header="de.laser.ui.Btn" hideClose="true"> <icon:pointingHand /> Text (Icon optional) </ui:msg>
 
             <table class="ui simple table very compact">
                 <thead>
@@ -75,20 +72,20 @@
                     <td> <button class="${Btn.POSITIVE}"><i class="${Icon.CMD.LINKIFY}"></i> POSITIVE</button> </td>
                     <td> Btn.POSITIVE </td>
                     <td> ${Btn.POSITIVE} </td>
-                    <td> </td>
+                    <td> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.NEGATIVE}"><i class="${Icon.CMD.UNLINK}"></i> NEGATIVE</button> </td>
                     <td> Btn.NEGATIVE </td>
                     <td> ${Btn.NEGATIVE} </td>
-                    <td> </td>
+                    <td> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
                 </tr>
                 </tbody>
             </table>
         </div>
 
         <div class="column">
-            <ui:msg class="info" header="de.laser.ui.Btn.ICON"  hideClose="true"> Icon ONLY </ui:msg>
+            <ui:msg class="info" header="de.laser.ui.Btn.ICON"  hideClose="true"> <icon:pointingHand /> Icon ONLY </ui:msg>
 
             <table class="ui simple table very compact">
                 <thead>
@@ -122,13 +119,13 @@
                     <td> <button class="${Btn.ICON.POSITIVE}"><i class="${Icon.CMD.ADD}"></i></button> </td>
                     <td> Btn.ICON.POSITIVE </td>
                     <td> ${Btn.ICON.POSITIVE} </td>
-                    <td> </td>
+                    <td> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.ICON.NEGATIVE}"><i class="${Icon.CMD.REMOVE}"></i></button> </td>
                     <td> Btn.ICON.NEGATIVE </td>
                     <td> ${Btn.ICON.NEGATIVE} </td>
-                    <td> </td>
+                    <td> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
                 </tr>
                 </tbody>
             </table>
@@ -137,7 +134,7 @@
 
     <div class="ui one column grid">
         <div class="column">
-            <ui:msg class="info" header="de.laser.ui.Btn"  hideClose="true"> Text (Icon optional) + Javascript </ui:msg>
+            <ui:msg class="info" header="de.laser.ui.Btn"  hideClose="true"> <icon:pointingHand /> Text (Icon optional) + Javascript </ui:msg>
 
             <table class="ui simple table very compact">
                 <thead>
@@ -153,19 +150,19 @@
                     <td> <button class="${Btn.SIMPLE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.COPY}"></i> SIMPLE_CONFIRM</button> </td>
                     <td> Btn.SIMPLE_CONFIRM </td>
                     <td> ${Btn.SIMPLE_CONFIRM} </td>
-                    <td> Colors by declaration; <span class="ui text blue">default: none (blue)</span> <br/> Confirmation Dialog (data-confirm-attributes needed) </td>
+                    <td> Confirmation Dialog (data-confirm-attributes needed) <br /> Colors by declaration; <span class="ui text blue">default: none (blue)</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.POSITIVE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.ADD}"></i> POSITIVE_CONFIRM</button> </td>
                     <td> Btn.POSITIVE_CONFIRM </td>
                     <td> ${Btn.POSITIVE_CONFIRM} </td>
-                    <td> Confirmation Dialog (data-confirm-attributes needed) </td>
+                    <td> Confirmation Dialog (data-confirm-attributes needed) <br /> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.NEGATIVE_CONFIRM}" data-confirm-term-how="delete"><i class="${Icon.CMD.DELETE}"></i> NEGATIVE_CONFIRM</button> </td>
                     <td> Btn.NEGATIVE_CONFIRM </td>
                     <td> ${Btn.NEGATIVE_CONFIRM} </td>
-                    <td> Confirmation Dialog (data-confirm-attributes needed) </td>
+                    <td> Confirmation Dialog (data-confirm-attributes needed) <br /> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.SIMPLE_CLICKCONTROL} teal">SIMPLE_CLICKCONTROL</button> </td>
@@ -177,25 +174,25 @@
                     <td> <button class="${Btn.NEGATIVE_CLICKCONTROL}">NEGATIVE_CLICKCONTROL</button> </td>
                     <td> Btn.NEGATIVE_CLICKCONTROL </td>
                     <td> ${Btn.NEGATIVE_CLICKCONTROL} </td>
-                    <td> </td>
+                    <td> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.SIMPLE_TOOLTIP}" data-content="Something to know ..">SIMPLE_TOOLTIP</button> </td>
                     <td> Btn.SIMPLE_TOOLTIP </td>
                     <td> ${Btn.SIMPLE_TOOLTIP} </td>
-                    <td> Colors by declaration; <span class="ui text blue">default: none (blue)</span> <br/> Tooltip (data-attributes needed) </td>
+                    <td> Tooltip (data-attributes needed) <br /> Colors by declaration; <span class="ui text blue">default: none (blue)</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.POSITIVE_TOOLTIP}" data-content="Something to know ..">POSITIVE_TOOLTIP</button> </td>
                     <td> Btn.POSITIVE_TOOLTIP </td>
                     <td> ${Btn.POSITIVE_TOOLTIP} </td>
-                    <td> Tooltip (data-attributes needed) </td>
+                    <td> Tooltip (data-attributes needed) <br /> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.NEGATIVE_TOOLTIP}" data-content="Something to know ..">NEGATIVE_TOOLTIP</button> </td>
                     <td> Btn.NEGATIVE_TOOLTIP </td>
                     <td> ${Btn.NEGATIVE_TOOLTIP} </td>
-                    <td> Tooltip (data-attributes needed) </td>
+                    <td> Tooltip (data-attributes needed) <br /> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
                 </tr>
                 </tbody>
             </table>
@@ -204,7 +201,7 @@
 
     <div class="ui one column grid">
         <div class="column">
-            <ui:msg class="info" header="de.laser.ui.Btn.ICON" hideClose="true"> Icon ONLY + Javascript </ui:msg>
+            <ui:msg class="info" header="de.laser.ui.Btn.ICON" hideClose="true"> <icon:pointingHand /> Icon ONLY + Javascript </ui:msg>
 
             <table class="ui simple table very compact">
                 <thead>
@@ -220,19 +217,19 @@
                     <td> <button class="${Btn.ICON.POSITIVE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.ADD}"></i></button> </td>
                     <td> Btn.ICON.POSITIVE_CONFIRM </td>
                     <td> ${Btn.ICON.POSITIVE_CONFIRM} </td>
-                    <td> Confirmation Dialog (data-confirm-attributes needed) </td>
+                    <td> Confirmation Dialog (data-confirm-attributes needed) <br /> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.ICON.NEGATIVE_CONFIRM}" data-confirm-term-how="delete"><i class="${Icon.CMD.DELETE}"></i></button> </td>
                     <td> Btn.ICON.NEGATIVE_CONFIRM </td>
                     <td> ${Btn.ICON.NEGATIVE_CONFIRM} </td>
-                    <td> Confirmation Dialog (data-confirm-attributes needed) </td>
+                    <td> Confirmation Dialog (data-confirm-attributes needed) <br /> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.ICON.SIMPLE_TOOLTIP}" data-content="Something to know .."><i class="${Icon.CMD.DOWNLOAD}"></i></button> </td>
                     <td> Btn.ICON.SIMPLE_TOOLTIP </td>
                     <td> ${Btn.ICON.SIMPLE_TOOLTIP} </td>
-                    <td> Colors by declaration; <span class="ui text blue">default: none (blue)</span> <br/> Tooltip (data-attributes needed) </td>
+                    <td> Tooltip (data-attributes needed) <br /> Colors by declaration; <span class="ui text blue">default: none (blue)</span> </td>
                 </tr>
                 </tbody>
             </table>
@@ -244,7 +241,7 @@
 
     <div class="ui one column grid">
         <div class="column">
-            <ui:msg class="info" header="de.laser.ui.Btn.MODERN" hideClose="true"> Icon ONLY </ui:msg>
+            <ui:msg class="info" header="de.laser.ui.Btn.MODERN" hideClose="true"> <icon:pointingHand /> Icon ONLY </ui:msg>
 
             <table class="ui simple table very compact">
                 <thead>
@@ -257,28 +254,22 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td> <button class="${Btn.MODERN.BASIC} orange"><i class="${Icon.CMD.REPLACE}"></i></button> </td>
-                    <td> Btn.MODERN.BASIC <br/> orange </td>
-                    <td> ${Btn.MODERN.BASIC} (+ orange) </td>
-                    <td> Colors by declaration; <span class="ui text red">default: none (BROKEN)</span> </td>
-                </tr>
-                <tr>
-                    <td> <button class="${Btn.MODERN.SIMPLE}"><i class="${Icon.SYM.SQUARE}"></i></button> </td>
+                    <td> <button class="${Btn.MODERN.SIMPLE}"><i class="${Icon.CMD.REPLACE}"></i></button> </td>
                     <td> Btn.MODERN.SIMPLE </td>
                     <td> ${Btn.MODERN.SIMPLE} </td>
-                    <td> </td>
+                    <td> Colors by declaration; <span class="ui text blue">default: none (blue)</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.MODERN.POSITIVE}"><i class="${Icon.CMD.ADD}"></i></button> </td>
                     <td> Btn.MODERN.POSITIVE </td>
                     <td> ${Btn.MODERN.POSITIVE} </td>
-                    <td> </td>
+                    <td> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.MODERN.NEGATIVE}"><i class="${Icon.CMD.REMOVE}"></i></button> </td>
                     <td> Btn.MODERN.NEGATIVE </td>
                     <td> ${Btn.MODERN.NEGATIVE} </td>
-                    <td> </td>
+                    <td> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
                 </tr>
                 </tbody>
             </table>
@@ -287,7 +278,7 @@
 
     <div class="ui one column grid">
         <div class="column">
-            <ui:msg class="info" header="de.laser.ui.Btn.MODERN" hideClose="true"> Icon ONLY + Javascript</ui:msg>
+            <ui:msg class="info" header="de.laser.ui.Btn.MODERN" hideClose="true"> <icon:pointingHand /> Icon ONLY + Javascript</ui:msg>
 
             <table class="ui simple table very compact">
                 <thead>
@@ -300,70 +291,58 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td> <button class="${Btn.MODERN.BASIC_CONFIRM} orange" data-confirm-term-how="ok"><i class="${Icon.CMD.COPY}"></i></button> </td>
-                    <td> Btn.MODERN.BASIC_CONFIRM <br/> orange </td>
-                    <td> ${Btn.MODERN.BASIC_CONFIRM} (+ orange) </td>
-                    <td> Colors by declaration; <span class="ui text red">default: none (BROKEN)</span> <br/> Confirmation Dialog (data-confirm-attributes needed) </td>
-                </tr>
-                <tr>
-                    <td> <button class="${Btn.MODERN.SIMPLE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.COPY}"></i></button> </td>
-                    <td> Btn.MODERN.SIMPLE_CONFIRM </td>
-                    <td> ${Btn.MODERN.SIMPLE_CONFIRM} </td>
-                    <td> Confirmation Dialog (data-confirm-attributes needed) </td>
+                    <td> <button class="${Btn.MODERN.SIMPLE_CONFIRM} orange" data-confirm-term-how="ok"><i class="${Icon.CMD.COPY}"></i></button> </td>
+                    <td> Btn.MODERN.SIMPLE_CONFIRM <br/> orange </td>
+                    <td> ${Btn.MODERN.SIMPLE_CONFIRM} (+ orange) </td>
+                    <td> Confirmation Dialog (data-confirm-attributes needed) <br /> Colors by declaration; <span class="ui text blue">default: none (blue)</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.MODERN.POSITIVE_CONFIRM}" data-confirm-term-how="ok"><i class="${Icon.CMD.ADD}"></i></button> </td>
                     <td> Btn.MODERN.POSITIVE_CONFIRM </td>
                     <td> ${Btn.MODERN.POSITIVE_CONFIRM} </td>
-                    <td> Confirmation Dialog (data-confirm-attributes needed) </td>
+                    <td> Confirmation Dialog (data-confirm-attributes needed) <br /> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.MODERN.NEGATIVE_CONFIRM}" data-confirm-term-how="delete"><i class="${Icon.CMD.DELETE}"></i></button> </td>
                     <td> Btn.MODERN.NEGATIVE_CONFIRM </td>
                     <td> ${Btn.MODERN.NEGATIVE_CONFIRM} </td>
-                    <td> Confirmation Dialog (data-confirm-attributes needed) </td>
+                    <td> Confirmation Dialog (data-confirm-attributes needed) <br /> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
                 </tr>
                 <tr>
-                    <td> <button class="${Btn.MODERN.BASIC_TOOLTIP} yellow" data-content="Something to know .."><i class="${Icon.UI.HELP}"></i></button> </td>
-                    <td> Btn.MODERN.BASIC_TOOLTIP <br/> yellow </td>
-                    <td> ${Btn.MODERN.BASIC_TOOLTIP} (+ yellow) </td>
-                    <td> Colors by declaration; <span class="ui text red">default: none (BROKEN)</span> <br/> Tooltip (data-attributes needed) </td>
-                </tr>
-                <tr>
-                    <td> <button class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="Something to know .."><i class="${Icon.UI.INFO}"></i></button> </td>
-                    <td> Btn.MODERN.SIMPLE_TOOLTIP </td>
-                    <td> ${Btn.MODERN.SIMPLE_TOOLTIP} </td>
-                    <td> Tooltip (data-attributes needed) </td>
+                    <td> <button class="${Btn.MODERN.SIMPLE_TOOLTIP} yellow" data-content="Something to know .."><i class="${Icon.UI.HELP}"></i></button> </td>
+                    <td> Btn.MODERN.SIMPLE_TOOLTIP <br/> yellow </td>
+                    <td> ${Btn.MODERN.SIMPLE_TOOLTIP} (+ yellow) </td>
+                    <td> Tooltip (data-attributes needed) <br /> Colors by declaration; <span class="ui text blue">default: none (blue)</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.MODERN.POSITIVE_TOOLTIP}" data-content="Something to know .."><i class="${Icon.CMD.ATTACHMENT}"></i></button> </td>
                     <td> Btn.MODERN.POSITIVE_TOOLTIP </td>
                     <td> ${Btn.MODERN.POSITIVE_TOOLTIP} </td>
-                    <td> Tooltip (data-attributes needed) </td>
+                    <td> Tooltip (data-attributes needed) <br /> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.MODERN.NEGATIVE_TOOLTIP}" data-content="Something to know .."><i class="${Icon.CMD.ERASE}"></i></button> </td>
                     <td> Btn.MODERN.NEGATIVE_TOOLTIP </td>
                     <td> ${Btn.MODERN.NEGATIVE_TOOLTIP} </td>
-                    <td> Tooltip (data-attributes needed) </td>
+                    <td> Tooltip (data-attributes needed) <br /> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}" data-confirm-term-how="ok" data-content="Something to know .."><i class="${Icon.CMD.COPY}"></i></button> </td>
                     <td> Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP </td>
                     <td> ${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP} </td>
-                    <td> Confirmation Dialog (data-confirm-attributes needed) <br/> Tooltip (data-attributes needed) </td>
+                    <td> Confirmation Dialog (data-confirm-attributes needed) <br/> Tooltip (data-attributes needed) <br /> Colors by declaration; <span class="ui text blue">default: none (blue)</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.MODERN.POSITIVE_CONFIRM_TOOLTIP}" data-confirm-term-how="ok" data-content="Something to know .."><i class="${Icon.CMD.ADD}"></i></button> </td>
                     <td> Btn.MODERN.POSITIVE_CONFIRM_TOOLTIP </td>
                     <td> ${Btn.MODERN.POSITIVE_CONFIRM_TOOLTIP} </td>
-                    <td> Confirmation Dialog (data-confirm-attributes needed) <br/> Tooltip (data-attributes needed) </td>
+                    <td> Confirmation Dialog (data-confirm-attributes needed) <br/> Tooltip (data-attributes needed) <br /> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
                 </tr>
                 <tr>
                     <td> <button class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP}" data-confirm-term-how="unlink" data-content="Something to know .."><i class="${Icon.CMD.UNLINK}"></i></button> </td>
                     <td> Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP </td>
                     <td> ${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP} </td>
-                    <td> Confirmation Dialog (data-confirm-attributes needed) <br/> Tooltip (data-attributes needed) </td>
+                    <td> Confirmation Dialog (data-confirm-attributes needed) <br/> Tooltip (data-attributes needed) <br /> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
                 </tr>
                 </tbody>
             </table>

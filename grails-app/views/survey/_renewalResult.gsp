@@ -61,7 +61,7 @@
                 <g:if test="${!surveyConfig.hasOrgSubscription(participantResult.participant)}">
                     <span data-position="top right" class="la-popup-tooltip"
                           data-content="${message(code: 'surveyResult.newOrg')}">
-                        <i class="star black large  icon"></i>
+                        <i class="${Icon.SIG.NEW_OBJECT} large"></i>
                     </span>
                 </g:if>
 

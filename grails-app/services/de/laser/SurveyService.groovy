@@ -274,10 +274,7 @@ class SurveyService {
                                    messageSource.getMessage('subscription.hasPerpetualAccess.label', null, locale)])
                     if (surveyConfig.subSurveyUseForTransfer) {
                         titles.addAll([messageSource.getMessage('surveyconfig.scheduledStartDate.label', null, locale),
-                                       messageSource.getMessage('surveyconfig.scheduledEndDate.label', null, locale),
-                                       messageSource.getMessage('surveyConfigsInfo.newPrice', null, locale),
-                                       messageSource.getMessage('default.currency.label', null, locale),
-                                       messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, locale)])
+                                       messageSource.getMessage('surveyconfig.scheduledEndDate.label', null, locale)])
                     }
                 }
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
@@ -341,13 +338,6 @@ class SurveyService {
                         row.add([field: subscription.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
                         row.add([field: subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
 
-                        if (surveyConfig.subSurveyUseForTransfer) {
-                            CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, surveyOrg.org), RDStore.COST_ITEM_DELETED)
-
-                            row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
-                            row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
-                            row.add([field: surveyCostItem?.costDescription ?: '', style: null])
-                        }
                     }
 
                     SurveyResult.findAllBySurveyConfigAndParticipant(surveyConfig, surveyOrg.org).sort{it.type.getI10n('name')}.each { surResult ->
@@ -377,6 +367,28 @@ class SurveyService {
 
 
                     }
+
+                    CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED).each { CostItem surveyCostItem ->
+                        row.add([field: surveyCostItem.costItemElement?.getI10n('value') ?: '', style: null])
+                        row.add([field: surveyCostItem.costInBillingCurrency ?: '', style: null])
+                        row.add([field: surveyCostItem.billingCurrency?.value ?: '', style: null])
+                        String surveyCostTax
+                        if(surveyCostItem.taxKey && surveyCostItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
+                            surveyCostTax = RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")
+                        else if(surveyCostItem.taxKey)
+                            surveyCostTax = surveyCostItem.taxKey.taxType?.getI10n("value") + " (" + surveyCostItem.taxKey.taxRate + "%)"
+                        else
+                            surveyCostTax = ''
+                        row.add([field: surveyCostTax, style: null])
+                        if(surveyCostItem.taxKey && surveyCostItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
+                            row.add([field: '', style: null])
+                        else
+                            row.add([field: surveyCostItem.costInBillingCurrencyAfterTax ?: '', style: null])
+                        row.add([field: surveyCostItem.startDate ? formatter.format(surveyCostItem.startDate) : '', style: null])
+                        row.add([field: surveyCostItem.endDate ? formatter.format(surveyCostItem.endDate) : '', style: null])
+                        row.add([field: surveyCostItem.costDescription ?: '', style: null])
+                    }
+
                     surveyData.add(row)
                 }
             } else {
@@ -430,13 +442,31 @@ class SurveyService {
                     }
 
                     if (surveyConfig.subSurveyUseForTransfer) {
-                        CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED)
                         row.add([field: surveyConfig.scheduledStartDate ? DateUtils.getSDF_ddMMyyy().format( DateUtils.getSDF_yyyyMMdd_hhmmSSS().parse(surveyConfig.scheduledStartDate.toString()) ): '', style: null])
                         row.add([field: surveyConfig.scheduledEndDate ? DateUtils.getSDF_ddMMyyy().format( DateUtils.getSDF_yyyyMMdd_hhmmSSS().parse(surveyConfig.scheduledEndDate.toString()) ): '', style: null])
-                        row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
-                        row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
-                        row.add([field: surveyCostItem?.costDescription ?: '', style: null])
                     }
+
+                    CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED).each { CostItem surveyCostItem ->
+                        row.add([field: surveyCostItem.costItemElement?.getI10n('value') ?: '', style: null])
+                        row.add([field: surveyCostItem.costInBillingCurrency ?: '', style: null])
+                        row.add([field: surveyCostItem.billingCurrency?.value ?: '', style: null])
+                        String surveyCostTax
+                        if(surveyCostItem.taxKey && surveyCostItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
+                            surveyCostTax = RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")
+                        else if(surveyCostItem.taxKey)
+                            surveyCostTax = surveyCostItem.taxKey.taxType?.getI10n("value") + " (" + surveyCostItem.taxKey.taxRate + "%)"
+                        else
+                            surveyCostTax = ''
+                        row.add([field: surveyCostTax, style: null])
+                        if(surveyCostItem.taxKey && surveyCostItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
+                            row.add([field: '', style: null])
+                        else
+                            row.add([field: surveyCostItem.costInBillingCurrencyAfterTax ?: '', style: null])
+                        row.add([field: surveyCostItem.startDate ? formatter.format(surveyCostItem.startDate) : '', style: null])
+                        row.add([field: surveyCostItem.endDate ? formatter.format(surveyCostItem.endDate) : '', style: null])
+                        row.add([field: surveyCostItem.costDescription ?: '', style: null])
+                    }
+
                 }
 
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
@@ -487,6 +517,85 @@ class SurveyService {
                     row3.add([field: surveyOrg.finishDate ? sdf.format(surveyOrg.finishDate) : '', style: null])
 
                     surveyData.add(row3)
+                }
+
+
+                //Lieferanten-Umfrage
+                if(surveyConfig.vendorSurvey) {
+                    surveyData.add([])
+                    surveyData.add([])
+                    surveyData.add([])
+                    surveyData.add([[field: messageSource.getMessage('surveyconfig.vendorSurvey.label', null, locale), style: 'bold']])
+                    List rowVendor = [[field: messageSource.getMessage('default.sortname.label', null, locale), style: 'bold'],
+                                      [field: messageSource.getMessage('default.name.label', null, locale), style: 'bold'],
+                                 [field: messageSource.getMessage('surveyResult.comment', null, locale), style: 'bold'],
+                                 [field: messageSource.getMessage('surveyResult.commentOnlyForParticipant', null, locale), style: 'bold']]
+                    surveyData.add(rowVendor)
+
+                    SurveyVendorResult.findAllBySurveyConfigAndParticipant(surveyConfig, contextOrg).sort { it.vendor.name }.each { surveyVendorResult ->
+                        List row3 = []
+                        row3.add([field: surveyVendorResult.vendor.sortname, style: null])
+                        row3.add([field: surveyVendorResult.vendor.name, style: null])
+                        row3.add([field: surveyVendorResult.comment ?: '', style: null])
+                        row3.add([field: surveyVendorResult.participantComment ?: '', style: null])
+                        surveyData.add(row3)
+                    }
+                }
+
+
+                //Paket-Umfrage
+                if(surveyConfig.packageSurvey) {
+                    surveyData.add([])
+                    surveyData.add([])
+                    surveyData.add([])
+                    surveyData.add([[field: messageSource.getMessage('surveyconfig.packageSurvey.label', null, locale), style: 'bold']])
+                    List rowPackage = [[field: messageSource.getMessage('package.show.pkg_name', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('default.status.label', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('package.compare.overview.tipps', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('provider.label', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('surveyResult.comment', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('surveyResult.commentOnlyForParticipant', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('financials.costItemElement', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('financials.costInBillingCurrency', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('default.currency.label', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('financials.newCosts.taxTypeAndRate', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('financials.costInBillingCurrencyAfterTax', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('default.startDate.label', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('default.endDate.label', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, locale), style: 'bold']]
+                    surveyData.add(rowPackage)
+
+                    SurveyPackageResult.findAllBySurveyConfigAndParticipant(surveyConfig, contextOrg).sort { it.pkg.name }.each { surveyPackageResult ->
+                        List row3 = []
+                        row3.add([field: surveyPackageResult.pkg.name, style: null])
+                        row3.add([field: surveyPackageResult.pkg.packageStatus?.getI10n('value'), style: null])
+                        row3.add([field: surveyPackageResult.pkg.getCurrentTippsCount(), style: null])
+                        row3.add([field: surveyPackageResult.pkg.provider.name, style: null])
+                        row3.add([field: surveyPackageResult.comment ?: '', style: null])
+                        row3.add([field: surveyPackageResult.participantComment ?: '', style: null])
+                        CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndPkg(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED, surveyPackageResult.pkg).each { CostItem surveyCostItem ->
+                            row3.add([field: surveyCostItem.costItemElement?.getI10n('value') ?: '', style: null])
+                            row3.add([field: surveyCostItem.costInBillingCurrency ?: '', style: null])
+                            row3.add([field: surveyCostItem.billingCurrency?.value ?: '', style: null])
+                            String surveyCostTax
+                            if(surveyCostItem.taxKey && surveyCostItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
+                                surveyCostTax = RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")
+                            else if(surveyCostItem.taxKey)
+                                surveyCostTax = surveyCostItem.taxKey.taxType?.getI10n("value") + " (" + surveyCostItem.taxKey.taxRate + "%)"
+                            else
+                                surveyCostTax = ''
+                            row3.add([field: surveyCostTax, style: null])
+                            if(surveyCostItem.taxKey && surveyCostItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
+                                row3.add([field: '', style: null])
+                            else
+                                row3.add([field: surveyCostItem.costInBillingCurrencyAfterTax ?: '', style: null])
+                            row3.add([field: surveyCostItem.startDate ? formatter.format(surveyCostItem.startDate) : '', style: null])
+                            row3.add([field: surveyCostItem.endDate ? formatter.format(surveyCostItem.endDate) : '', style: null])
+                            row3.add([field: surveyCostItem.costDescription ?: '', style: null])
+                        }
+
+                        surveyData.add(row3)
+                    }
                 }
             }
             sheetData.put(escapeService.escapeString(surveyConfig.getConfigNameShort()), [titleRow: titles, columnData: surveyData])
@@ -576,27 +685,25 @@ class SurveyService {
 
                         row.add([field: subscription.status?.getI10n("value") ?: '', style: null])
 
-                        CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, surveyOrg.org), RDStore.COST_ITEM_DELETED)
-
-                        if (surveyCostItem) {
-                            row.add([field: surveyCostItem?.costItemElement?.getI10n('value') ?: '', style: null])
-                            row.add([field: surveyCostItem?.costInBillingCurrency ?: '', style: null])
-                            row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
-                            String surveyCostTax
-                            if(surveyCostItem?.taxKey && surveyCostItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
-                                surveyCostTax = RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")
-                            else if(surveyCostItem?.taxKey)
-                                surveyCostTax = surveyCostItem.taxKey.taxType?.getI10n("value") + " (" + surveyCostItem.taxKey.taxRate + "%)"
-                            else
-                                surveyCostTax = ''
-                            row.add([field: surveyCostTax, style: null])
-                            if(surveyCostItem?.taxKey && surveyCostItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
-                                row.add([field: '', style: null])
-                            else
-                                row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
-                            row.add([field: surveyCostItem?.startDate ? formatter.format(surveyCostItem.startDate): '', style: null])
-                            row.add([field: surveyCostItem?.endDate ? formatter.format(surveyCostItem.endDate): '', style: null])
-                            row.add([field: surveyCostItem?.costDescription ?: '', style: null])
+                        CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, surveyOrg.org), RDStore.COST_ITEM_DELETED).each { CostItem surveyCostItem ->
+                                row.add([field: surveyCostItem.costItemElement?.getI10n('value') ?: '', style: null])
+                                row.add([field: surveyCostItem.costInBillingCurrency ?: '', style: null])
+                                row.add([field: surveyCostItem.billingCurrency?.value ?: '', style: null])
+                                String surveyCostTax
+                                if (surveyCostItem.taxKey && surveyCostItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
+                                    surveyCostTax = RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")
+                                else if (surveyCostItem.taxKey)
+                                    surveyCostTax = surveyCostItem.taxKey.taxType?.getI10n("value") + " (" + surveyCostItem.taxKey.taxRate + "%)"
+                                else
+                                    surveyCostTax = ''
+                                row.add([field: surveyCostTax, style: null])
+                                if (surveyCostItem.taxKey && surveyCostItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
+                                    row.add([field: '', style: null])
+                                else
+                                    row.add([field: surveyCostItem.costInBillingCurrencyAfterTax ?: '', style: null])
+                                row.add([field: surveyCostItem.startDate ? formatter.format(surveyCostItem.startDate) : '', style: null])
+                                row.add([field: surveyCostItem.endDate ? formatter.format(surveyCostItem.endDate) : '', style: null])
+                                row.add([field: surveyCostItem.costDescription ?: '', style: null])
                         }
                     }
 
@@ -1171,6 +1278,16 @@ class SurveyService {
                         surveyConfig: newSurveyConfig,
                         propertyOrder: surveyConfigProperty.propertyOrder,
                         mandatoryProperty: surveyConfigProperty.mandatoryProperty).save()
+            }
+        }
+        if (params.copySurvey.copyPackages) {
+            oldSurveyConfig.surveyPackages.each { SurveyConfigPackage surveyConfigPackage ->
+                new SurveyConfigPackage(surveyConfig: newSurveyConfig, pkg: surveyConfigPackage.pkg).save()
+            }
+        }
+        if (params.copySurvey.copyVendors) {
+            oldSurveyConfig.surveyVendors.each { SurveyConfigVendor surveyConfigVendor ->
+                new SurveyConfigVendor(surveyConfig: newSurveyConfig, vendor: surveyConfigVendor.vendor).save()
             }
         }
     }
@@ -2236,7 +2353,7 @@ class SurveyService {
         List<SurveyPackageResult> surveyPackageResultList = SurveyPackageResult.findAllBySurveyConfigAndParticipant(surveyConfig, participant)
 
         if(surveyPackageResultList){
-            List<CostItem> costItemList = CostItem.findAllBySurveyOrgAndPkgInListAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), surveyPackageResultList.pkg)
+            List<CostItem> costItemList = CostItem.findAllBySurveyOrgAndPkgInList(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), surveyPackageResultList.pkg)
             costItemList.each { CostItem costItem ->
 
                 sumCostInBillingCurrency = sumCostInBillingCurrency+ costItem.costInBillingCurrency
@@ -2354,6 +2471,14 @@ class SurveyService {
                         result.surveyOrg.save()
                     }
                 }
+
+                if(params.setEInvoiceValuesFromOrg) {
+                    result.surveyOrg.eInvoicePortal = participant.eInvoicePortal
+                    result.surveyOrg.eInvoiceLeitwegId = participant.getLeitID()?.value
+                    result.surveyOrg.eInvoiceLeitkriterium = participant.getLeitkriterium()?.value
+                    result.surveyOrg.save()
+                }
+
             }
 
             params.sort = params.sort ?: 'sortname'

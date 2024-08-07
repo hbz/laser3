@@ -7,6 +7,24 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5845    05.08.2024  rc-3.4  3.4.5       Andreas Bug         Zeile zur Massenbearbeitung blieb stehen
+
+5841    05.08.2024  rc-3.4  3.4.5       Andreas Bug         Identifier von Anbieter und Lieferanten waren nicht bearbeitbar
+
+5839    05.08.2024  rc-3.4  3.4.5       Andreas Bug         gelöschte Kosten konnten nicht abgeräumt werden
+
+5837/5838    05.08.2024  rc-3.4  3.4.5       Andreas Bug         Variablenfehler behoben
+
+5842    02.08.2024  rc-3.4  3.4.5       David   Bug         500er bei leerem Dateifeld bei "neue Dokumente"
+
+5836    02.08.2024  rc-3.4  3.4.5       David   Bug         Nutzer ohne Email-Adresse erstellt, obwohl eigentlich Pflichtfeld
+
+5835    01.08.2024  rc-3.4  3.4.4       Andreas Bug         Lieferanten-Reiter hatten keine IDs
+
+5834    01.08.2024  rc-3.4  3.4.4       Andreas Bug         fehlende we:kb-ID-Exports nachgereicht
+
+5831    31.07.2024  rc-3.4  3.4.4       Andreas Feature     Erweiterung des Kundennummernmodals um Prüfung des Wertes
+
 5824    25.07.2024  rc-3.4  3.4.4       David   Feature     Gasco-Seite: Interne Links unterbinden
 
 --      24.07.2024  rc-3.4  3.4.4       Andreas Bug         überflüssige Verschachtelung in Api-Ausgabe entfernt (nach Mail aus Jülich)

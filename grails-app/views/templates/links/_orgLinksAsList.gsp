@@ -27,7 +27,7 @@
                                             params="${[owner:genericOIDService.getOID(roleObject), sharedObject:genericOIDService.getOID(role), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]}"
                                             data-position="top right" data-content="${message(code:'property.share.tooltip.on')}"
                                     >
-                                        <i class="la-share icon"></i>
+                                        <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
                                     </g:link>
                                 </span>
                             </g:if>
@@ -38,7 +38,7 @@
                                             params="${[owner:genericOIDService.getOID(roleObject), sharedObject:genericOIDService.getOID(role), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]}"
                                              data-position="top right" data-content="${message(code:'property.share.tooltip.off')}"
                                     >
-                                        <i class="la-share slash icon"></i>
+                                        <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
                                     </g:link>
                                 </span>
                             </g:else>
@@ -46,7 +46,7 @@
 
                         <g:if test="${!role.isShared && role.sharedFrom}">
                             <span class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.sharedFrom')}">
-                                <i class="grey alternate share icon"></i>
+                                <i class="${Icon.SIG.SHARED_OBJECT_ON} grey"></i>
                             </span>
                         </g:if>
 
@@ -216,7 +216,7 @@
                                                 <g:if test="${editmode}">
                                                     <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
                                                     <div class="two wide column">
-                                                        <div class="ui icon buttons">
+                                                        <div class="ui buttons">
                                                             <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
                                                                     data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
                                                                     data-confirm-how = "unlink">
@@ -370,7 +370,7 @@
                                                 <g:if test="${editmode}">
                                                     <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
                                                     <div class="two wide column">
-                                                        <div class="ui icon buttons">
+                                                        <div class="ui buttons">
                                                             <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
                                                                     data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
                                                                     data-confirm-how = "unlink">

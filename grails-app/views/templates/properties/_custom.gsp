@@ -15,6 +15,7 @@
             <col class="la-prop-col-1">
             <col class="la-prop-col-2">
             <g:if test="${ownobj instanceof License}">
+                <col>
                 <col class="la-prop-col-3">
             </g:if>
             <col class="la-prop-col-4">
@@ -25,6 +26,7 @@
                 <th>${message(code:'property.table.property')}</th>
                 <th>${message(code:'default.value.label')}</th>
                 <g:if test="${ownobj instanceof License}">
+                    <th>${message(code:'property.table.paragraphNumber')}</th>
                     <th>${message(code:'property.table.paragraph')}</th>
                 </g:if>
                 <th>${message(code:'property.table.notes')}</th>
@@ -82,6 +84,9 @@
                             </g:elseif>
                         </td>
                         <g:if test="${ownobj instanceof License}">
+                            <td>
+                                <ui:xEditable owner="${prop}" type="text" field="paragraphNumber" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
+                            </td>
                             <td>
                                 <ui:xEditable owner="${prop}" type="textarea" field="paragraph" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                             </td>
@@ -175,7 +180,7 @@
                                                               data-content="${message(code:'property.visible.active.tooltip')}" data-position="left center"
                                                               data-update="${custom_props_div}"
                                             >
-                                                <i class="icon eye"></i>
+                                                <i class="${Icon.SIG.VISIBLE_ON}"></i>
                                             </ui:remoteLink>
                                         </g:if>
                                         <g:else>
@@ -184,7 +189,7 @@
                                                               data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                               data-content="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
                                                               data-update="${custom_props_div}">
-                                                <i class="icon eye slash"></i>
+                                                <i class="${Icon.SIG.VISIBLE_OFF}"></i>
                                             </ui:remoteLink>
                                         </g:else>
                                     </g:if>
@@ -225,7 +230,7 @@
                                                       data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                       data-content="${message(code:'property.visible.active.tooltip')}" data-position="left center"
                                                       data-update="${custom_props_div}">
-                                        <i class="icon eye"></i>
+                                        <i class="${Icon.SIG.VISIBLE_ON}"></i>
                                     </ui:remoteLink>
                                 </g:if>
                                 <g:else>
@@ -234,7 +239,7 @@
                                                       data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                       data-content="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
                                                       data-update="${custom_props_div}">
-                                        <i class="icon eye slash"></i>
+                                        <i class="${Icon.SIG.VISIBLE_OFF}"></i>
                                     </ui:remoteLink>
                                 </g:else>
                                 <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
@@ -290,10 +295,10 @@
             <tr>
             <g:if test="${orphanedProperties}">
                 <g:if test="${ownobj instanceof License}">
-                    <td colspan="5">
+                    <td colspan="6">
                 </g:if>
                 <g:else>
-                    <td colspan="4">
+                    <td colspan="5">
                 </g:else>
             </g:if>
             <g:else>

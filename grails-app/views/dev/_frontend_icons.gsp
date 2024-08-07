@@ -16,9 +16,9 @@
 
         <div class="column"><i aria-hidden="true" class="la-chain icon"></i>la-chain</div>
 
-        <div class="column"><i aria-hidden="true" class="la-share icon"></i>la-share</div>
+        <div class="column"><i aria-hidden="true" class="${Icon.SIG.SHARED_OBJECT_ON}"></i>la-share</div>
 
-        <div class="column"><i aria-hidden="true" class="la-share slash icon"></i>la-share slash</div>
+        <div class="column"><i aria-hidden="true" class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>la-share slash</div>
 
         <div class="column"><i aria-hidden="true" class="la-copySend icon"></i>la-copySend</div>
 

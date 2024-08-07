@@ -38,8 +38,7 @@
                         </dl>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.offerRequestedDate.label')}</dt>
-                            <dd><ui:xEditable owner="${subscription}" field="offerRequestedDate" type="date"
-                                              validation="datesCheck"/></dd>
+                            <dd><ui:xEditable owner="${subscription}" field="offerRequestedDate" type="date"/></dd>
                         </dl>
 
                         <dl>

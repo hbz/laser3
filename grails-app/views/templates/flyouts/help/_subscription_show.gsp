@@ -80,7 +80,7 @@
         </tr>
         <tr>
             <td>
-                <i class="la-share icon" aria-hidden="true"></i>
+                <i class="${Icon.SIG.SHARED_OBJECT_ON}" aria-hidden="true"></i>
             </td>
             <td>
                 Objekt wird geteilt
@@ -88,7 +88,7 @@
         </tr>
         <tr>
             <td>
-                <i class="la-share slash icon" aria-hidden="true"></i>
+                <i class="${Icon.SIG.SHARED_OBJECT_OFF}" aria-hidden="true"></i>
             </td>
             <td>
                 Objekt wird nicht geteilt

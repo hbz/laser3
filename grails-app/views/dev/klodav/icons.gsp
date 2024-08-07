@@ -10,8 +10,8 @@
 
 <nav class="ui secondary menu">
     <g:link controller="dev" action="klodav" class="item">Various</g:link>
-    <g:link controller="dev" action="icons" class="item active"><i class="certificate icon yellow"></i> New Icons</g:link>
-    <g:link controller="dev" action="buttons" class="item"><i class="certificate icon red"></i> New Buttons</g:link>
+    <g:link controller="dev" action="icons" class="item active"><i class="${Icon.SIG.NEW_OBJECT} yellow"></i> New Icons</g:link>
+    <g:link controller="dev" action="buttons" class="item"><i class="${Icon.SIG.NEW_OBJECT} orange"></i> New Buttons</g:link>
 </nav>
 
 <div class="ui info message">

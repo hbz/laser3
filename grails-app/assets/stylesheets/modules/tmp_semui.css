@@ -318,3 +318,38 @@ body.survey_copyElementsIntoSurvey nav.tabular .item .content .description
 .icon.teal.la-list-icon:before {
     color: #00b5ad;
 }
+
+
+/* --- NEW DEFAULT for la-modern-button --- */
+
+.ui.buttons .button.la-modern-button,
+.ui.button.la-modern-button {
+    color: #004678;
+    background-color: transparent;
+}
+
+.ui.buttons .button.la-modern-button:hover,
+.ui.button.la-modern-button:hover {
+    background-color: #004678;
+    color: #FFFFFF;
+}
+
+/* --- la-modern-button in button groups --- */
+
+.ui.buttons .negative.button.la-modern-button {
+    color: #bb1600;
+    background-color: transparent;
+}
+.ui.buttons .negative.button.la-modern-button:hover {
+    background-color: #bb1600;
+    color: #FFFFFF;
+}
+
+.ui.buttons .positive.button.la-modern-button {
+    color: #98b500;
+    background-color: transparent;
+}
+.ui.buttons .positive.button.la-modern-button:hover {
+    background-color: #98b500;
+    color: #FFFFFF;
+}

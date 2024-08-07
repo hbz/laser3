@@ -284,13 +284,13 @@
                 <td>
                         <g:if test="${editable && controllerName == 'myInstitution'}">
                             <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndPerson(participant, surveyConfig, person)}">
-                                <g:link controller="myInstitution" action="setSurveyInvoicingInformation"
+                                <g:link controller="myInstitution" action="surveyInfos"
                                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: false, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation']">
                                     <i class="${Icon.SYM.YES} bordered large green"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
-                                <g:link controller="myInstitution" action="setSurveyInvoicingInformation"
+                                <g:link controller="myInstitution" action="surveyInfos"
                                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: true, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation']">
                                     <i class="${Icon.SYM.NO} bordered large red"></i>
                                 </g:link>

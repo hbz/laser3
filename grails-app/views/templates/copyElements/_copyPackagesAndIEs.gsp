@@ -126,7 +126,7 @@
                             <div class="la-copyPack-container la-element">
                                 <div data-oid="${genericOIDService.getOID(titleGroup)}" class="la-copyPack-item">
                                     <g:link action="index" controller="subscription" id="${sourceObject.id}" params="[titleGroup: titleGroup.id]">
-                                        <i class="grey icon object group la-popup-tooltip"
+                                        <i class="${Icon.IE_GROUP} grey la-popup-tooltip"
                                            data-content="${message(code: 'issueEntitlementGroup.label')}"></i> ${titleGroup.name}
                                     </g:link>
                                     <div class="ui accordion">
@@ -170,7 +170,7 @@
                             <div class="la-copyPack-container la-element">
                                 <div data-oid="${genericOIDService.getOID(titleGroup)}" class="la-copyPack-item">
                                     <g:link action="index" controller="subscription" id="${targetObject.id}" params="[titleGroup: titleGroup.id]">
-                                        <i class="grey icon object group la-popup-tooltip"
+                                        <i class="${Icon.IE_GROUP} grey la-popup-tooltip"
                                            data-content="${message(code: 'issueEntitlementGroup.label')}"></i> ${titleGroup.name}
                                     </g:link>
                                     <div class="ui accordion">

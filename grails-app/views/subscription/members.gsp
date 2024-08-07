@@ -289,7 +289,7 @@
                                 </g:if>
                                 <g:else>
                                     <g:link class="${Btn.ICON.SIMPLE_TOOLTIP} orange" data-content="${message(code:'subscription.details.hideToSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
-                                        <i class="icon eye"></i>
+                                        <i class="${Icon.SIG.VISIBLE_ON}"></i>
                                     </g:link>
                                 </g:else>
                             </g:if>

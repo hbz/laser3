@@ -131,7 +131,7 @@
 
                 <th scope="col" rowspan="2">
                     <a href="#" class="la-popup-tooltip" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
-                        <i class="users large icon"></i>
+                        <i class="${Icon.ATTR.SURVEY_PARTICIPANTS} large"></i>
                     </a>
                 </th>
                 <th scope="col" rowspan="2">

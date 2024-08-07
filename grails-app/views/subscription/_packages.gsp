@@ -63,7 +63,7 @@
                             </div>
                             <div class="six wide right aligned column">
                                 <g:if test="${editmode}">
-                                    <div class="${Btn.MODERN.BASIC_TOOLTIP} ${buttonColor}"
+                                    <div class="${Btn.MODERN.SIMPLE_TOOLTIP} ${buttonColor}"
                                          data-content="${message(code:'subscription.packages.config.header')}">
                                         <i class="${Icon.CMD.SHOW_MORE}"></i>
                                     </div>
@@ -208,7 +208,7 @@
                                         <div class="ui list">
                                             <g:each in="${packageInstanceRecord.altname}" var="altname">
                                               <div class="item">
-                                                  <i class="box open grey icon"></i>
+                                                  <i class="${Icon.SYM.ALTNAME} grey"></i>
                                                   <div class="content">
                                                     ${altname}
                                                   </div>
