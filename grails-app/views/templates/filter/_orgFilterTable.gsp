@@ -310,7 +310,7 @@
                     <g:if test="${altnames.size() > 10}">
                         <div class="ui accordion">
                             <%-- TODO translation string if this solution is going to be accepted --%>
-                            <div class="title">Weitere ...<i class="ui dropdown icon"></i></div>
+                            <div class="title">Weitere ...<i class="dropdown icon"></i></div>
                             <div class="content">
                                 <ul class="la-simpleList">
                                     <g:each in="${altnames.drop(10)}" var="altname">

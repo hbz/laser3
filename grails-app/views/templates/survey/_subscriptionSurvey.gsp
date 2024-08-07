@@ -254,9 +254,9 @@
                                                         //$("#derived-license-properties${link.id}").toggleClass('hidden');
 
                                                         if ($("#derived-license-properties${link.id}").hasClass('visible')) {
-                                                            $(this).html('<i class="ui angle double down icon"></i>')
+                                                            $(this).html('<i class="angle double down icon"></i>')
                                                         } else {
-                                                            $(this).html('<i class="ui angle double up icon"></i>')
+                                                            $(this).html('<i class="angle double up icon"></i>')
                                                         }
                                                     })
                                                         </laser:script>
