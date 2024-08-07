@@ -4,7 +4,6 @@ tasks.register('dbm.createGormDiff', Exec) {
     String date = java.time.LocalDate.now().format('yyyy-MM-dd')
 //    args '-c', './grailsw prod dbm-gorm-diff changelogs/' + date + '.groovy --add'
     args '-c', './gradlew dbmGormDiff -Pargs="changelogs/' + date + '.groovy --add" -Dgrails.env=prod'
-
 }
 
 tasks.register('dbm.createGormDiff-storage', Exec) {
