@@ -15,6 +15,7 @@ class OrgTypeService {
     /**
      * @return List<Org> with orgType in ('Agency, Broker, Content Provider, Provider, Vendor'); generic
      */
+    @Deprecated
     Collection<Org> getOrgsForTypeLicensor() {
         Set<Org> result = Org.executeQuery("select o from Org o join o.orgType as rt where rt.value in ('Agency', 'Broker', 'Content Provider', 'Provider', 'Vendor') order by o.name, lower(o.sortname)")
         result
