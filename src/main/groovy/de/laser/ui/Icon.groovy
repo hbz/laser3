@@ -43,7 +43,7 @@ class Icon {
         @UIDoc(usage = 'Only for Subscription attribute: isMultiYear')
         public static String SUBSCRIPTION_IS_MULTIYEAR      = 'forward icon'
         @UIDoc(usage = 'Only for Subscription attribute: kind')
-        public static String SUBSCRIPTION_KIND              = 'dice one icon'
+        public static String SUBSCRIPTION_KIND              = 'dice five icon'
         @UIDoc(usage = 'Only for Subscription attribute: resource')
         public static String SUBSCRIPTION_RESOURCE          = 'expand icon'
 

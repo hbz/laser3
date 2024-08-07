@@ -150,7 +150,7 @@
                                 tmpParams.remove("sort")
                             %>
                             <g:if test="${sortOnCostItemsUp}">
-                                <g:link action="surveyCostItems" class="ui icon"
+                                <g:link action="surveyCostItems"
                                         params="${tmpParams + [sortOnCostItemsDown: true]}"><span
                                         class="la-popup-tooltip"
                                         data-position="top right"
@@ -159,7 +159,7 @@
                                 </span></g:link>
                             </g:if>
                             <g:else>
-                                <g:link action="surveyCostItems" class="ui icon"
+                                <g:link action="surveyCostItems"
                                         params="${tmpParams + [sortOnCostItemsUp: true]}"><span
                                         class="la-popup-tooltip"
                                         data-position="top right"

@@ -348,7 +348,7 @@
                     <td class="center aligned">
                         <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
                             <g:link controller="survey" action="surveyCostItems" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: surveyConfig.id]" class="ui icon">
+                                    params="[surveyConfigID: surveyConfig.id]">
                                 <div class="ui circular ${surveyConfig.costItemsFinish ? "green" : ""} label">
                                     ${surveyConfig.getSurveyConfigCostItems().size() ?: 0}
                                 </div>
@@ -358,11 +358,9 @@
 
                     <td class="center aligned">
                             <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: surveyConfig.id]"
-                                    class="ui icon">
+                                    params="[surveyConfigID: surveyConfig.id]">
                                 <div class="ui circular ${(participantsFinish.size() == participantsTotal.size()) ? "green" : (participantsFinish.size() > 0) ? "yellow" : ""} label">
-                                    <g:if
-                                            test="${participantsFinish && participantsTotal}">
+                                    <g:if test="${participantsFinish && participantsTotal}">
                                         <g:formatNumber
                                                 number="${(participantsFinish.size() / participantsTotal.size()) * 100}"
                                                 minFractionDigits="2"

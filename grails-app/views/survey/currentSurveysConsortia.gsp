@@ -309,7 +309,7 @@
                 <td class="center aligned">
                     <g:if test="${surveyConfig}">
                             <g:link controller="survey" action="show" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: surveyConfig.id]" class="ui icon">
+                                    params="[surveyConfigID: surveyConfig.id]">
                                 <div class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
                                     %{--Titel-Umfrage kann keine Umfrage-Merkmale haben--}%
                                     ${surveyConfig.surveyProperties?.size() ?: 0}
@@ -321,7 +321,7 @@
                     <td class="center aligned">
                         <g:if test="${surveyConfig}">
                             <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: surveyConfig.id]" class="ui icon">
+                                    params="[surveyConfigID: surveyConfig.id]">
                                 <ui:bubble count="${surveyConfig.getCurrentDocs().size()}" />
                             </g:link>
                         </g:if>
@@ -331,7 +331,7 @@
                 <td class="center aligned">
                     <g:if test="${surveyConfig}">
                         <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
-                                params="[surveyConfigID: surveyConfig.id]" class="ui icon">
+                                params="[surveyConfigID: surveyConfig.id]">
                                 <div class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
                                 ${surveyConfig.orgs?.size() ?: 0}
                                 </div>
@@ -346,7 +346,7 @@
                 <td class="center aligned">
                     <g:if test="${surveyConfig && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
                         <g:link controller="survey" action="surveyCostItems" id="${surveyInfo.id}"
-                                params="[surveyConfigID: surveyConfig.id]" class="ui icon">
+                                params="[surveyConfigID: surveyConfig.id]">
                             <div class="ui circular ${surveyConfig.costItemsFinish ? "green" : ""} label">
                                 ${surveyConfig.getSurveyConfigCostItems().size() ?: 0}
                             </div>
