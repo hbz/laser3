@@ -42,7 +42,7 @@
                 <g:sortableColumn title="${message(code: 'org.fullName.label')}" property="lower(o.name)" params="${request.getParameterMap()}"/>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('altname')}">
-                <th>${message(code: 'org.altname.label')}</th>
+                <th>${message(code: 'altname.plural')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('mainContact')}">
                 <th>${message(code: 'org.mainContact.label')}</th>

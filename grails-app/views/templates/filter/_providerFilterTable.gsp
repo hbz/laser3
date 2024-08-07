@@ -24,7 +24,7 @@
                 <g:sortableColumn title="${message(code: 'org.fullName.label')}" property="lower(p.name)" params="${request.getParameterMap()}"/>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('altname')}">
-                <th>${message(code: 'org.altname.label')}</th>
+                <th>${message(code: 'altname.plural')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
                 <th>${message(code: 'org.isWekbCurated.label')}</th>

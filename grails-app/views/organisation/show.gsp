@@ -78,7 +78,7 @@
                         </dl>
                     </g:if>
                     <dl>
-                        <dt><g:message code="org.altname.label" /></dt>
+                        <dt><g:message code="altname.plural" /></dt>
                         <dd>
                             <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion la-accordion-showMore">
                                 <g:if test="${orgInstance.altnames}">
@@ -94,7 +94,7 @@
                                             </g:if>
                                         </div>
                                         <div class="${Btn.MODERN.SIMPLE_TOOLTIP} la-show-button"
-                                             data-content="${message(code: 'org.altname.show')}">
+                                             data-content="${message(code: 'altname.showAll')}">
                                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                                         </div>
                                     </div>
@@ -121,7 +121,7 @@
                                 </g:if>
                             </div>
                             <g:if test="${editable}">
-                                <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}">
+                                <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} addListValue" data-objtype="altname" value="${message(code: 'altname.add')}">
                             </g:if>
                         </dd>
                     </dl>
