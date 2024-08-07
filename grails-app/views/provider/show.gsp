@@ -701,7 +701,7 @@
                                 <div class="right aligned four wide column">
                                     <g:if test="${inContextOrg}">
                                         <a href="#createPersonModal" class="${Btn.MODERN.SIMPLE} createContact" id="contactPersonForPublic" data-ui="modal">
-                                            <i aria-hidden="true" class="plus icon"></i>
+                                            <i aria-hidden="true" class="${Icon.CMD.ADD}"></i>
                                         </a>
                                     </g:if>
                                 </div>
@@ -824,7 +824,7 @@
                                     </div>
                                     <div class="right aligned four wide column">
                                         <a href="#createPersonModal" class="${Btn.MODERN.SIMPLE} createContact" id="contactPersonForProvider" data-ui="modal">
-                                            <i aria-hidden="true" class="plus icon"></i>
+                                            <i aria-hidden="true" class="${Icon.CMD.ADD}"></i>
                                         </a>
                                     </div>
                                 </div>

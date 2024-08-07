@@ -787,7 +787,7 @@
                                     </div>
                                     <div class="right aligned four wide column">
                                         <a href="#createPersonModal" class="${Btn.MODERN.SIMPLE} createContact" id="contactPersonForAgency" data-ui="modal">
-                                            <i aria-hidden="true" class="plus icon"></i>
+                                            <i aria-hidden="true" class="${Icon.CMD.ADD}"></i>
                                         </a>
                                     </div>
                                 </div>

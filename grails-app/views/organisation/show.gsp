@@ -539,12 +539,12 @@
                                 <div class="right aligned four wide column">
                                     <g:if test="${inContextOrg}">
                                         <a href="#createPersonModal" class="${Btn.MODERN.SIMPLE} createContact" id="contactPersonForPublic" data-ui="modal">
-                                            <i aria-hidden="true" class="plus icon"></i>
+                                            <i aria-hidden="true" class="${Icon.CMD.ADD}"></i>
                                         </a>
                                     </g:if>
 %{--                                    <g:elseif test="${isProviderOrAgency}">--}%
 %{--                                        <a href="#createPersonModal" class="${Btn.MODERN.SIMPLE} createContact" id="contactPersonForProviderAgencyPublic" data-ui="modal">--}%
-%{--                                            <i aria-hidden="true" class="plus icon"></i>--}%
+%{--                                            <i aria-hidden="true" class="${Icon.CMD.ADD}"></i>--}%
 %{--                                        </a>--}%
 %{--                                    </g:elseif>--}%
                                 </div>
@@ -723,7 +723,7 @@
                                     </div>
                                     <div class="right aligned four wide column">
                                         <a href="#createPersonModal" class="${Btn.MODERN.SIMPLE} createContact" id="contactPersonForInstitution" data-ui="modal">
-                                            <i aria-hidden="true" class="plus icon"></i>
+                                            <i aria-hidden="true" class="${Icon.CMD.ADD}"></i>
                                         </a>
                                     </div>
                                 </div>
