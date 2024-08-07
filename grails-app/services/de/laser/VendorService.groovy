@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.auth.User
+import de.laser.convenience.Marker
 import de.laser.helper.Params
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.ProviderProperty
@@ -302,6 +303,8 @@ class VendorService {
         List customProperties       = new ArrayList(vendor.propertySet.findAll { it.type.tenant == null })
         List privateProperties      = new ArrayList(vendor.propertySet.findAll { it.type.tenant != null })
 
+        List markers        = Marker.findAllByVen(vendor)
+
         // collecting information
 
         result.info = []
@@ -321,6 +324,7 @@ class VendorService {
         result.info << ['Allgemeine Merkmale', customProperties]
         result.info << ['Private Merkmale', privateProperties]
 
+        result.info << ['Marker', markers]
 
         // checking constraints and/or processing
 
@@ -369,7 +373,7 @@ class VendorService {
 
                     // addresses
                     vendor.addresses.clear()
-                    log.debug("${Address.executeUpdate('update Address a set a.vendor = :target where a.org = :source', genericParams)} addresses updated")
+                    log.debug("${Address.executeUpdate('update Address a set a.vendor = :target where a.vendor = :source', genericParams)} addresses updated")
 
                     // custom properties
                     vendor.propertySet.clear()
@@ -394,6 +398,10 @@ class VendorService {
                     // electronic delivery delay notifications
                     vendor.electronicDeliveryDelays.clear()
                     log.debug("${ElectronicDeliveryDelayNotification.executeUpdate('update ElectronicDeliveryDelayNotification eddn set eddn.vendor = :target where eddn.vendor = :source', genericParams)} electronic delivery delay notifications updated")
+
+                    markers.each { Marker mkr ->
+                        mkr.ven = replacement
+                    }
 
                     // persons
                     List<Person> targetPersons = Person.executeQuery('select pr.prs from PersonRole pr where pr.vendor = :target', [target: replacement])
