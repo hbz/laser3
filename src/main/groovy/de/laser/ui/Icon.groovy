@@ -38,14 +38,14 @@ class Icon {
         @UIDoc(usage = 'Only for Subscription attribute: hasPublishComponent')
         public static String SUBSCRIPTION_HAS_PUBLISH_COMPONENT = 'quote right icon'
         @UIDoc(usage = 'Only for Subscription attribute: holdingSelection')
-        public static String SUBSCRIPTION_HOLDING_SELECTION     = 'cut icon'
+        public static String SUBSCRIPTION_HOLDING_SELECTION     = 'cut icon'            // TODO
 
         @UIDoc(usage = 'Only for Subscription attribute: isMultiYear')
         public static String SUBSCRIPTION_IS_MULTIYEAR      = 'forward icon'
         @UIDoc(usage = 'Only for Subscription attribute: kind')
-        public static String SUBSCRIPTION_KIND              = 'dice five icon'
+        public static String SUBSCRIPTION_KIND              = 'dice five icon'          // TODO
         @UIDoc(usage = 'Only for Subscription attribute: resource')
-        public static String SUBSCRIPTION_RESOURCE          = 'expand icon'
+        public static String SUBSCRIPTION_RESOURCE          = 'expand icon'             // TODO
 
         @UIDoc(usage = 'Only for Subscription transfer: survey cancellation')
         public static String SURVEY_CANCELLATION   = 'times circle icon'

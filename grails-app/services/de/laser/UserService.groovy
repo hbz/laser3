@@ -98,7 +98,7 @@ class UserService {
      * @param flash the message container
      * @return the new user object or the error messages (null) in case of failure
      */
-    User addNewUser(GrailsParameterMap params, FlashScope flash) {
+    def addNewUser(GrailsParameterMap params, FlashScope flash) {
         Locale locale = LocaleUtils.getCurrentLocale()
         User user = new User(params)
         user.enabled = true
