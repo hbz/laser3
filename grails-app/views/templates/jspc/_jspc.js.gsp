@@ -25,10 +25,10 @@ JSPC = {
             htmlDocumentPreview: "<g:createLink controller='ajaxHtml' action='documentPreview'/>"
         },
         jquery: jQuery().jquery
-%{--        ws: {--}%
-%{--            stompUrl: "${createLink(uri: de.laser.custom.CustomWebSocketMessageBrokerConfig.WS_STOMP)}",--}%
-%{--            topicStatusUrl: "${de.laser.custom.CustomWebSocketMessageBrokerConfig.WS_TOPIC_STATUS}",--}%
-%{--        }--}%
+%{--        ws: {
+           stompUrl: "${createLink(uri: de.laser.custom.CustomWebSocketMessageBrokerConfig.WS_STOMP)}",
+           topicStatusUrl: "${de.laser.custom.CustomWebSocketMessageBrokerConfig.WS_TOPIC_STATUS}",
+        }--}%
     },
 
     modules : { // -- module registry
@@ -114,6 +114,23 @@ JSPC = {
             return JSPC.dict.registry[key][lang]
         },
     },
+
+    icons : {
+<%
+    // ~ 6kb
+    de.laser.ui.Icon.getDeclaredClasses().findAll{ true }.each { ic ->
+        println '        ' + ic.simpleName + ' : {'
+        ic.getDeclaredFields().findAll{ ! it.isSynthetic() }.each { f ->
+            println "            ${f.name} : '${ic[f.name]}', "
+        }
+        println '        },'
+    }
+    de.laser.ui.Icon.getDeclaredFields().findAll{ ! it.isSynthetic() }.each { f ->
+        println "          ${f.name} : '${de.laser.ui.Icon[f.name]}', "
+    }
+%>
+    },
+
     colors : { // -- charts
         palette: [ '#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc', '#c4c4c4' ],
         hex : {
@@ -129,6 +146,7 @@ JSPC = {
             grey:       '#d4d4d4'
         },
     },
+
     helper : { // -- snippets only
         goBack : function() {
             window.history.back();

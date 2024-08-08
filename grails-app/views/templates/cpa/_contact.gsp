@@ -16,7 +16,7 @@
             <g:if test="${contact.contentType == RDStore.CCT_EMAIL}">
                 <span class="la-popup-tooltip" data-position="top right" data-content="${message(code: 'tooltip.sendMail')}">
                     <a href="mailto:${contact.content}" class="${Btn.MODERN.SIMPLE}">
-                        <i class="${Icon.LNK.EXTERNAL}"></i>
+                        <i class="${Icon.LNK.MAIL_TO}"></i>
                     </a>
                 </span>
             </g:if>

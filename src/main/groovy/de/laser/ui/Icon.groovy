@@ -141,7 +141,7 @@ class Icon {
         @UIDoc(usage = 'Only for Links to google maps')
         public static String GOOGLE_MAPS    = 'map marker alternate icon'
         @UIDoc(usage = 'Only for Links to send emails')
-        public static String MAIL_TO        = 'at icon'
+        public static String MAIL_TO        = 'paper plane outline icon'
         @UIDoc(usage = 'Only for Links to views for successors of the current object (see also PREV)')
         public static String NEXT       = 'arrow right icon'     // todo: duplicate: ui:anualRings, ui:statusWithRings
         @UIDoc(usage = 'Only for Links to views for predecessors of the current object (see also NEXT)')
