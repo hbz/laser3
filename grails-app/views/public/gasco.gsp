@@ -151,7 +151,7 @@
                         <g:each in="${sub.packages}" var="subPkg" status="j">
                             <div class="la-flexbox">
                                 <i class="${Icon.PACKAGE} la-list-icon"></i>
-                                <g:link controller="public" action="gascoDetails" id="${subPkg.id}">${subPkg.pkg}</g:link>
+                                <g:link controller="gasco" action="details" id="${subPkg.id}">${subPkg.pkg}</g:link>
                             </div>
                         </g:each>
                     </td>
@@ -196,7 +196,7 @@
                     </td>
                     <td class="center aligned">
                         <g:if test="${flyoutCheckList.contains(sub.id)}">
-                            <g:link class="${Btn.MODERN.SIMPLE} flyoutLink" controller="public" action="gascoFlyout" data-key="${sub.id}">
+                            <g:link class="${Btn.MODERN.SIMPLE} flyoutLink" controller="gasco" action="json" data-key="${sub.id}">
                                 <i class="${Icon.UI.INFO}"></i>
                             </g:link>
                         </g:if>

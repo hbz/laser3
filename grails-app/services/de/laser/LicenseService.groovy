@@ -495,6 +495,10 @@ class LicenseService {
                                 }
                             }
                         }
+                        GeneralTerm {
+                            GeneralTermType('onixPL:UseOfDigitalWatermarking')
+                            LicenseTextLink(href: 'lp_branding_01')
+                        }
                     }
                     //optional 0-1; possible container for LicenseProperty.paragraph-s
                     //not possible to implement properly because mandatory data is missing: DocumentLabel (I cannot ensure an underlying document is available); SortNumber (is mostly not given)
@@ -542,6 +546,10 @@ class LicenseService {
                         TextElement(id: 'lp_authorized_users_01') {
                             SortNumber(0)
                             Text("1.2 Authorized Users/Sites. Authorized Users are the employees of the Subscriber and individuals who are independent contractors or are employed by independent contractors of the Subscriber affiliated with the Subscriber’s locations listed on Schedule 2 (the “Sites”) and individuals using computer terminals within the library facilities at the Sites permitted by the Subscriber to access the Subscribed Products for purposes of personal research,")
+                        }
+                        TextElement(id: 'lp_branding_01') {
+                            SortNumber(0)
+                            Text('§ 3.6 Im Falle elektronischer Lieferung setzt subito e.V. bei allen über seine Websites abgewickelten Lieferungen das in Anlage 1 genannte Wasserzeichen zum Schutz ein. Anlage 1. WASSERZEICHEN UND URHEBERRECHTSHINWEIS FÜR ELEKTRONISCHE LIEFERUNGEN 1. Wasserzeichen Wenn eine Kopie elektronisch geliefert wird, muss auf allen Kopien ein Wasserzeichen mit folgendem Urheberrechtsvermerk angebracht werden: „Kopie für Lizenznutzer von subito e.V., geliefert und ausgedruckt für {Name des Nutzers}, {Nutzernummer}; subito e.V. licensed user copy supplied and printed for {name of Client}, {Client ID}“')
                         }
                     }
                 }
