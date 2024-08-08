@@ -29,7 +29,7 @@ class SymbolTagLib {
     }
     @UIDoc(usage = 'Generic symbol for: Data/Database')
     def database = { attrs, body ->
-        out << '<i class="ui database icon"></i>'
+        out << '<i class="database icon"></i>'
     }
 
     @UIDoc(usage = 'Generic symbol for: Universal access')

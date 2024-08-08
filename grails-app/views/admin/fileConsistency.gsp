@@ -12,7 +12,7 @@
 <div class="ui grid">
     <div class="sixtenn wide column">
 
-        <h3 class="ui header"><i class="ui hdd icon"></i><span class="content">Dateien</span></h3>
+        <h3 class="ui header"><i class="hdd icon"></i><span class="content">Dateien</span></h3>
 
         <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
             <thead>
@@ -125,7 +125,7 @@
         <br />
         <br />
 
-        <h3 class="ui header"><i class="ui tasks icon"></i><span class="content">ToDo-Liste (${listOfDocsInUseOrphaned.size()} Dateiobjekte)</span></h3>
+        <h3 class="ui header"><i class="tasks icon"></i><span class="content">ToDo-Liste (${listOfDocsInUseOrphaned.size()} Dateiobjekte)</span></h3>
 
         <ui:msg class="info" hideClose="true">
             Alle aufgelisteten Einträge repräsentieren referenzierte Dateiobjekte in der Datenbank OHNE entspr. Dateien im Filesystem.
@@ -142,7 +142,7 @@
                     </g:if>
                 <%
                     print "&nbsp;&nbsp;"
-                    print link(action: 'recoveryDoc', controller: 'admin', params:['docID': doc.id], target: '_blank') { '<i class="ui large icon paste yellow"></i>' }
+                    print link(action: 'recoveryDoc', controller: 'admin', params:['docID': doc.id], target: '_blank') { '<i class="large icon paste yellow"></i>' }
                 %>
 
                      <g:if test="${DocContext.findAllByOwner(doc)}">

@@ -65,7 +65,7 @@
                 <tr data-type="altnames" data-element="copyObject.takeAltname">
                     <td data-element="source">
                         <div>
-                            <strong><i class="${Icon.SYM.ALTNAME}"></i>&nbsp;${message(code: 'org.altname.label')}:</strong><br />
+                            <strong><i class="${Icon.SYM.ALTNAME}"></i>&nbsp;${message(code: 'altname.plural')}:</strong><br />
                             <g:each in="${sourceAltnames}" var="altname">
                                 <div data-oid="${genericOIDService.getOID(altname)}">
                                     ${altname.name}<br />
@@ -98,7 +98,7 @@
                     <g:if test="${!copyObject}">
                         <td data-element="target">
                             <div>
-                                <strong><i class="${Icon.SYM.ALTNAME}"></i>&nbsp;${message(code: 'org.altname.label')}:</strong><br />
+                                <strong><i class="${Icon.SYM.ALTNAME}"></i>&nbsp;${message(code: 'altname.plural')}:</strong><br />
                                 <g:each in="${targetAltnames}" var="altname">
                                     <div data-oid="${genericOIDService.getOID(altname)}">
                                         ${altname.name}<br />

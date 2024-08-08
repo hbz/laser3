@@ -24,7 +24,7 @@
                 <g:sortableColumn title="${message(code: 'org.fullName.label')}" property="lower(p.name)" params="${request.getParameterMap()}"/>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('altname')}">
-                <th>${message(code: 'org.altname.label')}</th>
+                <th>${message(code: 'altname.plural')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
                 <th>${message(code: 'org.isWekbCurated.label')}</th>
@@ -102,7 +102,7 @@
                     </ul>
                     <g:if test="${altnames.size() > 10}">
                         <div class="ui accordion">
-                            <div class="title"><g:message code="default.further"/><i class="ui dropdown icon"></i></div>
+                            <div class="title"><g:message code="default.further"/><i class="dropdown icon"></i></div>
                             <div class="content">
                                 <ul class="la-simpleList">
                                     <g:each in="${altnames.drop(10)}" var="altname">

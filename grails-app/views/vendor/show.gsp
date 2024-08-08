@@ -46,7 +46,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt><g:message code="org.altname.label" /></dt>
+                        <dt><g:message code="altname.plural" /></dt>
                         <dd>
                             <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion la-accordion-showMore">
                                 <g:if test="${vendor.altnames}">
@@ -65,7 +65,7 @@
                                             </g:if>
                                         </div>
                                         <div class="${Btn.MODERN.SIMPLE_TOOLTIP} la-show-button"
-                                             data-content="${message(code: 'org.altname.show')}">
+                                             data-content="${message(code: 'altname.showAll')}">
                                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                                         </div>
                                     </div>
@@ -96,7 +96,7 @@
                                 </g:if>
                             </div>
                             <g:if test="${editable && !vendor.gokbId}">
-                                <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}">
+                                <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} addListValue" data-objtype="altname" value="${message(code: 'altname.add')}">
                             </g:if>
                         </dd>
                     </dl>
@@ -787,7 +787,7 @@
                                     </div>
                                     <div class="right aligned four wide column">
                                         <a href="#createPersonModal" class="${Btn.MODERN.SIMPLE} createContact" id="contactPersonForAgency" data-ui="modal">
-                                            <i aria-hidden="true" class="plus icon"></i>
+                                            <i aria-hidden="true" class="${Icon.CMD.ADD}"></i>
                                         </a>
                                     </div>
                                 </div>

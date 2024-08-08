@@ -241,12 +241,12 @@
                         <td class="center aligned">
                             <g:set var="license" value="${Links.executeQuery('select li.id from Links li where li.destinationSubscription = :destination and li.linkType = :linktype',[destination:sub,linktype:RDStore.LINKTYPE_LICENSE])}"/>
                             <g:if test="${!license}">
-                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkLicense']" id="${subscription.id}" class="ui icon">
+                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkLicense']" id="${subscription.id}">
                                     <i class="circular la-light-grey inverted minus icon"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
-                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkLicense']" id="${subscription.id}" class="ui icon">
+                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkLicense']" id="${subscription.id}">
                                     <i class="circular la-license icon"></i>
                                 </g:link>
                             </g:else>
@@ -255,12 +255,12 @@
                     <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <td class="center aligned">
                             <g:if test="${!sub.packages}">
-                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkPackages']" id="${subscription.id}" class="ui icon">
+                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkPackages']" id="${subscription.id}">
                                     <i class="circular la-light-grey inverted minus icon"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
-                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkPackages']" id="${subscription.id}" class="ui icon">
+                                <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkPackages']" id="${subscription.id}">
                                     <i class="circular la-package icon"></i>
                                 </g:link>
                             </g:else>

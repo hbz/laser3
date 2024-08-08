@@ -26,7 +26,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                     ${message(code: 'copyElementsIntoObject.general_data.label')}
                 </div>
                 <div class="description">
-                    <i class="${Icon.SYM.ALTNAME}"></i>                 ${message(code: 'org.altname.label')} <br />
+                    <i class="${Icon.SYM.ALTNAME}"></i>                 ${message(code: 'altname.plural')} <br />
                     <i class="${Icon.ATTR.SUBSCRIPTION_KIND}"></i>      ${message(code:'subscription.kind.label')} <br />
                     <i class="${Icon.ATTR.SUBSCRIPTION_FORM}"></i>      ${message(code:'subscription.form.label')} <br />
                     <i class="${Icon.ATTR.SUBSCRIPTION_RESOURCE}"></i>  ${message(code:'subscription.resource.label')} <br />

@@ -177,7 +177,7 @@
                             </th>
                             <th class="control-label la-popup-tooltip"
                                 data-content="${message(code: "subscription.packages.notification.label")}">
-                                <i class="ui large icon bullhorn"></i>
+                                <i class="large icon bullhorn"></i>
                             </th>
                         </tr>
                         <g:set var="excludes"
@@ -253,7 +253,7 @@
                                     <i class="${Icon.SIG.INHERITANCE} large"></i>
                                 </th>
                                 <th class="control-label la-popup-tooltip" data-content="${message(code: "subscription.packages.notification.auditable")}">
-                                    <i class="ui large icon bullhorn"></i>
+                                    <i class="large icon bullhorn"></i>
                                 </th>
                             </tr>
                             <g:set var="excludes"

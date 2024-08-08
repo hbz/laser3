@@ -292,19 +292,19 @@
 
                     <th scope="col" rowspan="3" class="center aligned">
                         <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscription.survey.evaluation.label')}" data-position="top center">
-                            <i class="${Icon.ATTR.SURVEY_EVALUTAION}"></i>
+                            <i class="${Icon.ATTR.SURVEY_EVALUTAION} large"></i>
                         </a>
                     </th>
 
                     <th scope="col" rowspan="3" class="center aligned">
                         <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscription.survey.cancellation.label')}" data-position="top center">
-                            <i class="${Icon.ATTR.SURVEY_CANCELLATION}"></i>
+                            <i class="${Icon.ATTR.SURVEY_CANCELLATION} large"></i>
                         </a>
                     </th>
 
                     <th scope="col" rowspan="3" class="center aligned">
                         <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscription.discountScale.label')}" data-position="top center">
-                            <i class="${Icon.ATTR.SUBSCRIPTION_DISCOUNT_SCALE}"></i>
+                            <i class="${Icon.ATTR.SUBSCRIPTION_DISCOUNT_SCALE} large"></i>
                         </a>
                     </th> %{--Discount Scale--}%
 
@@ -418,7 +418,7 @@
                         </td>
                         <td>
                             <button type="button" class="${Btn.MODERN.SIMPLE} small" data-ui="modal" data-href="${"#modalCreateDocumentOffer" + s.id}">
-                                <i aria-hidden="true" class="plus small icon"></i>
+                                <i aria-hidden="true" class="${Icon.CMD.ADD} small"></i>
                             </button>
                             <laser:render template="/templates/documents/modal"
                                           model="${[newModalId: "modalCreateDocumentOffer" + s.id, ownobj: s, owntp: 'subscription']}"/>
@@ -609,7 +609,7 @@
                         <td>
                             <button type="button" class="${Btn.MODERN.SIMPLE} tiny" data-ui="modal"
                                     data-href="${"#modalCreateDocumentRenewal" + s.id}">
-                                <i aria-hidden="true" class="plus small icon"></i>
+                                <i aria-hidden="true" class="${Icon.CMD.ADD} small"></i>
                             </button>
                             <laser:render template="/templates/documents/modal"
                                           model="${[newModalId: "modalCreateDocumentRenewal" + s.id, ownobj: s, owntp: 'subscription']}"/>

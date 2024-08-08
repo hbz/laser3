@@ -290,7 +290,7 @@
                         data: data
                     }).done(function(response) {
                         if(response.error === true) {
-                            cell.html('<span class="la-popup-tooltip" data-content="'+response.message+'"><i class="ui circular inverted icon red times"></i></span>');
+                            cell.html('<span class="la-popup-tooltip" data-content="'+response.message+'"><i class="circular inverted icon red times"></i></span>');
                             r2d2.initDynamicUiStuff('#'+cell.attr('id'));
                         }
                     });

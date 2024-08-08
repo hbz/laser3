@@ -47,7 +47,7 @@
 									<g:else>
 										${record.name}
 										<a target="_blank" href="${editUrl ? editUrl + '/public/platformContent?id=' + record.uuid : '#'}">
-											<i title="we:kb Link" class="external alternate icon"></i>
+											<i title="we:kb Link" class="${Icon.LNK.EXTERNAL}"></i>
 										</a>
 									</g:else>
 								</th>
@@ -72,7 +72,7 @@
 									<g:elseif test="${record.providerUuid}">
 										${record.providerName}
 										<a target="_blank" href="${editUrl ? editUrl + '/public/orgContent?id=' + record.providerUuid : '#'}">
-											<i title="we:kb Link" class="external alternate icon"></i>
+											<i title="we:kb Link" class="${Icon.LNK.EXTERNAL}"></i>
 										</a>
 									</g:elseif>
 								</td>
