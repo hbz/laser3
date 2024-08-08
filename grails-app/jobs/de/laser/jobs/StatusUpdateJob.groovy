@@ -1,7 +1,6 @@
 package de.laser.jobs
 
 import de.laser.StatusUpdateService
-import de.laser.SubscriptionService
 import de.laser.base.AbstractJob
 import groovy.util.logging.Slf4j
 

@@ -38,14 +38,14 @@ class Icon {
         @UIDoc(usage = 'Only for Subscription attribute: hasPublishComponent')
         public static String SUBSCRIPTION_HAS_PUBLISH_COMPONENT = 'quote right icon'
         @UIDoc(usage = 'Only for Subscription attribute: holdingSelection')
-        public static String SUBSCRIPTION_HOLDING_SELECTION     = 'cut icon'
+        public static String SUBSCRIPTION_HOLDING_SELECTION     = 'cut icon'            // TODO
 
         @UIDoc(usage = 'Only for Subscription attribute: isMultiYear')
         public static String SUBSCRIPTION_IS_MULTIYEAR      = 'forward icon'
         @UIDoc(usage = 'Only for Subscription attribute: kind')
-        public static String SUBSCRIPTION_KIND              = 'dice five icon'
+        public static String SUBSCRIPTION_KIND              = 'dice five icon'          // TODO
         @UIDoc(usage = 'Only for Subscription attribute: resource')
-        public static String SUBSCRIPTION_RESOURCE          = 'expand icon'
+        public static String SUBSCRIPTION_RESOURCE          = 'expand icon'             // TODO
 
         @UIDoc(usage = 'Only for Subscription transfer: survey cancellation')
         public static String SURVEY_CANCELLATION   = 'times circle icon'
@@ -141,7 +141,7 @@ class Icon {
         @UIDoc(usage = 'Only for Links to google maps')
         public static String GOOGLE_MAPS    = 'map marker alternate icon'
         @UIDoc(usage = 'Only for Links to send emails')
-        public static String MAIL_TO        = 'at icon'
+        public static String MAIL_TO        = 'paper plane outline icon'
         @UIDoc(usage = 'Only for Links to views for successors of the current object (see also PREV)')
         public static String NEXT       = 'arrow right icon'     // todo: duplicate: ui:anualRings, ui:statusWithRings
         @UIDoc(usage = 'Only for Links to views for predecessors of the current object (see also NEXT)')
