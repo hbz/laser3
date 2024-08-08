@@ -25,7 +25,7 @@ import javax.persistence.Transient
  * and for licenses:
  * <ul>
  *     <li>Licensee (for local licenses; used mainly by single users)</li>
- *     <li>Licensee_Consortial (consortial membershipt)</li>
+ *     <li>Licensee_Consortial (consortial membership)</li>
  *     <li>Licensing Consortium (consortial parenthood)</li>
  * </ul>
  * The role types listed above will never be taken by providers, agencies or similar; the linking of an {@link Org} to other objects permits thus determination of the organisation type itself. This is useful if the
