@@ -197,6 +197,7 @@ class LicenseService {
         generic dos:
         - RDConstants.YN and derivates and RDConstants.PERMISSIONS: implement helper; TermStatusCode is base for RefdataCategory RDConstants.PERMISSIONS
         - paragraph reference: create method for paragraph extraction
+        - LicenseProperty values are not necessarily defined nor are paragraphs; perform if-checks before each element!
 
         structure:
         - elements may contain references to definitions; internal labels are being used as referrers
@@ -355,10 +356,11 @@ class LicenseService {
                             }
                         }
                         AgentDefinition {
+                            //license property Authorized Users
                             AgentLabel('Authorized Users')
                             AgentType('onixPL:Person')
-                            //the value of Authorized Users cannot be used because it is free text; include paragraphs here
-                            LicenseTextLink(href: '')
+                            AgentName('s. Vertragstext') //sic!
+                            LicenseTextLink(href: 'lp_authorized_users_01')
                         }
                         ResourceDefinition {
                             ResourceLabel('Subscription')
@@ -373,7 +375,7 @@ class LicenseService {
                         //(all other) properties with type date
                         TimePointDefinition {
                             TimePointLabel('ArchivalCopyTimePoint')
-                            Description('On request') //maps refdata value of license property Archival Copy: Time
+                            Description('Trigger Event') //maps refdata value of license property Archival Copy: Time
                         }
                         DocumentDefinition {
 
@@ -445,8 +447,9 @@ class LicenseService {
                             }
                         }
                         ContinuingAccessTerm {
-                            //license property Archival Copy: Permission
+                            //any of Archival Copy Content and Archival Copy: X
                             ContinuingAccessTermType('onixPL:PostCancellationFileSupply')
+                            //license property Archival Copy: Permission
                             TermStatus('onixPL:Yes')
                             //license property Archival Copy Content
                             Annotation {
@@ -458,6 +461,9 @@ class LicenseService {
                                 AnnotationType('onixPL:PaymentNote')
                                 AnnotationText('With Charge')
                             }
+                            LicenseTextLink(href: 'lp_archival_copy_content_01')
+                            LicenseTextLink(href: 'lp_archival_copy_cost_01')
+                            LicenseTextLink(href: 'lp_archival_copy_permission_01')
                             ContinuingAccessTermRelatedTimePoint {
                                 RelatedTimePoint('ArchivalCopyTimePoint')
                             }
@@ -495,7 +501,7 @@ class LicenseService {
                     //DocumentLabel: substituted by LicenseProperty paragraph, SortNumber: substituted by 0; may be removed completely if no productive use is possible, proposal character!
                     LicenseDocumentText {
                         DocumentLabel('license.reference')
-                        TextElement(id: 'lp_accessibility_compliance_01') { //"lp_${toSnakeCase(lp.name)}_property count number"
+                        TextElement(id: 'lp_accessibility_compliance_01') { //"lp_${lp.name.replaceAll('/:/','').replaceAll('/ /','_').toLowerCase()}_property count number"
                             //property count number; dummy value 0 if not existent
                             SortNumber(0)
                             Text('4. Kurs-Dossiers und elektronische Bereitstellung 4.2 Zugriffsberechtigte Einrichtungen dürfen lizenzierte Dokumente für Personen, denen die Nutzung des ursprünglichen PDF-Formates nicht möglich ist (z.B. Sehbehinderte), in andere Formate (audio, Braille u.ä.) konvertieren und bereitstellen. Sie werden in diesem Fall gebeten, die konvertierten Dateien dem Distributor zum Verfügung zu stellen, damit sie diesem Personenkreis weltweit zugänglich gemacht werden können.')
@@ -516,6 +522,26 @@ class LicenseService {
                         TextElement(id: 'lp_applicable_copyright_law_01') {
                             SortNumber(0)
                             Text('§ 3 Abs. 2: This Licence shall be deemed to complement and extend the rights of Licensee, the lnstitutions and Authorised Users under the German Copyright Law and other applicable legislation in Germany')
+                        }
+                        TextElement(id: 'lp_archival_copy_content_01') {
+                            SortNumber(0)
+                            Text('11. Metadata shall be licensed and delivered at no extra costs for non-commercial use by: - local catalogues - union catalogues - any other library and information system (including but not limited to search engines of commercial corporations provided that the metadata is not sold, lent, re-licensed, or distributed in any manner that violates the terms and conditions of the licence) including provisions that they do not create products or perform services which complete or interfere with those of ProQuest or its licensors.')
+                        }
+                        TextElement(id: 'lp_archival_copy_cost_01') {
+                            SortNumber(0)
+                            Text("13. Archival Rights ... Archived Licensed Materials are produced by the Publisher as a PDF collection. The files, distributed on CD-ROMs , can be purchased and mounted on the Licensee's local server. The use of the subscribed archived Licensed Materials remains subject to the terms and conditions of this License.")
+                        }
+                        TextElement(id: 'lp_archival_copy_permission_01') {
+                            SortNumber(0)
+                            Text("§ 2 Abs. 3: The Licensee is further permitted to make copies or re-format the Licensed Material contained in the archival copies supplied by the Licensor in any way that ensures their future preservation and accessibility in accordance with this Licence.")
+                        }
+                        TextElement(id: 'lp_archival_copy_time_01') {
+                            SortNumber(0)
+                            Text("§ 5 Responsibilities of the publisher 1. The Publisher agrees to: [...] e. Deliver the Licensed Material to Licensee as specified below - in case of post-cancellation rights six months after cancellation/publication; - in case of withdrawal of Licensed Material or any part of it before removal from Publisher's server; - in case of termination of this agreement immediately after termination;")
+                        }
+                        TextElement(id: 'lp_authorized_users_01') {
+                            SortNumber(0)
+                            Text("1.2 Authorized Users/Sites. Authorized Users are the employees of the Subscriber and individuals who are independent contractors or are employed by independent contractors of the Subscriber affiliated with the Subscriber’s locations listed on Schedule 2 (the “Sites”) and individuals using computer terminals within the library facilities at the Sites permitted by the Subscriber to access the Subscribed Products for purposes of personal research,")
                         }
                     }
                 }
