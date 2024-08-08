@@ -58,6 +58,7 @@
             <%-- Those are the rights settings the DMS needs to cope with. See the following documentation which is currently a requirement specification, too, and serves as base for ERMS-2393 --%>
             <%
                 Set documentSet = instance.documents
+                boolean showBulkDelete = false
                 if(instance instanceof Org && inContextOrg) {
                     //get all documents which has been attached to this org
                     documentSet.addAll(docstoreService.getTargettedDocuments(instance))
@@ -108,6 +109,7 @@
                     }
                 %>
                 <g:if test="${docctx.isDocAFile() && visible && (docctx.status != RDStore.DOC_CTX_STATUS_DELETED)}">
+                    <% showBulkDelete = true %>
                     <tr>
                         <g:if test="${!(controllerName == 'subscription' && actionName == 'membersSubscriptionsManagement')}">
                             <td class="center aligned">
@@ -216,7 +218,7 @@
             </g:each>
         </tbody>
         <g:if test="${!(controllerName == 'subscription' && actionName == 'membersSubscriptionsManagement')}">
-        <g:if test="${editable && documentSet}">
+        <g:if test="${editable && documentSet && showBulkDelete}">
             <tfoot>
                 <tr>
                     <td class="center aligned">

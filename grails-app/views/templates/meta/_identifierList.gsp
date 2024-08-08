@@ -111,7 +111,7 @@
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="${Icons.CMD_DELETE} outline"></i>
+                                                <i class="${Icons.CMD_DELETE} icon"></i>
                                             </g:link>
                                         </g:if>
                                         <g:else>
@@ -139,7 +139,7 @@
                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="${Icons.CMD_DELETE} outline"></i>
+                                            <i class="${Icons.CMD_DELETE} icon"></i>
                                         </g:link>
                                     </g:else>
                                 </g:if>
@@ -152,10 +152,19 @@
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="${Icons.CMD_DELETE} outline"></i>
+                                        <i class="${Icons.CMD_DELETE} icon"></i>
                                     </g:link>
                                 </g:else>
                             </g:if>
+                            <g:else>
+                                <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                        params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                </g:link>
+                            </g:else>
                         </g:if>
                         <g:elseif test="${ident instanceof Identifier && ident.instanceOf}">
                             <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
