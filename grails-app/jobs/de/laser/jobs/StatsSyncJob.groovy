@@ -37,12 +37,12 @@ class StatsSyncJob extends AbstractJob {
     }
 
     def execute() {
-        if (! start()) {
+        SystemEvent sysEvent = start('STATS_SYNC_JOB_START')
+
+        if (! sysEvent) {
             return false
         }
         try {
-            SystemEvent sysEvent = SystemEvent.createEvent('STATS_SYNC_JOB_START')
-
             //statsSyncService.doFetch(true) changed as of ERMS-4834
             String usagePath = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
             File folder = new File(usagePath)
@@ -53,13 +53,11 @@ class StatsSyncJob extends AbstractJob {
                     oldReport.delete()
                 }
             }
-
-            sysEvent.changeTo('STATS_SYNC_JOB_COMPLETE')
         }
         catch (Exception e) {
             log.error e.getMessage()
         }
 
-        stop()
+        stopAndComplete(sysEvent)
     }
 }

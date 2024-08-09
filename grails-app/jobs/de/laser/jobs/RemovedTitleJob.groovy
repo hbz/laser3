@@ -28,22 +28,21 @@ class RemovedTitleJob extends AbstractJob {
     }
 
     def execute() {
-        if (! start()) {
+        SystemEvent sysEvent = start('REMOVE_TITLE_JOB_START')
+        def crt = null
+
+        if (! sysEvent) {
             return false
         }
         try {
-            SystemEvent sysEvent = SystemEvent.createEvent('REMOVE_TITLE_JOB_START')
-
-            boolean crt = packageService.clearRemovedTitles()
+            crt = packageService.clearRemovedTitles()
             if (!crt ) {
                 log.warn( 'RemoveTitleJob failed. Maybe ignored due blocked removedTitleJob' )
             }
-
-            sysEvent.changeTo('REMOVE_TITLE_JOB_COMPLETE', [returns: crt])
         }
         catch (Exception e) {
             log.error e.getMessage()
         }
-        stop()
+        stopAndComplete(sysEvent, [returns: crt])
     }
 }

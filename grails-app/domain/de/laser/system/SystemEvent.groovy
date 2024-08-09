@@ -255,7 +255,7 @@ class SystemEvent {
                 this.relevance = DEFINED_EVENTS.get(token).relevance
 
                 this.hasChanged = true
-                payload.runtime = startTime ? ((System.currentTimeMillis() - startTime) / 1000).round(2) : 0
+                payload.s = startTime ? ((System.currentTimeMillis() - startTime) / 1000).round(2) : 0
 
                 this.payload = (new JSON(payload)).toString(false)
                 this.save()
