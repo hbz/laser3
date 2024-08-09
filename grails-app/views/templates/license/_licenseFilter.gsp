@@ -38,13 +38,13 @@
                                 value="${params.status}"
                                 noSelection="${['' : message(code:'default.select.choose.label')]}"/>
               </div>
-            <g:if test="${'providerAgency' in licenseFilterTable}">
+            <g:if test="${'provider' in licenseFilterTable}">
               <div class="field">
-                  <label for="licensor"><g:message code="provider.label"/></label>
-                  <select id="licensor" name="licensor" multiple="" class="ui search selection fluid dropdown">
+                  <label for="provider"><g:message code="provider.label"/></label>
+                  <select id="provider" name="provider" multiple="" class="ui search selection fluid dropdown">
                       <option value=""><g:message code="default.select.choose.label"/></option>
-                      <g:each in="${orgs.licensors}" var="licensor">
-                          <option <%=Params.getLongList(params, 'licensor').contains(licensor.id) ? 'selected="selected"' : ''%> value="${licensor.id}">${licensor.name}</option>
+                      <g:each in="${providers}" var="provider">
+                          <option <%=Params.getLongList(params, 'provider').contains(provider.id) ? 'selected="selected"' : ''%> value="${provider.id}">${provider.name}</option>
                       </g:each>
                   </select>
               </div>

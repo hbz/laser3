@@ -467,14 +467,14 @@
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <div class="ui item">
                                     <div class="content la-space-right">
-                                        <g:link controller="myInstitution" action="currentLicenses" params="[licensor: provider.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']">
+                                        <g:link controller="myInstitution" action="currentLicenses" params="[provider: provider.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']">
                                             <i class="${Icons.LINK_FILTERED} icon"></i> <g:message code="license.plural.current" />
                                             &nbsp;<div class="ui blue circular label">${currentLicensesCount}</div></g:link>
                                     </div>
                                 </div>
                                 <div class="ui item">
                                     <div class="content la-space-right">
-                                        <g:link controller="myInstitution" action="currentLicenses" params="[licensor: provider.id, filterSubmit: 'Filtern']">
+                                        <g:link controller="myInstitution" action="currentLicenses" params="[provider: provider.id, filterSubmit: 'Filtern']">
                                             <i class="${Icons.LINK_FILTERED} icon"></i> <g:message code="license.plural.total" />
                                             &nbsp;<div class="ui blue circular label">${licLinks}</div></g:link>
                                     </div>
@@ -735,9 +735,8 @@
                                                                             <g:each in="${prs.contacts.toSorted()}" var="contact">
                                                                                 <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
                                                                                     <laser:render template="/templates/cpa/contact" model="${[
-                                                                                            overwriteEditable   : (provider.gokbId && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
                                                                                             contact             : contact,
-                                                                                            tmplShowDeleteButton: (provider.gokbId && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
+                                                                                            tmplShowDeleteButton: false
                                                                                     ]}"/>
                                                                                 </g:if>
                                                                             </g:each>

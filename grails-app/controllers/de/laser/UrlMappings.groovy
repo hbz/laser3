@@ -6,10 +6,14 @@ class UrlMappings {
 
     static mappings = {
 
-        "/"         (controller: 'public', action: 'index')
-        "/gasco"    (controller: 'public', action: 'gasco')
+        "/"             (controller: 'public', action: 'index')
+        "/robots.txt"   (controller: 'public', action: 'robots')
 
-        "/robots.txt" (controller: 'public', action: 'robots')
+        // gasco
+
+        "/gasco"                (controller: 'public', action: 'gasco')
+        "/gasco/details/$id"    (controller: 'public', action: 'gascoDetails')
+        "/gasco/json"           (controller: 'public', action: 'gascoJson')
 
         // ajax
 
@@ -35,11 +39,15 @@ class UrlMappings {
         "/org/$action?/$id?"                (controller: 'organisation')
         "/sub/$action?/$id?"                (controller: 'subscription')
 
+        // finance
+
         "/myInstitution/finance"            (controller: 'finance', action: 'index')
 
         name subfinance:                "/subscription/$sub/finance/"           (controller: 'finance', action: 'subFinancialData')
         name subfinanceEditCI:          "/subscription/$sub/editCostItem/$id"   (controller: 'finance', action: 'editCostItem')
         name subfinanceCopyCI:          "/subscription/$sub/copyCostItem/$id"   (controller: 'finance', action: 'copyCostItem')
+
+        // survey
 
         "/surveyconfig/show/$id"            (controller: 'survey', action: 'redirectSurveyConfig')
 

@@ -29,7 +29,7 @@ class IdentifierService {
         def owner = genericOIDService.resolveOID(ownerKey)
         def target = genericOIDService.resolveOID(targetKey)
         if (owner && target) {
-            if (target.ns.ns in IdentifierNamespace.CORE_ORG_NS) {
+            if (target.ns.ns in IdentifierNamespace.CORE_ORG_NS && owner instanceof Org) {
                 Org org = (Org) owner
                 if(Identifier.countByNsAndOrg(target.ns, org) == 1) {
                     target.value = IdentifierNamespace.UNKNOWN

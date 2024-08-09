@@ -52,7 +52,8 @@ class LoginController {
    * Show the login page.
    */
     def auth = {
-        log.debug 'Attempting login ~ ' + request.getRemoteAddr() + ', ' + request.session.id
+//        log.debug 'Attempting login ~ ' + request.getRemoteAddr() + ', ' + request.session.id
+        log.debug 'Attempting login ~ ' + request.session.id
 
         ConfigObject config = SpringSecurityUtils.securityConfig
 
