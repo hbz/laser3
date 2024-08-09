@@ -17,6 +17,8 @@ class SystemEvent {
 
     @Transient
     private String i18n
+    @Transient
+    private long startTime
 
     String    token                 // i18n and more
     String    payload               // json for object ids, etx
@@ -180,6 +182,8 @@ class SystemEvent {
             }
 
             if (result) {
+                result.startTime = System.currentTimeMillis()
+
                 result.token = token
                 result.payload = payload ? (new JSON(payload)).toString(false) : null
 
@@ -241,7 +245,7 @@ class SystemEvent {
      * @param token the new token for this record
      * @param payload the new JSON payload
      */
-    void changeTo(String token, def payload) {
+    void changeTo(String token, Map<String, Object> payload = [:]) {
         withTransaction {
             if (DEFINED_EVENTS.containsKey(token)) {
                 log.info '> changed given SystemEvent (ID:' + this.id + ') from ' + this.token + ' to ' + token
@@ -251,10 +255,9 @@ class SystemEvent {
                 this.relevance = DEFINED_EVENTS.get(token).relevance
 
                 this.hasChanged = true
+                payload.runtime = startTime ? ((System.currentTimeMillis() - startTime) / 1000).round(2) : 0
 
-                if (payload) {
-                    this.payload = (new JSON(payload)).toString(false)
-                }
+                this.payload = (new JSON(payload)).toString(false)
                 this.save()
             }
         }

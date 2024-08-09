@@ -33,15 +33,13 @@ class RemovedTitleJob extends AbstractJob {
         }
         try {
             SystemEvent sysEvent = SystemEvent.createEvent('REMOVE_TITLE_JOB_START')
-            long start_time = System.currentTimeMillis()
 
             boolean crt = packageService.clearRemovedTitles()
             if (!crt ) {
                 log.warn( 'RemoveTitleJob failed. Maybe ignored due blocked removedTitleJob' )
             }
 
-            double elapsed = ((System.currentTimeMillis() - start_time) / 1000).round(2)
-            sysEvent.changeTo('REMOVE_TITLE_JOB_COMPLETE', [returns: crt, s: elapsed])
+            sysEvent.changeTo('REMOVE_TITLE_JOB_COMPLETE', [returns: crt])
         }
         catch (Exception e) {
             log.error e.getMessage()

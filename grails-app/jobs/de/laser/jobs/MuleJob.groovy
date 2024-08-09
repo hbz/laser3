@@ -39,8 +39,6 @@ class MuleJob extends AbstractJob {
         }
         try {
             SystemEvent sysEvent = SystemEvent.createEvent('MULE_START')
-            long start_time = System.currentTimeMillis()
-
             LocalTime now = LocalTime.now()
 
             systemService.maintainUnlockedUserAccounts()
@@ -61,13 +59,11 @@ class MuleJob extends AbstractJob {
 
             wekbNewsService.updateCache()
 
-            double elapsed = ((System.currentTimeMillis() - start_time) / 1000).round(2)
-            sysEvent.changeTo('MULE_COMPLETE', [s: elapsed])
+            sysEvent.changeTo('MULE_COMPLETE')
 
         } catch (Exception e) {
             log.error e.getMessage()
         }
-
         stop()
     }
 

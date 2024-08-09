@@ -125,8 +125,8 @@ class DataloadService {
         double elapsed = ((System.currentTimeMillis() - start_time) / 1000).round(2)
         log.debug("doFTUpdate ---> Completed in ${elapsed}s")
 
-        if (indexName) { sysEvent.changeTo('FT_INDEX_UPDATE_COMPLETE', [index: indexName, s: elapsed]) }
-        else           { sysEvent.changeTo('FT_INDEX_UPDATE_COMPLETE', [s: elapsed]) }
+        if (indexName) { sysEvent.changeTo('FT_INDEX_UPDATE_COMPLETE', [index: indexName]) }
+        else           { sysEvent.changeTo('FT_INDEX_UPDATE_COMPLETE') }
 
         update_running = false
         true

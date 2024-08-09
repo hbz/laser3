@@ -42,7 +42,6 @@ class StatsSyncJob extends AbstractJob {
         }
         try {
             SystemEvent sysEvent = SystemEvent.createEvent('STATS_SYNC_JOB_START')
-            long start_time = System.currentTimeMillis()
 
             //statsSyncService.doFetch(true) changed as of ERMS-4834
             String usagePath = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
@@ -55,8 +54,7 @@ class StatsSyncJob extends AbstractJob {
                 }
             }
 
-            double elapsed = ((System.currentTimeMillis() - start_time) / 1000).round(2)
-            sysEvent.changeTo('STATS_SYNC_JOB_COMPLETE', [s: elapsed])
+            sysEvent.changeTo('STATS_SYNC_JOB_COMPLETE')
         }
         catch (Exception e) {
             log.error e.getMessage()
