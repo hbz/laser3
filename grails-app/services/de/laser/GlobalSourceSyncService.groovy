@@ -98,7 +98,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
         defineMapFields()
         //we need to consider that there may be several sources per instance
         List<GlobalRecordSource> jobs = GlobalRecordSource.findAllByActive(true)
-        SystemEvent.createEvent('GSSS_JSON_START', ['jobs': jobs.size()])
+        List finishedJobs = []
+        SystemEvent.createEvent('GSSS_JSON_START', ['jobs started': jobs.size()])
 
         jobs.each { GlobalRecordSource source ->
             this.source = source
@@ -204,14 +205,18 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         if (!source.save())
                             log.error(source.getErrors().getAllErrors().toListString())
                     }
+
                     log.info("sync job finished")
-                    SystemEvent.createEvent('GSSS_JSON_COMPLETE',['jobId':source.id])
+                    finishedJobs << source.id
                 }
             }
             catch (Exception e) {
                 SystemEvent.createEvent('GSSS_JSON_ERROR',['jobId':source.id])
                 log.error("sync job has failed, please consult stacktrace as follows: ",e)
             }
+        }
+        if (finishedJobs) {
+            SystemEvent.createEvent('GSSS_JSON_COMPLETE', ['finishedJobs': finishedJobs])
         }
         running = false
     }

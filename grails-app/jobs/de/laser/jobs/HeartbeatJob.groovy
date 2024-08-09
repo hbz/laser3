@@ -45,7 +45,7 @@ class HeartbeatJob extends AbstractJob {
 
     @UnstableFeature
     def execute() {
-        if (! start(null, true)) { // suppress logging to shrink file
+        if (! simpleStart(true)) { // shrinking logs
             return false
         }
         try {
@@ -67,6 +67,6 @@ class HeartbeatJob extends AbstractJob {
             log.error e.getMessage()
         }
 
-        stop(null, true) // suppress logging to shrink file
+        simpleStop(true) // shrinking logs
     }
 }
