@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Platform; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.CustomerTypeService" %>
+<%@ page import="de.laser.wekb.Platform; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.CustomerTypeService" %>
 <laser:serviceInjection />
 <!-- _properties -->
 %{--

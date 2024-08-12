@@ -118,7 +118,7 @@ class PackageQuery extends BaseQuery {
                 }
                 struct.eachWithIndex { it, idx ->
                     Map<String, Object> id = helper.get(it.key)
-                    IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(id.namespace, 'de.laser.Package')
+                    IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(id.namespace, 'de.laser.wekb.Package')
                     String label = ns ? (ns.getI10n('name') ?: ns.ns) : GenericHelper.flagUnmatched( id.namespaceName ?: id.namespace )
                     List d = [ ns ? ns.id : (idx * -1), label, it.value.size()]
 

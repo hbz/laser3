@@ -479,7 +479,7 @@ class ApiCollectionReader {
                 tmp.license = ApiStubReader.requestLicenseStub(it.lic, context) // de.laser.License
             }
             if (it.pkg && (ApiReader.IGNORE_PACKAGE != ignoreRelationType)) {
-                tmp.package = ApiUnsecuredMapReader.getPackageStubMap(it.pkg) // de.laser.Package
+                tmp.package = ApiUnsecuredMapReader.getPackageStubMap(it.pkg) // de.laser.wekb.Package
             }
             if (it.sub && (ApiReader.IGNORE_SUBSCRIPTION != ignoreRelationType)) {
                 tmp.subscription = ApiStubReader.requestSubscriptionStub(it.sub, context) // de.laser.Subscription
@@ -549,7 +549,7 @@ class ApiCollectionReader {
         Collection<Object> result = []
 
         list.each { pkg ->
-            Map<String, Object> pkgMap = ApiUnsecuredMapReader.getPackageStubMap(pkg) // de.laser.Package
+            Map<String, Object> pkgMap = ApiUnsecuredMapReader.getPackageStubMap(pkg) // de.laser.wekb.Package
             result << pkgMap
         }
 
@@ -566,7 +566,7 @@ class ApiCollectionReader {
         Collection<Object> result = []
 
         list.each { subPkg ->
-            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg) // de.laser.Package
+            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg) // de.laser.wekb.Package
             result << pkg
 
             //if (pkg != Constants.HTTP_FORBIDDEN) {
@@ -587,7 +587,7 @@ class ApiCollectionReader {
         Collection<Object> result = []
 
         list.each { plat ->
-            Map<String, Object> platformMap = ApiUnsecuredMapReader.getPlatformStubMap(plat) // de.laser.Platform
+            Map<String, Object> platformMap = ApiUnsecuredMapReader.getPlatformStubMap(plat) // de.laser.wekb.Platform
             result << platformMap
         }
 
@@ -739,7 +739,7 @@ class ApiCollectionReader {
                         role.license = ApiStubReader.resolveLicenseStub(it.lic, context) // de.laser.License
                     }
                     if (it.pkg) {
-                        role.package = ApiStubReader.resolvePackageStub(it.pkg, context) // de.laser.Package
+                        role.package = ApiStubReader.resolvePackageStub(it.pkg, context) // de.laser.wekb.Package
                     }
                     if (it.sub) {
                         role.subscription = ApiStubReader.resolveSubscriptionStub(it.sub, context) // de.laser.Subscription

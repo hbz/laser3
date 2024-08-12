@@ -420,7 +420,7 @@ class ApiUnsecuredMapReader {
         //result.softwareProvider     = pform.softwareProvider?.value
 
         // References
-        result.provider = getProviderStubMap(pform.provider) // de.laser.Provider
+        result.provider = getProviderStubMap(pform.provider) // de.laser.wekb.Provider
         result.properties = ApiCollectionReader.getCustomPropertyCollection(pform.propertySet, pform, context)
 
         ApiToolkit.cleanUp(result, true, true)

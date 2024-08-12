@@ -305,9 +305,9 @@ class ApiOAMonitor {
         Collection<Object> result = []
 
         list.each { subPkg ->
-            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg), qryParams = [sub: subPkg.subscription.id, pkg: subPkg.pkg.id, removed: RDStore.TIPP_STATUS_REMOVED.id] // de.laser.Package
+            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg), qryParams = [sub: subPkg.subscription.id, pkg: subPkg.pkg.id, removed: RDStore.TIPP_STATUS_REMOVED.id] // de.laser.wekb.Package
 
-            pkg.provider = ApiUnsecuredMapReader.getProviderStubMap(subPkg.pkg.provider) // de.laser.Provider
+            pkg.provider = ApiUnsecuredMapReader.getProviderStubMap(subPkg.pkg.provider) // de.laser.wekb.Provider
             result << pkg
             JsonSlurper slurper = new JsonSlurper()
             List tmp = []

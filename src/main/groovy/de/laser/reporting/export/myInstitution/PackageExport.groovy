@@ -227,7 +227,7 @@ class PackageExport extends BaseDetailsExport {
                     }
                     else if (key == 'x-id') {
                         List<String> idList = record?.get( esData.mapping )?.collect{ id ->
-                            IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(id.namespace, 'de.laser.Package')
+                            IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(id.namespace, 'de.laser.wekb.Package')
                             ns ? ((ns.getI10n('name') ?: ns.ns) + ':' + id.value) : GenericHelper.flagUnmatched( id.namespaceName ?: id.namespace ) + ':' + id.value
                         }
                         content.add (idList ? idList.join( BaseDetailsExport.CSV_VALUE_SEPARATOR ) : '')

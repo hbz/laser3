@@ -1,4 +1,4 @@
-<%@ page import="de.laser.wekb.ProviderRole; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.License; de.laser.ProviderRole; de.laser.wekb.VendorRole" %>
+<%@ page import="de.laser.wekb.ProviderRole; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.License; de.laser.wekb.VendorRole" %>
 <g:set var="auditConfigProviders" value="${ProviderRole.findAllBySubscriptionAndIsShared(parentSuccessorSubscription, true)}" />
 <g:set var="auditConfigVendors" value="${VendorRole.findAllBySubscriptionAndIsShared(parentSuccessorSubscription, true)}" />
 

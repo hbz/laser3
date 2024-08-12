@@ -1,4 +1,4 @@
-<%@ page import="de.laser.wekb.Package; de.laser.wekb.Platform; de.laser.wekb.Provider; de.laser.wekb.Vendor; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.Vendor; de.laser.Provider; de.laser.storage.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.Platform; de.laser.AuditConfig; de.laser.FormService" %>
+<%@ page import="de.laser.wekb.Package; de.laser.wekb.Platform; de.laser.wekb.Provider; de.laser.wekb.Vendor; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.storage.RDStore; de.laser.IdentifierNamespace; de.laser.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection />
 
 <table class="ui table">

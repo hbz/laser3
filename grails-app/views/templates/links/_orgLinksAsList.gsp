@@ -110,7 +110,7 @@
                                                 </div>
                                             </div>
                                         </g:each>
-                                        <%--<g:if test="${roleObject instanceof de.laser.Package}">--%>
+                                        <%--<g:if test="${roleObject instanceof de.laser.wekb.Package}">--%>
                                         <%
                                             Set<Person> techSupports = Person.getPublicByOrgAndFunc(role.org, 'Technical Support'), serviceSupports = Person.getPublicByOrgAndFunc(role.org, 'Service Support'), metadataContacts = Person.getPublicByOrgAndFunc(role.org, 'Metadata Contact')
                                         %>
@@ -267,7 +267,7 @@
                                                 </div>
                                             </div>
                                         </g:each>
-                                        <%--<g:if test="${roleObject instanceof de.laser.Package}">--%>
+                                        <%--<g:if test="${roleObject instanceof de.laser.wekb.Package}">--%>
                                             <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support', contextOrg)}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.wekb.ProviderRole; de.laser.wekb.VendorRole; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ProviderRole; de.laser.VendorRole; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Subscription;" %>
+<%@ page import="de.laser.wekb.ProviderRole; de.laser.wekb.VendorRole; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Subscription;" %>
 <g:if test="${filteredSubscriptions}">
 
     <g:if test="${controllerName == "subscription"}">
