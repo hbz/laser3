@@ -188,7 +188,7 @@ class MyInstitutionController  {
         result.contextOrg = contextService.getOrg()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PLA_PROP], contextService.getOrg())
-        Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA]]
+        Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM]]
 
         String instanceFilter = "", subFilter = ""
         if (! params.status) {
@@ -1471,7 +1471,7 @@ class MyInstitutionController  {
                         it.pkg.name
                     }
                     row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
-                    row.add([field: sub.getConsortia()?.name ?: '', style: null])
+                    row.add([field: sub.getConsortium()?.name ?: '', style: null])
                     row.add([field: subProviders.join(', '), style: null])
                     row.add([field: subAgencies.join(', '), style: null])
                     row.add([field: sub.startDate ? sdf.format(sub.startDate) : '', style: null])
@@ -1505,7 +1505,7 @@ class MyInstitutionController  {
                         it.pkg.name
                     }
                     row.add(packageNames ? packageNames.join("; ") : '')
-                    row.add(sub.getConsortia()?.name ?: '')
+                    row.add(sub.getConsortium()?.name ?: '')
                     row.add(subProviders.join("; ").replace(',',''))
                     row.add(subAgencies.join("; ").replace(',',''))
                     row.add(sub.startDate ? sdf.format(sub.startDate) : '')
@@ -1709,7 +1709,7 @@ class MyInstitutionController  {
         List<String> queryFilter = [], subscriptionQueryFilter = []
 
         if (contextService.getOrg().isCustomerType_Consortium()) {
-            orgRoles << RDStore.OR_SUBSCRIPTION_CONSORTIA
+            orgRoles << RDStore.OR_SUBSCRIPTION_CONSORTIUM
             subscriptionQueryFilter << " sub.instanceOf = null "
         }
         else {
@@ -1991,7 +1991,7 @@ class MyInstitutionController  {
                             configMap.subscriptions = Subscription.findAllByIdInList(filterSub)
                         /*
                         else
-                            configMap.subscriptions = SubscriptionPackage.executeQuery('select s.id from Subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes) and s.status = :current'+instanceFilter, [current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]]).toSet()
+                            configMap.subscriptions = SubscriptionPackage.executeQuery('select s.id from Subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes) and s.status = :current'+instanceFilter, [current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS]]).toSet()
                         */
                         Map<String,Collection> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
                         if(tableData.columnData.size() > 0) {
@@ -2024,7 +2024,7 @@ class MyInstitutionController  {
                         configMap.putAll(params)
                         configMap.validOn = checkedDate.getTime()
                         String consFilter = result.institution.isCustomerType_Consortium() ? ' and s.instanceOf is null' : ''
-                        configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]])
+                        configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS]])
                         Map<String,List> export = exportService.generateTitleExportCustom(configMap, IssueEntitlement.class.name) //all subscriptions, all packages
                         Map sheetData = [:]
                         sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
@@ -2153,7 +2153,7 @@ class MyInstitutionController  {
         ])
         List idsCategory2 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
                 org: contextService.getOrg(), roleTypes: [
-                RDStore.OR_SUBSCRIPTION_CONSORTIA
+                RDStore.OR_SUBSCRIPTION_CONSORTIUM
         ]
         ])
 
@@ -3614,12 +3614,12 @@ class MyInstitutionController  {
 
         Map queryParamsProviders = [
                 subOrg      : result.institution,
-                subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]
+                subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIUM]
         ]
 
         Map queryParamsSubs = [
                 subOrg      : result.institution,
-                subRoleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA]
+                subRoleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIUM]
         ]
 
         String queryProviders = '''select distinct(pvr.provider) from OrgRole or_pa, ProviderRole pvr 

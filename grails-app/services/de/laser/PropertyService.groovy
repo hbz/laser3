@@ -543,7 +543,7 @@ class PropertyService {
                         query = 'select b from PropertyDefinitionGroupBinding b where b.propDefGroup = :pdg and b.lic.id = :id and b.propDefGroup.tenant = :ctxOrg'
                     }
                     else {
-                        consortium = obj.getConsortia()
+                        consortium = obj.getConsortium()
                         objId = (consortium.id == contextOrg.id) ? obj.instanceOf.id : obj.id
                         query = 'select b from PropertyDefinitionGroupBinding b where b.propDefGroup = :pdg and b.sub.id = :id and b.propDefGroup.tenant = :ctxOrg'
                     }
@@ -641,7 +641,7 @@ class PropertyService {
              case PropertyDefinition.SUB_PROP:
                  if(!params.objStatus)
                      parameterMap.status = RDStore.SUBSCRIPTION_CURRENT
-                 objectsWithoutProp.addAll(Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :ctx '+subFilterClause+' and oo.roleType in (:roleTypes) and not exists (select sp from SubscriptionProperty sp where sp.owner = oo.sub and sp.tenant = :ctx and sp.type = :type) and oo.sub.status = :status order by oo.sub.name asc, oo.sub.startDate asc, oo.sub.endDate asc',parameterMap+[roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]]))
+                 objectsWithoutProp.addAll(Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :ctx '+subFilterClause+' and oo.roleType in (:roleTypes) and not exists (select sp from SubscriptionProperty sp where sp.owner = oo.sub and sp.tenant = :ctx and sp.type = :type) and oo.sub.status = :status order by oo.sub.name asc, oo.sub.startDate asc, oo.sub.endDate asc',parameterMap+[roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIUM,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]]))
                  filteredObjs.addAll(SubscriptionProperty.executeQuery('select sp.owner from SubscriptionProperty sp where sp.type = :type and sp.tenant = :ctx '+spOwnerFilterClause+' and sp.owner.status = :status order by sp.owner.name asc',parameterMap))
                  result.auditable = propDef.tenant == null //blocked until inheritance of private property is cleared
                  result.manageChildren = true
@@ -672,7 +672,7 @@ class PropertyService {
                                  [context    : contextOrg,
                                   comboType  : RDStore.COMBO_TYPE_CONSORTIUM.id,
                                   subscrRoles: [RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id],
-                                  consType   : RDStore.OR_SUBSCRIPTION_CONSORTIA.id,
+                                  consType   : RDStore.OR_SUBSCRIPTION_CONSORTIUM.id,
                                   subStatus  : RDStore.SUBSCRIPTION_CURRENT.id
                                  ])
                          orgfilter += 'and o.id in (:myInstsIds)'
@@ -700,7 +700,7 @@ class PropertyService {
                      List<Long> myProvidersIds = Provider.executeQuery("select distinct(p.id) from ProviderRole pvr join pvr.provider p, OrgRole or_sub " +
                              "where pvr.subscription = or_sub.sub and or_sub.org = :subOrg and or_sub.roleType.id in (:subRoleTypes) " ,
                              [subOrg      : contextOrg,
-                              subRoleTypes: [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIPTION_CONSORTIA.id]
+                              subRoleTypes: [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIPTION_CONSORTIUM.id]
                              ])
                      providerFilter += 'and p.id in (:myProvidersIds)'
                      providerFilter2 += 'and pp.owner.id in (:myProvidersIds)'
@@ -731,7 +731,7 @@ class PropertyService {
                      List<Long> myVendorIds = Provider.executeQuery("select distinct(v.id) from VendorRole vr join vr.vendor v, OrgRole or_sub " +
                              "where vr.subscription = or_sub.sub and or_sub.org = :subOrg and or_sub.roleType.id in (:subRoleTypes) " ,
                              [subOrg      : contextOrg,
-                              subRoleTypes: [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIPTION_CONSORTIA.id]
+                              subRoleTypes: [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIPTION_CONSORTIUM.id]
                              ])
                      vendorFilter += 'and v.id in (:myVendorIds)'
                      vendorFilter2 += 'and vp.owner.id in (:myVendorIds)'

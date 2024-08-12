@@ -109,7 +109,7 @@ class MarkerService {
                         + (contextService.getOrg().isCustomerType_Consortium() ? ' and sub.instanceOf = null' : ''),
                 [
                         context:    contextService.getOrg(),
-                        roleTypes:  [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA],
+                        roleTypes:  [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM],
                         current:    RDStore.SUBSCRIPTION_CURRENT,
                         expired:    RDStore.SUBSCRIPTION_EXPIRED
                 ]

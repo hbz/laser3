@@ -147,7 +147,7 @@
                             <tbody>
                                 <g:each in="${subList}" var="subId">
                                     <g:set var="sub" value="${Subscription.get(subId)}" />
-                                    <g:set var="orgCons" value="${sub.getConsortia()}" />
+                                    <g:set var="orgCons" value="${sub.getConsortium()}" />
                                     <tr data-id="${subId}" data-referenceYear="${sub.referenceYear}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
@@ -261,7 +261,7 @@
                             <tbody>
                                 <g:each in="${subList}" var="subId">
                                     <g:set var="sub" value="${Subscription.get(subId)}" />
-                                    <g:set var="orgCons" value="${sub.getConsortia()}" />
+                                    <g:set var="orgCons" value="${sub.getConsortium()}" />
                                     <tr data-id="${subId}" data-referenceYear="${sub.referenceYear}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">

@@ -204,7 +204,7 @@
                              tmplModalID            : 'sub_add_license_link',
                              editmode               : editable,
                              subscriptionLicenseLink: true,
-                             atConsortialParent     : contextOrg == subscription.getConsortia(),
+                             atConsortialParent     : contextOrg == subscription.getConsortium(),
                              context                : subscription,
                              linkInstanceType       : Links.class.name
                     ]

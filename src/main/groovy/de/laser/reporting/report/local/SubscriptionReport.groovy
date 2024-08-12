@@ -46,7 +46,7 @@ class SubscriptionReport {
             return SubscriptionXCfg.CONFIG_CONS_AT_CONS
         }
         else if (calcType in [Subscription.TYPE_PARTICIPATION]) {
-            if (sub.getConsortia().id == BeanStore.getContextService().getOrg().id) {
+            if (sub.getConsortium().id == BeanStore.getContextService().getOrg().id) {
                 return SubscriptionXCfg.CONFIG_CONS_AT_SUBSCR
             }
             else {

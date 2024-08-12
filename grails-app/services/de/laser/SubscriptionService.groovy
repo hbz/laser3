@@ -354,7 +354,7 @@ class SubscriptionService {
                     " and roleT.roleType in (:rdvSubscr) " +
                     " and ( (ci is null or ci.costItemStatus != :deleted) ) "
             qarams = [org      : contextOrg,
-                      rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
+                      rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIUM,
                       rdvSubscr: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],
                       deleted  : RDStore.COST_ITEM_DELETED
             ]
@@ -367,7 +367,7 @@ class SubscriptionService {
                     " and roleTK.org = :org and roleTK.roleType = :rdvCons " +
                     " and ( roleT.roleType = :rdvSubscr or roleT.roleType = :rdvSubscrHidden ) "
             qarams = [org      : contextOrg,
-                      rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
+                      rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIUM,
                       rdvSubscr: RDStore.OR_SUBSCRIBER_CONS,
                       rdvSubscrHidden: RDStore.OR_SUBSCRIBER_CONS_HIDDEN
             ]
@@ -519,11 +519,11 @@ class SubscriptionService {
 
             if (params.filterPvd) {
                 query = query + " and exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.sub.id = subT.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select provRole from ProviderRole provRole where provRole.subscription = sub and provRole.provider.id in (:filterPvd))) "
-                qarams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextOrg, filterPvd: Params.getLongList(params, 'filterPvd')]
+                qarams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextOrg, filterPvd: Params.getLongList(params, 'filterPvd')]
             }
             if (params.filterVen) {
                 query = query + " and exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.sub.id = subT.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select venRole from VendorRole venRole where venRole.subscription = sub and venRole.vendor.id in (:filterVen))) "
-                qarams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextOrg, filterVen: Params.getLongList(params, 'filterVen')]
+                qarams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextOrg, filterVen: Params.getLongList(params, 'filterVen')]
             }
 
 
@@ -719,7 +719,7 @@ class SubscriptionService {
             queryParams.status = params.status
         }
         queryParams.showParentsAndChildsSubs = params.showSubscriber
-        queryParams.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
+        queryParams.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIUM.value
         String joinQuery = params.joinQuery ?: ""
         List result = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, joinQuery)
         result
@@ -1647,7 +1647,7 @@ class SubscriptionService {
      * false otherwise
      */
     boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
-        return ((subscription.getConsortia()?.id == contextOrg.id) && subscription._getCalculatedType() in
+        return ((subscription.getConsortium()?.id == contextOrg.id) && subscription._getCalculatedType() in
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
     }
 
@@ -2165,7 +2165,7 @@ class SubscriptionService {
                 String idCandidate = cols[colMap.instanceOf].trim()
                 String memberIdCandidate = cols[colMap.member].trim()
                 if(idCandidate && memberIdCandidate) {
-                    List<Subscription> parentSubs = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and :idCandidate in (cast(oo.sub.id as string),oo.sub.globalUID)",[contextOrg: contextOrg, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA], idCandidate: idCandidate])
+                    List<Subscription> parentSubs = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and :idCandidate in (cast(oo.sub.id as string),oo.sub.globalUID)",[contextOrg: contextOrg, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIUM], idCandidate: idCandidate])
                     List<Org> possibleOrgs = Org.executeQuery("select distinct ident.org from Identifier ident, Combo c where c.fromOrg = ident.org and :idCandidate in (cast(ident.org.id as string), ident.org.globalUID) or (ident.value = :idCandidate and ident.ns = :wibid) and c.toOrg = :contextOrg and c.type = :type", [idCandidate:memberIdCandidate,wibid:IdentifierNamespace.findByNs('wibid'),contextOrg: contextOrg,type: comboType])
                     if(parentSubs.size() == 1) {
                         Subscription instanceOf = parentSubs[0]
@@ -2309,7 +2309,7 @@ class SubscriptionService {
                     //create the org role associations
                     RefdataValue parentRoleType, memberRoleType
                     if (contextService.getOrg().isCustomerType_Consortium()) {
-                        parentRoleType = RDStore.OR_SUBSCRIPTION_CONSORTIA
+                        parentRoleType = RDStore.OR_SUBSCRIPTION_CONSORTIUM
                         memberRoleType = RDStore.OR_SUBSCRIBER_CONS
                     }
                     else

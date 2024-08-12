@@ -159,7 +159,7 @@
                             </g:each>
                             <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                                 <td>
-                                    <g:if test="${ci.sub && OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and oo.sub = :sub and oo.roleType = :roleType and oo.sub.instanceOf is not null',[org: ci.owner,sub: ci.sub,roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA])}">
+                                    <g:if test="${ci.sub && OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and oo.sub = :sub and oo.roleType = :roleType and oo.sub.instanceOf is not null',[org: ci.owner,sub: ci.sub,roleType: RDStore.OR_SUBSCRIPTION_CONSORTIUM])}">
                                         ${message(code:'myinst.financeImport.post.visible')} <g:checkBox name="visibleForSubscriber${r}" class="visibleForSubscriber" checked="true"/>
                                     </g:if>
                                 </td>

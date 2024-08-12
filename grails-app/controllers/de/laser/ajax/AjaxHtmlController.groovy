@@ -253,7 +253,7 @@ class AjaxHtmlController {
         result.editable = entry.isEditableBy(result.user)
         if(entry instanceof Subscription) {
             result.subscription = (Subscription) entry
-            result.atConsortialParent = result.contextOrg.id == result.subscription.getConsortia()?.id && !result.subscription.instanceOf ? "true" : "false"
+            result.atConsortialParent = result.contextOrg.id == result.subscription.getConsortium()?.id && !result.subscription.instanceOf ? "true" : "false"
         }
         else if(entry instanceof License) {
             result.license = (License) entry
@@ -279,7 +279,7 @@ class AjaxHtmlController {
         result.contextCustomerType = contextOrg.getCustomerType()
         result.institution = contextOrg
         result.showConsortiaFunctions = contextOrg.isCustomerType_Consortium()
-        result.roleLinks = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]) }
+        result.roleLinks = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIUM]) }
         result.roleObject = result.subscription
         result.roleRespValue = 'Specific subscription editor'
         result.editmode = result.subscription.isEditableBy(contextService.getUser())

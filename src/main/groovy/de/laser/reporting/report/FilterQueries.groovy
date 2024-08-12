@@ -19,7 +19,7 @@ class FilterQueries {
 
         List<Long> idList = Subscription.executeQuery(
                 "select sub.id from Subscription sub join sub.orgRelations ro where (ro.roleType in (:roleTypes) and ro.org = :ctx)", [
-                roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
+                roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIUM],
                 ctx: contextService.getOrg()
         ])
         idList

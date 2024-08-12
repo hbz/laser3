@@ -177,7 +177,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
             'isSlavedAsString', 'provider', 'multiYearSubscription',
             'currentMultiYearSubscriptionNew', 'renewalDate',
             'commaSeperatedPackagesIsilList', 'calculatedPropDefGroups', 'allocationTerm',
-            'subscriberRespConsortia', 'providers', 'agencies', 'consortia'
+            'subscriberRespConsortia', 'providers', 'agencies', 'consortium'
     ] // mark read-only accessor methods
 
     static mapping = {
@@ -498,13 +498,13 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     String _getCalculatedType() {
         String result = TYPE_UNKOWN
 
-        if(getConsortia() && !getAllSubscribers() && !instanceOf) {
+        if(getConsortium() && !getAllSubscribers() && !instanceOf) {
             if(administrative) {
                 result = TYPE_ADMINISTRATIVE
             }
             else result = TYPE_CONSORTIAL
         }
-        else if(getConsortia() && instanceOf) {
+        else if(getConsortium() && instanceOf) {
             result = TYPE_PARTICIPATION
         }
         // TODO remove type_local
@@ -586,7 +586,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
       if ( or.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id] )
         result = or.org
         
-      if ( or.roleType.id == RDStore.OR_SUBSCRIPTION_CONSORTIA.id )
+      if ( or.roleType.id == RDStore.OR_SUBSCRIPTION_CONSORTIUM.id )
         cons = or.org
     }
     
@@ -625,8 +625,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * Gets the consortium of this subscription
      * @return the {@link Org} linked as 'Subscription Consortia' to this subscription or null if none exists (this is the case for local subscriptions)
      */
-    Org getConsortia() { // TODO getConsortium()
-        Org result = OrgRole.findByRoleTypeAndSub(RDStore.OR_SUBSCRIPTION_CONSORTIA, this)?.org //null check necessary because of single users!
+    Org getConsortium() {
+        Org result = OrgRole.findByRoleTypeAndSub(RDStore.OR_SUBSCRIPTION_CONSORTIUM, this)?.org //null check necessary because of single users!
         result
     }
 
@@ -775,7 +775,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         Org contextOrg = contextService.getOrg()
 
         if (user.isFormal(contextOrg)) {
-            OrgRole cons       = OrgRole.findBySubAndOrgAndRoleType( this, contextOrg, RDStore.OR_SUBSCRIPTION_CONSORTIA )
+            OrgRole cons       = OrgRole.findBySubAndOrgAndRoleType( this, contextOrg, RDStore.OR_SUBSCRIPTION_CONSORTIUM )
             OrgRole subscrCons = OrgRole.findBySubAndOrgAndRoleType( this, contextOrg, RDStore.OR_SUBSCRIBER_CONS )
             OrgRole subscr     = OrgRole.findBySubAndOrgAndRoleType( this, contextOrg, RDStore.OR_SUBSCRIBER )
 
@@ -847,7 +847,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
       String hqlString = "select sub from Subscription sub where lower(sub.name) like :name "
         Map<String, Object> hqlParams = [name: ((params.q ? params.q.toLowerCase() : '' ) + "%")]
         SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd()
-        List<RefdataValue> viableRoles = [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]
+        List<RefdataValue> viableRoles = [RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]
     
     hqlParams.put('viableRoles', viableRoles)
 
@@ -953,7 +953,7 @@ select distinct oap from OrgAccessPoint oap
            orgRelations.each { or ->
                orgRelationsMap.put(or.roleType.id,or.org)
            }
-           if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_CONSORTIA.id)?.id == contextOrg.id) {
+           if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_CONSORTIUM.id)?.id == contextOrg.id) {
                if(orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id))
                    additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id)?.sortname
                else if(orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id))

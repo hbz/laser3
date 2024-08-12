@@ -5,7 +5,7 @@
 
     //for ERMS-2393/3933: this is a request parameter for the DMS rights management interface
     if(instance instanceof Subscription) {
-        if(contextService.getOrg().id == instance.getConsortia()?.id && instance.instanceOf) {
+        if(contextService.getOrg().id == instance.getConsortium()?.id && instance.instanceOf) {
             if(instance._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
                 parentAtChild = true
         }

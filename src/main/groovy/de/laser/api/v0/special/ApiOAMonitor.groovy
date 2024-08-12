@@ -66,7 +66,7 @@ class ApiOAMonitor {
                         "where sub = :sub and org in (:orgs) and oo.roleType in (:roles) ", [
                             sub  : sub,
                             orgs : orgs,
-                            roles: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
+                            roles: [RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
                         ]
                 )
                 hasAccess = ! valid.isEmpty()
@@ -280,7 +280,7 @@ class ApiOAMonitor {
         List<Subscription> tmp = OrgRole.executeQuery(
                 'select distinct(oo.sub) from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)', [
                         org: org,
-                        roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
+                        roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
                 ]
         )
         log.debug ("found ${tmp.size()} subscriptions .. processing")

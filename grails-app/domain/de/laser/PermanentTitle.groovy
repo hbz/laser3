@@ -64,10 +64,10 @@ class PermanentTitle {
         String statusString = subscription.status ? subscription.status.getI10n('value') : RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
         String debugInfo = SpringSecurityUtils.ifAnyGranted('ROLE_YODA') ? " (${subscription.id})" : ""
 
-        Org consortia = subscription.getConsortia()
+        Org cons = subscription.getConsortium()
 
-        if(consortia && consortia != contextOrg){
-            return subscription.name + ' - ' + statusString + ' ' +period + ' - ' + " (${subscription.getConsortia()?.name})${debugInfo}"
+        if(cons && cons != contextOrg){
+            return subscription.name + ' - ' + statusString + ' ' +period + ' - ' + " (${subscription.getConsortium()?.name})${debugInfo}"
 
         } else {
 

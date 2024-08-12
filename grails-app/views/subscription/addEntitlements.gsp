@@ -19,7 +19,7 @@
 
 <h2 class="ui left aligned icon header la-clear-before">${message(code: 'subscription.details.addEntitlements.label')}</h2>
 <%-- <laser:render template="nav"/> --%>
-<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortium()?.id}">
     <laser:render template="message"/>
 </g:if>
 

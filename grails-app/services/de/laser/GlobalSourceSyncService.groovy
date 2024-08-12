@@ -163,7 +163,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         'join s.orgRelations oo ' +
                                         'where s.instanceOf = null and pkg.gokbId = :packageKey ' +
                                         'and oo.roleType in (:roleTypes)'
-                                List subPkgHolders = SubscriptionPackage.executeQuery(query,[packageKey:packageKey,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
+                                List subPkgHolders = SubscriptionPackage.executeQuery(query,[packageKey:packageKey,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIUM,RDStore.OR_SUBSCRIBER]])
                                 log.info("getting subscription package holders for ${packageKey}: ${subPkgHolders.toListString()}")
                                 subPkgHolders.each { row ->
                                     log.debug("processing ${row[1]}")
@@ -298,7 +298,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     'join s.orgRelations oo ' +
                                     'where s.instanceOf = null and pkg.gokbId = :packageKey ' +
                                     'and oo.roleType in (:roleTypes)'
-                            List subPkgHolders = SubscriptionPackage.executeQuery(query,[packageKey:packageKey,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
+                            List subPkgHolders = SubscriptionPackage.executeQuery(query,[packageKey:packageKey,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIUM,RDStore.OR_SUBSCRIBER]])
                             log.info("getting subscription package holders for ${packageKey}: ${subPkgHolders.toListString()}")
                             subPkgHolders.each { row ->
                                 log.debug("processing ${row[1]}")

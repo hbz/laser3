@@ -109,7 +109,7 @@
                                     -- ${message(code: 'myinst.currentSubscriptions.name_not_set')}  --
                                 </g:else>
                                 <g:if test="${s.instanceOf}">
-                                    <g:if test="${s.consortia && s.consortia == institution}">
+                                    <g:if test="${s.getConsortium() && s.getConsortium() == institution}">
                                         ( ${s.getSubscriberRespConsortia()?.name} )
                                     </g:if>
                                 </g:if>
@@ -168,7 +168,7 @@
                         <g:if test="${params.orgRole == 'Subscriber'}">
                             <td>
                                 <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
-                                    ${s.getConsortia()?.name}
+                                    ${s.getConsortium()?.name}
                                 </g:if>
                             </td>
                         </g:if>

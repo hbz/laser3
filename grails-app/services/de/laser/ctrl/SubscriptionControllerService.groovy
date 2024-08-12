@@ -541,7 +541,7 @@ class SubscriptionControllerService {
             allCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :ctx and ci.sub in (:subs) order by ci.startDate', [ctx: statsData.contextOrg, subs: statsData.subscriptions])
         }
         else if(config == "consortial") {
-            Org consortium = statsData.subscription.getConsortia()
+            Org consortium = statsData.subscription.getConsortium()
             //Set<RefdataValue> elementsToUse = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :institution and ciec.useForCostPerUse = true', [institution: consortium])
             allCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :consortium and ci.sub in (:subs) and ci.isVisibleForSubscriber = true order by ci.startDate', [consortium: consortium, subs: statsData.subscriptions])
         }
@@ -1187,7 +1187,7 @@ class SubscriptionControllerService {
 
         switch(subType) {
             case [ RDStore.SUBSCRIPTION_TYPE_CONSORTIAL, RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE ]:
-                orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA
+                orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIUM
                 memberRole = RDStore.OR_SUBSCRIBER_CONS
                 break
             default:
@@ -1654,7 +1654,7 @@ class SubscriptionControllerService {
                                         } else {
                                             new OrgRole(org: cm, sub: memberSub, roleType: RDStore.OR_SUBSCRIBER_CONS).save()
                                         }
-                                        new OrgRole(org: result.institution, sub: memberSub, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).save()
+                                        new OrgRole(org: result.institution, sub: memberSub, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIUM).save()
                                         synShareTargetList.add(memberSub)
                                         SubscriptionProperty.findAllByOwner(currParent).each { SubscriptionProperty sp ->
                                             AuditConfig ac = AuditConfig.getConfig(sp)
@@ -4034,7 +4034,7 @@ class SubscriptionControllerService {
         result.institution = result.subscription ? result.subscription?.getSubscriberRespConsortia() : result.contextOrg //TODO temp, remove the duplicate
 
         if (result.subscription) {
-            result.subscriptionConsortia = result.subscription.getConsortia()
+            result.subscriptionConsortia = result.subscription.getConsortium()
             result.inContextOrg = result.contextOrg.id == result.subscription.getSubscriberRespConsortia().id
             result.licenses = Links.findAllByDestinationSubscriptionAndLinkType(result.subscription, RDStore.LINKTYPE_LICENSE).collect { Links li -> li.sourceLicense }
             LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.subscription)

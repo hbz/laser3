@@ -150,7 +150,7 @@
             <g:if test="${error == 'noCustomerId'}">
                 <g:message code="default.stats.error.${error}.local" args="${errorArgs}"/>
 
-                <g:if test="${contextOrg.id == subscription.getConsortia()?.id}">
+                <g:if test="${contextOrg.id == subscription.getConsortium()?.id}">
                     <br/>
                     Alternativ: <g:link controller="subscription" action="membersSubscriptionsManagement"
                                         id="${subscription.instanceOf.id}"

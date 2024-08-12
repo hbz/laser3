@@ -233,7 +233,7 @@ class ApiStatistic {
 
                 OrgRole.findAllBySub(subPkg.subscription).each { ogr ->
 
-                    if (ogr.roleType?.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIPTION_CONSORTIA.id]) {
+                    if (ogr.roleType?.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIPTION_CONSORTIUM.id]) {
                         if (ogr.org.id in accessibleOrgs.collect{ it.id }) {
 
                             if (ogr.org.status?.value == 'Deleted') {
