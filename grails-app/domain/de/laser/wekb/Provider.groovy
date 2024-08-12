@@ -8,7 +8,6 @@ import de.laser.Identifier
 import de.laser.InvoiceDispatch
 import de.laser.InvoicingVendor
 import de.laser.Org
-import de.laser.Package
 import de.laser.Person
 import de.laser.PersonRole
 import de.laser.RefdataValue

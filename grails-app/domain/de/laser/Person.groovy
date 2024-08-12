@@ -5,6 +5,7 @@ import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.properties.PersonProperty
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.wekb.Package
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 import groovy.util.logging.Slf4j
@@ -218,7 +219,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
      * Gets all public contacts attached to the given organisation and object, matching to the given responsibility.
      * If org is null, this method gets ALL public responsibilities attached to the given object; if the object is missing, too, get all public responsibilities
      * @param target the {@link Org} to which the contacts are attached to
-     * @param obj the object (one of {@link License}, {@link Package} or {@link Subscription}) for which the requested persons are responsible
+     * @param obj the object (one of {@link License}, {@link de.laser.wekb.Package} or {@link Subscription}) for which the requested persons are responsible
      * @param resp the responsibility of the persons requested
      * @return a {@link List} of persons attached to the given organisation and object and matching to the given responsibility
      */

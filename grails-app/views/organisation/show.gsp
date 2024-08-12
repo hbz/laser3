@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.wekb.Package; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
     <g:if test="${institutionalView}">
         <g:set var="entityName" value="${message(code: 'org.institution.label')}"/>
@@ -817,7 +817,7 @@
                                                                                     else respObjects << l
                                                                                 }
                                                                                 break
-                                                                            case 'pkg': de.laser.Package p = de.laser.Package.get(respRef[1])
+                                                                            case 'pkg': de.laser.wekb.Package p = de.laser.wekb.Package.get(respRef[1])
                                                                                 if(p.packageStatus != RDStore.PACKAGE_STATUS_REMOVED)
                                                                                     respObjects << p
                                                                                 break
@@ -856,7 +856,7 @@
                                                                                     <g:elseif test="${respObj instanceof License}">
                                                                                         (<g:link controller="license" action="show" id="${respObj.id}">${respObj.reference}</g:link>)
                                                                                     </g:elseif>
-                                                                                    <g:elseif test="${respObj instanceof de.laser.Package}">
+                                                                                    <g:elseif test="${respObj instanceof de.laser.wekb.Package}">
                                                                                         (<g:link controller="package" action="show" id="${respObj.id}">${respObj.name}</g:link>)
                                                                                     </g:elseif>
                                                                                     <g:if test="${respObj instanceof TitleInstancePackagePlatform}">

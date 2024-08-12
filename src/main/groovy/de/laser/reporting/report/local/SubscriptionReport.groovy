@@ -14,6 +14,7 @@ import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Package
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 
@@ -320,7 +321,7 @@ class SubscriptionReport {
                     List<List<Long>> pkgIdLists = []
 
                     timeline.eachWithIndex { s, i ->
-                        pkgIdLists.add(de.laser.Package.executeQuery(
+                        pkgIdLists.add(de.laser.wekb.Package.executeQuery(
                                 'select distinct ie.tipp.pkg.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status',
                                 [sub: s, status: RDStore.TIPP_STATUS_CURRENT]
                         ))

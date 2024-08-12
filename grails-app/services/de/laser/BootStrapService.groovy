@@ -14,6 +14,7 @@ import de.laser.system.SystemSetting
 import de.laser.utils.AppUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.PasswordUtils
+import de.laser.wekb.Package
 import grails.converters.JSON
 import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional

@@ -5,6 +5,7 @@ import de.laser.finance.PriceItem
 import de.laser.storage.RDStore
 import de.laser.base.AbstractLockableService
 import de.laser.system.SystemEvent
+import de.laser.wekb.Package
 import grails.gorm.transactions.Transactional
 
 import java.time.LocalDate

@@ -36,6 +36,7 @@ import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.wekb.ProviderRole
@@ -2118,7 +2119,7 @@ class MyInstitutionController  {
      * by filter parameters
      * @return a list view of packages the institution has subscribed
      * @see SubscriptionPackage
-     * @see Package
+     * @see de.laser.wekb.Package
      */
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
@@ -3320,7 +3321,7 @@ class MyInstitutionController  {
 
     /**
      * Call to load the current watchlist of objects coming from we:kb
-     * @return a {@link Map} containing the {@link Org}s, {@link Package}s and {@link Platform}s currently being observed
+     * @return a {@link Map} containing the {@link Org}s, {@link de.laser.wekb.Package}s and {@link Platform}s currently being observed
      */
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {

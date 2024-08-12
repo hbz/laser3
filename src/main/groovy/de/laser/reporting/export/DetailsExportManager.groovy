@@ -3,6 +3,7 @@ package de.laser.reporting.export
 import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.Org
+import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.Subscription
@@ -362,7 +363,7 @@ class DetailsExportManager {
             result = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
         }
         else if (export.KEY == PackageExport.KEY) {
-            result = de.laser.Package.executeQuery('select p from Package p where p.id in (:idList) order by p.sortname, p.name', [idList: idList])
+            result = de.laser.wekb.Package.executeQuery('select p from Package p where p.id in (:idList) order by p.sortname, p.name', [idList: idList])
         }
         else if (export.KEY == PlatformExport.KEY) {
             result = Platform.executeQuery('select p from Platform p where p.id in (:idList) order by p.name', [idList: idList])

@@ -2,7 +2,7 @@ package de.laser.finance
 
 import de.laser.IssueEntitlement
 import de.laser.IssueEntitlementGroup
-import de.laser.Package
+import de.laser.wekb.Package
 import de.laser.survey.SurveyOrg
 import de.laser.Org
 import de.laser.RefdataValue

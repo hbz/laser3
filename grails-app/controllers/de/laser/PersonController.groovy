@@ -4,6 +4,7 @@ import de.laser.annotations.DebugInfo
 import de.laser.helper.Params
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.wekb.Package
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 import grails.converters.JSON

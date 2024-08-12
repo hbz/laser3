@@ -4,10 +4,10 @@ import de.laser.auth.User
 import de.laser.finance.CostItem
 import de.laser.oap.OrgAccessPointLink
 import de.laser.remote.ApiSource
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.Package
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -39,7 +39,7 @@ class PackageService {
      * @param numOfCIs the count of cost items linked either to the subscription package or to titles in them
      * @return a list of conflicts, each of them a map naming the conflict details when unlinking
      */
-    List listConflicts(de.laser.Package pkg,subscription,int numOfPCs,int numOfIEs,int numOfCIs) {
+    List listConflicts(de.laser.wekb.Package pkg, subscription, int numOfPCs, int numOfIEs, int numOfCIs) {
         Locale locale = LocaleUtils.getCurrentLocale()
         Map<String,Object> conflict_item_pkg = [name: messageSource.getMessage("subscription.details.unlink.linkedPackage",null,locale),
                                                 details: [['link': grailsLinkGenerator.link(controller: 'package', action: 'show', id: pkg.id), 'text': pkg.name]],
@@ -175,7 +175,7 @@ class PackageService {
      * @param pkg the package whose titles should be retrieved
      * @return a set of database IDs
      */
-    Long getCountOfCurrentTippIDs(de.laser.Package pkg) {
+    Long getCountOfCurrentTippIDs(de.laser.wekb.Package pkg) {
         TitleInstancePackagePlatform.executeQuery('select count(*) from TitleInstancePackagePlatform tipp where tipp.status = :current and tipp.pkg = :pkg',[current: RDStore.TIPP_STATUS_CURRENT, pkg: pkg])[0]
     }
 
@@ -184,32 +184,32 @@ class PackageService {
      * @param pkg the package whose titles should be counted
      * @return a count of non-deleted titles in the package
      */
-    Long getCountOfNonDeletedTitles(de.laser.Package pkg) {
+    Long getCountOfNonDeletedTitles(de.laser.wekb.Package pkg) {
         TitleInstancePackagePlatform.executeQuery('select count(*) from TitleInstancePackagePlatform tipp where tipp.status != :removed and tipp.pkg = :pkg',[removed: RDStore.TIPP_STATUS_REMOVED, pkg: pkg])[0]
     }
 
     /**
-     * Substitution call for {@link #unlinkFromSubscription(de.laser.Package, java.util.List, de.laser.Org, java.lang.Object)} with a single subscription
-     * @param pkg the {@link de.laser.Package} to be unlinked
+     * Substitution call for {@link #unlinkFromSubscription(Package, java.util.List, de.laser.Org, java.lang.Object)} with a single subscription
+     * @param pkg the {@link Package} to be unlinked
      * @param subscription the {@link Subscription} from which the package should be detached
      * @param contextOrg the {@link de.laser.Org} whose cost items should be verified
      * @param deletePackage should the package be unlinked, too?
      * @return
      */
-    boolean unlinkFromSubscription(de.laser.Package pkg, Subscription subscription, Org contextOrg, deletePackage) {
+    boolean unlinkFromSubscription(de.laser.wekb.Package pkg, Subscription subscription, Org contextOrg, deletePackage) {
         unlinkFromSubscription(pkg, [subscription.id], contextOrg, deletePackage)
     }
 
     /**
      * Unlinks a subscription from the given package and removes resp. marks as delete every dependent object from that link such as cost items, pending change configurations etc.
      * The unlinking can be done iff no cost items are linked to the (subscription) package
-     * @param pkg the {@link de.laser.Package} to be unlinked
+     * @param pkg the {@link Package} to be unlinked
      * @param subscription the {@link Subscription} from which the package should be detached
      * @param contextOrg the {@link de.laser.Org} whose cost items should be verified
      * @param deletePackage should the package be unlinked, too?
      * @return true if the unlink was successful, false otherwise
      */
-    boolean unlinkFromSubscription(de.laser.Package pkg, List<Long> subList, Org contextOrg, deletePackage) {
+    boolean unlinkFromSubscription(de.laser.wekb.Package pkg, List<Long> subList, Org contextOrg, deletePackage) {
 
         //Not Exist CostItem with Package
         if(!CostItem.executeQuery('select ci from CostItem ci where ci.sub.id in (:subIds) and ci.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted',[pkg:pkg, deleted: RDStore.COST_ITEM_DELETED, subIds: subList, context: contextOrg])) {
@@ -249,7 +249,7 @@ class PackageService {
      * @param confirmed should the deletion really be executed?
      * @return the number of deleted entries
      */
-    int removePackagePendingChanges(de.laser.Package pkg, List subIds, boolean confirmed) {
+    int removePackagePendingChanges(de.laser.wekb.Package pkg, List subIds, boolean confirmed) {
         int count = 0
         List<Long> tippIDs = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg', [pkg: pkg])
         if(confirmed) {

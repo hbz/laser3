@@ -3,7 +3,7 @@ package de.laser.api.v0
 
 import de.laser.License
 import de.laser.Org
-import de.laser.Package
+import de.laser.wekb.Package
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
 import de.laser.oap.OrgAccessPoint

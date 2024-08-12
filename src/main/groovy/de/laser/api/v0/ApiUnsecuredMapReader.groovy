@@ -7,7 +7,7 @@ import de.laser.InvoiceDispatch
 import de.laser.LibrarySystem
 import de.laser.License
 import de.laser.Org
-import de.laser.Package
+import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.Subscription

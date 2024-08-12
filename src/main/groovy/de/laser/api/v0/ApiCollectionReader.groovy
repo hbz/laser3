@@ -11,6 +11,7 @@ import de.laser.Language
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.PersonRole
+import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.Subscription
@@ -541,10 +542,10 @@ class ApiCollectionReader {
 
     /**
      * Delivers a package stub map without titles
-     * @param list the {@link Collection} of {@link de.laser.Package}s which should be returned
+     * @param list the {@link Collection} of {@link de.laser.wekb.Package}s which should be returned
      * @return a {@link Collection<Object>} reflecting the packages
      */
-    static Collection<Object> getPackageCollection(Collection<de.laser.Package> list) {
+    static Collection<Object> getPackageCollection(Collection<de.laser.wekb.Package> list) {
         Collection<Object> result = []
 
         list.each { pkg ->
@@ -656,7 +657,7 @@ class ApiCollectionReader {
 
     /**
      * Collects the properties (general and private) of the given object and outputs the collections
-     * @param generic the object (one of {@link de.laser.Subscription}, {@link de.laser.License}, {@link Org}, {@link de.laser.Package} or {@link de.laser.wekb.Platform})
+     * @param generic the object (one of {@link de.laser.Subscription}, {@link de.laser.License}, {@link Org}, {@link de.laser.wekb.Package} or {@link de.laser.wekb.Platform})
      * @param context the requesting institution ({@link Org}) whose perspective is going to be taken during checks
      * @param ignoreFlag should certain properties being left out from output (private or custom)?
      * @return a {@link Collection} of both general and private properties

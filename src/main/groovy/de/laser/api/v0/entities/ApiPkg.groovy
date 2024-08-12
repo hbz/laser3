@@ -2,7 +2,7 @@ package de.laser.api.v0.entities
 
 import de.laser.Identifier
 import de.laser.Org
-import de.laser.Package
+import de.laser.wekb.Package
 import de.laser.api.v0.*
 import de.laser.storage.Constants
 import de.laser.storage.RDStore

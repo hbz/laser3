@@ -8,7 +8,7 @@ import de.laser.convenience.Marker
  * objects coming from the we:kb knowledge base; possible objects for marking are:
  * <ul>
  *     <li>{@link de.laser.Org}</li>
- *     <li>{@link de.laser.Package}</li>
+ *     <li>{@link de.laser.wekb.Package}</li>
  *     <li>{@link de.laser.wekb.Platform}</li>
  * </ul>
  */

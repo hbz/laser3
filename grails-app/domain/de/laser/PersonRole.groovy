@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
+import de.laser.wekb.Package
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 
@@ -10,7 +11,7 @@ import de.laser.wekb.Vendor
  * Possible objects to restrict are:
  * <ul>
  *     <li>{@link License}</li>
- *     <li>{@link Package}</li>
+ *     <li>{@link de.laser.wekb.Package}</li>
  *     <li>{@link Subscription}</li>
  *     <li>{@link TitleInstancePackagePlatform}</li>
  * </ul>

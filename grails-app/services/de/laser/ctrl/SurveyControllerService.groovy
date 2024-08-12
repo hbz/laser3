@@ -25,7 +25,7 @@ import de.laser.Links
 import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.OrgRole
-import de.laser.Package
+import de.laser.wekb.Package
 import de.laser.PackageService
 import de.laser.PendingChange
 import de.laser.PendingChangeConfiguration

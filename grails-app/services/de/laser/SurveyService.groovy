@@ -31,6 +31,7 @@ import de.laser.config.ConfigMapper
 import de.laser.survey.SurveyVendorResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Vendor
 import grails.converters.JSON

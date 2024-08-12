@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
+import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
@@ -12,7 +13,7 @@ import groovy.util.logging.Slf4j
  * A container class to retain alternative names of an entity; a such entity may be
  * <ul>
  *     <li>{@link TitleInstancePackagePlatform}</li>
- *     <li>{@link Package}</li>
+ *     <li>{@link de.laser.wekb.Package}</li>
  *     <li>{@link de.laser.wekb.Platform}</li>
  *     <li>{@link Org}</li>
  * </ul>

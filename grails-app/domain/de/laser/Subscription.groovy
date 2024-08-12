@@ -67,7 +67,7 @@ import static java.time.temporal.ChronoUnit.DAYS
  * subscription or its holding and reporting is mainly fed by data from and around subscriptions</p>
  * @see SubscriptionProperty
  * @see de.laser.wekb.Platform
- * @see Package
+ * @see de.laser.wekb.Package
  * @see SubscriptionPackage
  * @see TitleInstancePackagePlatform
  * @see IssueEntitlement
@@ -893,7 +893,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * Called from issueEntitlement/show and subscription/show, is part of the Nationaler Statistikserver statistics component
      * @return a {@link List} of ISIL identifier strings
      * @see SubscriptionPackage
-     * @see Package
+     * @see de.laser.wekb.Package
      */
   String getCommaSeperatedPackagesIsilList() {
       List<String> result = []

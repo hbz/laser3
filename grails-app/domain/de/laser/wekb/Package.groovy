@@ -1,5 +1,14 @@
-package de.laser
+package de.laser.wekb
 
+import de.laser.AlternativeName
+import de.laser.DeweyDecimalClassification
+import de.laser.Identifier
+import de.laser.Language
+import de.laser.PendingChange
+import de.laser.PersonRole
+import de.laser.RefdataValue
+import de.laser.SubscriptionPackage
+import de.laser.TitleInstancePackagePlatform
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
@@ -9,8 +18,6 @@ import de.laser.interfaces.MarkerSupport
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
-import de.laser.wekb.Platform
-import de.laser.wekb.Provider
 import grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.persistence.Transient

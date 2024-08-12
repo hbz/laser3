@@ -3,6 +3,7 @@ package de.laser
 import de.laser.convenience.Marker
 import de.laser.interfaces.MarkerSupport
 import de.laser.storage.RDStore
+import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
@@ -19,7 +20,7 @@ class MarkerService {
 
     /**
      * Gets the bookmarks for the given class of the given type
-     * @param cls the class for which to fetch markers - one of {@link Org}, {@link Package} or {@link de.laser.wekb.Platform}
+     * @param cls the class for which to fetch markers - one of {@link Org}, {@link de.laser.wekb.Package} or {@link de.laser.wekb.Platform}
      * @param type
      * @return
      */
@@ -68,7 +69,7 @@ class MarkerService {
 
     /**
      * Builds a map of currently subscribed packages and platforms
-     * @return a {@link Map} of {@link de.laser.Package} IDs and {@link Platform} IDs to which there exists a link from a {@link Subscription} (= are subscribed by the context institution)
+     * @return a {@link Map} of {@link de.laser.wekb.Package} IDs and {@link Platform} IDs to which there exists a link from a {@link Subscription} (= are subscribed by the context institution)
      */
     Map<String, List> getMyCurrentXMap() {
         Map<String, List> result = [

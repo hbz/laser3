@@ -13,7 +13,7 @@ import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.LicenseService
 import de.laser.LinksGenerationService
-import de.laser.Package
+import de.laser.wekb.Package
 import de.laser.wekb.Provider
 import de.laser.ProviderService
 import de.laser.ReportingGlobalService

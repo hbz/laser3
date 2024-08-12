@@ -11,6 +11,7 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.titles.TitleHistoryEvent
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import groovy.time.TimeCategory
 
@@ -19,7 +20,7 @@ import java.text.Normalizer
 import java.util.regex.Pattern
 
 /**
- * A title instance. Title instances in LAS:eR and we:kb are mandatorily linked to a {@link Package} and a {@link de.laser.wekb.Platform}. Titles may be (list is not exhaustive):
+ * A title instance. Title instances in LAS:eR and we:kb are mandatorily linked to a {@link de.laser.wekb.Package} and a {@link de.laser.wekb.Platform}. Titles may be (list is not exhaustive):
  * <ul>
  *     <li>(E)books</li>
  *     <li>databases</li>
@@ -33,7 +34,7 @@ import java.util.regex.Pattern
  * from subscription to subscription. See {@link IssueEntitlement} for the local holding level. Local means for the institution subscribing the title within a certain subscription context.
  * This class is moreover a mirror of the we:kb TitleInstancePackagePlatform implementation <a href="https://github.com/hbz/wekb/blob/wekb-dev/server/gokbg3/grails-app/domain/org/gokb/cred/TitleInstancePackagePlatform.groovy">(see TitleInstancePackagePlatform in we:kb)</a>
  * and generally a reflection of a KBART record (see <a href="https://groups.niso.org/apps/group_public/download.php/16900/RP-9-2014_KBART.pdf">KBART specification</a>)
- * @see Package
+ * @see de.laser.wekb.Package
  * @see SubscriptionPackage
  * @see Subscription
  * @see de.laser.wekb.Platform
@@ -120,7 +121,7 @@ class TitleInstancePackagePlatform extends AbstractBase implements MarkerSupport
                     altnames   : AlternativeName]
 
   static belongsTo = [
-    pkg:Package,
+    pkg: Package,
     platform: Platform
   ]
 

@@ -4,7 +4,7 @@ import de.laser.wekb.Provider
 import de.laser.remote.ApiSource
 import de.laser.ContextService
 import de.laser.IdentifierNamespace
-import de.laser.Package
+import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.RefdataValue
 import de.laser.TitleInstancePackagePlatform
@@ -30,7 +30,7 @@ class PackageExport extends BaseDetailsExport {
 
             base : [
                     meta : [
-                            class: de.laser.Package
+                            class: de.laser.wekb.Package
                     ],
                     fields : [
                             default: [
