@@ -36,6 +36,8 @@ import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.Provider
+import de.laser.wekb.ProviderRole
 import de.laser.wekb.Vendor
 import de.laser.wekb.VendorRole
 import de.laser.workflow.WfChecklist

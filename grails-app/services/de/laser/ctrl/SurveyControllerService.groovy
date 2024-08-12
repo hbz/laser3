@@ -30,8 +30,8 @@ import de.laser.PackageService
 import de.laser.PendingChange
 import de.laser.PendingChangeConfiguration
 import de.laser.PropertyService
-import de.laser.Provider
-import de.laser.ProviderRole
+import de.laser.wekb.Provider
+import de.laser.wekb.ProviderRole
 import de.laser.ProviderService
 import de.laser.RefdataCategory
 import de.laser.RefdataValue

@@ -29,6 +29,8 @@ import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.Provider
+import de.laser.wekb.ProviderRole
 import de.laser.wekb.Vendor
 import de.laser.wekb.VendorRole
 import grails.converters.JSON
@@ -701,7 +703,7 @@ class AjaxController {
     }
 
     /**
-     * Adds a relation link from a given object to a {@link Provider}
+     * Adds a relation link from a given object to a {@link de.laser.wekb.Provider}
      */
     @Secured(['ROLE_USER'])
     @Transactional

@@ -4,7 +4,7 @@ import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.Org
 import de.laser.Platform
-import de.laser.Provider
+import de.laser.wekb.Provider
 import de.laser.Subscription
 import de.laser.wekb.Vendor
 import de.laser.finance.CostItem

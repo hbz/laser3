@@ -3,6 +3,7 @@ package de.laser
 import de.laser.convenience.Marker
 import de.laser.interfaces.MarkerSupport
 import de.laser.storage.RDStore
+import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 

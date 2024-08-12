@@ -18,6 +18,7 @@ import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.ProviderRole
 import de.laser.wekb.VendorRole
 import de.laser.workflow.WfChecklist
 import grails.gorm.transactions.Transactional

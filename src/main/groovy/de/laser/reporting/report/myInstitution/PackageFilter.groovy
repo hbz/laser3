@@ -3,7 +3,7 @@ package de.laser.reporting.report.myInstitution
 import de.laser.ContextService
 import de.laser.Package
 import de.laser.Platform
-import de.laser.Provider
+import de.laser.wekb.Provider
 import de.laser.RefdataValue
 import de.laser.wekb.Vendor
 import de.laser.helper.Params

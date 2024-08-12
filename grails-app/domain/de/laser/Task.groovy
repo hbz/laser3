@@ -5,6 +5,7 @@ import de.laser.auth.User
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.survey.SurveyConfig
+import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 
 /**
@@ -13,7 +14,7 @@ import de.laser.wekb.Vendor
  * <ul>
  *     <li>{@link License}</li>
  *     <li>{@link Org}</li>
- *     <li>{@link Provider}</li>
+ *     <li>{@link de.laser.wekb.Provider}</li>
  *     <li>{@link de.laser.wekb.Vendor}</li>
  *     <li><s>{@link Package}</s> (is still included in the domain model but is disused)</li>
  *     <li>{@link Subscription}</li>

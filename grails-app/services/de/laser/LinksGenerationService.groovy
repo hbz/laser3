@@ -6,6 +6,8 @@ import de.laser.exceptions.CreationException
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Provider
+import de.laser.wekb.ProviderLink
 import de.laser.wekb.Vendor
 import de.laser.wekb.VendorLink
 import grails.gorm.transactions.Transactional

@@ -5,6 +5,7 @@ import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.properties.PersonProperty
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 import groovy.util.logging.Slf4j
 

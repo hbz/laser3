@@ -8,9 +8,11 @@ import de.laser.properties.ProviderProperty
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
 import de.laser.traces.DeletedObject
+import de.laser.wekb.Provider
+import de.laser.wekb.ProviderLink
+import de.laser.wekb.ProviderRole
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
 
@@ -33,7 +35,7 @@ class ProviderService {
 
     /**
      * Gets the contact persons; optionally, a function type may be given as filter. Moreover, the request may be limited to public contacts only
-     * @param provider the {@link Provider} for which the contacts should be retrieved
+     * @param provider the {@link de.laser.wekb.Provider} for which the contacts should be retrieved
      * @param onlyPublic retrieve only public contacts?
      * @param functionType the function type of the contacts to be requested
      * @param exWekb should only contacts being retrieved which come from the provider itself (i.e. from we:kb)?

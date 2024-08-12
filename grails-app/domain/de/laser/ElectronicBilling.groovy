@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
+import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 
 class ElectronicBilling implements Comparable<ElectronicBilling> {

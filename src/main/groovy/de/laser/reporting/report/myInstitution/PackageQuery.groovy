@@ -4,7 +4,7 @@ import de.laser.IdentifierNamespace
 import de.laser.Language
 import de.laser.Platform
 import de.laser.Package
-import de.laser.Provider
+import de.laser.wekb.Provider
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.wekb.Vendor

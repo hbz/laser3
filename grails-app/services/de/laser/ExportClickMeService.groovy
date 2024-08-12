@@ -23,6 +23,7 @@ import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
+import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
@@ -4508,7 +4509,7 @@ class ExportClickMeService {
 
     /**
      * Exports the given fields from the given cost items
-     * @param result the {@link Provider} set to export
+     * @param result the {@link de.laser.wekb.Provider} set to export
      * @param selectedFields the fields which should appear in the export
      * @param format the {@link FORMAT} to be exported
      * @param contactSources which type of contacts should be taken? (public or private)

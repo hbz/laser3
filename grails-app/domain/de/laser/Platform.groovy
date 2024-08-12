@@ -11,6 +11,7 @@ import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
+import de.laser.wekb.Provider
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 

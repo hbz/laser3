@@ -5,6 +5,7 @@ import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.*
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseQuery
+import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap

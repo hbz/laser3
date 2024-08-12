@@ -12,7 +12,7 @@ import de.laser.Org
 import de.laser.OrgRole
 import de.laser.PersonRole
 import de.laser.Platform
-import de.laser.Provider
+import de.laser.wekb.Provider
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
 import de.laser.TitleInstancePackagePlatform

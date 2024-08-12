@@ -11,6 +11,7 @@ import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.CalculatedType
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
+import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 import grails.converters.JSON
 import org.apache.commons.lang3.ClassUtils
@@ -137,7 +138,7 @@ class DataloadService {
      * Currently supported by this implementation are:
      * <ul>
      *     <li>{@link Org}</li>
-     *     <li>{@link Provider}</li>
+     *     <li>{@link de.laser.wekb.Provider}</li>
      *     <li>{@link de.laser.wekb.Vendor}</li>
      *     <li>{@link TitleInstancePackagePlatform}</li>
      *     <li>{@link de.laser.Package}</li>

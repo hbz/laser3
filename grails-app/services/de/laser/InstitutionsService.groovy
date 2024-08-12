@@ -5,6 +5,7 @@ import de.laser.config.ConfigMapper
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.storage.RDStore
+import de.laser.wekb.ProviderRole
 import de.laser.wekb.VendorRole
 import grails.gorm.transactions.Transactional
 

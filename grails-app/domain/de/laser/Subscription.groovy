@@ -17,6 +17,8 @@ import de.laser.survey.SurveyOrg
 import de.laser.traits.ShareableTrait
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Provider
+import de.laser.wekb.ProviderRole
 import de.laser.wekb.Vendor
 import de.laser.wekb.VendorRole
 import grails.plugins.orm.auditable.Auditable
@@ -518,7 +520,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     /**
      * Retrieves all providers linked to this subscription
-     * @return a {@link List} of {@link Provider}s
+     * @return a {@link List} of {@link de.laser.wekb.Provider}s
      */
     List<Provider> getProviders() {
         Provider.executeQuery('select pr.provider from ProviderRole pr where pr.subscription =:sub order by pr.provider.sortname ',
