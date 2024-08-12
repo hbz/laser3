@@ -58,7 +58,7 @@ class ControlledListService {
         Org org = contextService.getOrg()
         LinkedHashMap result = [results:[]]
         String queryString = 'select distinct s, org.sortname from Subscription s join s.orgRelations orgRoles join orgRoles.org org left join s.propertySet sp where org = :org and orgRoles.roleType in ( :orgRoles )'
-        LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN,RDStore.OR_SUBSCRIPTION_CONSORTIA]]
+        LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN,RDStore.OR_SUBSCRIPTION_CONSORTIUM]]
         //may be generalised later - here it is where to expand the query filter
         if (params.query && params.query.length() > 0) {
             queryString += " and (genfunc_filter_matcher(s.name, :query) = true or genfunc_filter_matcher(orgRoles.org.sortname, :query) = true) "
@@ -236,7 +236,7 @@ class ControlledListService {
         LinkedHashMap issueEntitlements = [results:[]]
         //build up set of subscriptions which are owned by the current institution or instances of such - or filter for a given subscription
         String filter = 'in (select distinct o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) and o.sub.status = :current ) '
-        LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS], current:RDStore.SUBSCRIPTION_CURRENT]
+        LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIUM,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS], current:RDStore.SUBSCRIPTION_CURRENT]
         if(params.sub) {
             filter = '= :sub'
             filterParams = ['sub':genericOIDService.resolveOID(params.sub)]
@@ -279,7 +279,7 @@ class ControlledListService {
         LinkedHashMap issueEntitlementGroup = [results:[]]
         //build up set of subscriptions which are owned by the current institution or instances of such - or filter for a given subscription
         String filter = 'in (select distinct o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) and o.sub.status = :current ) '
-        LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], current:RDStore.SUBSCRIPTION_CURRENT]
+        LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], current:RDStore.SUBSCRIPTION_CURRENT]
         if(params.sub) {
             filter = '= :sub'
             filterParams = ['sub':genericOIDService.resolveOID(params.sub)]
@@ -356,7 +356,7 @@ class ControlledListService {
         Org org = contextService.getOrg()
         LinkedHashMap result = [results:[]]
         String queryString = 'select distinct s, orgRoles.org.sortname from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles )'
-        LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
+        LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
         //may be generalised later - here it is where to expand the query filter
         if(params.query && params.query.length() > 0) {
             filter.put('query', params.query)
@@ -1426,7 +1426,7 @@ class ControlledListService {
             qryParams.query = params.query
         }
         if(params.forFinanceView) {
-            List<Long> subIDs = Subscription.executeQuery('select s.id from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org: institution, orgRoles: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA]])
+            List<Long> subIDs = Subscription.executeQuery('select s.id from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org: institution, orgRoles: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIUM]])
             if(subIDs) {
                 qryParams.subscriptions = subIDs
                 if(providerNameFilter)
@@ -1484,7 +1484,7 @@ class ControlledListService {
             qryParams.query = params.query
         }
         if(params.forFinanceView) {
-            List<Long> subIDs = Subscription.executeQuery('select s.id from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org: institution, orgRoles: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA]])
+            List<Long> subIDs = Subscription.executeQuery('select s.id from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org: institution, orgRoles: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIUM]])
             if(subIDs) {
                 qryParams.subscriptions = subIDs
                 if(vendorNameFilter)

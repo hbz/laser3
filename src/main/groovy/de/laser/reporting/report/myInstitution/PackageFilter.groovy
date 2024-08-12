@@ -124,7 +124,7 @@ class PackageFilter extends BaseFilter {
 
                         queryParts.add('OrgRole ro')
                         whereParts.add('ro.roleType in (:p' + (++pCount) + ')')
-                        queryParams.put('p' + pCount, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS ])
+                        queryParams.put('p' + pCount, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS ])
                         whereParts.add('ro.org = :p' + (++pCount) + ' and ro.sub = sub')
                         queryParams.put('p' + pCount, contextService.getOrg())
 

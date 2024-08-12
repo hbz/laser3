@@ -682,7 +682,7 @@ class FinanceService {
                         Set<CostItem> consCostItems = CostItem.executeQuery('select ci from CostItem as ci right join ci.sub sub join sub.orgRelations oo where ci.owner = :owner and sub = :sub and oo.roleType = :roleType'+
                             filterQuery.subFilter + genericExcludes + filterQuery.ciFilter +
                                 'order by '+ configMap.sortConfig.consSort + ' ' + configMap.sortConfig.consOrder,
-                            [owner:org,sub:sub,roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA]+genericExcludeParams+filterQuery.filterData)
+                            [owner:org,sub:sub,roleType: RDStore.OR_SUBSCRIPTION_CONSORTIUM]+genericExcludeParams+filterQuery.filterData)
                         prf.setBenchmark("assembling map")
                         result.cons = [count:consCostItems.size()]
                         if(consCostItems) {
@@ -790,7 +790,7 @@ class FinanceService {
                         'where orgC = :org and orgC = roleC.org and roleMC.roleType = :consortialType and oo.roleType in (:subscrType)'+
                         genericExcludes+filterQuery.subFilter+filterQuery.ciFilter+
                         'order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder+', sub.name, ciec.value desc, cie.value_'+ LocaleUtils.getCurrentLang() +' desc',
-                        [org:org,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
+                        [org:org,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIUM,subscrType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
                     result.cons = [count:consortialCostRows.size()]
                     if(consortialCostRows) {
                         Set<CostItem> consortialCostItems = consortialCostRows
@@ -816,7 +816,7 @@ class FinanceService {
                         'where orgC = roleC.org and roleC.roleType = :consType and oo.org = :org and oo.roleType = :subscrType and ci.isVisibleForSubscriber = true'+
                         genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
                         ' order by '+configMap.sortConfig.subscrSort+' '+configMap.sortConfig.subscrOrder+', sub.name, ciec.value desc, cie.value_'+ LocaleUtils.getCurrentLang() +' asc nulls first',
-                        [org:org,consType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrType:RDStore.OR_SUBSCRIBER_CONS]+genericExcludeParams+filterQuery.filterData)
+                        [org:org,consType:RDStore.OR_SUBSCRIPTION_CONSORTIUM,subscrType:RDStore.OR_SUBSCRIBER_CONS]+genericExcludeParams+filterQuery.filterData)
                     result.subscr = [count:consortialMemberSubscriptionCostItems.size()]
                     if(consortialMemberSubscriptionCostItems) {
                         result.subscr.sums = calculateResults(consortialMemberSubscriptionCostItems.id)
@@ -1274,7 +1274,7 @@ class FinanceService {
                     //fetch possible identifier namespaces
                     List<Subscription> subMatches
                     if(contextService.getOrg().isCustomerType_Consortium())
-                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
+                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIPTION_CONSORTIUM,RDStore.OR_SUBSCRIBER]])
                     else if(contextService.getOrg().isCustomerType_Inst_Pro())
                         subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]])
                     if(!subMatches)

@@ -279,7 +279,7 @@ class AjaxHtmlController {
         result.contextCustomerType = contextOrg.getCustomerType()
         result.institution = contextOrg
         result.showConsortiaFunctions = contextOrg.isCustomerType_Consortium()
-        result.roleLinks = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]) }
+        result.roleLinks = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIUM]) }
         result.roleObject = result.subscription
         result.roleRespValue = 'Specific subscription editor'
         result.editmode = result.subscription.isEditableBy(contextService.getUser())

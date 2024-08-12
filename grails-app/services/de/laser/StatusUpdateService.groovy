@@ -382,7 +382,7 @@ class StatusUpdateService extends AbstractLockableService {
                         break
                 }
             }
-            Org org = Org.executeQuery('select oo.org from OrgRole oo where oo.sub = :sub and oo.roleType in (:roleTypes)', [sub: sp.subscription, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA]])[0]
+            Org org = Org.executeQuery('select oo.org from OrgRole oo where oo.sub = :sub and oo.roleType in (:roleTypes)', [sub: sp.subscription, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM]])[0]
             globalSourceSyncService.autoAcceptPendingChanges(org, sp, packageChanges)
         }
     }

@@ -4967,7 +4967,7 @@ class SurveyControllerService {
                 if (memberSub) {
 
                     new OrgRole(org: org, sub: memberSub, roleType: RDStore.OR_SUBSCRIBER_CONS).save()
-                    new OrgRole(org: institution, sub: memberSub, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).save()
+                    new OrgRole(org: institution, sub: memberSub, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIUM).save()
 
                     if (transferProvider) {
                         newParentSub.getProviders().each { provider ->

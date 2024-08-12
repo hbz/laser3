@@ -138,7 +138,7 @@ class AjaxJsonController {
                 if(entry.endDate)
                     endDate = sdf.format(entry.endDate)
                 if(entry.instanceOf) {
-                    if(entry.orgRelations.get(RDStore.OR_SUBSCRIPTION_CONSORTIA.id).id == contextOrg.id) {
+                    if(entry.orgRelations.get(RDStore.OR_SUBSCRIPTION_CONSORTIUM.id).id == contextOrg.id) {
                         Org subscriber = entry.orgRelations.get(RDStore.OR_SUBSCRIBER_CONS.id)
                         if(!subscriber)
                             subscriber = entry.orgRelations.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id)

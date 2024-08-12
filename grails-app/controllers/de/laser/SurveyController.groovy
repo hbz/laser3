@@ -133,7 +133,7 @@ class SurveyController {
         result.providers = providerService.getCurrentProviders( (Org) result.institution )
         prf.setBenchmark("after providers and vendors and before subscriptions")
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
-                " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution])
+                " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIUM, 'activeInst': result.institution])
         prf.setBenchmark("after subscriptions and before survey config query")
         FilterService.Result fsr = filterService.getSurveyConfigQueryConsortia(params, DateUtils.getLocalizedSDF_noTime(), (Org) result.institution)
         if (fsr.isFilterSet) { params.filterSet = true }
@@ -217,7 +217,7 @@ class SurveyController {
         result.providers = providerService.getCurrentProviders( contextService.getOrg() )
 
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
-                " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution])
+                " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIUM, 'activeInst': result.institution])
 
 
         DateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()

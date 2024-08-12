@@ -342,7 +342,7 @@ class SubscriptionFilter extends BaseFilter {
             queryParams.subscriptionIdList = filterResult.data.get('memberSubscriptionIdList') // if memberSubscription filter is set
         }
         if (partKey == 'consortium') {
-            queryParams.put( 'roleTypes', [RDStore.OR_SUBSCRIPTION_CONSORTIA] )
+            queryParams.put( 'roleTypes', [RDStore.OR_SUBSCRIPTION_CONSORTIUM] )
         }
 //        if (partKey == 'provider') {
 //            queryParams.put( 'roleTypes', [RDStore.OR_PROVIDER] )

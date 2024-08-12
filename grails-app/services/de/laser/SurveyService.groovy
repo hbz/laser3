@@ -1724,7 +1724,7 @@ class SurveyService {
         Map qry_params = [:]
         RefdataValue role_sub = RDStore.OR_SUBSCRIBER
         RefdataValue role_subCons = RDStore.OR_SUBSCRIBER_CONS
-        RefdataValue role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIUM
 
         if (org.isCustomerType_Consortium_Pro()) {
             //nur Parents

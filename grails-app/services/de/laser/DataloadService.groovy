@@ -571,7 +571,7 @@ class DataloadService {
 
                 switch (sub._getCalculatedType()) {
                     case CalculatedType.TYPE_CONSORTIAL:
-                        result.availableToOrgs = sub.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value] }?.org?.id
+                        result.availableToOrgs = sub.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIUM.value] }?.org?.id
                         result.membersCount = Subscription.findAllByInstanceOf(sub).size() ?: 0
                         break
                     case CalculatedType.TYPE_PARTICIPATION:
@@ -870,7 +870,7 @@ class DataloadService {
 
                 switch (ie.subscription._getCalculatedType()) {
                     case CalculatedType.TYPE_CONSORTIAL:
-                        result.availableToOrgs = ie.subscription.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value] }?.org?.id
+                        result.availableToOrgs = ie.subscription.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIUM.value] }?.org?.id
                         break
                     case CalculatedType.TYPE_PARTICIPATION:
                         result.availableToOrgs = ie.subscription.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value] }?.org?.id
@@ -944,7 +944,7 @@ class DataloadService {
                 if (subProp.isPublic) {
                     switch (subProp.owner._getCalculatedType()) {
                         case CalculatedType.TYPE_CONSORTIAL:
-                            result.availableToOrgs = subProp.owner.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value] }?.org?.id
+                            result.availableToOrgs = subProp.owner.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIUM.value] }?.org?.id
                             break
                         case CalculatedType.TYPE_PARTICIPATION:
                             result.availableToOrgs = subProp.owner.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value] }?.org?.id

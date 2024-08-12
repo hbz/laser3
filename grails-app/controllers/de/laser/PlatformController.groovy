@@ -140,7 +140,7 @@ class PlatformController  {
         String instanceFilter = ""
         Map<String, Object> subscriptionParams = [
                 contextOrg: contextService.getOrg(),
-                roleTypes:  [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA],
+                roleTypes:  [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM],
                 current:    RDStore.SUBSCRIPTION_CURRENT,
                 expired:    RDStore.SUBSCRIPTION_EXPIRED
         ]
@@ -295,7 +295,7 @@ class PlatformController  {
         String instanceFilter = ""
         Map<String, Object> subscriptionParams = [
                 contextOrg: contextService.getOrg(),
-                roleTypes:  [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA],
+                roleTypes:  [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM],
                 current:    RDStore.SUBSCRIPTION_CURRENT,
                 expired:    RDStore.SUBSCRIPTION_EXPIRED
         ]

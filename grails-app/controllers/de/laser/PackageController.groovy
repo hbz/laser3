@@ -195,7 +195,7 @@ class PackageController {
 
         List<RefdataValue> roleTypes = [RDStore.OR_SUBSCRIBER]
         if (contextService.getOrg().isCustomerType_Consortium()) {
-            roleTypes.addAll([RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS])
+            roleTypes.addAll([RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS])
         }
 
 

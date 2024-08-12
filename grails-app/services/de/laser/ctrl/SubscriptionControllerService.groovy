@@ -1187,7 +1187,7 @@ class SubscriptionControllerService {
 
         switch(subType) {
             case [ RDStore.SUBSCRIPTION_TYPE_CONSORTIAL, RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE ]:
-                orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA
+                orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIUM
                 memberRole = RDStore.OR_SUBSCRIBER_CONS
                 break
             default:
@@ -1654,7 +1654,7 @@ class SubscriptionControllerService {
                                         } else {
                                             new OrgRole(org: cm, sub: memberSub, roleType: RDStore.OR_SUBSCRIBER_CONS).save()
                                         }
-                                        new OrgRole(org: result.institution, sub: memberSub, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).save()
+                                        new OrgRole(org: result.institution, sub: memberSub, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIUM).save()
                                         synShareTargetList.add(memberSub)
                                         SubscriptionProperty.findAllByOwner(currParent).each { SubscriptionProperty sp ->
                                             AuditConfig ac = AuditConfig.getConfig(sp)
