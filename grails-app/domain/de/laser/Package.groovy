@@ -9,6 +9,7 @@ import de.laser.interfaces.MarkerSupport
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
+import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -22,7 +23,7 @@ import java.util.regex.Pattern
  * This is a reflection of the we:kb-implementation of the package class (see <a href="https://github.com/hbz/wekb2/blob/dev/grails-app/domain/wekb/Package.groovy">here</a>).
  * If a package is being subscribed, the link between subscription and package is being represented by a {@link SubscriptionPackage} connection
  * @see TitleInstancePackagePlatform
- * @see Platform
+ * @see de.laser.wekb.Platform
  * @see SubscriptionPackage
  */
 class Package extends AbstractBaseWithCalculatedLastUpdated implements MarkerSupport {

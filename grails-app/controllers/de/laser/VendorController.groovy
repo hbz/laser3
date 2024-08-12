@@ -11,6 +11,7 @@ import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.Platform
 import de.laser.wekb.Vendor
 import de.laser.wekb.VendorLink
 import de.laser.wekb.VendorRole

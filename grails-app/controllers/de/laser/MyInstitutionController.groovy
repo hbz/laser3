@@ -36,6 +36,7 @@ import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.wekb.ProviderRole
 import de.laser.wekb.Vendor
@@ -173,7 +174,7 @@ class MyInstitutionController  {
      * Lists the platforms which are linked by any current subscription or subscription with perpetual access to the context institution.
      * The list results may be filtered by filter parameters
      * @return the platform list view
-     * @see Platform
+     * @see de.laser.wekb.Platform
      * @see Subscription
      */
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])

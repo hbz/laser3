@@ -11,6 +11,7 @@ import de.laser.survey.SurveyConfigVendor
 import de.laser.traces.DeletedObject
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.Platform
 import de.laser.wekb.Vendor
 import de.laser.wekb.VendorLink
 import de.laser.wekb.VendorRole

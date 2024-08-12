@@ -3,7 +3,7 @@ package de.laser.reporting.report
 import com.fasterxml.jackson.databind.ObjectMapper
 import de.laser.remote.ApiSource
 import de.laser.Package
-import de.laser.Platform
+import de.laser.wekb.Platform
 import de.laser.RefdataValue
 import de.laser.http.BasicHttpClient
 import de.laser.config.ConfigMapper

@@ -5,7 +5,7 @@ import de.laser.GenericOIDService
 import de.laser.License
 import de.laser.Org
 import de.laser.Person
-import de.laser.Platform
+import de.laser.wekb.Platform
 import de.laser.Subscription
 import de.laser.cache.EhcacheWrapper
 import de.laser.storage.BeanStore

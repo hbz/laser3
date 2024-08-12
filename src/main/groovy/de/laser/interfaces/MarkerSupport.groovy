@@ -9,7 +9,7 @@ import de.laser.convenience.Marker
  * <ul>
  *     <li>{@link de.laser.Org}</li>
  *     <li>{@link de.laser.Package}</li>
- *     <li>{@link de.laser.Platform}</li>
+ *     <li>{@link de.laser.wekb.Platform}</li>
  * </ul>
  */
 interface MarkerSupport {

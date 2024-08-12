@@ -3,6 +3,7 @@ package de.laser
 import de.laser.convenience.Marker
 import de.laser.interfaces.MarkerSupport
 import de.laser.storage.RDStore
+import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
@@ -18,7 +19,7 @@ class MarkerService {
 
     /**
      * Gets the bookmarks for the given class of the given type
-     * @param cls the class for which to fetch markers - one of {@link Org}, {@link Package} or {@link Platform}
+     * @param cls the class for which to fetch markers - one of {@link Org}, {@link Package} or {@link de.laser.wekb.Platform}
      * @param type
      * @return
      */

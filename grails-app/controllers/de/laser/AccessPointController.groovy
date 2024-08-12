@@ -8,6 +8,7 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
+import de.laser.wekb.Platform
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 

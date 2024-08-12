@@ -66,7 +66,7 @@ import static java.time.temporal.ChronoUnit.DAYS
  * <p>Single users may manage their local subscriptions independently. Subscriptions have a wide range of functionality; costs and statistics may be managed via the
  * subscription or its holding and reporting is mainly fed by data from and around subscriptions</p>
  * @see SubscriptionProperty
- * @see Platform
+ * @see de.laser.wekb.Platform
  * @see Package
  * @see SubscriptionPackage
  * @see TitleInstancePackagePlatform
@@ -909,7 +909,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     /**
      * Retrieves a set of access points linked to this subscription and attached to the given institution and platform
      * @param org the institution ({@link Org}) who created the access point
-     * @param platform the {@link Platform} to which the access point link is attached to
+     * @param platform the {@link de.laser.wekb.Platform} to which the access point link is attached to
      * @return a set (as {@link List} with distinct in query) of access point links
      * @see OrgAccessPoint
      */

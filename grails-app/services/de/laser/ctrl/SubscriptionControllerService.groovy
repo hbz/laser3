@@ -26,6 +26,7 @@ import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.wekb.VendorRole
 import grails.converters.JSON

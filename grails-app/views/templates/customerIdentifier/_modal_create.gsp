@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Platform; de.laser.CustomerIdentifier; de.laser.IdentifierNamespace" %>
+<%@ page import="de.laser.wekb.Platform; de.laser.CustomerIdentifier; de.laser.IdentifierNamespace" %>
 <ui:modal id="modalCreateCustomerIdentifier"
              text="${customeridentifier? message(code:'org.customerIdentifier.create.edit') : message(code:'org.customerIdentifier.create.new')}"
              isEditModal="true"

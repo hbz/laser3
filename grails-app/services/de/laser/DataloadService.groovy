@@ -11,6 +11,7 @@ import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.CalculatedType
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
+import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 import grails.converters.JSON
@@ -142,7 +143,7 @@ class DataloadService {
      *     <li>{@link de.laser.wekb.Vendor}</li>
      *     <li>{@link TitleInstancePackagePlatform}</li>
      *     <li>{@link de.laser.Package}</li>
-     *     <li>{@link Platform}</li>
+     *     <li>{@link de.laser.wekb.Platform}</li>
      *     <li>{@link License}</li>
      *     <li>{@link Subscription}</li>
      *     <li>{@link SurveyConfig}</li>

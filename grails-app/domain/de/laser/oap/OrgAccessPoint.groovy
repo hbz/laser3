@@ -109,7 +109,7 @@ class OrgAccessPoint extends AbstractBase {
 
     /**
      * Gets all platforms for this access point which are not linked to any subscription
-     * @return a {@link List} of {@link de.laser.Platform}s not linked anywhere
+     * @return a {@link List} of {@link de.laser.wekb.Platform}s not linked anywhere
      */
     def getNotLinkedPlatforms()
     {

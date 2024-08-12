@@ -1,7 +1,7 @@
 package de.laser.reporting.report.myInstitution.config
 
 import de.laser.IssueEntitlement
-import de.laser.Platform
+import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.Subscription
 import de.laser.annotations.UnstableFeature

@@ -4,6 +4,7 @@ import de.laser.cache.EhcacheWrapper
 import de.laser.convenience.Marker
 import de.laser.remote.ApiSource
 import de.laser.utils.DateUtils
+import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
@@ -38,7 +39,7 @@ class WekbNewsService {
      *     <li>newly created</li>
      *     <li>updated</li>
      * </ul>
-     * objects. The following objects are being traced: {@link Org} (provider), {@link de.laser.Package} and {@link Platform}
+     * objects. The following objects are being traced: {@link Org} (provider), {@link de.laser.Package} and {@link de.laser.wekb.Platform}
      * @return a {@link Map} containing the counts: [all: all, inLaser: in LAS:eR, my: subscribed, marker: bookmarked, created: newly created, updated: updated objects]
      */
     Map getCurrentNews() {

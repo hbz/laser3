@@ -16,6 +16,7 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
+import de.laser.wekb.Platform
 import grails.gorm.transactions.Transactional
 import grails.web.mvc.FlashScope
 import grails.web.servlet.mvc.GrailsParameterMap

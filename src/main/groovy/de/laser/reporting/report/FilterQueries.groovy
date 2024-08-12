@@ -3,7 +3,7 @@ package de.laser.reporting.report
 import de.laser.ContextService
 import de.laser.License
 import de.laser.Package
-import de.laser.Platform
+import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.Subscription
 import de.laser.wekb.Vendor

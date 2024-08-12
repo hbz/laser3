@@ -11,7 +11,6 @@ import de.laser.Org
 import de.laser.Package
 import de.laser.Person
 import de.laser.PersonRole
-import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.Task
 import de.laser.annotations.RefdataInfo

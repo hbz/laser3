@@ -35,7 +35,7 @@ import de.laser.properties.LicenseProperty
 import de.laser.Org
 import de.laser.properties.OrgProperty
 import de.laser.properties.PersonProperty
-import de.laser.Platform
+import de.laser.wekb.Platform
 import de.laser.properties.PlatformProperty
 import de.laser.Subscription
 import de.laser.SubscriptionPackage

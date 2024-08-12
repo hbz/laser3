@@ -3,6 +3,7 @@ package de.laser
 
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
+import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 
 /**

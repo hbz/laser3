@@ -1,6 +1,6 @@
 package de.laser.reporting.report.myInstitution.config
 
-import de.laser.Platform
+import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.storage.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig

@@ -9,6 +9,7 @@ import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource

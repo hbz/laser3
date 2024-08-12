@@ -11,6 +11,7 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.titles.TitleHistoryEvent
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Platform
 import groovy.time.TimeCategory
 
 import javax.persistence.Transient
@@ -18,7 +19,7 @@ import java.text.Normalizer
 import java.util.regex.Pattern
 
 /**
- * A title instance. Title instances in LAS:eR and we:kb are mandatorily linked to a {@link Package} and a {@link Platform}. Titles may be (list is not exhaustive):
+ * A title instance. Title instances in LAS:eR and we:kb are mandatorily linked to a {@link Package} and a {@link de.laser.wekb.Platform}. Titles may be (list is not exhaustive):
  * <ul>
  *     <li>(E)books</li>
  *     <li>databases</li>
@@ -35,7 +36,7 @@ import java.util.regex.Pattern
  * @see Package
  * @see SubscriptionPackage
  * @see Subscription
- * @see Platform
+ * @see de.laser.wekb.Platform
  * @see IssueEntitlement
  */
 class TitleInstancePackagePlatform extends AbstractBase implements MarkerSupport /*implements AuditableTrait*/ {
@@ -120,7 +121,7 @@ class TitleInstancePackagePlatform extends AbstractBase implements MarkerSupport
 
   static belongsTo = [
     pkg:Package,
-    platform:Platform
+    platform: Platform
   ]
 
     static transients = [

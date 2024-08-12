@@ -6,7 +6,7 @@ import de.laser.GlobalService
 import de.laser.License
 import de.laser.Org
 import de.laser.Package
-import de.laser.Platform
+import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.Subscription
 import de.laser.wekb.Vendor

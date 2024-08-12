@@ -11,7 +11,7 @@ import de.laser.Language
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.PersonRole
-import de.laser.Platform
+import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
@@ -202,7 +202,7 @@ class ApiCollectionReader {
     /**
      * Builds a collection of custom (= general) properties for the given object and respecting the settings of the requestor institution
      * @param list the {@link Collection} of properties to enumerate
-     * @param generic the object (one of {@link de.laser.Subscription}, {@link de.laser.License}, {@link Org}, {@link de.laser.Person} or {@link de.laser.Platform})
+     * @param generic the object (one of {@link de.laser.Subscription}, {@link de.laser.License}, {@link Org}, {@link de.laser.Person} or {@link de.laser.wekb.Platform})
      * @param context the requestor institution ({@link Org})
      * @return a {@link Collection} of {@link Map}s containing property details for API output
      */
@@ -656,7 +656,7 @@ class ApiCollectionReader {
 
     /**
      * Collects the properties (general and private) of the given object and outputs the collections
-     * @param generic the object (one of {@link de.laser.Subscription}, {@link de.laser.License}, {@link Org}, {@link de.laser.Package} or {@link de.laser.Platform})
+     * @param generic the object (one of {@link de.laser.Subscription}, {@link de.laser.License}, {@link Org}, {@link de.laser.Package} or {@link de.laser.wekb.Platform})
      * @param context the requesting institution ({@link Org}) whose perspective is going to be taken during checks
      * @param ignoreFlag should certain properties being left out from output (private or custom)?
      * @return a {@link Collection} of both general and private properties

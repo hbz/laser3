@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Platform" %>
+<%@ page import="de.laser.wekb.Platform" %>
 
 <g:set var="entityName" value="${message(code: 'platform.label')}" />
 <laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" />

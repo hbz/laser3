@@ -21,6 +21,7 @@ import de.laser.storage.RDStore
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
