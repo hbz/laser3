@@ -29,15 +29,15 @@ import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.Vendor
+import de.laser.wekb.VendorRole
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
-import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
-import de.laser.exceptions.ChangeAcceptException
 
 import javax.servlet.ServletOutputStream
 import java.text.NumberFormat
@@ -637,7 +637,7 @@ class AjaxController {
     }
 
     /**
-     * Adds a relation link from a given object to a {@link Vendor}
+     * Adds a relation link from a given object to a {@link de.laser.wekb.Vendor}
      */
     @Secured(['ROLE_USER'])
     @Transactional

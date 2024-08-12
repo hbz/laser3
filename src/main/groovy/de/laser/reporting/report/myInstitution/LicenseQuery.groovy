@@ -3,7 +3,7 @@ package de.laser.reporting.report.myInstitution
 import de.laser.ContextService
 import de.laser.License
 import de.laser.Provider
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.storage.BeanStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery

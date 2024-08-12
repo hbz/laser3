@@ -32,6 +32,7 @@ import de.laser.system.SystemSetting
 import de.laser.utils.AppUtils
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
+import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.gorm.transactions.Transactional

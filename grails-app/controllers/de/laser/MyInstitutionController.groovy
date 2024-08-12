@@ -8,7 +8,6 @@ import de.laser.convenience.Marker
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.UserControllerService
-import de.laser.interfaces.CalculatedType
 import de.laser.remote.ApiSource
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
@@ -28,19 +27,18 @@ import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
-import de.laser.survey.SurveyConfigPackage
 import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyLinks
 import de.laser.survey.SurveyOrg
-import de.laser.survey.SurveyPackageResult
 import de.laser.survey.SurveyResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.Vendor
+import de.laser.wekb.VendorRole
 import de.laser.workflow.WfChecklist
-import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
@@ -1081,7 +1079,7 @@ class MyInstitutionController  {
     }
 
     /**
-     * Opens a list of all {@link Vendor}s which are linked by {@link VendorRole} to any subscription.
+     * Opens a list of all {@link Vendor}s which are linked by {@link de.laser.wekb.VendorRole} to any subscription.
      * The list results may be filtered with filter parameters
      * @return a list of matching {@link Vendor} records, as html or as export pipe (Excel / CSV)
      */

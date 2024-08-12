@@ -1,5 +1,7 @@
 package de.laser
 
+import de.laser.wekb.Vendor
+
 class InvoicingVendor implements Comparable<InvoicingVendor> {
 
     Provider provider

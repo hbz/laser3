@@ -14,6 +14,7 @@ import de.laser.storage.RDStore
 import de.laser.system.SystemEvent
 import de.laser.titles.TitleHistoryEvent
 import de.laser.utils.DateUtils
+import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import io.micronaut.http.HttpResponse

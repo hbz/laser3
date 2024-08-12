@@ -6,7 +6,7 @@ import de.laser.Org
 import de.laser.Platform
 import de.laser.Provider
 import de.laser.Subscription
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.finance.CostItem
 import de.laser.reporting.export.myInstitution.ProviderExport
 import de.laser.reporting.export.myInstitution.VendorExport

@@ -1,5 +1,5 @@
 <%--  model: [persons, restrictToOrg] --%>
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyOrg; de.laser.utils.LocaleUtils; de.laser.Org; de.laser.Provider; de.laser.Vendor; de.laser.Person; de.laser.PersonRole; de.laser.I10nTranslation;" %>
+<%@ page import="de.laser.wekb.Vendor; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyOrg; de.laser.utils.LocaleUtils; de.laser.Org; de.laser.Provider; de.laser.Vendor; de.laser.Person; de.laser.PersonRole; de.laser.I10nTranslation;" %>
 
 <g:set var="languageSuffix" value="${LocaleUtils.getCurrentLang()}"/>
 

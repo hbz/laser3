@@ -3,7 +3,7 @@ package de.laser.reporting.report.myInstitution.config
 import de.laser.Org
 import de.laser.Provider
 import de.laser.Subscription
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class SubscriptionInstCfg extends BaseConfig {

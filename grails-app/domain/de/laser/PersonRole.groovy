@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
+import de.laser.wekb.Vendor
 
 /**
  * This class ensures connections between {@link Person}s and {@link Org}s. Moreover, a person role may be specified to an instance of certain other objects like {@link OrgRole} does it for organisations.

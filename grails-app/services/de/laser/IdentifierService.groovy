@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.ctrl.LicenseControllerService
 import de.laser.utils.LocaleUtils
-import de.laser.storage.RDStore
+import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import org.springframework.context.MessageSource
 

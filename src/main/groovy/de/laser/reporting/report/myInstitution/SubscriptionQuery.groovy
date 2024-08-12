@@ -6,7 +6,7 @@ import de.laser.Platform
 import de.laser.Provider
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter

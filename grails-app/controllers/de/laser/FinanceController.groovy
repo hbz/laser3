@@ -11,7 +11,7 @@ import de.laser.utils.DateUtils
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
-import de.laser.utils.LocaleUtils
+import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus

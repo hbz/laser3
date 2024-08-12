@@ -1,4 +1,4 @@
-<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Provider; de.laser.CustomerTypeService; de.laser.survey.SurveyPackageResult; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.Vendor; de.laser.convenience.Marker; de.laser.utils.DateUtils; de.laser.storage.RDConstants; de.laser.Package; de.laser.Org; de.laser.Platform; de.laser.RefdataValue" %>
+<%@page import="de.laser.wekb.Vendor; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Provider; de.laser.CustomerTypeService; de.laser.survey.SurveyPackageResult; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.Vendor; de.laser.convenience.Marker; de.laser.utils.DateUtils; de.laser.storage.RDConstants; de.laser.Package; de.laser.Org; de.laser.Platform; de.laser.RefdataValue" %>
 <laser:serviceInjection/>
 <table class="ui sortable celled la-js-responsive-table la-table table">
     <thead>

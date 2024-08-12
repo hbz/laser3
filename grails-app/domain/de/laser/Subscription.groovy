@@ -17,6 +17,8 @@ import de.laser.survey.SurveyOrg
 import de.laser.traits.ShareableTrait
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Vendor
+import de.laser.wekb.VendorRole
 import grails.plugins.orm.auditable.Auditable
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -534,7 +536,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     /**
      * Retrieves all vendors linked to this subscription
-     * @return a {@link List} of linked {@link Vendor}s
+     * @return a {@link List} of linked {@link de.laser.wekb.Vendor}s
      */
     List<Vendor> getVendors() {
         Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription = :sub order by vr.vendor.sortname',

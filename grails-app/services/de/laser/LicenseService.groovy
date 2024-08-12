@@ -3,6 +3,7 @@ package de.laser
 import de.laser.helper.Params
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.VendorRole
 import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import groovy.xml.StreamingMarkupBuilder

@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
+import de.laser.wekb.Vendor
 import grails.plugins.orm.auditable.Auditable
 import groovy.util.logging.Slf4j
 

@@ -5,7 +5,7 @@ import de.laser.Org
 import de.laser.Platform
 import de.laser.Provider
 import de.laser.Subscription
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.storage.BeanStore
 import de.laser.properties.PropertyDefinition

@@ -6,7 +6,7 @@ import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.Provider
 import de.laser.RefdataValue
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.auth.Role
 import de.laser.storage.BeanStore
 import de.laser.utils.DateUtils

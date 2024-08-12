@@ -6,20 +6,17 @@ import de.laser.DeweyDecimalClassification
 import de.laser.DocContext
 import de.laser.Identifier
 import de.laser.IdentifierNamespace
-import de.laser.InvoicingVendor
 import de.laser.IssueEntitlement
 import de.laser.Language
 import de.laser.Org
 import de.laser.OrgRole
-import de.laser.Person
 import de.laser.PersonRole
 import de.laser.Platform
 import de.laser.Provider
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
 import de.laser.TitleInstancePackagePlatform
-import de.laser.Vendor
-import de.laser.VendorRole
+import de.laser.wekb.Vendor
 import de.laser.base.AbstractCoverage
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
@@ -36,8 +33,6 @@ import groovy.json.JsonSlurper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.util.logging.Slf4j
-
-import java.sql.Array
 
 /**
  * This class delivers given lists as maps of stubs or full objects

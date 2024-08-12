@@ -1,21 +1,18 @@
 package de.laser.api.v0
 
 import de.laser.Address
-import de.laser.Combo
 import de.laser.ElectronicBilling
 import de.laser.ElectronicDeliveryDelayNotification
 import de.laser.InvoiceDispatch
 import de.laser.LibrarySystem
 import de.laser.License
 import de.laser.Org
-import de.laser.OrgSubjectGroup
 import de.laser.Package
 import de.laser.Platform
 import de.laser.Provider
-import de.laser.ProviderLink
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.base.AbstractCoverage
 import de.laser.finance.Invoice
 import de.laser.finance.PriceItem

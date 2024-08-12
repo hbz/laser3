@@ -5,6 +5,7 @@ import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.survey.SurveyConfig
 import de.laser.traits.ShareableTrait
+import de.laser.wekb.Vendor
 import org.grails.datastore.mapping.engine.event.PostUpdateEvent
 
 /**

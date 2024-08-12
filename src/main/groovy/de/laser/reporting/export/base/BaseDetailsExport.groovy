@@ -10,7 +10,7 @@ import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.reporting.export.myInstitution.ProviderExport
 import de.laser.reporting.export.myInstitution.VendorExport
 import de.laser.storage.BeanStore

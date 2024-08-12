@@ -5,7 +5,7 @@ import de.laser.Package
 import de.laser.Platform
 import de.laser.Provider
 import de.laser.RefdataValue
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.helper.Params
 import de.laser.reporting.report.FilterQueries
 import de.laser.storage.BeanStore

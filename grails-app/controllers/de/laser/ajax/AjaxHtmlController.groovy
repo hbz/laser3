@@ -48,7 +48,7 @@ import de.laser.Task
 import de.laser.TaskService
 import de.laser.TitleInstancePackagePlatform
 import de.laser.UserSetting
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService

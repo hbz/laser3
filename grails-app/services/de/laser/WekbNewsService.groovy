@@ -4,6 +4,7 @@ import de.laser.cache.EhcacheWrapper
 import de.laser.convenience.Marker
 import de.laser.remote.ApiSource
 import de.laser.utils.DateUtils
+import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 
 import java.time.LocalDate

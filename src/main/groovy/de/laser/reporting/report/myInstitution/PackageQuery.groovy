@@ -2,15 +2,13 @@ package de.laser.reporting.report.myInstitution
 
 import de.laser.IdentifierNamespace
 import de.laser.Language
-import de.laser.Org
 import de.laser.Platform
 import de.laser.Package
 import de.laser.Provider
 import de.laser.RefdataValue
 import de.laser.Subscription
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.storage.RDConstants
-import de.laser.storage.RDStore
 import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseFilter

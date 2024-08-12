@@ -8,7 +8,6 @@ import de.laser.CompareService
 import de.laser.ComparisonService
 import de.laser.ContextService
 import de.laser.CopyElementsService
-import de.laser.CustomerIdentifier
 import de.laser.DocContext
 import de.laser.DocstoreService
 import de.laser.EscapeService
@@ -30,7 +29,6 @@ import de.laser.Package
 import de.laser.PackageService
 import de.laser.PendingChange
 import de.laser.PendingChangeConfiguration
-import de.laser.Platform
 import de.laser.PropertyService
 import de.laser.Provider
 import de.laser.ProviderRole
@@ -44,8 +42,8 @@ import de.laser.SubscriptionsQueryService
 import de.laser.SurveyService
 import de.laser.Task
 import de.laser.TitleInstancePackagePlatform
-import de.laser.Vendor
-import de.laser.VendorRole
+import de.laser.wekb.Vendor
+import de.laser.wekb.VendorRole
 import de.laser.VendorService
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.finance.CostItem
@@ -53,9 +51,7 @@ import de.laser.finance.CostItemElementConfiguration
 import de.laser.finance.Order
 import de.laser.helper.Params
 import de.laser.interfaces.CalculatedType
-import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinitionGroup
-import de.laser.remote.ApiSource
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.survey.SurveyConfig
@@ -77,20 +73,17 @@ import de.laser.utils.LocaleUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
-import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
-import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.context.MessageSource
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.multipart.MultipartFile
 
-import javax.servlet.ServletOutputStream
 import java.text.NumberFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat

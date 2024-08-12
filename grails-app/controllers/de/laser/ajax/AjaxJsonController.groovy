@@ -13,7 +13,6 @@ import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.LicenseService
 import de.laser.LinksGenerationService
-import de.laser.OrganisationService
 import de.laser.Package
 import de.laser.Provider
 import de.laser.ProviderService
@@ -21,7 +20,7 @@ import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
 import de.laser.SubscriptionDiscountScale
 import de.laser.SubscriptionService
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.VendorService
 import de.laser.auth.Role
 import de.laser.cache.EhcacheWrapper
@@ -44,7 +43,6 @@ import de.laser.properties.SubscriptionProperty
 import de.laser.auth.User
 import de.laser.Contact
 import de.laser.Person
-import de.laser.PersonRole
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.base.AbstractI10n

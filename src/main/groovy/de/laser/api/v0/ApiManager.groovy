@@ -9,7 +9,7 @@ import de.laser.Package
 import de.laser.Platform
 import de.laser.Provider
 import de.laser.Subscription
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.api.v0.special.ApiEZB
 import de.laser.exceptions.NativeSqlException
 import de.laser.finance.CostItem

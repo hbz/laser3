@@ -14,6 +14,8 @@ import de.laser.storage.RDStore
 import de.laser.traits.ShareableTrait
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Vendor
+import de.laser.wekb.VendorRole
 import grails.plugins.orm.auditable.Auditable
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -314,7 +316,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     /**
      * Retrieves all vendors linked to this license
-     * @return a {@link List} of linked {@link Vendor}s
+     * @return a {@link List} of linked {@link de.laser.wekb.Vendor}s
      */
     List<Vendor> getVendors() {
         Vendor.executeQuery("select vr.vendor from VendorRole vr where vr.license = :lic order by vr.vendor.sortname",
