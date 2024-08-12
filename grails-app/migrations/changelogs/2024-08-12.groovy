@@ -92,4 +92,24 @@ databaseChangeLog = {
             rollback {}
         }
     }
+
+    changeSet(author: "klober (modified)", id: "1723461329740-5") {
+        grailsChange {
+            change {
+                RefdataCategory rdc_new = RefdataCategory.findByDescAndIsHardData('license.arc.title.transfer.regulation', true)
+                RefdataCategory rdc_old = RefdataCategory.findByDescAndIsHardData('license.arc.title.transfer.regulation', false)
+
+                if (rdc_new && rdc_old) {
+                    RefdataValue.findAllByOwner(rdc_old).each{ rdv ->
+                        RefdataValue.executeUpdate(
+                                'update RefdataValue set value = :value, owner = :owner where id = :id',
+                                [value: rdv.value + ' (deprecated)', owner: rdc_new, id: rdv.id]
+                        )
+                    }
+                    RefdataCategory.executeUpdate('delete from RefdataCategory where id = :id', [id: rdc_old.id])
+                }
+            }
+            rollback {}
+        }
+    }
 }
