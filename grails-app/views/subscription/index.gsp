@@ -29,7 +29,7 @@
     <ui:msg class="warning" showIcon="true" hideClose="true" header="Info" message="subscription.details.permanentTitlesProcessRunning.info" />
 </g:if>
 
-<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortium()?.id}">
     <laser:render template="message"/>
 </g:if>
 

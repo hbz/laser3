@@ -5492,10 +5492,10 @@ class ExportClickMeService {
                 }
                 */
                 else if (fieldKey == 'subscription.consortium') {
-                    row.add(createTableCell(format, subscription.getConsortia()?.name))
+                    row.add(createTableCell(format, subscription.getConsortium()?.name))
                 }
                 else if (fieldKey == 'license.consortium') {
-                    row.add(createTableCell(format, subscription.getConsortia()?.name))
+                    row.add(createTableCell(format, subscription.getConsortium()?.name))
                 }
                 else if (fieldKey.startsWith('participantCustomerIdentifiers.')) {
                     _setOrgFurtherInformation(org, row, fieldKey, format, subscription)
@@ -5846,7 +5846,7 @@ class ExportClickMeService {
                     _setOrgFurtherInformation(org, row, fieldKey, format)
                 }
                 else if (fieldKey == 'subscription.consortium') {
-                    row.add(createTableCell(format, costItem.sub?.getConsortia()?.name))
+                    row.add(createTableCell(format, costItem.sub?.getConsortium()?.name))
                 }
                 else {
                     def fieldValue = _getFieldValue(costItem, field, sdf)
@@ -6435,7 +6435,7 @@ class ExportClickMeService {
                         }
                 }
                 else if (fieldKey.contains('subscription.consortium')) {
-                    row.add(createTableCell(format, result.subscription.getConsortia()?.name))
+                    row.add(createTableCell(format, result.subscription.getConsortium()?.name))
                 }
                 else if (fieldKey.contains('tipp.ddcs')) {
                     row.add(createTableCell(format, result.tipp.ddcs.collect {"${it.ddc.value} - ${it.ddc.getI10n("value")}"}.join(";")))

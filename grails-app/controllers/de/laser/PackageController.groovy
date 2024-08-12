@@ -221,7 +221,7 @@ class PackageController {
         Map<Org, Map<String, Object>> gascoContacts = [:]
         PropertyDefinition gascoDisplayName = PropertyStore.SUB_PROP_GASCO_NEGOTIATOR_NAME
         gascoSubscriptions.each { Subscription s ->
-            Org gascoNegotiator = s.getConsortia()
+            Org gascoNegotiator = s.getConsortium()
             if(gascoNegotiator) {
                 Map<String, Object> gascoContactData = gascoContacts.get(gascoNegotiator)
                 Set<PersonRole> personRoles = PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, gascoNegotiator)

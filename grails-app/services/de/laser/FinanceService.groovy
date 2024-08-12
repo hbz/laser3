@@ -695,7 +695,7 @@ class FinanceService {
                         prf.setBenchmark("before subscr")
                         Set<CostItem> subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci left join ci.costItemElementConfiguration ciec left join ci.costItemElement cie join ci.sub sub where ci.owner in :owner and sub = :sub and ci.isVisibleForSubscriber = true'+
                                  genericExcludes + filterQuery.subFilter + filterQuery.ciFilter + ' order by ' + configMap.sortConfig.subscrSort + ' ' + configMap.sortConfig.subscrOrder + ', ciec.value desc nulls first, cie.value_'+LocaleUtils.getCurrentLang(),
-                                 [owner:[sub.getConsortia()],sub:sub]+genericExcludeParams+filterQuery.filterData)
+                                 [owner:[sub.getConsortium()],sub:sub]+genericExcludeParams+filterQuery.filterData)
                         prf.setBenchmark("assembling map")
                         result.subscr = [count:subscrCostItems.size()]
                         if(subscrCostItems) {

@@ -82,7 +82,7 @@ class DocstoreService {
         Set<DocContext> documentSet = instance.documents
         SortedSet<DocContext> filteredDocuments = new TreeSet<DocContext>(), sharedItems = new TreeSet<DocContext>()
         if(instance instanceof Subscription) {
-            if(contextOrg.id == instance.getConsortia()?.id && instance.instanceOf) {
+            if(contextOrg.id == instance.getConsortium()?.id && instance.instanceOf) {
                 if(instance._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
                     parentAtChild = true
             }

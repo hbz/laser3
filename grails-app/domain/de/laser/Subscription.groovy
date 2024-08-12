@@ -177,7 +177,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
             'isSlavedAsString', 'provider', 'multiYearSubscription',
             'currentMultiYearSubscriptionNew', 'renewalDate',
             'commaSeperatedPackagesIsilList', 'calculatedPropDefGroups', 'allocationTerm',
-            'subscriberRespConsortia', 'providers', 'agencies', 'consortia'
+            'subscriberRespConsortia', 'providers', 'agencies', 'consortium'
     ] // mark read-only accessor methods
 
     static mapping = {
@@ -498,13 +498,13 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     String _getCalculatedType() {
         String result = TYPE_UNKOWN
 
-        if(getConsortia() && !getAllSubscribers() && !instanceOf) {
+        if(getConsortium() && !getAllSubscribers() && !instanceOf) {
             if(administrative) {
                 result = TYPE_ADMINISTRATIVE
             }
             else result = TYPE_CONSORTIAL
         }
-        else if(getConsortia() && instanceOf) {
+        else if(getConsortium() && instanceOf) {
             result = TYPE_PARTICIPATION
         }
         // TODO remove type_local
@@ -625,7 +625,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * Gets the consortium of this subscription
      * @return the {@link Org} linked as 'Subscription Consortia' to this subscription or null if none exists (this is the case for local subscriptions)
      */
-    Org getConsortia() { // TODO getConsortium()
+    Org getConsortium() {
         Org result = OrgRole.findByRoleTypeAndSub(RDStore.OR_SUBSCRIPTION_CONSORTIA, this)?.org //null check necessary because of single users!
         result
     }

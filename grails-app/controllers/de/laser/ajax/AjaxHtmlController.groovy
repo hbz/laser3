@@ -253,7 +253,7 @@ class AjaxHtmlController {
         result.editable = entry.isEditableBy(result.user)
         if(entry instanceof Subscription) {
             result.subscription = (Subscription) entry
-            result.atConsortialParent = result.contextOrg.id == result.subscription.getConsortia()?.id && !result.subscription.instanceOf ? "true" : "false"
+            result.atConsortialParent = result.contextOrg.id == result.subscription.getConsortium()?.id && !result.subscription.instanceOf ? "true" : "false"
         }
         else if(entry instanceof License) {
             result.license = (License) entry

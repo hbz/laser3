@@ -577,8 +577,8 @@ class DataloadService {
                     case CalculatedType.TYPE_PARTICIPATION:
                         List orgs = sub.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value] }?.org
                         result.availableToOrgs = orgs?.id
-                        result.consortiaID = sub.getConsortia()?.id
-                        result.consortiaName = sub.getConsortia()?.name
+                        result.consortiaID = sub.getConsortium()?.id
+                        result.consortiaName = sub.getConsortium()?.name
 
                         result.members = []
                         orgs.each { org ->

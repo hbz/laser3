@@ -1647,7 +1647,7 @@ class SubscriptionService {
      * false otherwise
      */
     boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
-        return ((subscription.getConsortia()?.id == contextOrg.id) && subscription._getCalculatedType() in
+        return ((subscription.getConsortium()?.id == contextOrg.id) && subscription._getCalculatedType() in
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
     }
 

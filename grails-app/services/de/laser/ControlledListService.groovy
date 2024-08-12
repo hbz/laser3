@@ -208,7 +208,7 @@ class ControlledListService {
             switch (params.ltype) {
                 case CalculatedType.TYPE_PARTICIPATION:
                     if (s._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION]){
-                        if(org.id == s.getConsortia().id)
+                        if(org.id == s.getConsortium().id)
                             result.results.add([name:s.dropdownNamingConvention(org), value:genericOIDService.getOID(s)])
                     }
                     break
@@ -546,7 +546,7 @@ class ControlledListService {
                 Subscription subscription = (Subscription) it[0]
                 /*
                 String tenant
-                if(subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && subscription.getConsortia().id == org.id) {
+                if(subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && subscription.getConsortium().id == org.id) {
                     try {
                         tenant = " - ${subscription.getAllSubscribers().get(0).sortname}"
                     }

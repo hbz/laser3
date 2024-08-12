@@ -543,7 +543,7 @@ class PropertyService {
                         query = 'select b from PropertyDefinitionGroupBinding b where b.propDefGroup = :pdg and b.lic.id = :id and b.propDefGroup.tenant = :ctxOrg'
                     }
                     else {
-                        consortium = obj.getConsortia()
+                        consortium = obj.getConsortium()
                         objId = (consortium.id == contextOrg.id) ? obj.instanceOf.id : obj.id
                         query = 'select b from PropertyDefinitionGroupBinding b where b.propDefGroup = :pdg and b.sub.id = :id and b.propDefGroup.tenant = :ctxOrg'
                     }

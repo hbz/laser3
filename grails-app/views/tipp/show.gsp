@@ -34,7 +34,7 @@
                         <div class="item">
                             <div class="sixteen wide column">
                                 <i class="icon clipboard outline la-list-icon"></i>
-                                <g:if test="${pt.subscription.getConsortia() != contextOrg}">
+                                <g:if test="${pt.subscription.getConsortium() != contextOrg}">
                                     ${pt.getPermanentTitleInfo(contextOrg)}
                                 </g:if><g:else>
                                     <g:link controller="subscription"

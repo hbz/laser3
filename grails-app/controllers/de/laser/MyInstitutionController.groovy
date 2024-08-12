@@ -1471,7 +1471,7 @@ class MyInstitutionController  {
                         it.pkg.name
                     }
                     row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
-                    row.add([field: sub.getConsortia()?.name ?: '', style: null])
+                    row.add([field: sub.getConsortium()?.name ?: '', style: null])
                     row.add([field: subProviders.join(', '), style: null])
                     row.add([field: subAgencies.join(', '), style: null])
                     row.add([field: sub.startDate ? sdf.format(sub.startDate) : '', style: null])
@@ -1505,7 +1505,7 @@ class MyInstitutionController  {
                         it.pkg.name
                     }
                     row.add(packageNames ? packageNames.join("; ") : '')
-                    row.add(sub.getConsortia()?.name ?: '')
+                    row.add(sub.getConsortium()?.name ?: '')
                     row.add(subProviders.join("; ").replace(',',''))
                     row.add(subAgencies.join("; ").replace(',',''))
                     row.add(sub.startDate ? sdf.format(sub.startDate) : '')
