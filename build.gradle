@@ -103,13 +103,14 @@ dependencies {
     implementation 'org.elasticsearch:elasticsearch:7.17.23'                                // 2024
     implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.23'  // 2024
 
-    implementation 'org.grails.plugins:spring-security-core:6.1.1'          // 2024
     implementation 'org.grails.plugins:audit-logging:4.0.3'                 // 2021
     implementation 'org.grails.plugins:database-migration:4.2.1', {         // 2023
         exclude module: 'spring-boot-cli'
     }
+    implementation 'org.grails.plugins:grails-executor:0.4'                 // 2016 : [deprecated]
     implementation 'org.grails.plugins:mail:3.0.0'                          // 2021
     implementation 'org.grails.plugins:quartz:3.0.0'                        // 2024
+    implementation 'org.grails.plugins:spring-security-core:6.1.1'          // 2024
     implementation 'org.grails.plugins:wkhtmltopdf:1.0.0.RC9'               // 2018
 
     implementation 'org.hibernate:hibernate-core:5.6.15.Final'              // 2023
