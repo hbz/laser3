@@ -23,6 +23,13 @@ import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
+import de.laser.wekb.ElectronicBilling
+import de.laser.wekb.ElectronicDeliveryDelayNotification
+import de.laser.wekb.InvoiceDispatch
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -185,7 +192,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields : [
                                 'subscription.name'                  : [field: 'sub.name', label: 'Name', message: 'subscription.name.label'],
-                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true'],
+                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'altname.plural', defaultChecked: 'true'],
                                 'subscription.startDate'             : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
                                 'subscription.endDate'               : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label'],
                                 'subscription.manualCancellationDate': [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -211,7 +218,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields : [
                                 'subscription.name'                  : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true'],
+                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'altname.plural', defaultChecked: 'true'],
                                 'subscription.startDate'             : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                                 'subscription.endDate'               : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                                 'subscription.manualCancellationDate': [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -363,7 +370,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields: [
                                 'subscription.name'                         : [field: 'name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                                'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                                'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'altname.plural', defaultChecked: 'true' ],
                                 'subscription.startDate'                    : [field: 'startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                                 'subscription.endDate'                      : [field: 'endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                                 'subscription.manualCancellationDate'       : [field: 'manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -507,7 +514,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields: [
                                 'subscription.name'                         : [field: 'name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                                'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                                'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'altname.plural', defaultChecked: 'true' ],
                                 'subscription.startDate'                    : [field: 'startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                                 'subscription.endDate'                      : [field: 'endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                                 'subscription.manualCancellationDate'       : [field: 'manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -614,7 +621,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields: [
                                 'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                                'subscription.altnames'                     : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                                'subscription.altnames'                     : [field: 'sub.altnames', label: 'Alternative names', message: 'altname.plural', defaultChecked: 'true' ],
                                 'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                                 'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                                 'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -765,7 +772,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields : [
                                 'subscription.name'                  : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true'],
+                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'altname.plural', defaultChecked: 'true'],
                                 'subscription.startDate'             : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                                 'subscription.endDate'               : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                                 'subscription.manualCancellationDate': [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -906,7 +913,7 @@ class ExportClickMeService {
                         message: 'license.label',
                         fields : [
                                 'license.reference'      : [field: 'reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true'],
-                                'license.altnames'       : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true'],
+                                'license.altnames'       : [field: 'altnames', label: 'Alternative names', message: 'altname.plural', defaultChecked: 'true'],
                                 'license.status'         : [field: 'status', label: 'Status', message: 'exportClickMe.license.status', defaultChecked: 'true'],
                                 'license.licenseCategory': [field: 'licenseCategory', label: 'License Category', message: 'license.licenseCategory.label', defaultChecked: 'true'],
                                 'license.startDate'      : [field: 'startDate', label: 'Start Date', message: 'exportClickMe.license.startDate', defaultChecked: 'true'],
@@ -991,7 +998,7 @@ class ExportClickMeService {
                         message: 'license.label',
                         fields: [
                                 'license.reference'       : [field: 'reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true'],
-                                'license.altnames'        : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                                'license.altnames'        : [field: 'altnames', label: 'Alternative names', message: 'altname.plural', defaultChecked: 'true' ],
                                 'license.status'          : [field: 'status', label: 'Status', message: 'exportClickMe.license.status', defaultChecked: 'true'],
                                 'license.licenseCategory' : [field: 'licenseCategory', label: 'License Category', message: 'license.licenseCategory.label', defaultChecked: 'true'],
                                 'license.startDate'       : [field: 'startDate', label: 'Start Date', message: 'exportClickMe.license.startDate', defaultChecked: 'true'],
@@ -1398,7 +1405,7 @@ class ExportClickMeService {
                         fields: [
                                 'provider.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
                                 'provider.sortname'              : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                                'provider.altnames'              : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                                'provider.altnames'              : [field: 'altnames', label: 'Alternative names', message: 'altname.plural', defaultChecked: 'true' ],
                                 'provider.status'                : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: true],
                                 'provider.homepage'              : [field: 'homepage', label: 'Homepage URL', message: 'org.homepage.label', defaultChecked: true],
                                 'provider.metadataDownloaderURL' : [field: 'metadataDownloaderURL', label: 'Metadata Downloader URL', message: 'org.metadataDownloaderURL.label', defaultChecked: true],
@@ -4460,7 +4467,7 @@ class ExportClickMeService {
 
     /**
      * Exports the given fields from the given cost items
-     * @param result the {@link Vendor} set to export
+     * @param result the {@link de.laser.wekb.Vendor} set to export
      * @param selectedFields the fields which should appear in the export
      * @param format the {@link FORMAT} to be exported
      * @param contactSources which type of contacts should be taken? (public or private)
@@ -4507,7 +4514,7 @@ class ExportClickMeService {
 
     /**
      * Exports the given fields from the given cost items
-     * @param result the {@link Provider} set to export
+     * @param result the {@link de.laser.wekb.Provider} set to export
      * @param selectedFields the fields which should appear in the export
      * @param format the {@link FORMAT} to be exported
      * @param contactSources which type of contacts should be taken? (public or private)
@@ -5492,10 +5499,10 @@ class ExportClickMeService {
                 }
                 */
                 else if (fieldKey == 'subscription.consortium') {
-                    row.add(createTableCell(format, subscription.getConsortia()?.name))
+                    row.add(createTableCell(format, subscription.getConsortium()?.name))
                 }
                 else if (fieldKey == 'license.consortium') {
-                    row.add(createTableCell(format, subscription.getConsortia()?.name))
+                    row.add(createTableCell(format, subscription.getConsortium()?.name))
                 }
                 else if (fieldKey.startsWith('participantCustomerIdentifiers.')) {
                     _setOrgFurtherInformation(org, row, fieldKey, format, subscription)
@@ -5846,7 +5853,7 @@ class ExportClickMeService {
                     _setOrgFurtherInformation(org, row, fieldKey, format)
                 }
                 else if (fieldKey == 'subscription.consortium') {
-                    row.add(createTableCell(format, costItem.sub?.getConsortia()?.name))
+                    row.add(createTableCell(format, costItem.sub?.getConsortium()?.name))
                 }
                 else {
                     def fieldValue = _getFieldValue(costItem, field, sdf)
@@ -6435,7 +6442,7 @@ class ExportClickMeService {
                         }
                 }
                 else if (fieldKey.contains('subscription.consortium')) {
-                    row.add(createTableCell(format, result.subscription.getConsortia()?.name))
+                    row.add(createTableCell(format, result.subscription.getConsortium()?.name))
                 }
                 else if (fieldKey.contains('tipp.ddcs')) {
                     row.add(createTableCell(format, result.tipp.ddcs.collect {"${it.ddc.value} - ${it.ddc.getI10n("value")}"}.join(";")))
@@ -7062,6 +7069,8 @@ class ExportClickMeService {
                                     BigDecimal studentsStr = readerNumberStudents ? readerNumberStudents.value : null,
                                            staffStr = readerNumberStaff ? readerNumberStaff.value : null,
                                            fteStr = readerNumberFTE ? readerNumberFTE.value : null
+                                    BigDecimal studentsFTEStr = studentsStr && fteStr ? studentsStr+fteStr : null
+                                    BigDecimal studentsStaffStr = studentsStr && staffStr ? studentsStr+staffStr : null
                                     row.add(createTableCell(format, refdataValueList[count].getI10n('value')))
                                     row.add(createTableCell(format, ' '))
                                     row.add(createTableCell(format, studentsStr))
@@ -7087,15 +7096,19 @@ class ExportClickMeService {
                 row.add(createTableCell(format, peopleStr))
                 row.add(createTableCell(format, userStr))
 
-                BigDecimal sum = 0
+                BigDecimal sum = 0, sumStudFTE = 0, sumStudHeads = 0
                 if(readerNumberStudents){
                     sum = sum + (readerNumberStudents.value != null ? readerNumberStudents.value : 0)
+                    sumStudFTE += (readerNumberStudents.value != null ? readerNumberStudents.value : 0)
+                    sumStudHeads += (readerNumberStudents.value != null ? readerNumberStudents.value : 0)
                 }
                 if(readerNumberStaff){
                     sum = sum + (readerNumberStaff.value != null ? readerNumberStaff.value : 0)
+                    sumStudHeads += (readerNumberStaff.value != null ? readerNumberStaff.value : 0)
                 }
                 if(readerNumberFTE){
                     sum = sum + (readerNumberFTE.value != null ? readerNumberFTE.value : 0)
+                    sumStudFTE += (readerNumberFTE.value != null ? readerNumberFTE.value : 0)
                 }
                 if(readerNumberPeople){
                     sum = sum + (readerNumberPeople.value != null ? readerNumberPeople.value : 0)
@@ -7108,6 +7121,8 @@ class ExportClickMeService {
                     sum = sum + (readerNumberStaffwithDueDate.value != null ? readerNumberStaffwithDueDate.value : 0)
                 }
 
+                row.add(createTableCell(format, sumStudFTE))
+                row.add(createTableCell(format, sumStudHeads))
                 row.add(createTableCell(format, sum))
 
                 String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : (readerNumberStaffwithDueDate ? readerNumberStaffwithDueDate.dateGroupNote : '')))
@@ -7450,6 +7465,8 @@ class ExportClickMeService {
                     titles.add(createTableCell(format,  RDStore.READER_NUMBER_FTE."${localizedValue}"))
                     titles.add(createTableCell(format,  RDStore.READER_NUMBER_USER."${localizedValue}"))
                     titles.add(createTableCell(format,  RDStore.READER_NUMBER_PEOPLE."${localizedValue}"))
+                    titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.sumStudFTE.label', null, locale)))
+                    titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.sumStudHeads.label', null, locale)))
                     titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.sum.label', null, locale)))
                     titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.note.label', null, locale)))
                 }

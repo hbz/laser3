@@ -1,8 +1,9 @@
 package de.laser.reporting.report.myInstitution.config
 
-import de.laser.Platform
-import de.laser.Provider
-import de.laser.Vendor
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import de.laser.storage.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
@@ -12,7 +13,7 @@ class PackageXCfg extends BaseConfig {
 
             base : [
                     meta : [
-                            class:  de.laser.Package,
+                            class:  de.laser.wekb.Package,
                             cfgKey: BaseConfig.KEY_PACKAGE
                     ],
                     source : [

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.Org; de.laser.finance.CostItem; de.laser.Subscription; de.laser.Platform; de.laser.Package; java.text.SimpleDateFormat; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.Org; de.laser.finance.CostItem; de.laser.Subscription; de.laser.wekb.Platform; de.laser.wekb.Package; java.text.SimpleDateFormat; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
 <laser:htmlStart message="subscription.details.linkPackage.heading" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -177,7 +177,7 @@
                             </th>
                             <th class="control-label la-popup-tooltip"
                                 data-content="${message(code: "subscription.packages.notification.label")}">
-                                <i class="ui large icon bullhorn"></i>
+                                <i class="large icon bullhorn"></i>
                             </th>
                         </tr>
                         <g:set var="excludes"
@@ -253,7 +253,7 @@
                                     <i class="${Icon.SIG.INHERITANCE} large"></i>
                                 </th>
                                 <th class="control-label la-popup-tooltip" data-content="${message(code: "subscription.packages.notification.auditable")}">
-                                    <i class="ui large icon bullhorn"></i>
+                                    <i class="large icon bullhorn"></i>
                                 </th>
                             </tr>
                             <g:set var="excludes"

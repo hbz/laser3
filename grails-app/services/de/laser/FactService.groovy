@@ -1,12 +1,11 @@
 package de.laser
 
 import de.laser.finance.CostItem
-import de.laser.properties.PlatformProperty
 import de.laser.stats.Fact
 import de.laser.stats.StatsTripleCursor
-import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.utils.DateUtils
+import de.laser.wekb.Platform
 import grails.gorm.transactions.Transactional
 
 import java.time.YearMonth

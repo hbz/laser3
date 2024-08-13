@@ -3,6 +3,7 @@ package de.laser.jobs
 import de.laser.GlobalSourceSyncService
 import de.laser.config.ConfigMapper
 import de.laser.base.AbstractJob
+import de.laser.system.SystemEvent
 import groovy.util.logging.Slf4j
 
 /**
@@ -36,7 +37,9 @@ class GlobalDataSyncJob extends AbstractJob {
     }
 
     def execute() {
-        if (! start('GD_SYNC_JOB_START')) {
+        SystemEvent sysEvent = start('GD_SYNC_JOB_START')
+
+        if (! sysEvent) {
             return false
         }
         try {
@@ -47,7 +50,7 @@ class GlobalDataSyncJob extends AbstractJob {
         catch (Exception e) {
             log.error( e.toString() )
         }
-        stop('GD_SYNC_JOB_COMPLETE')
+        stopAndComplete(sysEvent)
   }
 }
 

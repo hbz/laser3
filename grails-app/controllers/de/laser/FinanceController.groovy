@@ -11,7 +11,8 @@ import de.laser.utils.DateUtils
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
-import de.laser.utils.LocaleUtils
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
@@ -547,7 +548,7 @@ class FinanceController  {
         params.status = [result.costItem.sub.status.id.toString()]
         result.modalText = message(code: 'financials.costItem.copy.tooltip')
         result.submitButtonLabel = message(code:'default.button.copy.label')
-        result.copyCostsFromConsortia = result.costItem.owner == result.costItem.sub?.getConsortia() && result.institution.id != result.costItem.sub?.getConsortia().id
+        result.copyCostsFromConsortia = result.costItem.owner == result.costItem.sub?.getConsortium() && result.institution.id != result.costItem.sub?.getConsortium().id
         result.copyToOtherSub =  !result.copyCostsFromConsortia && result.costItem.owner.id == result.institution.id && result.institution.isCustomerType_Inst_Pro()
         result.taxKey = result.costItem.taxKey
         result.formUrl = createLink(controller:"finance",action:"createOrUpdateCostItem",params:[showView:params.showView, mode:"copy", offset: params.offset])

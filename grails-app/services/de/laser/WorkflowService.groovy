@@ -1,5 +1,7 @@
 package de.laser
 
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import de.laser.workflow.*
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap

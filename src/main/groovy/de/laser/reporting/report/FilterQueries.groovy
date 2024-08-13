@@ -2,11 +2,11 @@ package de.laser.reporting.report
 
 import de.laser.ContextService
 import de.laser.License
-import de.laser.Package
-import de.laser.Platform
-import de.laser.Provider
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 import de.laser.Subscription
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import groovy.util.logging.Slf4j
@@ -19,7 +19,7 @@ class FilterQueries {
 
         List<Long> idList = Subscription.executeQuery(
                 "select sub.id from Subscription sub join sub.orgRelations ro where (ro.roleType in (:roleTypes) and ro.org = :ctx)", [
-                roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
+                roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIUM],
                 ctx: contextService.getOrg()
         ])
         idList

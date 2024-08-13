@@ -3,6 +3,8 @@ package de.laser
 
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 
 /**
  * Represents a key/value pair for a customer {@link Org} which enables to load statistic data from a SUSHI server

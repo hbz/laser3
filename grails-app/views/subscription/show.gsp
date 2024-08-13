@@ -60,7 +60,7 @@
                 <div class="ui card la-time-card">
                     <div class="content">
                         <dl>
-                            <dt class="control-label"><g:message code="org.altname.label" /></dt>
+                            <dt class="control-label"><g:message code="altname.plural" /></dt>
                             <dd>
                                 <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion la-accordion-showMore">
                                     <g:if test="${subscription.altnames}">
@@ -143,7 +143,7 @@
                                                 </g:if>
                                             </div>
                                             <div class="${Btn.MODERN.SIMPLE_TOOLTIP} la-show-button"
-                                                 data-content="${message(code: 'org.altname.show')}">
+                                                 data-content="${message(code: 'altname.showAll')}">
                                                 <i class="${Icon.CMD.SHOW_MORE}"></i>
                                             </div>
                                         </div>
@@ -238,7 +238,10 @@
                             </dd>
                         </dl>
                         <g:if test="${editable}">
-                            <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} addListValue" data-objtype="altname" value="${message(code:'org.altname.add')}">
+                            <dl>
+                                <dt></dt>
+                                <dd><input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} addListValue" data-objtype="altname" value="${message(code:'altname.add')}"></dd>
+                            </dl>
                         </g:if>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.startDate.label')}</dt>
@@ -350,7 +353,7 @@
                                         auditable="[subscription, 'resource']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
-                        <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia().id}">
+                        <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortium().id}">
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.isInstanceOfSub.label')}</dt>
                                 <dd>
@@ -611,7 +614,7 @@
                     <div class="ui card la-dl-no-table">
                         <div class="content">
                             <g:if test="${costItemSums.ownCosts}">
-                                <g:if test="${(contextOrg.id != subscription.getConsortia()?.id && subscription.instanceOf) || !subscription.instanceOf}">
+                                <g:if test="${(contextOrg.id != subscription.getConsortium()?.id && subscription.instanceOf) || !subscription.instanceOf}">
                                     <h2 class="ui header">${message(code: 'financials.label')}: ${message(code: 'financials.tab.ownCosts')}</h2>
                                     <laser:render template="financials" model="[data: costItemSums.ownCosts]"/>
                                 </g:if>

@@ -9,7 +9,7 @@
 <div class="ui grid">
     <div class="sixteen wide column">
 
-        <h3 class="ui header"><i class="ui hdd icon"></i><span class="content">Dateien</span></h3>
+        <h3 class="ui header"><i class="hdd icon"></i><span class="content">Dateien</span></h3>
 
         <g:link action="deleteTempFile" class="${Btn.ICON.NEGATIVE_CONFIRM}" data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.tempDir")}" params="[emptyDir: true]" role="button" aria-label="${message(code: 'ariaLabel.delete.universal')}">
             <i class="${Icon.CMD.DELETE}"></i> Gesamtes Verzeichnis leeren

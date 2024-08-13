@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.wekb.Package; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
     <g:if test="${institutionalView}">
         <g:set var="entityName" value="${message(code: 'org.institution.label')}"/>
@@ -78,7 +78,7 @@
                         </dl>
                     </g:if>
                     <dl>
-                        <dt><g:message code="org.altname.label" /></dt>
+                        <dt><g:message code="altname.plural" /></dt>
                         <dd>
                             <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion la-accordion-showMore">
                                 <g:if test="${orgInstance.altnames}">
@@ -94,7 +94,7 @@
                                             </g:if>
                                         </div>
                                         <div class="${Btn.MODERN.SIMPLE_TOOLTIP} la-show-button"
-                                             data-content="${message(code: 'org.altname.show')}">
+                                             data-content="${message(code: 'altname.showAll')}">
                                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                                         </div>
                                     </div>
@@ -121,7 +121,7 @@
                                 </g:if>
                             </div>
                             <g:if test="${editable}">
-                                <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}">
+                                <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} addListValue" data-objtype="altname" value="${message(code: 'altname.add')}">
                             </g:if>
                         </dd>
                     </dl>
@@ -539,12 +539,12 @@
                                 <div class="right aligned four wide column">
                                     <g:if test="${inContextOrg}">
                                         <a href="#createPersonModal" class="${Btn.MODERN.SIMPLE} createContact" id="contactPersonForPublic" data-ui="modal">
-                                            <i aria-hidden="true" class="plus icon"></i>
+                                            <i aria-hidden="true" class="${Icon.CMD.ADD}"></i>
                                         </a>
                                     </g:if>
 %{--                                    <g:elseif test="${isProviderOrAgency}">--}%
 %{--                                        <a href="#createPersonModal" class="${Btn.MODERN.SIMPLE} createContact" id="contactPersonForProviderAgencyPublic" data-ui="modal">--}%
-%{--                                            <i aria-hidden="true" class="plus icon"></i>--}%
+%{--                                            <i aria-hidden="true" class="${Icon.CMD.ADD}"></i>--}%
 %{--                                        </a>--}%
 %{--                                    </g:elseif>--}%
                                 </div>
@@ -723,7 +723,7 @@
                                     </div>
                                     <div class="right aligned four wide column">
                                         <a href="#createPersonModal" class="${Btn.MODERN.SIMPLE} createContact" id="contactPersonForInstitution" data-ui="modal">
-                                            <i aria-hidden="true" class="plus icon"></i>
+                                            <i aria-hidden="true" class="${Icon.CMD.ADD}"></i>
                                         </a>
                                     </div>
                                 </div>
@@ -817,7 +817,7 @@
                                                                                     else respObjects << l
                                                                                 }
                                                                                 break
-                                                                            case 'pkg': de.laser.Package p = de.laser.Package.get(respRef[1])
+                                                                            case 'pkg': de.laser.wekb.Package p = de.laser.wekb.Package.get(respRef[1])
                                                                                 if(p.packageStatus != RDStore.PACKAGE_STATUS_REMOVED)
                                                                                     respObjects << p
                                                                                 break
@@ -856,7 +856,7 @@
                                                                                     <g:elseif test="${respObj instanceof License}">
                                                                                         (<g:link controller="license" action="show" id="${respObj.id}">${respObj.reference}</g:link>)
                                                                                     </g:elseif>
-                                                                                    <g:elseif test="${respObj instanceof de.laser.Package}">
+                                                                                    <g:elseif test="${respObj instanceof de.laser.wekb.Package}">
                                                                                         (<g:link controller="package" action="show" id="${respObj.id}">${respObj.name}</g:link>)
                                                                                     </g:elseif>
                                                                                     <g:if test="${respObj instanceof TitleInstancePackagePlatform}">

@@ -399,7 +399,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             boolean isPublic = false
             if(flag == CUSTOM_PROPERTY) {
                 if(owner instanceof Subscription)
-                    isPublic = owner._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE, CalculatedType.TYPE_PARTICIPATION] && owner.getConsortia()?.id == contextOrg.id
+                    isPublic = owner._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE, CalculatedType.TYPE_PARTICIPATION] && owner.getConsortium()?.id == contextOrg.id
                 else if(owner instanceof License)
                     isPublic = owner._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE, CalculatedType.TYPE_PARTICIPATION] && owner.getLicensingConsortium()?.id == contextOrg.id
             }

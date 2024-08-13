@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.Platform; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.Vendor; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.wekb.Platform; de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.wekb.Vendor; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
 <laser:serviceInjection/>
 
 <table id="${tableID ?: ''}" class="ui sortable celled la-js-responsive-table la-table table ${fixedHeader ?: ''}">
@@ -24,7 +24,7 @@
                 <g:sortableColumn title="${message(code: 'org.fullName.label')}" property="lower(p.name)" params="${request.getParameterMap()}"/>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('altname')}">
-                <th>${message(code: 'org.altname.label')}</th>
+                <th>${message(code: 'altname.plural')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
                 <th>${message(code: 'org.isWekbCurated.label')}</th>
@@ -102,7 +102,7 @@
                     </ul>
                     <g:if test="${altnames.size() > 10}">
                         <div class="ui accordion">
-                            <div class="title"><g:message code="default.further"/><i class="ui dropdown icon"></i></div>
+                            <div class="title"><g:message code="default.further"/><i class="dropdown icon"></i></div>
                             <div class="content">
                                 <ul class="la-simpleList">
                                     <g:each in="${altnames.drop(10)}" var="altname">

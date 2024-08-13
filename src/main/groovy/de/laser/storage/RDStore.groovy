@@ -66,10 +66,12 @@ class RDStore {
     public final static RefdataValue DOC_CONF_INTERNAL          = getRefdataValue('internal', RDConstants.DOCUMENT_CONFIDENTIALITY)
     public final static RefdataValue DOC_CONF_STRICTLY          = getRefdataValue('strictly_confidential', RDConstants.DOCUMENT_CONFIDENTIALITY)
     public final static RefdataValue DOC_CTX_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.DOCUMENT_CONTEXT_STATUS)
+    public final static RefdataValue DOC_TYPE_ADDENDUM          = getRefdataValue('Addendum', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_ANNOUNCEMENT      = getRefdataValue('Announcement', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_NOTE              = getRefdataValue('Note', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_RENEWAL           = getRefdataValue('Renewal', RDConstants.DOCUMENT_TYPE)
-    public final static RefdataValue DOC_TYPE_OFFER           = getRefdataValue('Offer', RDConstants.DOCUMENT_TYPE)
+    public final static RefdataValue DOC_TYPE_LICENSE           = getRefdataValue('License', RDConstants.DOCUMENT_TYPE)
+    public final static RefdataValue DOC_TYPE_OFFER             = getRefdataValue('Offer', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_ONIXPL            = getRefdataValue('ONIX-PL License', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_TITLELIST         = getRefdataValue('Title List', RDConstants.DOCUMENT_TYPE)
 
@@ -106,7 +108,7 @@ class RDStore {
     public final static RefdataValue OR_LICENSEE                = getRefdataValue('Licensee', RDConstants.ORGANISATIONAL_ROLE)
     public final static RefdataValue OR_LICENSEE_CONS           = getRefdataValue('Licensee_Consortial', RDConstants.ORGANISATIONAL_ROLE)
 
-    public final static RefdataValue OR_SUBSCRIPTION_CONSORTIA  = getRefdataValue('Subscription Consortia', RDConstants.ORGANISATIONAL_ROLE)
+    public final static RefdataValue OR_SUBSCRIPTION_CONSORTIUM = getRefdataValue('Subscription Consortia', RDConstants.ORGANISATIONAL_ROLE) // TODO: 'Subscription Consortium'
     public final static RefdataValue OR_SUBSCRIBER              = getRefdataValue('Subscriber', RDConstants.ORGANISATIONAL_ROLE)
     public final static RefdataValue OR_SUBSCRIBER_CONS         = getRefdataValue('Subscriber_Consortial', RDConstants.ORGANISATIONAL_ROLE)
     public final static RefdataValue OR_SUBSCRIBER_CONS_HIDDEN  = getRefdataValue('Subscriber_Consortial_Hidden', RDConstants.ORGANISATIONAL_ROLE)
@@ -319,6 +321,8 @@ class RDStore {
     public final static RefdataValue YNO_YES        = getRefdataValue('Yes', RDConstants.Y_N_O)
     public final static RefdataValue YNO_NO         = getRefdataValue('No', RDConstants.Y_N_O)
     public final static RefdataValue YNO_OTHER      = getRefdataValue('Other', RDConstants.Y_N_O)
+    public final static RefdataValue YNU_YES        = getRefdataValue('Yes', RDConstants.Y_N_U)
+    public final static RefdataValue YNU_NO         = getRefdataValue('No', RDConstants.Y_N_U)
     public final static RefdataValue YNU_UNKNOWN    = getRefdataValue('Unknown', RDConstants.Y_N_U)
 
     // --

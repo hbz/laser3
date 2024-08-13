@@ -21,6 +21,9 @@ import de.laser.storage.RDStore
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.GroovyRowResult
@@ -45,7 +48,6 @@ import org.springframework.context.MessageSource
 
 import java.awt.*
 import java.math.RoundingMode
-import java.sql.Connection
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat

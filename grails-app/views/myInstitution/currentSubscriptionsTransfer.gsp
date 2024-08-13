@@ -306,19 +306,19 @@
 
                     <th scope="col" rowspan="3" class="center aligned">
                         <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscription.survey.evaluation.label')}" data-position="top center">
-                            <i class="${Icon.ATTR.SURVEY_EVALUTAION}"></i>
+                            <i class="${Icon.ATTR.SURVEY_EVALUTAION} large"></i>
                         </a>
                     </th>
 
                     <th scope="col" rowspan="3" class="center aligned">
                         <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscription.survey.cancellation.label')}" data-position="top center">
-                            <i class="${Icon.ATTR.SURVEY_CANCELLATION}"></i>
+                            <i class="${Icon.ATTR.SURVEY_CANCELLATION} large"></i>
                         </a>
                     </th>
 
                     <th scope="col" rowspan="3" class="center aligned">
                         <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscription.discountScale.label')}" data-position="top center">
-                            <i class="${Icon.ATTR.SUBSCRIPTION_DISCOUNT_SCALE}"></i>
+                            <i class="${Icon.ATTR.SUBSCRIPTION_DISCOUNT_SCALE} large"></i>
                         </a>
                     </th> %{--Discount Scale--}%
 
@@ -442,8 +442,8 @@
                                         data-ownerclass="${s.class.name}"
                                         data-doctype="${RDStore.DOC_TYPE_OFFER.value}"
                                         data-ui="modal"
-                                        data-href="#modalCreateDocument"><i aria-hidden="true"
-                                                                            class="plus small icon"></i>
+                                        data-href="#modalCreateDocument">
+                                    <i aria-hidden="true" class="${Icon.CMD.ADD} small"></i>
                                 </button>
                             </g:if>
 
@@ -646,7 +646,8 @@
                                         data-ownerclass="${s.class.name}"
                                         data-doctype="${RDStore.DOC_TYPE_RENEWAL.value}"
                                         data-ui="modal"
-                                        data-href="#modalCreateDocument"><i aria-hidden="true" class="plus small icon"></i>
+                                        data-href="#modalCreateDocument">
+                                    <i aria-hidden="true" class="${Icon.CMD.ADD} small"></i>
                                 </button>
                             </g:if>
 

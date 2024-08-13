@@ -1,5 +1,11 @@
-package de.laser
+package de.laser.wekb
 
+import de.laser.AlternativeName
+import de.laser.GenericOIDService
+import de.laser.Org
+import de.laser.RefdataValue
+import de.laser.SubscriptionPackage
+import de.laser.TitleInstancePackagePlatform
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
@@ -159,7 +165,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
 
   /**
    * Checks whether this platform uses access points defined for the given subscription package
-   * @param subscriptionPackage the subscription (represented by the {@link SubscriptionPackage} link) whose configurations should be verified
+   * @param subscriptionPackage the subscription (represented by the {@link de.laser.SubscriptionPackage} link) whose configurations should be verified
    * @return true if there are access point configurations linked to this platform and the given subscription package, false otherwise
    */
     @Deprecated

@@ -43,7 +43,7 @@
                     <p>
                         <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                             <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: surveyConfig.id]" class="ui icon">
+                                    params="[surveyConfigID: surveyConfig.id]">
                                 <strong>${message(code: 'surveyParticipants.label')}:</strong>
                                 <span class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
                                     ${surveyConfig.orgs.size()}

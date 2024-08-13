@@ -83,7 +83,7 @@ class EscapeService {
      * @param name the name to normalise
      * @return the normalised sort name string
      * @see TitleInstancePackagePlatform#generateSortTitle()
-     * @see Package#generateSortName(java.lang.String)
+     * @see de.laser.wekb.Package#generateSortName(java.lang.String)
      */
     String generateSortTitle(String name) {
         Pattern alphanum = Pattern.compile("\\p{Punct}|\\p{Cntrl}|( ?« ?)+|( ?» ?)+")

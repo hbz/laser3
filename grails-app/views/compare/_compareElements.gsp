@@ -105,13 +105,13 @@
             <tr>
                 <td>
                     <strong><i
-                            class="${Icon.ORG}"></i>&nbsp;${RDStore.OR_LICENSOR.getI10n('value')}/${RDStore.OR_LICENSING_CONSORTIUM.getI10n('value')}/${RDStore.OR_SUBSCRIPTION_CONSORTIA.getI10n('value')}}:
+                            class="${Icon.ORG}"></i>&nbsp;${RDStore.OR_LICENSOR.getI10n('value')}/${RDStore.OR_LICENSING_CONSORTIUM.getI10n('value')}/${RDStore.OR_SUBSCRIPTION_CONSORTIUM.getI10n('value')}}:
                     </strong>
                 </td>
                 <g:each in="${objects}" var="object">
                     <td>
                         <g:each in="${object.orgRelations?.sort{it.org.name}}" var="role">
-                            <g:if test="${(role.roleType in [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_SUBSCRIPTION_CONSORTIA]) && role.org.id != contextOrg.id}">
+                            <g:if test="${(role.roleType in [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_SUBSCRIPTION_CONSORTIUM]) && role.org.id != contextOrg.id}">
                                 <strong><i class="${Icon.ORG}"></i>&nbsp;${role.roleType.getI10n("value")}:
                                 </strong>
                                 <g:link controller="organisation" action="show" target="_blank"

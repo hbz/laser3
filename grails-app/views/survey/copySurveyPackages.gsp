@@ -219,8 +219,7 @@
                                     <br>
                                     <br>
 
-                                    <div class="ui icon"
-                                         data-tooltip="${message(code: 'surveyProperty.label') + ': ' + multiYearResultProperties.collect { it.getI10n('name') }.join(', ') + ' = ' + message(code: 'refdata.Yes')}">
+                                    <div data-tooltip="${message(code: 'surveyProperty.label') + ': ' + multiYearResultProperties.collect { it.getI10n('name') }.join(', ') + ' = ' + message(code: 'refdata.Yes')}">
                                         <i class="bordered colored info icon"></i>
                                     </div>
                                 </g:if>
@@ -230,8 +229,7 @@
                                 <br>
                                 <br>
 
-                                <div class="ui icon"
-                                     data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
+                                <div data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
                                     <i class="${Icon.SURVEY} bordered colored"></i>
                                 </div>
                             </g:if>

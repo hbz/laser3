@@ -33,7 +33,7 @@
 
                 <div class="title">
                     <i class="dropdown icon"></i>
-                    ${rdc.getI10n('desc')} (${rdc.desc})
+                    ${rdc.getI10n('desc')} (${rdc.desc}) <!--[${rdc.id}]-->
                 </div>
                 <div class="content">
 

@@ -4,8 +4,7 @@ package de.laser.api.v0.entities
 import de.laser.Identifier
 import de.laser.IdentifierNamespace
 import de.laser.Org
-import de.laser.Platform
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.api.v0.ApiBox
 import de.laser.api.v0.ApiUnsecuredMapReader
 import de.laser.storage.Constants

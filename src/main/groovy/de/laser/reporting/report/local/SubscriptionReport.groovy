@@ -14,6 +14,7 @@ import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Package
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 
@@ -46,7 +47,7 @@ class SubscriptionReport {
             return SubscriptionXCfg.CONFIG_CONS_AT_CONS
         }
         else if (calcType in [Subscription.TYPE_PARTICIPATION]) {
-            if (sub.getConsortia().id == BeanStore.getContextService().getOrg().id) {
+            if (sub.getConsortium().id == BeanStore.getContextService().getOrg().id) {
                 return SubscriptionXCfg.CONFIG_CONS_AT_SUBSCR
             }
             else {
@@ -320,7 +321,7 @@ class SubscriptionReport {
                     List<List<Long>> pkgIdLists = []
 
                     timeline.eachWithIndex { s, i ->
-                        pkgIdLists.add(de.laser.Package.executeQuery(
+                        pkgIdLists.add(de.laser.wekb.Package.executeQuery(
                                 'select distinct ie.tipp.pkg.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status',
                                 [sub: s, status: RDStore.TIPP_STATUS_CURRENT]
                         ))

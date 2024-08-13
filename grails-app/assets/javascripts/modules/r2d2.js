@@ -831,30 +831,19 @@ r2d2 = {
                 }
                 var $jscb = $('#js-confirmation-button')
 
-                switch (how) {
-                    case "delete":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.delete', JSPC.config.language) + '<i aria-hidden="true" class="trash alternate outline icon"></i>');
-                        break;
-                    case "unlink":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.unlink', JSPC.config.language) + '<i aria-hidden="true" class="la-chain broken icon"></i>');
-                        break;
-                    case "unset":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.unset', JSPC.config.language) + '<i aria-hidden="true" class="eraser icon"></i>');
-                        break;
-                    case "share":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.share', JSPC.config.language) + '<i aria-hidden="true" class="la-share icon"></i>');
-                        break;
-                    case "inherit":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.inherit', JSPC.config.language) + '<i aria-hidden="true" class="thumbtack icon"></i>');
-                        break;
-                    case "ok":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.ok', JSPC.config.language) + '<i aria-hidden="true" class="check icon"></i>');
-                        break;
-                    case "concludeBinding":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.concludeBinding', JSPC.config.language) + '<i aria-hidden="true" class="check icon"></i>');
-                        break;
-                    default:
-                        $('').html('Entfernen<i aria-hidden="true" class="x icon"></i>');
+                let map = {
+                    'delete'            : JSPC.icons.CMD.DELETE,
+                    'unlink'            : 'la-chain broken icon',
+                    'unset'             : JSPC.icons.CMD.ERASE,
+                    'share'             : JSPC.icons.SIG.SHARED_OBJECT_ON,
+                    'inherit'           : JSPC.icons.SIG.INHERITANCE,
+                    'ok'                : JSPC.icons.SYM.YES,
+                    'concludeBinding'   : JSPC.icons.SYM.YES
+                }
+                if (map[how]) {
+                    $jscb.html(JSPC.dict.get('confirm.dialog.' + how, JSPC.config.language) + '<i aria-hidden="true" class="' + map[how] + '"></i>');
+                } else {
+                    $('').html('Entfernen<i aria-hidden="true" class="' + JSPC.icons.SYM.NO + '"></i>');
                 }
 
                 var remoteLink = $(elem).hasClass('la-js-remoteLink')

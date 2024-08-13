@@ -11,10 +11,10 @@ import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
+import de.laser.wekb.Package
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 
@@ -25,7 +25,7 @@ import java.util.concurrent.ExecutorService
 
 /**
  * This controller manages display calls to packages
- * @see Package
+ * @see de.laser.wekb.Package
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PackageController {
@@ -195,7 +195,7 @@ class PackageController {
 
         List<RefdataValue> roleTypes = [RDStore.OR_SUBSCRIBER]
         if (contextService.getOrg().isCustomerType_Consortium()) {
-            roleTypes.addAll([RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS])
+            roleTypes.addAll([RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS])
         }
 
 
@@ -221,7 +221,7 @@ class PackageController {
         Map<Org, Map<String, Object>> gascoContacts = [:]
         PropertyDefinition gascoDisplayName = PropertyStore.SUB_PROP_GASCO_NEGOTIATOR_NAME
         gascoSubscriptions.each { Subscription s ->
-            Org gascoNegotiator = s.getConsortia()
+            Org gascoNegotiator = s.getConsortium()
             if(gascoNegotiator) {
                 Map<String, Object> gascoContactData = gascoContacts.get(gascoNegotiator)
                 Set<PersonRole> personRoles = PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, gascoNegotiator)

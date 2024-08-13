@@ -1,9 +1,9 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.*;de.laser.storage.RDStore;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.wekb.Provider; de.laser.wekb.ProviderRole; de.laser.wekb.ProviderLink; de.laser.wekb.Vendor; de.laser.wekb.VendorLink; de.laser.utils.DateUtils; de.laser.*;de.laser.storage.RDStore;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants" %>
 <laser:serviceInjection/>
 <g:if test="${editmode}">
 
         <a role="button"
-           class="ui button la-modern-button la-popup-tooltip ${tmplCss}"
+           class="ui button la-popup-tooltip ${tmplCss}"
            data-ui="modal" href="#${tmplModalID}"
            data-content="${message(code:'license.details.editLink')}">
             <g:if test="${tmplIcon}">

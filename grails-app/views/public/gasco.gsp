@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.PersonRole; de.laser.ProviderRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.wekb.ProviderRole; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.PersonRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
 
 <laser:htmlStart message="menu.public.gasco_monitor">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
@@ -151,7 +151,7 @@
                         <g:each in="${sub.packages}" var="subPkg" status="j">
                             <div class="la-flexbox">
                                 <i class="${Icon.PACKAGE} la-list-icon"></i>
-                                <g:link controller="public" action="gascoDetails" id="${subPkg.id}">${subPkg.pkg}</g:link>
+                                <g:link controller="gasco" action="details" id="${subPkg.id}">${subPkg.pkg}</g:link>
                             </div>
                         </g:each>
                     </td>
@@ -161,9 +161,9 @@
                         </g:each>
                     </td>
                     <td>
-                        ${gasco_verhandlername ?: sub.getConsortia()?.name}
+                        ${gasco_verhandlername ?: sub.getConsortium()?.name}
                         <br />
-                        <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, sub.getConsortia())}" var="personRole">
+                        <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, sub.getConsortium())}" var="personRole">
                             <g:set var="person" value="${personRole.getPrs()}" />
                             <g:if test="${person.isPublic}">
                             <div class="ui list">
@@ -196,7 +196,7 @@
                     </td>
                     <td class="center aligned">
                         <g:if test="${flyoutCheckList.contains(sub.id)}">
-                            <g:link class="${Btn.MODERN.SIMPLE} flyoutLink" controller="public" action="gascoFlyout" data-key="${sub.id}">
+                            <g:link class="${Btn.MODERN.SIMPLE} flyoutLink" controller="gasco" action="json" data-key="${sub.id}">
                                 <i class="${Icon.UI.INFO}"></i>
                             </g:link>
                         </g:if>

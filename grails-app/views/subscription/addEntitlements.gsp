@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Subscription; de.laser.remote.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.Platform; de.laser.IssueEntitlementGroup" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Subscription; de.laser.remote.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.wekb.Platform; de.laser.IssueEntitlementGroup" %>
 
 <laser:htmlStart message="subscription.details.addEntitlements.label" serviceInjection="true" />
 
@@ -19,7 +19,7 @@
 
 <h2 class="ui left aligned icon header la-clear-before">${message(code: 'subscription.details.addEntitlements.label')}</h2>
 <%-- <laser:render template="nav"/> --%>
-<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortium()?.id}">
     <laser:render template="message"/>
 </g:if>
 

@@ -4,14 +4,12 @@ package de.laser
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.base.AbstractReport
 import de.laser.cache.EhcacheWrapper
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
 import de.laser.helper.*
-import de.laser.http.BasicHttpClient
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -22,27 +20,28 @@ import de.laser.stats.SushiCallError
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
-import de.laser.system.SystemEvent
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.ProviderRole
+import de.laser.wekb.Vendor
+import de.laser.wekb.VendorRole
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.BatchingPreparedStatementWrapper
 import groovy.sql.BatchingStatementWrapper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
-import io.micronaut.http.client.DefaultHttpClientConfiguration
-import io.micronaut.http.client.HttpClientConfiguration
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.grails.web.json.JSONObject
 import org.springframework.context.MessageSource
 import org.springframework.web.multipart.MultipartFile
 
 import java.sql.Connection
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
-import java.time.Duration
 import java.time.Year
 import java.util.concurrent.ExecutorService
 
@@ -354,7 +353,7 @@ class SubscriptionService {
                     " and roleT.roleType in (:rdvSubscr) " +
                     " and ( (ci is null or ci.costItemStatus != :deleted) ) "
             qarams = [org      : contextOrg,
-                      rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
+                      rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIUM,
                       rdvSubscr: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],
                       deleted  : RDStore.COST_ITEM_DELETED
             ]
@@ -367,7 +366,7 @@ class SubscriptionService {
                     " and roleTK.org = :org and roleTK.roleType = :rdvCons " +
                     " and ( roleT.roleType = :rdvSubscr or roleT.roleType = :rdvSubscrHidden ) "
             qarams = [org      : contextOrg,
-                      rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
+                      rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIUM,
                       rdvSubscr: RDStore.OR_SUBSCRIBER_CONS,
                       rdvSubscrHidden: RDStore.OR_SUBSCRIBER_CONS_HIDDEN
             ]
@@ -519,11 +518,11 @@ class SubscriptionService {
 
             if (params.filterPvd) {
                 query = query + " and exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.sub.id = subT.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select provRole from ProviderRole provRole where provRole.subscription = sub and provRole.provider.id in (:filterPvd))) "
-                qarams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextOrg, filterPvd: Params.getLongList(params, 'filterPvd')]
+                qarams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextOrg, filterPvd: Params.getLongList(params, 'filterPvd')]
             }
             if (params.filterVen) {
                 query = query + " and exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.sub.id = subT.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select venRole from VendorRole venRole where venRole.subscription = sub and venRole.vendor.id in (:filterVen))) "
-                qarams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextOrg, filterVen: Params.getLongList(params, 'filterVen')]
+                qarams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextOrg, filterVen: Params.getLongList(params, 'filterVen')]
             }
 
 
@@ -719,7 +718,7 @@ class SubscriptionService {
             queryParams.status = params.status
         }
         queryParams.showParentsAndChildsSubs = params.showSubscriber
-        queryParams.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
+        queryParams.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIUM.value
         String joinQuery = params.joinQuery ?: ""
         List result = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, joinQuery)
         result
@@ -1017,7 +1016,7 @@ class SubscriptionService {
      * The method uses native SQL for copying the issue entitlements, (eventual) coverages and price items
      * @param subscription the parent {@link Subscription} whose holding serves as base
      * @param memberSubs the {@link List} of member {@link Subscription}s which should be linked to the given package
-     * @param pkg the {@link de.laser.Package} to be linked
+     * @param pkg the {@link de.laser.wekb.Package} to be linked
      * @param createEntitlements should {@link IssueEntitlement}s be created along with the linking?
      */
     void addToMemberSubscription(Subscription subscription, List<Subscription> memberSubs, Package pkg, boolean createEntitlements) {
@@ -1071,7 +1070,7 @@ class SubscriptionService {
     }
 
     /**
-     * Copy from: {@link #addToSubscription(de.laser.Subscription, de.laser.Package, boolean)}
+     * Copy from: {@link #addToSubscription(de.laser.Subscription, de.laser.wekb.Package, boolean)}
      * Adds the consortial title holding to the given member subscription and links the given package to the member
      * @param target the member subscription whose holding should be enriched
      * @param consortia the consortial subscription whose holding should be taken
@@ -1647,7 +1646,7 @@ class SubscriptionService {
      * false otherwise
      */
     boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
-        return ((subscription.getConsortia()?.id == contextOrg.id) && subscription._getCalculatedType() in
+        return ((subscription.getConsortium()?.id == contextOrg.id) && subscription._getCalculatedType() in
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
     }
 
@@ -2165,7 +2164,7 @@ class SubscriptionService {
                 String idCandidate = cols[colMap.instanceOf].trim()
                 String memberIdCandidate = cols[colMap.member].trim()
                 if(idCandidate && memberIdCandidate) {
-                    List<Subscription> parentSubs = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and :idCandidate in (cast(oo.sub.id as string),oo.sub.globalUID)",[contextOrg: contextOrg, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA], idCandidate: idCandidate])
+                    List<Subscription> parentSubs = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and :idCandidate in (cast(oo.sub.id as string),oo.sub.globalUID)",[contextOrg: contextOrg, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIUM], idCandidate: idCandidate])
                     List<Org> possibleOrgs = Org.executeQuery("select distinct ident.org from Identifier ident, Combo c where c.fromOrg = ident.org and :idCandidate in (cast(ident.org.id as string), ident.org.globalUID) or (ident.value = :idCandidate and ident.ns = :wibid) and c.toOrg = :contextOrg and c.type = :type", [idCandidate:memberIdCandidate,wibid:IdentifierNamespace.findByNs('wibid'),contextOrg: contextOrg,type: comboType])
                     if(parentSubs.size() == 1) {
                         Subscription instanceOf = parentSubs[0]
@@ -2309,7 +2308,7 @@ class SubscriptionService {
                     //create the org role associations
                     RefdataValue parentRoleType, memberRoleType
                     if (contextService.getOrg().isCustomerType_Consortium()) {
-                        parentRoleType = RDStore.OR_SUBSCRIPTION_CONSORTIA
+                        parentRoleType = RDStore.OR_SUBSCRIPTION_CONSORTIUM
                         memberRoleType = RDStore.OR_SUBSCRIBER_CONS
                     }
                     else

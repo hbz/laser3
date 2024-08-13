@@ -23,42 +23,47 @@ abstract class AbstractJob {
         jobIsRunning
     }
 
-    /**
-     * Checks if the job can be started and records the start if so
-     * @param startEventToken the token which identifies the given job in the {@link SystemEvent} records
-     * @param suppressLog should the log output be suppressed?
-     * @return true if the job could be started successfully, false otherwise
-     */
-    protected boolean start(String startEventToken = null, boolean suppressLog = false) {
-        if (! isAvailable()) {
-            return false
-        }
-        else {
-            jobIsRunning = true
-
+    protected boolean simpleStart(boolean suppressLog = false) {
+        if (isAvailable()) {
             if (!suppressLog) {
                 log.info ' -> ' + this.class.simpleName + ' started'
             }
-            if (startEventToken) {
-                SystemEvent.createEvent( startEventToken )
-            }
+            jobIsRunning = true
+            return true
         }
-        true
+        return false
     }
-
-    /**
-     * Records the end of the job running and releases the lock
-     * @param stopEventToken the token which identifies the given job in the {@link SystemEvent} records
-     * @param suppressLog should the log output be suppressed?
-     */
-    protected void stop(String stopEventToken = null, boolean suppressLog = false) {
+    protected void simpleStop(boolean suppressLog = false) {
         if (!suppressLog) {
             log.info ' -> ' + this.class.simpleName + ' finished'
         }
-        if (stopEventToken) {
-            SystemEvent.createEvent( stopEventToken )
-        }
+        jobIsRunning = false
+    }
 
+    /**
+        Flags jobIsRunning if available and returns systemEvent or null if not
+     */
+    protected SystemEvent start(String startToken) {
+        if (isAvailable()) {
+            log.info ' -> ' + this.class.simpleName + ' started: ' + startToken
+            jobIsRunning = true
+            return SystemEvent.createEvent(startToken)
+        }
+       return null
+    }
+    /**
+        Flags jobIsRunning and changes systemEvent.token: A_B_START -> A_B_COMPLETE
+     */
+    protected void stopAndComplete(SystemEvent systemEvent, Map<String, Object> payload = [:]) {
+        if (!systemEvent) {
+            log.warn ' -> ' + this.class.simpleName + ' finished - but no SystemEvent given'
+        }
+        else {
+            String stopToken = systemEvent.token.replace('_START', '_COMPLETE')
+            log.info ' -> ' + this.class.simpleName + ' finished: ' + systemEvent.token + ' > ' + stopToken
+
+            systemEvent.changeTo(stopToken, payload)
+        }
         jobIsRunning = false
     }
 }

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Package; de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.Vendor; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.wekb.Package; de.laser.wekb.Vendor; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
 <laser:serviceInjection/>
 <g:if test="${'surveySubCostItem' in tmplConfigShow}">
     <g:set var="oldCostItem" value="${0.0}"/>
@@ -42,7 +42,7 @@
                 <g:sortableColumn title="${message(code: 'org.fullName.label')}" property="lower(o.name)" params="${request.getParameterMap()}"/>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('altname')}">
-                <th>${message(code: 'org.altname.label')}</th>
+                <th>${message(code: 'altname.plural')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('mainContact')}">
                 <th>${message(code: 'org.mainContact.label')}</th>
@@ -150,7 +150,7 @@
                                 tmpParams.remove("sort")
                             %>
                             <g:if test="${sortOnCostItemsUp}">
-                                <g:link action="surveyCostItems" class="ui icon"
+                                <g:link action="surveyCostItems"
                                         params="${tmpParams + [sortOnCostItemsDown: true]}"><span
                                         class="la-popup-tooltip"
                                         data-position="top right"
@@ -159,7 +159,7 @@
                                 </span></g:link>
                             </g:if>
                             <g:else>
-                                <g:link action="surveyCostItems" class="ui icon"
+                                <g:link action="surveyCostItems"
                                         params="${tmpParams + [sortOnCostItemsUp: true]}"><span
                                         class="la-popup-tooltip"
                                         data-position="top right"
@@ -310,7 +310,7 @@
                     <g:if test="${altnames.size() > 10}">
                         <div class="ui accordion">
                             <%-- TODO translation string if this solution is going to be accepted --%>
-                            <div class="title">Weitere ...<i class="ui dropdown icon"></i></div>
+                            <div class="title">Weitere ...<i class="dropdown icon"></i></div>
                             <div class="content">
                                 <ul class="la-simpleList">
                                     <g:each in="${altnames.drop(10)}" var="altname">

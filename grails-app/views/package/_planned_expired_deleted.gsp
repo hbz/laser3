@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ExportClickMeService; de.laser.Package" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.wekb.Package" %>
 
       <ui:breadcrumbs>
           <ui:crumb controller="package" action="index" text="${message(code:'package.show.all')}" />

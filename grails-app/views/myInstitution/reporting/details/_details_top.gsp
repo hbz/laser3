@@ -5,7 +5,8 @@
 
 <div style="text-align:right; margin-right:0.5em">
     <g:if test="${!(queryPart in ['issueEntitlement'])}">
-        <button id="details-export-button" class="${Btn.MODERN.SIMPLE}" data-href="#detailsExportModal" data-ui="modal">
+        <button id="details-export-button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="${message(code: 'default.button.export.label')}"
+                data-href="#detailsExportModal" data-ui="modal">
             <i class="${Icon.CMD.DOWNLOAD}"></i>
         </button>
     </g:if>
@@ -16,8 +17,9 @@
         </button>
     </g:if>
 
-    <g:if test="${queryPart in ['org', 'member', 'consortium', /* 'provider', 'vendor' */]}"><!-- TODO -->
-        <button id="details-copy-email-button" class="${Btn.MODERN.SIMPLE}" data-href="#detailsCopyEmailModal" data-ui="modal">
+    <g:if test="${queryPart in ['org', 'member', 'consortium', 'provider', 'vendor']}">
+        <button id="details-copy-email-button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="${message(code: 'menu.institutions.copy_emailaddresses.button')}"
+                data-href="#detailsCopyEmailModal" data-ui="modal">
             <i class="${Icon.SYM.EMAIL}"></i>
         </button>
     </g:if>

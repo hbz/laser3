@@ -14,6 +14,10 @@ import de.laser.storage.RDStore
 import de.laser.traits.ShareableTrait
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Provider
+import de.laser.wekb.ProviderRole
+import de.laser.wekb.Vendor
+import de.laser.wekb.VendorRole
 import grails.plugins.orm.auditable.Auditable
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -32,6 +36,19 @@ import java.text.SimpleDateFormat
  */
 class License extends AbstractBaseWithCalculatedLastUpdated
         implements Auditable, CalculatedType, Permissions, ShareSupport, Comparable<License> {
+
+    static enum ONIXPL_CONTROLLED_LIST {
+        LICENSE_DOCUMENT_TYPE_CODE ('LicenseDocumentTypeCode'),
+        LICENSE_STATUS_CODE ('LicenseStatusCode'),
+        TERM_STATUS_CODE ('TermStatusCode'),
+        USAGE_STATUS_CODE ('UsageStatusCode')
+
+        ONIXPL_CONTROLLED_LIST(String code) {
+            this.code = code
+        }
+
+        public String code
+    }
 
     License instanceOf
 
@@ -305,7 +322,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     /**
      * Retrieves all organisation linked as providers to this license
-     * @return a {@link List} of {@link Provider}s linked as provider
+     * @return a {@link List} of {@link de.laser.wekb.Provider}s linked as provider
      */
     List<Provider> getProviders() {
         Provider.executeQuery("select pvr.provider from ProviderRole pvr where pvr.license = :lic order by pvr.provider.sortname",
@@ -314,7 +331,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     /**
      * Retrieves all vendors linked to this license
-     * @return a {@link List} of linked {@link Vendor}s
+     * @return a {@link List} of linked {@link de.laser.wekb.Vendor}s
      */
     List<Vendor> getVendors() {
         Vendor.executeQuery("select vr.vendor from VendorRole vr where vr.license = :lic order by vr.vendor.sortname",

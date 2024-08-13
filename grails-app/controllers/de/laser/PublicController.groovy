@@ -6,6 +6,7 @@ import de.laser.config.ConfigMapper
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDStore
 import de.laser.utils.AppUtils
+import de.laser.wekb.Package
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
@@ -22,19 +23,29 @@ class PublicController {
     MailService mailService
     SpringSecurityService springSecurityService
 
+    /**
+     * Displays the landing page
+     */
+    @Secured(['permitAll'])
+    def index() {
+    }
+
    /**
     * Displays the robots.txt preventing crawler access to instances other than the productive one
     */
     @Secured(['permitAll'])
     def robots() {
-        if (AppUtils.getCurrentServer() != AppUtils.PROD) {
-            def text = "User-agent: *\n" +
-                    "Disallow: / \n"
+        String text = "User-agent: *\n"
 
-            render(text: text, contentType: "text/plain", encoding: "UTF-8")
-        } else {
-            render(status: 404, text: 'Failed to load robots.txt')
+        if (AppUtils.getCurrentServer() == AppUtils.PROD) {
+            text += "Disallow: /tipp/ \n"                                   // TODO TMP
+            text += "Disallow: /public/gascoDetailsIssueEntitlements/ \n"   // TODO TMP
+            text += "Disallow: /gasco/details/ \n"
         }
+        else {
+            text += "Disallow: / \n"
+        }
+        render(text: text, contentType: "text/plain", encoding: "UTF-8")
     }
 
     /**
@@ -79,13 +90,6 @@ class PublicController {
     }
 
     /**
-     * Displays the landing page
-     */
-    @Secured(['permitAll'])
-    def index() {
-    }
-
-    /**
      * Test page for check compatibility
      */
     @Secured(['permitAll'])
@@ -104,6 +108,8 @@ class PublicController {
     def gasco() {
         Map<String, Object> result = [:]
 
+      try {
+
         result.allConsortia = Org.executeQuery(
                 """select o from Org o, OrgSetting os_gs, OrgSetting os_ct where 
                         os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and 
@@ -112,13 +118,11 @@ class PublicController {
                         order by lower(o.name)"""
         )
 
-
         if (! params.subKinds && ! params.consortia && ! params.q) {
             // init filter with checkboxes checked
             result.initQuery = 'true'
         }
         else {
-
             String q = params.q?.trim()
             Map<String, Object> queryParams = [:]
 
@@ -183,6 +187,11 @@ class PublicController {
             }
             result.subscriptionsCount = result.subscriptions.size()
         }
+
+      } catch (Exception e) {
+          log.warn 'gasco: exception caused by ' + request.getRemoteAddr()
+          throw e
+      }
 
         result
     }
@@ -265,7 +274,7 @@ class PublicController {
      * @see Org#region
      */
     @Secured(['permitAll'])
-    def gascoFlyout() {
+    def gascoJson() {
         Map<String, Object> result = [
             title: '?',
             data: []
@@ -301,7 +310,6 @@ class PublicController {
         }
         render result as JSON
     }
-
 
     /**
      * @return the frontend view with sample area for frontend developing and showcase

@@ -3,11 +3,9 @@ package de.laser
 import de.laser.annotations.Check404
 import de.laser.auth.User
 import de.laser.config.ConfigMapper
-import de.laser.storage.PropertyStore
 import de.laser.utils.SwissKnife
-import de.laser.properties.PlatformProperty
-import de.laser.properties.PropertyDefinition
 import de.laser.annotations.DebugInfo
+import de.laser.wekb.Platform
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.transaction.TransactionStatus
@@ -45,7 +43,7 @@ class IssueEntitlementController {
       result.issueEntitlementInstance = IssueEntitlement.get(params.id)
       result.sub = result.issueEntitlementInstance.subscription
 
-      if(result.sub.getSubscriberRespConsortia().id == contextService.getOrg().id || (result.sub.getConsortia() && result.sub.getConsortia().id == contextService.getOrg().id)){
+      if(result.sub.getSubscriberRespConsortia().id == contextService.getOrg().id || (result.sub.getConsortium() && result.sub.getConsortium().id == contextService.getOrg().id)){
           result.isMySub = true
       }
 

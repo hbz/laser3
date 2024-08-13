@@ -470,8 +470,8 @@
                                         data-ownerclass="${subParticipant.class.name}"
                                         data-doctype="${RDStore.DOC_TYPE_TITLELIST.value}"
                                         data-ui="modal"
-                                        data-href="#modalUploadTitleListDoc"><i aria-hidden="true"
-                                                                            class="plus small icon"></i>
+                                        data-href="#modalUploadTitleListDoc">
+                                    <i aria-hidden="true" class="${Icon.CMD.ADD} small"></i>
                                 </button>
                             </g:if>
 
@@ -1052,8 +1052,8 @@
                                         data-ownerclass="${subParticipant.class.name}"
                                         data-doctype="${RDStore.DOC_TYPE_TITLELIST.value}"
                                         data-ui="modal"
-                                        data-href="#modalUploadTitleListDoc"><i aria-hidden="true"
-                                                                            class="plus small icon"></i>
+                                        data-href="#modalUploadTitleListDoc">
+                                    <i aria-hidden="true" class="${Icon.CMD.ADD} small"></i>
                                 </button>
                             </g:if>
 

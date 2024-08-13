@@ -31,6 +31,9 @@ import de.laser.config.ConfigMapper
 import de.laser.survey.SurveyVendorResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.gsp.PageRenderer
@@ -1724,7 +1727,7 @@ class SurveyService {
         Map qry_params = [:]
         RefdataValue role_sub = RDStore.OR_SUBSCRIBER
         RefdataValue role_subCons = RDStore.OR_SUBSCRIBER_CONS
-        RefdataValue role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIUM
 
         if (org.isCustomerType_Consortium_Pro()) {
             //nur Parents

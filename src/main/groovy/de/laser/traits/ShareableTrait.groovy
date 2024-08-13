@@ -2,9 +2,8 @@ package de.laser.traits
 
 import de.laser.DocContext
 import de.laser.OrgRole
-import de.laser.Provider
-import de.laser.ProviderRole
-import de.laser.VendorRole
+import de.laser.wekb.ProviderRole
+import de.laser.wekb.VendorRole
 import de.laser.interfaces.ShareSupport
 import de.laser.storage.BeanStore
 

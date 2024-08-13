@@ -9,6 +9,7 @@ import de.laser.reporting.report.myInstitution.base.BaseDetails
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Vendor
 import org.grails.plugins.web.taglib.ApplicationTagLib
 import org.springframework.context.MessageSource
 

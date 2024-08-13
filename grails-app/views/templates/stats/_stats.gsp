@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.base.AbstractReport; de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription; de.laser.wekb.Platform; de.laser.base.AbstractReport; de.laser.finance.CostItem" %>
 
 <g:if test="${platformInstanceRecords.values().statisticsFormat.contains('COUNTER')}">
     <laser:serviceInjection/>
@@ -150,7 +150,7 @@
             <g:if test="${error == 'noCustomerId'}">
                 <g:message code="default.stats.error.${error}.local" args="${errorArgs}"/>
 
-                <g:if test="${contextOrg.id == subscription.getConsortia()?.id}">
+                <g:if test="${contextOrg.id == subscription.getConsortium()?.id}">
                     <br/>
                     Alternativ: <g:link controller="subscription" action="membersSubscriptionsManagement"
                                         id="${subscription.instanceOf.id}"
@@ -290,7 +290,7 @@
                         data: data
                     }).done(function(response) {
                         if(response.error === true) {
-                            cell.html('<span class="la-popup-tooltip" data-content="'+response.message+'"><i class="ui circular inverted icon red times"></i></span>');
+                            cell.html('<span class="la-popup-tooltip" data-content="'+response.message+'"><i class="circular inverted icon red times"></i></span>');
                             r2d2.initDynamicUiStuff('#'+cell.attr('id'));
                         }
                     });

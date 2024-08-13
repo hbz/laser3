@@ -16,6 +16,7 @@ import de.laser.storage.RDStore
 import de.laser.system.SystemEvent
 import de.laser.usage.StatsSyncServiceOptions
 import de.laser.usage.SushiClient
+import de.laser.wekb.Platform
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.json.JsonOutput
@@ -155,7 +156,7 @@ class StatsSyncService {
      * Starts the internal statistics synchronisation process, i.e. loading usage data directly from the providers
      * and puts the process on a new thread
      * @param incremental should only new data being loaded or a full data reload done?
-     * @params platformUUID fetch usage data for the given {@link Platform} UUID
+     * @params platformUUID fetch usage data for the given {@link de.laser.wekb.Platform} UUID
      * @params the SUSHI API URL of the platform
      * @params which COUNTER version is being offered by the API - counter4 or counter5?
      * @deprecated disused because usage data is not persisted in LAS:eR any more
@@ -213,7 +214,7 @@ class StatsSyncService {
      * Performs the loading of the SUSHI sources from the we:kb instance and loads the data from the SUSHI endpoints defined there.
      * Both COUNTER 4 and COUNTER 5 are being processed here
      * @param incremental should only newest data being fetched or a full data reload done?
-     * @params platformUUID fetch usage data for the given {@link Platform} UUID
+     * @params platformUUID fetch usage data for the given {@link de.laser.wekb.Platform} UUID
      * @params the SUSHI API URL of the platform
      * @params which COUNTER version is being offered by the API - counter4 or counter5?
      * @deprecated disused because usage data is not persisted in LAS:eR any more

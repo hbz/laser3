@@ -30,22 +30,22 @@ class Icon {
         @UIDoc(usage = 'Only for Subscription transfer: discount scale')
         public static String SUBSCRIPTION_DISCOUNT_SCALE    = 'percentage icon'
 
-        @UIDoc(usage = 'Only for Subscription attribute: form (TODO)')
-        public static String SUBSCRIPTION_FORM              = 'dolly icon'              // todo: change icon
+        @UIDoc(usage = 'Only for Subscription attribute: form')
+        public static String SUBSCRIPTION_FORM              = 'dice icon'
 
-        @UIDoc(usage = 'Only for Subscription attribute: hasPerpetualAccess (TODO)')
-        public static String SUBSCRIPTION_HAS_PERPETUAL_ACCESS  = 'flag outline icon'   // todo: change icon
-        @UIDoc(usage = 'Only for Subscription attribute: hasPublishComponent (TODO)')
-        public static String SUBSCRIPTION_HAS_PUBLISH_COMPONENT = 'comment icon'        // todo: change icon
-        @UIDoc(usage = 'Only for Subscription attribute: holdingSelection (TODO)')
-        public static String SUBSCRIPTION_HOLDING_SELECTION     = 'pizza slice icon'    // todo: change icon
+        @UIDoc(usage = 'Only for Subscription attribute: hasPerpetualAccess')
+        public static String SUBSCRIPTION_HAS_PERPETUAL_ACCESS  = 'flag outline icon'
+        @UIDoc(usage = 'Only for Subscription attribute: hasPublishComponent')
+        public static String SUBSCRIPTION_HAS_PUBLISH_COMPONENT = 'quote right icon'
+        @UIDoc(usage = 'Only for Subscription attribute: holdingSelection')
+        public static String SUBSCRIPTION_HOLDING_SELECTION     = 'cut icon'            // TODO
 
         @UIDoc(usage = 'Only for Subscription attribute: isMultiYear')
         public static String SUBSCRIPTION_IS_MULTIYEAR      = 'forward icon'
-        @UIDoc(usage = 'Only for Subscription attribute: kind (TODO)')
-        public static String SUBSCRIPTION_KIND              = 'image outline icon'  // todo: change icon
-        @UIDoc(usage = 'Only for Subscription attribute: resource (TODO)')
-        public static String SUBSCRIPTION_RESOURCE          = 'box icon'            // todo: change icon
+        @UIDoc(usage = 'Only for Subscription attribute: kind')
+        public static String SUBSCRIPTION_KIND              = 'dice five icon'          // TODO
+        @UIDoc(usage = 'Only for Subscription attribute: resource')
+        public static String SUBSCRIPTION_RESOURCE          = 'expand icon'             // TODO
 
         @UIDoc(usage = 'Only for Subscription transfer: survey cancellation')
         public static String SURVEY_CANCELLATION   = 'times circle icon'
@@ -141,7 +141,7 @@ class Icon {
         @UIDoc(usage = 'Only for Links to google maps')
         public static String GOOGLE_MAPS    = 'map marker alternate icon'
         @UIDoc(usage = 'Only for Links to send emails')
-        public static String MAIL_TO        = 'at icon'
+        public static String MAIL_TO        = 'paper plane outline icon'
         @UIDoc(usage = 'Only for Links to views for successors of the current object (see also PREV)')
         public static String NEXT       = 'arrow right icon'     // todo: duplicate: ui:anualRings, ui:statusWithRings
         @UIDoc(usage = 'Only for Links to views for predecessors of the current object (see also NEXT)')
@@ -322,7 +322,7 @@ class Icon {
 
     public static String IDENTIFIER                 = 'barcode icon'
 
-    public static String IE_GROUP                   = 'object group icon'
+    public static String IE_GROUP                   = 'object ungroup icon'
 
     public static String LICENSE                    = 'balance scale icon'
 

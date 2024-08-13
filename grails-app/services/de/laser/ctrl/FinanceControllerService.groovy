@@ -107,7 +107,7 @@ class FinanceControllerService {
 
             Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
             if(result.institution.isCustomerType_Consortium())
-                excludes << RDStore.OR_SUBSCRIPTION_CONSORTIA.id
+                excludes << RDStore.OR_SUBSCRIPTION_CONSORTIUM.id
             // restrict visible for templates/links/orgLinksAsList; done by Andreas Gálffy
             result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }
         }
@@ -158,7 +158,7 @@ class FinanceControllerService {
                                     'join subC.orgRelations roleC ' +
                                     'join s.orgRelations roleMC ' +
                                     'join s.orgRelations oo ' +
-                                    'where roleC.org = :contextOrg and roleMC.roleType = :consortialType and oo.roleType in :subscrRoles order by sortname asc',[contextOrg:result.institution,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
+                                    'where roleC.org = :contextOrg and roleMC.roleType = :consortialType and oo.roleType in :subscrRoles order by sortname asc',[contextOrg:result.institution,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIUM,subscrRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
                     result.consMembers = consMembers
                     result.showVisibilitySettings = true
                     editable = true
