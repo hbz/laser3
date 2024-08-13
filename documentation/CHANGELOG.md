@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5860    13.08.2024  rc-3.4  3.4.6       David   Bug         Admin > Referenzwerte verwalten
+
 5863    13.08.2024  rc-3.4  3.4.6       Andreas Bug         inkorrekte Auslesung der Anbieter/Lieferantenkontakte beim PDF-Export
 
 5859    12.08.2024  rc-3.4  3.4.6       David   Feature     Kundentyp (Org) in gecachten Nutzerrechten beachten
