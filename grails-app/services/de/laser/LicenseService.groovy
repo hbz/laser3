@@ -374,6 +374,13 @@ class LicenseService {
                             AgentName('Fakultätsangehörige, eingeschriebene Studenten, aktuelle Mitarbeiter, Vertragspersonal, das direkt in Bildungs- und Forschungsaktivitäten eingebunden ist') //property value
                             LicenseTextLink(href: 'lp_local_authorized_user_defintion_01')
                         }
+                        AgentDefinition {
+                            //license property Usage Statistics Addressee
+                            AgentLabel('Usage Statistics Addressee')
+                            AgentType('onixPL:Person')
+                            AgentName('benannte Administratoren des Kunden')
+                            LicenseTextLink(href: 'lp_usage_statistics_addressee_01')
+                        }
                         ResourceDefinition {
                             ResourceLabel('Subscription')
                             ResourceType('onixPL:LicensedContent') //supplying; ResourceType has no controlled list behind
@@ -449,20 +456,25 @@ class LicenseService {
                         Usage {
                             UsageType('onixPL:Use')
                             UsageStatus('onixPL:Permitted')
+                            Annotation {
+                                AnnotationType('onixPL:ERMI:WalkInUserTermNote')
+                                AnnotationText('Nur in den Räumen der Bibliothek') //license property Walk-in User Term Note
+                            }
                             LicenseTextLink(href: 'lp_concurrent_users_01')
                             LicenseTextLink(href: 'lp_conformity_with_urhg_01')
                             LicenseTextLink(href: 'lp_method_of_authentication_01')
                             LicenseTextLink(href: 'lp_remote_access_01')
+                            LicenseTextLink(href: 'lp_singleuseraccess_01')
+                            LicenseTextLink(href: 'lp_walkin_access_01')
+                            LicenseTextLink(href: 'lp_wifi_access_01')
                             User('Authorized Users')
                             User('Local Authorized Users')
                             User('onixPL:LicenseeInstitutionAndPartners') //license property Partners Access; no example value in current dataset
                             User('onixPL:WalkInUser') //license property Walk-In User
-                            /*
-                                //!!! mark here the ___existence___ of the following properties: Walk-In User, (Simuser)
-                                RelatedAgent('onixPL:WalkInUser')
-                             */
                             UsedResource('Subscription')
+                            UsagePurpose('onixPL:PersonalUse')
                             UsageMethod('onixPL:SecureAuthentication') //license property Method of Authentication
+                            UsageMethod('onixPL:PublicNetwork') //Wifi Access
                             /*
                             regex check:
                             if('shibboleth' in lp.value.toLowerCase())
@@ -518,7 +530,7 @@ class LicenseService {
                             }
                             Annotation {
                                 //license property Course reserve term note
-                                AnnotationType('onixPL:SpecialConditions')
+                                AnnotationType('onixPL:Interpretation') //if value; else if paragraph, then onixPL:SpecialConditions
                                 AnnotationText('keine Beschränkung') //value xor paragraph
                             }
                             LicenseTextLink(href: 'lp_course_pack_electronic_01')
@@ -562,6 +574,24 @@ class LicenseService {
                             }
                         }
                         Usage {
+                            //license property Scholarly sharing
+                            UsageType('onixPL:MakeAvailable')
+                            UsageStatus('onixPL:Permitted') //its refdata value
+                            Annotation {
+                                //license property Scholarly sharing term note
+                                AnnotationType('onixPL:SpecialConditions')
+                                AnnotationText('§ 3 Abs. 1f: Incorporate Parts of the Licensed Material in printed or electronic form in assignments and portfolios, theses and in dissertations ( the Academic Works ), including reproductions of the Academic Works for personal use and library deposit. Reproductions in printed or electronic form of Academic Works may be provided to Sponsors of such Academic Works. Each item shall carry appropriate acknowledgement of the source; Publicly display or publicly perform Parts of the Licensed Material as part of a presentation at a seminar, Conference,-workshop, or other such similar activity. Deposit in perpetuity the learning and teaching objects as referred to in § 3.1.b on Servers operated by the Institution or Licensee. The use of such material shall be limited to Authorised Users.')
+                            }
+                            LicenseTextLink('lp_scholarly_sharing_01')
+                            User('Licensee Consortial')
+                            User('onixPL:AuthorizedUser')
+                            UsageRelatedAgent {
+                                UsageAgentRelator('onixPL:ReceivingAgent')
+                                RelatedAgent('onixPL:ExternalAcademic')
+                            }
+                            UsedResource('Subscription')
+                        }
+                        Usage {
                             //license property Digital copy
                             UsageType('onixPL:MakeDigitalCopy')
                             UsageStatus('onixPL:Permitted') //its refdata value
@@ -579,7 +609,7 @@ class LicenseService {
                             UsageType('onixPL:SupplyCopy')
                             UsageStatus('onixPL:Permitted') //one statement per permission status; structure: permission -> property
                             Annotation {
-                                AnnotationType('onixPL:SpecialConditions')
+                                AnnotationType('onixPL:Interpretation')
                                 AnnotationText('Keine Fernleihe an kommerzielle Bibliotheken liefern') //license property ILL term note - value xor paragraph; include everywhere (to be sure)
                             }
                             LicenseTextLink(href: 'lp_ill_electronic_01')
@@ -597,7 +627,7 @@ class LicenseService {
                             UsageType('onixPL:SupplyCopy')
                             UsageStatus('onixPL:Prohibited') //one statement per permission status; structure: permission -> property
                             Annotation {
-                                AnnotationType('onixPL:SpecialConditions')
+                                AnnotationType('onixPL:Interpretation')
                                 AnnotationText('Keine Fernleihe an kommerzielle Bibliotheken liefern') //license property ILL term note - value xor paragraph; include everywhere (to be sure)
                             }
                             LicenseTextLink(href: 'lp_ill_electronic_02')
@@ -620,6 +650,23 @@ class LicenseService {
                                 AnnotationType('onixPL:Interpretation')
                                 AnnotationText('Erlaubt für den persönlicher Gebrauch.')
                             }
+                            User('Licensee Consortial')
+                            UsedResource('Subscription')
+                        }
+                        Usage {
+                            //license properties Text- and Datamining, Text- and Datamining Character Count, Text- and Datamining Restrictions
+                            UsageType('onixPL:UseForDataMining')
+                            UsageStatus('onixPL:InterpretedAsPermitted') //its refdata value
+                            LicenseTextLink('lp_text_and_datamining_01') //license property Text- and Datamining
+                            LicenseTextLink('lp_text_and_datamining_character_count_01')
+                            LicenseTextLink('lp_text_and_datamining_restrictions_01')
+                            Annotation {
+                                AnnotationType('onixPL:Interpretation') //license property Text- and Datamining Restrictions
+                                AnnotationText('Zustimmung des Verlags erforderlich, außer es ist gesetzlich erlaubt. In dem Fall vorheringe Information des Verlags notwendig')
+                            }
+                            User('Licensee Consortial')
+                            UsedResource('Subscription')
+                            UsageCondition('onixPL:SubjectToVolumeLimit') //license property Text- and Datamining Character Count
                         }
                     }
                     //optional 0-1
@@ -659,17 +706,22 @@ class LicenseService {
                             LicenseTextLink(href: 'lp_continuing_access_title_transfer_01')
                         }
                         SupplyTerm {
-                            //license properties Maintenance window and Performance warranty
+                            //license properties Maintenance window, Performance warranty and Uptime guarantee
                             SupplyTermType('onixPL:ServicePerformanceGuarantee')
                             LicenseReferenceText(href: 'lp_maintenance_window_01')
                             LicenseReferenceText(href: 'lp_performance_warranty_01')
+                            LicenseReferenceText(href: 'lp_uptime_guarantee_01')
                             Annotation {
                                 AnnotationType('onixPL:ERMI:MaintenanceWindow')
-                                AnnotationText('regelmäßig täglich zwischen 06:00 Uhr und 08:00 Uhr') //property value
+                                AnnotationText('regelmäßig täglich zwischen 06:00 Uhr und 08:00 Uhr') //property value Maintenance window
                             }
                             Annotation {
                                 AnnotationType('onixPL:Interpretation')
-                                AnnotationText('Yes') //property value
+                                AnnotationText('Yes') //property value Performance warranty
+                            }
+                            Annotation {
+                                AnnotationType('onixPL:ERMI:UptimeGuarantee')
+                                AnnotationText('mind. 99,1% bzgl. eines Kalenderjahres') //property value Uptime guarantee
                             }
                         }
                         SupplyTerm {
@@ -700,6 +752,16 @@ class LicenseService {
                             SupplyTermRelatedTimePoint {
                                 SupplyTermTimePointRelator('onixPL:SupplyStartDate') //the only permitted list value
                                 RelatedTimePoint('OALastDate')
+                            }
+                        }
+                        SupplyTerm {
+                            //license properties Usage Statistics Addressee and Usage Statistics Availability Indicator
+                            SupplyTermType('onixPL:UsageStatistics')
+                            TermStatus('onixPL:Yes')
+                            LicenseTextLink(href: 'lp_usage_statistics_availability_indicator_01')
+                            SupplyTermRelatedAgent {
+                                SupplyTermAgentRelator('onixPL:ReceivingAgent')
+                                RelatedAgent('Usage Statistics Addressee')
                             }
                         }
                     }
@@ -889,7 +951,7 @@ class LicenseService {
                             LicenseReferenceText(href: 'lp_licensee_termination_notice_period_01') //license property Licensee termination notice period
                             LicenseReferenceText(href: 'lp_licensee_termination_right_01') //license property Licensee termination right
                             Annotation {
-                                AnnotationType('onixPL:SpecialConditions')
+                                AnnotationType('onixPL:Interpretation')
                                 AnnotationText('Sollte die Erhöhung mehr als 5% betragen, steht den K0NS0RTIAL TEILNEHMERN ein außerordentliches Kündigungsrecht zu.') //license property Licensee termination condition
                             }
                         }
@@ -900,7 +962,7 @@ class LicenseService {
                             LicenseReferenceText(href: 'lp_licensor_termination_notice_period_01') //license property Licensor termination notice period
                             LicenseReferenceText(href: 'lp_licensor_termination_right_01') //license property Licensor termination right
                             Annotation {
-                                AnnotationType('onixPL:SpecialConditions')
+                                AnnotationType('onixPL:Interpretation')
                                 AnnotationText('Sollte Preselect eine grobe Missnutzungen der Inhalte feststellen, wird die Hochschule innerhalb von 4 Wochen versuchen diese zubeheben. Sollte dies nicht möglich sein, behält sich Preselect ein außerordentliches Kündigungsrecht und/oder das Abschalten der Hochschule vor.') //license property Licensor termination condition
                             }
                         }
@@ -912,6 +974,21 @@ class LicenseService {
                                 AnnotationType('onixPL:Interpretation')
                                 AnnotationText('monatlich in 2022') //we will map here the license property value
                             }
+                        }
+                        GeneralTerm {
+                            //license property Termination requirement note
+                            GeneralTermType('onixPL:ActionOnTermination')
+                            LicenseReferenceText(href: 'lp_termination_requirement_note_01')
+                            Annotation {
+                                AnnotationType('onixPL:ERMI:TerminationRequirementsNote')
+                                AnnotationText('jede Kündigung bedarf der Schriftform')
+                            }
+                        }
+                        GeneralTerm {
+                            //license property User information confidentiality
+                            GeneralTermType('onixPL:ConfidentialityOfUserData')
+                            TermStatus('onixPL:Uncertain')
+                            LicenseReferenceText(href: 'lp_user_information_confidentiality_01')
                         }
                     }
                     //optional 0-1; possible container for LicenseProperty.paragraph-s
@@ -1190,6 +1267,50 @@ class LicenseService {
                         TextElement(id: 'lp_repository_01') {
                             SortNumber(0)
                             Text('Members of authorized institutions are allowed to give open access to all articles, they have published in the licensed product as author ("corresponding author") or co-author ("contributing author") by integrating them in a repository of their own choice. The articles have to be delivered by licensor in the published version / post print (PDF).')
+                        }
+                        TextElement(id: 'lp_scholarly_sharing_01') {
+                            SortNumber(0)
+                            Text('3. USAGE RIGHTS 3.2 Authorized Users may, in accordance with the copyright laws of The Netherlands and subject to clause 6 below: 3 .2. 5 Distribute a copy of individual chapters, articles or other single items of the Licensed Materials in print or electronic form to other Authorized Users or to other individual scholars collaborating with Authorized Users but only for the purposes of research and private study; for the avoidance of doubt, this sub-clause shall include the distribution of a copy for teaching purposes to each individual student Authorized User in a class at the Licensee\'s institution. 3.2.6 Download a copy of individual chapters, articles or other single items of the Licensed Materials and share the same with Authorized Users or other individual scholars collaborating in a specific research project with such Authorized Users provided that it is held and accessed within a closed network that is not accessible to any person not directly involved in such collaboration and provided that it is deleted from such network immediately upon completion of the collaboration.')
+                        }
+                        TextElement(id: 'lp_termination_requirement_note_01') {
+                            SortNumber(0)
+                            Text('§ 6 Vertragsdauer, Kündigung 6.2 Jede Kündigung bedarf der Schriftform')
+                        }
+                        TextElement('lp_text_and_datamining_01') {
+                            SortNumber(0)
+                            Text('3. Scope of License b. Downloading, printing, or saving of text for personal, noncommercial use is permissible. These terms and conditions do not permit the downloading of entire issues of PNAS Online, and systematic downloading is prohibited.')
+                        }
+                        TextElement('lp_text_and_datamining_character_count_01') {
+                            SortNumber(0)
+                            Text('1.3 Authorized Uses. [...] The Subscriber may: [...] maximum length of 200 characters surrounding and excluding the text entity matched ("Snippets") or bibliographic metadata.')
+                        }
+                        TextElement('lp_text_and_datamining_restrictions_01') {
+                            SortNumber(0)
+                            Text('For the avoidance of doubt, the Licensee and Auhtorized Users may not [...] carry out any Text and Data Minging without the Licensor\'s prior consent in writing except as permitted by law, but must always notify the Licensor prior to commencing any Data Mining activity.')
+                        }
+                        TextElement('lp_uptime_guarantee_01') {
+                            SortNumber(0)
+                            Text('§ 5 2.-5. § 6')
+                        }
+                        TextElement(id: 'lp_usage_statistics_addressee_01') {
+                            SortNumber(0)
+                            Text('2.3 Nutzungs- und Lizenzvereinbarungen')
+                        }
+                        TextElement(id: 'lp_usage_statistics_availability_indicator_01') {
+                            SortNumber(0)
+                            Text('20.2 Usage Statistics. 20.2.1 Publisher will provide Customer with COUNTER-compliant usage statistics relating to Publisher Content as identified in Schedule B accessed by Customer Sites by an External reute. Such usage information shall be compiled in a manner consistent with any applicable privacy and data protection laws, and the anonymity of individual users and the confidentiality of their searches shall be fully protected. 20.2.2 Customer will provide Publisher with COUNTER-compliant usage statistics relating to Publisher Content as identified in Schedule B accessed by Customer Sites by an Internal reute. Such usage information shall be compiled in a manner consistent with any applicable privacy and data protection laws, and the anonymity of individual users and the confidentiality of their searches shall be fully protected.')
+                        }
+                        TextElement(id: 'lp_user_information_confidentiality_01') {
+                            SortNumber(0)
+                            Text('9. Confidentiality Confidential information received from each other (other than information that is or becomes public or known to us on a non-confidential basis) will not be disclosed to anyone else except to the extent required by law or as necessary to perform the agreement for as long as the information remains confidential. Each of us will use industry standard administrative, physical and technical safeguards to protect the other\'s confidential information. If a court or government agency orders either of us to disclose the confidential information of the other, the other will be promptly notified so that an appropriate protective order or other remedy can be obtained unless the court or government agency prohibits prior notification.')
+                        }
+                        TextElement(href: 'lp_walkin_access_01') {
+                            SortNumber(0)
+                            Text("§1: [...] authorised persons physically present in the Licensee's library facilities.")
+                        }
+                        TextElement(href: 'lp_wifi_access_01') {
+                            SortNumber(0)
+                            Text('§ 10 Sonstige Bestimmungen Der WLAN-Zugriff auf dem Campus oder in den Räumen einer Bibliothek ist gestattet.')
                         }
                     }
                 }

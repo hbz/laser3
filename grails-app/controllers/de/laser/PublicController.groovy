@@ -38,7 +38,8 @@ class PublicController {
         String text = "User-agent: *\n"
 
         if (AppUtils.getCurrentServer() == AppUtils.PROD) {
-            text += "Disallow: /tipp/ \n"                       // TODO TMP
+            text += "Disallow: /tipp/ \n"                                   // TODO TMP
+            text += "Disallow: /public/gascoDetailsIssueEntitlements/ \n"   // TODO TMP
             text += "Disallow: /gasco/details/ \n"
         }
         else {
