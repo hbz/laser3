@@ -5,7 +5,6 @@ import de.laser.GenericOIDService
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.SubscriptionPackage
-import de.laser.TitleInstancePackagePlatform
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated

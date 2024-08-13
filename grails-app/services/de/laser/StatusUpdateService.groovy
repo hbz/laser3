@@ -6,6 +6,7 @@ import de.laser.storage.RDStore
 import de.laser.base.AbstractLockableService
 import de.laser.system.SystemEvent
 import de.laser.wekb.Package
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.gorm.transactions.Transactional
 
 import java.time.LocalDate

@@ -15,7 +15,7 @@ import java.time.ZoneId
 
 /**
  * This service keeps track of the changes performed in the <a href="https://wekb.hbz-nrw.de">we:kb knowledge base</a>. It replaces the entirely
- * functionality of {@link PendingChange}s for {@link TitleInstancePackagePlatform}s (not for cost items and subscriptions!) just as the immediate
+ * functionality of {@link PendingChange}s for {@link de.laser.wekb.TitleInstancePackagePlatform}s (not for cost items and subscriptions!) just as the immediate
  * successors {@link TitleChange}s and {@link IssueEntitlementChange}s. Periodically, via a Cronjob, the last changes are being retrieved from the we:kb
  * using the {@link ApiSource} to fetch the data which is then being cached
  */

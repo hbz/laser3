@@ -33,6 +33,7 @@ import de.laser.utils.AppUtils
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.wekb.Platform
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured

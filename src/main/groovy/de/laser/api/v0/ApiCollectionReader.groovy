@@ -11,12 +11,11 @@ import de.laser.Language
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.PersonRole
-import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
-import de.laser.TitleInstancePackagePlatform
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import de.laser.base.AbstractCoverage
 import de.laser.finance.BudgetCode

@@ -46,7 +46,7 @@ import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import de.laser.Task
 import de.laser.TaskService
-import de.laser.TitleInstancePackagePlatform
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.UserSetting
 import de.laser.wekb.Vendor
 import de.laser.annotations.DebugInfo

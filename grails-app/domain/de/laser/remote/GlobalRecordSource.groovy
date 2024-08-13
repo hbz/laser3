@@ -9,7 +9,7 @@ import javax.persistence.Transient
  *     <li>{@link de.laser.wekb.Package}</li>
  *     <li>{@link de.laser.wekb.Platform}</li>
  *     <li>{@link de.laser.Org}</li>
- *     <li>{@link de.laser.TitleInstancePackagePlatform}</li>
+ *     <li>{@link de.laser.wekb.TitleInstancePackagePlatform}</li>
  * </ul>
  * and a source type ({@link #type}):
  * <ul>

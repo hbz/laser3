@@ -4,6 +4,7 @@ import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
 import de.laser.titles.TitleHistoryEvent
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.plugin.springsecurity.annotation.Secured
 
 /**
@@ -36,7 +37,7 @@ class TippController  {
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
-  @Check404(domain=TitleInstancePackagePlatform)
+  @Check404(domain= TitleInstancePackagePlatform)
   def show() { 
     Map<String, Object> result = [:]
 

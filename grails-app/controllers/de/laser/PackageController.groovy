@@ -12,6 +12,7 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
 import de.laser.wekb.Package
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -277,7 +278,7 @@ class PackageController {
      * KBART files may take time to be prepared; therefor the download is not triggered by this method because te loading would generate a 502 timeout. Instead, a
      * file is being prepared and written to the file storage and a download link is being generated which delivers the file after its full generation
      * @return a HTML table showing the holding or the holding rendered as KBART or Excel worksheet
-     * @see TitleInstancePackagePlatform
+     * @see de.laser.wekb.TitleInstancePackagePlatform
      * @see GlobalService#obtainFileStorageLocation()
      * @see #downloadLargeFile()
      */

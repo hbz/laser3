@@ -1,5 +1,13 @@
-package de.laser
+package de.laser.wekb
 
+import de.laser.AlternativeName
+import de.laser.DeweyDecimalClassification
+import de.laser.Identifier
+import de.laser.Language
+import de.laser.Org
+import de.laser.OrgRole
+import de.laser.PersonRole
+import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.User
 import de.laser.base.AbstractBase
@@ -11,8 +19,6 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.titles.TitleHistoryEvent
 import de.laser.utils.LocaleUtils
-import de.laser.wekb.Package
-import de.laser.wekb.Platform
 import groovy.time.TimeCategory
 
 import javax.persistence.Transient
@@ -280,7 +286,7 @@ class TitleInstancePackagePlatform extends AbstractBase implements MarkerSupport
 
     /**
      * Gets an identifier value of the given namespace
-     * @param idtype the {@link IdentifierNamespace} to which the required identifier belongs to
+     * @param idtype the {@link de.laser.IdentifierNamespace} to which the required identifier belongs to
      * @return the {@link Identifier}'s value; if multiple, the last identifier's value is being returned (no comment ...)
      */
   String getIdentifierValue(String idtype) {
@@ -565,7 +571,7 @@ class TitleInstancePackagePlatform extends AbstractBase implements MarkerSupport
 
     /**
      * Gets the publishers associated to this title
-     * @return a {@link List} of publisher {@link Org}s
+     * @return a {@link List} of publisher {@link de.laser.Org}s
      */
     List<Org> getPublishers() {
         List<Org> result = []

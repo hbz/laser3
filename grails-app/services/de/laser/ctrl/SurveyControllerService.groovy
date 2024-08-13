@@ -41,7 +41,7 @@ import de.laser.SubscriptionService
 import de.laser.SubscriptionsQueryService
 import de.laser.SurveyService
 import de.laser.Task
-import de.laser.TitleInstancePackagePlatform
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import de.laser.wekb.VendorRole
 import de.laser.VendorService

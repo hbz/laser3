@@ -7,6 +7,7 @@ import de.laser.storage.PropertyStore
 import de.laser.storage.RDStore
 import de.laser.utils.AppUtils
 import de.laser.wekb.Package
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured

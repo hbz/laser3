@@ -8,7 +8,6 @@ import de.laser.PendingChange
 import de.laser.PersonRole
 import de.laser.RefdataValue
 import de.laser.SubscriptionPackage
-import de.laser.TitleInstancePackagePlatform
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated

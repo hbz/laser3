@@ -7,6 +7,7 @@ import de.laser.helper.FilterLogic
 import de.laser.helper.Profiler
 import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -49,7 +50,7 @@ class TitleController  {
 
     /**
      * Lists all recorded title in the app; the result may be filtered
-     * @return a list of {@link TitleInstancePackagePlatform}s
+     * @return a list of {@link de.laser.wekb.TitleInstancePackagePlatform}s
      */
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {

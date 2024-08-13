@@ -3,6 +3,7 @@ package de.laser
 
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.plugin.springsecurity.SpringSecurityUtils
 
 import java.text.SimpleDateFormat
@@ -19,7 +20,7 @@ import java.text.SimpleDateFormat
  * and thus a double purchase should be avoided
  * @see Subscription
  * @see IssueEntitlement
- * @see TitleInstancePackagePlatform
+ * @see de.laser.wekb.TitleInstancePackagePlatform
  */
 class PermanentTitle {
 

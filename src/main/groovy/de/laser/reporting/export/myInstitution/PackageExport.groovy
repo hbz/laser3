@@ -7,7 +7,7 @@ import de.laser.IdentifierNamespace
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.RefdataValue
-import de.laser.TitleInstancePackagePlatform
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
