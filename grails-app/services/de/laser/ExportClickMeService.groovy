@@ -7074,6 +7074,8 @@ class ExportClickMeService {
                                     row.add(createTableCell(format, studentsStr))
                                     row.add(createTableCell(format, staffStr))
                                     row.add(createTableCell(format, fteStr))
+                                    row.add(createTableCell(format, studentsStr+fteStr))
+                                    row.add(createTableCell(format, studentsStr+staffStr))
                                     break
                                 }
                             }
@@ -7094,15 +7096,19 @@ class ExportClickMeService {
                 row.add(createTableCell(format, peopleStr))
                 row.add(createTableCell(format, userStr))
 
-                BigDecimal sum = 0
+                BigDecimal sum = 0, sumStudFTE = 0, sumStudHeads = 0
                 if(readerNumberStudents){
                     sum = sum + (readerNumberStudents.value != null ? readerNumberStudents.value : 0)
+                    sumStudFTE += (readerNumberStudents.value != null ? readerNumberStudents.value : 0)
+                    sumStudHeads += (readerNumberStudents.value != null ? readerNumberStudents.value : 0)
                 }
                 if(readerNumberStaff){
                     sum = sum + (readerNumberStaff.value != null ? readerNumberStaff.value : 0)
+                    sumStudHeads += (readerNumberStaff.value != null ? readerNumberStaff.value : 0)
                 }
                 if(readerNumberFTE){
                     sum = sum + (readerNumberFTE.value != null ? readerNumberFTE.value : 0)
+                    sumStudFTE += (readerNumberFTE.value != null ? readerNumberFTE.value : 0)
                 }
                 if(readerNumberPeople){
                     sum = sum + (readerNumberPeople.value != null ? readerNumberPeople.value : 0)
@@ -7115,6 +7121,8 @@ class ExportClickMeService {
                     sum = sum + (readerNumberStaffwithDueDate.value != null ? readerNumberStaffwithDueDate.value : 0)
                 }
 
+                row.add(createTableCell(format, sumStudFTE))
+                row.add(createTableCell(format, sumStudHeads))
                 row.add(createTableCell(format, sum))
 
                 String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : (readerNumberStaffwithDueDate ? readerNumberStaffwithDueDate.dateGroupNote : '')))
@@ -7122,6 +7130,8 @@ class ExportClickMeService {
                 row.add(createTableCell(format, note))
 
             } else {
+                row.add(createTableCell(format, ' '))
+                row.add(createTableCell(format, ' '))
                 row.add(createTableCell(format, ' '))
                 row.add(createTableCell(format, ' '))
                 row.add(createTableCell(format, ' '))
@@ -7457,6 +7467,8 @@ class ExportClickMeService {
                     titles.add(createTableCell(format,  RDStore.READER_NUMBER_FTE."${localizedValue}"))
                     titles.add(createTableCell(format,  RDStore.READER_NUMBER_USER."${localizedValue}"))
                     titles.add(createTableCell(format,  RDStore.READER_NUMBER_PEOPLE."${localizedValue}"))
+                    titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.sumStudFTE.label', null, locale)))
+                    titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.sumStudHeads.label', null, locale)))
                     titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.sum.label', null, locale)))
                     titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.note.label', null, locale)))
                 }

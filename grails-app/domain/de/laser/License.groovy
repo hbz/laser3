@@ -37,6 +37,19 @@ import java.text.SimpleDateFormat
 class License extends AbstractBaseWithCalculatedLastUpdated
         implements Auditable, CalculatedType, Permissions, ShareSupport, Comparable<License> {
 
+    static enum ONIXPL_CONTROLLED_LIST {
+        LICENSE_DOCUMENT_TYPE_CODE ('LicenseDocumentTypeCode'),
+        LICENSE_STATUS_CODE ('LicenseStatusCode'),
+        TERM_STATUS_CODE ('TermStatusCode'),
+        USAGE_STATUS_CODE ('UsageStatusCode')
+
+        ONIXPL_CONTROLLED_LIST(String code) {
+            this.code = code
+        }
+
+        public String code
+    }
+
     License instanceOf
 
     /**

@@ -790,8 +790,8 @@ class LicenseController {
     def onixTestSuite() {
         Map<String, Object> result = [user: contextService.getUser(), institution: contextService.getOrg()]
         //enrich later by input!
-        result.xmlString = licenseService.validateOnixPlDocument()
-        //exportService.generateOnixPlExport(result.license)
+        result.xmlString = licenseService.validateOnixPlDocument(params.id)
+        //exportService.generateOnixPlExport(params.id)
         render view: 'onixTestSuite', model: result
     }
 
