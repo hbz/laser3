@@ -1347,6 +1347,7 @@ class LicenseService {
         //for LicenseDocument.LicenseDocumentTypes; for that doc.doctype can be mapped to one of: onixPL:Addendum, onixPL:License, onixPL:LicenseMainTerms, onixPL:LicenseSchedule, onixPL:LicenseSummary
         Set<RefdataValue> relevantDocTypes = RefdataValue.findAllByValueInListAndOwner(['Addendum', 'License', 'ONIX-PL License'], RefdataCategory.findByDesc(RDConstants.DOCUMENT_TYPE))
         Map<String, LicenseProperty> licPropertyMap = lic.propertySet.collectEntries { LicenseProperty lp -> [lp.type.name, lp] }
+        Set<PropertyDefinition> agentDefinitionProps = [PropertyStore.LIC_AUTHORIZED_USERS, PropertyStore.LIC_LOCAL_AUTHORIZED_USER_DEFINITION, PropertyStore.LIC_USAGE_STATISTICS_ADDRESSEE]
         def xml = builder.bind {
             mkp.xmlDeclaration()
             mkp.declareNamespace(ople: "http://www.editeur.org/ople")
@@ -1518,44 +1519,32 @@ class LicenseService {
                                 }
                             }
                         }
-                        if(isValueSet(licPropertyMap, PropertyStore.LIC_AUTHORIZED_USERS)) {
-                            //license property Authorized Users
-                            LicenseProperty authUsers = licPropertyMap.get(PropertyStore.LIC_AUTHORIZED_USERS.name)
-                            AgentDefinition {
-                                AgentLabel(PropertyStore.LIC_AUTHORIZED_USERS.name)
-                                AgentType('onixPL:Person')
-                                Description(authUsers.getValue())
-                                if(authUsers.paragraph)
-                                    LicenseTextLink(href: 'lp_authorized_users_01')
+                        //license properties Authorized Users, Local authorized user defintion
+                        agentDefinitionProps.each { PropertyDefinition propDef ->
+                            if(isValueSet(licPropertyMap, propDef)) {
+                                LicenseProperty licProp = licPropertyMap.get(propDef.name)
+                                AgentDefinition {
+                                    AgentLabel(propDef.name)
+                                    AgentType('onixPL:Person')
+                                    Description(licProp.getValue())
+                                    if(licProp.paragraph)
+                                        LicenseTextLink(href: "lp_${toSnakeCase(propDef.name)}_01")
+                                }
                             }
                         }
-                        /*
-                        AgentDefinition {
-                            //license property Local authorized user defintion
-                            AgentLabel('Local Authorized Users')
-                            AgentType('onixPL:Person')
-                            Description('Fakultätsangehörige, eingeschriebene Studenten, aktuelle Mitarbeiter, Vertragspersonal, das direkt in Bildungs- und Forschungsaktivitäten eingebunden ist') //property value
-                            LicenseTextLink(href: 'lp_local_authorized_user_defintion_01')
-                        }
-                        AgentDefinition {
-                            //license property Usage Statistics Addressee
-                            AgentLabel('Usage Statistics Addressee')
-                            AgentType('onixPL:Person')
-                            Description('benannte Administratoren des Kunden')
-                            LicenseTextLink(href: 'lp_usage_statistics_addressee_01')
-                        }
-                        */
-                        ResourceDefinition {
-                            ResourceLabel('Subscription')
-                            ResourceType('onixPL:LicensedContent') //supplying; ResourceType has no controlled list behind
-                            ResourceIdentifier {
-                                ResourceIDType('onixPL:Proprietary')
-                                IDTypeName('globalUID')
-                                IDValue('subscription:xxxxxxxxxxxxxxxxxxxxx')
+                        //the subscriptions
+                        lic.getSubscriptions(institution).each { Subscription s->
+                            ResourceDefinition {
+                                ResourceLabel(s.name)
+                                ResourceIdentifier {
+                                    ResourceIDType('onixPL:Proprietary')
+                                    IDTypeName('globalUID')
+                                    IDValue(s.globalUID)
+                                }
                             }
-                            Description('Gentz: Alle Werke') //subscription.name
                         }
                         //(all other) properties with type date
+
                         TimePointDefinition {
                             TimePointLabel('ArchivalCopyTimePoint')
                             Description('Trigger Event') //maps refdata value of license property Archival Copy: Time
@@ -1672,5 +1661,9 @@ class LicenseService {
             isValueSet = licPropertyMap.get(pd.name).getValue() == null
         }
         isValueSet
+    }
+
+    String toSnakeCase(String input) {
+        input.replaceAll(/[:()-]/, "").replaceAll(/ /,"_").toLowerCase()
     }
 }

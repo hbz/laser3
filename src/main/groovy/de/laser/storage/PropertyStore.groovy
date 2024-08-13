@@ -16,8 +16,8 @@ class PropertyStore {
 
     public final static PropertyDefinition LIC_AUTHORIZED_USERS    = getPropertyDefinition('Authorized Users', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_LOCAL_AUTHORIZED_USER_DEFINITION = getPropertyDefinition('Local authorized user defintion', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_USAGE_STATISTICS_ADDRESSEE = getPropertyDefinition('Usage Statistics Addressee', PropertyDefinition.LIC_PROP)
     /*
-    public final static PropertyDefinition PLA_COUNTER_R4_REPORTS      = getPropertyDefinition('COUNTER R4: Reports supported', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition PLA_COUNTER_R5_REPORTS      = getPropertyDefinition('COUNTER R5: Reports supported', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition PLA_COUNTER_R4_STATS_URL    = getPropertyDefinition('COUNTER R4: Usage Statistics URL', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition PLA_COUNTER_R5_STATS_URL    = getPropertyDefinition('COUNTER R5: Usage Statistics URL', PropertyDefinition.LIC_PROP)
