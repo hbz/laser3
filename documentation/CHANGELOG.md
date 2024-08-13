@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5861    13.08.2024  dev     3.4.5       David   Feature     Refactoring: wekb-Package
+
 5852    08.08.2024  rc-3.4  3.4.5       Andreas Feature     Validierung bei DEAL-ID eingeführt
 
 5856    07.08.2024  rc-3.4  3.4.5       Andreas Bug         Marker wurden nicht überführt

@@ -1,7 +1,22 @@
 package changelogs
 
+import de.laser.IdentifierNamespace
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
+import de.laser.properties.PropertyDefinitionGroup
+import de.laser.remote.FTControl
+
+Map substitutes = [
+        'de.laser.Package'          : 'de.laser.wekb.Package',
+        'de.laser.PackageVendor'    : 'de.laser.wekb.PackageVendor',
+        'de.laser.Platform'         : 'de.laser.wekb.Platform',
+        'de.laser.Provider'         : 'de.laser.wekb.Provider',
+        'de.laser.ProviderLink'     : 'de.laser.wekb.ProviderLink',
+        'de.laser.ProviderRole'     : 'de.laser.wekb.ProviderRole',
+        'de.laser.Vendor'           : 'de.laser.wekb.Vendor',
+        'de.laser.VendorLink'       : 'de.laser.wekb.VendorLink',
+        'de.laser.VendorRole'       : 'de.laser.wekb.VendorRole',
+]
 
 databaseChangeLog = {
 
@@ -108,6 +123,69 @@ databaseChangeLog = {
                     }
                     RefdataCategory.executeUpdate('delete from RefdataCategory where id = :id', [id: rdc_old.id])
                 }
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1723461329740-6") {
+        grailsChange {
+            change {
+                List<String> done = []
+
+                substitutes.each{ k, v ->
+                    List<Long> todo = FTControl.findAllByDomainClassName(k).collect{ it.id }
+                    if (todo) {
+                        done << ( k + ' -> ' + todo + ' = ' +
+                                FTControl.executeUpdate('update FTControl set domainClassName = :v where id in (:todo)', [v: v, todo: todo])
+                        )
+                    }
+                }
+                String result = 'FTControl: ' + done.join(', ')
+                confirm( result )
+                changeSet.setComments( result )
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1723461329740-7") {
+        grailsChange {
+            change {
+                List<String> done = []
+
+                substitutes.each{ k, v ->
+                    List<Long> todo = IdentifierNamespace.findAllByNsType(k).collect{ it.id }
+                    if (todo) {
+                        done << ( k + ' -> ' + todo + ' = ' +
+                                IdentifierNamespace.executeUpdate('update IdentifierNamespace set nsType = :v where id in (:todo)', [v: v, todo: todo])
+                        )
+                    }
+                }
+                String result = 'IdentifierNamespace: ' + done.join(', ')
+                confirm( result )
+                changeSet.setComments( result )
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1723461329740-8") {
+        grailsChange {
+            change {
+                List<String> done = []
+
+                substitutes.each{ k, v ->
+                    List<Long> todo = PropertyDefinitionGroup.findAllByOwnerType(k).collect{ it.id }
+                    if (todo) {
+                        done << ( k + ' -> ' + todo + ' = ' +
+                                PropertyDefinitionGroup.executeUpdate('update PropertyDefinitionGroup set ownerType = :v where id in (:todo)', [v: v, todo: todo])
+                        )
+                    }
+                }
+                String result = 'PropertyDefinitionGroup: ' + done.join(', ')
+                confirm( result )
+                changeSet.setComments( result )
             }
             rollback {}
         }
