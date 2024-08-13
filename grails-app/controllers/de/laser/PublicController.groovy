@@ -108,6 +108,8 @@ class PublicController {
     def gasco() {
         Map<String, Object> result = [:]
 
+      try {
+
         result.allConsortia = Org.executeQuery(
                 """select o from Org o, OrgSetting os_gs, OrgSetting os_ct where 
                         os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and 
@@ -116,13 +118,11 @@ class PublicController {
                         order by lower(o.name)"""
         )
 
-
         if (! params.subKinds && ! params.consortia && ! params.q) {
             // init filter with checkboxes checked
             result.initQuery = 'true'
         }
         else {
-
             String q = params.q?.trim()
             Map<String, Object> queryParams = [:]
 
@@ -187,6 +187,11 @@ class PublicController {
             }
             result.subscriptionsCount = result.subscriptions.size()
         }
+
+      } catch (Exception e) {
+          log.warn 'gasco: exception caused by ' + request.getRemoteAddr()
+          throw e
+      }
 
         result
     }

@@ -7069,13 +7069,13 @@ class ExportClickMeService {
                                     BigDecimal studentsStr = readerNumberStudents ? readerNumberStudents.value : null,
                                            staffStr = readerNumberStaff ? readerNumberStaff.value : null,
                                            fteStr = readerNumberFTE ? readerNumberFTE.value : null
+                                    BigDecimal studentsFTEStr = studentsStr && fteStr ? studentsStr+fteStr : null
+                                    BigDecimal studentsStaffStr = studentsStr && staffStr ? studentsStr+staffStr : null
                                     row.add(createTableCell(format, refdataValueList[count].getI10n('value')))
                                     row.add(createTableCell(format, ' '))
                                     row.add(createTableCell(format, studentsStr))
                                     row.add(createTableCell(format, staffStr))
                                     row.add(createTableCell(format, fteStr))
-                                    row.add(createTableCell(format, studentsStr+fteStr))
-                                    row.add(createTableCell(format, studentsStr+staffStr))
                                     break
                                 }
                             }
@@ -7130,8 +7130,6 @@ class ExportClickMeService {
                 row.add(createTableCell(format, note))
 
             } else {
-                row.add(createTableCell(format, ' '))
-                row.add(createTableCell(format, ' '))
                 row.add(createTableCell(format, ' '))
                 row.add(createTableCell(format, ' '))
                 row.add(createTableCell(format, ' '))
