@@ -58,7 +58,6 @@ class RefdataService {
                 detailsMap.putAt( dcName, dfMap )
             }
         }
-
         [usedRdvList.unique().sort(), detailsMap.sort()]
     }
 
