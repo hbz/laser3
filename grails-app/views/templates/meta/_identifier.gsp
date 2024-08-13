@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.Platform; de.laser.AuditConfig; de.laser.FormService" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.IdentifierNamespace; de.laser.wekb.Package; de.laser.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.wekb.Platform; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection />
 <!-- template: meta/identifier : editable: ${editable} -->
 <%

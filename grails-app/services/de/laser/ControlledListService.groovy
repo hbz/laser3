@@ -11,6 +11,10 @@ import de.laser.utils.LocaleUtils
 import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
@@ -1465,7 +1469,7 @@ class ControlledListService {
     }
 
     /**
-     * Retrieves a list of {@link Vendor}s matching the given request parameters
+     * Retrieves a list of {@link de.laser.wekb.Vendor}s matching the given request parameters
      * @param params the request parameter map
      * @return a map containing vendors, an empty one if no providers match the filter
      */

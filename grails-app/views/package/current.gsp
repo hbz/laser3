@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ExportClickMeService; de.laser.Package" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.wekb.Package" %>
 <laser:htmlStart message="package.show.nav.current" />
 
 <ui:breadcrumbs>

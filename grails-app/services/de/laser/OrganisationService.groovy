@@ -5,6 +5,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Platform
 import grails.gorm.transactions.Transactional
 import org.springframework.context.MessageSource
 
@@ -229,7 +230,7 @@ class OrganisationService {
 
     /**
      * Gets all platforms where a provider {@link Org} is assigned to, ordered by name, sortname and platform name
-     * @return the ordered {@link List} of {@link Platform}s
+     * @return the ordered {@link List} of {@link de.laser.wekb.Platform}s
      */
     List<Platform> getAllPlatforms() {
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)

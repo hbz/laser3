@@ -4,14 +4,12 @@ package de.laser
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.base.AbstractReport
 import de.laser.cache.EhcacheWrapper
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
 import de.laser.helper.*
-import de.laser.http.BasicHttpClient
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -22,27 +20,28 @@ import de.laser.stats.SushiCallError
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
-import de.laser.system.SystemEvent
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.ProviderRole
+import de.laser.wekb.Vendor
+import de.laser.wekb.VendorRole
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.BatchingPreparedStatementWrapper
 import groovy.sql.BatchingStatementWrapper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
-import io.micronaut.http.client.DefaultHttpClientConfiguration
-import io.micronaut.http.client.HttpClientConfiguration
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.grails.web.json.JSONObject
 import org.springframework.context.MessageSource
 import org.springframework.web.multipart.MultipartFile
 
 import java.sql.Connection
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
-import java.time.Duration
 import java.time.Year
 import java.util.concurrent.ExecutorService
 
@@ -1017,7 +1016,7 @@ class SubscriptionService {
      * The method uses native SQL for copying the issue entitlements, (eventual) coverages and price items
      * @param subscription the parent {@link Subscription} whose holding serves as base
      * @param memberSubs the {@link List} of member {@link Subscription}s which should be linked to the given package
-     * @param pkg the {@link de.laser.Package} to be linked
+     * @param pkg the {@link de.laser.wekb.Package} to be linked
      * @param createEntitlements should {@link IssueEntitlement}s be created along with the linking?
      */
     void addToMemberSubscription(Subscription subscription, List<Subscription> memberSubs, Package pkg, boolean createEntitlements) {
@@ -1071,7 +1070,7 @@ class SubscriptionService {
     }
 
     /**
-     * Copy from: {@link #addToSubscription(de.laser.Subscription, de.laser.Package, boolean)}
+     * Copy from: {@link #addToSubscription(de.laser.Subscription, de.laser.wekb.Package, boolean)}
      * Adds the consortial title holding to the given member subscription and links the given package to the member
      * @param target the member subscription whose holding should be enriched
      * @param consortia the consortial subscription whose holding should be taken

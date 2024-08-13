@@ -10,6 +10,7 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
+import de.laser.wekb.Platform
 import grails.converters.JSON
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql

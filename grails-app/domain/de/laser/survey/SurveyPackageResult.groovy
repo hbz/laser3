@@ -1,7 +1,7 @@
 package de.laser.survey
 
 import de.laser.Org
-import de.laser.Package
+import de.laser.wekb.Package
 import de.laser.Subscription
 
 

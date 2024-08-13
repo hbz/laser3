@@ -11,6 +11,9 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Package
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -102,7 +105,7 @@ class FinanceService {
                 }
             }
             Package pkg
-            if (params.newPackage?.contains("${de.laser.Package.class.name}:")) {
+            if (params.newPackage?.contains("${de.laser.wekb.Package.class.name}:")) {
                 try {
                     if (params.newPackage.split(":")[1] != 'null') {
                         pkg = (Package) genericOIDService.resolveOID(params.newPackage)

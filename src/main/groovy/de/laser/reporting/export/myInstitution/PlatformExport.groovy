@@ -2,7 +2,7 @@ package de.laser.reporting.export.myInstitution
 
 import de.laser.remote.ApiSource
 import de.laser.ContextService
-import de.laser.Platform
+import de.laser.wekb.Platform
 import de.laser.RefdataValue
 import de.laser.storage.BeanStore
 import de.laser.reporting.export.GlobalExportHelper

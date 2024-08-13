@@ -1,4 +1,4 @@
-<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.PendingChangeConfiguration; de.laser.Platform; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.finance.CostItem; de.laser.Org; de.laser.IssueEntitlement" %>
+<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.PendingChangeConfiguration; de.laser.wekb.Platform; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.finance.CostItem; de.laser.Org; de.laser.IssueEntitlement" %>
 <laser:serviceInjection />
 
 <div class="ui card">

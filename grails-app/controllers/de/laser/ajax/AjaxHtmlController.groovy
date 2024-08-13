@@ -24,7 +24,7 @@ import de.laser.License
 import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.OrgRole
-import de.laser.Provider
+import de.laser.wekb.Provider
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.ReportingFilter
@@ -48,7 +48,7 @@ import de.laser.Task
 import de.laser.TaskService
 import de.laser.TitleInstancePackagePlatform
 import de.laser.UserSetting
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService

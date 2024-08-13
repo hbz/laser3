@@ -5,12 +5,12 @@ import de.laser.IdentifierNamespace
 import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.Org
-import de.laser.Provider
+import de.laser.wekb.Provider
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.reporting.export.myInstitution.ProviderExport
 import de.laser.reporting.export.myInstitution.VendorExport
 import de.laser.storage.BeanStore

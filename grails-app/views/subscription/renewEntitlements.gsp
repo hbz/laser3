@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform" %>
+<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.Subscription; de.laser.wekb.Platform" %>
 <laser:htmlStart message="default.subscription.label" />
 
 <ui:breadcrumbs>

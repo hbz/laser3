@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.base.AbstractReport; de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription; de.laser.wekb.Platform; de.laser.base.AbstractReport; de.laser.finance.CostItem" %>
 
 <g:if test="${platformInstanceRecords.values().statisticsFormat.contains('COUNTER')}">
     <laser:serviceInjection/>

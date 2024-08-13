@@ -17,6 +17,10 @@ import de.laser.survey.SurveyOrg
 import de.laser.traits.ShareableTrait
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Provider
+import de.laser.wekb.ProviderRole
+import de.laser.wekb.Vendor
+import de.laser.wekb.VendorRole
 import grails.plugins.orm.auditable.Auditable
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -62,8 +66,8 @@ import static java.time.temporal.ChronoUnit.DAYS
  * <p>Single users may manage their local subscriptions independently. Subscriptions have a wide range of functionality; costs and statistics may be managed via the
  * subscription or its holding and reporting is mainly fed by data from and around subscriptions</p>
  * @see SubscriptionProperty
- * @see Platform
- * @see Package
+ * @see de.laser.wekb.Platform
+ * @see de.laser.wekb.Package
  * @see SubscriptionPackage
  * @see TitleInstancePackagePlatform
  * @see IssueEntitlement
@@ -516,7 +520,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     /**
      * Retrieves all providers linked to this subscription
-     * @return a {@link List} of {@link Provider}s
+     * @return a {@link List} of {@link de.laser.wekb.Provider}s
      */
     List<Provider> getProviders() {
         Provider.executeQuery('select pr.provider from ProviderRole pr where pr.subscription =:sub order by pr.provider.sortname ',
@@ -534,7 +538,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     /**
      * Retrieves all vendors linked to this subscription
-     * @return a {@link List} of linked {@link Vendor}s
+     * @return a {@link List} of linked {@link de.laser.wekb.Vendor}s
      */
     List<Vendor> getVendors() {
         Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription = :sub order by vr.vendor.sortname',
@@ -889,7 +893,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * Called from issueEntitlement/show and subscription/show, is part of the Nationaler Statistikserver statistics component
      * @return a {@link List} of ISIL identifier strings
      * @see SubscriptionPackage
-     * @see Package
+     * @see de.laser.wekb.Package
      */
   String getCommaSeperatedPackagesIsilList() {
       List<String> result = []
@@ -905,7 +909,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     /**
      * Retrieves a set of access points linked to this subscription and attached to the given institution and platform
      * @param org the institution ({@link Org}) who created the access point
-     * @param platform the {@link Platform} to which the access point link is attached to
+     * @param platform the {@link de.laser.wekb.Platform} to which the access point link is attached to
      * @return a set (as {@link List} with distinct in query) of access point links
      * @see OrgAccessPoint
      */

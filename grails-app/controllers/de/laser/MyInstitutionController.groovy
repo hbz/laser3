@@ -8,7 +8,6 @@ import de.laser.convenience.Marker
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.UserControllerService
-import de.laser.interfaces.CalculatedType
 import de.laser.remote.ApiSource
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
@@ -28,19 +27,22 @@ import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
-import de.laser.survey.SurveyConfigPackage
 import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyLinks
 import de.laser.survey.SurveyOrg
-import de.laser.survey.SurveyPackageResult
 import de.laser.survey.SurveyResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.ProviderRole
+import de.laser.wekb.Vendor
+import de.laser.wekb.VendorRole
 import de.laser.workflow.WfChecklist
-import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
@@ -173,7 +175,7 @@ class MyInstitutionController  {
      * Lists the platforms which are linked by any current subscription or subscription with perpetual access to the context institution.
      * The list results may be filtered by filter parameters
      * @return the platform list view
-     * @see Platform
+     * @see de.laser.wekb.Platform
      * @see Subscription
      */
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
@@ -1081,7 +1083,7 @@ class MyInstitutionController  {
     }
 
     /**
-     * Opens a list of all {@link Vendor}s which are linked by {@link VendorRole} to any subscription.
+     * Opens a list of all {@link Vendor}s which are linked by {@link de.laser.wekb.VendorRole} to any subscription.
      * The list results may be filtered with filter parameters
      * @return a list of matching {@link Vendor} records, as html or as export pipe (Excel / CSV)
      */
@@ -2117,7 +2119,7 @@ class MyInstitutionController  {
      * by filter parameters
      * @return a list view of packages the institution has subscribed
      * @see SubscriptionPackage
-     * @see Package
+     * @see de.laser.wekb.Package
      */
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
@@ -3319,7 +3321,7 @@ class MyInstitutionController  {
 
     /**
      * Call to load the current watchlist of objects coming from we:kb
-     * @return a {@link Map} containing the {@link Org}s, {@link Package}s and {@link Platform}s currently being observed
+     * @return a {@link Map} containing the {@link Org}s, {@link de.laser.wekb.Package}s and {@link Platform}s currently being observed
      */
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {

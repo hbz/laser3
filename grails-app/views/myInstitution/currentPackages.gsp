@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.helper.Params; de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Package; de.laser.RefdataValue" %>
+<%@ page import="de.laser.ui.Btn; de.laser.helper.Params; de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.wekb.Package; de.laser.RefdataValue" %>
 <laser:htmlStart message="menu.my.packages" serviceInjection="true" />
 
 <ui:breadcrumbs>

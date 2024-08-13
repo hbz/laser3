@@ -5,7 +5,7 @@ import de.laser.License
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.OrgSetting
-import de.laser.Package
+import de.laser.wekb.Package
 import de.laser.RefdataValue
 import de.laser.SubscriptionPackage
 import de.laser.api.v0.*
@@ -81,7 +81,7 @@ class ApiStatistic {
      * Checks implicit NATSTAT_SERVER_ACCESS; i.e. only those packages are being listed which are subscribed by at least one
      * subscriber who gave permission to the Nationaler Statistikserver to access its data
      * @return JSON
-     * @see ApiUnsecuredMapReader#getPackageStubMap(de.laser.Package)
+     * @see ApiUnsecuredMapReader#getPackageStubMap(de.laser.wekb.Package)
      */
     static JSON getAllPackages() {
         Collection<Object> result = []

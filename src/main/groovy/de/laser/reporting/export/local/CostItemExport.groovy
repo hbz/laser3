@@ -9,6 +9,7 @@ import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.reporting.export.LocalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
+import de.laser.wekb.Package
 
 import java.text.SimpleDateFormat
 
@@ -178,7 +179,7 @@ class CostItemExport extends BaseDetailsExport {
 //                    content.add( subscrOr.collect{ it.org.name + ( it.org.sortname ? ' (' + it.org.sortname +')' : '')}.join( CSV_VALUE_SEPARATOR ) )
 //                }
                 else if (key == '@-cost-package') {
-                    de.laser.Package pkg = ci.pkg
+                    de.laser.wekb.Package pkg = ci.pkg
                     if (pkg) {
                         content.add(pkg.toString())
                     } else {

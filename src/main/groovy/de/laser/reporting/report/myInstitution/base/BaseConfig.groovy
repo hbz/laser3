@@ -3,10 +3,10 @@ package de.laser.reporting.report.myInstitution.base
 import de.laser.ContextService
 import de.laser.License
 import de.laser.Org
-import de.laser.Package
-import de.laser.PackageVendor
-import de.laser.Platform
-import de.laser.Provider
+import de.laser.wekb.Package
+import de.laser.wekb.PackageVendor
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 import de.laser.RefdataCategory
 import de.laser.Subscription
 import de.laser.SubscriptionsQueryService

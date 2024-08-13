@@ -9,6 +9,9 @@ import de.laser.storage.RDStore
 import de.laser.properties.*
 import de.laser.survey.SurveyResult
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil

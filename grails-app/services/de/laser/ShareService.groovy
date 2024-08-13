@@ -2,6 +2,9 @@ package de.laser
 
 
 import de.laser.interfaces.ShareSupport
+import de.laser.wekb.Package
+import de.laser.wekb.ProviderRole
+import de.laser.wekb.VendorRole
 import grails.gorm.transactions.Transactional
 
 /**

@@ -6,9 +6,11 @@ import de.laser.http.BasicHttpClient
 import de.laser.properties.OrgProperty
 import de.laser.remote.GlobalRecordSource
 import de.laser.storage.Constants
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import groovy.sql.GroovyRowResult

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ExportClickMeService; de.laser.RefdataValue; de.laser.Vendor" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.RefdataValue; de.laser.wekb.Vendor" %>
 
 <laser:htmlStart message="menu.my.vendors" />
 
