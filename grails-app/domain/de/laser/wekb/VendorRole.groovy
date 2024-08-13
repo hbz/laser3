@@ -1,5 +1,7 @@
-package de.laser
+package de.laser.wekb
 
+import de.laser.License
+import de.laser.Subscription
 import de.laser.traits.ShareableTrait
 import org.grails.datastore.mapping.engine.event.PostUpdateEvent
 

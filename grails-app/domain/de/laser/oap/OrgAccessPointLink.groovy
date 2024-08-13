@@ -1,6 +1,6 @@
 package de.laser.oap
 
-import de.laser.Platform
+import de.laser.wekb.Platform
 import de.laser.SubscriptionPackage
 import de.laser.base.AbstractBase
 

@@ -1,4 +1,4 @@
-package de.laser
+package de.laser.wekb
 
 class PackageVendor implements Comparable<PackageVendor> {
 

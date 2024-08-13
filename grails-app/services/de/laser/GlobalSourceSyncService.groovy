@@ -14,6 +14,15 @@ import de.laser.storage.RDStore
 import de.laser.system.SystemEvent
 import de.laser.titles.TitleHistoryEvent
 import de.laser.utils.DateUtils
+import de.laser.wekb.ElectronicBilling
+import de.laser.wekb.ElectronicDeliveryDelayNotification
+import de.laser.wekb.InvoiceDispatch
+import de.laser.wekb.InvoicingVendor
+import de.laser.wekb.Package
+import de.laser.wekb.PackageVendor
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import io.micronaut.http.HttpResponse
@@ -163,7 +172,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         'join s.orgRelations oo ' +
                                         'where s.instanceOf = null and pkg.gokbId = :packageKey ' +
                                         'and oo.roleType in (:roleTypes)'
-                                List subPkgHolders = SubscriptionPackage.executeQuery(query,[packageKey:packageKey,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
+                                List subPkgHolders = SubscriptionPackage.executeQuery(query,[packageKey:packageKey,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIUM,RDStore.OR_SUBSCRIBER]])
                                 log.info("getting subscription package holders for ${packageKey}: ${subPkgHolders.toListString()}")
                                 subPkgHolders.each { row ->
                                     log.debug("processing ${row[1]}")
@@ -298,7 +307,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     'join s.orgRelations oo ' +
                                     'where s.instanceOf = null and pkg.gokbId = :packageKey ' +
                                     'and oo.roleType in (:roleTypes)'
-                            List subPkgHolders = SubscriptionPackage.executeQuery(query,[packageKey:packageKey,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
+                            List subPkgHolders = SubscriptionPackage.executeQuery(query,[packageKey:packageKey,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIUM,RDStore.OR_SUBSCRIBER]])
                             log.info("getting subscription package holders for ${packageKey}: ${subPkgHolders.toListString()}")
                             subPkgHolders.each { row ->
                                 log.debug("processing ${row[1]}")
@@ -1138,9 +1147,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     /**
-     * Looks up for a given UUID if a local record exists or not. If no {@link de.laser.Package} record exists, it will be
+     * Looks up for a given UUID if a local record exists or not. If no {@link de.laser.wekb.Package} record exists, it will be
      * created with the given remote record data, otherwise, the local record is going to be updated. The {@link TitleInstancePackagePlatform records}
-     * in the {@link de.laser.Package} will be checked for differences and if there are such, the according fields updated. Same counts for the {@link TIPPCoverage} records
+     * in the {@link de.laser.wekb.Package} will be checked for differences and if there are such, the according fields updated. Same counts for the {@link TIPPCoverage} records
      * in the {@link TitleInstancePackagePlatform}s
      * @param packageData A UUID pointing to record extract or the record itself for a given package
      * @return the updated package record

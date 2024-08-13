@@ -7,7 +7,7 @@
     <g:set var="costItemsSubsc"
            value="${subscription ? CostItem.executeQuery('select ci from CostItem as ci left join ci.costItemElement cie where ci.owner in :owner and ci.sub = :sub and ci.isVisibleForSubscriber = true and ci.surveyOrg = null and ci.costItemStatus != :deleted and ci.pkg is null' +
                    ' order by cie.value_' + LocaleUtils.getCurrentLang(),
-                   [owner: [subscription.getConsortia()], sub: subscription, deleted: RDStore.COST_ITEM_DELETED]) : null}"/>
+                   [owner: [subscription.getConsortium()], sub: subscription, deleted: RDStore.COST_ITEM_DELETED]) : null}"/>
 
     <% Set<RefdataValue> costItemElementsNotInSurveyCostItems = [] %>
 
@@ -436,13 +436,13 @@
                value="${subscription ? CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElement cie ' +
                        'where ci.owner = :owner and sub.instanceOf = :sub and oo.roleType in (:roleTypes)  and ci.surveyOrg = null and ci.costItemStatus != :deleted' +
                        ' order by cie.value_' + LocaleUtils.getCurrentLang(),
-                       [owner: [subscription.getConsortia()], sub: subscription, deleted: RDStore.COST_ITEM_DELETED, roleTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]) : null}"/>
+                       [owner: [subscription.getConsortium()], sub: subscription, deleted: RDStore.COST_ITEM_DELETED, roleTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]) : null}"/>
         <g:set var="consCosts" value="${consCostItems ? financeService.calculateResults(consCostItems.id) : null}"/>
         <g:if test="${consCosts}">
             <div class="ui card la-dl-no-table">
                 <div class="content">
                 %{-- <g:if test="${costItemSums.ownCosts}">
-                     <g:if test="${(contextOrg.id != subscription.getConsortia()?.id && subscription.instanceOf) || !subscription.instanceOf}">
+                     <g:if test="${(contextOrg.id != subscription.getConsortium()?.id && subscription.instanceOf) || !subscription.instanceOf}">
                          <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.ownCosts')} </h2>
                          <laser:render template="/subscription/financials" model="[data: costItemSums.ownCosts]"/>
                      </g:if>

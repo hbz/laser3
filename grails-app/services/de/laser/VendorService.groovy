@@ -4,28 +4,26 @@ import de.laser.auth.User
 import de.laser.convenience.Marker
 import de.laser.helper.Params
 import de.laser.properties.PropertyDefinition
-import de.laser.properties.ProviderProperty
 import de.laser.properties.VendorProperty
 import de.laser.remote.ApiSource
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfigVendor
-import de.laser.survey.SurveyVendorResult
 import de.laser.traces.DeletedObject
-import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
-import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.ElectronicBilling
+import de.laser.wekb.ElectronicDeliveryDelayNotification
+import de.laser.wekb.InvoiceDispatch
+import de.laser.wekb.Package
+import de.laser.wekb.PackageVendor
+import de.laser.wekb.Platform
+import de.laser.wekb.Vendor
+import de.laser.wekb.VendorLink
+import de.laser.wekb.VendorRole
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.codehaus.groovy.runtime.InvokerHelper
-import org.hibernate.Session
 import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
-
-import javax.servlet.ServletOutputStream
-import java.text.SimpleDateFormat
 
 @Transactional
 class VendorService {
@@ -45,7 +43,7 @@ class VendorService {
 
     /**
      * Gets the contact persons; optionally, a function type may be given as filter. Moreover, the request may be limited to public contacts only
-     * @param vendor the {@link Vendor} for which the contacts should be retrieved
+     * @param vendor the {@link de.laser.wekb.Vendor} for which the contacts should be retrieved
      * @param onlyPublic retrieve only public contacts?
      * @param functionType the function type of the contacts to be requested
      * @param exWekb should only contacts being retrieved which come from the provider itself (i.e. from we:kb)?
@@ -643,7 +641,7 @@ class VendorService {
 
     Set<Long> getCurrentVendorIds(Org context) {
         Set<Long> result = VendorRole.executeQuery("select vr.id from VendorRole vr join vr.vendor as v where vr.subscription in (select sub from OrgRole where org = :context and roleType in (:roleTypes))",
-                [context:context,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]])
+                [context:context,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIUM,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]])
         result
     }
 

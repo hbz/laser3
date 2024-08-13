@@ -58,7 +58,7 @@
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <%
                                 print esRecords.get(pkg.id as String).identifiers.collect { identifier ->
-                                    IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(identifier.namespace, 'de.laser.Package')
+                                    IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(identifier.namespace, 'de.laser.wekb.Package')
                                     String namespace = ns ? (ns.getI10n('name') ?: ns.ns) : GenericHelper.flagUnmatched(identifier.namespaceName ?: identifier.namespace)
                                     return namespace + ':' + identifier.value
                                 }.join(',<br/>')

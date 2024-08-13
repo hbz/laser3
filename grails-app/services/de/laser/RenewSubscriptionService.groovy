@@ -10,6 +10,8 @@ import de.laser.interfaces.CalculatedType
 import de.laser.oap.OrgAccessPointLink
 import de.laser.properties.SubscriptionProperty
 import de.laser.system.SystemEvent
+import de.laser.wekb.ProviderRole
+import de.laser.wekb.VendorRole
 import grails.gorm.transactions.Transactional
 import groovy.time.TimeCategory
 import org.codehaus.groovy.runtime.InvokerHelper

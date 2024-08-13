@@ -5,6 +5,7 @@ import de.laser.storage.RDStore
 import de.laser.survey.SurveyResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Provider
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.web.util.WebUtils
@@ -160,7 +161,7 @@ class InfoService {
 //                        [
 //                                owner               : consortium,
 //                                sub                 : sub,
-//                                roleType            : RDStore.OR_SUBSCRIPTION_CONSORTIA,
+//                                roleType            : RDStore.OR_SUBSCRIPTION_CONSORTIUM,
 //                                deleted             : RDStore.COST_ITEM_DELETED
 //                        ]
 //                )
@@ -228,7 +229,7 @@ class InfoService {
 
         List<CostItem> consCostItems = CostItem.executeQuery( costItemQuery, [
                 org                 : consortium,
-                consortialType      : RDStore.OR_SUBSCRIPTION_CONSORTIA,
+                consortialType      : RDStore.OR_SUBSCRIPTION_CONSORTIUM,
                 subscrType          : [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN],
                 filterConsMembers   : [member],
                 filterSubStatus     : RDStore.SUBSCRIPTION_CURRENT,
@@ -360,7 +361,7 @@ class InfoService {
 //
 //        List<CostItem> consCostItems = CostItem.executeQuery( costItemQuery, [
 //                org                 : institution,
-//                consortialType      : RDStore.OR_SUBSCRIPTION_CONSORTIA,
+//                consortialType      : RDStore.OR_SUBSCRIPTION_CONSORTIUM,
 //                subscrType          : [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN],
 //                filterConsMembers   : [institution],
 //                filterSubStatus     : RDStore.SUBSCRIPTION_CURRENT,

@@ -2,11 +2,11 @@ package de.laser.properties
 
 import de.laser.Org
 import de.laser.RefdataValue
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 
 /**
- * The class's name is what it does: a property (implicitly general) to a {@link de.laser.Vendor}.
+ * The class's name is what it does: a property (implicitly general) to a {@link Vendor}.
  * The flag whether it is visible by everyone or not is determined by the {@link #isPublic} flag.
  * This flag is particularly important here because vendors are accessible by everyone.
  */

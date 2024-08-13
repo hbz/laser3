@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.*;de.laser.storage.RDStore;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.wekb.Provider; de.laser.wekb.ProviderRole; de.laser.wekb.ProviderLink; de.laser.wekb.Vendor; de.laser.wekb.VendorLink; de.laser.utils.DateUtils; de.laser.*;de.laser.storage.RDStore;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants" %>
 <laser:serviceInjection/>
 <g:if test="${editmode}">
 

@@ -23,6 +23,13 @@ import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
+import de.laser.wekb.ElectronicBilling
+import de.laser.wekb.ElectronicDeliveryDelayNotification
+import de.laser.wekb.InvoiceDispatch
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -4460,7 +4467,7 @@ class ExportClickMeService {
 
     /**
      * Exports the given fields from the given cost items
-     * @param result the {@link Vendor} set to export
+     * @param result the {@link de.laser.wekb.Vendor} set to export
      * @param selectedFields the fields which should appear in the export
      * @param format the {@link FORMAT} to be exported
      * @param contactSources which type of contacts should be taken? (public or private)
@@ -4507,7 +4514,7 @@ class ExportClickMeService {
 
     /**
      * Exports the given fields from the given cost items
-     * @param result the {@link Provider} set to export
+     * @param result the {@link de.laser.wekb.Provider} set to export
      * @param selectedFields the fields which should appear in the export
      * @param format the {@link FORMAT} to be exported
      * @param contactSources which type of contacts should be taken? (public or private)
@@ -5492,10 +5499,10 @@ class ExportClickMeService {
                 }
                 */
                 else if (fieldKey == 'subscription.consortium') {
-                    row.add(createTableCell(format, subscription.getConsortia()?.name))
+                    row.add(createTableCell(format, subscription.getConsortium()?.name))
                 }
                 else if (fieldKey == 'license.consortium') {
-                    row.add(createTableCell(format, subscription.getConsortia()?.name))
+                    row.add(createTableCell(format, subscription.getConsortium()?.name))
                 }
                 else if (fieldKey.startsWith('participantCustomerIdentifiers.')) {
                     _setOrgFurtherInformation(org, row, fieldKey, format, subscription)
@@ -5846,7 +5853,7 @@ class ExportClickMeService {
                     _setOrgFurtherInformation(org, row, fieldKey, format)
                 }
                 else if (fieldKey == 'subscription.consortium') {
-                    row.add(createTableCell(format, costItem.sub?.getConsortia()?.name))
+                    row.add(createTableCell(format, costItem.sub?.getConsortium()?.name))
                 }
                 else {
                     def fieldValue = _getFieldValue(costItem, field, sdf)
@@ -6435,7 +6442,7 @@ class ExportClickMeService {
                         }
                 }
                 else if (fieldKey.contains('subscription.consortium')) {
-                    row.add(createTableCell(format, result.subscription.getConsortia()?.name))
+                    row.add(createTableCell(format, result.subscription.getConsortium()?.name))
                 }
                 else if (fieldKey.contains('tipp.ddcs')) {
                     row.add(createTableCell(format, result.tipp.ddcs.collect {"${it.ddc.value} - ${it.ddc.getI10n("value")}"}.join(";")))

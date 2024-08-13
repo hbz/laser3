@@ -3,6 +3,7 @@ package de.laser
 import de.laser.ui.Icon
 import de.laser.oap.OrgAccessPointLink
 import de.laser.storage.RDStore
+import de.laser.wekb.Package
 import grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.persistence.Transient
@@ -14,7 +15,7 @@ import javax.persistence.Transient
  * @see OrgAccessPointLink
  * @see PendingChangeConfiguration
  * @see IssueEntitlement
- * @see Package
+ * @see de.laser.wekb.Package
  */
 class SubscriptionPackage implements Comparable {
 

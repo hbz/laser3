@@ -7,7 +7,7 @@
             <tr>
                 <td>
                     <span class="la-flexbox la-minor-object">
-                        <g:if test="${role.roleType.value == RDStore.OR_SUBSCRIPTION_CONSORTIA.value}">
+                        <g:if test="${role.roleType.value == RDStore.OR_SUBSCRIPTION_CONSORTIUM.value}">
                             <i class="la-list-icon la-popup-tooltip la-consortia icon" data-content="${message(code:'consortium')}"></i>
                         </g:if>
                         <g:link controller="organisation" action="show" id="${role.org.id}">
@@ -110,7 +110,7 @@
                                                 </div>
                                             </div>
                                         </g:each>
-                                        <%--<g:if test="${roleObject instanceof de.laser.Package}">--%>
+                                        <%--<g:if test="${roleObject instanceof de.laser.wekb.Package}">--%>
                                         <%
                                             Set<Person> techSupports = Person.getPublicByOrgAndFunc(role.org, 'Technical Support'), serviceSupports = Person.getPublicByOrgAndFunc(role.org, 'Service Support'), metadataContacts = Person.getPublicByOrgAndFunc(role.org, 'Metadata Contact')
                                         %>
@@ -267,7 +267,7 @@
                                                 </div>
                                             </div>
                                         </g:each>
-                                        <%--<g:if test="${roleObject instanceof de.laser.Package}">--%>
+                                        <%--<g:if test="${roleObject instanceof de.laser.wekb.Package}">--%>
                                             <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support', contextOrg)}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">

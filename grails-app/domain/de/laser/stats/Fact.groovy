@@ -1,7 +1,7 @@
 package de.laser.stats
 
 import de.laser.Org
-import de.laser.Platform
+import de.laser.wekb.Platform
 import de.laser.RefdataValue
 import de.laser.TitleInstancePackagePlatform
 import de.laser.annotations.RefdataInfo

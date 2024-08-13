@@ -93,7 +93,7 @@
                         </g:elseif>
                     </g:if>
                     <g:elseif test="${subscription}">
-                        <g:set var="consortium" value="${subscription.getConsortia()}"/>
+                        <g:set var="consortium" value="${subscription.getConsortium()}"/>
                         <g:set var="atSubscr" value="${subscription._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
                         <g:if test="${isGroupVisible}">
                             <g:set var="propDefGroupItems" value="${pdg.getCurrentProperties(subscription)}" />
@@ -261,7 +261,7 @@
                                         <g:set var="consortium" value="${license.getLicensingConsortium()}"/>
                                     </g:if>
                                     <g:elseif test="${subscription}">
-                                        <g:set var="consortium" value="${subscription.getConsortia()}"/>
+                                        <g:set var="consortium" value="${subscription.getConsortium()}"/>
                                         <g:set var="atSubscr" value="${subscription._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
                                     </g:elseif>
                                     %{--<g:if test="${(prop.hasProperty('instanceOf') && prop.instan && AuditConfig.getConfig(prop.instanceOf)) || AuditConfig.getConfig(prop)}">

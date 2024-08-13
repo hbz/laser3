@@ -147,7 +147,7 @@
                     <li>
                         <strong><g:message code="subscription.resource.label"/>: </strong>${subscription.resource?.getI10n("value")}
                     </li>
-                    <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia().id}">
+                    <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortium().id}">
                         <li>
                             <strong><g:message code="subscription.isInstanceOfSub.label"/>: </strong><g:link controller="subscription" action="show" id="${subscription.instanceOf.id}" absolute="true">${subscription.instanceOf.name}</g:link>
                         </li>
@@ -642,7 +642,7 @@
         <g:if test="${costItemSums.ownCosts || costItemSums.consCosts || costItemSums.subscrCosts}">
             <article>
                 <g:if test="${costItemSums.ownCosts}">
-                    <g:if test="${(institution.id != subscription.getConsortia()?.id && subscription.instanceOf) || !subscription.instanceOf}">
+                    <g:if test="${(institution.id != subscription.getConsortium()?.id && subscription.instanceOf) || !subscription.instanceOf}">
                         <h2>${message(code: 'financials.label')}: ${message(code: 'financials.tab.ownCosts')}</h2>
                         <g:render template="financialsPdf" model="[data: costItemSums.ownCosts]"/>
                     </g:if>

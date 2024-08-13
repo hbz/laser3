@@ -310,7 +310,7 @@
                                                 <g:set var="consortium" value="${targetObject.getLicensingConsortium()}"/>
                                             </g:if>
                                             <g:elseif test="${targetObject instanceof Subscription}">
-                                                <g:set var="consortium" value="${targetObject.getConsortia()}"/>
+                                                <g:set var="consortium" value="${targetObject.getConsortium()}"/>
                                                 <g:set var="atSubscr"
                                                        value="${targetObject._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
                                             </g:elseif>

@@ -8,7 +8,6 @@ import de.laser.convenience.Marker
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.UserControllerService
-import de.laser.interfaces.CalculatedType
 import de.laser.remote.ApiSource
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
@@ -28,19 +27,22 @@ import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
-import de.laser.survey.SurveyConfigPackage
 import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyLinks
 import de.laser.survey.SurveyOrg
-import de.laser.survey.SurveyPackageResult
 import de.laser.survey.SurveyResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.ProviderRole
+import de.laser.wekb.Vendor
+import de.laser.wekb.VendorRole
 import de.laser.workflow.WfChecklist
-import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
@@ -173,7 +175,7 @@ class MyInstitutionController  {
      * Lists the platforms which are linked by any current subscription or subscription with perpetual access to the context institution.
      * The list results may be filtered by filter parameters
      * @return the platform list view
-     * @see Platform
+     * @see de.laser.wekb.Platform
      * @see Subscription
      */
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
@@ -188,7 +190,7 @@ class MyInstitutionController  {
         result.contextOrg = contextService.getOrg()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PLA_PROP], contextService.getOrg())
-        Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA]]
+        Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM]]
 
         String instanceFilter = "", subFilter = ""
         if (! params.status) {
@@ -1081,7 +1083,7 @@ class MyInstitutionController  {
     }
 
     /**
-     * Opens a list of all {@link Vendor}s which are linked by {@link VendorRole} to any subscription.
+     * Opens a list of all {@link Vendor}s which are linked by {@link de.laser.wekb.VendorRole} to any subscription.
      * The list results may be filtered with filter parameters
      * @return a list of matching {@link Vendor} records, as html or as export pipe (Excel / CSV)
      */
@@ -1471,7 +1473,7 @@ class MyInstitutionController  {
                         it.pkg.name
                     }
                     row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
-                    row.add([field: sub.getConsortia()?.name ?: '', style: null])
+                    row.add([field: sub.getConsortium()?.name ?: '', style: null])
                     row.add([field: subProviders.join(', '), style: null])
                     row.add([field: subAgencies.join(', '), style: null])
                     row.add([field: sub.startDate ? sdf.format(sub.startDate) : '', style: null])
@@ -1505,7 +1507,7 @@ class MyInstitutionController  {
                         it.pkg.name
                     }
                     row.add(packageNames ? packageNames.join("; ") : '')
-                    row.add(sub.getConsortia()?.name ?: '')
+                    row.add(sub.getConsortium()?.name ?: '')
                     row.add(subProviders.join("; ").replace(',',''))
                     row.add(subAgencies.join("; ").replace(',',''))
                     row.add(sub.startDate ? sdf.format(sub.startDate) : '')
@@ -1709,7 +1711,7 @@ class MyInstitutionController  {
         List<String> queryFilter = [], subscriptionQueryFilter = []
 
         if (contextService.getOrg().isCustomerType_Consortium()) {
-            orgRoles << RDStore.OR_SUBSCRIPTION_CONSORTIA
+            orgRoles << RDStore.OR_SUBSCRIPTION_CONSORTIUM
             subscriptionQueryFilter << " sub.instanceOf = null "
         }
         else {
@@ -1991,7 +1993,7 @@ class MyInstitutionController  {
                             configMap.subscriptions = Subscription.findAllByIdInList(filterSub)
                         /*
                         else
-                            configMap.subscriptions = SubscriptionPackage.executeQuery('select s.id from Subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes) and s.status = :current'+instanceFilter, [current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]]).toSet()
+                            configMap.subscriptions = SubscriptionPackage.executeQuery('select s.id from Subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes) and s.status = :current'+instanceFilter, [current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS]]).toSet()
                         */
                         Map<String,Collection> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
                         if(tableData.columnData.size() > 0) {
@@ -2024,7 +2026,7 @@ class MyInstitutionController  {
                         configMap.putAll(params)
                         configMap.validOn = checkedDate.getTime()
                         String consFilter = result.institution.isCustomerType_Consortium() ? ' and s.instanceOf is null' : ''
-                        configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]])
+                        configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS]])
                         Map<String,List> export = exportService.generateTitleExportCustom(configMap, IssueEntitlement.class.name) //all subscriptions, all packages
                         Map sheetData = [:]
                         sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
@@ -2117,7 +2119,7 @@ class MyInstitutionController  {
      * by filter parameters
      * @return a list view of packages the institution has subscribed
      * @see SubscriptionPackage
-     * @see Package
+     * @see de.laser.wekb.Package
      */
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
@@ -2153,7 +2155,7 @@ class MyInstitutionController  {
         ])
         List idsCategory2 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
                 org: contextService.getOrg(), roleTypes: [
-                RDStore.OR_SUBSCRIPTION_CONSORTIA
+                RDStore.OR_SUBSCRIPTION_CONSORTIUM
         ]
         ])
 
@@ -3319,7 +3321,7 @@ class MyInstitutionController  {
 
     /**
      * Call to load the current watchlist of objects coming from we:kb
-     * @return a {@link Map} containing the {@link Org}s, {@link Package}s and {@link Platform}s currently being observed
+     * @return a {@link Map} containing the {@link Org}s, {@link de.laser.wekb.Package}s and {@link Platform}s currently being observed
      */
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
@@ -3614,12 +3616,12 @@ class MyInstitutionController  {
 
         Map queryParamsProviders = [
                 subOrg      : result.institution,
-                subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]
+                subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIUM]
         ]
 
         Map queryParamsSubs = [
                 subOrg      : result.institution,
-                subRoleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA]
+                subRoleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIUM]
         ]
 
         String queryProviders = '''select distinct(pvr.provider) from OrgRole or_pa, ProviderRole pvr 

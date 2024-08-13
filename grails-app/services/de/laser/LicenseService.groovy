@@ -7,6 +7,8 @@ import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.ProviderRole
+import de.laser.wekb.VendorRole
 import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import groovy.xml.StreamingMarkupBuilder

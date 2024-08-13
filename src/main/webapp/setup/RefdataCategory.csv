@@ -189,8 +189,6 @@ tipp.status.reason,Tipp.StatusReason,Tipp.StatusReason
 title.status,TitleInstanceStatus,TitleInstanceStatus
 title.medium,Title Medium,Title Medium
 title.type,Title Type,Title Type
-transform.format,Transform Format,Transform Format
-transform.type,Transform Type,Transform Type
 user.setting.dashboard.tab,Dashbord Tab,Dashboard Tab
 user.setting.theme,Theme,Theme
 vendor.status,Lieferant-Status,Vendor Status

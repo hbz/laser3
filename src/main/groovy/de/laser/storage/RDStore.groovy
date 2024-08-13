@@ -108,7 +108,7 @@ class RDStore {
     public final static RefdataValue OR_LICENSEE                = getRefdataValue('Licensee', RDConstants.ORGANISATIONAL_ROLE)
     public final static RefdataValue OR_LICENSEE_CONS           = getRefdataValue('Licensee_Consortial', RDConstants.ORGANISATIONAL_ROLE)
 
-    public final static RefdataValue OR_SUBSCRIPTION_CONSORTIA  = getRefdataValue('Subscription Consortia', RDConstants.ORGANISATIONAL_ROLE)
+    public final static RefdataValue OR_SUBSCRIPTION_CONSORTIUM = getRefdataValue('Subscription Consortia', RDConstants.ORGANISATIONAL_ROLE) // TODO: 'Subscription Consortium'
     public final static RefdataValue OR_SUBSCRIBER              = getRefdataValue('Subscriber', RDConstants.ORGANISATIONAL_ROLE)
     public final static RefdataValue OR_SUBSCRIBER_CONS         = getRefdataValue('Subscriber_Consortial', RDConstants.ORGANISATIONAL_ROLE)
     public final static RefdataValue OR_SUBSCRIBER_CONS_HIDDEN  = getRefdataValue('Subscriber_Consortial_Hidden', RDConstants.ORGANISATIONAL_ROLE)

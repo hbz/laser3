@@ -2,8 +2,8 @@ package de.laser.reporting.report
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import de.laser.remote.ApiSource
-import de.laser.Package
-import de.laser.Platform
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
 import de.laser.RefdataValue
 import de.laser.http.BasicHttpClient
 import de.laser.config.ConfigMapper
@@ -96,7 +96,7 @@ class ElasticSearchHelper {
     }
 
     /**
-     * Gets the full {@link de.laser.Package} objects for the given IDs
+     * Gets the full {@link de.laser.wekb.Package} objects for the given IDs
      * @param idList the list of database IDs to be fetched
      * @return a {@link Map} containing the records and the orphaned IDs, i.e. such remote records to which there is no local record counterpart yet
      */
