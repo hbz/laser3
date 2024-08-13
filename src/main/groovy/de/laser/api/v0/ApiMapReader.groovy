@@ -60,7 +60,7 @@ class ApiMapReader {
         result.name             = tipp.name
         result.medium           = tipp.medium?.value
         result.status           = tipp.status?.value
-        result.coverages        = ApiCollectionReader.getCoverageCollection(tipp.coverages) //de.laser.TIPPCoverage
+        result.coverages        = ApiCollectionReader.getCoverageCollection(tipp.coverages) //de.laser.wekb.TIPPCoverage
         result.priceItems       = ApiCollectionReader.getPriceItemCollection(tipp.priceItems) //de.laser.finance.PriceItem with pi.tipp != null
         result.altnames          = ApiCollectionReader.getAlternativeNameCollection(tipp.altnames)
         result.firstAuthor       = tipp.firstAuthor

@@ -417,16 +417,16 @@ class ApiCollectionReader {
                 if(ignoreRelation == ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE) {
                     //row.platform = platformMap.get(row['tipp_plat_fk'])[0]
                     row.pkg = pkgData
-                    ie.tipp = ApiMapReader.getTippMapWithSQL(row, ApiReader.IGNORE_ALL, context) // de.laser.TitleInstancePackagePlatform
+                    ie.tipp = ApiMapReader.getTippMapWithSQL(row, ApiReader.IGNORE_ALL, context) // de.laser.wekb.TitleInstancePackagePlatform
                 }
                 else {
                     if(ignoreRelation != ApiReader.IGNORE_TIPP) {
                         //row.platform = platformMap.get(row['tipp_plat_fk'])[0]
                         row.pkg = pkgData
-                        ie.tipp = ApiMapReader.getTippMapWithSQL(row, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.TitleInstancePackagePlatform
+                        ie.tipp = ApiMapReader.getTippMapWithSQL(row, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.wekb.TitleInstancePackagePlatform
                     }
                     if(ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
-                        ie.subscription = ApiStubReader.requestSubscriptionStub(subPkg.subscription, context) // de.laser.TitleInstancePackagePlatform
+                        ie.subscription = ApiStubReader.requestSubscriptionStub(subPkg.subscription, context) // de.laser.wekb.TitleInstancePackagePlatform
                     }
                 }
             }
@@ -484,7 +484,7 @@ class ApiCollectionReader {
                 tmp.subscription = ApiStubReader.requestSubscriptionStub(it.sub, context) // de.laser.Subscription
             }
             if (it.tipp && (ApiReader.IGNORE_TIPP != ignoreRelationType)) {
-                tmp.title = ApiMapReader.getTippMap(it.tipp, ApiReader.IGNORE_ALL, context) // de.laser.titles.TitleInstancePackagePlatform
+                tmp.title = ApiMapReader.getTippMap(it.tipp, ApiReader.IGNORE_ALL, context) // de.laser.wekb.TitleInstancePackagePlatform
             }
 
             result << ApiToolkit.cleanUp(tmp, true, false)
@@ -791,7 +791,7 @@ class ApiCollectionReader {
     static Collection<Object> getTippCollection(Collection<TitleInstancePackagePlatform> list, def ignoreRelation, Org context) {
         Collection<Object> result = []
 
-        list.each { TitleInstancePackagePlatform it -> // de.laser.TitleInstancePackagePlatform
+        list.each { TitleInstancePackagePlatform it -> // de.laser.wekb.TitleInstancePackagePlatform
             result << ApiMapReader.getTippMap(it, ignoreRelation, context)
         }
 

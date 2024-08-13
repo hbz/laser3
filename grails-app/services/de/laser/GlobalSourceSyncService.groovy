@@ -1048,7 +1048,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 //println("diffsOfPackage:"+diffsOfPackage)
                 diffsOfPackage.each { Map<String,Object> diff ->
                     log.debug(diff.toMapString())
-                    //[event:update, target:de.laser.TitleInstancePackagePlatform : 196477, diffs:[[prop:price, priceDiffs:[[event:add, target:de.laser.finance.PriceItem : 10791]]]]]
+                    //[event:update, target:de.laser.wekb.TitleInstancePackagePlatform : 196477, diffs:[[prop:price, priceDiffs:[[event:add, target:de.laser.finance.PriceItem : 10791]]]]]
                     switch(diff.event) {
                         case 'add': packageChanges << TitleChange.construct([event:PendingChangeConfiguration.NEW_TITLE,tipp:diff.target])
                             break

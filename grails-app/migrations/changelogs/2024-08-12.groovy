@@ -18,6 +18,11 @@ Map substitutes = [
         'de.laser.VendorRole'       : 'de.laser.wekb.VendorRole',
 ]
 
+Map substitutes2 = [
+        'de.laser.TIPPCoverage'                 : 'de.laser.wekb.TIPPCoverage',
+        'de.laser.TitleInstancePackagePlatform' : 'de.laser.wekb.TitleInstancePackagePlatform',
+]
+
 databaseChangeLog = {
 
     changeSet(author: "klober (modified)", id: "1723461329740-1") {
@@ -184,6 +189,44 @@ databaseChangeLog = {
                     }
                 }
                 String result = 'PropertyDefinitionGroup: ' + done.join(', ')
+                confirm( result )
+                changeSet.setComments( result )
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1723461329740-9") {
+        grailsChange {
+            change {
+                List<String> done = []
+
+                substitutes2.each{ k, v ->
+                    List<Long> todo = FTControl.findAllByDomainClassName(k).collect{ it.id }
+                    if (todo) {
+                        done << (k + ' -> ' + todo + ' = ' + FTControl.executeUpdate('update FTControl set domainClassName = :v where id in (:todo)', [v: v, todo: todo]))
+                    }
+                }
+                String result = 'FTControl: ' + done.join(', ')
+                confirm( result )
+                changeSet.setComments( result )
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1723461329740-10") {
+        grailsChange {
+            change {
+                List<String> done = []
+
+                substitutes2.each{ k, v ->
+                    List<Long> todo = IdentifierNamespace.findAllByNsType(k).collect{ it.id }
+                    if (todo) {
+                        done << (k + ' -> ' + todo + ' = ' + IdentifierNamespace.executeUpdate('update IdentifierNamespace set nsType = :v where id in (:todo)', [v: v, todo: todo]))
+                    }
+                }
+                String result = 'IdentifierNamespace: ' + done.join(', ')
                 confirm( result )
                 changeSet.setComments( result )
             }
