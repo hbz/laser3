@@ -11,6 +11,8 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.titles.TitleHistoryEvent
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
 import groovy.time.TimeCategory
 
 import javax.persistence.Transient
@@ -18,7 +20,7 @@ import java.text.Normalizer
 import java.util.regex.Pattern
 
 /**
- * A title instance. Title instances in LAS:eR and we:kb are mandatorily linked to a {@link Package} and a {@link Platform}. Titles may be (list is not exhaustive):
+ * A title instance. Title instances in LAS:eR and we:kb are mandatorily linked to a {@link de.laser.wekb.Package} and a {@link de.laser.wekb.Platform}. Titles may be (list is not exhaustive):
  * <ul>
  *     <li>(E)books</li>
  *     <li>databases</li>
@@ -32,10 +34,10 @@ import java.util.regex.Pattern
  * from subscription to subscription. See {@link IssueEntitlement} for the local holding level. Local means for the institution subscribing the title within a certain subscription context.
  * This class is moreover a mirror of the we:kb TitleInstancePackagePlatform implementation <a href="https://github.com/hbz/wekb/blob/wekb-dev/server/gokbg3/grails-app/domain/org/gokb/cred/TitleInstancePackagePlatform.groovy">(see TitleInstancePackagePlatform in we:kb)</a>
  * and generally a reflection of a KBART record (see <a href="https://groups.niso.org/apps/group_public/download.php/16900/RP-9-2014_KBART.pdf">KBART specification</a>)
- * @see Package
+ * @see de.laser.wekb.Package
  * @see SubscriptionPackage
  * @see Subscription
- * @see Platform
+ * @see de.laser.wekb.Platform
  * @see IssueEntitlement
  */
 class TitleInstancePackagePlatform extends AbstractBase implements MarkerSupport /*implements AuditableTrait*/ {
@@ -119,8 +121,8 @@ class TitleInstancePackagePlatform extends AbstractBase implements MarkerSupport
                     altnames   : AlternativeName]
 
   static belongsTo = [
-    pkg:Package,
-    platform:Platform
+    pkg: Package,
+    platform: Platform
   ]
 
     static transients = [
@@ -146,9 +148,9 @@ class TitleInstancePackagePlatform extends AbstractBase implements MarkerSupport
   subjectReference column:'tipp_subject_reference', type: 'text',   index: 'tipp_subject_reference_idx'
             gokbId column:'tipp_gokb_id'
             status column:'tipp_status_rv_fk', index: 'tipp_status_idx, tipp_status_pkg_idx, tipp_status_plat_idx, tipp_status_plat_pkg_idx'
-         delayedOA column:'tipp_delayedoa_rv_fk'
-          hybridOA column:'tipp_hybridoa_rv_fk'
-      statusReason column:'tipp_status_reason_rv_fk'
+         delayedOA column:'tipp_delayedoa_rv_fk',       index: 'tipp_delayedoae_idx'
+          hybridOA column:'tipp_hybridoa_rv_fk',        index: 'tipp_hybridoa_idx'
+      statusReason column:'tipp_status_reason_rv_fk',   index: 'tipp_status_reason_idx'
    hostPlatformURL column:'tipp_host_platform_url', type: 'text', index: 'tipp_host_platform_url_idx'
       accessStartDate column:'tipp_access_start_date'
       accessEndDate column:'tipp_access_end_date'

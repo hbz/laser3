@@ -64,7 +64,7 @@ where (consOr.roleType = :consRoleType)
                         [
                                 org: contextService.getOrg(), orgStatus: RDStore.ORG_STATUS_DELETED,
                                 subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS],
-                                consRoleType: RDStore.OR_SUBSCRIPTION_CONSORTIA
+                                consRoleType: RDStore.OR_SUBSCRIPTION_CONSORTIUM
                         ]
                 )
 

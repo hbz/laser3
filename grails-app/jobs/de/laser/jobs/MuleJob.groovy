@@ -34,17 +34,15 @@ class MuleJob extends AbstractJob {
     }
 
     def execute() {
-        if (! start()) {
+        SystemEvent sysEvent = start('MULE_START')
+
+        if (! sysEvent) {
             return false
         }
         try {
-            SystemEvent sysEvent = SystemEvent.createEvent('MULE_START')
-            long start_time = System.currentTimeMillis()
-
             LocalTime now = LocalTime.now()
 
             systemService.maintainUnlockedUserAccounts()
-
             // every (full) hour
 //            if (_checkTime(now, -1, 0)) {
 //                systemService.maintainUnlockedUserAccounts()
@@ -58,17 +56,12 @@ class MuleJob extends AbstractJob {
                 systemService.sendSystemInsightMails()
 //                systemService.maintainExpiredUserAccounts()
             }
-
             wekbNewsService.updateCache()
-
-            double elapsed = ((System.currentTimeMillis() - start_time) / 1000).round(2)
-            sysEvent.changeTo('MULE_COMPLETE', [s: elapsed])
-
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             log.error e.getMessage()
         }
-
-        stop()
+        stopAndComplete(sysEvent)
     }
 
     private boolean _checkTime(LocalTime now, int hour, int minute) {

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.Platform; de.laser.Subscription; de.laser.SubscriptionPackage;" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.wekb.Platform; de.laser.Subscription; de.laser.SubscriptionPackage;" %>
 <laser:serviceInjection />
 
 <ui:subNav actionName="${actionName}">

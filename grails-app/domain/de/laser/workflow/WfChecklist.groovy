@@ -5,6 +5,8 @@ import de.laser.ui.Icon
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.MessageSource
 

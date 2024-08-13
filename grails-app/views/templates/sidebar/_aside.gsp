@@ -6,7 +6,7 @@
 
     if (ownobj instanceof Subscription) {
         //array is created and should be extended to collective view; not yet done because collective view is not merged yet
-        if(contextOrg.id == ownobj.getConsortia()?.id && ownobj.instanceOf) {
+        if(contextOrg.id == ownobj.getConsortium()?.id && ownobj.instanceOf) {
             if(ownobj._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
                 parentAtChild = true
         }

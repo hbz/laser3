@@ -7,6 +7,16 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5860    13.08.2024  rc-3.4  3.4.6       David   Bug         Admin > Referenzwerte verwalten
+
+5863    13.08.2024  rc-3.4  3.4.6       Andreas Bug         inkorrekte Auslesung der Anbieter/Lieferantenkontakte beim PDF-Export
+
+5861    13.08.2024  dev     3.5         David   Feature     Refactoring: wekb-Package
+
+5859    12.08.2024  rc-3.4  3.4.6       David   Feature     Kundentyp (Org) in gecachten Nutzerrechten beachten
+
+5852    08.08.2024  rc-3.4  3.4.5       Andreas Feature     Validierung bei DEAL-ID eingeführt
+
 5856    07.08.2024  rc-3.4  3.4.5       Andreas Bug         Marker wurden nicht überführt
 
 5845    05.08.2024  rc-3.4  3.4.5       Andreas Bug         Zeile zur Massenbearbeitung blieb stehen

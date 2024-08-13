@@ -1,8 +1,8 @@
 package de.laser.jobs
 
 import de.laser.StatusUpdateService
-import de.laser.SubscriptionService
 import de.laser.base.AbstractJob
+import de.laser.system.SystemEvent
 import groovy.util.logging.Slf4j
 
 /**
@@ -35,7 +35,9 @@ class StatusUpdateJob extends AbstractJob {
     }
 
     def execute() {
-        if (! start('SUB_UPDATE_JOB_START')) {
+        SystemEvent sysEvent = start('SUB_UPDATE_JOB_START')
+
+        if (! sysEvent) {
             return false
         }
         try {
@@ -46,6 +48,6 @@ class StatusUpdateJob extends AbstractJob {
         catch (Exception e) {
             log.error( e.toString() )
         }
-        stop('SUB_UPDATE_JOB_COMPLETE')
+        stopAndComplete(sysEvent)
     }
 }

@@ -2,6 +2,10 @@ package de.laser
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.survey.SurveyResult
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 
 /**
  * This service updates timestamps of depending objects if an object update has been triggered. This is essential for

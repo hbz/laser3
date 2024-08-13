@@ -6,9 +6,11 @@ import de.laser.http.BasicHttpClient
 import de.laser.properties.OrgProperty
 import de.laser.remote.GlobalRecordSource
 import de.laser.storage.Constants
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import groovy.sql.GroovyRowResult
@@ -292,7 +294,7 @@ class YodaService {
                 deletedLaserTIPPs.each { Map row ->
                     Map<String, Object> titleRow = row
                     titleRow.wekbStatus = wekbUuids.get(row.wekbId)
-                    List issueEntitlements = IssueEntitlement.executeQuery("select new map(ie.id as id, concat(s.name, ' (', s.startDate, '-', s.endDate, ') (', oo.org.sortname, ')') as subscriptionName) from IssueEntitlement ie join ie.tipp tipp join ie.subscription s join s.orgRelations oo where oo.roleType in (:roleTypes) and tipp.gokbId = :wekbId and ie.status != :removed", [roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER], wekbId: row.wekbId, removed: RDStore.TIPP_STATUS_REMOVED])
+                    List issueEntitlements = IssueEntitlement.executeQuery("select new map(ie.id as id, concat(s.name, ' (', s.startDate, '-', s.endDate, ') (', oo.org.sortname, ')') as subscriptionName) from IssueEntitlement ie join ie.tipp tipp join ie.subscription s join s.orgRelations oo where oo.roleType in (:roleTypes) and tipp.gokbId = :wekbId and ie.status != :removed", [roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER], wekbId: row.wekbId, removed: RDStore.TIPP_STATUS_REMOVED])
                     titleRow.issueEntitlements = issueEntitlements
                     if(!issueEntitlements) {
                         keysToDelete << row.wekbId

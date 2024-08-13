@@ -38,7 +38,7 @@
             %{-- child indicator --}%
 
             <g:if test="${controllerName == 'subscription' && subscription && !surveyConfig}">
-                <g:if test="${subscription.instanceOf && ((contextService.getOrg().id == subscription.getConsortia()?.id) || contextService.getUser().isYoda())}">
+                <g:if test="${subscription.instanceOf && ((contextService.getOrg().id == subscription.getConsortium()?.id) || contextService.getUser().isYoda())}">
                     <ui:cbItemInfo display="Sie sehen eine Kindlizenz" icon="child" color="orange" />
                 </g:if>
             </g:if>
@@ -87,7 +87,7 @@
             %{-- subscription members --}%
 
             <g:if test="${controllerName in ['finance', 'subscription'] && subscription && isSubscriptionViewValid}">
-                <g:if test="${editable && contextService.getOrg().isCustomerType_Consortium() && subscription.getConsortia()?.id == contextService.getOrg().id}">
+                <g:if test="${editable && contextService.getOrg().isCustomerType_Consortium() && subscription.getConsortium()?.id == contextService.getOrg().id}">
                     <div class="item la-cb-action">
 %{--                        <button class="${Btn.ICON.SIMPLE_TOOLTIP} la-toggle-ui" id="subscriptionMembers-toggle"--}%
 %{--                                data-content="${message(code:'consortium.member.plural')} ${message(code:'default.and')} ${message(code:'subscription.member.plural')}" data-position="bottom left">--}%

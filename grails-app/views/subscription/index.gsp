@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.IssueEntitlementCoverage; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.IssueEntitlementCoverage; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.wekb.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart message="subscription.details.current_ent" serviceInjection="true"/>
 
@@ -29,7 +29,7 @@
     <ui:msg class="warning" showIcon="true" hideClose="true" header="Info" message="subscription.details.permanentTitlesProcessRunning.info" />
 </g:if>
 
-<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortium()?.id}">
     <laser:render template="message"/>
 </g:if>
 

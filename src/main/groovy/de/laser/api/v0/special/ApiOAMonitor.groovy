@@ -66,7 +66,7 @@ class ApiOAMonitor {
                         "where sub = :sub and org in (:orgs) and oo.roleType in (:roles) ", [
                             sub  : sub,
                             orgs : orgs,
-                            roles: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
+                            roles: [RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
                         ]
                 )
                 hasAccess = ! valid.isEmpty()
@@ -280,7 +280,7 @@ class ApiOAMonitor {
         List<Subscription> tmp = OrgRole.executeQuery(
                 'select distinct(oo.sub) from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)', [
                         org: org,
-                        roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
+                        roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
                 ]
         )
         log.debug ("found ${tmp.size()} subscriptions .. processing")
@@ -305,9 +305,9 @@ class ApiOAMonitor {
         Collection<Object> result = []
 
         list.each { subPkg ->
-            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg), qryParams = [sub: subPkg.subscription.id, pkg: subPkg.pkg.id, removed: RDStore.TIPP_STATUS_REMOVED.id] // de.laser.Package
+            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg), qryParams = [sub: subPkg.subscription.id, pkg: subPkg.pkg.id, removed: RDStore.TIPP_STATUS_REMOVED.id] // de.laser.wekb.Package
 
-            pkg.provider = ApiUnsecuredMapReader.getProviderStubMap(subPkg.pkg.provider) // de.laser.Provider
+            pkg.provider = ApiUnsecuredMapReader.getProviderStubMap(subPkg.pkg.provider) // de.laser.wekb.Provider
             result << pkg
             JsonSlurper slurper = new JsonSlurper()
             List tmp = []

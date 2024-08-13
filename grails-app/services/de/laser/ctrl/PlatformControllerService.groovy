@@ -1,7 +1,7 @@
 package de.laser.ctrl
 
 import de.laser.ContextService
-import de.laser.Platform
+import de.laser.wekb.Platform
 import de.laser.SubscriptionPackage
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink

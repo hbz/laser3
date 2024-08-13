@@ -118,7 +118,7 @@
                                                 </div>
                                             </div>
                                         </g:each>
-                                        <%--<g:if test="${roleObject instanceof de.laser.Package}">--%>
+                                        <%--<g:if test="${roleObject instanceof de.laser.wekb.Package}">--%>
                                         <%
                                             Set<Person> techSupports = [], serviceSupports = [], metadataContacts = []
                                             boolean contactsExWekb = false
@@ -297,7 +297,7 @@
                                                 </div>
                                             </div>
                                         </g:each>
-                                        <%--<g:if test="${roleObject instanceof de.laser.Package}">--%>
+                                        <%--<g:if test="${roleObject instanceof de.laser.wekb.Package}">--%>
                                             <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'Technical Support', contextOrg)}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">

@@ -6,20 +6,18 @@ import de.laser.DeweyDecimalClassification
 import de.laser.DocContext
 import de.laser.Identifier
 import de.laser.IdentifierNamespace
-import de.laser.InvoicingVendor
 import de.laser.IssueEntitlement
 import de.laser.Language
 import de.laser.Org
 import de.laser.OrgRole
-import de.laser.Person
 import de.laser.PersonRole
-import de.laser.Platform
-import de.laser.Provider
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
 import de.laser.TitleInstancePackagePlatform
-import de.laser.Vendor
-import de.laser.VendorRole
+import de.laser.wekb.Vendor
 import de.laser.base.AbstractCoverage
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
@@ -36,8 +34,6 @@ import groovy.json.JsonSlurper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.util.logging.Slf4j
-
-import java.sql.Array
 
 /**
  * This class delivers given lists as maps of stubs or full objects
@@ -207,7 +203,7 @@ class ApiCollectionReader {
     /**
      * Builds a collection of custom (= general) properties for the given object and respecting the settings of the requestor institution
      * @param list the {@link Collection} of properties to enumerate
-     * @param generic the object (one of {@link de.laser.Subscription}, {@link de.laser.License}, {@link Org}, {@link de.laser.Person} or {@link de.laser.Platform})
+     * @param generic the object (one of {@link de.laser.Subscription}, {@link de.laser.License}, {@link Org}, {@link de.laser.Person} or {@link de.laser.wekb.Platform})
      * @param context the requestor institution ({@link Org})
      * @return a {@link Collection} of {@link Map}s containing property details for API output
      */
@@ -483,7 +479,7 @@ class ApiCollectionReader {
                 tmp.license = ApiStubReader.requestLicenseStub(it.lic, context) // de.laser.License
             }
             if (it.pkg && (ApiReader.IGNORE_PACKAGE != ignoreRelationType)) {
-                tmp.package = ApiUnsecuredMapReader.getPackageStubMap(it.pkg) // de.laser.Package
+                tmp.package = ApiUnsecuredMapReader.getPackageStubMap(it.pkg) // de.laser.wekb.Package
             }
             if (it.sub && (ApiReader.IGNORE_SUBSCRIPTION != ignoreRelationType)) {
                 tmp.subscription = ApiStubReader.requestSubscriptionStub(it.sub, context) // de.laser.Subscription
@@ -546,14 +542,14 @@ class ApiCollectionReader {
 
     /**
      * Delivers a package stub map without titles
-     * @param list the {@link Collection} of {@link de.laser.Package}s which should be returned
+     * @param list the {@link Collection} of {@link de.laser.wekb.Package}s which should be returned
      * @return a {@link Collection<Object>} reflecting the packages
      */
-    static Collection<Object> getPackageCollection(Collection<de.laser.Package> list) {
+    static Collection<Object> getPackageCollection(Collection<de.laser.wekb.Package> list) {
         Collection<Object> result = []
 
         list.each { pkg ->
-            Map<String, Object> pkgMap = ApiUnsecuredMapReader.getPackageStubMap(pkg) // de.laser.Package
+            Map<String, Object> pkgMap = ApiUnsecuredMapReader.getPackageStubMap(pkg) // de.laser.wekb.Package
             result << pkgMap
         }
 
@@ -570,7 +566,7 @@ class ApiCollectionReader {
         Collection<Object> result = []
 
         list.each { subPkg ->
-            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg) // de.laser.Package
+            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg) // de.laser.wekb.Package
             result << pkg
 
             //if (pkg != Constants.HTTP_FORBIDDEN) {
@@ -591,7 +587,7 @@ class ApiCollectionReader {
         Collection<Object> result = []
 
         list.each { plat ->
-            Map<String, Object> platformMap = ApiUnsecuredMapReader.getPlatformStubMap(plat) // de.laser.Platform
+            Map<String, Object> platformMap = ApiUnsecuredMapReader.getPlatformStubMap(plat) // de.laser.wekb.Platform
             result << platformMap
         }
 
@@ -661,7 +657,7 @@ class ApiCollectionReader {
 
     /**
      * Collects the properties (general and private) of the given object and outputs the collections
-     * @param generic the object (one of {@link de.laser.Subscription}, {@link de.laser.License}, {@link Org}, {@link de.laser.Package} or {@link de.laser.Platform})
+     * @param generic the object (one of {@link de.laser.Subscription}, {@link de.laser.License}, {@link Org}, {@link de.laser.wekb.Package} or {@link de.laser.wekb.Platform})
      * @param context the requesting institution ({@link Org}) whose perspective is going to be taken during checks
      * @param ignoreFlag should certain properties being left out from output (private or custom)?
      * @return a {@link Collection} of both general and private properties
@@ -743,7 +739,7 @@ class ApiCollectionReader {
                         role.license = ApiStubReader.resolveLicenseStub(it.lic, context) // de.laser.License
                     }
                     if (it.pkg) {
-                        role.package = ApiStubReader.resolvePackageStub(it.pkg, context) // de.laser.Package
+                        role.package = ApiStubReader.resolvePackageStub(it.pkg, context) // de.laser.wekb.Package
                     }
                     if (it.sub) {
                         role.subscription = ApiStubReader.resolveSubscriptionStub(it.sub, context) // de.laser.Subscription

@@ -45,7 +45,7 @@ class SubscriptionsQueryService {
 
         RefdataValue role_sub            = RDStore.OR_SUBSCRIBER
         RefdataValue role_subCons        = RDStore.OR_SUBSCRIBER_CONS
-        RefdataValue role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIUM
 
         // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
         // ORG: def qry_params = ['roleTypes':roleTypes, 'activeInst':contextOrg]
@@ -99,7 +99,7 @@ class SubscriptionsQueryService {
             base_qry += "       and cr.org = :consortia"
             base_qry += " )"
 
-            qry_params.put('rtSubCons', RDStore.OR_SUBSCRIPTION_CONSORTIA)
+            qry_params.put('rtSubCons', RDStore.OR_SUBSCRIPTION_CONSORTIUM)
             qry_params.put('consortia', consortia)
         }
 

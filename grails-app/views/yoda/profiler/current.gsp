@@ -1,5 +1,5 @@
 <%@ page import="de.laser.auth.User; de.laser.utils.DateUtils; de.laser.system.SystemActivityProfiler; de.laser.system.SystemProfiler" %>
-<laser:htmlStart message="menu.yoda.profilerCurrent ">
+<laser:htmlStart message="menu.yoda.profilerCurrent">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.Package" %>
+<%@ page import="de.laser.ui.Btn; de.laser.wekb.Package" %>
 <laser:htmlStart text="${message(code: 'myinst.packages')} - ${message(code: 'default.onlyDatabase')}" />
 
     <g:set var="entityName" value="${message(code: 'package.label')}" />

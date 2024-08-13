@@ -2,7 +2,8 @@
 <br />
 
 <div style="text-align: right">
-    <button id="details-export-button" class="${Btn.ICON.SIMPLE}" data-href="#detailsExportModal" data-ui="modal">
+    <button id="details-export-button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="${message(code: 'default.button.export.label')}"
+            data-href="#detailsExportModal" data-ui="modal">
         <i class="${Icon.CMD.DOWNLOAD}"></i>
     </button>
 </div>

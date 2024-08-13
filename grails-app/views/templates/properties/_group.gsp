@@ -39,7 +39,7 @@
             <g:set var="atSubscr" value="${ownobj._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
         </g:if>
         <g:elseif test="${ownobj instanceof Subscription}">
-            <g:set var="consortium" value="${ownobj.getConsortia()}"/>
+            <g:set var="consortium" value="${ownobj.getConsortium()}"/>
             <g:set var="atSubscr" value="${ownobj._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
         </g:elseif>
         <g:if test="${isGroupVisible}">

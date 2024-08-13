@@ -164,7 +164,7 @@
                                     <g:set var="consortium" value="${object.getLicensingConsortium()}"/>
                                 </g:if>
                                 <g:elseif test="${object instanceof Subscription}">
-                                    <g:set var="consortium" value="${object.getConsortia()}"/>
+                                    <g:set var="consortium" value="${object.getConsortium()}"/>
                                     <g:set var="atSubscr"
                                            value="${object._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}"/>
                                 </g:elseif>

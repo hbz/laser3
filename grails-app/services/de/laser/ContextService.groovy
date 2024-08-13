@@ -114,7 +114,12 @@ class ContextService {
      */
     String getFormalCacheKeyToken() {
         User user = getUser()
-        '[' + user.id + ':' + user.formalOrg.id + ':' + user.formalRole.id + ']'
+        Role customerType = OrgSetting.executeQuery(
+                'select oss.roleValue from OrgSetting oss where oss.org = :org and oss.key = :key',
+                [org: user.formalOrg, key: OrgSetting.KEYS.CUSTOMER_TYPE]
+        )?.first()
+
+        '[' + user.id + ':' + user.formalRole.id + ':' + user.formalOrg.id + ':' + (customerType ? customerType.id : '#') + ']'
     }
 
     // -- Formal checks @ user.formalOrg

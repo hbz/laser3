@@ -4,12 +4,12 @@ package de.laser
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.Params
 import de.laser.storage.PropertyStore
-import de.laser.survey.SurveyConfigProperties
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.survey.SurveyConfig
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Package
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
@@ -267,10 +267,10 @@ class FilterService {
             String subQuery = "exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType"
             if(params.invertDirection) {
                 subQuery = "exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org = :context and oo.roleType in (:subscrRoles) and ooCons.org.id = o.id and ooCons.roleType = :consType"
-                queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg()]
+                queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg()]
             }
             else
-                queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg()]
+                queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg()]
             String subQueryBase = subQuery
             if (params.subStatus) {
                 subQuery +=  " and (sub.status in (:subStatus)" // ( closed in line 273; needed to prevent consortia members without any subscriptions because or would lift up the other restrictions)
@@ -305,13 +305,13 @@ class FilterService {
             }
 
             subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf = :sub)"
-            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg(), sub: params.sub]
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), sub: params.sub]
             query << subQuery
         }
 
         if (params.filterPvd) {
             String subQuery = " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select pvr from ProviderRole pvr where pvr.subscription = sub and pvr.provider.id in (:filterPvd)) "
-            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg(), filterPvd: Params.getLongList(params, 'filterPvd')]
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), filterPvd: Params.getLongList(params, 'filterPvd')]
 
             if (params.subStatus) {
                 subQuery +=  " and (sub.status = :subStatus" // ( closed in line 213; needed to prevent consortia members without any subscriptions because or would lift up the other restrictions)
@@ -336,7 +336,7 @@ class FilterService {
 
             if(params.subStatus && RDStore.GENERIC_NULL_VALUE in Params.getRefdataList(params, 'subStatus')) {
                 subQuery += "or not exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf = :sub)"
-                queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg(), sub: params.sub]
+                queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), sub: params.sub]
             }
             query << subQuery
             // params.filterSet = true // ERMS-5516
@@ -1066,7 +1066,7 @@ class FilterService {
             }
 
             subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = surveyOrg.org.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf = surveyOrg.surveyConfig.subscription)"
-            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg()]
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg()]
             base_qry = base_qry + subQuery
         }
 

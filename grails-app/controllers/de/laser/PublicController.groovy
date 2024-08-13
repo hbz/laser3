@@ -6,6 +6,7 @@ import de.laser.config.ConfigMapper
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDStore
 import de.laser.utils.AppUtils
+import de.laser.wekb.Package
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
@@ -22,19 +23,29 @@ class PublicController {
     MailService mailService
     SpringSecurityService springSecurityService
 
+    /**
+     * Displays the landing page
+     */
+    @Secured(['permitAll'])
+    def index() {
+    }
+
    /**
     * Displays the robots.txt preventing crawler access to instances other than the productive one
     */
     @Secured(['permitAll'])
     def robots() {
-        if (AppUtils.getCurrentServer() != AppUtils.PROD) {
-            def text = "User-agent: *\n" +
-                    "Disallow: / \n"
+        String text = "User-agent: *\n"
 
-            render(text: text, contentType: "text/plain", encoding: "UTF-8")
-        } else {
-            render(status: 404, text: 'Failed to load robots.txt')
+        if (AppUtils.getCurrentServer() == AppUtils.PROD) {
+            text += "Disallow: /tipp/ \n"                                   // TODO TMP
+            text += "Disallow: /public/gascoDetailsIssueEntitlements/ \n"   // TODO TMP
+            text += "Disallow: /gasco/details/ \n"
         }
+        else {
+            text += "Disallow: / \n"
+        }
+        render(text: text, contentType: "text/plain", encoding: "UTF-8")
     }
 
     /**
@@ -76,13 +87,6 @@ class PublicController {
      */
     @Secured(['permitAll'])
     def wcagEasyLanguage() {
-    }
-
-    /**
-     * Displays the landing page
-     */
-    @Secured(['permitAll'])
-    def index() {
     }
 
     /**
@@ -265,7 +269,7 @@ class PublicController {
      * @see Org#region
      */
     @Secured(['permitAll'])
-    def gascoFlyout() {
+    def gascoJson() {
         Map<String, Object> result = [
             title: '?',
             data: []
@@ -301,7 +305,6 @@ class PublicController {
         }
         render result as JSON
     }
-
 
     /**
      * @return the frontend view with sample area for frontend developing and showcase

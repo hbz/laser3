@@ -1,12 +1,11 @@
 package de.laser.reporting.export.myInstitution
 
-import de.laser.Provider
+import de.laser.wekb.Provider
 import de.laser.remote.ApiSource
 import de.laser.ContextService
 import de.laser.IdentifierNamespace
-import de.laser.Org
-import de.laser.Package
-import de.laser.Platform
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
 import de.laser.RefdataValue
 import de.laser.TitleInstancePackagePlatform
 import de.laser.storage.BeanStore
@@ -31,7 +30,7 @@ class PackageExport extends BaseDetailsExport {
 
             base : [
                     meta : [
-                            class: de.laser.Package
+                            class: de.laser.wekb.Package
                     ],
                     fields : [
                             default: [
@@ -228,7 +227,7 @@ class PackageExport extends BaseDetailsExport {
                     }
                     else if (key == 'x-id') {
                         List<String> idList = record?.get( esData.mapping )?.collect{ id ->
-                            IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(id.namespace, 'de.laser.Package')
+                            IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(id.namespace, 'de.laser.wekb.Package')
                             ns ? ((ns.getI10n('name') ?: ns.ns) + ':' + id.value) : GenericHelper.flagUnmatched( id.namespaceName ?: id.namespace ) + ':' + id.value
                         }
                         content.add (idList ? idList.join( BaseDetailsExport.CSV_VALUE_SEPARATOR ) : '')

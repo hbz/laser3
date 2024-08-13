@@ -1,5 +1,14 @@
-package de.laser
+package de.laser.wekb
 
+import de.laser.AlternativeName
+import de.laser.DeweyDecimalClassification
+import de.laser.Identifier
+import de.laser.Language
+import de.laser.PendingChange
+import de.laser.PersonRole
+import de.laser.RefdataValue
+import de.laser.SubscriptionPackage
+import de.laser.TitleInstancePackagePlatform
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
@@ -21,7 +30,7 @@ import java.util.regex.Pattern
  * This is a reflection of the we:kb-implementation of the package class (see <a href="https://github.com/hbz/wekb2/blob/dev/grails-app/domain/wekb/Package.groovy">here</a>).
  * If a package is being subscribed, the link between subscription and package is being represented by a {@link SubscriptionPackage} connection
  * @see TitleInstancePackagePlatform
- * @see Platform
+ * @see de.laser.wekb.Platform
  * @see SubscriptionPackage
  */
 class Package extends AbstractBaseWithCalculatedLastUpdated implements MarkerSupport {

@@ -98,7 +98,7 @@
             <laser:render template="/subscription/subscriptionTransferInfo" model="${[calculatedSubList: successor + [subscription] + previous]}"/>
         </g:if>
 
-        <g:if test="${editable && subscription.getConsortia()?.id == contextService.getOrg().id}">
+        <g:if test="${editable && subscription.getConsortium()?.id == contextService.getOrg().id}">
             <laser:render template="/templates/flyouts/subscriptionMembers" model="[subscription: subscription]"/>
         </g:if>
         <laser:render template="/subscription/${customerTypeService.getNavTemplatePath()}" model="${[subscription:subscription, params:(params << [id:subscription.id, showConsortiaFunctions:showConsortiaFunctions])]}"/>

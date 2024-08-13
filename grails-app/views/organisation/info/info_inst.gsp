@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.Provider; java.time.Year; de.laser.finance.CostItem; de.laser.RefdataValue; de.laser.survey.SurveyInfo; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.wekb.Provider; de.laser.ui.Icon; java.time.Year; de.laser.finance.CostItem; de.laser.RefdataValue; de.laser.survey.SurveyInfo; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting; de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
 <laser:htmlStart message="menu.institutions.org.info" serviceInjection="true">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
@@ -147,7 +147,7 @@
                             <tbody>
                                 <g:each in="${subList}" var="subId">
                                     <g:set var="sub" value="${Subscription.get(subId)}" />
-                                    <g:set var="orgCons" value="${sub.getConsortia()}" />
+                                    <g:set var="orgCons" value="${sub.getConsortium()}" />
                                     <tr data-id="${subId}" data-referenceYear="${sub.referenceYear}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
@@ -261,7 +261,7 @@
                             <tbody>
                                 <g:each in="${subList}" var="subId">
                                     <g:set var="sub" value="${Subscription.get(subId)}" />
-                                    <g:set var="orgCons" value="${sub.getConsortia()}" />
+                                    <g:set var="orgCons" value="${sub.getConsortium()}" />
                                     <tr data-id="${subId}" data-referenceYear="${sub.referenceYear}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">

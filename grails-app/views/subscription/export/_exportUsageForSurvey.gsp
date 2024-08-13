@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.Platform; de.laser.base.AbstractReport; grails.converters.JSON; de.laser.CustomerIdentifier; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.wekb.Platform; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.base.AbstractReport; grails.converters.JSON; de.laser.CustomerIdentifier; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <%
     Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscriberSub", [subscriberSub: subscriberSub])

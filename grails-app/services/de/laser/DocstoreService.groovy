@@ -6,6 +6,8 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
@@ -82,7 +84,7 @@ class DocstoreService {
         Set<DocContext> documentSet = instance.documents
         SortedSet<DocContext> filteredDocuments = new TreeSet<DocContext>(), sharedItems = new TreeSet<DocContext>()
         if(instance instanceof Subscription) {
-            if(contextOrg.id == instance.getConsortia()?.id && instance.instanceOf) {
+            if(contextOrg.id == instance.getConsortium()?.id && instance.instanceOf) {
                 if(instance._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
                     parentAtChild = true
             }

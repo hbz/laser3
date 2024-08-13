@@ -58,7 +58,7 @@
                 </g:if>
                 <g:elseif test="${d.host.startsWith('cookie: ')}">
                     <span class="la-popup-tooltip" data-content="${d.host.replaceFirst('cookie: ', '')}" data-position="top right">
-                        <i class="cookie icon orange"></i>
+                        <i class="cookie icon blue"></i>
                     </span>
                 </g:elseif>
                 <g:else>

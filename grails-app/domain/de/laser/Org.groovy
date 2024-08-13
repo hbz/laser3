@@ -14,6 +14,7 @@ import de.laser.properties.OrgProperty
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.wekb.Platform
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.StringUtils

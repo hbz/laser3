@@ -5,6 +5,8 @@ import de.laser.auth.User
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.survey.SurveyConfig
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 
 /**
  * Represents a single task which can be attached to an object an is, unlike {@link de.laser.workflow.WfCheckpoint}, not part of a more complex workflow
@@ -12,9 +14,9 @@ import de.laser.survey.SurveyConfig
  * <ul>
  *     <li>{@link License}</li>
  *     <li>{@link Org}</li>
- *     <li>{@link Provider}</li>
- *     <li>{@link Vendor}</li>
- *     <li><s>{@link Package}</s> (is still included in the domain model but is disused)</li>
+ *     <li>{@link de.laser.wekb.Provider}</li>
+ *     <li>{@link de.laser.wekb.Vendor}</li>
+ *     <li><s>{@link de.laser.wekb.Package}</s> (is still included in the domain model but is disused)</li>
  *     <li>{@link Subscription}</li>
  *     <li>{@link SurveyConfig}</li>
  * </ul>
@@ -163,7 +165,7 @@ class Task {
      *     <li>{@link Org#name}</li>
      *     <li>{@link Provider#name}</li>
      *     <li>{@link Vendor#name}</li>
-     *     <li>{@link Package#name}</li>
+     *     <li>{@link de.laser.wekb.Package#name}</li>
      *     <li>{@link Subscription#name}</li>
      *     <li>{@link de.laser.survey.SurveyInfo#name}</li>
      * </ul>

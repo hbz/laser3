@@ -3,7 +3,7 @@ package de.laser.survey
 import de.laser.CustomerTypeService
 import de.laser.License
 import de.laser.Org
-import de.laser.Provider
+import de.laser.wekb.Provider
 import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.BeanStore

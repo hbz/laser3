@@ -32,8 +32,8 @@
             PropertyDefinitionGroup pdg            = entry[1]
             PropertyDefinitionGroupBinding binding = entry[2]
             List numberOfConsortiaProperties       = []
-            if(subscription.getConsortia() && contextOrg.id != subscription.getConsortia().id)
-                numberOfConsortiaProperties.addAll(pdg.getCurrentPropertiesOfTenant(subscription,subscription.getConsortia()))
+            if(subscription.getConsortium() && contextOrg.id != subscription.getConsortium().id)
+                numberOfConsortiaProperties.addAll(pdg.getCurrentPropertiesOfTenant(subscription,subscription.getConsortium()))
 
             boolean isVisible = false
 
