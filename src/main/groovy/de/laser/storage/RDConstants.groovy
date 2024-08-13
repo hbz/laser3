@@ -28,8 +28,6 @@ class RDConstants {
     public static final String CATEGORY_ULLMANNS      = 'category.ullmans'
     public static final String CATEGORY_UNWTO         = 'category.unwto'
     public static final String CATEGORY_WORLD_BANK    = 'category.world.bank'
-    public static final String CLUSTER_ROLE           = 'cluster.role'
-    public static final String CLUSTER_TYPE           = 'cluster.type'
     public static final String COMBO_STATUS           = 'combo.status'
     public static final String COMBO_TYPE             = 'combo.type'
     public static final String CONCURRENT_ACCESS      = 'concurrent.access'
@@ -64,7 +62,6 @@ class RDConstants {
     public static final String FUNDER_HSK_TYPE        = 'funder.hsk.type'
 
     public static final String GENDER                 = 'gender'
-
 
     public static final String IE_ACCESS_STATUS       = 'ie.access.status'
     public static final String IE_MEDIUM              = 'ie.medium'
@@ -185,8 +182,6 @@ class RDConstants {
 
     public static final String TITLE_MEDIUM           = 'title.medium'
     public static final String TITLE_STATUS           = 'title.status'
-    public static final String TRANSFORM_FORMAT       = 'transform.format'
-    public static final String TRANSFORM_TYPE         = 'transform.type'
 
     public static final String USER_SETTING_DASHBOARD_TAB = 'user.setting.dashboard.tab'
     public static final String USER_SETTING_THEME         = 'user.setting.theme'
