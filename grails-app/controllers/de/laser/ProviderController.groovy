@@ -11,6 +11,9 @@ import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.ElectronicBilling
+import de.laser.wekb.InvoiceDispatch
+import de.laser.wekb.InvoicingVendor
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider

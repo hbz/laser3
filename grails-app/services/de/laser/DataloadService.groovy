@@ -11,6 +11,7 @@ import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.CalculatedType
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
+import de.laser.wekb.InvoicingVendor
 import de.laser.wekb.Package
 import de.laser.wekb.PackageVendor
 import de.laser.wekb.Platform

@@ -1,9 +1,8 @@
-package de.laser
+package de.laser.wekb
 
+import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
-import de.laser.wekb.Provider
-import de.laser.wekb.Vendor
 
 class InvoiceDispatch implements Comparable<InvoiceDispatch> {
 

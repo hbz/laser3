@@ -3,10 +3,7 @@ package de.laser.wekb
 import de.laser.Address
 import de.laser.AlternativeName
 import de.laser.DocContext
-import de.laser.ElectronicBilling
 import de.laser.Identifier
-import de.laser.InvoiceDispatch
-import de.laser.InvoicingVendor
 import de.laser.Org
 import de.laser.Person
 import de.laser.PersonRole
