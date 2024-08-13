@@ -1,9 +1,9 @@
 package de.laser.api.v0
 
 import de.laser.Address
-import de.laser.ElectronicBilling
-import de.laser.ElectronicDeliveryDelayNotification
-import de.laser.InvoiceDispatch
+import de.laser.wekb.ElectronicBilling
+import de.laser.wekb.ElectronicDeliveryDelayNotification
+import de.laser.wekb.InvoiceDispatch
 import de.laser.LibrarySystem
 import de.laser.License
 import de.laser.Org
