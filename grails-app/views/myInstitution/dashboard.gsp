@@ -195,8 +195,7 @@
     </div><!-- secondary -->
         <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Due Dates' ? 'active':''}" data-tab="duedates">
             <div>
-                <laser:render template="/user/dueDatesView"
-                          model="[user: user, dueDates: dueDates, dueDatesCount: dueDatesCount]"/>
+                <laser:render template="/user/dueDatesView" model="[user: user, dueDates: dueDates, dueDatesCount: dueDatesCount]"/>
             </div>
         </div>
 

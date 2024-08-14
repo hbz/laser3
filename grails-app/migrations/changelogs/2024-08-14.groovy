@@ -63,7 +63,37 @@ databaseChangeLog = {
         addForeignKeyConstraint(baseColumnNames: "ddo_license_fk", baseTableName: "due_date_object", constraintName: "FK7eiafhdvdli77rg8c76ycw4i7", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "lic_id", referencedTableName: "license", validate: "true")
     }
 
-//    changeSet(author: "klober (modified)", id: "1723617251555-11") {
+    changeSet(author: "klober (generated)", id: "1723617251555-11") {
+        addColumn(tableName: "due_date_object") {
+            column(name: "ddo_org_fk", type: "int8")
+        }
+    }
+
+    changeSet(author: "klober (generated)", id: "1723617251555-12") {
+        addColumn(tableName: "due_date_object") {
+            column(name: "ddo_provider_fk", type: "int8")
+        }
+    }
+
+    changeSet(author: "klober (generated)", id: "1723617251555-13") {
+        addColumn(tableName: "due_date_object") {
+            column(name: "ddo_vendor_fk", type: "int8")
+        }
+    }
+
+    changeSet(author: "klober (generated)", id: "1723617251555-14") {
+        addForeignKeyConstraint(baseColumnNames: "ddo_vendor_fk", baseTableName: "due_date_object", constraintName: "FK62ufmo73xyg9rh6jcc6ersi99", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "ven_id", referencedTableName: "vendor", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1723617251555-15") {
+        addForeignKeyConstraint(baseColumnNames: "ddo_provider_fk", baseTableName: "due_date_object", constraintName: "FKmiaru56e6kdhhc5tf9nsvs30q", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "prov_id", referencedTableName: "provider", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1723617251555-16") {
+        addForeignKeyConstraint(baseColumnNames: "ddo_org_fk", baseTableName: "due_date_object", constraintName: "FKpgihkob4ltf3a2idxujsb4y8e", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "org_id", referencedTableName: "org", validate: "true")
+    }
+
+//    changeSet(author: "klober (modified)", id: "1723617251555-yy") {
 //        grailsChange {
 //            change {
 //                List done = []
