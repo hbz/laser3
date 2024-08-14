@@ -47,6 +47,9 @@
                                     <g:set var="number" value="${numbersInstance.getValue().get(column)}"/>
                                     <g:if test="${number}">
                                         <ui:xEditable owner="${number}" field="value" format="number"/>
+                                        <span class="la-popup-tooltip la-delay" data-position="right center" data-content="${message(code:'default.lastUpdated.message')} ${formatDate(format:message(code:'default.date.format.notime'), date:number.lastUpdated)}">
+                                            <i class="${Icon.TOOLTIP.INFO}"></i>
+                                        </span>
                                     </g:if>
                                 </td>
                             </g:each>
@@ -115,6 +118,9 @@
                                         <g:set var="number" value="${numbersInstance.getValue().get(column)}"/>
                                         <g:if test="${number}">
                                             <ui:xEditable owner="${number}" field="value" type="number"/>
+                                            <span class="la-popup-tooltip la-delay" data-position="right center" data-content="${message(code:'default.lastUpdated.message')} ${formatDate(format:message(code:'default.date.format.notime'), date:number.lastUpdated)}">
+                                                <i class="${Icon.TOOLTIP.INFO}"></i>
+                                            </span>
                                         </g:if>
                                     </td>
                                 </g:each>
