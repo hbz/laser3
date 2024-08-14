@@ -43,7 +43,7 @@ class DueDateObject {
      * @param isDone is the task done?
      * @param now time stamp to retain the connection's creation date and last modification date
      */
-    DueDateObject(String attribute_value_de, String attribute_value_en, String attribute_name, Date date, def object, boolean isDone, Date now){
+    DueDateObject(String attribute_value_de, String attribute_value_en, String attribute_name, Date date, def object, Date now){
         object = GrailsHibernateUtil.unwrapIfProxy(object)
 
         this.attribute_value_de = attribute_value_de
@@ -51,7 +51,7 @@ class DueDateObject {
         this.attribute_name = attribute_name
         this.date = date
         this.oid = "${object.class.name}:${object.id}"
-        this.isDone = isDone
+        // this.isDone = false // TODO
         this.dateCreated = now
         this.lastUpdated = now
 

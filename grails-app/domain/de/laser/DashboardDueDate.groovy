@@ -30,16 +30,14 @@ class DashboardDueDate {
      * @param isDone is the task done?
      * @param isHidden is the reminder hidden?
      */
-    DashboardDueDate(def obj, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHidden){
+    DashboardDueDate(def obj, User responsibleUser, Org responsibleOrg){
         this(   getAttributeValue(obj, responsibleUser, Locale.GERMAN),
                 getAttributeValue(obj, responsibleUser, Locale.ENGLISH),
                 getAttributeName(obj, responsibleUser),
                 getDate(obj, responsibleUser),
                 obj,
                 responsibleUser,
-                responsibleOrg,
-                isDone,
-                isHidden
+                responsibleOrg
         )
     }
 
@@ -145,25 +143,25 @@ class DashboardDueDate {
      * @param isDone is the task done?
      * @param isHidden is the reminder hidden?
      */
-    private DashboardDueDate(String attribute_value_de, String attribute_value_en, String attribute_name, Date date, def object, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHidden){
+    private DashboardDueDate(String attribute_value_de, String attribute_value_en, String attribute_name, Date date, def object, User responsibleUser, Org responsibleOrg){
         withTransaction {
             Date now = new Date()
             this.responsibleUser = responsibleUser
             this.responsibleOrg = responsibleOrg
-            this.isHidden = isHidden
+            // this.isHidden = false // TODO
             this.dateCreated = now
             this.lastUpdated = now
 
             DueDateObject ddo = DueDateObject.getDueDateObject(object, attribute_name) // TODO: ERMS-5862
 
             if (!ddo) {
-                ddo = new DueDateObject(attribute_value_de, attribute_value_en, attribute_name, date, object, isDone, now)
+                ddo = new DueDateObject(attribute_value_de, attribute_value_en, attribute_name, date, object, now)
                 ddo.save()
             }
 
             if(date != ddo.date){
                 ddo.date = date
-                ddo.isDone = isDone
+                ddo.isDone = false
                 ddo.lastUpdated = now
                 ddo.save()
             }
