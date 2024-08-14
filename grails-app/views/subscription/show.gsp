@@ -61,12 +61,12 @@
                     <div class="content">
                         <dl>
                             <dt class="control-label"><g:message code="altname.plural" /></dt>
-                            <dd>
-                                <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion la-accordion-showMore">
-                                    <g:if test="${subscription.altnames}">
-                                        <div class="item title" id="altname_title">
+                            <dd id="altnames" class="ui accordion la-accordion-showMore" style="padding-bottom: 1rem;">
+                                <g:if test="${subscription.altnames}">
+                                    <div class="item title" id="altname_title">
+                                        <div class="ui divided middle aligned selection list la-flex-center">
                                             <div class="item" data-objId="${genericOIDService.getOID(subscription.altnames[0])}">
-                                                <div class="content la-space-right">
+                                                <div class="content la-space-right" style="flex-grow: 1;">
                                                     <g:if test="${!subscription.altnames[0].instanceOf}">
                                                         <ui:xEditable owner="${subscription.altnames[0]}" field="name"/>
                                                     </g:if>
@@ -141,16 +141,18 @@
                                                         </ui:remoteLink>
                                                     </g:else>
                                                 </g:if>
-                                            </div>
-                                            <div class="${Btn.MODERN.SIMPLE_TOOLTIP} la-show-button"
-                                                 data-content="${message(code: 'altname.showAll')}">
-                                                <i class="${Icon.CMD.SHOW_MORE}"></i>
+                                                <div class="${Btn.MODERN.SIMPLE_TOOLTIP} la-show-button"
+                                                     data-content="${message(code: 'altname.showAll')}">
+                                                    <i class="${Icon.CMD.SHOW_MORE}"></i>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="content">
+                                    </div>
+                                    <div class="content" style="padding:0">
+                                        <div class="ui divided middle aligned selection list la-flex-center">
                                             <g:each in="${subscription.altnames.drop(1)}" var="altname">
                                                 <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
-                                                    <div class="content la-space-right">
+                                                    <div class="content la-space-right" style="flex-grow: 1;">
                                                         <g:if test="${!altname.instanceOf}">
                                                             <ui:xEditable owner="${altname}" field="name"/>
                                                         </g:if>
@@ -202,6 +204,9 @@
                                                                     >
                                                                         <i class="${Icon.SIG.INHERITANCE}"></i>
                                                                     </ui:link>
+                                                                    <div class="${Btn.ICON.SIMPLE} la-hidden">
+                                                                        <icon:placeholder /><%-- Hidden Fake Button --%>
+                                                                    </div>
                                                                 </g:else>
                                                             </g:if>
                                                             <g:else>
@@ -233,8 +238,8 @@
                                                 </div>
                                             </g:each>
                                         </div>
+                                    </div>
                                     </g:if>
-                                </div>
                             </dd>
                         </dl>
                         <g:if test="${editable}">

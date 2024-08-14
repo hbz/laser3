@@ -33,6 +33,19 @@
     opacity: 1;
   }
 }
+
+// Show Buttons only on hover
+.ui.divided.middle.list.la-flex-center {
+    margin: 0;
+    .item {
+        display: flex;
+        align-items: center;
+        justify-content:space-between;
+        table-layout: unset;
+    }
+}
+
+
 // Show Buttons only on hover
 .la-timeLineSegment-contact .row{
   .button {
