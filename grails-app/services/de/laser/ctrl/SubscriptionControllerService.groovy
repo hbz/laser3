@@ -29,6 +29,7 @@ import de.laser.utils.SwissKnife
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.VendorRole
 import grails.converters.JSON
 import de.laser.stats.Counter4Report

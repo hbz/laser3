@@ -16,6 +16,7 @@ import de.laser.wekb.Package
 import de.laser.wekb.PackageVendor
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.converters.JSON
 import org.apache.commons.lang3.ClassUtils
@@ -144,7 +145,7 @@ class DataloadService {
      *     <li>{@link Org}</li>
      *     <li>{@link de.laser.wekb.Provider}</li>
      *     <li>{@link de.laser.wekb.Vendor}</li>
-     *     <li>{@link TitleInstancePackagePlatform}</li>
+     *     <li>{@link de.laser.wekb.TitleInstancePackagePlatform}</li>
      *     <li>{@link de.laser.wekb.Package}</li>
      *     <li>{@link de.laser.wekb.Platform}</li>
      *     <li>{@link License}</li>

@@ -4,6 +4,7 @@ import de.laser.ui.Icon
 import de.laser.oap.OrgAccessPointLink
 import de.laser.storage.RDStore
 import de.laser.wekb.Package
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.persistence.Transient
@@ -143,11 +144,11 @@ class SubscriptionPackage implements Comparable {
 
   /**
    * Retrieves the current titles of the global level of the given package - this method is NOT delivering the current holding of the subscription!
-   * @return a {@link Set} of {@link TitleInstancePackagePlatform}s in the subscribed package (on global level!)
+   * @return a {@link Set} of {@link de.laser.wekb.TitleInstancePackagePlatform}s in the subscribed package (on global level!)
    */
   Set getCurrentTippsofPkg()
   {
-    this.pkg.tipps?.findAll{TitleInstancePackagePlatform tipp -> tipp.status?.value == 'Current'}
+    this.pkg.tipps?.findAll{ TitleInstancePackagePlatform tipp -> tipp.status?.value == 'Current' }
   }
 
   /**

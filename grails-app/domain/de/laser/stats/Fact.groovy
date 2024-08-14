@@ -3,7 +3,7 @@ package de.laser.stats
 import de.laser.Org
 import de.laser.wekb.Platform
 import de.laser.RefdataValue
-import de.laser.TitleInstancePackagePlatform
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
 

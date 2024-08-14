@@ -69,7 +69,7 @@ import static java.time.temporal.ChronoUnit.DAYS
  * @see de.laser.wekb.Platform
  * @see de.laser.wekb.Package
  * @see SubscriptionPackage
- * @see TitleInstancePackagePlatform
+ * @see de.laser.wekb.TitleInstancePackagePlatform
  * @see IssueEntitlement
  * @see CostItem
  * @see License

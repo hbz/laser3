@@ -22,6 +22,8 @@ import de.laser.wekb.Package
 import de.laser.wekb.PackageVendor
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
+import de.laser.wekb.TIPPCoverage
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
@@ -1046,7 +1048,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 //println("diffsOfPackage:"+diffsOfPackage)
                 diffsOfPackage.each { Map<String,Object> diff ->
                     log.debug(diff.toMapString())
-                    //[event:update, target:de.laser.TitleInstancePackagePlatform : 196477, diffs:[[prop:price, priceDiffs:[[event:add, target:de.laser.finance.PriceItem : 10791]]]]]
+                    //[event:update, target:de.laser.wekb.TitleInstancePackagePlatform : 196477, diffs:[[prop:price, priceDiffs:[[event:add, target:de.laser.finance.PriceItem : 10791]]]]]
                     switch(diff.event) {
                         case 'add': packageChanges << TitleChange.construct([event:PendingChangeConfiguration.NEW_TITLE,tipp:diff.target])
                             break
@@ -1149,7 +1151,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     /**
      * Looks up for a given UUID if a local record exists or not. If no {@link de.laser.wekb.Package} record exists, it will be
      * created with the given remote record data, otherwise, the local record is going to be updated. The {@link TitleInstancePackagePlatform records}
-     * in the {@link de.laser.wekb.Package} will be checked for differences and if there are such, the according fields updated. Same counts for the {@link TIPPCoverage} records
+     * in the {@link de.laser.wekb.Package} will be checked for differences and if there are such, the according fields updated. Same counts for the {@link de.laser.wekb.TIPPCoverage} records
      * in the {@link TitleInstancePackagePlatform}s
      * @param packageData A UUID pointing to record extract or the record itself for a given package
      * @return the updated package record

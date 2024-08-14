@@ -18,6 +18,7 @@ import de.laser.utils.DateUtils
 import de.laser.utils.PdfUtils
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.sql.Sql

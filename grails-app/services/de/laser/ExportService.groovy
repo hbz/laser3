@@ -23,6 +23,8 @@ import de.laser.stats.Counter5Report
 import de.laser.utils.LocaleUtils
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
+import de.laser.wekb.TIPPCoverage
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap

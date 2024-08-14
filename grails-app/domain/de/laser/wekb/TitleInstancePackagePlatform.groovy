@@ -1,5 +1,13 @@
-package de.laser
+package de.laser.wekb
 
+import de.laser.AlternativeName
+import de.laser.DeweyDecimalClassification
+import de.laser.Identifier
+import de.laser.Language
+import de.laser.Org
+import de.laser.OrgRole
+import de.laser.PersonRole
+import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.User
 import de.laser.base.AbstractBase
@@ -11,8 +19,6 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.titles.TitleHistoryEvent
 import de.laser.utils.LocaleUtils
-import de.laser.wekb.Package
-import de.laser.wekb.Platform
 import groovy.time.TimeCategory
 
 import javax.persistence.Transient
@@ -31,14 +37,14 @@ import java.util.regex.Pattern
  * Title instance records may have an access start / access end date; those are set by the provider and define from when to when this title is available in the given package context.
  * The package context defines if and how a title may be subscribed; usually, titles are subscribed within a package and those packages are then linked to a subscription.
  * This class represents the global entitlement level, i.e. the title which counts for the package provided by the provider and is independent from negotiation differences which may vary
- * from subscription to subscription. See {@link IssueEntitlement} for the local holding level. Local means for the institution subscribing the title within a certain subscription context.
+ * from subscription to subscription. See {@link de.laser.IssueEntitlement} for the local holding level. Local means for the institution subscribing the title within a certain subscription context.
  * This class is moreover a mirror of the we:kb TitleInstancePackagePlatform implementation <a href="https://github.com/hbz/wekb/blob/wekb-dev/server/gokbg3/grails-app/domain/org/gokb/cred/TitleInstancePackagePlatform.groovy">(see TitleInstancePackagePlatform in we:kb)</a>
  * and generally a reflection of a KBART record (see <a href="https://groups.niso.org/apps/group_public/download.php/16900/RP-9-2014_KBART.pdf">KBART specification</a>)
  * @see de.laser.wekb.Package
- * @see SubscriptionPackage
- * @see Subscription
+ * @see de.laser.SubscriptionPackage
+ * @see de.laser.Subscription
  * @see de.laser.wekb.Platform
- * @see IssueEntitlement
+ * @see de.laser.IssueEntitlement
  */
 class TitleInstancePackagePlatform extends AbstractBase implements MarkerSupport /*implements AuditableTrait*/ {
 
@@ -280,7 +286,7 @@ class TitleInstancePackagePlatform extends AbstractBase implements MarkerSupport
 
     /**
      * Gets an identifier value of the given namespace
-     * @param idtype the {@link IdentifierNamespace} to which the required identifier belongs to
+     * @param idtype the {@link de.laser.IdentifierNamespace} to which the required identifier belongs to
      * @return the {@link Identifier}'s value; if multiple, the last identifier's value is being returned (no comment ...)
      */
   String getIdentifierValue(String idtype) {
@@ -565,7 +571,7 @@ class TitleInstancePackagePlatform extends AbstractBase implements MarkerSupport
 
     /**
      * Gets the publishers associated to this title
-     * @return a {@link List} of publisher {@link Org}s
+     * @return a {@link List} of publisher {@link de.laser.Org}s
      */
     List<Org> getPublishers() {
         List<Org> result = []

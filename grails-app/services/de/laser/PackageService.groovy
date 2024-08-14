@@ -8,6 +8,7 @@ import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.wekb.Package
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import grails.web.servlet.mvc.GrailsParameterMap

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.TitleInstancePackagePlatform; grails.converters.JSON" %>
+<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.wekb.TitleInstancePackagePlatform; grails.converters.JSON" %>
 
 <laser:htmlStart text="Datenbereinigung: Gelöschte TIPPs" serviceInjection="true"/>
 

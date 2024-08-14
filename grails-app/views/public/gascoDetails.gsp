@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.IssueEntitlement; de.laser.TitleInstancePackagePlatform;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
+<%@ page import="de.laser.ui.Btn; de.laser.IssueEntitlement; de.laser.wekb.TitleInstancePackagePlatform;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
 
 <laser:htmlStart message="menu.public.gasco_monitor" />
 
