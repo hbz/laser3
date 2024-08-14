@@ -131,11 +131,12 @@ class DashboardDueDatesService {
                             ])[0]
                     // TODO ERMS-5862
 
-                    if (das){//update
+                    if (das) {
                         das.update(obj)
                         log.debug("DashboardDueDatesService UPDATE: " + das);
-                    } else {//insert
-                        das = new DashboardDueDate(obj, user, user.formalOrg, false, false)
+                    }
+                    else { // insert
+                        das = new DashboardDueDate(obj, user, user.formalOrg)
                         das.save()
                         dashboarEntriesToInsert << das
                         log.debug("DashboardDueDatesService INSERT: " + das);
@@ -227,7 +228,7 @@ class DashboardDueDatesService {
             List<Map<String, Object>> dueDateRows = []
             dashboardEntries.each { DashboardDueDate dashDueDate ->
                 Map<String, Object> dashDueDateRow = [:]
-                def obj = genericOIDService.resolveOID(dashDueDate.dueDateObject.oid)
+                def obj = genericOIDService.resolveOID(dashDueDate.dueDateObject.oid) // TODO ERMS-5862
                 if(obj) {
                     if(userLang == RDStore.LANGUAGE_DE)
                         dashDueDateRow.valueDate = escapeService.replaceUmlaute(dashDueDate.dueDateObject.attribute_value_de)
@@ -238,6 +239,7 @@ class DashboardDueDatesService {
                     else if(SqlDateUtils.isBeforeToday(dashDueDate.dueDateObject.date))
                         dashDueDateRow.importance = '!!'
                     else dashDueDateRow.importance = ' '
+
                     if(obj instanceof Subscription) {
                         dashDueDateRow.classLabel = messageSource.getMessage('subscription', null, language)
                         dashDueDateRow.link = grailsLinkGenerator.link(controller: 'subscription', action: 'show', id: obj.id, absolute: true)
