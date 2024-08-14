@@ -2,8 +2,10 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.storage.BeanStore
 import de.laser.survey.SurveyInfo
 import de.laser.utils.SqlDateUtils
+import org.springframework.context.MessageSource
 
 /**
  * Represents a dashboard reminder for a user's dashboard. They are initialised every day per cronjob; the object's parameters to remind about are stored in {@link DueDateObject}
@@ -22,16 +24,15 @@ class DashboardDueDate {
 
     /**
      * Sets up a new due date reminder with the given parameters. It calls the private constructor, enriching with the attribute's name and value and the date to remind of
-     * @param messageSource the {@link org.springframework.context.MessageSource} to load the localised message strings
      * @param obj the object (of type {@link Subscription}, {@link AbstractPropertyWithCalculatedLastUpdated}, {@link Task} or {@link SurveyInfo} for which the reminder should be set up
      * @param responsibleUser the {@link User} who should be reminded
      * @param responsibleOrg the {@link Org} to which the reminded user belongs to
      * @param isDone is the task done?
      * @param isHidden is the reminder hidden?
      */
-    DashboardDueDate(messageSource, def obj, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHidden){
-        this(   getAttributeValue(messageSource, obj, responsibleUser, Locale.GERMAN),
-                getAttributeValue(messageSource, obj, responsibleUser, Locale.ENGLISH),
+    DashboardDueDate(def obj, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHidden){
+        this(   getAttributeValue(obj, responsibleUser, Locale.GERMAN),
+                getAttributeValue(obj, responsibleUser, Locale.ENGLISH),
                 getAttributeName(obj, responsibleUser),
                 getDate(obj, responsibleUser),
                 obj,
@@ -44,18 +45,17 @@ class DashboardDueDate {
 
     /**
      * Refreshes the due date object
-     * @param messageSource the {@link org.springframework.context.MessageSource} to load the localised message strings
      * @param obj the object (of type {@link Subscription}, {@link AbstractPropertyWithCalculatedLastUpdated}, {@link Task} or {@link SurveyInfo} for which the reminder is set up
      */
-    void update(messageSource, def obj){
+    void update(def obj){
         withTransaction {
             Date now = new Date()
             this.version = this.version + 1
             this.lastUpdated = now
             this.dueDateObject.version = this.dueDateObject.version + 1
             this.dueDateObject.lastUpdated = now
-            this.dueDateObject.attribute_value_de = DashboardDueDate.getAttributeValue(messageSource, obj, responsibleUser, Locale.GERMAN)
-            this.dueDateObject.attribute_value_en = DashboardDueDate.getAttributeValue(messageSource, obj, responsibleUser, Locale.ENGLISH)
+            this.dueDateObject.attribute_value_de = DashboardDueDate.getAttributeValue(obj, responsibleUser, Locale.GERMAN)
+            this.dueDateObject.attribute_value_en = DashboardDueDate.getAttributeValue(obj, responsibleUser, Locale.ENGLISH)
 
             Date date = DashboardDueDate.getDate(obj, responsibleUser)
 
@@ -89,13 +89,14 @@ class DashboardDueDate {
 
     /**
      * Gets the localised value name of the property to be reminded about
-     * @param messageSource the {@link org.springframework.context.MessageSource} to load the localised message strings
      * @param obj the object for which the reminder is set up
      * @param user the {@link User} for which the date should be required; needed to compare whether the reminder time is already reached
      * @param locale the {@link Locale} to load the string in
      * @return the internationalised name of the property being reminded
      */
-    static String getAttributeValue(messageSource, def obj, User user, Locale locale){
+    static String getAttributeValue(def obj, User user, Locale locale){
+        MessageSource messageSource = BeanStore.getMessageSource()
+
         if (obj instanceof AbstractPropertyWithCalculatedLastUpdated)            return obj.type.getI10n('name', locale)
         if (obj instanceof Task)                        return messageSource.getMessage('dashboardDueDate.task.endDate', null, locale)
         if (obj instanceof SurveyInfo)                  return messageSource.getMessage('dashboardDueDate.surveyInfo.endDate', null, locale)
@@ -153,9 +154,10 @@ class DashboardDueDate {
             this.dateCreated = now
             this.lastUpdated = now
 
-            DueDateObject ddo = DueDateObject.findWhere(oid: "${object.class.name}:${object.id}", attribute_name: attribute_name)
+            DueDateObject ddo = DueDateObject.getDueDateObject(object, attribute_name) // TODO: ERMS-5862
+
             if (!ddo) {
-                ddo = new DueDateObject(attribute_value_de, attribute_value_en, attribute_name, date, object, isDone, now, now)
+                ddo = new DueDateObject(attribute_value_de, attribute_value_en, attribute_name, date, object, isDone, now)
                 ddo.save()
             }
 
@@ -180,7 +182,6 @@ class DashboardDueDate {
         dueDateObject           (column: 'das_ddobj_fk',  lazy: false)
         dateCreated             column: 'das_date_created'
         lastUpdated             column: 'das_last_updated'
-        autoTimestamp true
     }
 
     static constraints = {

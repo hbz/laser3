@@ -129,12 +129,13 @@ class DashboardDueDatesService {
                              attribute_name: attributeName,
                              oid: oid
                             ])[0]
+                    // TODO ERMS-5862
 
                     if (das){//update
-                        das.update(messageSource, obj)
+                        das.update(obj)
                         log.debug("DashboardDueDatesService UPDATE: " + das);
                     } else {//insert
-                        das = new DashboardDueDate(messageSource, obj, user, user.formalOrg, false, false)
+                        das = new DashboardDueDate(obj, user, user.formalOrg, false, false)
                         das.save()
                         dashboarEntriesToInsert << das
                         log.debug("DashboardDueDatesService INSERT: " + das);
