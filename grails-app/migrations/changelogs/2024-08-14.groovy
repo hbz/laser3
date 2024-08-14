@@ -53,32 +53,32 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "klober (modified)", id: "1723617251555-9") {
-        grailsChange {
-            change {
-                List done = []
-
-                DueDateObject.findAllByOidLike('de.laser.Subscription$HibernateProxy$%').each { ddo ->
-                    String oid = 'de.laser.Subscription:' + ddo.oid.split(':').last()
-                    DueDateObject.executeUpdate('update DueDateObject set oid = :oid where id = :id', [oid: oid, id: ddo.id])
-                    done << ddo.id
-                }
-                confirm( 'fixed de.laser.Subscription$HibernateProxy entries -> ' + done )
-                changeSet.setComments( 'fixed de.laser.Subscription$HibernateProxy entries -> ' + done.size() )
-            }
-            rollback {}
-        }
-    }
-
-    changeSet(author: "klober (generated)", id: "1723617251555-10") {
+    changeSet(author: "klober (generated)", id: "1723617251555-9") {
         addColumn(tableName: "due_date_object") {
             column(name: "ddo_license_fk", type: "int8")
         }
     }
 
-    changeSet(author: "klober (generated)", id: "1723617251555-11") {
+    changeSet(author: "klober (generated)", id: "1723617251555-10") {
         addForeignKeyConstraint(baseColumnNames: "ddo_license_fk", baseTableName: "due_date_object", constraintName: "FK7eiafhdvdli77rg8c76ycw4i7", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "lic_id", referencedTableName: "license", validate: "true")
     }
+
+//    changeSet(author: "klober (modified)", id: "1723617251555-11") {
+//        grailsChange {
+//            change {
+//                List done = []
+//
+//                DueDateObject.findAllByOidLike('de.laser.Subscription$HibernateProxy$%').each { ddo ->
+//                    String oid = 'de.laser.Subscription:' + ddo.oid.split(':').last()
+//                    DueDateObject.executeUpdate('update DueDateObject set oid = :oid where id = :id', [oid: oid, id: ddo.id])
+//                    done << ddo.id
+//                }
+//                confirm( 'fixed de.laser.Subscription$HibernateProxy entries -> ' + done )
+//                changeSet.setComments( 'fixed de.laser.Subscription$HibernateProxy entries -> ' + done.size() )
+//            }
+//            rollback {}
+//        }
+//    }
 
 //    changeSet(author: "klober (modified)", id: "1723617251555-xx") {
 //        grailsChange {
