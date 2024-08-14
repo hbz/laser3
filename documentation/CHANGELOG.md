@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      14.08.2024  rc-3.4  3.4.6       Andreas Bug         Erweiterung der Fehlermeldung beim Lizenzimport
+
 5865    13.08.2024  rc-3.4  3.4.6       Andreas Feature     Abschaltung der Sichten "Alle Titel" und "Meine Titel" mangels UseCase
 
 5864    13.08.2024  rc-3.4  3.4.6       Andreas Feature     feingliedrige Aufschlüsselung der Nutzerzahl-Summen im Excel-Export
