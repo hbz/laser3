@@ -1346,8 +1346,9 @@ class LicenseService {
         Date now = new Date()
         //for LicenseDocument.LicenseDocumentTypes; for that doc.doctype can be mapped to one of: onixPL:Addendum, onixPL:License, onixPL:LicenseMainTerms, onixPL:LicenseSchedule, onixPL:LicenseSummary
         Set<RefdataValue> relevantDocTypes = RefdataValue.findAllByValueInListAndOwner(['Addendum', 'License', 'ONIX-PL License'], RefdataCategory.findByDesc(RDConstants.DOCUMENT_TYPE))
-        Map<String, LicenseProperty> licPropertyMap = lic.propertySet.collectEntries { LicenseProperty lp -> [lp.type.name, lp] }
-        Set<PropertyDefinition> agentDefinitionProps = [PropertyStore.LIC_AUTHORIZED_USERS, PropertyStore.LIC_LOCAL_AUTHORIZED_USER_DEFINITION, PropertyStore.LIC_USAGE_STATISTICS_ADDRESSEE]
+        Map<PropertyDefinition, LicenseProperty> licPropertyMap = lic.propertySet.collectEntries { LicenseProperty lp -> [lp.type, lp] }
+        Set<PropertyDefinition> agentDefinitionProps = [PropertyStore.LIC_AUTHORIZED_USERS, PropertyStore.LIC_LOCAL_AUTHORIZED_USER_DEFINITION, PropertyStore.LIC_USAGE_STATISTICS_ADDRESSEE],
+        timePointDefinitionProps = [PropertyStore.LIC_OA_FIRST_DATE, PropertyStore.LIC_OA_LAST_DATE, PropertyStore.LIC_PERPETUAL_COVERAGE_FROM, PropertyStore.LIC_PERPETUAL_COVERAGE_TO]
         def xml = builder.bind {
             mkp.xmlDeclaration()
             mkp.declareNamespace(ople: "http://www.editeur.org/ople")
@@ -1455,12 +1456,12 @@ class LicenseService {
                                 AgentIdentifier {
                                     AgentIDType('onixPL:CompanyRegistrationNumber')
                                     IDTypeName('ISIL')
-                                    IDValue(Identifier.findByNsAndOrg(IdentifierNamespace.findByNs(IdentifierNamespace.ISIL)), oo.org)
+                                    IDValue(Identifier.findByNsAndOrg(IdentifierNamespace.findByNs(IdentifierNamespace.ISIL), oo.org))
                                 }
                                 AgentIdentifier {
                                     AgentIDType('onixPL:CompanyRegistrationNumber')
                                     IDTypeName('WIBID')
-                                    IDValue(Identifier.findByNsAndOrg(IdentifierNamespace.findByNs(IdentifierNamespace.WIBID)), oo.org)
+                                    IDValue(Identifier.findByNsAndOrg(IdentifierNamespace.findByNs(IdentifierNamespace.WIBID), oo.org))
                                 }
                                 AgentIdentifier {
                                     AgentIDType('onixPL:Proprietary')
@@ -1522,7 +1523,7 @@ class LicenseService {
                         //license properties Authorized Users, Local authorized user defintion
                         agentDefinitionProps.each { PropertyDefinition propDef ->
                             if(isValueSet(licPropertyMap, propDef)) {
-                                LicenseProperty licProp = licPropertyMap.get(propDef.name)
+                                LicenseProperty licProp = licPropertyMap.get(propDef)
                                 AgentDefinition {
                                     AgentLabel(propDef.name)
                                     AgentType('onixPL:Person')
@@ -1543,50 +1544,271 @@ class LicenseService {
                                 }
                             }
                         }
-                        //(all other) properties with type date
-
-                        TimePointDefinition {
-                            TimePointLabel('ArchivalCopyTimePoint')
-                            Description('Trigger Event') //maps refdata value of license property Archival Copy: Time
-                        }
-                        TimePointDefinition {
-                            //mapping license property OA First Date
-                            TimePointLabel('OAFirstDate')
-                            TimePointIdentifier {
-                                TimePointIDType('onixPL:YYYYMMDD')
-                                IDValue(20210801) //format YYYYmmdd
+                        if(isValueSet(licPropertyMap, PropertyStore.LIC_ARCHIVAL_COPY_TIME)) {
+                            TimePointDefinition {
+                                TimePointLabel('ArchivalCopyTimePoint')
+                                Description(licPropertyMap.get(PropertyStore.LIC_ARCHIVAL_COPY_TIME.name).getValue()) //maps refdata value of license property Archival Copy: Time
                             }
                         }
-                        TimePointDefinition {
-                            //mapping license property OA Last Date
-                            TimePointLabel('OALastDate')
-                            TimePointIdentifier {
-                                TimePointIDType('onixPL:YYYYMMDD')
-                                IDValue(20211231) //format YYYYmmdd
+                        //mapping license properties OA First Date, OA Last Date, Perpetual coverage from, Perpetual coverage to
+                        timePointDefinitionProps.each { PropertyDefinition propDef ->
+                            if(isValueSet(licPropertyMap, propDef)) {
+                                TimePointDefinition {
+                                    TimePointLabel(propDef.name)
+                                    TimePointIdentifier {
+                                        TimePointIDType('onixPL:YYYYMMDD')
+                                        IDValue(onixDateFormat.format(licPropertyMap.get(propDef).getDateValue())) //format YYYYmmdd
+                                    }
+                                }
                             }
                         }
-                        TimePointDefinition {
-                            //mapping license property Perpetual coverage from
-                            TimePointLabel('PerpetualCoverageFrom')
-                            TimePointIdentifier {
-                                TimePointIDType('onixPL:YYYYMMDD')
-                                IDValue(20130211) //format YYYYmmdd
+                        //mapping license property Repository
+                        if(isValueSet(licPropertyMap, PropertyStore.LIC_REPOSITORY)) {
+                            PlaceDefinition {
+                                PlaceLabel('Repository')
+                                PlaceName {
+                                    Name(licPropertyMap.get(PropertyStore.LIC_REPOSITORY).getValue()) //the refdata value
+                                }
                             }
                         }
-                        TimePointDefinition {
-                            //mapping license property Perpetual coverage to
-                            TimePointLabel('PerpetualCoverageTo')
-                            TimePointIdentifier {
-                                TimePointIDType('onixPL:YYYYMMDD')
-                                IDValue(20281231) //format YYYYmmdd
+                    }
+                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_CITATION_REQUIREMENT_DETAIL) || isParagraphSet(licPropertyMap, PropertyStore.LIC_OTHER_USE_RESTRICTION_NOTE)) {
+                        LicenseGrant {
+                            //license property Citation requirement detail
+                            if(isParagraphSet(licPropertyMap, PropertyStore.LIC_CITATION_REQUIREMENT_DETAIL)) {
+                                Annotation {
+                                    AnnotationType('onixPL:ERMI:CitationRequirementDetail')
+                                    AnnotationText(licPropertyMap.get(PropertyStore.LIC_CITATION_REQUIREMENT_DETAIL).paragraph)
+                                }
+                            }
+                            //license property Other Use Restriction Note
+                            if(isParagraphSet(licPropertyMap, PropertyStore.LIC_OTHER_USE_RESTRICTION_NOTE)) {
+                                Annotation {
+                                    AnnotationType('onixPL:ERMI:OtherUseRestrictionNote')
+                                    AnnotationText(licPropertyMap.get(PropertyStore.LIC_OTHER_USE_RESTRICTION_NOTE).paragraph)
+                                }
                             }
                         }
-                        PlaceDefinition {
-                            //mapping license property Repository
-                            PlaceLabel('Repository')
-                            PlaceName {
-                                Name('Own Choice') //the refdata value
+                    }
+                    UsageTerms {
+                        //covers Authorized Users, Alumni Access, Walk-In User and many others
+                        //multiple Usage statements per each status; include user if status applicable
+                        Usage {
+                            UsageType('onixPL:Use')
+                            UsageStatus('onixPL:Permitted')
+                            Annotation {
+                                AnnotationType('onixPL:ERMI:WalkInUserTermNote')
+                                AnnotationText('Nur in den Räumen der Bibliothek') //license property Walk-in User Term Note
                             }
+                            LicenseTextLink(href: 'lp_concurrent_users_01')
+                            LicenseTextLink(href: 'lp_conformity_with_urhg_01')
+                            LicenseTextLink(href: 'lp_method_of_authentication_01')
+                            LicenseTextLink(href: 'lp_remote_access_01')
+                            LicenseTextLink(href: 'lp_singleuseraccess_01')
+                            LicenseTextLink(href: 'lp_walkin_access_01')
+                            LicenseTextLink(href: 'lp_wifi_access_01')
+                            User('Authorized Users')
+                            User('Local Authorized Users')
+                            User('onixPL:LicenseeInstitutionAndPartners') //license property Partners Access; no example value in current dataset
+                            User('onixPL:WalkInUser') //license property Walk-In User
+                            UsedResource('Subscription')
+                            UsagePurpose('onixPL:PersonalUse')
+                            UsageMethod('onixPL:SecureAuthentication') //license property Method of Authentication
+                            UsageMethod('onixPL:PublicNetwork') //Wifi Access
+                            /*
+                            regex check:
+                            if('shibboleth' in lp.value.toLowerCase())
+                                UsageMethod('onixPL:Shibboleth') //license property Method of Authentication
+                            if('ip' in lp.value.toLowerCase())
+                                UsageMethod('onixPL:IPAddressAuthentication') //license property Method of Authentication
+                            if('password' in lp.value.toLowerCase())
+                                UsageMethod('onixPL:PasswordAuthentication') //license property Method of Authentication
+                             */
+                            UsageCondition('onixPL:ComplianceWithApplicableCopyrightLaw') //license property Conformity with UrhG; move in Prohibited when No
+                            UsageCondition('onixPL:SubjectToFairUse') //license property Fair use clause indicator; move in Prohibited when No
+                            UsageQuantity {
+                                //license property Concurrent Users
+                                UsageQuantityType('onixPL:NumberOfConcurrentUsers')
+                                QuantityDetail {
+                                    Value(2000)
+                                    QuantityUnit('onixPL:Users')
+                                }
+                            }
+                            UsageRelatedPlace {
+                                UsagePlaceRelator('onixPL:PlaceOfUsage')
+                                RelatedPlace('onixPL:RemoteLocation')
+                            }
+                        }
+                        //multiple Usage statements per each status; include user if status applicable
+                        Usage {
+                            UsageType('onixPL:Use')
+                            UsageStatus('onixPL:Prohibited')
+                            //base: license #4060, tenant is HeBIS-Konsortium
+                            LicenseTextLink(href: 'lp_alumni_access_01')
+                            LicenseTextLink(href: 'lp_distance_education_01')
+                            User('onixPL:LicenseAlumnus')
+                            User('onixPL:LicenseeDistanceLearningStudent') //license property Distance Education
+                            /*
+                                //!!! mark here the ___existence___ of the following properties: Walk-In User, (Simuser)
+                                RelatedAgent('onixPL:WalkInUser')
+                             */
+                            UsedResource('Subscription')
+                        }
+                        //multiple Usage statements per each status; include user if status applicable
+                        /*
+                        Usage {
+                            UsageType('onixPL:Use')
+                            UsageStatus('onixPL:SilentUninterpreted') //for y_n_o other or y_n_u unclear
+                        }
+                        */
+                        Usage {
+                            //license properties Course pack electronic/cached, Course pack print, Course reserve electronic/cached, Course reserve print; group by status
+                            UsageType('onixPL:MakeAvailable')
+                            UsageStatus('onixPL:Permitted') //its refdata value
+                            Annotation {
+                                //license property Course pack term note
+                                AnnotationType('onixPL:SpecialConditions')
+                                AnnotationText('Hierbei stellt der Lizenznehmer sicher, dass nur Personen, die berechtigte Nutzer und gleichzeitig Teilnehmer der jeweiligen Lehrveranstaltung sind, Zugang zu diesen Readern erhalten.') //value xor paragraph
+                            }
+                            Annotation {
+                                //license property Course reserve term note
+                                AnnotationType('onixPL:Interpretation') //if value; else if paragraph, then onixPL:SpecialConditions
+                                AnnotationText('keine Beschränkung') //value xor paragraph
+                            }
+                            LicenseTextLink(href: 'lp_course_pack_electronic_01')
+                            LicenseTextLink(href: 'lp_course_pack_print_01')
+                            LicenseTextLink(href: 'lp_course_reserve_electronic_01')
+                            LicenseTextLink(href: 'lp_course_reserve_print_01')
+                            User('Licensee Consortial')
+                            UsedResource('Subscription')
+                            UsageRelatedResource {
+                                UsageResourceRelator('onixPL:TargetResource')
+                                RelatedResource('onixPL:CoursePackElectronic')
+                                RelatedResource('onixPL:CoursePackPrint')
+                                RelatedResource('onixPL:CourseReserveElectronic')
+                                RelatedResource('onixPL:CourseReservePrint')
+                            }
+                        }
+                        Usage {
+                            //license property Document delivery service (commercial)
+                            UsageType('onixPL:MakeAvailable')
+                            UsageStatus('onixPL:Prohibited') //its refdata value
+                            LicenseTextLink(href: 'lp_document_delivery_service_commercial_01')
+                            User('Licensee Consortial')
+                            UsedResource('Subscription')
+                            UsagePurpose('onixPL:CommercialUse')
+                        }
+                        Usage {
+                            //license property Electronic link
+                            UsageType('onixPL:MakeAvailable')
+                            UsageStatus('onixPL:Permitted') //its refdata value
+                            Annotation {
+                                //license property Electronic link term note
+                                AnnotationType('onixPL:SpecialConditions')
+                                AnnotationText('C. TERMS AND CONDITIONS OF USE c. The Licensee and its Authorized Users may create links to Wiley InterScience from their Online Public Access Catalog (OPAC) records, library catalogs, locally hosted databases or library web pages, provided those links do not result in access to licensed content by anyone other than Authorized Users, or for use in any paid or commercial service.')
+                            }
+                            LicenseTextLink(href: 'lp_electronic_link_01')
+                            User('Licensee Consortial')
+                            UsedResource('Subscription')
+                            UsageRelatedResource {
+                                UsageResourceRelator('onixPL:TargetResource')
+                                RelatedResource('onixPL:LinkToLicensedContent')
+                            }
+                        }
+                        Usage {
+                            //license property Scholarly sharing
+                            UsageType('onixPL:MakeAvailable')
+                            UsageStatus('onixPL:Permitted') //its refdata value
+                            Annotation {
+                                //license property Scholarly sharing term note
+                                AnnotationType('onixPL:SpecialConditions')
+                                AnnotationText('§ 3 Abs. 1f: Incorporate Parts of the Licensed Material in printed or electronic form in assignments and portfolios, theses and in dissertations ( the Academic Works ), including reproductions of the Academic Works for personal use and library deposit. Reproductions in printed or electronic form of Academic Works may be provided to Sponsors of such Academic Works. Each item shall carry appropriate acknowledgement of the source; Publicly display or publicly perform Parts of the Licensed Material as part of a presentation at a seminar, Conference,-workshop, or other such similar activity. Deposit in perpetuity the learning and teaching objects as referred to in § 3.1.b on Servers operated by the Institution or Licensee. The use of such material shall be limited to Authorised Users.')
+                            }
+                            LicenseTextLink(href: 'lp_scholarly_sharing_01')
+                            User('Licensee Consortial')
+                            User('onixPL:AuthorizedUser')
+                            UsedResource('Subscription')
+                            UsageRelatedAgent {
+                                UsageAgentRelator('onixPL:ReceivingAgent')
+                                RelatedAgent('onixPL:ExternalAcademic')
+                            }
+                        }
+                        Usage {
+                            //license property Digital copy
+                            UsageType('onixPL:MakeDigitalCopy')
+                            UsageStatus('onixPL:Permitted') //its refdata value
+                            Annotation {
+                                //license property Digital copy term note
+                                AnnotationType('onixPL:SpecialConditions')
+                                AnnotationText('10.2: Das Nutzungsrecht berechtigt zur Recherche und zum Lesezugriff, zum Herunterladen und einmaligen Abspeichern eines Dokuments auf dem Endgerät des Kunden oder des berechtigten Nutzers sowie zum einmaligen Ausdruck des Dokuments. Eine weitere Vervielfältigung oder das sonstige Verwerten von Dokumenten oder sonstigen Elementen der Datenbank ist nur mit vorangehender schriftlicher Zustimmung des Verlags zulässig [...]') //value xor paragraph
+                            }
+                            LicenseTextLink(href: 'lp_digitial_copy_01')
+                            User('Licensee Consortial')
+                            UsedResource('Subscription')
+                        }
+                        Usage {
+                            //license properties ILL electronic, ILL print or fax, ILL record keeping required, ILL secure electronic transmission, ILL term note; group by status
+                            UsageType('onixPL:SupplyCopy')
+                            UsageStatus('onixPL:Permitted') //one statement per permission status; structure: permission -> property
+                            Annotation {
+                                AnnotationType('onixPL:Interpretation')
+                                AnnotationText('Keine Fernleihe an kommerzielle Bibliotheken liefern') //license property ILL term note - value xor paragraph; include everywhere (to be sure)
+                            }
+                            LicenseTextLink(href: 'lp_ill_electronic_01')
+                            LicenseTextLink(href: 'lp_ill_print_or_fax_01')
+                            LicenseTextLink(href: 'lp_ill_secure_electronic_transmission_01')
+                            User('Licensee Consortial')
+                            UsedResource('Subscription')
+                            UsageMethod('onixPL:ElectronicTransmission') //license property ILL electronic
+                            UsageMethod('onixPL:SecureElectronicTransmission') //license property ILL secure electronic transmission
+                            UsageMethod('onixPL:Fax') //license property ILL print or fax
+                            UsageCondition('onixPL:RecordKeepingRequired') //license property ILL record keeping required - currently no example available!
+                        }
+                        Usage {
+                            //license properties ILL electronic, ILL print or fax, ILL record keeping required, ILL secure electronic transmission, ILL term note; group by status
+                            UsageType('onixPL:SupplyCopy')
+                            UsageStatus('onixPL:Prohibited') //one statement per permission status; structure: permission -> property
+                            Annotation {
+                                AnnotationType('onixPL:Interpretation')
+                                AnnotationText('Keine Fernleihe an kommerzielle Bibliotheken liefern') //license property ILL term note - value xor paragraph; include everywhere (to be sure)
+                            }
+                            LicenseTextLink(href: 'lp_ill_electronic_02')
+                            LicenseTextLink(href: 'lp_ill_print_or_fax_02')
+                            LicenseTextLink(href: 'lp_ill_secure_electronic_transmission_02')
+                            User('Licensee Consortial')
+                            UsedResource('Subscription')
+                            UsageMethod('onixPL:ElectronicTransmission') //license property ILL electronic
+                            UsageMethod('onixPL:SecureElectronicTransmission') //license property ILL secure electronic transmission
+                            UsageMethod('onixPL:Fax') //license property ILL print or fax
+                            UsageCondition('onixPL:RecordKeepingRequired') //license property ILL record keeping required - currently no example available!
+                        }
+                        Usage {
+                            //license properties Print Copy and Print copy term note
+                            UsageType('onixPL:PrintCopy')
+                            UsageStatus('onixPL:Permitted')
+                            Annotation {
+                                AnnotationType('onixPL:Interpretation')
+                                AnnotationText('Erlaubt für den persönlicher Gebrauch.')
+                            }
+                            LicenseTextLink(href: 'lp_print_copy_01') //license property Print Copy
+                            LicenseTextLink(href: 'lp_print_copy_term_note_01') //license property Print copy term note
+                            User('Licensee Consortial')
+                            UsedResource('Subscription')
+                        }
+                        Usage {
+                            //license properties Text- and Datamining, Text- and Datamining Character Count, Text- and Datamining Restrictions
+                            UsageType('onixPL:UseForDataMining')
+                            UsageStatus('onixPL:InterpretedAsPermitted') //its refdata value
+                            Annotation {
+                                AnnotationType('onixPL:Interpretation') //license property Text- and Datamining Restrictions
+                                AnnotationText('Zustimmung des Verlags erforderlich, außer es ist gesetzlich erlaubt. In dem Fall vorheringe Information des Verlags notwendig')
+                            }
+                            LicenseTextLink(href: 'lp_text_and_datamining_01') //license property Text- and Datamining
+                            LicenseTextLink(href: 'lp_text_and_datamining_character_count_01')
+                            LicenseTextLink(href: 'lp_text_and_datamining_restrictions_01')
+                            User('Licensee Consortial')
+                            UsedResource('Subscription')
+                            UsageCondition('onixPL:SubjectToVolumeLimit') //license property Text- and Datamining Character Count
                         }
                     }
                 }
@@ -1655,10 +1877,18 @@ class LicenseService {
         }
     }
 
-    boolean isValueSet(Map<String, LicenseProperty> licPropertyMap, PropertyDefinition pd) {
+    boolean isValueSet(Map<PropertyDefinition, LicenseProperty> licPropertyMap, PropertyDefinition pd) {
         boolean isValueSet = false
-        if(licPropertyMap.containsKey(pd.name)) {
-            isValueSet = licPropertyMap.get(pd.name).getValue() == null
+        if(licPropertyMap.containsKey(pd)) {
+            isValueSet = licPropertyMap.get(pd).getValue() != null
+        }
+        isValueSet
+    }
+
+    boolean isParagraphSet(Map<PropertyDefinition, LicenseProperty> licPropertyMap, PropertyDefinition pd) {
+        boolean isValueSet = false
+        if(licPropertyMap.containsKey(pd)) {
+            isValueSet = licPropertyMap.get(pd).paragraph != null
         }
         isValueSet
     }

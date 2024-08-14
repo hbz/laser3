@@ -15,16 +15,17 @@ class PropertyStore {
     // -- License Properties
 
     public final static PropertyDefinition LIC_AUTHORIZED_USERS    = getPropertyDefinition('Authorized Users', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_ARCHIVAL_COPY_TIME      = getPropertyDefinition('Archival Copy: Time', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_CITATION_REQUIREMENT_DETAIL    = getPropertyDefinition('Citation requirement detail', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_LOCAL_AUTHORIZED_USER_DEFINITION = getPropertyDefinition('Local authorized user defintion', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_OA_FIRST_DATE = getPropertyDefinition('OA First Date', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_OA_LAST_DATE    = getPropertyDefinition('OA Last Date', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_OTHER_USE_RESTRICTION_NOTE    = getPropertyDefinition('Other Use Restriction Note', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_PERPETUAL_COVERAGE_FROM    = getPropertyDefinition('Perpetual coverage from', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_PERPETUAL_COVERAGE_TO    = getPropertyDefinition('Perpetual coverage to', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_REPOSITORY    = getPropertyDefinition('Repository', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_USAGE_STATISTICS_ADDRESSEE = getPropertyDefinition('Usage Statistics Addressee', PropertyDefinition.LIC_PROP)
     /*
-    public final static PropertyDefinition PLA_COUNTER_R5_REPORTS      = getPropertyDefinition('COUNTER R5: Reports supported', PropertyDefinition.LIC_PROP)
-    public final static PropertyDefinition PLA_COUNTER_R4_STATS_URL    = getPropertyDefinition('COUNTER R4: Usage Statistics URL', PropertyDefinition.LIC_PROP)
-    public final static PropertyDefinition PLA_COUNTER_R5_STATS_URL    = getPropertyDefinition('COUNTER R5: Usage Statistics URL', PropertyDefinition.LIC_PROP)
-    public final static PropertyDefinition PLA_COUNTER_R4_SUSHI_API    = getPropertyDefinition('COUNTER R4: COUNTER_SUSHI API supported', PropertyDefinition.LIC_PROP)
-    public final static PropertyDefinition PLA_COUNTER_R5_SUSHI_API    = getPropertyDefinition('COUNTER R5: COUNTER_SUSHI API supported', PropertyDefinition.LIC_PROP)
-    public final static PropertyDefinition PLA_COUNTER_R4_SUSHI_URL    = getPropertyDefinition('COUNTER R4: SUSHI Server URL', PropertyDefinition.LIC_PROP)
-    public final static PropertyDefinition PLA_COUNTER_R5_SUSHI_URL    = getPropertyDefinition('COUNTER R5: SUSHI Server URL', PropertyDefinition.LIC_PROP)
 
     public final static PropertyDefinition PLA_IPV4    = getPropertyDefinition('IPv4: Supported', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition PLA_IPV6    = getPropertyDefinition('IPv6: Supported', PropertyDefinition.LIC_PROP)
