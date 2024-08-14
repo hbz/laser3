@@ -23,27 +23,6 @@ class DashboardDueDate {
     Date lastUpdated
 
     /**
-     * Sets up a new due date reminder with the given parameters. It calls the private constructor, enriching with the attribute's name and value and the date to remind of
-     * @param obj the object (of type {@link Subscription}, {@link AbstractPropertyWithCalculatedLastUpdated}, {@link Task} or {@link SurveyInfo} for which the reminder should be set up
-     * @param responsibleUser the {@link User} who should be reminded
-     * @param responsibleOrg the {@link Org} to which the reminded user belongs to
-     * @param isDone is the task done?
-     * @param isHidden is the reminder hidden?
-     */
-    DashboardDueDate(def obj, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHidden){
-        this(   getAttributeValue(obj, responsibleUser, Locale.GERMAN),
-                getAttributeValue(obj, responsibleUser, Locale.ENGLISH),
-                getAttributeName(obj, responsibleUser),
-                getDate(obj, responsibleUser),
-                obj,
-                responsibleUser,
-                responsibleOrg,
-                isDone,
-                isHidden
-        )
-    }
-
-    /**
      * Refreshes the due date object
      * @param obj the object (of type {@link Subscription}, {@link AbstractPropertyWithCalculatedLastUpdated}, {@link Task} or {@link SurveyInfo} for which the reminder is set up
      */
@@ -135,35 +114,34 @@ class DashboardDueDate {
 
     /**
      * Sets up a new due date reminder with the given parameters
-     * @param attribute_value_de the German value of the attribute to be reminded about
-     * @param attribute_value_en the English value of the attribute to be reminded about
-     * @param attribute_name the name of the attribute
-     * @param date the due date which should be considered
-     * @param object the object (of type {@link Subscription}, {@link AbstractPropertyWithCalculatedLastUpdated}, {@link SurveyInfo} or {@link Task}) whose due date should be kept in mind
+     * @param obj the object (of type {@link Subscription}, {@link AbstractPropertyWithCalculatedLastUpdated}, {@link Task} or {@link SurveyInfo} for which the reminder should be set up
      * @param responsibleUser the {@link User} who should be reminded
-     * @param responsibleOrg the {@link Org} to which the user is belonging to
-     * @param isDone is the task done?
-     * @param isHidden is the reminder hidden?
+     * @param responsibleOrg the {@link Org} to which the reminded user belongs to
      */
-    private DashboardDueDate(String attribute_value_de, String attribute_value_en, String attribute_name, Date date, def object, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHidden){
+    DashboardDueDate(def object, User responsibleUser, Org responsibleOrg){
+        String attribute_value_de   = getAttributeValue(object, responsibleUser, Locale.GERMAN)
+        String attribute_value_en   = getAttributeValue(object, responsibleUser, Locale.ENGLISH)
+        String attribute_name       = getAttributeName(object, responsibleUser)
+        Date date                   = getDate(object, responsibleUser)
+
         withTransaction {
             Date now = new Date()
             this.responsibleUser = responsibleUser
             this.responsibleOrg = responsibleOrg
-            this.isHidden = isHidden
+            // this.isHidden = false // TODO
             this.dateCreated = now
             this.lastUpdated = now
 
             DueDateObject ddo = DueDateObject.getDueDateObject(object, attribute_name) // TODO: ERMS-5862
 
             if (!ddo) {
-                ddo = new DueDateObject(attribute_value_de, attribute_value_en, attribute_name, date, object, isDone, now)
+                ddo = new DueDateObject(attribute_value_de, attribute_value_en, attribute_name, date, object, now)
                 ddo.save()
             }
 
             if(date != ddo.date){
                 ddo.date = date
-                ddo.isDone = isDone
+                ddo.isDone = false
                 ddo.lastUpdated = now
                 ddo.save()
             }
