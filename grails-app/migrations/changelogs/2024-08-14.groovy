@@ -1,5 +1,7 @@
 package changelogs
 
+import de.laser.DueDateObject
+
 databaseChangeLog = {
 
     changeSet(author: "klober (generated)", id: "1723617251555-1") {
@@ -38,4 +40,77 @@ databaseChangeLog = {
         addForeignKeyConstraint(baseColumnNames: "ddo_task_fk", baseTableName: "due_date_object", constraintName: "FKfisaip13g3kqwe6ugvs2w1vcr", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "tsk_id", referencedTableName: "task", validate: "true")
     }
 
+    changeSet(author: "klober (modified)", id: "1723617251555-8") {
+        grailsChange {
+            change {
+                String sql = "delete from DueDateObject where oid like 'com.k_int.kbplus.%'"
+                int done = DueDateObject.executeUpdate( sql )
+
+                confirm( sql + ' -> ' + done )
+                changeSet.setComments( sql + ' -> ' + done )
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1723617251555-9") {
+        grailsChange {
+            change {
+                List done = []
+
+                DueDateObject.findAllByOidLike('de.laser.Subscription$HibernateProxy$%').each { ddo ->
+                    String oid = 'de.laser.Subscription:' + ddo.oid.split(':').last()
+                    DueDateObject.executeUpdate('update DueDateObject set oid = :oid where id = :id', [oid: oid, id: ddo.id])
+                    done << ddo.id
+                }
+                confirm( 'fixed de.laser.Subscription$HibernateProxy entries -> ' + done )
+                changeSet.setComments( 'fixed de.laser.Subscription$HibernateProxy entries -> ' + done.size() )
+            }
+            rollback {}
+        }
+    }
+
+//    changeSet(author: "klober (modified)", id: "1723617251555-xx") {
+//        grailsChange {
+//            change {
+//                Map done    = [task:[], subscription:[], surveyInfo:[]]
+//                Map errors  = [task:[], subscription:[], surveyInfo:[]]
+//
+//                GenericOIDService genericOIDService = BeanStore.getGenericOIDService()
+//
+//                DueDateObject.findAllByOidLike('de.laser.Task:%').each { ddo ->
+//                    Task obj = genericOIDService.resolveOID(ddo.oid) as Task
+//                    if (obj) {
+//                        DueDateObject.executeUpdate('update DueDateObject set task = :obj where id = :id', [obj: obj, id: ddo.id])
+//                        done.task << ddo.id
+//                    } else {
+//                        errors.task << ddo.id
+//                    }
+//                }
+//
+//                DueDateObject.findAllByOidLike('de.laser.Subscription:%').each { ddo ->
+//                    Subscription obj = genericOIDService.resolveOID(ddo.oid) as Subscription
+//                    if (obj) {
+//                        DueDateObject.executeUpdate('update DueDateObject set subscription = :obj where id = :id', [obj: obj, id: ddo.id])
+//                        done.subscription << ddo.id
+//                    } else {
+//                        errors.subscription << ddo.id
+//                    }
+//                }
+//
+//                DueDateObject.findAllByOidLike('de.laser.survey.SurveyInfo:%').each { ddo ->
+//                    SurveyInfo obj = genericOIDService.resolveOID(ddo.oid) as SurveyInfo
+//                    if (obj) {
+//                        DueDateObject.executeUpdate('update DueDateObject set surveyInfo = :obj where id = :id', [obj: obj, id: ddo.id])
+//                        done.surveyInfo << ddo.id
+//                    } else {
+//                        errors.surveyInfo << ddo.id
+//                    }
+//                }
+//                confirm( 'ERRORS: ' + errors.toMapString() + ', DONE: ' + done.toMapString() )
+//                changeSet.setComments( errors.toMapString() )
+//            }
+//            rollback {}
+//        }
+//    }
 }
