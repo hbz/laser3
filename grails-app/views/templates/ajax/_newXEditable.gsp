@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 <g:if test="${wrapper == 'altname'}">
     <div class="ui item" data-objId="${objOID}">
-        <div class="content la-space-right">
+        <div class="content la-space-right" >
             <g:if test="${ownObj.provider || ownObj.vendor}">
                 <ui:xEditable
                         data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
@@ -14,7 +14,7 @@
                 <ui:xEditable owner="${ownObj}" field="${field}" overwriteEditable="${overwriteEditable}"/>
             </g:else>
         </div>
-        <div class="content la-space-right">
+
             <g:if test="${ownObj.subscription && showConsortiaFunctions}">
                 <ui:link class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
                          controller="ajax"
@@ -58,7 +58,7 @@
                     <i class="${Icon.CMD.DELETE}"></i>
                 </ui:remoteLink>
             </div>
-        </div>
+
     </div>
 </g:if>
 <g:elseif test="${wrapper in ['frontend', 'index']}">

@@ -34,7 +34,7 @@
   }
 }
 
-// Show Buttons only on hover
+// Show Buttons always and align button in lists
 .ui.divided.middle.list.la-flex-center {
     margin: 0;
     .item {
@@ -42,6 +42,9 @@
         align-items: center;
         justify-content:space-between;
         table-layout: unset;
+        .content {
+            flex-grow: 1;
+        }
     }
 }
 

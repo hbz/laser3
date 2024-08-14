@@ -61,7 +61,7 @@
                     <div class="content">
                         <dl>
                             <dt class="control-label"><g:message code="altname.plural" /></dt>
-                            <dd id="altnames" class="ui accordion la-accordion-showMore" style="padding-bottom: 1rem;">
+                            <dd  class="ui accordion la-accordion-showMore" style="padding-bottom: 1rem;">
                                 <g:if test="${subscription.altnames}">
                                     <div class="item title" id="altname_title">
                                         <div class="ui divided middle aligned selection list la-flex-center">
@@ -149,7 +149,7 @@
                                         </div>
                                     </div>
                                     <div class="content" style="padding:0">
-                                        <div class="ui divided middle aligned selection list la-flex-center">
+                                        <div id="altnames" class="ui divided middle aligned selection list la-flex-center">
                                             <g:each in="${subscription.altnames.drop(1)}" var="altname">
                                                 <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
                                                     <div class="content la-space-right" style="flex-grow: 1;">
@@ -243,10 +243,7 @@
                             </dd>
                         </dl>
                         <g:if test="${editable}">
-                            <dl>
-                                <dt></dt>
-                                <dd><input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} addListValue" data-objtype="altname" value="${message(code:'altname.add')}"></dd>
-                            </dl>
+                            <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} addListValue" data-objtype="altname" value="${message(code:'altname.add')}">
                         </g:if>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.startDate.label')}</dt>
