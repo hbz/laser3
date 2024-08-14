@@ -44337,6 +44337,10 @@ ol.ui.suffixed.list li::before,
   table-layout: unset;
 }
 
+.ui.divided.middle.list.la-flex-center .item .content {
+  flex-grow: 1;
+}
+
 .la-timeLineSegment-contact .row .button {
   opacity: 0;
   transition: opacity 1s;
