@@ -98,8 +98,8 @@ class MyInstitutionControllerService {
         result.tasksCount    = result.tasks.size()
 
         prf.setBenchmark('due dates')
-        result.dueDates = dashboardDueDatesService.getDashboardDueDates( result.user, result.institution, false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = dashboardDueDatesService.countDashboardDueDates( result.user, result.institution, false, false)
+        result.dueDates = dashboardDueDatesService.getDashboardDueDates( result.user, result.institution, result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = dashboardDueDatesService.countDashboardDueDates( result.user, result.institution)
 
         prf.setBenchmark('workflows')
         if (workflowService.hasUserPerm_edit()) {

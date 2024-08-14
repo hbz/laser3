@@ -1597,8 +1597,8 @@ class AjaxController {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.dashboardDueDatesOffset = result.offset
 
-        result.dueDates = dashboardDueDatesService.getDashboardDueDates(contextService.getUser(), contextService.getOrg(), false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = dashboardDueDatesService.countDashboardDueDates(contextService.getUser(), contextService.getOrg(), false, false)
+        result.dueDates = dashboardDueDatesService.getDashboardDueDates(contextService.getUser(), contextService.getOrg(), result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = dashboardDueDatesService.countDashboardDueDates(contextService.getUser(), contextService.getOrg())
 
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
     }
@@ -1643,7 +1643,8 @@ class AjaxController {
         if (params.owner) {
             DueDateObject dueDateObject = (DueDateObject) genericOIDService.resolveOID(params.owner)
             if (dueDateObject){
-                Object obj = genericOIDService.resolveOID(dueDateObject.oid)
+//                Object obj = genericOIDService.resolveOID(dueDateObject.oid)
+                Object obj = dueDateObject.getObject() // TODO - ERMS-5862
                 if (obj instanceof Task && isDone){
                     Task dueTask = (Task)obj
                     dueTask.setStatus(RDStore.TASK_STATUS_DONE)
@@ -1666,8 +1667,8 @@ class AjaxController {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.dashboardDueDatesOffset = result.offset
 
-        result.dueDates = dashboardDueDatesService.getDashboardDueDates(contextService.getUser(), contextService.getOrg(), false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = dashboardDueDatesService.countDashboardDueDates(contextService.getUser(), contextService.getOrg(), false, false)
+        result.dueDates = dashboardDueDatesService.getDashboardDueDates(contextService.getUser(), contextService.getOrg(), result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = dashboardDueDatesService.countDashboardDueDates(contextService.getUser(), contextService.getOrg())
 
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
     }

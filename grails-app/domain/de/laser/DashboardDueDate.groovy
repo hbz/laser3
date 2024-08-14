@@ -17,8 +17,8 @@ class DashboardDueDate {
 
     User responsibleUser
     Org  responsibleOrg
-    boolean isHidden = false
     DueDateObject dueDateObject
+    boolean isHidden = false
     Date dateCreated
     Date lastUpdated
 
@@ -132,7 +132,7 @@ class DashboardDueDate {
             this.dateCreated = now
             this.lastUpdated = now
 
-            DueDateObject ddo = DueDateObject.getDueDateObject(object, attribute_name) // TODO: ERMS-5862
+            DueDateObject ddo = DueDateObject.getByObjectAndAttributeName(object, attribute_name) // TODO: ERMS-5862
 
             if (!ddo) {
                 ddo = new DueDateObject(attribute_value_de, attribute_value_en, attribute_name, date, object, now)
@@ -149,6 +149,10 @@ class DashboardDueDate {
             this.dueDateObject = ddo
             this.save()
         }
+    }
+
+    String getOID() {
+        BeanStore.getGenericOIDService().getOID(this)
     }
 
     static mapping = {
