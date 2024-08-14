@@ -13,6 +13,7 @@ import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.wekb.Package
 import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional

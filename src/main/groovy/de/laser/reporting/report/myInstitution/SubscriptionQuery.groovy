@@ -5,7 +5,7 @@ import de.laser.License
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.Subscription
-import de.laser.TitleInstancePackagePlatform
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore

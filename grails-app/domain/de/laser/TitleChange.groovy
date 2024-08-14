@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.annotations.RefdataInfo
 import de.laser.exceptions.CreationException
+import de.laser.wekb.TitleInstancePackagePlatform
 import groovy.util.logging.Slf4j
 
 @Slf4j

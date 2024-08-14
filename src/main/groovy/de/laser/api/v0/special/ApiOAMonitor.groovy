@@ -6,7 +6,6 @@ import de.laser.OrgRole
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
-import de.laser.TitleInstancePackagePlatform
 import de.laser.exceptions.NativeSqlException
 import de.laser.finance.CostItem
 import de.laser.OrgSetting

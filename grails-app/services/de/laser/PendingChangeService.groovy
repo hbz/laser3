@@ -7,6 +7,7 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.gorm.transactions.Transactional
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql

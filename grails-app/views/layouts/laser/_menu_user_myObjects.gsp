@@ -23,7 +23,7 @@
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentVendors" message="menu.my.vendors"/>
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentPlatforms" message="menu.my.platforms" />
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentPackages" message="menu.my.packages" />
-        <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
+        <%--<ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentTitles" message="menu.my.titles" />--%>
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentPermanentTitles" message="menu.my.permanentTitles" />
 
         <div class="divider"></div>

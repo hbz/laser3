@@ -6,7 +6,7 @@ import de.laser.Links
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
-import de.laser.TitleInstancePackagePlatform
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.ctrl.FinanceControllerService
 import de.laser.finance.CostItem
 import de.laser.storage.BeanStore
@@ -14,7 +14,6 @@ import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import de.laser.utils.LocaleUtils
-import de.laser.wekb.Package
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 

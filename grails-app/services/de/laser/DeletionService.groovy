@@ -19,6 +19,8 @@ import de.laser.titles.TitleHistoryEventParticipant
 import de.laser.traces.DeletedObject
 import de.laser.convenience.Marker
 import de.laser.wekb.Package
+import de.laser.wekb.TIPPCoverage
+import de.laser.wekb.TitleInstancePackagePlatform
 import groovy.util.logging.Slf4j
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.client.RequestOptions

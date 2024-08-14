@@ -10,6 +10,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.survey.SurveyConfig
 import de.laser.utils.LocaleUtils
 import de.laser.wekb.Package
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql

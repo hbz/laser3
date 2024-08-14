@@ -27,6 +27,8 @@ import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.wekb.ProviderRole
+import de.laser.wekb.TIPPCoverage
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import de.laser.wekb.VendorRole
 import grails.gorm.transactions.Transactional
@@ -1868,7 +1870,9 @@ class SubscriptionService {
         InputStream fileContent = tsvFile.getInputStream()
         List<String> rows = fileContent.getText(encoding).split('\n')
         List<String> ignoredColHeads = [], multiplePropDefs = []
-        rows[0].split('\t').eachWithIndex { String s, int c ->
+        List<String> headerRow = rows.remove(0).split('\t')
+        int colCount = headerRow.size()
+        headerRow.eachWithIndex { String s, int c ->
             String headerCol = s.trim()
             if(headerCol.startsWith("\uFEFF"))
                 headerCol = headerCol.substring(1)
@@ -1952,49 +1956,49 @@ class SubscriptionService {
             globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.colHeaderIgnored',[ignoredColHeads.join('</li><li>')].toArray(),locale)
         if(multiplePropDefs)
             globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.multiplePropDefs',[multiplePropDefs.join('</li><li>')].toArray(),locale)
-        rows.remove(0)
-        rows.each { row ->
+        rows.eachWithIndex { String row, int rowno ->
             Map mappingErrorBag = [:], candidate = [properties: [:]]
             List<String> cols = row.split('\t', -1)
-            //check if we have some mandatory properties ...
-            //status(nullable:false, blank:false) -> to status, defaults to status not set
-            if(colMap.status != null) {
-                String statusKey = cols[colMap.status].trim()
-                if(statusKey) {
-                    String status = refdataService.retrieveRefdataValueOID(statusKey, RDConstants.SUBSCRIPTION_STATUS)
-                    if(status) {
-                        candidate.status = status
+            if(cols.size() == colCount) {
+                //check if we have some mandatory properties ...
+                //status(nullable:false, blank:false) -> to status, defaults to status not set
+                if(colMap.status != null) {
+                    String statusKey = cols[colMap.status].trim()
+                    if(statusKey) {
+                        String status = refdataService.retrieveRefdataValueOID(statusKey, RDConstants.SUBSCRIPTION_STATUS)
+                        if(status) {
+                            candidate.status = status
+                        }
+                        else {
+                            //missing case one: invalid status key
+                            //default to subscription not set
+                            candidate.status = "${RDStore.SUBSCRIPTION_NO_STATUS.class.name}:${RDStore.SUBSCRIPTION_NO_STATUS.id}"
+                            mappingErrorBag.noValidStatus = statusKey
+                        }
                     }
                     else {
-                        //missing case one: invalid status key
+                        //missing case two: no status key set
                         //default to subscription not set
                         candidate.status = "${RDStore.SUBSCRIPTION_NO_STATUS.class.name}:${RDStore.SUBSCRIPTION_NO_STATUS.id}"
-                        mappingErrorBag.noValidStatus = statusKey
+                        mappingErrorBag.statusNotSet = true
                     }
                 }
                 else {
-                    //missing case two: no status key set
+                    //missing case three: the entire column is missing
                     //default to subscription not set
                     candidate.status = "${RDStore.SUBSCRIPTION_NO_STATUS.class.name}:${RDStore.SUBSCRIPTION_NO_STATUS.id}"
                     mappingErrorBag.statusNotSet = true
                 }
-            }
-            else {
-                //missing case three: the entire column is missing
-                //default to subscription not set
-                candidate.status = "${RDStore.SUBSCRIPTION_NO_STATUS.class.name}:${RDStore.SUBSCRIPTION_NO_STATUS.id}"
-                mappingErrorBag.statusNotSet = true
-            }
-            //moving on to optional attributes
-            //name(nullable:true, blank:false) -> to name
-            if(colMap.name != null) {
-                String name = cols[colMap.name].trim()
-                if(name)
-                    candidate.name = name
-            }
-            //licenses
-            if(colMap.licenses != null && cols[colMap.licenses]?.trim()) {
-                List<String> licenseKeys = cols[colMap.licenses].split(',')
+                //moving on to optional attributes
+                //name(nullable:true, blank:false) -> to name
+                if(colMap.name != null) {
+                    String name = cols[colMap.name].trim()
+                    if(name)
+                        candidate.name = name
+                }
+                //licenses
+                if(colMap.licenses != null && cols[colMap.licenses]?.trim()) {
+                    List<String> licenseKeys = cols[colMap.licenses].split(',')
                     candidate.licenses = []
                     licenseKeys.each { String licenseKey ->
                         List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg", [idCandidate: licenseKey.trim(), roleTypes: [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_LICENSEE], contextOrg: contextOrg])
@@ -2012,252 +2016,256 @@ class SubscriptionService {
                             mappingErrorBag.noValidLicense << licenseKey
                         }
                     }
-            }
-            //type(nullable:true, blank:false) -> to type
-            if(colMap.kind != null) {
-                String typeKey = cols[colMap.kind].trim()
-                if(typeKey) {
-                    String type = refdataService.retrieveRefdataValueOID(typeKey, RDConstants.SUBSCRIPTION_KIND)
-                    if(type) {
-                        candidate.kind = type
-                    }
-                    else {
-                        mappingErrorBag.noValidType = typeKey
-                    }
                 }
-            }
-            //form(nullable:true, blank:false) -> to form
-            if(colMap.form != null) {
-                String formKey = cols[colMap.form].trim()
-                if(formKey) {
-                    String form = refdataService.retrieveRefdataValueOID(formKey, RDConstants.SUBSCRIPTION_FORM)
-                    if(form) {
-                        candidate.form = form
-                    }
-                    else {
-                        mappingErrorBag.noValidForm = formKey
-                    }
-                }
-            }
-            //resource(nullable:true, blank:false) -> to resource
-            if(colMap.resource != null) {
-                String resourceKey = cols[colMap.resource].trim()
-                if(resourceKey) {
-                    String resource = refdataService.retrieveRefdataValueOID(resourceKey,RDConstants.SUBSCRIPTION_RESOURCE)
-                    if(resource) {
-                        candidate.resource = resource
-                    }
-                    else {
-                        mappingErrorBag.noValidResource = resourceKey
-                    }
-                }
-            }
-            //holdingSelection(nullable:true, blank:false) -> to holdingSelection
-            if(colMap.holdingSelection != null) {
-                String holdingSelectionKey = cols[colMap.holdingSelection].trim()
-                if(holdingSelectionKey) {
-                    String holdingSelection = refdataService.retrieveRefdataValueOID(holdingSelectionKey,RDConstants.SUBSCRIPTION_HOLDING)
-                    if(holdingSelection) {
-                        candidate.holdingSelection = holdingSelection
-                    }
-                    else {
-                        mappingErrorBag.noValidHoldingSelection = holdingSelectionKey
-                    }
-                }
-            }
-            //provider
-            if(colMap.provider != null) {
-                String providerIdCandidate = cols[colMap.provider]?.trim()
-                if(providerIdCandidate) {
-                    Long idCandidate = providerIdCandidate.isLong() ? Long.parseLong(providerIdCandidate) : null
-                    Provider provider = Provider.findByIdOrGlobalUID(idCandidate,providerIdCandidate)
-                    if(provider)
-                        candidate.provider = "${provider.class.name}:${provider.id}"
-                    else {
-                        mappingErrorBag.noValidOrg = providerIdCandidate
-                    }
-                }
-            }
-            //agency
-            if(colMap.vendor != null) {
-                String vendorIdCandidate = cols[colMap.vendor]?.trim()
-                if(vendorIdCandidate) {
-                    Long idCandidate = vendorIdCandidate.isLong() ? Long.parseLong(vendorIdCandidate) : null
-                    Vendor vendor = Vendor.findByIdOrGlobalUID(idCandidate,vendorIdCandidate)
-                    if(vendor)
-                        candidate.vendor = "${vendor.class.name}:${vendor.id}"
-                    else {
-                        mappingErrorBag.noValidOrg = vendorIdCandidate
-                    }
-                }
-            }
-            /*
-            startDate(nullable:true, blank:false, validator: { val, obj ->
-                if(obj.startDate != null && obj.endDate != null) {
-                    if(obj.startDate > obj.endDate) return ['startDateAfterEndDate']
-                }
-            }) -> to startDate
-            */
-            Date startDate
-            if(colMap.startDate != null) {
-                startDate = DateUtils.parseDateGeneric(cols[colMap.startDate].trim())
-            }
-            /*
-            endDate(nullable:true, blank:false, validator: { val, obj ->
-                if(obj.startDate != null && obj.endDate != null) {
-                    if(obj.startDate > obj.endDate) return ['endDateBeforeStartDate']
-                }
-            }) -> to endDate
-            */
-            Date endDate
-            if(colMap.endDate != null) {
-                endDate = DateUtils.parseDateGeneric(cols[colMap.endDate].trim())
-            }
-            if(startDate && endDate) {
-                if(startDate <= endDate) {
-                    candidate.startDate = startDate
-                    candidate.endDate = endDate
-                }
-                else {
-                    mappingErrorBag.startDateBeforeEndDate = true
-                }
-            }
-            else if(startDate && !endDate)
-                candidate.startDate = startDate
-            else if(!startDate && endDate)
-                candidate.endDate = endDate
-            //manualCancellationDate(nullable:true, blank:false)
-            if(colMap.manualCancellationDate != null) {
-                Date manualCancellationDate = DateUtils.parseDateGeneric(cols[colMap.manualCancellationDate])
-                if(manualCancellationDate)
-                    candidate.manualCancellationDate = manualCancellationDate
-            }
-            //referenceYear(nullable:true, blank:false)
-            if(colMap.referenceYear != null) {
-                String yearKey = cols[colMap.referenceYear].trim()
-                if(yearKey) {
-                    Year referenceYear = Year.parse(cols[colMap.referenceYear])
-                    if(referenceYear)
-                        candidate.referenceYear = referenceYear
-                }
-            }
-            //isAutomaticRenewAnnually
-            if(colMap.isAutomaticRenewAnnually != null) {
-                if(startDate && endDate) {
-                    String autoRenewKey = cols[colMap.isAutomaticRenewAnnually].trim()
-                    if(autoRenewKey) {
-                        String yesNo = refdataService.retrieveRefdataValueOID(autoRenewKey,RDConstants.Y_N)
-                        if(yesNo) {
-                            candidate.isAutomaticRenewAnnually = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}")
+                //type(nullable:true, blank:false) -> to type
+                if(colMap.kind != null) {
+                    String typeKey = cols[colMap.kind].trim()
+                    if(typeKey) {
+                        String type = refdataService.retrieveRefdataValueOID(typeKey, RDConstants.SUBSCRIPTION_KIND)
+                        if(type) {
+                            candidate.kind = type
                         }
                         else {
-                            mappingErrorBag.noValidAutoRenew = autoRenewKey
+                            mappingErrorBag.noValidType = typeKey
                         }
                     }
                 }
-                else {
-                    mappingErrorBag.invalidDateRangeForRenew = true
-                }
-            }
-            //instanceOf(nullable:true, blank:false)
-            if(colMap.instanceOf != null && colMap.member != null) {
-                String idCandidate = cols[colMap.instanceOf].trim()
-                String memberIdCandidate = cols[colMap.member].trim()
-                if(idCandidate && memberIdCandidate) {
-                    List<Subscription> parentSubs = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and :idCandidate in (cast(oo.sub.id as string),oo.sub.globalUID)",[contextOrg: contextOrg, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIUM], idCandidate: idCandidate])
-                    List<Org> possibleOrgs = Org.executeQuery("select distinct ident.org from Identifier ident, Combo c where c.fromOrg = ident.org and :idCandidate in (cast(ident.org.id as string), ident.org.globalUID) or (ident.value = :idCandidate and ident.ns = :wibid) and c.toOrg = :contextOrg and c.type = :type", [idCandidate:memberIdCandidate,wibid:IdentifierNamespace.findByNs('wibid'),contextOrg: contextOrg,type: comboType])
-                    if(parentSubs.size() == 1) {
-                        Subscription instanceOf = parentSubs[0]
-                        candidate.instanceOf = "${instanceOf.class.name}:${instanceOf.id}"
-                        if(!candidate.name)
-                            candidate.name = instanceOf.name
-                    }
-                    else {
-                        mappingErrorBag.noValidSubscription = idCandidate
-                    }
-                    if(possibleOrgs.size() == 1) {
-                        //further check needed: is the subscriber linked per combo to the organisation?
-                        Org member = possibleOrgs[0]
-                        candidate.member = "${member.class.name}:${member.id}"
-                    }
-                    else if(possibleOrgs.size() > 1) {
-                        mappingErrorBag.multipleOrgsError = possibleOrgs.collect { org -> org.sortname ?: org.name }
-                    }
-                    else {
-                        mappingErrorBag.noValidOrg = memberIdCandidate
+                //form(nullable:true, blank:false) -> to form
+                if(colMap.form != null) {
+                    String formKey = cols[colMap.form].trim()
+                    if(formKey) {
+                        String form = refdataService.retrieveRefdataValueOID(formKey, RDConstants.SUBSCRIPTION_FORM)
+                        if(form) {
+                            candidate.form = form
+                        }
+                        else {
+                            mappingErrorBag.noValidForm = formKey
+                        }
                     }
                 }
+                //resource(nullable:true, blank:false) -> to resource
+                if(colMap.resource != null) {
+                    String resourceKey = cols[colMap.resource].trim()
+                    if(resourceKey) {
+                        String resource = refdataService.retrieveRefdataValueOID(resourceKey,RDConstants.SUBSCRIPTION_RESOURCE)
+                        if(resource) {
+                            candidate.resource = resource
+                        }
+                        else {
+                            mappingErrorBag.noValidResource = resourceKey
+                        }
+                    }
+                }
+                //holdingSelection(nullable:true, blank:false) -> to holdingSelection
+                if(colMap.holdingSelection != null) {
+                    String holdingSelectionKey = cols[colMap.holdingSelection].trim()
+                    if(holdingSelectionKey) {
+                        String holdingSelection = refdataService.retrieveRefdataValueOID(holdingSelectionKey,RDConstants.SUBSCRIPTION_HOLDING)
+                        if(holdingSelection) {
+                            candidate.holdingSelection = holdingSelection
+                        }
+                        else {
+                            mappingErrorBag.noValidHoldingSelection = holdingSelectionKey
+                        }
+                    }
+                }
+                //provider
+                if(colMap.provider != null) {
+                    String providerIdCandidate = cols[colMap.provider]?.trim()
+                    if(providerIdCandidate) {
+                        Long idCandidate = providerIdCandidate.isLong() ? Long.parseLong(providerIdCandidate) : null
+                        Provider provider = Provider.findByIdOrGlobalUID(idCandidate,providerIdCandidate)
+                        if(provider)
+                            candidate.provider = "${provider.class.name}:${provider.id}"
+                        else {
+                            mappingErrorBag.noValidOrg = providerIdCandidate
+                        }
+                    }
+                }
+                //agency
+                if(colMap.vendor != null) {
+                    String vendorIdCandidate = cols[colMap.vendor]?.trim()
+                    if(vendorIdCandidate) {
+                        Long idCandidate = vendorIdCandidate.isLong() ? Long.parseLong(vendorIdCandidate) : null
+                        Vendor vendor = Vendor.findByIdOrGlobalUID(idCandidate,vendorIdCandidate)
+                        if(vendor)
+                            candidate.vendor = "${vendor.class.name}:${vendor.id}"
+                        else {
+                            mappingErrorBag.noValidOrg = vendorIdCandidate
+                        }
+                    }
+                }
+                /*
+                startDate(nullable:true, blank:false, validator: { val, obj ->
+                    if(obj.startDate != null && obj.endDate != null) {
+                        if(obj.startDate > obj.endDate) return ['startDateAfterEndDate']
+                    }
+                }) -> to startDate
+                */
+                Date startDate
+                if(colMap.startDate != null) {
+                    startDate = DateUtils.parseDateGeneric(cols[colMap.startDate].trim())
+                }
+                /*
+                endDate(nullable:true, blank:false, validator: { val, obj ->
+                    if(obj.startDate != null && obj.endDate != null) {
+                        if(obj.startDate > obj.endDate) return ['endDateBeforeStartDate']
+                    }
+                }) -> to endDate
+                */
+                Date endDate
+                if(colMap.endDate != null) {
+                    endDate = DateUtils.parseDateGeneric(cols[colMap.endDate].trim())
+                }
+                if(startDate && endDate) {
+                    if(startDate <= endDate) {
+                        candidate.startDate = startDate
+                        candidate.endDate = endDate
+                    }
+                    else {
+                        mappingErrorBag.startDateBeforeEndDate = true
+                    }
+                }
+                else if(startDate && !endDate)
+                    candidate.startDate = startDate
+                else if(!startDate && endDate)
+                    candidate.endDate = endDate
+                //manualCancellationDate(nullable:true, blank:false)
+                if(colMap.manualCancellationDate != null) {
+                    Date manualCancellationDate = DateUtils.parseDateGeneric(cols[colMap.manualCancellationDate])
+                    if(manualCancellationDate)
+                        candidate.manualCancellationDate = manualCancellationDate
+                }
+                //referenceYear(nullable:true, blank:false)
+                if(colMap.referenceYear != null) {
+                    String yearKey = cols[colMap.referenceYear].trim()
+                    if(yearKey) {
+                        Year referenceYear = Year.parse(cols[colMap.referenceYear])
+                        if(referenceYear)
+                            candidate.referenceYear = referenceYear
+                    }
+                }
+                //isAutomaticRenewAnnually
+                if(colMap.isAutomaticRenewAnnually != null) {
+                    if(startDate && endDate) {
+                        String autoRenewKey = cols[colMap.isAutomaticRenewAnnually].trim()
+                        if(autoRenewKey) {
+                            String yesNo = refdataService.retrieveRefdataValueOID(autoRenewKey,RDConstants.Y_N)
+                            if(yesNo) {
+                                candidate.isAutomaticRenewAnnually = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}")
+                            }
+                            else {
+                                mappingErrorBag.noValidAutoRenew = autoRenewKey
+                            }
+                        }
+                    }
+                    else {
+                        mappingErrorBag.invalidDateRangeForRenew = true
+                    }
+                }
+                //instanceOf(nullable:true, blank:false)
+                if(colMap.instanceOf != null && colMap.member != null) {
+                    String idCandidate = cols[colMap.instanceOf].trim()
+                    String memberIdCandidate = cols[colMap.member].trim()
+                    if(idCandidate && memberIdCandidate) {
+                        List<Subscription> parentSubs = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and :idCandidate in (cast(oo.sub.id as string),oo.sub.globalUID)",[contextOrg: contextOrg, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIUM], idCandidate: idCandidate])
+                        List<Org> possibleOrgs = Org.executeQuery("select distinct ident.org from Identifier ident, Combo c where c.fromOrg = ident.org and :idCandidate in (cast(ident.org.id as string), ident.org.globalUID) or (ident.value = :idCandidate and ident.ns = :wibid) and c.toOrg = :contextOrg and c.type = :type", [idCandidate:memberIdCandidate,wibid:IdentifierNamespace.findByNs('wibid'),contextOrg: contextOrg,type: comboType])
+                        if(parentSubs.size() == 1) {
+                            Subscription instanceOf = parentSubs[0]
+                            candidate.instanceOf = "${instanceOf.class.name}:${instanceOf.id}"
+                            if(!candidate.name)
+                                candidate.name = instanceOf.name
+                        }
+                        else {
+                            mappingErrorBag.noValidSubscription = idCandidate
+                        }
+                        if(possibleOrgs.size() == 1) {
+                            //further check needed: is the subscriber linked per combo to the organisation?
+                            Org member = possibleOrgs[0]
+                            candidate.member = "${member.class.name}:${member.id}"
+                        }
+                        else if(possibleOrgs.size() > 1) {
+                            mappingErrorBag.multipleOrgsError = possibleOrgs.collect { org -> org.sortname ?: org.name }
+                        }
+                        else {
+                            mappingErrorBag.noValidOrg = memberIdCandidate
+                        }
+                    }
+                    else {
+                        if(!idCandidate && memberIdCandidate)
+                            mappingErrorBag.instanceOfWithoutMember = true
+                        if(idCandidate && !memberIdCandidate)
+                            mappingErrorBag.memberWithoutInstanceOf = true
+                    }
+                }
                 else {
-                    if(!idCandidate && memberIdCandidate)
-                        mappingErrorBag.instanceOfWithoutMember = true
-                    if(idCandidate && !memberIdCandidate)
-                        mappingErrorBag.memberWithoutInstanceOf = true
+                    if(colMap.instanceOf == null && colMap.member != null)
+                        globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.memberWithoutInstanceOf',null,locale)
+                    if(colMap.instanceOf != null && colMap.member == null)
+                        globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.instanceOfWithoutMember',null,locale)
+                }
+                if(colMap.hasPerpetualAccess != null) {
+                    String hasPerpetualAccessKey = cols[colMap.hasPerpetualAccess].trim()
+                    if(hasPerpetualAccessKey) {
+                        String yesNo = refdataService.retrieveRefdataValueOID(hasPerpetualAccessKey, RDConstants.Y_N)
+                        if(yesNo) {
+                            candidate.hasPerpetualAccess = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}")
+                        }
+                        else {
+                            mappingErrorBag.noPerpetualAccessType = hasPerpetualAccessKey
+                        }
+                    }
+                }
+                if(colMap.hasPublishComponent != null) {
+                    String hasPublishComponentKey = cols[colMap.hasPublishComponent].trim()
+                    if(hasPublishComponentKey) {
+                        String yesNo = refdataService.retrieveRefdataValueOID(hasPublishComponentKey, RDConstants.Y_N)
+                        if(yesNo) {
+                            candidate.hasPublishComponent = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}")
+                        }
+                        else {
+                            mappingErrorBag.noPublishComponent = hasPublishComponentKey
+                        }
+                    }
+                }
+                if(colMap.isPublicForApi != null) {
+                    String isPublicForApiKey = cols[colMap.isPublicForApi].trim()
+                    if(isPublicForApiKey) {
+                        String yesNo = refdataService.retrieveRefdataValueOID(isPublicForApiKey, RDConstants.Y_N)
+                        if(yesNo) {
+                            candidate.isPublicForApi = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}")
+                        }
+                        else {
+                            mappingErrorBag.noPublicForApi = isPublicForApiKey
+                        }
+                    }
+                }
+                //properties -> propMap
+                propMap.each { String k, Map propInput ->
+                    Map defPair = propInput.definition
+                    Map propData = [:]
+                    if(cols[defPair.colno]) {
+                        def v
+                        if(defPair.refCategory) {
+                            v = refdataService.retrieveRefdataValueOID(cols[defPair.colno].trim(),defPair.refCategory)
+                            if(!v) {
+                                mappingErrorBag.propValNotInRefdataValueSet = [cols[defPair.colno].trim(),defPair.refCategory]
+                            }
+                        }
+                        else v = cols[defPair.colno]
+                        propData.propValue = v
+                    }
+                    if(propInput.notesColno)
+                        propData.propNote = cols[propInput.notesColno].trim()
+                    candidate.properties[k] = propData
+                }
+                //notes
+                if(colMap.notes != null && cols[colMap.notes]?.trim()) {
+                    candidate.notes = cols[colMap.notes].trim()
                 }
             }
             else {
-                if(colMap.instanceOf == null && colMap.member != null)
-                    globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.memberWithoutInstanceOf',null,locale)
-                if(colMap.instanceOf != null && colMap.member == null)
-                    globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.instanceOfWithoutMember',null,locale)
-            }
-            if(colMap.hasPerpetualAccess != null) {
-                String hasPerpetualAccessKey = cols[colMap.hasPerpetualAccess].trim()
-                if(hasPerpetualAccessKey) {
-                    String yesNo = refdataService.retrieveRefdataValueOID(hasPerpetualAccessKey, RDConstants.Y_N)
-                    if(yesNo) {
-                        candidate.hasPerpetualAccess = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}")
-                    }
-                    else {
-                        mappingErrorBag.noPerpetualAccessType = hasPerpetualAccessKey
-                    }
-                }
-            }
-            if(colMap.hasPublishComponent != null) {
-                String hasPublishComponentKey = cols[colMap.hasPublishComponent].trim()
-                if(hasPublishComponentKey) {
-                    String yesNo = refdataService.retrieveRefdataValueOID(hasPublishComponentKey, RDConstants.Y_N)
-                    if(yesNo) {
-                        candidate.hasPublishComponent = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}")
-                    }
-                    else {
-                        mappingErrorBag.noPublishComponent = hasPublishComponentKey
-                    }
-                }
-            }
-            if(colMap.isPublicForApi != null) {
-                String isPublicForApiKey = cols[colMap.isPublicForApi].trim()
-                if(isPublicForApiKey) {
-                    String yesNo = refdataService.retrieveRefdataValueOID(isPublicForApiKey, RDConstants.Y_N)
-                    if(yesNo) {
-                        candidate.isPublicForApi = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}")
-                    }
-                    else {
-                        mappingErrorBag.noPublicForApi = isPublicForApiKey
-                    }
-                }
-            }
-            //properties -> propMap
-            propMap.each { String k, Map propInput ->
-                Map defPair = propInput.definition
-                Map propData = [:]
-                if(cols[defPair.colno]) {
-                    def v
-                    if(defPair.refCategory) {
-                        v = refdataService.retrieveRefdataValueOID(cols[defPair.colno].trim(),defPair.refCategory)
-                        if(!v) {
-                            mappingErrorBag.propValNotInRefdataValueSet = [cols[defPair.colno].trim(),defPair.refCategory]
-                        }
-                    }
-                    else v = cols[defPair.colno]
-                    propData.propValue = v
-                }
-                if(propInput.notesColno)
-                    propData.propNote = cols[propInput.notesColno].trim()
-                candidate.properties[k] = propData
-            }
-            //notes
-            if(colMap.notes != null && cols[colMap.notes]?.trim()) {
-                candidate.notes = cols[colMap.notes].trim()
+                mappingErrorBag.rowMismatch = "Zeile Nummer ${rowno+1} enthält nicht die gleiche Anzahl Spalten (${cols.size()}), wie die Überschrift (${colCount})! Bitte überprüfen Sie die Zeile, ob nicht Zeilenumbrüche enthalten sind!"
             }
             candidates.put(candidate,mappingErrorBag)
         }

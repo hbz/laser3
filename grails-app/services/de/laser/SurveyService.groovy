@@ -33,6 +33,7 @@ import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
@@ -1620,7 +1621,7 @@ class SurveyService {
     }
 
     /**
-     * Substitution call to ${@link #hasParticipantPerpetualAccessToTitle2(java.util.List, de.laser.TitleInstancePackagePlatform)}
+     * Substitution call to ${@link #hasParticipantPerpetualAccessToTitle2(java.util.List, de.laser.wekb.TitleInstancePackagePlatform)}
      * @param subscriptions the list of subscriptions eligible for the perpetual purchase
      * @param tipp the title to be checked
      * @return true if one of the given subscriptions grant access, false otherwise

@@ -82,7 +82,7 @@ class EscapeService {
      * Generates a normalised sort name from the given input
      * @param name the name to normalise
      * @return the normalised sort name string
-     * @see TitleInstancePackagePlatform#generateSortTitle()
+     * @see de.laser.wekb.TitleInstancePackagePlatform#generateSortTitle()
      * @see de.laser.wekb.Package#generateSortName(java.lang.String)
      */
     String generateSortTitle(String name) {

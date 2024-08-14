@@ -6,7 +6,7 @@ import de.laser.storage.RDStore
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import de.laser.reporting.report.local.SubscriptionReport
-import de.laser.wekb.Package
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.gorm.transactions.Transactional
 
 import grails.web.servlet.mvc.GrailsParameterMap

@@ -29,6 +29,7 @@ import de.laser.wekb.InvoiceDispatch
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional

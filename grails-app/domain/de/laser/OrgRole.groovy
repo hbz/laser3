@@ -4,6 +4,7 @@ import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
 import de.laser.traits.ShareableTrait
 import de.laser.wekb.Package
+import de.laser.wekb.TitleInstancePackagePlatform
 import org.grails.datastore.mapping.engine.event.PostUpdateEvent
 
 import javax.persistence.Transient
@@ -12,7 +13,7 @@ import javax.persistence.Transient
  * This domain links organisations (institutions and other ones) to other objects. The objects may be one of:
  * <ul>
  *     <li>{@link de.laser.wekb.Package}</li>
- *     <li>{@link TitleInstancePackagePlatform}</li>
+ *     <li>{@link de.laser.wekb.TitleInstancePackagePlatform}</li>
  *     <li>{@link License}</li>
  *     <li>{@link Subscription}</li>
  * </ul>
@@ -34,7 +35,7 @@ import javax.persistence.Transient
  * Moreover, an organisation link may be inherited from a consortial parent object to its member children
  * @see Org
  * @see de.laser.wekb.Package
- * @see TitleInstancePackagePlatform
+ * @see de.laser.wekb.TitleInstancePackagePlatform
  * @see License
  * @see Subscription
  */
