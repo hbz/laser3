@@ -70,24 +70,33 @@ databaseChangeLog = {
         }
     }
 
+    changeSet(author: "klober (generated)", id: "1723617251555-10") {
+        addColumn(tableName: "due_date_object") {
+            column(name: "ddo_license_fk", type: "int8")
+        }
+    }
+
+    changeSet(author: "klober (generated)", id: "1723617251555-11") {
+        addForeignKeyConstraint(baseColumnNames: "ddo_license_fk", baseTableName: "due_date_object", constraintName: "FK7eiafhdvdli77rg8c76ycw4i7", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "lic_id", referencedTableName: "license", validate: "true")
+    }
+
 //    changeSet(author: "klober (modified)", id: "1723617251555-xx") {
 //        grailsChange {
 //            change {
-//                Map done    = [task:[], subscription:[], surveyInfo:[]]
-//                Map errors  = [task:[], subscription:[], surveyInfo:[]]
+//                Map done    = [license:[], subscription:[], surveyInfo:[], task:[]]
+//                Map errors  = [license:[], subscription:[], surveyInfo:[], task:[]]
 //
 //                GenericOIDService genericOIDService = BeanStore.getGenericOIDService()
 //
-//                DueDateObject.findAllByOidLike('de.laser.Task:%').each { ddo ->
-//                    Task obj = genericOIDService.resolveOID(ddo.oid) as Task
+//                DueDateObject.findAllByOidLike('de.laser.License:%').each { ddo ->
+//                    License obj = genericOIDService.resolveOID(ddo.oid) as License
 //                    if (obj) {
-//                        DueDateObject.executeUpdate('update DueDateObject set task = :obj where id = :id', [obj: obj, id: ddo.id])
-//                        done.task << ddo.id
+//                        DueDateObject.executeUpdate('update DueDateObject set license = :obj where id = :id', [obj: obj, id: ddo.id])
+//                        done.license << ddo.id
 //                    } else {
-//                        errors.task << ddo.id
+//                        errors.license << ddo.id
 //                    }
 //                }
-//
 //                DueDateObject.findAllByOidLike('de.laser.Subscription:%').each { ddo ->
 //                    Subscription obj = genericOIDService.resolveOID(ddo.oid) as Subscription
 //                    if (obj) {
@@ -97,7 +106,6 @@ databaseChangeLog = {
 //                        errors.subscription << ddo.id
 //                    }
 //                }
-//
 //                DueDateObject.findAllByOidLike('de.laser.survey.SurveyInfo:%').each { ddo ->
 //                    SurveyInfo obj = genericOIDService.resolveOID(ddo.oid) as SurveyInfo
 //                    if (obj) {
@@ -105,6 +113,15 @@ databaseChangeLog = {
 //                        done.surveyInfo << ddo.id
 //                    } else {
 //                        errors.surveyInfo << ddo.id
+//                    }
+//                }
+//                DueDateObject.findAllByOidLike('de.laser.Task:%').each { ddo ->
+//                    Task obj = genericOIDService.resolveOID(ddo.oid) as Task
+//                    if (obj) {
+//                        DueDateObject.executeUpdate('update DueDateObject set task = :obj where id = :id', [obj: obj, id: ddo.id])
+//                        done.task << ddo.id
+//                    } else {
+//                        errors.task << ddo.id
 //                    }
 //                }
 //                confirm( 'ERRORS: ' + errors.toMapString() + ', DONE: ' + done.toMapString() )

@@ -154,7 +154,8 @@ class DashboardDueDate {
             this.dateCreated = now
             this.lastUpdated = now
 
-            DueDateObject ddo = DueDateObject.findWhere(oid: "${object.class.name}:${object.id}", attribute_name: attribute_name)
+            DueDateObject ddo = DueDateObject.getDueDateObject(object, attribute_name) // TODO: ERMS-5862
+
             if (!ddo) {
                 ddo = new DueDateObject(attribute_value_de, attribute_value_en, attribute_name, date, object, isDone, now)
                 ddo.save()
