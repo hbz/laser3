@@ -14,28 +14,39 @@ class PropertyStore {
 
     // -- License Properties
 
+    public final static PropertyDefinition LIC_ALUMNI_ACCESS    = getPropertyDefinition('Alumni Access', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_AUTHORIZED_USERS    = getPropertyDefinition('Authorized Users', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_ARCHIVAL_COPY_TIME      = getPropertyDefinition('Archival Copy: Time', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_CITATION_REQUIREMENT_DETAIL    = getPropertyDefinition('Citation requirement detail', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_CONCURRENT_USERS    = getPropertyDefinition('Concurrent Users', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_CONFORMITY_WITH_URHG    = getPropertyDefinition('Conformity with UrhG', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_COURSE_PACK_ELECTRONIC    = getPropertyDefinition('Course pack electronic/cached', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_COURSE_PACK_PRINT    = getPropertyDefinition('Course pack print', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_COURSE_PACK_TERM_NOTE    = getPropertyDefinition('Course pack term note', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_COURSE_RESERVE_ELECTRONIC    = getPropertyDefinition('Course reserve electronic/cached', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_COURSE_RESERVE_PRINT    = getPropertyDefinition('Course reserve print', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_COURSE_RESERVE_TERM_NOTE    = getPropertyDefinition('Course reserve term note', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_DISTANCE_EDUCATION    = getPropertyDefinition('Distance Education', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_FAIR_USE_CLAUSE_INDICATOR     = getPropertyDefinition('Fair use clause indicator', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_LOCAL_AUTHORIZED_USER_DEFINITION = getPropertyDefinition('Local authorized user defintion', PropertyDefinition.LIC_PROP)
-    /*
-    public final static PropertyDefinition PLA_COUNTER_R4_REPORTS      = getPropertyDefinition('COUNTER R4: Reports supported', PropertyDefinition.LIC_PROP)
-    public final static PropertyDefinition PLA_COUNTER_R5_REPORTS      = getPropertyDefinition('COUNTER R5: Reports supported', PropertyDefinition.LIC_PROP)
-    public final static PropertyDefinition PLA_COUNTER_R4_STATS_URL    = getPropertyDefinition('COUNTER R4: Usage Statistics URL', PropertyDefinition.LIC_PROP)
-    public final static PropertyDefinition PLA_COUNTER_R5_STATS_URL    = getPropertyDefinition('COUNTER R5: Usage Statistics URL', PropertyDefinition.LIC_PROP)
-    public final static PropertyDefinition PLA_COUNTER_R4_SUSHI_API    = getPropertyDefinition('COUNTER R4: COUNTER_SUSHI API supported', PropertyDefinition.LIC_PROP)
-    public final static PropertyDefinition PLA_COUNTER_R5_SUSHI_API    = getPropertyDefinition('COUNTER R5: COUNTER_SUSHI API supported', PropertyDefinition.LIC_PROP)
-    public final static PropertyDefinition PLA_COUNTER_R4_SUSHI_URL    = getPropertyDefinition('COUNTER R4: SUSHI Server URL', PropertyDefinition.LIC_PROP)
-    public final static PropertyDefinition PLA_COUNTER_R5_SUSHI_URL    = getPropertyDefinition('COUNTER R5: SUSHI Server URL', PropertyDefinition.LIC_PROP)
-
-    public final static PropertyDefinition PLA_IPV4    = getPropertyDefinition('IPv4: Supported', PropertyDefinition.LIC_PROP)
-    public final static PropertyDefinition PLA_IPV6    = getPropertyDefinition('IPv6: Supported', PropertyDefinition.LIC_PROP)
-
-    public final static PropertyDefinition PLA_NATSTAT_SID     = getPropertyDefinition('NatStat Supplier ID', PropertyDefinition.LIC_PROP)
-    public final static PropertyDefinition PLA_PROXY           = getPropertyDefinition('Proxy: Supported', PropertyDefinition.LIC_PROP)
-
-    public final static PropertyDefinition PLA_SHIBBOLETH      = getPropertyDefinition('Shibboleth: Supported', PropertyDefinition.LIC_PROP)
-    public final static PropertyDefinition PLA_SHIBBOLETH_EID  = getPropertyDefinition('Shibboleth: SP entityID', PropertyDefinition.LIC_PROP)
-    */
-
+    public final static PropertyDefinition LIC_METHOD_OF_AUTHENTICATION  = getPropertyDefinition('Method of Authentication', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_OA_FIRST_DATE = getPropertyDefinition('OA First Date', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_OA_LAST_DATE    = getPropertyDefinition('OA Last Date', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_OTHER_USE_RESTRICTION_NOTE    = getPropertyDefinition('Other Use Restriction Note', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_PARTNERS_ACCESS    = getPropertyDefinition('Partners Access', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_PERPETUAL_COVERAGE_FROM    = getPropertyDefinition('Perpetual coverage from', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_PERPETUAL_COVERAGE_TO    = getPropertyDefinition('Perpetual coverage to', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_REPOSITORY    = getPropertyDefinition('Repository', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_REMOTE_ACCESS    = getPropertyDefinition('Remote access', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_SINGLE_USER_ACCESS    = getPropertyDefinition('SingleUserAccess', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_USAGE_STATISTICS_ADDRESSEE = getPropertyDefinition('Usage Statistics Addressee', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_WALK_IN_ACCESS = getPropertyDefinition('Walk-In Access', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_WALK_IN_USER_TERM_NOTE = getPropertyDefinition('Walk-In User Term Note', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_WIFI_ACCESS = getPropertyDefinition('Wifi Access', PropertyDefinition.LIC_PROP)
+/*
+    public final static PropertyDefinition PLA_PROXY           = getPropertyDefinition('Proxy: Supported', PropertyDefinition.PLA_PROP)
+    public final static PropertyDefinition PLA_SHIBBOLETH      = getPropertyDefinition('Shibboleth: Supported', PropertyDefinition.PLA_PROP)
+*/
     // -- Subscription Properties
 
     public final static PropertyDefinition SUB_PROP_GASCO_DISPLAY_NAME      = getPropertyDefinition('GASCO display name', PropertyDefinition.SUB_PROP)
