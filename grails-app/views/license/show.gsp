@@ -68,8 +68,7 @@
                             <div class="content">
                                 <dl>
                                     <dt class="control-label"><g:message code="altname.plural" /></dt>
-                                    <dd>
-                                        <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion la-accordion-showMore">
+                                    <dd d="altnames" class="ui accordion la-accordion-showMore" style="padding-bottom: 0">
                                             <g:if test="${license.altnames}">
                                                 <div class="item title" id="altname_title">
                                                     <div class="item" data-objId="${genericOIDService.getOID(license.altnames[0])}">
@@ -241,13 +240,13 @@
                                                     </g:each>
                                                 </div>
                                             </g:if>
-                                        </div>
+
                                     </dd>
                                 </dl>
                                 <g:if test="${editable}">
                                     <dl>
                                         <dt></dt>
-                                        <dd><input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} addListValue" data-objtype="altname" value="${message(code: 'altname.add')}"></dd>
+                                        <dd><input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} la-js-addListValue" data-objtype="altname" value="${message(code: 'altname.add')}"></dd>
                                     </dl>
                                 </g:if>
                                 <dl>
@@ -400,7 +399,7 @@
 
         </div><!-- .grid -->
     <laser:script file="${this.getGroovyPageFileName()}">
-        $('.addListValue').click(function() {
+        $('.la-js-addListValue').click(function() {
             let url;
             let returnSelector;
             switch($(this).attr('data-objtype')) {

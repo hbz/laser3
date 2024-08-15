@@ -1,7 +1,8 @@
 <%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Subscription; de.laser.FormService" %>
 <laser:serviceInjection/>
 <g:if test="${wrapper == 'altname'}">
-    <div class="ui item" data-objId="${objOID}">
+    <div class="ui divided middle aligned selection list la-flex-center">
+        <div class="ui item" data-objId="${objOID}">
         <div class="content la-space-right" >
             <g:if test="${ownObj.provider || ownObj.vendor}">
                 <ui:xEditable
@@ -59,6 +60,7 @@
                 </ui:remoteLink>
             </div>
 
+    </div>
     </div>
 </g:if>
 <g:elseif test="${wrapper in ['frontend', 'index']}">

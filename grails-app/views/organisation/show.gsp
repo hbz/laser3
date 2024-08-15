@@ -79,12 +79,14 @@
                     </g:if>
                     <dl>
                         <dt><g:message code="altname.plural" /></dt>
-                        <dd>
-                            <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion la-accordion-showMore">
-                                <g:if test="${orgInstance.altnames}">
-                                    <div class="item title" id="altname_title">
+                        <dd id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName" style="padding-bottom: 0">
+                            <g:if test="${orgInstance.altnames}">
+                                <div class="item title" id="altname_title">
+                                    <div class="ui divided middle aligned selection list la-flex-center">
                                         <div class="item" data-objId="${genericOIDService.getOID(orgInstance.altnames[0])}">
-                                            <ui:xEditable owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable}"/>
+                                            <div class="content la-space-right">
+                                                <ui:xEditable owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable}"/>
+                                            </div>
                                             <g:if test="${editable}">
                                                 <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [orgInstance.altnames[0].name])}"
@@ -92,39 +94,40 @@
                                                     <i class="${Icon.CMD.DELETE}"></i>
                                                 </ui:remoteLink>
                                             </g:if>
-                                        </div>
-                                        <div class="${Btn.MODERN.SIMPLE_TOOLTIP} la-show-button"
-                                             data-content="${message(code: 'altname.showAll')}">
-                                            <i class="${Icon.CMD.SHOW_MORE}"></i>
+
                                         </div>
                                     </div>
-                                    <div class="content">
+                                    <div class="${Btn.MODERN.SIMPLE_TOOLTIP} la-show-button"
+                                         data-content="${message(code: 'altname.showAll')}">
+                                        <i class="${Icon.CMD.SHOW_MORE}"></i>
+                                    </div>
+                                </div>
+                                <div class="content" style="padding:0">
+                                    <div class="ui divided middle aligned selection list la-flex-center">
                                         <g:each in="${orgInstance.altnames.drop(1)}" var="altname">
                                             <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
                                                 <div class="content la-space-right">
                                                     <ui:xEditable owner="${altname}" field="name" overwriteEditable="${editable}"/>
                                                 </div>
                                                 <g:if test="${editable}">
-                                                    <div class="content la-space-right">
-                                                        <div class="ui buttons">
-                                                            <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
-                                                                           data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
-                                                                           data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                <i class="${Icon.CMD.DELETE}"></i>
-                                                            </ui:remoteLink>
-                                                        </div>
+                                                    <div class="ui buttons">
+                                                        <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
+                                                                       data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
+                                                                       data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                            <i class="${Icon.CMD.DELETE}"></i>
+                                                        </ui:remoteLink>
                                                     </div>
                                                 </g:if>
                                             </div>
                                         </g:each>
                                     </div>
-                                </g:if>
-                            </div>
-                            <g:if test="${editable}">
-                                <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} addListValue" data-objtype="altname" value="${message(code: 'altname.add')}">
+                                </div>
                             </g:if>
                         </dd>
                     </dl>
+                    <g:if test="${editable}">
+                        <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} la-js-addListValue" data-objtype="altname" value="${message(code: 'altname.add')}">
+                    </g:if>
                     <dl>
                         <dt><g:message code="default.url.label"/></dt>
                         <dd>
@@ -969,7 +972,7 @@
             JSPC.app.showRegionsdropdown( $("#country").editable('getValue', true) );
         }
     </g:if>
-    $('.addListValue').click(function() {
+    $('.la-js-addListValue').click(function() {
         let url;
         let returnSelector;
         switch($(this).attr('data-objtype')) {

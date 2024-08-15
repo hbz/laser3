@@ -41,3 +41,25 @@
 .ui.accordion.la-namedetails:not(.styled) .title~.content {
     padding: 0;
 }
+
+// Show Buttons always and align button in lists
+.la-accordion-altName {
+    .title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        table-layout: unset;
+    }
+    .ui.divided.middle.list.la-flex-center {
+        margin: 0;
+        .item {
+            display: flex;
+            align-items: center;
+            justify-content:space-between;
+            table-layout: unset;
+            .content {
+                flex-grow: 1;
+            }
+        }
+    }
+}

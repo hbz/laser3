@@ -61,12 +61,12 @@
                     <div class="content">
                         <dl>
                             <dt class="control-label"><g:message code="altname.plural" /></dt>
-                            <dd  class="ui accordion la-accordion-showMore" style="padding-bottom: 1rem;">
+                            <dd id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName" style="padding-bottom: 0">
                                 <g:if test="${subscription.altnames}">
                                     <div class="item title" id="altname_title">
                                         <div class="ui divided middle aligned selection list la-flex-center">
                                             <div class="item" data-objId="${genericOIDService.getOID(subscription.altnames[0])}">
-                                                <div class="content la-space-right" style="flex-grow: 1;">
+                                                <div class="content la-space-right">
                                                     <g:if test="${!subscription.altnames[0].instanceOf}">
                                                         <ui:xEditable owner="${subscription.altnames[0]}" field="name"/>
                                                     </g:if>
@@ -94,13 +94,13 @@
                                                                 >
                                                                     <i class="icon la-thumbtack slash"></i>
                                                                 </ui:link>
-                                                                <div class="ui buttons">
+
                                                                     <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
                                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
-                                                                                   data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                                   data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(subscription.altnames[0])}')">
                                                                         <i class="${Icon.CMD.DELETE}"></i>
                                                                     </ui:remoteLink>
-                                                                </div>
+
                                                             </g:if>
                                                             <g:else>
                                                                 <ui:link class="${Btn.MODERN.POSITIVE_CONFIRM_TOOLTIP}"
@@ -141,18 +141,19 @@
                                                         </ui:remoteLink>
                                                     </g:else>
                                                 </g:if>
-                                                <div class="${Btn.MODERN.SIMPLE_TOOLTIP} la-show-button"
-                                                     data-content="${message(code: 'altname.showAll')}">
-                                                    <i class="${Icon.CMD.SHOW_MORE}"></i>
-                                                </div>
+
                                             </div>
+                                        </div>
+                                        <div class="${Btn.MODERN.SIMPLE_TOOLTIP}"
+                                             data-content="${message(code: 'altname.showAll')}">
+                                            <i class="${Icon.CMD.SHOW_MORE}"></i>
                                         </div>
                                     </div>
                                     <div class="content" style="padding:0">
-                                        <div id="altnames" class="ui divided middle aligned selection list la-flex-center">
+                                        <div  class="ui divided middle aligned selection list la-flex-center">
                                             <g:each in="${subscription.altnames.drop(1)}" var="altname">
                                                 <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
-                                                    <div class="content la-space-right" style="flex-grow: 1;">
+                                                    <div class="content la-space-right">
                                                         <g:if test="${!altname.instanceOf}">
                                                             <ui:xEditable owner="${altname}" field="name"/>
                                                         </g:if>
@@ -243,7 +244,7 @@
                             </dd>
                         </dl>
                         <g:if test="${editable}">
-                            <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} addListValue" data-objtype="altname" value="${message(code:'altname.add')}">
+                            <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} la-js-addListValue" data-objtype="altname" value="${message(code:'altname.add')}">
                         </g:if>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.startDate.label')}</dt>
@@ -645,7 +646,7 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
-    $('.addListValue').click(function() {
+    $('.la-js-addListValue').click(function() {
         let url;
         let returnSelector;
         switch($(this).attr('data-objtype')) {

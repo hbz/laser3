@@ -96,7 +96,7 @@
                                 </g:if>
                             </div>
                             <g:if test="${editable && !vendor.gokbId}">
-                                <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} addListValue" data-objtype="altname" value="${message(code: 'altname.add')}">
+                                <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} la-js-addListValue" data-objtype="altname" value="${message(code: 'altname.add')}">
                             </g:if>
                         </dd>
                     </dl>
@@ -983,7 +983,7 @@
         func();
     }
 
-    $('.addListValue').click(function() {
+    $('.la-js-addListValue').click(function() {
         let url;
         let returnSelector;
         switch($(this).attr('data-objtype')) {

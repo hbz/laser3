@@ -6856,6 +6856,10 @@ a i.circular.la-gokb:hover {
   position: fixed;
   z-index: 103;
 }
+
+.ui.button.la-js-addListValue {
+  margin-bottom: 1em;
+}
 /*!
  * # Fomantic-UI 2.9.3 - Container
  * https://github.com/fomantic/Fomantic-UI/
@@ -44326,21 +44330,6 @@ ol.ui.suffixed.list li::before,
   opacity: 1;
 }
 
-.ui.divided.middle.list.la-flex-center {
-  margin: 0;
-}
-
-.ui.divided.middle.list.la-flex-center .item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  table-layout: unset;
-}
-
-.ui.divided.middle.list.la-flex-center .item .content {
-  flex-grow: 1;
-}
-
 .la-timeLineSegment-contact .row .button {
   opacity: 0;
   transition: opacity 1s;
@@ -66999,6 +66988,28 @@ a.inverted.ui.card:hover,
 
 .ui.accordion.la-namedetails:not(.styled) .title ~ .content {
   padding: 0;
+}
+
+.la-accordion-altName .title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  table-layout: unset;
+}
+
+.la-accordion-altName .ui.divided.middle.list.la-flex-center {
+  margin: 0;
+}
+
+.la-accordion-altName .ui.divided.middle.list.la-flex-center .item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  table-layout: unset;
+}
+
+.la-accordion-altName .ui.divided.middle.list.la-flex-center .item .content {
+  flex-grow: 1;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Calendar
