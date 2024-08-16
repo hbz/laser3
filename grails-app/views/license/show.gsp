@@ -68,9 +68,10 @@
                             <div class="content">
                                 <dl>
                                     <dt class="control-label"><g:message code="altname.plural" /></dt>
-                                    <dd d="altnames" class="ui accordion la-accordion-showMore" style="padding-bottom: 0">
-                                            <g:if test="${license.altnames}">
-                                                <div class="item title" id="altname_title">
+                                    <dd d="altnames" class="ui accordion la-accordion-showMore la-accordion-altName" style="padding-bottom: 0">
+                                        <g:if test="${license.altnames}">
+                                            <div class="item title" id="altname_title">
+                                                <div class="ui divided middle aligned selection list la-flex-center">
                                                     <div class="item" data-objId="${genericOIDService.getOID(license.altnames[0])}">
                                                         <div class="content la-space-right">
                                                             <g:if test="${!license.altnames[0].instanceOf}">
@@ -100,13 +101,13 @@
                                                                         >
                                                                             <i class="icon la-thumbtack slash"></i>
                                                                         </ui:link>
-                                                                        <div class="ui buttons">
-                                                                            <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: license.altnames[0].id]"
-                                                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [license.altnames[0].name])}"
-                                                                                     data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                                <i class="${Icon.CMD.DELETE}"></i>
-                                                                            </ui:remoteLink>
-                                                                        </div>
+
+                                                                        <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: license.altnames[0].id]"
+                                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [license.altnames[0].name])}"
+                                                                                 data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                            <i class="${Icon.CMD.DELETE}"></i>
+                                                                        </ui:remoteLink>
+
                                                                     </g:if>
                                                                     <g:else>
                                                                         <ui:link class="${Btn.MODERN.POSITIVE_CONFIRM_TOOLTIP}"
@@ -127,13 +128,11 @@
                                                                     </g:else>
                                                                 </g:if>
                                                                 <g:else>
-                                                                    <div class="ui buttons">
-                                                                        <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: license.altnames[0].id]"
-                                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [license.altnames[0].name])}"
-                                                                                 data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(license.altnames[0])}')">
-                                                                            <i class="${Icon.CMD.DELETE}"></i>
-                                                                        </ui:remoteLink>
-                                                                    </div>
+                                                                    <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: license.altnames[0].id]"
+                                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [license.altnames[0].name])}"
+                                                                             data-confirm-term-how="delete"  data-done="JSPC.app.removeListValue('${genericOIDService.getOID(license.altnames[0])}')">
+                                                                        <i class="${Icon.CMD.DELETE}"></i>
+                                                                    </ui:remoteLink>
                                                                 </g:else>
                                                             </g:if>
                                                             <g:elseif test="${license.altnames[0].instanceOf}">
@@ -148,25 +147,27 @@
                                                             </g:else>
                                                         </g:if>
                                                     </div>
-                                                    <div class="${Btn.MODERN.SIMPLE_TOOLTIP} la-show-button"
-                                                         data-content="${message(code: 'altname.showAll')}">
-                                                        <i class="${Icon.CMD.SHOW_MORE}"></i>
-                                                    </div>
                                                 </div>
-                                                <div class="content">
-                                                    <g:each in="${license.altnames.drop(1)}" var="altname">
-                                                        <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
-                                                            <div class="content la-space-right">
-                                                                <g:if test="${!altname.instanceOf}">
-                                                                    <ui:xEditable owner="${altname}" field="name"/>
-                                                                </g:if>
-                                                                <g:else>
-                                                                    ${altname.name}
-                                                                </g:else>
-                                                            </div>
-                                                            <g:if test="${editable}">
-                                                                <g:if test="${showConsortiaFunctions}">
+                                                <div class="${Btn.MODERN.SIMPLE_TOOLTIP} la-show-button"
+                                                     data-content="${message(code: 'altname.showAll')}">
+                                                    <i class="${Icon.CMD.SHOW_MORE}"></i>
+                                                </div>
+                                            </div>
+                                            <div class="content" style="padding:0">
+                                                <div class="ui divided middle aligned selection list la-flex-center">
+                                                        <g:each in="${license.altnames.drop(1)}" var="altname">
+                                                            <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
+                                                                <div class="content la-space-right">
                                                                     <g:if test="${!altname.instanceOf}">
+                                                                        <ui:xEditable owner="${altname}" field="name"/>
+                                                                    </g:if>
+                                                                    <g:else>
+                                                                        ${altname.name}
+                                                                    </g:else>
+                                                                </div>
+                                                                <g:if test="${editable}">
+                                                                    <g:if test="${showConsortiaFunctions}">
+                                                                        <g:if test="${!altname.instanceOf}">
                                                                         <g:if test="${! AuditConfig.getConfig(altname)}">
                                                                             <ui:link class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
                                                                                      controller="ajax"
@@ -233,21 +234,18 @@
                                                                     </div>
                                                                 </g:else>
                                                             </g:if>
-                                                            <g:elseif test="${altname.instanceOf}">
-                                                                <ui:auditIcon type="auto" />
-                                                            </g:elseif>
+                                                                <g:elseif test="${altname.instanceOf}">
+                                                                    <ui:auditIcon type="auto" />
+                                                                </g:elseif>
                                                         </div>
                                                     </g:each>
                                                 </div>
-                                            </g:if>
-
+                                            </div>
+                                        </g:if>
                                     </dd>
                                 </dl>
                                 <g:if test="${editable}">
-                                    <dl>
-                                        <dt></dt>
-                                        <dd><input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} la-js-addListValue" data-objtype="altname" value="${message(code: 'altname.add')}"></dd>
-                                    </dl>
+                                    <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} la-js-addListValue" data-objtype="altname" value="${message(code: 'altname.add')}"></dd>
                                 </g:if>
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.startDate.label')}</dt>

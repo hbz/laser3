@@ -121,13 +121,11 @@
                                                             </g:else>
                                                         </g:if>
                                                         <g:else>
-                                                            <div class="ui buttons">
-                                                                <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
-                                                                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
-                                                                               data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(subscription.altnames[0])}')">
-                                                                    <i class="${Icon.CMD.DELETE}"></i>
-                                                                </ui:remoteLink>
-                                                            </div>
+                                                            <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: subscription.altnames[0].id]"
+                                                                           data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
+                                                                           data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(subscription.altnames[0])}')">
+                                                                <i class="${Icon.CMD.DELETE}"></i>
+                                                            </ui:remoteLink>
                                                         </g:else>
                                                     </g:if>
                                                     <g:elseif test="${subscription.altnames[0].instanceOf}">
@@ -141,7 +139,6 @@
                                                         </ui:remoteLink>
                                                     </g:else>
                                                 </g:if>
-
                                             </div>
                                         </div>
                                         <div class="${Btn.MODERN.SIMPLE_TOOLTIP}"
@@ -240,7 +237,7 @@
                                             </g:each>
                                         </div>
                                     </div>
-                                    </g:if>
+                                </g:if>
                             </dd>
                         </dl>
                         <g:if test="${editable}">
