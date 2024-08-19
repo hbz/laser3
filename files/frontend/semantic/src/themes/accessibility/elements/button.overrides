@@ -96,6 +96,19 @@
     change buttons so the background area is not visible on default
  ----------------*/
 
+ /*---------------
+     Neutral
+ ----------------*/
+ .ui.buttons .button.la-modern-button,
+ .ui.button.la-modern-button {
+   color: @blue;
+   background-color: transparent;
+   &:hover {
+     background-color: @blue;
+     color: @positiveTextColor;
+   }
+ }
+
 /*---------------
     Negativ
 ----------------*/

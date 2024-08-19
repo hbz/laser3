@@ -100,7 +100,7 @@
                                                                          role="button">
                                                                     <i class="icon la-thumbtack slash"></i>
                                                                 </ui:link>
-
+                                                                <div class="ui buttons">
                                                                 <ui:remoteLink role="button"
                                                                                class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                                                controller="ajaxJson" action="removeObject"
@@ -110,6 +110,7 @@
                                                                                data-done="JSPC.app.removeListValue('${genericOIDService.getOID(subscription.altnames[0])}')">
                                                                     <i class="${Icon.CMD.DELETE}"></i>
                                                                 </ui:remoteLink>
+                                                                </div>
 
                                                             </g:if>
                                                             <g:else>
