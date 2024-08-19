@@ -28313,7 +28313,7 @@ body[class*="vendor"] .ui.icon.header .icon.la-object {
 
 body[class*="Vendor"] .ui.icon.header .icon.la-object:before,
 body[class*="vendor"] .ui.icon.header .icon.la-object:before {
-  content: "\f48b";
+  content: "\f468";
 }
 
 body[class*="Vendor"] .la-objectIsMine,
@@ -28324,7 +28324,7 @@ body[class*="vendor"] .la-objectIsMine {
 
 body[class*="Vendor"] .ui.icon.header .icon.la-object:before,
 body[class*="vendor"] .ui.icon.header .icon.la-object:before {
-  content: "\f48b";
+  content: "\f468";
 }
 
 body[class*="Provider"] .ui.icon.header .icon.la-object,

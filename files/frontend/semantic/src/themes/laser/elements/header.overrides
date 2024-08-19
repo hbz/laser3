@@ -144,7 +144,7 @@ body[class*="vendor"]
     background-color: @vendor;
     border-color: @vendor;
     &:before {
-      content: "\f48b";
+      content: "\f468";
     }
   }
   .la-objectIsMine {
@@ -156,7 +156,7 @@ body[class*="vendor"]
 
 body[class*="Vendor"] .ui.icon.header .icon.la-object:before,
 body[class*="vendor"] .ui.icon.header .icon.la-object:before {
-  content: "\f48b";
+  content: "\f468";
 }
 
 body[class*="Provider"],
