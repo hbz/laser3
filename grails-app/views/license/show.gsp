@@ -68,7 +68,7 @@
                             <div class="content">
                                 <dl>
                                     <dt class="control-label"><g:message code="altname.plural" /></dt>
-                                    <dd d="altnames" class="ui accordion la-accordion-showMore la-accordion-altName" style="padding-bottom: 0">
+                                    <dd id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName" style="padding-bottom: 0">
                                         <g:if test="${license.altnames}">
                                             <div class="item title" id="altname_title">
                                                 <div class="ui divided middle aligned selection list la-flex-center">

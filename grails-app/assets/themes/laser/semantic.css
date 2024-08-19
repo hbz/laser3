@@ -66911,11 +66911,18 @@ a.inverted.ui.card:hover,
   margin: 0;
 }
 
+.la-accordion-altName .ui.divided.middle.list.la-flex-center .ui.selection.list .list > .item,
+.la-accordion-altName .ui.divided.middle.list.la-flex-center .ui.selection.list > .item {
+  padding: 0;
+}
+
 .la-accordion-altName .ui.divided.middle.list.la-flex-center .item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   table-layout: unset;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
 
 .la-accordion-altName .ui.divided.middle.list.la-flex-center .item .content {
