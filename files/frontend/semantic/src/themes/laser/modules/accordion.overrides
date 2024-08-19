@@ -61,11 +61,15 @@
             align-items: center;
             justify-content:space-between;
             table-layout: unset;
-            padding-left: .5em;
-            padding-right: .5em;
+            padding-left: 0;
+            padding-right: 0;
             .content {
                 flex-grow: 1;
             }
+        }
+        .ui.button {
+            display: inline-block !important;
+            padding: .78571429em .78571429em .78571429em !important;
         }
     }
 }

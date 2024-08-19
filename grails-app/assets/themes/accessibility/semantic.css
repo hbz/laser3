@@ -67011,12 +67011,17 @@ a.inverted.ui.card:hover,
   align-items: center;
   justify-content: space-between;
   table-layout: unset;
-  padding-left: 0.5em;
-  padding-right: 0.5em;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .la-accordion-altName .ui.divided.middle.list.la-flex-center .item .content {
   flex-grow: 1;
+}
+
+.la-accordion-altName .ui.divided.middle.list.la-flex-center .ui.button {
+  display: inline-block !important;
+  padding: 0.78571429em 0.78571429em 0.78571429em !important;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Calendar

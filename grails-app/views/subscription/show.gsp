@@ -69,9 +69,9 @@
                     <div class="content">
                         <dl>
                             <dt class="control-label"><g:message code="altname.plural"/></dt>
-                            <dd  class="ui accordion la-accordion-showMore la-accordion-altName" style="padding-bottom: 0">
+                            <dd id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName" style="padding-bottom: 0">
                                 <g:if test="${subscription.altnames}">
-                                    <div id="altnames" class="ui divided middle aligned selection list la-flex-center">
+                                    <div class="ui divided middle aligned selection list la-flex-center">
                                         <div class="item title" data-objId="${genericOIDService.getOID(subscription.altnames[0])}" >
                                             <div class="content la-space-right">
                                                 <g:if test="${!subscription.altnames[0].instanceOf}">

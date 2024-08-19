@@ -79,9 +79,9 @@
                     </g:if>
                     <dl>
                         <dt><g:message code="altname.plural" /></dt>
-                        <dd  class="ui accordion la-accordion-showMore la-accordion-altName" style="padding-bottom: 0">
+                        <dd id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName" style="padding-bottom: 0">
                             <g:if test="${orgInstance.altnames}">
-                                <div id="altnames" class="ui divided middle aligned selection list la-flex-center">
+                                <div class="ui divided middle aligned selection list la-flex-center">
                                     <div class="item title" id="altname_title"  data-objId="${genericOIDService.getOID(orgInstance.altnames[0])}">
                                         <div class="content la-space-right">
                                             <ui:xEditable owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable}"/>
