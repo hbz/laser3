@@ -237,3 +237,6 @@ a i.circular.la-gokb:hover {
     position: fixed;
     z-index: @debugInfoZIndex
 }
+.ui.button.la-js-addListValue {
+    margin-bottom: 1em;
+}

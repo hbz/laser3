@@ -68,93 +68,111 @@
                             <div class="content">
                                 <dl>
                                     <dt class="control-label"><g:message code="altname.plural" /></dt>
-                                    <dd>
-                                        <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion la-accordion-showMore">
-                                            <g:if test="${license.altnames}">
-                                                <div class="item title" id="altname_title">
-                                                    <div class="item" data-objId="${genericOIDService.getOID(license.altnames[0])}">
-                                                        <div class="content la-space-right">
+                                    <dd id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName" style="padding-bottom: 0">
+                                        <g:if test="${license.altnames}">
+                                            <div  class="ui divided middle aligned selection list la-flex-center">
+                                                <div class="item title" id="altname_title" data-objId="${genericOIDService.getOID(license.altnames[0])}">
+                                                    <div class="content la-space-right">
+                                                        <g:if test="${!license.altnames[0].instanceOf}">
+                                                            <ui:xEditable owner="${license.altnames[0]}"
+                                                                          field="name"/>
+                                                        </g:if>
+                                                        <g:else>
+                                                            ${license.altnames[0].name}
+                                                        </g:else>
+                                                    </div>
+                                                    <g:if test="${editable}">
+                                                        <g:if test="${showConsortiaFunctions}">
                                                             <g:if test="${!license.altnames[0].instanceOf}">
-                                                                <ui:xEditable owner="${license.altnames[0]}" field="name"/>
-                                                            </g:if>
-                                                            <g:else>
-                                                                ${license.altnames[0].name}
-                                                            </g:else>
-                                                        </div>
-                                                        <g:if test="${editable}">
-                                                            <g:if test="${showConsortiaFunctions}">
-                                                                <g:if test="${!license.altnames[0].instanceOf}">
-                                                                    <g:if test="${! AuditConfig.getConfig(license.altnames[0])}">
-                                                                        <ui:link class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
-                                                                                 controller="ajax"
-                                                                                 action="toggleAlternativeNameAuditConfig"
-                                                                                 params='[ownerId: "${license.id}",
-                                                                                          ownerClass: "${license.class}",
-                                                                                          showConsortiaFunctions: true,
-                                                                                          (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
-                                                                                 ]'
-                                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.altname", args: [license.altnames[0].name])}"
-                                                                                 data-confirm-term-how="inherit"
-                                                                                 id="${license.altnames[0].id}"
-                                                                                 data-content="${message(code:'property.audit.off.tooltip')}"
-                                                                                 role="button"
-                                                                        >
-                                                                            <i class="icon la-thumbtack slash"></i>
-                                                                        </ui:link>
-                                                                        <div class="ui buttons">
-                                                                            <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: license.altnames[0].id]"
-                                                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [license.altnames[0].name])}"
-                                                                                     data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                                <i class="${Icon.CMD.DELETE}"></i>
-                                                                            </ui:remoteLink>
-                                                                        </div>
-                                                                    </g:if>
-                                                                    <g:else>
-                                                                        <ui:link class="${Btn.MODERN.POSITIVE_CONFIRM_TOOLTIP}"
-                                                                                 controller="ajax" action="toggleAlternativeNameAuditConfig"
-                                                                                 params='[ownerId: "${license.altnames[0].id}",
-                                                                                          ownerClass: "${license.altnames[0].class}",
-                                                                                          showConsortiaFunctions: true,
-                                                                                          (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
-                                                                                 ]'
-                                                                                 id="${license.altnames[0].id}"
-                                                                                 data-content="${message(code:'property.audit.on.tooltip')}"
-                                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.identifier", args: [license.altnames[0].name])}"
-                                                                                 data-confirm-term-how="inherit"
-                                                                                 role="button"
-                                                                        >
-                                                                            <i class="${Icon.SIG.INHERITANCE}"></i>
-                                                                        </ui:link>
-                                                                    </g:else>
+                                                                <g:if test="${!AuditConfig.getConfig(license.altnames[0])}">
+                                                                    <ui:link
+                                                                        class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
+                                                                        controller="ajax"
+                                                                        action="toggleAlternativeNameAuditConfig"
+                                                                        params='[ownerId                         : "${license.id}",
+                                                                                 ownerClass                      : "${license.class}",
+                                                                                 showConsortiaFunctions          : true,
+                                                                                 (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
+                                                                        ]'
+                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.altname", args: [license.altnames[0].name])}"
+                                                                        data-confirm-term-how="inherit"
+                                                                        id="${license.altnames[0].id}"
+                                                                        data-content="${message(code: 'property.audit.off.tooltip')}"
+                                                                        role="button">
+                                                                        <i class="icon la-thumbtack slash"></i>
+                                                                    </ui:link>
+
+                                                                    <ui:remoteLink role="button"
+                                                                                   class="${Btn.MODERN.NEGATIVE_CONFIRM}"
+                                                                                   controller="ajaxJson"
+                                                                                   action="removeObject"
+                                                                                   params="[object: 'altname', objId: license.altnames[0].id]"
+                                                                                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [license.altnames[0].name])}"
+                                                                                   data-confirm-term-how="delete"
+                                                                                   data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                        <i class="${Icon.CMD.DELETE}"></i>
+                                                                    </ui:remoteLink>
+
                                                                 </g:if>
                                                                 <g:else>
-                                                                    <div class="ui buttons">
-                                                                        <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: license.altnames[0].id]"
-                                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [license.altnames[0].name])}"
-                                                                                 data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(license.altnames[0])}')">
-                                                                            <i class="${Icon.CMD.DELETE}"></i>
-                                                                        </ui:remoteLink>
+                                                                    <ui:link
+                                                                        class="${Btn.MODERN.POSITIVE_CONFIRM_TOOLTIP}"
+                                                                        controller="ajax"
+                                                                        action="toggleAlternativeNameAuditConfig"
+                                                                        params='[ownerId                         : "${license.altnames[0].id}",
+                                                                                 ownerClass                      : "${license.altnames[0].class}",
+                                                                                 showConsortiaFunctions          : true,
+                                                                                 (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
+                                                                        ]'
+                                                                        id="${license.altnames[0].id}"
+                                                                        data-content="${message(code: 'property.audit.on.tooltip')}"
+                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.identifier", args: [license.altnames[0].name])}"
+                                                                        data-confirm-term-how="inherit"
+                                                                        role="button">
+                                                                        <i class="${Icon.SIG.INHERITANCE}"></i>
+                                                                    </ui:link>
+                                                                    <div class="${Btn.ICON.SIMPLE} la-hidden">
+                                                                        <icon:placeholder/><%-- Hidden Fake Button --%>
                                                                     </div>
                                                                 </g:else>
                                                             </g:if>
-                                                            <g:elseif test="${license.altnames[0].instanceOf}">
-                                                                <ui:auditIcon type="auto" />
-                                                            </g:elseif>
                                                             <g:else>
-                                                                <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: license.altnames[0].id]"
-                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [license.altnames[0].name])}"
-                                                                         data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(license.altnames[0])}')">
+                                                                <ui:remoteLink role="button"
+                                                                               class="${Btn.MODERN.NEGATIVE_CONFIRM}"
+                                                                               controller="ajaxJson"
+                                                                               action="removeObject"
+                                                                               params="[object: 'altname', objId: license.altnames[0].id]"
+                                                                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [license.altnames[0].name])}"
+                                                                               data-confirm-term-how="delete"
+                                                                               data-done="JSPC.app.removeListValue('${genericOIDService.getOID(license.altnames[0])}')">
                                                                     <i class="${Icon.CMD.DELETE}"></i>
                                                                 </ui:remoteLink>
                                                             </g:else>
                                                         </g:if>
-                                                    </div>
+                                                        <g:elseif test="${license.altnames[0].instanceOf}">
+                                                            <ui:auditIcon type="auto"/>
+                                                        </g:elseif>
+                                                        <g:else>
+                                                            <ui:remoteLink role="button"
+                                                                           class="${Btn.MODERN.NEGATIVE_CONFIRM}"
+                                                                           controller="ajaxJson"
+                                                                           action="removeObject"
+                                                                           params="[object: 'altname', objId: license.altnames[0].id]"
+                                                                           data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [license.altnames[0].name])}"
+                                                                           data-confirm-term-how="delete"
+                                                                           data-done="JSPC.app.removeListValue('${genericOIDService.getOID(license.altnames[0])}')">
+                                                                <i class="${Icon.CMD.DELETE}"></i>
+                                                            </ui:remoteLink>
+                                                        </g:else>
+                                                    </g:if>
                                                     <div class="${Btn.MODERN.SIMPLE_TOOLTIP} la-show-button"
                                                          data-content="${message(code: 'altname.showAll')}">
                                                         <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                     </div>
                                                 </div>
-                                                <div class="content">
+
+
+                                                <div class="content" style="padding:0">
                                                     <g:each in="${license.altnames.drop(1)}" var="altname">
                                                         <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
                                                             <div class="content la-space-right">
@@ -168,87 +186,109 @@
                                                             <g:if test="${editable}">
                                                                 <g:if test="${showConsortiaFunctions}">
                                                                     <g:if test="${!altname.instanceOf}">
-                                                                        <g:if test="${! AuditConfig.getConfig(altname)}">
-                                                                            <ui:link class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
-                                                                                     controller="ajax"
-                                                                                     action="toggleAlternativeNameAuditConfig"
-                                                                                     params='[ownerId: "${license.id}",
-                                                                                              ownerClass: "${license.class}",
-                                                                                              showConsortiaFunctions: true,
-                                                                                              (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
-                                                                                     ]'
-                                                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.altname", args: [altname.name])}"
-                                                                                     data-confirm-term-how="inherit"
-                                                                                     id="${altname.id}"
-                                                                                     data-content="${message(code:'property.audit.off.tooltip')}"
-                                                                                     role="button"
-                                                                            >
+                                                                        <g:if test="${!AuditConfig.getConfig(altname)}">
+                                                                            <ui:link
+                                                                                class="test ${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
+                                                                                controller="ajax"
+                                                                                action="toggleAlternativeNameAuditConfig"
+                                                                                params='[ownerId                         : "${license.id}",
+                                                                                         ownerClass                      : "${license.class}",
+                                                                                         showConsortiaFunctions          : true,
+                                                                                         (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
+                                                                                ]'
+                                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.altname", args: [altname.name])}"
+                                                                                data-confirm-term-how="inherit"
+                                                                                id="${altname.id}"
+                                                                                data-content="${message(code: 'property.audit.off.tooltip')}"
+                                                                                role="button">
                                                                                 <i class="icon la-thumbtack slash"></i>
                                                                             </ui:link>
                                                                             <div class="ui buttons">
-                                                                                <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
-                                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
-                                                                                         data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                                <ui:remoteLink role="button"
+                                                                                               class="${Btn.MODERN.NEGATIVE_CONFIRM}"
+                                                                                               controller="ajaxJson"
+                                                                                               action="removeObject"
+                                                                                               params="[object: 'altname', objId: altname.id]"
+                                                                                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
+                                                                                               data-confirm-term-how="delete"
+                                                                                               data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
                                                                                     <i class="${Icon.CMD.DELETE}"></i>
                                                                                 </ui:remoteLink>
                                                                             </div>
+                                                                            <div class="${Btn.ICON.SIMPLE} la-hidden">
+                                                                                <icon:placeholder/><%-- Hidden Fake Button --%>
+                                                                            </div>
                                                                         </g:if>
                                                                         <g:else>
-                                                                            <ui:link class="${Btn.MODERN.POSITIVE_CONFIRM_TOOLTIP}"
-                                                                                     controller="ajax" action="toggleAlternativeNameAuditConfig"
-                                                                                     params='[ownerId: "${altname.id}",
-                                                                                              ownerClass: "${altname.class}",
-                                                                                              showConsortiaFunctions: true,
-                                                                                              (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
-                                                                                     ]'
-                                                                                     id="${altname.id}"
-                                                                                     data-content="${message(code:'property.audit.on.tooltip')}"
-                                                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.altname", args: [altname.name])}"
-                                                                                     data-confirm-term-how="inherit"
-                                                                                     role="button"
-                                                                            >
+                                                                            <ui:link
+                                                                                class="${Btn.MODERN.POSITIVE_CONFIRM_TOOLTIP}"
+                                                                                controller="ajax"
+                                                                                action="toggleAlternativeNameAuditConfig"
+                                                                                params='[ownerId                         : "${altname.id}",
+                                                                                         ownerClass                      : "${altname.class}",
+                                                                                         showConsortiaFunctions          : true,
+                                                                                         (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
+                                                                                ]'
+                                                                                id="${altname.id}"
+                                                                                data-content="${message(code: 'property.audit.on.tooltip')}"
+                                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.altname", args: [altname.name])}"
+                                                                                data-confirm-term-how="inherit"
+                                                                                role="button">
                                                                                 <i class="${Icon.SIG.INHERITANCE}"></i>
                                                                             </ui:link>
+                                                                            <div class="${Btn.ICON.SIMPLE} la-hidden">
+                                                                                <icon:placeholder/><%-- Hidden Fake Button --%>
+                                                                            </div>                                                                    <div class="${Btn.ICON.SIMPLE} la-hidden">
+                                                                            <icon:placeholder/><%-- Hidden Fake Button --%>
+                                                                        </div>
                                                                         </g:else>
                                                                     </g:if>
                                                                     <g:else>
                                                                         <div class="ui buttons">
-                                                                            <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
-                                                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
-                                                                                     data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                            <ui:remoteLink role="button"
+                                                                                           class="${Btn.MODERN.NEGATIVE_CONFIRM}"
+                                                                                           controller="ajaxJson"
+                                                                                           action="removeObject"
+                                                                                           params="[object: 'altname', objId: altname.id]"
+                                                                                           data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
+                                                                                           data-confirm-term-how="delete"
+                                                                                           data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
                                                                                 <i class="${Icon.CMD.DELETE}"></i>
                                                                             </ui:remoteLink>
                                                                         </div>
                                                                     </g:else>
                                                                 </g:if>
                                                                 <g:elseif test="${altname.instanceOf}">
-                                                                    <ui:auditIcon type="auto" />
+                                                                    <ui:auditIcon type="auto"/>
                                                                 </g:elseif>
                                                                 <g:else>
                                                                     <div class="ui buttons">
-                                                                        <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
-                                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
-                                                                                 data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                        <ui:remoteLink role="button"
+                                                                                       class="${Btn.MODERN.NEGATIVE_CONFIRM}"
+                                                                                       controller="ajaxJson"
+                                                                                       action="removeObject"
+                                                                                       params="[object: 'altname', objId: altname.id]"
+                                                                                       data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
+                                                                                       data-confirm-term-how="delete"
+                                                                                       data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
                                                                             <i class="${Icon.CMD.DELETE}"></i>
                                                                         </ui:remoteLink>
                                                                     </div>
                                                                 </g:else>
                                                             </g:if>
                                                             <g:elseif test="${altname.instanceOf}">
-                                                                <ui:auditIcon type="auto" />
+                                                                <ui:auditIcon type="auto"/>
                                                             </g:elseif>
                                                         </div>
                                                     </g:each>
+
                                                 </div>
-                                            </g:if>
-                                        </div>
+                                            </div>
+                                        </g:if>
                                     </dd>
                                 </dl>
                                 <g:if test="${editable}">
-                                    <dl>
-                                        <dt></dt>
-                                        <dd><input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} addListValue" data-objtype="altname" value="${message(code: 'altname.add')}"></dd>
-                                    </dl>
+                                    <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} la-js-addListValue" data-objtype="altname" value="${message(code: 'altname.add')}"></dd>
                                 </g:if>
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.startDate.label')}</dt>
@@ -400,7 +440,7 @@
 
         </div><!-- .grid -->
     <laser:script file="${this.getGroovyPageFileName()}">
-        $('.addListValue').click(function() {
+        $('.la-js-addListValue').click(function() {
             let url;
             let returnSelector;
             switch($(this).attr('data-objtype')) {

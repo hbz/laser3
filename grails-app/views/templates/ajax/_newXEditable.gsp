@@ -1,19 +1,20 @@
 <%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Subscription; de.laser.FormService" %>
 <laser:serviceInjection/>
 <g:if test="${wrapper == 'altname'}">
-    <div class="ui item" data-objId="${objOID}">
-        <div class="content la-space-right" >
-            <g:if test="${ownObj.provider || ownObj.vendor}">
-                <ui:xEditable
-                        data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                        data_confirm_term_how="ok"
-                        class="js-open-confirm-modal-xEditable"
-                        owner="${ownObj}" field="${field}" overwriteEditable="${overwriteEditable}"/>
-            </g:if>
-            <g:else>
-                <ui:xEditable owner="${ownObj}" field="${field}" overwriteEditable="${overwriteEditable}"/>
-            </g:else>
-        </div>
+    <div  class="ui divided middle aligned selection list la-flex-center">
+        <div class="ui item" data-objId="${objOID}">
+            <div class="content la-space-right" >
+                <g:if test="${ownObj.provider || ownObj.vendor}">
+                    <ui:xEditable
+                            data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                            data_confirm_term_how="ok"
+                            class="js-open-confirm-modal-xEditable"
+                            owner="${ownObj}" field="${field}" overwriteEditable="${overwriteEditable}"/>
+                </g:if>
+                <g:else>
+                    <ui:xEditable owner="${ownObj}" field="${field}" overwriteEditable="${overwriteEditable}"/>
+                </g:else>
+            </div>
 
             <g:if test="${ownObj.subscription && showConsortiaFunctions}">
                 <ui:link class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
@@ -58,7 +59,10 @@
                     <i class="${Icon.CMD.DELETE}"></i>
                 </ui:remoteLink>
             </div>
-
+            <div class="${Btn.ICON.SIMPLE} la-hidden">
+                <icon:placeholder /><%-- Hidden Fake Button --%>
+            </div>
+        </div>
     </div>
 </g:if>
 <g:elseif test="${wrapper in ['frontend', 'index']}">
