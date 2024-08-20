@@ -36,7 +36,7 @@ class VendorProperty extends AbstractPropertyWithCalculatedLastUpdated {
         stringValue          column: 'vp_string_value', type: 'text'
         intValue             column: 'vp_int_value'
         decValue             column: 'vp_dec_value'
-        refValue             column: 'vp_ref_value_rv_fk'
+        refValue             column: 'vp_ref_value_rv_fk', index: 'vp_ref_value_idx'
         urlValue             column: 'vp_url_value'
         note                 column: 'vp_note', type: 'text'
         dateValue            column: 'vp_date_value'

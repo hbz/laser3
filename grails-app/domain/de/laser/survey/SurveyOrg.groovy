@@ -67,9 +67,9 @@ class SurveyOrg {
 
         orgInsertedItself column: 'org_inserted_itself'
 
-        person column: 'surorg_person_fk'
-        address column: 'surorg_address_fk'
-        eInvoicePortal      column:'surorg_e_invoice_portal_fk'
+        person column: 'surorg_person_fk',      index: 'surorg_person_idx'
+        address column: 'surorg_address_fk',    index: 'surorg_address_idx'
+        eInvoicePortal      column:'surorg_e_invoice_portal_fk', index: 'surorg_e_invoice_portal_idx'
         eInvoiceLeitwegId column: 'surorg_e_invoice_leitweg_id'
         eInvoiceLeitkriterium column: 'surorg_e_invoice_leitkriterium'
     }

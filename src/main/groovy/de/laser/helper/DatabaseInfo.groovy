@@ -173,9 +173,19 @@ class DatabaseInfo {
 
     static List<List> getAllTablesWithGORMIndices() {
         List<List> result = []
+
+        DataSource dataSource = getDataSource(DS_DEFAULT)
+        Sql sql = new Sql(dataSource)
+        def sf = BeanStore.get('sessionFactory')
         int i = 0
 
         CodeUtils.getAllDomainClasses().each { cls ->
+            String clstn  = null
+            try {
+                clstn = sf.getClassMetadata(cls).getTableName()
+            } catch (Exception e) {
+                clstn = null
+            }
             PersistentEntity pe = CodeUtils.getPersistentEntity(cls.name)
             if (pe) {
                 Map mapping = pe.mapping?.mappedForm?.columns
@@ -183,7 +193,16 @@ class DatabaseInfo {
                     mapping.sort().each { prop ->
                         PersistentProperty pp = pe.getPropertyByName(prop.key)
                         prop.value.columns.each { c ->
-                            result << [i++, cls.name, pp.name, pp.type, c.name, c.index]
+                            if (c.index) {
+                                String query = """
+                                    select pg_size_pretty(pg_relation_size(indexrelid)) "index_size" from pg_stat_all_indexes idx join pg_class c on idx.relid = c.oid
+                                    where idx.relname='${clstn}' and indexrelname = '${c.index}'"""
+                                GroovyRowResult si = clstn ? sql.firstRow(query) : null
+//                                println clstn + ' ' + c.index + ' = ' + si
+                                result << [i++, cls.name, pp.name, pp.type, c.name, c.index, si]
+                            } else {
+                                result << [i++, cls.name, pp.name, pp.type, c.name, (prop.value.unique ? 'UNIQUE' : null), null]
+                            }
                         }
                     }
                 }

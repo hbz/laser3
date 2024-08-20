@@ -24,14 +24,16 @@
 %{--    <button class="${Btn.NEGATIVE} small" id="internal1">Id/Version</button>--}%
 %{--    <button class="${Btn.NEGATIVE} small" id="internal2">DateCreated/LastUpdated</button>--}%
 %{--    <button class="${Btn.NEGATIVE} small" id="collections">Collections</button>--}%
-    <g:select class="ui dropdown" from="${['1.000':1000, '10.000':10000, '50.000':50000, '100.000':100000, '500.000':500000, '1.000.000':1000000, '5.000.000':5000000, '10.000.000':10000000]}"
+    <g:select class="ui dropdown" from="${['1.000':1000, '5.000':5000, '10.000':10000, '50.000':50000, '100.000':100000, '500.000':500000, '1.000.000':1000000, '5.000.000':5000000, '10.000.000':10000000]}"
               id="thresholdvalue" name="thresholdvalue"
               optionValue="${{it.key}}"
               optionKey="${{it.value}}"
-              noSelection="${['': 'DB-Einträge']}" />
+              noSelection="${['': 'DB-Einträge (Domainklasse)']}" />
 
-    <button class="ui button icon small" id="threshold"><i class="icon sort"></i></button>
+    <button class="ui button icon small" id="threshold"><i class="icon filter"></i><i class="icon sort"></i></button>
 </div>
+
+<ui:msg class="info" header="Achtung" text="Die angezeigten Daten sind unvollständig und bieten nur eine Orientierungshilfe."/>
 
 <style>
     tr.info td {
@@ -40,6 +42,9 @@
     }
     tr.threshold td {
         display: none;
+    }
+    tr.unique td {
+        font-style: italic;
     }
 </style>
 
@@ -98,6 +103,7 @@
                 <th class="center aligned">&lArr;</th>
                 <th class="center aligned">&rArr;</th>
                 <th>Index</th>
+                <th>Größe</th>
             </tr>
         </thead>
         <tbody>
@@ -105,16 +111,18 @@
                 <g:if test="${!lastRow || lastRow != row[1]}">
                     <g:set var="lastRow" value="${row[1]}" />
                     <tr class="disabled">
-                        <td colspan="8" style="background-color: #f4f8f9"></td>
+                        <td colspan="9" style="background-color: #f4f8f9"></td>
                     </tr>
                 </g:if>
-                <g:set var="isDisabled" value="${tables_internal1.contains(i) ||  tables_internal2.contains(i) || tables_collections.contains(i)}" />
-                <g:set var="calcCssClass" value="${row[5] ? (tables_laser.contains(i) ? 'positive' : 'info') : tables_laser.contains(i) ? 'warning' : ''}" />
+                <g:set var="isDisabled" value="${tables_internal1.contains(i) || tables_internal2.contains(i) || tables_collections.contains(i)}" />
+                <g:set var="calcCssUnique" value="${row[5] == 'UNIQUE' ? 'unique' : ''}" />
+                <g:set var="calcCssClass" value="${row[5] ? (tables_laser.contains(i) ? 'positive' : 'info') : tables_laser.contains(i) ? 'negative' : ''}" />
                 <g:set var="countFrom" value="${counts.get(row[1])}" />
                 <g:set var="countTo" value="${counts.get(row[3].toString().replace('class ', ''))}" />
-                <g:set var="threshold" value="${Math.max((countFrom && countFrom != '?') ? countFrom : 0, (countTo && countTo != '?') ? countTo : 0)}" />
+%{--                <g:set var="threshold" value="${Math.max((countFrom && countFrom != '?') ? countFrom : 0, (countTo && countTo != '?') ? countTo : 0)}" />--}%
+                <g:set var="threshold" value="${(countFrom && countFrom != '?') ? countFrom : 0}" />
 
-                <tr class="${calcCssClass}${isDisabled ? 'disabled ' : ''}"
+                <tr class="${calcCssClass} ${calcCssUnique} ${isDisabled ? 'disabled ' : ''}"
                     data-internal1="${tables_internal1.contains(i)}"
                     data-internal2="${tables_internal2.contains(i)}"
                     data-collections="${tables_collections.contains(i)}"
@@ -145,6 +153,7 @@
                     <td>
                         <g:each in="${row[5]?.split(',')}" var="idx"> ${idx} <br/> </g:each>
                     </td>
+                    <td> ${row[6] ? row[6]['index_size'] : ''} </td>
                 </tr>
             </g:each>
         </tbody>
