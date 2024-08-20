@@ -1,9 +1,12 @@
 package de.laser.helper
 
 import de.laser.storage.BeanStore
+import de.laser.utils.CodeUtils
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.util.logging.Slf4j
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.PersistentProperty
 
 import javax.sql.DataSource
 
@@ -166,6 +169,27 @@ class DatabaseInfo {
             """)
 
         rows.collect{getGroovyRowResultAsMap(it) }
+    }
+
+    static List<List> getAllTablesWithGORMIndices() {
+        List<List> result = []
+        int i = 0
+
+        CodeUtils.getAllDomainClasses().each { cls ->
+            PersistentEntity pe = CodeUtils.getPersistentEntity(cls.name)
+            if (pe) {
+                Map mapping = pe.mapping?.mappedForm?.columns
+                if (mapping) {
+                    mapping.sort().each { prop ->
+                        PersistentProperty pp = pe.getPropertyByName(prop.key)
+                        prop.value.columns.each { c ->
+                            result << [i++, cls.name, pp.name, pp.type, c.name, c.index]
+                        }
+                    }
+                }
+            }
+        }
+        result
     }
 
     /**
