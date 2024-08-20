@@ -203,18 +203,16 @@
                                                                                 role="button">
                                                                                 <i class="icon la-thumbtack slash"></i>
                                                                             </ui:link>
-                                                                            <div class="ui buttons">
-                                                                                <ui:remoteLink role="button"
-                                                                                               class="${Btn.MODERN.NEGATIVE_CONFIRM}"
-                                                                                               controller="ajaxJson"
-                                                                                               action="removeObject"
-                                                                                               params="[object: 'altname', objId: altname.id]"
-                                                                                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
-                                                                                               data-confirm-term-how="delete"
-                                                                                               data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                                    <i class="${Icon.CMD.DELETE}"></i>
-                                                                                </ui:remoteLink>
-                                                                            </div>
+                                                                            <ui:remoteLink role="button"
+                                                                                           class="${Btn.MODERN.NEGATIVE_CONFIRM}"
+                                                                                           controller="ajaxJson"
+                                                                                           action="removeObject"
+                                                                                           params="[object: 'altname', objId: altname.id]"
+                                                                                           data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
+                                                                                           data-confirm-term-how="delete"
+                                                                                           data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                                <i class="${Icon.CMD.DELETE}"></i>
+                                                                            </ui:remoteLink>
                                                                             <div class="${Btn.ICON.SIMPLE} la-hidden">
                                                                                 <icon:placeholder/><%-- Hidden Fake Button --%>
                                                                             </div>
