@@ -52,13 +52,11 @@
                     <i class="icon la-thumbtack slash"></i>
                 </ui:link>
             </g:elseif>
-            <div class="ui buttons">
-                <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: ownObj.id]"
-                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.${wrapper}", args: [ownObj.name])}"
-                               data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${objOID}')">
-                    <i class="${Icon.CMD.DELETE}"></i>
-                </ui:remoteLink>
-            </div>
+            <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: ownObj.id]"
+                           data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.${wrapper}", args: [ownObj.name])}"
+                           data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${objOID}')">
+                <i class="${Icon.CMD.DELETE}"></i>
+            </ui:remoteLink>
             <div class="${Btn.ICON.SIMPLE} la-hidden">
                 <icon:placeholder /><%-- Hidden Fake Button --%>
             </div>
@@ -70,14 +68,10 @@
         <div class="content la-space-right">
             <ui:xEditableRefData owner="${ownObj}" field="${field}" config="${config}" overwriteEditable="${overwriteEditable}"/>
         </div>
-        <div class="content la-space-right">
-            <div class="ui buttons">
-                <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: wrapper, objId: ownObj.id]"
-                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.${wrapper}", args: [ownObj[field].getI10n('value')])}"
-                               data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${objOID}')">
-                    <i class="${Icon.CMD.DELETE}"></i>
-                </ui:remoteLink>
-            </div>
-        </div>
+        <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: wrapper, objId: ownObj.id]"
+                       data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.${wrapper}", args: [ownObj[field].getI10n('value')])}"
+                       data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${objOID}')">
+            <i class="${Icon.CMD.DELETE}"></i>
+        </ui:remoteLink>
     </div>
 </g:elseif>

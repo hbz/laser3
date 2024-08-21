@@ -88,7 +88,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="five wide right aligned  column">
+                                    <div class="five wide right aligned column">
                                         <g:if test="${license}"></g:if>
                                         <g:else>
                                             <g:if test="${pair.propertySet && pair instanceof License}">
@@ -103,7 +103,7 @@
                                         <laser:render template="/templates/links/subLinksModal"
                                                       model="${[tmplText               : message(code: 'subscription.details.editLink'),
                                                                 tmplIcon               : 'write',
-                                                                tmplCss                : 'icon blue la-selectable-button la-popup-tooltip',
+                                                                tmplCss                : 'icon la-modern-button la-selectable-button la-popup-tooltip',
                                                                 tmplID                 : 'editLink',
                                                                 tmplModalID            : "sub_edit_link_${link.id}",
                                                                 subscriptionLicenseLink: subscriptionLicenseLink,
