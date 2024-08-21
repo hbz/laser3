@@ -440,9 +440,59 @@ databaseChangeLog = {
         }
     }
 
-    //    changeSet(author: "klober (generated)", id: "1724138532317-74") {
-//        createIndex(indexName: "doc_owner_idx", tableName: "doc") {
-//            column(name: "doc_owner_fk")
-//        }
-//    }
+    changeSet(author: "klober (generated)", id: "1724138532317-74") {
+        createIndex(indexName: "combo_from_to_org_idx", tableName: "combo") {
+            column(name: "combo_from_org_fk")
+
+            column(name: "combo_to_org_fk")
+        }
+    }
+
+    changeSet(author: "klober (generated)", id: "1724138532317-75") {
+        createIndex(indexName: "tsk_creator_idx", tableName: "task") {
+            column(name: "tsk_creator_fk")
+        }
+    }
+
+    changeSet(author: "klober (generated)", id: "1724138532317-76") {
+        createIndex(indexName: "inv_owner_idx", tableName: "invoice") {
+            column(name: "inv_owner")
+        }
+    }
+    changeSet(author: "klober (generated)", id: "1724138532317-77") {
+        createIndex(indexName: "surconf_sub_idx", tableName: "survey_config") {
+            column(name: "surconf_sub_fk")
+        }
+    }
+
+    changeSet(author: "klober (generated)", id: "1724138532317-78") {
+        createIndex(indexName: "surconf_surinfo_idx", tableName: "survey_config") {
+            column(name: "surconf_surinfo_fk")
+        }
+    }
+
+    changeSet(author: "klober (generated)", id: "1724138532317-79") {
+        createIndex(indexName: "surconf_surprop_idx", tableName: "survey_config") {
+            column(name: "surconf_surprop_fk")
+        }
+    }
+
+    changeSet(author: "klober (generated)", id: "1724138532317-80") {
+        createIndex(indexName: "surin_owner_org_idx", tableName: "survey_info") {
+            column(name: "surin_owner_org_fk")
+        }
+    }
+
+    changeSet(author: "klober (generated)", id: "1724138532317-81") {
+        createIndex(indexName: "surin_status_idx", tableName: "survey_info") {
+            column(name: "surin_status_rv_fk")
+        }
+    }
+
+    changeSet(author: "klober (generated)", id: "1724138532317-82") {
+        createIndex(indexName: "surin_type_idx", tableName: "survey_info") {
+            column(name: "surin_type_rv_fk")
+        }
+    }
+
 }

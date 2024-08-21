@@ -77,7 +77,7 @@ class Task {
         description     column:'tsk_description', type: 'text'
         status          column:'tsk_status_rdv_fk'
 
-        creator         column:'tsk_creator_fk'
+        creator         column:'tsk_creator_fk',    index: 'tsk_creator_idx'
         endDate         column:'tsk_end_date'
         systemCreateDate column:'tsk_system_create_date'
         createDate      column:'tsk_create_date'

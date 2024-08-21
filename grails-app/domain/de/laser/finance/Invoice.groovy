@@ -33,7 +33,7 @@ class Invoice {
            invoiceNumber column:'inv_number'
                startDate column:'inv_start_date'
                  endDate column:'inv_end_date'
-                   owner column:'inv_owner'
+                   owner column:'inv_owner', index: 'inv_owner_idx'
          description column:'inv_description', type:'text'
 
       dateCreated column: 'inv_date_created'
