@@ -1,6 +1,6 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.storage.RDStore;" %>
 
-<g:if test="${selectedSubParticipantsCount == 0}">
+<g:if test="${selectedSubParticipantsCount == 0 && surveyConfig.subscription}">
     <div class="four wide column">
 
         <g:link action="actionSurveyParticipants"
