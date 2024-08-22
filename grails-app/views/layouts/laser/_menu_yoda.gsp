@@ -154,6 +154,7 @@
                 <div class="divider"></div>
 
                 <ui:link addItemAttributes="true" controller="admin" action="databaseInfo">${message(code: "menu.admin.databaseInfo")}</ui:link>
+                <ui:link addItemAttributes="true" controller="admin" action="databaseIndices">${message(code: "menu.admin.databaseIndices")}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="databaseCollations">${message(code: "menu.admin.databaseCollations")}</ui:link>
                 <div class="divider"></div>
 

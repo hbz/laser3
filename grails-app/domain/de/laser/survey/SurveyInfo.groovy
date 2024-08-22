@@ -77,9 +77,9 @@ class SurveyInfo {
         dateCreated column: 'surin_date_created'
         lastUpdated column: 'surin_last_updated'
 
-        owner column: 'surin_owner_org_fk'
-        type column: 'surin_type_rv_fk'
-        status column: 'surin_status_rv_fk'
+        owner column: 'surin_owner_org_fk',     index: 'surin_owner_org_idx'
+        type column: 'surin_type_rv_fk',        index: 'surin_type_idx'
+        status column: 'surin_status_rv_fk',    index: 'surin_status_idx'
 
         isSubscriptionSurvey column: 'surin_is_subscription_survey'
         isMandatory column: 'surin_is_mandatory'

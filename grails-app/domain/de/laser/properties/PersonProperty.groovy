@@ -35,7 +35,7 @@ class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
         stringValue          column: 'pp_string_value', type: 'text'
         intValue             column: 'pp_int_value'
         decValue             column: 'pp_dec_value'
-        refValue             column: 'pp_ref_value_rv_fk'
+        refValue             column: 'pp_ref_value_rv_fk', index: 'pp_ref_value_idx'
         urlValue             column: 'pp_url_value'
         note                 column: 'pp_note', type: 'text'
         dateValue            column: 'pp_date_value'
