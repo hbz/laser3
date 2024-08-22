@@ -29,7 +29,7 @@ class AccessPointData extends AbstractBase {
         version         column:'apd_version'
 
         globalUID       column:'apd_guid'
-        orgAccessPoint  column:'apd_org_access_point_fk'
+        orgAccessPoint  column:'apd_org_access_point_fk', index: 'apd_org_access_point_idx'
         datatype        column:'apd_datatype'
         data            column:'apd_data'
 

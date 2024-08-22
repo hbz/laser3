@@ -18,8 +18,8 @@ class CostItemGroup {
     static mapping = {
                 id column:'cig_id'
            version column:'cig_version'
-        budgetCode column:'cig_budget_code_fk'
-          costItem column:'cig_cost_item_fk'
+        budgetCode column:'cig_budget_code_fk', index: 'cig_budget_code_idx'
+          costItem column:'cig_cost_item_fk',   index: 'cig_cost_item_idx'
     }
 
     static constraints = {

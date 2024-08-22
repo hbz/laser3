@@ -26,8 +26,8 @@ class Combo {
            version column:'combo_version'
             status column:'combo_status_rv_fk'
               type column:'combo_type_rv_fk'
-           fromOrg column:'combo_from_org_fk'
-             toOrg column:'combo_to_org_fk'
+           fromOrg column:'combo_from_org_fk',  index: 'combo_from_to_org_idx'
+             toOrg column:'combo_to_org_fk',    index: 'combo_from_to_org_idx'
 
         dateCreated column: 'combo_date_created'
         lastUpdated column: 'combo_last_updated'
