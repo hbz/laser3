@@ -148,21 +148,6 @@
                         </div>
                     </div>
                     <div class="fields">
-                        <div class="eight wide field">
-                            <label for="additionFirst">
-                                <g:message code="address.additionFirst.label" />
-                            </label>
-                            <g:textField id="additionFirst" name="additionFirst" value="${addressInstance?.additionFirst}"/>
-                        </div>
-                        <div class="eight wide field">
-                            <label for="additionSecond">
-                                <g:message code="address.additionSecond.label" />
-                            </label>
-                            <g:textField id="additionSecond" name="additionSecond" value="${addressInstance?.additionSecond}"/>
-                        </div>
-                    </div>
-
-                    <div class="fields">
                         <div class="four wide required field">
                             <label for="zipcode">
                                 <g:message code="address.zipcode.label" />
@@ -177,7 +162,6 @@
                             <g:textField id="city" name="city" value="${addressInstance?.city}" />
                         </div>
                     </div>
-
                 </div>
                 <!-- Hausanschrift END -->
                 <!-- Postanschrift START -->
@@ -192,15 +176,13 @@
                         </div>
                     </div>
                     <div class="fields">
-                        <div class="sixteen required wide field">
+                        <div class="four required wide field">
                             <label for="pobZipcode">
                                 <g:message code="address.zipcode.label" />
                             </label>
                             <g:textField id="pobZipcode" name="pobZipcode" value="${addressInstance?.pobZipcode}"/>
                         </div>
-                    </div>
-                    <div class="fields">
-                        <div class="sixteen required wide field">
+                        <div class="twelve required wide field">
                             <label for="pobCity">
                                 <g:message code="address.city.label" />
                             </label>
@@ -213,6 +195,23 @@
             </div>
         </div>
         <!-- Alternating address Table END-->
+        <br>
+        <div class="field ">
+            <div class="two fields">
+                <div class="eight wide field">
+                    <label for="additionFirst">
+                        <g:message code="address.additionFirst.label" />
+                    </label>
+                    <g:textField id="additionFirst" name="additionFirst" value="${addressInstance?.additionFirst}"/>
+                </div>
+                <div class="eight wide field">
+                    <label for="additionSecond">
+                        <g:message code="address.additionSecond.label" />
+                    </label>
+                    <g:textField id="additionSecond" name="additionSecond" value="${addressInstance?.additionSecond}"/>
+                </div>
+            </div>
+        </div>
 
         <div class="field ">
             <div class="two fields">
@@ -439,8 +438,6 @@
         let physicalAddressInputs = [
           $("#street_1"),
           $("#street_2"),
-          $("#additionFirst"),
-          $("#additionSecond"),
           $("#zipcode"),
           $("#city")
         ];
@@ -465,7 +462,6 @@
 
             if ($(physicalAddressInputs[i]).val() !== "") {
                 physicalAddressFound = true;
-                console.log("physicalAddressInputs: Non empty");
                 $("#buttonPhysicalAddress").addClass("active");
                 $("#buttonPostalAddress").removeClass("active");
                 $("#postalAddress").addClass("disabled");
