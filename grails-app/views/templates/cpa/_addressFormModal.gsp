@@ -261,6 +261,28 @@
               ]
             },
         </g:if>
+        <g:elseif test="${providerList}">
+            provider: {
+              identifier: 'provider',
+              rules: [
+                {
+                  type: 'empty',
+                  prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+                }
+              ]
+            },
+        </g:elseif>
+        <g:elseif test="${vendorList}">
+            vendor: {
+              identifier: 'vendor',
+              rules: [
+                {
+                  type: 'empty',
+                  prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+                }
+              ]
+            },
+        </g:elseif>
             typeId: {
               identifier: 'typeId',
               rules: [
