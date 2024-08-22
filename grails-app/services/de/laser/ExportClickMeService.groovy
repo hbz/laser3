@@ -4622,7 +4622,16 @@ class ExportClickMeService {
                 selectedExportContactFields.each { String fieldKey, Map mapSelectedFields ->
                     String field = mapSelectedFields.field
                     if (field == 'organisation') {
-                        row.add(createTableCell(format, prsLink.org.name))
+                        // ERMS-5869 - sufficient criteria?
+                        if (prsLink.org) {
+                            row.add(createTableCell(format, prsLink.org.name))
+                        }
+                        else if (prsLink.provider) {
+                            row.add(createTableCell(format, prsLink.provider.name))
+                        }
+                        else if (prsLink.vendor) {
+                            row.add(createTableCell(format, prsLink.vendor.name))
+                        }
                     }
                     else if (field == 'receiver') {
                         row.add(createTableCell(format, p.toString()))

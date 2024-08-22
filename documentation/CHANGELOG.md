@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5869    22.08.2024  rc-3.4  3.4.7       David   Bug         500er Export Adressbuch
+
 5870    20.08.2024  rc-3.4  3.4.7       David   Feature     Datenbank-Indizes überprüfen
 
 --      14.08.2024  rc-3.4  3.4.6       Andreas Bug         Erweiterung der Fehlermeldung beim Lizenzimport
