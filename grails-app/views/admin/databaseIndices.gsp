@@ -15,84 +15,121 @@
 <g:set var="tables_collections" value="${indices.findAll{ it[3].toString().startsWith('interface ') }.collect{ it[0] }}" />
 <g:set var="tables_laser" value="${indices.findAll{ it[3].toString().startsWith('class de.laser.') }.collect{ it[0] }}" />
 
+<g:set var="dformat" value="${new java.text.DecimalFormat("###,###,###")}" />
+
 <br/>
 
 <div id="filter">
-    <button class="ui button negative small" id="internal1">Id/Version</button>
-    <button class="ui button negative small" id="internal2">DateCreated/LastUpdated</button>
-    <button class="ui button negative small" id="collections">Collections</button>
-%{--    <button class="${Btn.NEGATIVE} small" id="internal1">Id/Version</button>--}%
-%{--    <button class="${Btn.NEGATIVE} small" id="internal2">DateCreated/LastUpdated</button>--}%
-%{--    <button class="${Btn.NEGATIVE} small" id="collections">Collections</button>--}%
+    <button class="ui icon button small" id="filter_internal1"><i class="arrow right icon"></i> Id/Version</button>
+    <button class="ui icon button small" id="filter_internal2"><i class="arrow right icon"></i> DateCreated/LastUpdated</button>
+    <button class="ui icon button small" id="filter_collections"><i class="arrow right icon"></i> Collections</button>
+%{--    <button class="${Btn.ICON.NEGATIVE} small" id="internal1"><i class="arrow right icon"></i> Id/Version</button>--}%
+%{--    <button class="${Btn.ICON.NEGATIVE} small" id="internal2"><i class="arrow right icon"></i> DateCreated/LastUpdated</button>--}%
+%{--    <button class="${Btn.ICON.NEGATIVE} small" id="collections"><i class="arrow right icon"></i> Collections</button>--}%
     <g:select class="ui dropdown" from="${['1.000':1000, '5.000':5000, '10.000':10000, '50.000':50000, '100.000':100000, '500.000':500000, '1.000.000':1000000, '5.000.000':5000000, '10.000.000':10000000]}"
-              id="thresholdvalue" name="thresholdvalue"
+              id="threshold_filter_value" name="threshold_filter_value"
               optionValue="${{it.key}}"
               optionKey="${{it.value}}"
               noSelection="${['': 'DB-Einträge (Domainklasse)']}" />
 
-    <button class="ui button icon small" id="threshold"><i class="icon filter"></i><i class="icon sort"></i></button>
+    <button class="ui icon button small" id="threshold_filter"><i class="icon filter"></i><i class="icon sort"></i></button>
+    <button class="ui icon button small" id="filter_mapping"><i class="arrow down icon"></i> Mapping</button>
+    <div class="ui buttons">
+        <button class="ui icon button small" id="filter_index"><i class="times icon"></i> Index</button>
+        <button class="ui icon button small" id="filter_todo"><i class="times icon"></i> Todo</button>
+    </div>
 </div>
 
 <ui:msg class="info" header="Achtung" text="Die angezeigten Daten sind unvollständig und bieten nur eine Orientierungshilfe."/>
 
 <style>
-    tr.info td {
+    #table {
+        background-color: #ffffff;
+    }
+    #table tr.info td {
         color: #276f86;
         background-color: #f8ffff;
     }
-    tr.threshold td {
+    #table tr.threshold_filter td {
         display: none;
     }
-    tr.unique td {
+    #table tr.unique td {
         font-style: italic;
+    }
+
+    #table.filter_internal1 tbody tr[data-internal1=true] {
+        display: none;
+    }
+    #table.filter_internal2 tbody tr[data-internal2=true] {
+        display: none;
+    }
+    #table.filter_collections tbody tr[data-collections=true] {
+        display: none;
+    }
+    #table.filter_mapping thead tr th:nth-child(4),
+    #table.filter_mapping tbody tr td:nth-child(4) {
+        display: none;
+    }
+    #table.filter_todo tbody tr:not(.negative) {
+        display: none;
+    }
+    #table.filter_index tbody tr:not(.positive, .info) {
+        display: none;
     }
 </style>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.app.idxFilter = { internal1: true, internal2: true, collections: true, threshold: false }
+    JSPC.app.idxFilter = { threshold_filter: false }
 
     JSPC.app.applyFilter = function() {
-        $('#table tr').removeClass('hidden').removeClass('threshold')
+        $('#table tbody tr').removeClass('threshold_filter')
 
-        let $$idx = JSPC.app.idxFilter
-
-        if ($$idx.internal1 )   { $('#table tr[data-internal1=true]').addClass('hidden') }
-        if ($$idx.internal2 )   { $('#table tr[data-internal2=true]').addClass('hidden') }
-        if ($$idx.collections ) { $('#table tr[data-collections=true]').addClass('hidden') }
-
-        let tv = $('#thresholdvalue').dropdown('get value')
+        let tv = $('#threshold_filter_value').dropdown('get value')
         if (tv) {
-            let $th = $('#table tr[data-threshold]').filter(function() {
-                if ($$idx.threshold ) {
-                    console.log('>=: ' + parseInt($(this).attr('data-threshold')) + ' ? ' +  parseInt(tv) + ' == ' + (parseInt($(this).attr('data-threshold')) >= parseInt(tv)))
+            let $th = $('#table tbody tr[data-threshold]').filter(function() {
+                if (JSPC.app.idxFilter.threshold_filter ) {
                     return parseInt($(this).attr('data-threshold')) >= parseInt(tv)
                 } else {
-                    console.log('<=: ' + parseInt($(this).attr('data-threshold')) + ' ? ' +  parseInt(tv) + ' == ' + (parseInt($(this).attr('data-threshold')) <= parseInt(tv)))
                     return parseInt($(this).attr('data-threshold')) <= parseInt(tv)
                 }
             });
-            $th.addClass('threshold')
+            $th.addClass('threshold_filter')
         }
     }
-    $('#internal1, #internal2, #collections, #threshold').on('click', function() {
-        let $$idx = JSPC.app.idxFilter
+    $('#threshold_filter').on('click', function() {
+        JSPC.app.idxFilter.threshold_filter = !JSPC.app.idxFilter.threshold_filter
+        JSPC.app.applyFilter()
+    })
+    $('#threshold_filter_value').on('change', function() {
+        JSPC.app.applyFilter()
+    })
+    $('#filter_internal1, #filter_internal2, #filter_collections, #filter_mapping').on('click', function() {
+        $(this).toggleClass('positive')
+        $('#table').toggleClass( $(this).attr('id') )
+    })
+    $('#filter_todo, #filter_index').on('click', function() {
+        let $todo = $('#filter_todo')
+        let $index = $('#filter_index')
         let id = $(this).attr('id')
-        $$idx[id] = !$$idx[id]
 
-        if (id != 'threshold') {
-            $(this).toggleClass('positive').toggleClass('negative')
+        if (id == 'filter_todo' && $index.hasClass('positive')) {
+            $index.toggleClass('positive')
+            $('#table').toggleClass('filter_index')
         }
-        JSPC.app.applyFilter()
-    })
-    $('#thresholdvalue').on('change', function() {
-        JSPC.app.applyFilter()
+        else if (id == 'filter_index' && $todo.hasClass('positive')) {
+            $todo.toggleClass('positive')
+            $('#table').toggleClass('filter_todo')
+        }
+
+        $(this).toggleClass('positive')
+        $('#table').toggleClass( id )
     })
 
-    JSPC.app.applyFilter()
+    $('table').addClass('filter_internal1 filter_internal2 filter_collections filter_mapping')
     $('table').removeClass('hidden')
 </laser:script>
 
-<table class="ui celled la-js-responsive-table la-table la-hover-table very compact table hidden" id="table">
+<table class="ui la-hover-table very compact table hidden" id="table">
         <thead>
             <tr>
                 <th class="center aligned">#</th>
@@ -104,6 +141,7 @@
                 <th class="center aligned">&rArr;</th>
                 <th>Index</th>
                 <th>Größe</th>
+                <th class="center aligned">*</th>
             </tr>
         </thead>
         <tbody>
@@ -148,12 +186,17 @@
                     <td> ${row[2]} </td>
                     <td> ${row[4]} </td>
                     <td> ${row[3].toString().replace('class ', '').replace('interface ', '')} </td>
-                    <td class="center aligned"> ${countFrom} </td>
-                    <td class="center aligned"> ${countTo} </td>
+                    <td class="center aligned"> ${countFrom && countFrom != '?' ? dformat.format(countFrom) : ''} </td>
+                    <td class="center aligned"> ${countTo && countTo != '?' ? dformat.format(countTo) : ''} </td>
                     <td>
                         <g:each in="${row[5]?.split(',')}" var="idx"> ${idx} <br/> </g:each>
                     </td>
-                    <td> ${row[6] ? row[6]['index_size'] : ''} </td>
+                    <td>
+                        <g:each in="${row[6]}" var="idx"> ${idx ? idx['idx_size'] : ''} <br/> </g:each>
+                    </td>
+                    <td class="center aligned">
+                        <g:each in="${row[6]}" var="idx"> ${idx ? dformat.format(idx['idx_scan']) : ''} <br/> </g:each>
+                    </td>
                 </tr>
             </g:each>
         </tbody>

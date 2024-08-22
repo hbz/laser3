@@ -194,12 +194,20 @@ class DatabaseInfo {
                         PersistentProperty pp = pe.getPropertyByName(prop.key)
                         prop.value.columns.each { c ->
                             if (c.index) {
-                                String query = """
-                                    select pg_size_pretty(pg_relation_size(indexrelid)) "index_size" from pg_stat_all_indexes idx join pg_class c on idx.relid = c.oid
-                                    where idx.relname='${clstn}' and indexrelname = '${c.index}'"""
-                                GroovyRowResult si = clstn ? sql.firstRow(query) : null
-//                                println clstn + ' ' + c.index + ' = ' + si
-                                result << [i++, cls.name, pp.name, pp.type, c.name, c.index, si]
+                                List<GroovyRowResult> siList = []
+                                c.index.split(',').each { ci ->
+                                    String query = """
+                                        select pg_size_pretty(pg_relation_size(indexrelid)) "idx_size", idx_scan from pg_stat_all_indexes idx join pg_class c on idx.relid = c.oid
+                                        where idx.relname='${clstn}' and indexrelname = '${ci.trim()}'"""
+                                    siList << (clstn ? sql.firstRow(query) : null)
+                                }
+
+//                                String query = """
+//                                    select pg_size_pretty(pg_relation_size(indexrelid)) "index_size" from pg_stat_all_indexes idx join pg_class c on idx.relid = c.oid
+//                                    where idx.relname='${clstn}' and indexrelname = '${c.index}'"""
+//                                GroovyRowResult si = clstn ? sql.firstRow(query) : null
+//                                println clstn + ' ' + c.index + ' = ' + siList
+                                result << [i++, cls.name, pp.name, pp.type, c.name, c.index, siList]
                             } else {
                                 result << [i++, cls.name, pp.name, pp.type, c.name, (prop.value.unique ? 'UNIQUE' : null), null]
                             }
