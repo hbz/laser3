@@ -35,7 +35,7 @@ class OrgProperty extends AbstractPropertyWithCalculatedLastUpdated {
         stringValue          column: 'op_string_value', type: 'text'
         intValue             column: 'op_int_value'
         decValue             column: 'op_dec_value'
-        refValue             column: 'op_ref_value_rv_fk'
+        refValue             column: 'op_ref_value_rv_fk', index: 'op_ref_value_idx'
         urlValue             column: 'op_url_value'
         note                 column: 'op_note', type: 'text'
         dateValue            column: 'op_date_value'

@@ -39,7 +39,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
         stringValue column: 'sp_string_value', type: 'text'
         intValue    column: 'sp_int_value'
         decValue    column: 'sp_dec_value'
-        refValue    column: 'sp_ref_value_rv_fk'
+        refValue    column: 'sp_ref_value_rv_fk', index: 'sp_ref_value_idx'
         urlValue    column: 'sp_url_value'
         note        column: 'sp_note', type: 'text'
         dateValue   column: 'sp_date_value'

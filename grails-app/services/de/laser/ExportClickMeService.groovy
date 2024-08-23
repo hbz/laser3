@@ -4622,7 +4622,16 @@ class ExportClickMeService {
                 selectedExportContactFields.each { String fieldKey, Map mapSelectedFields ->
                     String field = mapSelectedFields.field
                     if (field == 'organisation') {
-                        row.add(createTableCell(format, prsLink.org.name))
+                        // ERMS-5869 - sufficient criteria?
+                        if (prsLink.org) {
+                            row.add(createTableCell(format, prsLink.org.name))
+                        }
+                        else if (prsLink.provider) {
+                            row.add(createTableCell(format, prsLink.provider.name))
+                        }
+                        else if (prsLink.vendor) {
+                            row.add(createTableCell(format, prsLink.vendor.name))
+                        }
                     }
                     else if (field == 'receiver') {
                         row.add(createTableCell(format, p.toString()))
@@ -4653,7 +4662,7 @@ class ExportClickMeService {
         if(withProvData)
             sheetData[messageSource.getMessage('provider.plural', null, locale)] = [titleRow: titleRow, columnData: provData]
         if(withVenData)
-            sheetData[messageSource.getMessage('vendor.plural', null, locale)] = [titleRow: titleRow, columnData: provData]
+            sheetData[messageSource.getMessage('vendor.plural', null, locale)] = [titleRow: titleRow, columnData: venData] // ERMS-5869
         if(visibleAddresses || tab == 'addresses') {
             titleRow = [messageSource.getMessage('default.type.label', null, locale)]
             titleRow.addAll(_exportTitles(selectedExportAddressFields, locale, null, null, null, null, format))
@@ -4663,7 +4672,16 @@ class ExportClickMeService {
                     selectedExportAddressFields.each { String fieldKey, Map mapSelectedFields ->
                         String field = mapSelectedFields.field
                         if (field == 'organisation') {
-                            row.add(createTableCell(format, a.org.name))
+                            // ERMS-5869 - sufficient criteria?
+                            if (a.org) {
+                                row.add(createTableCell(format, a.org.name))
+                            }
+                            else if (a.provider) {
+                                row.add(createTableCell(format, a.provider.name))
+                            }
+                            else if (a.vendor) {
+                                row.add(createTableCell(format, a.vendor.name))
+                            }
                         }
                         else if (field == 'receiver') {
                             row.add(createTableCell(format, a.name))

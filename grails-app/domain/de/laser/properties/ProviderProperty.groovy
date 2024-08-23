@@ -36,7 +36,7 @@ class ProviderProperty extends AbstractPropertyWithCalculatedLastUpdated {
         stringValue          column: 'prp_string_value', type: 'text'
         intValue             column: 'prp_int_value'
         decValue             column: 'prp_dec_value'
-        refValue             column: 'prp_ref_value_rv_fk'
+        refValue             column: 'prp_ref_value_rv_fk', index: 'prp_ref_value_idx'
         urlValue             column: 'prp_url_value'
         note                 column: 'prp_note', type: 'text'
         dateValue            column: 'prp_date_value'
