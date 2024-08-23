@@ -281,7 +281,7 @@ class AjaxHtmlController {
         result.showConsortiaFunctions = contextOrg.isCustomerType_Consortium()
         result.roleLinks = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIUM]) }
         result.roleObject = result.subscription
-        result.roleRespValue = 'Specific subscription editor'
+        result.roleRespValue = RDStore.PRS_RESP_SPEC_SUB_EDITOR.value
         result.editmode = result.subscription.isEditableBy(contextService.getUser())
         result.accessConfigEditable = contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_INST_BASIC) || (contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.subscription.getSubscriberRespConsortia().id == contextOrg.id)
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)

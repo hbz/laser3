@@ -599,7 +599,7 @@
                             <laser:render template="/templates/links/providerLinksAsList"
                                           model="${[providerRoles: providerRoles,
                                                     roleObject   : subscription,
-                                                    roleRespValue: 'Specific subscription editor',
+                                                    roleRespValue: RDStore.PRS_RESP_SPEC_SUB_EDITOR.value,
                                                     editmode     : editable,
                                                     showPersons  : true
                                           ]}"/>
@@ -630,7 +630,7 @@
                             <laser:render template="/templates/links/vendorLinksAsList"
                                           model="${[vendorRoles  : vendorRoles,
                                                     roleObject   : subscription,
-                                                    roleRespValue: 'Specific subscription editor',
+                                                    roleRespValue: RDStore.PRS_RESP_SPEC_SUB_EDITOR.value,
                                                     editmode     : editable,
                                                     showPersons  : true
                                           ]}"/>

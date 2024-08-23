@@ -505,7 +505,7 @@ making obsolete package/actions
                             <laser:render template="/templates/links/providerLinksAsList"
                                           model="${[providerRoles: [packageInstance],
                                                     roleObject   : packageInstance,
-                                                    roleRespValue: 'Specific package editor',
+                                                    roleRespValue: RDStore.PRS_RESP_SPEC_PKG_EDITOR.value,
                                                     showPersons  : true
                                           ]}"/>
                         </div>
@@ -514,9 +514,9 @@ making obsolete package/actions
                         <div class="content">
                             <h2 class="ui header">${message(code: 'vendor.label')}</h2>
                             <laser:render template="/templates/links/vendorLinksAsList"
-                                          model="${[vendorRoles: packageInstance.vendors,
+                                          model="${[vendorRoles  : packageInstance.vendors,
                                                     roleObject   : packageInstance,
-                                                    roleRespValue: 'Specific package editor',
+                                                    roleRespValue: RDStore.PRS_RESP_SPEC_PKG_EDITOR.value,
                                                     showPersons  : true
                                           ]}"/>
                         </div>
