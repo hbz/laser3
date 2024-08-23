@@ -275,18 +275,20 @@ class SubscriptionService {
         subscriptionsFromQuery = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
         //candidate for ugliest bugfix ever ...
 
+        params.sort = params.sort ?: 'provider'
+        params.order = params.order ?: 'asc'
         if(params.sort){
             String newSort = "sub.${params.sort}"
-            if(params.sort == 'providerAgency'){
-                subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) order by oo.org.name " + params.order + ", sub.name ", [subscriptions: subscriptionsFromQuery.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
-                subscriptions = subscriptions + Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where sub.id in (:subscriptions) order by sub.name ", [subscriptions: subscriptionsFromQuery.id])
-            }else {
-
-                subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) or sub.id in (:subscriptions) order by " + newSort + " " + params.order + ", oo.org.name, sub.name ", [subscriptions: subscriptionsFromQuery.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
+            if(params.sort == 'provider'){
+                subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.providerRelations oo where (sub.id in (:subscriptions)) order by oo.provider.name " + params.order + ", sub.name ", [subscriptions: subscriptionsFromQuery.id])
+                subscriptions = subscriptions + Subscription.executeQuery("select sub from Subscription sub where sub.id in (:subscriptions) order by sub.name ", [subscriptions: subscriptionsFromQuery.id])
+            }else if(params.sort == 'vendor'){
+                subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.vendorRelations oo where (sub.id in (:subscriptions)) order by oo.vendor.name " + params.order + ", sub.name ", [subscriptions: subscriptionsFromQuery.id])
+                subscriptions = subscriptions + Subscription.executeQuery("select sub from Subscription sub where sub.id in (:subscriptions) order by sub.name ", [subscriptions: subscriptionsFromQuery.id])
             }
-        }else {
-            subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where (sub.id in (:subscriptions) and oo.roleType in (:providerAgency)) order by oo.org.name, sub.name ", [subscriptions: subscriptionsFromQuery.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
-            subscriptions = subscriptions + Subscription.executeQuery("select sub from Subscription sub join sub.orgRelations oo where sub.id in (:subscriptions) order by sub.name ", [subscriptions: subscriptionsFromQuery.id])
+            else {
+                subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.providerRelations oo where sub.id in (:subscriptions) order by " + newSort + " " + params.order + ", oo.provider.name, sub.name ", [subscriptions: subscriptionsFromQuery.id])
+            }
         }
 
         result.allSubscriptions = subscriptions
