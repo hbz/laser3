@@ -140,9 +140,9 @@ class SurveyConfig {
         dateCreated column: 'surconf_date_created'
         lastUpdated column: 'surconf_last_updated'
 
-        surveyInfo column: 'surconf_surinfo_fk'
-        subscription column: 'surconf_sub_fk'
-        surveyProperty column: 'surconf_surprop_fk'
+        surveyInfo column: 'surconf_surinfo_fk',        index: 'surconf_surinfo_idx'
+        subscription column: 'surconf_sub_fk',          index: 'surconf_sub_idx'
+        surveyProperty column: 'surconf_surprop_fk',    index: 'surconf_surprop_idx'
 
         configOrder column: 'surconf_config_order'
 
@@ -665,7 +665,8 @@ class SurveyConfig {
             }
         }
 
-        properties = properties.sort {it.type.getI10n('name')}
+        //properties = properties.sort {it.type.getI10n('name')}
+        properties = properties.sort {this.getSortedProperties().indexOf(it.type)}
 
         return properties
 

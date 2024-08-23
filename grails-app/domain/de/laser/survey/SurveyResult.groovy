@@ -77,7 +77,7 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         stringValue column: 'surre_string_value', type: 'text'
         intValue    column: 'surre_int_value'
         decValue    column: 'surre_dec_value'
-        refValue    column: 'surre_ref_value_rv_fk'
+        refValue    column: 'surre_ref_value_rv_fk', index: 'surre_ref_value_idx'
         urlValue    column: 'surre_url_value'
         note        column: 'surre_note', type: 'text'
         dateValue   column: 'surre_date_value'

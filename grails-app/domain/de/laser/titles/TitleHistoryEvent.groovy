@@ -24,7 +24,7 @@ class TitleHistoryEvent {
     eventDate   column: 'the_event_date'
     from        column: 'the_from', type: 'text'
     to          column: 'the_to', type: 'text'
-    tipp        column: 'the_tipp_fk'
+    tipp        column: 'the_tipp_fk',    index: 'the_tipp_idx'
     dateCreated column: 'the_date_created'
     lastUpdated column: 'the_last_updated'
   }
