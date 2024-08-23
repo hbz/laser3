@@ -25,7 +25,7 @@ class WfCheckpoint {
             comment column: 'wfcp_comment', type: 'text'
                date column: 'wfcp_date'
                done column: 'wfcp_is_done'
-          checklist column: 'wfcp_checklist_fk'
+          checklist column: 'wfcp_checklist_fk', index: 'wfcp_checklist_idx'
            position column: 'wfcp_position'
         dateCreated column: 'wfcp_date_created'
         lastUpdated column: 'wfcp_last_updated'

@@ -68,24 +68,24 @@ class Task {
         id              column:'tsk_id'
         version         column:'tsk_version'
 
-        license         column:'tsk_lic_fk'
-        org             column:'tsk_org_fk'
-        provider        column:'tsk_prov_fk'
-        vendor          column:'tsk_ven_fk'
-        subscription    column:'tsk_sub_fk'
-        surveyConfig    column:'tsk_sur_config_fk'
+        license         column:'tsk_lic_fk',        index: 'tsk_lic_idx'
+        org             column:'tsk_org_fk',        index: 'tsk_org_idx'
+        provider        column:'tsk_prov_fk',       index: 'tsk_prov_idx'
+        vendor          column:'tsk_ven_fk',        index: 'tsk_ven_idx'
+        subscription    column:'tsk_sub_fk',        index: 'tsk_sub_idx'
+        surveyConfig    column:'tsk_sur_config_fk', index: 'tsk_sur_config_idx'
 
         title           column:'tsk_title'
         description     column:'tsk_description', type: 'text'
         status          column:'tsk_status_rdv_fk'
 
-        creator         column:'tsk_creator_fk'
+        creator         column:'tsk_creator_fk',    index: 'tsk_creator_idx'
         endDate         column:'tsk_end_date'
         systemCreateDate column:'tsk_system_create_date'
         createDate      column:'tsk_create_date'
 
-        responsibleUser      column:'tsk_responsible_user_fk'
-        responsibleOrg       column:'tsk_responsible_org_fk'
+        responsibleUser      column:'tsk_responsible_user_fk', index: 'tsk_responsible_user_idx'
+        responsibleOrg       column:'tsk_responsible_org_fk',  index: 'tsk_responsible_org_idx'
 
         dateCreated     column: 'tsk_date_created'
         lastUpdated     column: 'tsk_last_updated'

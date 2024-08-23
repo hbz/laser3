@@ -33,9 +33,9 @@ class CustomerIdentifier {
              value column:'cid_value'
       requestorKey column:'cid_requestor_key', type: 'text'
              note  column:'cid_note', type: 'text'
-          customer column:'cid_customer_fk'
-          platform column:'cid_platform_fk'
-             owner column:'cid_owner_fk'
+          customer column:'cid_customer_fk',    index: 'cid_customer_idx'
+          platform column:'cid_platform_fk',    index: 'cid_platform_idx'
+             owner column:'cid_owner_fk',       index: 'cid_owner_idx'
           isPublic column:'cid_is_public'
     }
 

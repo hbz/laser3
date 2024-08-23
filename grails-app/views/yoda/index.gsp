@@ -134,6 +134,9 @@
                         <g:link controller="admin" action="databaseInfo" target="_blank">${message(code: "menu.admin.databaseInfo")}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                     <div class="item">
+                        <g:link controller="admin" action="databaseIndices" target="_blank">${message(code: "menu.admin.databaseIndices")}</g:link> <span class="ui mini label">Admin</span>
+                    </div>
+                    <div class="item">
                         <g:link controller="admin" action="databaseCollations" target="_blank">${message(code: "menu.admin.databaseCollations")}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                     <div class="item">

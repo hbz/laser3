@@ -49,7 +49,7 @@ class Fact {
                 id column:'fact_id'
            version column:'fact_version'
            factUid column:'fact_uid', index:'fact_uid_idx'
-          factType column:'fact_type_rdv_fk'
+          factType column:'fact_type_rdv_fk', index:'fact_type_rdv_idx'
         factMetric column:'fact_metric_rdv_fk', index:'fact_metric_idx'
       relatedTitle column:'fact_related_title_fk', index:'fact_access_idx'
           supplier column:'fact_supplier_fk', index:'fact_access_idx'

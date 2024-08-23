@@ -99,8 +99,8 @@ class UserSetting {
         user       column:'us_user_fk', index: 'us_user_idx'
         key        column:'us_key_enum'
         strValue   column:'us_string_value'
-        rdValue    column:'us_rv_fk'
-        orgValue   column:'us_org_fk'
+        rdValue    column:'us_rv_fk',   index: 'us_rv_idx'
+        orgValue   column:'us_org_fk',  index: 'us_org_idx'
 
         dateCreated column: 'us_date_created'
         lastUpdated column: 'us_last_updated'

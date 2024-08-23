@@ -35,6 +35,9 @@
                     <div class="item">
                         <g:link controller="admin" action="databaseInfo" target="_blank">${message(code: "menu.admin.databaseInfo")}</g:link>
                     </div>
+                %{--                    <div class="item">--}%
+                %{--                        <g:link controller="admin" action="databaseIndices" target="_blank">${message(code: "menu.admin.databaseIndices")}</g:link>--}%
+                %{--                    </div>--}%
                     <div class="item">
                         <g:link controller="admin" action="databaseCollations" target="_blank">${message(code: "menu.admin.databaseCollations")}</g:link>
                     </div>

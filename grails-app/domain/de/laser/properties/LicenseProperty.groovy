@@ -42,7 +42,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         stringValue column: 'lp_string_value', type: 'text'
         intValue    column: 'lp_int_value'
         decValue    column: 'lp_dec_value'
-        refValue    column: 'lp_ref_value_rv_fk'
+        refValue    column: 'lp_ref_value_rv_fk', index: 'lp_ref_value_idx'
         urlValue    column: 'lp_url_value'
         note        column: 'lp_note', type: 'text'
         dateValue   column: 'lp_date_value'
