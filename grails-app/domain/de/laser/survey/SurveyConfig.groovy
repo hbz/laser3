@@ -665,7 +665,8 @@ class SurveyConfig {
             }
         }
 
-        properties = properties.sort {it.type.getI10n('name')}
+        //properties = properties.sort {it.type.getI10n('name')}
+        properties = properties.sort {this.getSortedProperties().indexOf(it.type)}
 
         return properties
 
