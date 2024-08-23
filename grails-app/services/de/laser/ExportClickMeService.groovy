@@ -4662,7 +4662,7 @@ class ExportClickMeService {
         if(withProvData)
             sheetData[messageSource.getMessage('provider.plural', null, locale)] = [titleRow: titleRow, columnData: provData]
         if(withVenData)
-            sheetData[messageSource.getMessage('vendor.plural', null, locale)] = [titleRow: titleRow, columnData: provData]
+            sheetData[messageSource.getMessage('vendor.plural', null, locale)] = [titleRow: titleRow, columnData: venData] // ERMS-5869
         if(visibleAddresses || tab == 'addresses') {
             titleRow = [messageSource.getMessage('default.type.label', null, locale)]
             titleRow.addAll(_exportTitles(selectedExportAddressFields, locale, null, null, null, null, format))
