@@ -615,17 +615,17 @@ class PersonController  {
             }
             else if('resp' == roleType){
                 
-                if(roleRdv?.value == "Specific license editor") {
+                if(roleRdv == RDStore.PRS_RESP_SPEC_LIC_EDITOR) {
                     allSubjects             = License.getAll()
                     subjectType             = "license"
                     subjectFormOptionValue  = "reference"
                 }
-                else if(roleRdv?.value == "Specific package editor") {
+                else if(roleRdv == RDStore.PRS_RESP_SPEC_PKG_EDITOR) {
                     allSubjects             = Package.getAll()
                     subjectType             = "package"
                     subjectFormOptionValue  = "name"
                 }
-                else if(roleRdv?.value == "Specific subscription editor") {
+                else if(roleRdv == RDStore.PRS_RESP_SPEC_SUB_EDITOR) {
                     allSubjects             = Subscription.getAll()
                     subjectType             = "subscription"
                     subjectFormOptionValue  = "name"

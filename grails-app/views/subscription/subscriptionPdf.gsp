@@ -614,7 +614,7 @@
                                                     <i>${message(code:'address.private')}</i>
                                                 </td>
                                                 <td>
-                                                    ${RefdataValue.getByValue('Specific license editor').getI10n('value')}
+                                                    ${RDStore.PRS_RESP_SPEC_LIC_EDITOR.getI10n('value')}
                                                 </td>
                                                 <td>
                                                     <g:link controller="provider" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${resp}</g:link>
@@ -888,7 +888,7 @@
                                                     <i>${message(code:'address.private')}</i>
                                                 </td>
                                                 <td>
-                                                    ${RefdataValue.getByValue('Specific license editor').getI10n('value')}
+                                                    ${RDStore.PRS_RESP_SPEC_LIC_EDITOR.getI10n('value')}
                                                 </td>
                                                 <td>
                                                     <g:link controller="vendor" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${resp}</g:link>

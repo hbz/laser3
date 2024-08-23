@@ -380,7 +380,7 @@
                                     <laser:render template="/templates/links/providerLinksAsList"
                                               model="${[providerRoles: visibleProviders,
                                                         roleObject: license,
-                                                        roleRespValue: 'Specific license editor',
+                                                        roleRespValue: RDStore.PRS_RESP_SPEC_LIC_EDITOR.value,
                                                         editmode: editable,
                                                         showPersons: true
                                               ]}" />
@@ -408,7 +408,7 @@
                                     <laser:render template="/templates/links/vendorLinksAsList"
                                                   model="${[vendorRoles: visibleVendors,
                                                             roleObject: license,
-                                                            roleRespValue: 'Specific license editor',
+                                                            roleRespValue: RDStore.PRS_RESP_SPEC_LIC_EDITOR.value,
                                                             editmode: editable,
                                                             showPersons: true
                                                   ]}" />
