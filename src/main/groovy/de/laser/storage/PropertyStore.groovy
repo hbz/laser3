@@ -66,7 +66,7 @@ class PropertyStore {
         PropertyDefinition result = PropertyDefinition.getByNameAndDescr(name, descr)
 
         if (! result) {
-            log.warn "No PropertyDefinition found for name:'${name}', descr:'${descr}'"
+            println("No PropertyDefinition found for name:'${name}', descr:'${descr}'")
         }
         (PropertyDefinition) GrailsHibernateUtil.unwrapIfProxy( result)
     }
