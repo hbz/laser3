@@ -2503,7 +2503,7 @@ class MyInstitutionController  {
         params.tab = params.tab ?: 'open'
 
         //if(params.tab != 'new'){
-            params.sort = 'surInfo.endDate DESC, LOWER(surInfo.name)'
+            params.sort = params.sort ?: 'surInfo.endDate DESC, LOWER(surInfo.name)'
         //}
 
         if (params.validOnYear == null || params.validOnYear == '') {
