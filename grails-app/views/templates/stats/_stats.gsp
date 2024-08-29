@@ -88,7 +88,7 @@
                 </g:elseif>
                 <div class="field">
                     <label for="reportType"><g:message code="default.usage.reportType"/></label>
-                    <select name="reportType" id="reportType" class="ui search selection dropdown">
+                    <select name="reportType" id="reportType" class="ui search selection upward dropdown">
                         <option value=""><g:message code="default.select.choose.label"/></option>
                         <g:each in="${reportTypes}" var="reportType">
                             <option <%=(params.reportType == reportType) ? 'selected="selected"' : ''%>
@@ -183,6 +183,12 @@
 
 
 <laser:script file="${this.getGroovyPageFileName()}">
+    $('#filterDropdownWrapper .dropdown')
+  .dropdown({
+    direction: 'upward'
+  })
+;
+
     JSPC.app.stats_slider_date_format = function (value, variant) {
         let date = new Date(value.split('-')[0], value.split('-')[1]-1) //correction by -1 because Date() month counting is zero-based
         return date.toLocaleDateString('de-DE', {year: 'numeric', month: variant})

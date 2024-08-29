@@ -9494,26 +9494,32 @@
                         if (settings.direction === 'auto') {
                             // reset position, remove upward if it's base menu
                             if (!$menu) {
+                                console.log("1");
                                 module.remove.upward();
                             } else if (module.is.upward($menu)) {
                                 // we need make sure when make assertion openDownward for $menu, $menu does not have upward class
+                                console.log("2");
                                 module.remove.upward($menu);
                             }
 
                             if (module.can.openDownward($menu)) {
+                                console.log("3");
                                 module.remove.upward($menu);
                             } else {
+                                console.log("4");
                                 module.set.upward($menu);
                             }
                             if (!module.is.leftward($menu) && !module.can.openRightward($menu)) {
                                 module.set.leftward($menu);
                             }
                         } else if (settings.direction === 'upward') {
+                            console.log("5");
                             module.set.upward($menu);
                         }
                     },
                     upward: function ($currentMenu) {
                         var $element = $currentMenu || $module;
+                        console.log("6");
                         $element.addClass(className.upward);
                     },
                     leftward: function ($currentMenu) {
@@ -9905,6 +9911,9 @@
                     },
                     upward: function ($currentMenu) {
                         var $element = $currentMenu || $module;
+                        console.log("7");
+                        console.log($currentMenu);
+                        console.log($element);
                         $element.removeClass(className.upward);
                     },
                     leftward: function ($currentMenu) {
@@ -10336,7 +10345,7 @@
                     },
                     upward: function ($menu) {
                         var $element = $menu || $module;
-
+                        console.log("8");
                         return $element.hasClass(className.upward);
                     },
                     visible: function ($subMenu) {
@@ -10818,7 +10827,7 @@
 
         silent: false,
         debug: false,
-        verbose: false,
+        verbose: true,
         performance: true,
 
         on: 'click', // what event should show menu action on item selection
