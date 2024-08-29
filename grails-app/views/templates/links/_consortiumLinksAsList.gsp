@@ -173,19 +173,6 @@
                                                     ]}"/>
                                                 </g:each>
                                             </div>
-                                            <g:if test="${editmode}">
-                                                <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, consortium, roleRespValue)}"/>
-                                                <div class="two wide column">
-                                                    <div class="ui icon buttons">
-                                                        <g:link class="ui negative  button la-modern-button la-selectable-button js-open-confirm-modal"
-                                                                controller="ajax" action="delPrsRole" id="${prsRole?.id}"
-                                                                data-confirm-tokenMsg="${message(code: 'template.orgLinks.delete.warn')}"
-                                                                data-confirm-how="unlink">
-                                                            <i class="${Icons.CMD_UNLINK} icon"></i>
-                                                        </g:link>
-                                                    </div>
-                                                </div>
-                                            </g:if>
                                         </div>
                                     </g:each>
                                 </div>
@@ -344,19 +331,6 @@
                                                     ]}"/>
                                                 </g:each>
                                             </div>
-                                            <g:if test="${editmode}">
-                                                <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, consortium, roleRespValue)}"/>
-                                                <div class="two wide column">
-                                                    <div class="ui icon buttons">
-                                                        <g:link class="ui negative button la-modern-button la-selectable-button js-open-confirm-modal"
-                                                                controller="ajax" action="delPrsRole" id="${prsRole?.id}"
-                                                                data-confirm-tokenMsg="${message(code: 'template.orgLinks.delete.warn')}"
-                                                                data-confirm-how="unlink">
-                                                            <i class="${Icons.CMD_UNLINK} icon"></i>
-                                                        </g:link>
-                                                    </div>
-                                                </div>
-                                            </g:if>
                                         </div>
                                     </g:each>
                                 </div>
