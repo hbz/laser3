@@ -342,7 +342,7 @@ class Icon {
 
     public static String SUBSCRIPTION               = 'clipboard icon'      // todo: duplicate license.licenseCategory, tipp.accessStartDate/tipp.accessEndDate
 
-    public static String SURVEY                     = 'poll icon'
+    public static String SURVEY                     = 'la-survey icon'
 
     public static String TASK                       = 'calendar check outline icon'
 

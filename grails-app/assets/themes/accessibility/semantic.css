@@ -37878,6 +37878,10 @@ i.icon.la-sparkles {
   font-family: 'icomoon';
 }
 
+i.icon.la-survey {
+  font-family: 'icomoon';
+}
+
 i.icon.hand.pointer.outline.slash:before {
   content: "\e901";
 }
@@ -38043,6 +38047,10 @@ i.icon.la-bookmark.slash:before {
 
 i.icon.la-sparkles:before {
   content: "\e920";
+}
+
+i.icon.la-survey:before {
+  content: "\e922";
 }
 
 /*******************************
