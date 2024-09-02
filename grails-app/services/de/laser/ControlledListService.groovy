@@ -1457,7 +1457,8 @@ class ControlledListService {
                 results.sort { Map rowA, Map rowB ->
                     int cmp = rowA.sortname <=> rowB.sortname
                     if(!cmp)
-                        rowA.name <=> rowB.name
+                        cmp = rowA.name <=> rowB.name
+                    cmp
                 }
             }
         }
