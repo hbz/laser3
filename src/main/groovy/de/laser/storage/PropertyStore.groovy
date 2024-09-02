@@ -20,7 +20,7 @@ class PropertyStore {
     public final static PropertyDefinition LIC_CITATION_REQUIREMENT_DETAIL    = getPropertyDefinition('Citation requirement detail', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_CONCURRENT_USERS    = getPropertyDefinition('Concurrent Users', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_CONFORMITY_WITH_URHG    = getPropertyDefinition('Conformity with UrhG', PropertyDefinition.LIC_PROP)
-    public final static PropertyDefinition LIC_COURSE_PACK_ELECTRONIC    = getPropertyDefinition('Course pack electronic/cached', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_COURSE_PACK_ELECTRONIC    = getPropertyDefinition('Course pack electronic', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_COURSE_PACK_PRINT    = getPropertyDefinition('Course pack print', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_COURSE_PACK_TERM_NOTE    = getPropertyDefinition('Course pack term note', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_COURSE_RESERVE_ELECTRONIC    = getPropertyDefinition('Course reserve electronic/cached', PropertyDefinition.LIC_PROP)
