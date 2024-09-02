@@ -553,6 +553,21 @@
     <aside class="five wide column la-sidekick">
         <div class="ui one cards">
 
+            <g:if test="${subscription.instanceOf && !contextService.getOrg().isCustomerType_Support()}">
+                <div id="container-consortium">
+                    <div class="ui card">
+                        <div class="content">
+                            <h2 class="ui header">${message(code: 'consortium.label')}</h2>
+                            <laser:render template="/templates/links/consortiumLinksAsList"
+                                          model="${[consortium   : subscription.getConsortia(),
+                                                    roleObject   : subscription,
+                                                    roleRespValue: 'Specific subscription editor'
+                                          ]}"/>
+                        </div>
+                    </div>
+                </div>
+            </g:if>
+
             <g:if test="${!contextService.getOrg().isCustomerType_Support()}">
             <div id="container-provider">
                 <div class="ui card">

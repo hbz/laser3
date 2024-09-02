@@ -1676,7 +1676,12 @@ class MyInstitutionController  {
         String redir
         if(params.redirectAction == 'subscriptionsManagement') {
             redir = 'subscriptionsManagement'
-        }else if(params.redirectAction) {
+        }
+        else if(params.redirectAction == 'currentSubscriptionsTransfer'){
+            redirect(uri: request.getHeader('referer'))
+            return
+        }
+        else if(params.redirectAction) {
             redir = params.redirectAction
         }
 
@@ -2498,7 +2503,7 @@ class MyInstitutionController  {
         params.tab = params.tab ?: 'open'
 
         //if(params.tab != 'new'){
-            params.sort = 'surInfo.endDate DESC, LOWER(surInfo.name)'
+            params.sort = params.sort ?: 'surInfo.endDate DESC, LOWER(surInfo.name)'
         //}
 
         if (params.validOnYear == null || params.validOnYear == '') {

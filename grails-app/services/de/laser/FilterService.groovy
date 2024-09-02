@@ -804,7 +804,7 @@ class FilterService {
         }
 
         if (params.filterPvd) {
-            query << "exists (select pvr from ProviderRole pvr where pvr.subscription = surConfig.subscription and prv.provider.id in (:filterPvd))"
+            query << "exists (select pvr from ProviderRole pvr where pvr.subscription = surConfig.subscription and pvr.provider.id in (:filterPvd))"
             queryParams << [filterPvd: Params.getLongList(params, 'filterPvd')]
             isFilterSet = true
         }
