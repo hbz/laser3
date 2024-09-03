@@ -26,7 +26,7 @@
   background-color: @laSecondaryBackground;
   border: 1px solid @laDecorationColor;
   vertical-align: super;
-  margin: 0 0 1.4em; 1.142857em ;
+  margin: 0 0 2em 1.142857em ;
   .ui.tiny.label {
     font-size: .45rem;
     vertical-align: middle;

@@ -42769,11 +42769,10 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
   padding-right: 0.2em;
   padding-top: 0.9em;
   padding-bottom: 0.9em;
-  margin-bottom: 1.2em;
   background-color: #fffaf5;
   border: 1px solid #d3dae3;
   vertical-align: super;
-  margin: 0 1.142857em;
+  margin: 0 0 2em 1.142857em;
 }
 
 .ui.label.la-annual-rings .ui.tiny.label {

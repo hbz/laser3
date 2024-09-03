@@ -18,7 +18,12 @@ class LinkTagLib {
         out << '</span>'
     }
     def buttonWithIcon = { attrs, body ->
-        out << '<a class="ui button icon la-modern-buttonla-popup-tooltip" data-position="top right" data-content="' + attrs.message + 'href="' + attrs.href + attrs.style + '" target="_blank" aria-label="' + attrs.href + '">'
+        out << '<a class="ui button icon la-modern-button la-popup-tooltip" data-position="top right" '
+        out <<        ' data-content="' + attrs.message + ' '
+        out <<        ' href="' + attrs.href + ' '
+        out <<        ' style="' +attrs.style + ' '
+        out <<        ' target="_blank" ' + ' '
+        out <<        ' aria-label="' + attrs.href + '">'
         out << '<i class="' + attrs.icon  + '" aria-hidden="true"></i>'
         out << '</a>'
     }
