@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.helper.Params
+import de.laser.interfaces.CalculatedType
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.storage.PropertyStore
@@ -1418,20 +1419,24 @@ class LicenseService {
                         orgRole.roleType == Licensee maps to onixPL:Licensee
                          */
                         //mandatory are at least two LicenseRelatedAgent statements - error message if no provider is connected!
-                        lic.orgRelations.each { OrgRole oo ->
+                        if(lic.getLicensingConsortium()) {
                             LicenseRelatedAgent {
-                                switch(oo.roleType) {
-                                    case RDStore.OR_LICENSING_CONSORTIUM:
-                                        LicenseAgentRelator('onixPL:LicenseeRepresentative')
-                                        break
-                                    case RDStore.OR_LICENSEE_CONS:
-                                        LicenseAgentRelator('onixPL:LicenseeConsortium')
-                                        break
-                                    case RDStore.OR_LICENSEE:
-                                        LicenseAgentRelator('onixPL:Licensee')
-                                        break
+                                LicenseAgentRelator('onixPL:LicenseeRepresentative')
+                                RelatedAgent(RDStore.OR_LICENSING_CONSORTIUM.value)
+                            }
+                        }
+                        if(lic.getLicensee()) {
+                            if(lic._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
+                                LicenseRelatedAgent {
+                                    LicenseAgentRelator('onixPL:LicenseeConsortium')
+                                    RelatedAgent(RDStore.OR_LICENSEE_CONS.value)
                                 }
-                                RelatedAgent(oo.roleType.value) //take the RefdataValue and use this as further reference in the document
+                            }
+                            else if(lic._getCalculatedType() == CalculatedType.TYPE_LOCAL) {
+                                LicenseRelatedAgent {
+                                    LicenseAgentRelator('onixPL:Licensee')
+                                    RelatedAgent(RDStore.OR_LICENSEE.value)
+                                }
                             }
                         }
                         //TODO prevent ONIX creation if no provider is linked
@@ -2029,9 +2034,27 @@ class LicenseService {
                     //not possible to implement properly because mandatory data is missing: DocumentLabel (I cannot ensure an underlying document is available); SortNumber (is mostly not given)
                     //DocumentLabel: substituted by LicenseProperty paragraph, SortNumber: substituted by 0; may be removed completely if no productive use is possible, proposal character!
                     //general: create iff license.paragraph != null!
-                    /*
                     LicenseDocumentText {
                         DocumentLabel('license.reference')
+                        if(isParagraphSet(licPropertyMap, PropertyStore.LIC_TDM)) {
+                            TextElement(id: 'lp_text_and_datamining_01') {
+                                SortNumber(licPropertyMap.get(PropertyStore.LIC_TDM).getParagraphNumber())
+                                Text(licPropertyMap.get(PropertyStore.LIC_TDM).getParagraph())
+                            }
+                        }
+                        if(isParagraphSet(licPropertyMap, PropertyStore.LIC_TDM_CHAR_COUNT)) {
+                            TextElement(id: 'lp_text_and_datamining_character_count_01') {
+                                SortNumber(licPropertyMap.get(PropertyStore.LIC_TDM_CHAR_COUNT).getParagraphNumber())
+                                Text(licPropertyMap.get(PropertyStore.LIC_TDM_CHAR_COUNT).getParagraph())
+                            }
+                        }
+                        if(isParagraphSet(licPropertyMap, PropertyStore.LIC_TDM_RESTRICTIONS)) {
+                            TextElement(id: 'lp_text_and_datamining_restrictions_01') {
+                                SortNumber(licPropertyMap.get(PropertyStore.LIC_TDM_RESTRICTIONS).getParagraphNumber())
+                                Text(licPropertyMap.get(PropertyStore.LIC_TDM_RESTRICTIONS).getParagraph())
+                            }
+                        }
+                        /*
                         TextElement(id: 'lp_accessibility_compliance_01') { //"lp_${lp.name.replaceAll('/:/','').replaceAll('/ /','_').toLowerCase()}_property count number"
                             //property count number; dummy value 0 if not existent
                             SortNumber(0)
@@ -2315,18 +2338,6 @@ class LicenseService {
                             SortNumber(0)
                             Text('§ 6 Vertragsdauer, Kündigung 6.2 Jede Kündigung bedarf der Schriftform')
                         }
-                        TextElement(id: 'lp_text_and_datamining_01') {
-                            SortNumber(0)
-                            Text('3. Scope of License b. Downloading, printing, or saving of text for personal, noncommercial use is permissible. These terms and conditions do not permit the downloading of entire issues of PNAS Online, and systematic downloading is prohibited.')
-                        }
-                        TextElement(id: 'lp_text_and_datamining_character_count_01') {
-                            SortNumber(0)
-                            Text('1.3 Authorized Uses. [...] The Subscriber may: [...] maximum length of 200 characters surrounding and excluding the text entity matched ("Snippets") or bibliographic metadata.')
-                        }
-                        TextElement(id: 'lp_text_and_datamining_restrictions_01') {
-                            SortNumber(0)
-                            Text('For the avoidance of doubt, the Licensee and Auhtorized Users may not [...] carry out any Text and Data Minging without the Licensor\'s prior consent in writing except as permitted by law, but must always notify the Licensor prior to commencing any Data Mining activity.')
-                        }
                         TextElement(id: 'lp_uptime_guarantee_01') {
                             SortNumber(0)
                             Text('§ 5 2.-5. § 6')
@@ -2351,8 +2362,8 @@ class LicenseService {
                             SortNumber(0)
                             Text('§ 10 Sonstige Bestimmungen Der WLAN-Zugriff auf dem Campus oder in den Räumen einer Bibliothek ist gestattet.')
                         }
+                        */
                     }
-                    */
                 }
             }
         }

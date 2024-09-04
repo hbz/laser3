@@ -138,4 +138,8 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         newProp.paragraph = paragraph
         newProp
     }
+
+    String getParagraphNumber() {
+        paragraphNumber ?: '0'
+    }
 }
