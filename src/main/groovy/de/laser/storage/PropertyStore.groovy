@@ -14,9 +14,11 @@ class PropertyStore {
 
     // -- License Properties
 
+    public final static PropertyDefinition LIC_ACCESSIBILITY_COMPLIANCE = getPropertyDefinition('Accessibility compliance', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_ALUMNI_ACCESS    = getPropertyDefinition('Alumni Access', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_AUTHORIZED_USERS    = getPropertyDefinition('Authorized Users', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_ARCHIVAL_COPY_TIME      = getPropertyDefinition('Archival Copy: Time', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_CHANGE_TO_LICENSED_MATERIAL    = getPropertyDefinition('Change to licensed material', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_CITATION_REQUIREMENT_DETAIL    = getPropertyDefinition('Citation requirement detail', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_CONCURRENT_USERS    = getPropertyDefinition('Concurrent Users', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_CONFORMITY_WITH_URHG    = getPropertyDefinition('Conformity with UrhG', PropertyDefinition.LIC_PROP)
