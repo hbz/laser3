@@ -75,6 +75,9 @@ class RDStore {
     public final static RefdataValue DOC_TYPE_ONIXPL            = getRefdataValue('ONIX-PL License', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_TITLELIST         = getRefdataValue('Title List', RDConstants.DOCUMENT_TYPE)
 
+    public final static RefdataValue EXISTENT                   = getRefdataValue('Existent', RDConstants.EXISTENCE)
+    public final static RefdataValue NON_EXISTENT               = getRefdataValue('Nonexistend', RDConstants.EXISTENCE)
+
     public final static RefdataValue IE_ACCESS_CURRENT                      = getRefdataValue('Current', RDConstants.IE_ACCESS_STATUS)
 
     public final static RefdataValue LANGUAGE_DE            = getRefdataValue('de', RDConstants.LANGUAGE)
