@@ -131,7 +131,7 @@
                 </span>
             </th>
             <th>${message(code:'default.status.label')}</th>
-            <g:if test="${institution.isCustomerType_Consortium()}">
+            <g:if test="${institution.isCustomerType_Consortium() && !license.instanceOf}">
                 <th>${message(code:'org.institution.label')}</th>
             </g:if>
             <th class="la-no-uppercase">
@@ -213,7 +213,7 @@
                 <td>
                     ${sub.status.getI10n("value")}
                 </td>
-                <g:if test="${institution.isCustomerType_Consortium()}">
+                <g:if test="${institution.isCustomerType_Consortium() && !license.instanceOf}">
                     <g:set var="childSubCount" value="${Subscription.executeQuery('select count(*) from Subscription s where s.instanceOf = :parent',[parent:sub])[0]}"/>
                     <td>
                         <g:if test="${childSubCount > 0}">

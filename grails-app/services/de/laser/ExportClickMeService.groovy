@@ -4696,8 +4696,8 @@ class ExportClickMeService {
                         }
                         else {
                             if (a[field] instanceof RefdataValue)
-                                row.add([field: a[field].getI10n("value"), style: null])
-                            else row.add([field: a[field], style: null])
+                                row.add(createTableCell(format, a[field].getI10n("value")))
+                            else row.add(createTableCell(format, a[field]))
                         }
                     }
                     if(a.org)
@@ -6721,7 +6721,11 @@ class ExportClickMeService {
                 value.replaceAll('\n', ',')
             else value
         }
-        else value
+        else {
+            if(value == null && format in [FORMAT.CSV, FORMAT.TSV])
+                ' '
+            else value
+        }
     }
 
     /**
