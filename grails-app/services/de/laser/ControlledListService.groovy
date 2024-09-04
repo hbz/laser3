@@ -332,8 +332,7 @@ class ControlledListService {
                 break
         }
         if(params.providerFilter) {
-            licFilter += " and exists (select ol from OrgRole ol where ol.lic = l and ol.roleType = :providerRoleType and ol.org = :filterProvider) "
-            filterParams.providerRoleType = RDStore.OR_LICENSOR
+            licFilter += " and exists (select pvr from ProviderRole pvr where pvr.license = l and pvr.provider = :filterProvider) "
             filterParams.filterProvider = genericOIDService.resolveOID(params.providerFilter)
         }
         result = License.executeQuery('select l from License as l join l.orgRelations ol where ol.org = :org and ol.roleType in (:orgRoles)'+licFilter+" order by l.reference asc",filterParams)
