@@ -17,6 +17,17 @@ class LinkTagLib {
         out << '</a>'
         out << '</span>'
     }
+    def buttonWithIcon = { attrs, body ->
+        out << '<a class="ui button icon la-modern-button la-popup-tooltip" data-position="top right" '
+        out <<        ' data-content="' + attrs.message + '" '
+        out <<        'href="' + attrs.href + '" '
+        out <<        'style="' +attrs.style + '" '
+        out <<        'target="_blank" '
+        out <<        'data-variation"' + attrs.variation + '" '
+        out <<        'aria-label="' + attrs.href + '">'
+        out << '<i class="' + attrs.icon  + '" aria-hidden="true"></i>'
+        out << '</a>'
+    }
 
     // <wekbIconLink href="${target}" />
     def wekbIconLink = { attrs, body ->

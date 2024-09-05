@@ -17,10 +17,11 @@
 </g:if>
 
 <%
-    String header, thisString, lookupName, instanceType, linkType
+    String header, thisString, lookupName, instanceType, linkType, objectPlural
     Map<String, String> urlParams = [:]
     switch(context.class.name) {
         case Subscription.class.name:
+            objectPlural = message(code:"subscription.plural")
             if(subscriptionLicenseLink) {
                 header = message(code:"subscription.linking.headerLicense")
                 thisString = context.name
@@ -42,6 +43,7 @@
             thisString += ")"
             break
         case License.class.name: header = message(code:"license.linking.header")
+            objectPlural = message(code:"license.plural")
             thisString = context.reference
             lookupName = "lookupLicenses"
             instanceType = message(code:"license")
@@ -182,7 +184,7 @@
                     <g:if test="${linkInstanceType == Links.class.name && !link}">
                         <div class="row">
                             <div class="four wide column">
-                                <g:message code="default.linking.provider.label"/>
+                                <g:message code="default.linking.provider.label" args="[objectPlural]"/>
                             </div>
                             <div class="twelve wide column">
                                 <div class="ui search selection dropdown la-full-width" id="providerFilter">
