@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5910    04.09.2024  rc-3.4  3.4.8       Andreas Bug         Abfragefehler bei Merkmalsverwaltung behoben
+
 5904    02.09.2024  rc-3.4  3.4.8       Andreas Bug         Pfad im Erklärungstext angepasst
 
 5895    02.09.2024  rc-3.4  3.4.8       Andreas Bug         500er bei der Ausgabe von Anbietern behoben

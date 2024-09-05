@@ -149,7 +149,7 @@
                                                 <span class="la-popup-tooltip"
                                                       data-content="${message(code: 'license.details.unlink')}">
                                                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
-                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
+                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.license.license")}"
                                                             data-confirm-term-how="unlink"
                                                             controller="myInstitution" action="unlinkObjects"
                                                             params="${[oid: genericOIDService.getOID(link)]}"
