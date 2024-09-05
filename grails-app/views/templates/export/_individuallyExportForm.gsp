@@ -395,33 +395,41 @@
         </div><!-- .fields -->
 
         <g:if test="${showClickMeConfigSave}">
-            <g:if test="${enableClickMeConfigSave}">
-                <div class="fields">
-            </g:if>
-            <g:else>
-                <div class="fields disabled la-popup-tooltip la-delay" data-position="left center" data-content="${message(code:'tooltip.onlyFullMembership')}">
-            </g:else>
-                <div class="wide four field">
-                    <label for="clickMeConfigName">Export <g:message code="default.config.label"/> <g:message code="default.name.label"/></label>
-                    <input name="clickMeConfigName" id="clickMeConfigName" value=""/>
+            <div class="ui accordion">
+              <div class="title">
+                <i class="dropdown icon"></i>
+                <g:message code="clickMeConfig.save"/>?
+              </div>
+              <div class="content">
+
+                    <g:if test="${enableClickMeConfigSave}">
+                        <div class="fields">
+                    </g:if>
+                    <g:else>
+                        <div class="fields disabled la-popup-tooltip la-delay" data-position="left center" data-content="${message(code:'tooltip.onlyFullMembership')}">
+                    </g:else>
+                        <div class="wide four field">
+                            <label for="clickMeConfigName">Export <g:message code="default.config.label"/> <g:message code="default.name.label"/></label>
+                            <input name="clickMeConfigName" id="clickMeConfigName" value=""/>
+                        </div>
+
+                        <div class="wide six field">
+                            <label for="clickMeConfigNote"><g:message code="default.note.label"/></label>
+                            <input name="clickMeConfigNote" id="clickMeConfigNote" value=""/>
+                        </div>
+
+                        <div class="wide five field">
+                            <label></label>
+                            <button class="ui button positive export" value="saveClickMeConfig" name="saveClickMeConfig"><g:message code="clickMeConfig.save"/> </button>
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: 'clickMeConfig.save.info')}">
+                                <i class="grey question circle icon la-popup"></i>
+                            </span>
+                        </div>
+
+
+                    </div><!-- .fields -->
                 </div>
-
-                <div class="wide six field">
-                    <label for="clickMeConfigNote"><g:message code="default.note.label"/></label>
-                    <input name="clickMeConfigNote" id="clickMeConfigNote" value=""/>
-                </div>
-
-                <div class="wide five field">
-                    <label></label>
-                    <button class="ui button positive export" value="saveClickMeConfig" name="saveClickMeConfig">Export <g:message code="default.config.label"/> <g:message
-                            code="default.button.save"/> </button>
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: 'clickMeConfig.save.info')}">
-                        <i class="grey question circle icon la-popup"></i>
-                    </span>
-                </div>
-
-
-            </div><!-- .fields -->
+            </div>
         </g:if>
     </div><!-- .form -->
 
