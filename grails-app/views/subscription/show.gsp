@@ -597,7 +597,7 @@
                         <div class="content">
                             <h2 class="ui header">${message(code: 'consortium.label')}</h2>
                             <laser:render template="/templates/links/consortiumLinksAsList"
-                                          model="${[consortium   : subscription.getConsortia(),
+                                          model="${[consortium   : subscription.getConsortium(),
                                                     roleObject   : subscription,
                                                     roleRespValue: 'Specific subscription editor'
                                           ]}"/>

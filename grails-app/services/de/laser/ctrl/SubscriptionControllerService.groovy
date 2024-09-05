@@ -387,16 +387,18 @@ class SubscriptionControllerService {
                         //c5usages.each { Counter5Report report -> }
                         for(Map reportItem : requestResponse.items) {
                             Map<String, String> identifierMap = exportService.buildIdentifierMap(reportItem, AbstractReport.COUNTER_5)
-                            boolean titleMatch = (params.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS && matchReport(titles, propIdNamespace, identifierMap) != null) || params.reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS
+                            boolean titleMatch = (params.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS && matchReport(titles, propIdNamespace, identifierMap) != null) || params.reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS || params.reportType in Counter5Report.COUNTER_5_DATABASE_REPORTS
                             if(titleMatch) {
-                                for(Map performance: reportItem.Performance) {
-                                    Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
-                                    //String year = yearFormat.format(reportFrom)
-                                    for(Map instance: performance.Instance) {
-                                        String metricType = instance.Metric_Type
-                                        metricTypes << metricType
-                                        Map<String, Object> metricDatePointSums = c5counts.containsKey(metricType) ? c5counts.get(metricType) : [total: 0]
-                                        //if((!dateRanges.startDate || reportFrom >= dateRanges.startDate) && (!dateRanges.endDate || reportFrom <= dateRanges.endDate)) {
+                                //counter 5.0
+                                if(reportItem.containsKey('Performance')) {
+                                    for(Map performance: reportItem.Performance) {
+                                        Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
+                                        //String year = yearFormat.format(reportFrom)
+                                        for(Map instance: performance.Instance) {
+                                            String metricType = instance.Metric_Type
+                                            metricTypes << metricType
+                                            Map<String, Object> metricDatePointSums = c5counts.containsKey(metricType) ? c5counts.get(metricType) : [total: 0]
+                                            //if((!dateRanges.startDate || reportFrom >= dateRanges.startDate) && (!dateRanges.endDate || reportFrom <= dateRanges.endDate)) {
                                             String datePoint
                                             if(params.reportType == Counter5Report.JOURNAL_REQUESTS_BY_YOP) {
                                                 datePoint = "YOP ${performance.YOP}"
@@ -410,15 +412,43 @@ class SubscriptionControllerService {
                                             monthCount += instance.Count
                                             metricDatePointSums.put(datePoint, monthCount)
                                             c5counts.put(instance.Metric_Type, metricDatePointSums)
-                                        //}
-                                        //int yearCount = metricYearSums.containsKey(year) ? metricYearSums.get(year) : 0
-                                        //totalCount = countSumsPerYear.containsKey(year) ? countSumsPerYear.get(year) : 0
-                                        //yearCount += instance.Count
-                                        //totalCount += instance.Count
-                                        //metricYearSums.put(year, yearCount)
-                                        //countSumsPerYear.put(year, totalCount)
-                                        //c5allYearCounts.put(metricType, metricYearSums)
-                                        //allYears << year
+                                            //}
+                                            //int yearCount = metricYearSums.containsKey(year) ? metricYearSums.get(year) : 0
+                                            //totalCount = countSumsPerYear.containsKey(year) ? countSumsPerYear.get(year) : 0
+                                            //yearCount += instance.Count
+                                            //totalCount += instance.Count
+                                            //metricYearSums.put(year, yearCount)
+                                            //countSumsPerYear.put(year, totalCount)
+                                            //c5allYearCounts.put(metricType, metricYearSums)
+                                            //allYears << year
+                                        }
+                                    }
+                                }
+                                //counter 5.1
+                                else if(reportItem.containsKey('Attribute_Performance')) {
+                                    for (Map struct : reportItem.Attribute_Performance) {
+                                        for (Map.Entry performance : struct.Performance) {
+                                            for (Map.Entry instance : performance) {
+                                                String metricType = instance.getKey()
+                                                metricTypes << metricType
+                                                for (Map.Entry reportRow : instance.getValue()) {
+                                                    Map<String, Object> metricDatePointSums = c5counts.containsKey(metricType) ? c5counts.get(metricType) : [total: 0]
+                                                    String datePoint
+                                                    if(params.reportType == Counter5Report.JOURNAL_REQUESTS_BY_YOP) {
+                                                        datePoint = "YOP ${performance.YOP}"
+                                                    }
+                                                    else {
+                                                        datePoint = reportRow.getKey()
+                                                    }
+                                                    datePoints << datePoint
+                                                    metricDatePointSums.total += reportRow.getValue()
+                                                    int monthCount = metricDatePointSums.get(datePoint) ?: 0
+                                                    monthCount += reportRow.getValue()
+                                                    metricDatePointSums.put(datePoint, monthCount)
+                                                    c5counts.put(metricType, metricDatePointSums)
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }

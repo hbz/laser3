@@ -2129,7 +2129,7 @@ class LicenseService {
                         DocumentLabel('license.reference')
                         paragraphableProps.each { PropertyDefinition propDef ->
                             if(isParagraphSet(licPropertyMap, propDef)) {
-                                TextElement(id: "lp_${toSnakeCase(propDef)}_01") {
+                                TextElement(id: "lp_${toSnakeCase(propDef.name)}_01") {
                                     SortNumber(licPropertyMap.get(propDef).getParagraphNumber())
                                     Text(licPropertyMap.get(propDef).getParagraph())
                                 }
@@ -2214,7 +2214,7 @@ class LicenseService {
         boolean isValueSet = false
         int i = 0
         //check if not stuck in infinite loop
-        while(!isValueSet || i < propDefs.size()) {
+        while(!isValueSet && i < propDefs.size()) {
             PropertyDefinition pd = propDefs[i]
             if(licPropertyMap.containsKey(pd)) {
                 isValueSet = licPropertyMap.get(pd).getValue() != null
