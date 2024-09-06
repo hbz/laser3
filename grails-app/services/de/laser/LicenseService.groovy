@@ -1361,7 +1361,7 @@ class LicenseService {
         Set<PropertyDefinition> agentDefinitionProps = [PropertyStore.LIC_AUTHORIZED_USERS, PropertyStore.LIC_LOCAL_AUTHORIZED_USER_DEFINITION, PropertyStore.LIC_USAGE_STATISTICS_ADDRESSEE],
         timePointDefinitionProps = [PropertyStore.LIC_OA_FIRST_DATE, PropertyStore.LIC_OA_LAST_DATE, PropertyStore.LIC_PERPETUAL_COVERAGE_FROM, PropertyStore.LIC_PERPETUAL_COVERAGE_TO],
         generalUsageStatementProps = [PropertyStore.LIC_ALUMNI_ACCESS, PropertyStore.LIC_CONCURRENT_USERS, PropertyStore.LIC_CONFORMITY_WITH_URHG, PropertyStore.LIC_DISTANCE_EDUCATION,
-                                      PropertyStore.LIC_FAIR_USE_CLAUSE_INDICATOR, PropertyStore.LIC_METHOD_OF_AUTHENTICATION, PropertyStore.LIC_PARTNERS_ACCESS, PropertyStore.LIC_REMOTE_ACCESS,
+                                      PropertyStore.LIC_FAIR_USE_CLAUSE_INDICATOR, PropertyStore.LIC_PARTNERS_ACCESS, PropertyStore.LIC_REMOTE_ACCESS,
                                       PropertyStore.LIC_SINGLE_USER_ACCESS, PropertyStore.LIC_WALK_IN_ACCESS, PropertyStore.LIC_WIFI_ACCESS],
         coursePackUsageStatementProps = [PropertyStore.LIC_COURSE_PACK_ELECTRONIC, PropertyStore.LIC_COURSE_PACK_PRINT, PropertyStore.LIC_COURSE_RESERVE_ELECTRONIC, PropertyStore.LIC_COURSE_RESERVE_PRINT],
         interlibraryLoanUsageStatementProps = [PropertyStore.LIC_ILL_ELECTRONIC, PropertyStore.LIC_ILL_PRINT_OR_FAX, PropertyStore.LIC_ILL_RECORD_KEEPING_REQUIRED, PropertyStore.LIC_ILL_SECURE_ELECTRONIC_TRANSMISSION],
@@ -1723,16 +1723,16 @@ class LicenseService {
                                     }
                                 }
                                 //value xor paragraph
-                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_COURSE_RESERVE_TERM_NOTE)) {
-                                    Annotation {
-                                        AnnotationType('onixPL:SpecialConditions')
-                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_COURSE_RESERVE_TERM_NOTE.id).getParagraph())
-                                    }
-                                }
-                                else {
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_COURSE_RESERVE_TERM_NOTE)) {
                                     Annotation {
                                         AnnotationType('onixPL:Interpretation')
                                         AnnotationText(licPropertyMap.get(PropertyStore.LIC_COURSE_RESERVE_TERM_NOTE.id).getValue())
+                                    }
+                                }
+                                else if(isParagraphSet(licPropertyMap, PropertyStore.LIC_COURSE_RESERVE_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:SpecialConditions')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_COURSE_RESERVE_TERM_NOTE.id).getParagraph())
                                     }
                                 }
                                 if(isParagraphSet(licPropertyMap, PropertyStore.LIC_COURSE_PACK_ELECTRONIC)) {
@@ -1745,7 +1745,7 @@ class LicenseService {
                                     LicenseTextLink(href: 'lp_course_pack_term_note_01')
                                 }
                                 if(isParagraphSet(licPropertyMap, PropertyStore.LIC_COURSE_RESERVE_ELECTRONIC)) {
-                                    LicenseTextLink(href: 'lp_course_reserve_electronic_01')
+                                    LicenseTextLink(href: 'lp_course_reserve_electronic_cached_01')
                                 }
                                 if(isParagraphSet(licPropertyMap, PropertyStore.LIC_COURSE_RESERVE_PRINT)) {
                                     LicenseTextLink(href: 'lp_course_reserve_print_01')
@@ -1840,16 +1840,16 @@ class LicenseService {
                                 UsageType('onixPL:SupplyCopy')
                                 UsageStatus(usageStatus)
                                 //license property ILL term note - value xor paragraph; include everywhere (to be sure)
-                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ILL_TERM_NOTE)) {
-                                    Annotation {
-                                        AnnotationType('onixPL:SpecialConditions')
-                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_ILL_TERM_NOTE.id).getParagraph())
-                                    }
-                                }
-                                else {
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_ILL_TERM_NOTE)){
                                     Annotation {
                                         AnnotationType('onixPL:Interpretation')
                                         AnnotationText(licPropertyMap.get(PropertyStore.LIC_ILL_TERM_NOTE.id).getValue())
+                                    }
+                                }
+                                else if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ILL_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:SpecialConditions')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_ILL_TERM_NOTE.id).getParagraph())
                                     }
                                 }
                                 if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ILL_ELECTRONIC))
@@ -1881,16 +1881,16 @@ class LicenseService {
                                 UsageStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_ELECTRONIC_LINK.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.USAGE_STATUS_CODE))
                                 //license property Scholarly sharing term note
                                 //value xor paragraph
-                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_SCHOLARLY_SHARING_TERM_NOTE)) {
-                                    Annotation {
-                                        AnnotationType('onixPL:SpecialConditions')
-                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_SCHOLARLY_SHARING_TERM_NOTE.id).getParagraph())
-                                    }
-                                }
-                                else {
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_SCHOLARLY_SHARING_TERM_NOTE)) {
                                     Annotation {
                                         AnnotationType('onixPL:Interpretation')
                                         AnnotationText(licPropertyMap.get(PropertyStore.LIC_SCHOLARLY_SHARING_TERM_NOTE.id).getValue())
+                                    }
+                                }
+                                else if(isParagraphSet(licPropertyMap, PropertyStore.LIC_SCHOLARLY_SHARING_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:SpecialConditions')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_SCHOLARLY_SHARING_TERM_NOTE.id).getParagraph())
                                     }
                                 }
                                 if(isParagraphSet(licPropertyMap, PropertyStore.LIC_SCHOLARLY_SHARING))
@@ -1912,16 +1912,16 @@ class LicenseService {
                                 UsageType('onixPL:PrintCopy')
                                 UsageStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_PRINT_COPY.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.USAGE_STATUS_CODE))
                                 //value xor paragraph
-                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_PRINT_COPY_TERM_NOTE)) {
-                                    Annotation {
-                                        AnnotationType('onixPL:SpecialConditions')
-                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_PRINT_COPY_TERM_NOTE.id).getParagraph())
-                                    }
-                                }
-                                else {
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_PRINT_COPY_TERM_NOTE)) {
                                     Annotation {
                                         AnnotationType('onixPL:Interpretation')
                                         AnnotationText(licPropertyMap.get(PropertyStore.LIC_PRINT_COPY_TERM_NOTE.id).getValue())
+                                    }
+                                }
+                                else if(isParagraphSet(licPropertyMap, PropertyStore.LIC_PRINT_COPY_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:SpecialConditions')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_PRINT_COPY_TERM_NOTE.id).getParagraph())
                                     }
                                 }
                                 LicenseTextLink(href: 'lp_print_copy_01') //license property Print Copy
@@ -1935,7 +1935,7 @@ class LicenseService {
                         if(isValueSet(licPropertyMap, PropertyStore.LIC_TDM)) {
                             Usage {
                                 UsageType('onixPL:UseForDataMining')
-                                UsageStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_TDM).getRefValue(), License.ONIXPL_CONTROLLED_LIST.USAGE_STATUS_CODE))
+                                UsageStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_TDM.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.USAGE_STATUS_CODE))
                                 //license property Text- and Datamining Restrictions
                                 if(isValueSet(licPropertyMap, PropertyStore.LIC_TDM_RESTRICTIONS)) {
                                     Annotation {
@@ -2404,6 +2404,6 @@ class LicenseService {
     }
 
     String toSnakeCase(String input) {
-        input.replaceAll(/[:()-]/, "").replaceAll(/ /,"_").toLowerCase()
+        input.replaceAll(/[:()-]/, "").replaceAll(/[ \/]/,"_").toLowerCase()
     }
 }
