@@ -1637,13 +1637,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     List<String> supportedLibrarySystemsB = vendorRecord.supportedLibrarySystems.collect { slsB -> slsB.supportedLibrarySystem },
                                  electronicBillingsB = vendorRecord.electronicBillings.collect { ebB -> ebB.electronicBilling },
                                  invoiceDispatchsB = vendorRecord.invoiceDispatchs.collect { idiB -> idiB.invoiceDispatch },
-                                 electronicDeliveryDelaysB = vendorRecord.electronicDeliveryDelays.collect { eddnB -> eddnB.electronicDeliveryDelay },
-                                 packagesB = vendorRecord.packages.collect { pkgB -> pkgB.packageUuid }
+                                 electronicDeliveryDelaysB = vendorRecord.electronicDeliveryDelays.collect { eddnB -> eddnB.electronicDeliveryDelay }
                     if(vendor.packages) {
+                        PackageVendor.executeUpdate('delete from PackageVendor pv where pv.vendor = :vendor', [vendor: vendor]) //cascading ...
+                        /*
                         vendor.packages.each { PackageVendor pvA ->
                             if(!(pvA.pkg.gokbId in packagesB))
                                 pvA.delete()
                         }
+                        */
                     }
                     vendorRecord.packages.each { Map packageData ->
                         Package pkg = Package.findByGokbId(packageData.packageUuid)
