@@ -745,12 +745,12 @@
                                 <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, institution, RDStore.COST_ITEM_DELETED, RefdataValue.get(Long.valueOf(selectedCostItemElementID)))}"
                                         var="costItem">
                                     <g:set var="sumOldCostItem"
-                                           value="${sumOldCostItem + costItem.costInBillingCurrency ?: 0}"/>
+                                           value="${sumOldCostItem + (costItem.costInBillingCurrency ?: 0)}"/>
                                     <g:set var="sumOldCostItemAfterTax"
-                                           value="${sumOldCostItemAfterTax + costItem.costInBillingCurrencyAfterTax ?: 0}"/>
+                                           value="${sumOldCostItemAfterTax + (costItem.costInBillingCurrencyAfterTax ?: 0)}"/>
 
-                                    <g:set var="oldCostItem" value="${costItem.costInBillingCurrency ?: null}"/>
-                                    <g:set var="oldCostItemAfterTax" value="${costItem.costInBillingCurrencyAfterTax ?: null}"/>
+                                    <g:set var="oldCostItem" value="${costItem.costInBillingCurrency ?: 0.0}"/>
+                                    <g:set var="oldCostItemAfterTax" value="${costItem.costInBillingCurrencyAfterTax ?: 0.0}"/>
 
                                     <tr>
                                         <td>
@@ -798,9 +798,9 @@
                                 <g:each in="${costItems}"
                                         var="costItem">
                                     <g:set var="sumSurveyCostItem"
-                                           value="${sumSurveyCostItem + costItem.costInBillingCurrency ?: 0}"/>
+                                           value="${sumSurveyCostItem + (costItem.costInBillingCurrency ?: 0)}"/>
                                     <g:set var="sumSurveyCostItemAfterTax"
-                                           value="${sumSurveyCostItemAfterTax + costItem.costInBillingCurrencyAfterTax ?: 0}"/>
+                                           value="${sumSurveyCostItemAfterTax + (costItem.costInBillingCurrencyAfterTax ?: 0)}"/>
 
                                     <tr>
                                         <td>
@@ -819,11 +819,11 @@
                                             <g:if test="${oldCostItem || oldCostItemAfterTax}">
 
                                                 <strong><g:formatNumber
-                                                        number="${((costItem.costInBillingCurrencyAfterTax - oldCostItemAfterTax) / oldCostItemAfterTax) * 100}"
+                                                        number="${(((costItem.costInBillingCurrencyAfterTax ?: 0) - oldCostItemAfterTax) / oldCostItemAfterTax) * 100}"
                                                         minFractionDigits="2"
                                                         maxFractionDigits="2" type="number"/>%</strong>
 
-                                                (<g:formatNumber number="${((costItem.costInBillingCurrency - oldCostItem) / oldCostItem) * 100}"
+                                                (<g:formatNumber number="${(((costItem.costInBillingCurrency ?: 0) - oldCostItem) / oldCostItem) * 100}"
                                                                  minFractionDigits="2"
                                                                  maxFractionDigits="2" type="number"/>%)
 
@@ -895,9 +895,9 @@
                                 <g:each in="${costItems}"
                                         var="costItem">
                                     <g:set var="sumSurveyCostItem"
-                                           value="${sumSurveyCostItem + costItem.costInBillingCurrency ?: 0}"/>
+                                           value="${sumSurveyCostItem + (costItem.costInBillingCurrency ?: 0)}"/>
                                     <g:set var="sumSurveyCostItemAfterTax"
-                                           value="${sumSurveyCostItemAfterTax + costItem.costInBillingCurrencyAfterTax ?: 0}"/>
+                                           value="${sumSurveyCostItemAfterTax + (costItem.costInBillingCurrencyAfterTax ?: 0)}"/>
 
                                     <tr>
                                         <td>
@@ -916,11 +916,11 @@
                                             <g:if test="${oldCostItem || oldCostItemAfterTax}">
 
                                                 <strong><g:formatNumber
-                                                        number="${((costItem.costInBillingCurrencyAfterTax - oldCostItemAfterTax) / oldCostItemAfterTax) * 100}"
+                                                        number="${(((costItem.costInBillingCurrencyAfterTax ?: 0) - oldCostItemAfterTax) / oldCostItemAfterTax) * 100}"
                                                         minFractionDigits="2"
                                                         maxFractionDigits="2" type="number"/>%</strong>
 
-                                                (<g:formatNumber number="${((costItem.costInBillingCurrency - oldCostItem) / oldCostItem) * 100}"
+                                                (<g:formatNumber number="${(((costItem.costInBillingCurrency ?: 0) - oldCostItem) / oldCostItem) * 100}"
                                                                  minFractionDigits="2"
                                                                  maxFractionDigits="2" type="number"/>%)
 
