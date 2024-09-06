@@ -193,7 +193,7 @@
         <g:if test="${data.count > 0 && data.sums.billingSums}">
 
             <tr>
-                <th colspan="${wideColspan}">
+                <th class="control-label" colspan="${wideColspan}">
                     ${message(code:'financials.totalCost')}
                 </th>
             </tr>

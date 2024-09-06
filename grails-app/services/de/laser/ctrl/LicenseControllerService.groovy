@@ -111,9 +111,22 @@ class LicenseControllerService {
         if(!clone.license){
             clone.license = result.license.id
         }
+
         Map notNeededOnlySetCloneParams = setSubscriptionFilterData(clone)
-        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(clone)
-        result.subsCount   = result.license ? Subscription.executeQuery( "select count(*) " + tmpQ[0].split('order by')[0] , tmpQ[1] )[0] : 0
+        if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
+            Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
+            Map<String,Object> queryParams = [lic:result.license, subscriberRoleTypes:subscriberRoleTypes, linkType:RDStore.LINKTYPE_LICENSE]
+            String whereClause = ""
+            if (clone.status) {
+                whereClause += " and s.status.id = :status"
+                queryParams.status = clone.long('status')
+            }
+            String query = "select count(*) from Links l join l.destinationSubscription s join s.orgRelations oo where l.sourceLicense = :lic and l.linkType = :linkType and oo.roleType in :subscriberRoleTypes ${whereClause} "
+            result.subsCount = Subscription.executeQuery(query.split('order by')[0], queryParams)[0]
+        }else {
+            List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(clone)
+            result.subsCount   = Subscription.executeQuery( "select count(*) " + tmpQ[0].split('order by')[0] , tmpQ[1] )[0]
+        }
 
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)

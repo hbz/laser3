@@ -1015,6 +1015,7 @@ class SurveyController {
 
         ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-NR", "DEAL-ID"]
         titles.addAll([message(code: 'org.customerIdentifier'),
+                       message(code: 'org.sortname.label'), message(code: 'default.name.label'),
                        message(code: 'financials.costItemElement'),
                        message(code: 'default.status.label'),
                        message(code: 'myinst.financeImport.elementSign'),
@@ -1043,7 +1044,8 @@ class SurveyController {
             }else{
                 row.add('')
             }
-
+            row.add(org.sortname)
+            row.add(org.name)
             row.add(RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.getI10n('value'))
             row.add(RDStore.COST_ITEM_ACTUAL.getI10n('value'))
             row.add(RDStore.CIEC_POSITIVE.getI10n('value'))

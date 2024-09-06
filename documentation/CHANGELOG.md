@@ -7,6 +7,16 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      06.09.2024  rc-3.4  3.4.8       Andreas Bug         Kaskadierungsfehler bei Paket-Lieferant-Verknüpfungen behoben
+
+5910    04.09.2024  rc-3.4  3.4.8       Andreas Bug         Abfragefehler bei Merkmalsverwaltung behoben
+
+5904    02.09.2024  rc-3.4  3.4.8       Andreas Bug         Pfad im Erklärungstext angepasst
+
+5895    02.09.2024  rc-3.4  3.4.8       Andreas Bug         500er bei der Ausgabe von Anbietern behoben
+
+5881    02.09.2024  rc-3.4  3.4.8       Andreas Bug         inkorrekte Ausgaben bei den Exporten behoben
+
 5869    22.08.2024  rc-3.4  3.4.7       David   Bug         500er Export Adressbuch
 
 5868    22.08.2024  rc-3.4  3.4.7       David   Bug         Adressbuch: Keine Suche nach Anbieter/Lieferant/Einrichtung
