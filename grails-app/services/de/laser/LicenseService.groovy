@@ -1364,22 +1364,25 @@ class LicenseService {
                                       PropertyStore.LIC_FAIR_USE_CLAUSE_INDICATOR, PropertyStore.LIC_PARTNERS_ACCESS, PropertyStore.LIC_REMOTE_ACCESS,
                                       PropertyStore.LIC_SINGLE_USER_ACCESS, PropertyStore.LIC_WALK_IN_ACCESS, PropertyStore.LIC_WIFI_ACCESS],
         coursePackUsageStatementProps = [PropertyStore.LIC_COURSE_PACK_ELECTRONIC, PropertyStore.LIC_COURSE_PACK_PRINT, PropertyStore.LIC_COURSE_RESERVE_ELECTRONIC, PropertyStore.LIC_COURSE_RESERVE_PRINT],
-        interlibraryLoanUsageStatementProps = [PropertyStore.LIC_ILL_ELECTRONIC, PropertyStore.LIC_ILL_PRINT_OR_FAX, PropertyStore.LIC_ILL_RECORD_KEEPING_REQUIRED, PropertyStore.LIC_ILL_SECURE_ELECTRONIC_TRANSMISSION],
-        paragraphableProps = [PropertyStore.LIC_ACCESSIBILITY_COMPLIANCE, PropertyStore.LIC_ARCHIVAL_COPY_CONTENT, PropertyStore.LIC_ARCHIVAL_COPY_COST, PropertyStore.LIC_ARCHIVAL_COPY_PERMISSION, PropertyStore.LIC_ARCHIVAL_COPY_TIME,
-                              PropertyStore.LIC_CHANGE_TO_LICENSED_MATERIAL, PropertyStore.LIC_CITATION_REQUIREMENT_DETAIL, PropertyStore.LIC_COMPLETENESS_OF_CONTENT_CLAUSE,
-                              PropertyStore.LIC_CONCURRENCY_WITH_PRINT_VERSION, PropertyStore.LIC_CONTENT_WARRANTY, PropertyStore.LIC_CONT_ACCESS_PAYMENT_NOTE,
-                              PropertyStore.LIC_CONT_ACCESS_RESTRICTIONS, PropertyStore.LIC_CONT_ACCESS_TITLE_TRANSFER, PropertyStore.LIC_COURSE_PACK_ELECTRONIC, PropertyStore.LIC_COURSE_PACK_PRINT, PropertyStore.LIC_COURSE_PACK_TERM_NOTE,
-                              PropertyStore.LIC_COURSE_RESERVE_ELECTRONIC , PropertyStore.LIC_COURSE_RESERVE_PRINT, PropertyStore.LIC_COURSE_RESERVE_TERM_NOTE,
-                              PropertyStore.LIC_DIGITAL_COPY, PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE, PropertyStore.LIC_DOCUMENT_DELIVERY_SERVICE, PropertyStore.LIC_ELECTRONIC_LINK_TERM_NOTE, PropertyStore.LIC_ELECTRONIC_LINK,
-                              PropertyStore.LIC_ILL_ELECTRONIC, PropertyStore.LIC_ILL_PRINT_OR_FAX, PropertyStore.LIC_ILL_RECORD_KEEPING_REQUIRED, PropertyStore.LIC_ILL_SECURE_ELECTRONIC_TRANSMISSION, PropertyStore.LIC_ILL_TERM_NOTE,
-                              PropertyStore.LIC_OA_FIRST_DATE, PropertyStore.LIC_OA_LAST_DATE, PropertyStore.LIC_OA_NOTE, PropertyStore.LIC_OPEN_ACCESS,
-                              PropertyStore.LIC_OTHER_USE_RESTRICTION_NOTE, PropertyStore.LIC_MAINTENANCE_WINDOW, PropertyStore.LIC_METADATA_DELIVERY, PropertyStore.LIC_METADATA_RELATED_CONTRACTUAL_TERMS,
-                              PropertyStore.LIC_POST_CANCELLATION_ONLINE_ACCESS, PropertyStore.LIC_PERFORMANCE_WARRANTY, PropertyStore.LIC_PERPETUAL_COVERAGE_FROM, PropertyStore.LIC_PERPETUAL_COVERAGE_NOTE, PropertyStore.LIC_PERPETUAL_COVERAGE_TO,
-                              PropertyStore.LIC_PRINT_COPY_TERM_NOTE, PropertyStore.LIC_REMOTE_ACCESS, PropertyStore.LIC_REPOSITORY,
-                              PropertyStore.LIC_SCHOLARLY_SHARING, PropertyStore.LIC_SCHOLARLY_SHARING_TERM_NOTE,
-                              PropertyStore.LIC_TDM, PropertyStore.LIC_TDM_CHAR_COUNT, PropertyStore.LIC_TDM_RESTRICTIONS,
-                              PropertyStore.LIC_USAGE_STATISTICS_ADDRESSEE, PropertyStore.LIC_USAGE_STATISTICS_AVAILABILITY_INDICATOR, PropertyStore.LIC_UPTIME_GUARANTEE,
-                              PropertyStore.LIC_WALK_IN_ACCESS, PropertyStore.LIC_WALK_IN_USER_TERM_NOTE]
+        interlibraryLoanUsageStatementProps = [PropertyStore.LIC_ILL_ELECTRONIC, PropertyStore.LIC_ILL_PRINT_OR_FAX, PropertyStore.LIC_ILL_RECORD_KEEPING_REQUIRED, PropertyStore.LIC_ILL_SECURE_ELECTRONIC_TRANSMISSION]
+        Set<PropertyDefinition> usageTerms = [PropertyStore.LIC_DIGITAL_COPY, PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE, PropertyStore.LIC_DOCUMENT_DELIVERY_SERVICE, PropertyStore.LIC_ELECTRONIC_LINK,
+                                              PropertyStore.LIC_SCHOLARLY_SHARING, PropertyStore.LIC_SCHOLARLY_SHARING_TERM_NOTE, PropertyStore.LIC_PRINT_COPY, PropertyStore.LIC_PRINT_COPY_TERM_NOTE, PropertyStore.LIC_TDM,
+                                              PropertyStore.LIC_TDM_RESTRICTIONS, PropertyStore.LIC_TDM_CHAR_COUNT]
+        usageTerms.addAll(generalUsageStatementProps)
+        usageTerms.addAll(coursePackUsageStatementProps)
+        usageTerms.addAll(interlibraryLoanUsageStatementProps)
+        Set<PropertyDefinition> supplyTerms = [PropertyStore.LIC_ACCESSIBILITY_COMPLIANCE, PropertyStore.LIC_CHANGE_TO_LICENSED_MATERIAL, PropertyStore.LIC_COMPLETENESS_OF_CONTENT_CLAUSE,
+                                               PropertyStore.LIC_CONCURRENCY_WITH_PRINT_VERSION, PropertyStore.LIC_CONTENT_WARRANTY, PropertyStore.LIC_CONT_ACCESS_TITLE_TRANSFER,
+                                               PropertyStore.LIC_MAINTENANCE_WINDOW, PropertyStore.LIC_PERFORMANCE_WARRANTY, PropertyStore.LIC_UPTIME_GUARANTEE, PropertyStore.LIC_METADATA_DELIVERY,
+                                               PropertyStore.LIC_METADATA_RELATED_CONTRACTUAL_TERMS, PropertyStore.LIC_OA_NOTE, PropertyStore.LIC_OPEN_ACCESS, PropertyStore.LIC_OA_FIRST_DATE, PropertyStore.LIC_OA_LAST_DATE,
+                                               PropertyStore.LIC_USAGE_STATISTICS_AVAILABILITY_INDICATOR, PropertyStore.LIC_USAGE_STATISTICS_ADDRESSEE]
+        Set<PropertyDefinition> continuingAccessTerms = [PropertyStore.LIC_ARCHIVAL_COPY_CONTENT, PropertyStore.LIC_ARCHIVAL_COPY_COST, PropertyStore.LIC_ARCHIVAL_COPY_PERMISSION, PropertyStore.LIC_ARCHIVAL_COPY_TIME,
+                                                         PropertyStore.LIC_CONT_ACCESS_PAYMENT_NOTE, PropertyStore.LIC_CONT_ACCESS_RESTRICTIONS, PropertyStore.LIC_PERPETUAL_COVERAGE_FROM, PropertyStore.LIC_PERPETUAL_COVERAGE_NOTE,
+                                                         PropertyStore.LIC_PERPETUAL_COVERAGE_TO, PropertyStore.LIC_POST_CANCELLATION_ONLINE_ACCESS, PropertyStore.LIC_REPOSITORY]
+        Set<PropertyDefinition> paymentTerms = [PropertyStore.LIC_OFFSETTING, PropertyStore.LIC_PUBLISHING_FEE, PropertyStore.LIC_READING_FEE]
+        Set<PropertyDefinition> generalTerms = [PropertyStore.LIC_ALL_RIGHTS_RESERVED_INDICATOR, PropertyStore.LIC_APPLICABLE_COPYRIGHT_LAW, PropertyStore.LIC_BRANDING, PropertyStore.LIC_CANCELLATION_ALLOWANCE,
+                                                PropertyStore.LIC_CLICKWRAP_MODIFICATION]
+        Set<PropertyDefinition> paragraphableProps = usageTerms+supplyTerms+continuingAccessTerms+paymentTerms+generalTerms
         Set<String> possibleUsageStatus = ['onixPL:InterpretedAsPermitted', 'onixPL:InterpretedAsProhibited', 'onixPL:Permitted', 'onixPL:Prohibited', 'onixPL:SilentUninterpreted', 'onixPL:NotApplicable'],
         usedGeneralUsageStatus = [], usedCoursePackUsageStatus = [], usedILLUsageStatus = []
         possibleUsageStatus.each { String usageStatus ->
@@ -1878,7 +1881,7 @@ class LicenseService {
                         if(isValueSet(licPropertyMap, PropertyStore.LIC_SCHOLARLY_SHARING)) {
                             Usage {
                                 UsageType('onixPL:MakeAvailable')
-                                UsageStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_ELECTRONIC_LINK.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.USAGE_STATUS_CODE))
+                                UsageStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_SCHOLARLY_SHARING.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.USAGE_STATUS_CODE))
                                 //license property Scholarly sharing term note
                                 //value xor paragraph
                                 if(isValueSet(licPropertyMap, PropertyStore.LIC_SCHOLARLY_SHARING_TERM_NOTE)) {
@@ -1958,7 +1961,7 @@ class LicenseService {
                             }
                         }
                     }
-                    if(existsAnyOf(licPropertyMap, 'SupplyTerms')) {
+                    if(existsAnyOf(licPropertyMap, supplyTerms)) {
                         SupplyTerms {
                             //license property Accessibility compliance
                             if(isValueSet(licPropertyMap, PropertyStore.LIC_ACCESSIBILITY_COMPLIANCE)) {
@@ -2138,7 +2141,7 @@ class LicenseService {
                             }
                         }
                     }
-                    if(existsAnyOf(licPropertyMap, 'ContinuingAccessTerms')) {
+                    if(existsAnyOf(licPropertyMap, continuingAccessTerms)) {
                         ContinuingAccessTerms {
                             if(isValueOfAnySet(licPropertyMap, [PropertyStore.LIC_ARCHIVAL_COPY_CONTENT, PropertyStore.LIC_ARCHIVAL_COPY_COST, PropertyStore.LIC_ARCHIVAL_COPY_PERMISSION, PropertyStore.LIC_ARCHIVAL_COPY_TIME])) {
                                 //any of Archival Copy Content and Archival Copy: X
@@ -2243,6 +2246,185 @@ class LicenseService {
                             }
                         }
                     }
+                    if(existsAnyOf(licPropertyMap, paymentTerms)) {
+                        PaymentTerms {
+                            //license property Offsetting
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_OFFSETTING) || isParagraphSet(licPropertyMap, PropertyStore.LIC_OFFSETTING)) {
+                                PaymentTerm {
+                                    PaymentTermType('onixPL:OpenAccessOffset')
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_OFFSETTING)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:Interpretation')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_OFFSETTING.id).getValue())
+                                        }
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_OFFSETTING))
+                                        LicenseTextLink(href: 'lp_offsetting_01')
+                                }
+                            }
+                            //license properties Publishing Fee and Reading Fee
+                            if(isValueOfAnySet(licPropertyMap, [PropertyStore.LIC_PUBLISHING_FEE, PropertyStore.LIC_READING_FEE]) || isParagraphOfAnySet(licPropertyMap, [PropertyStore.LIC_PUBLISHING_FEE, PropertyStore.LIC_READING_FEE])) {
+                                PaymentTerm {
+                                    PaymentTermType('onixPL:PaymentConditions')
+                                    //license property Publishing Fee
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_PUBLISHING_FEE)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:Interpretation')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_PUBLISHING_FEE.id).getValue())
+                                        }
+                                    }
+                                    //license property Reading Fee
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_READING_FEE)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:Interpretation')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_READING_FEE.id).getValue())
+                                        }
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_PUBLISHING_FEE))
+                                        LicenseTextLink(href: 'lp_publishing_fee_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_READING_FEE))
+                                        LicenseTextLink(href: 'lp_reading_fee_01')
+                                }
+                            }
+                        }
+                    }
+                    if(existsAnyOf(licPropertyMap, generalTerms)) {
+                        /*
+                        GeneralTerms {
+                            GeneralTerm {
+                                //license property All rights reserved indicator
+                                GeneralTermType('onixPL:AllRightsReserved')
+                                TermStatus('onixPL:Yes')
+                                LicenseTextLink(href: 'lp_all_rights_reserved_indicator_01')
+                            }
+                            GeneralTerm {
+                                //license property Applicable copyright law
+                                GeneralTermType('onixPL:ApplicableCopyrightLaw')
+                                LicenseTextLink(href: 'lp_applicable_copyright_law_01')
+                            }
+                            GeneralTerm {
+                                //license property Branding
+                                GeneralTermType('onixPL:UseOfDigitalWatermarking')
+                                LicenseTextLink(href: 'lp_branding_01')
+                            }
+                            GeneralTerm {
+                                //license property Cancellation allowance
+                                GeneralTermType('onixPL:TerminationWithoutPrejudiceToRights')
+                                LicenseTextLink(href: 'lp_cancellation_allowance_01')
+                            }
+                            GeneralTerm {
+                                //license property Clickwrap modification
+                                GeneralTermType('onixPL:ClickThroughOverride')
+                                TermStatus('onixPL:No')
+                                LicenseTextLink(href: 'lp_clickwrap_modification_01')
+                            }
+                            GeneralTerm {
+                                //license property Confidentiality of agreement
+                                GeneralTermType('onixPL:ConfidentialityOfAgreement')
+                                LicenseTextLink(href: 'lp_confidentiality_of_agreement_01')
+                            }
+                            GeneralTerm {
+                                //license property Cure period for breach
+                                GeneralTermType('onixPL:TerminationByBreach')
+                                LicenseTextLink(href: 'lp_cure_period_for_breach_01')
+                                GeneralTermQuantity {
+                                    GeneralTermQuantityType('onixPL:PeriodForCureOfBreach')
+                                    //extractor script "30 Tage" -> 30 and onixPL:Days; throw exception if mapping failed with indicating correct values
+                                    //parser must be fuzzy; there are values like "3 Monate zum Ende eines Ein-Jahres-Berechnungszeitraums"; that needs to be parsed as well
+                                    QuantityDetail {
+                                        Value(30)
+                                        QuantityUnit('onixPL:Days')
+                                    }
+                                }
+                            }
+                            GeneralTerm {
+                                //license property Data protection override
+                                GeneralTermType('onixPL:DatabaseProtectionOverride')
+                                TermStatus('onixPL:Yes')
+                                LicenseTextLink(href: 'lp_data_protection_override_01')
+                            }
+                            GeneralTerm {
+                                //license property Governing jurisdiction
+                                GeneralTermType('onixPL:Jurisdiction')
+                                LicenseTextLink(href: 'lp_governing_jurisdiction_01')
+                            }
+                            GeneralTerm {
+                                //license property Governing law
+                                GeneralTermType('onixPL:GoverningLaw')
+                                LicenseTextLink(href: 'lp_governing_law_01')
+                            }
+                            GeneralTerm {
+                                //license property Indemnification by licensee clause indicator
+                                GeneralTermType('onixPL:IndemnityAgainstBreach')
+                                TermStatus('onixPL:No') //if exists
+                                LicenseTextLink(href: 'lp_indemnification_by_licensee_clause_indicator_01')
+                            }
+                            GeneralTerm {
+                                //license property Indemnification by licensor
+                                GeneralTermType('onixPL:LicensorIndemnity')
+                                TermStatus('onixPL:Uncertain') //if exists, maps y_n_o Other
+                                LicenseTextLink(href: 'lp_indemnification_by_licensor_01')
+                            }
+                            GeneralTerm {
+                                //license property Intellectual property warranty
+                                GeneralTermType('onixPL:LicensorIntellectualPropertyWarranty')
+                                TermStatus('onixPL:Yes') //its refdata value
+                                LicenseTextLink(href: 'lp_intellectual_property_warranty_01')
+                            }
+                            GeneralTerm {
+                                //license property Licensee obligations
+                                GeneralTermType('onixPL:NotificationOfLicenseeIPAddresses')
+                                LicenseTextLink(href: 'lp_licensee_obligations_01')
+                            }
+                            GeneralTerm {
+                                //license properties Licensee termination condition, Licensee termination notice period, Licensee termination right
+                                GeneralTermType('onixPL:LicenseeTerminationRight')
+                                TermStatus('onixPL:Uncertain') //refdata value of License termination right
+                                Annotation {
+                                    AnnotationType('onixPL:Interpretation')
+                                    AnnotationText('Sollte die Erhöhung mehr als 5% betragen, steht den K0NS0RTIAL TEILNEHMERN ein außerordentliches Kündigungsrecht zu.') //license property Licensee termination condition
+                                }
+                                LicenseTextLink(href: 'lp_licensee_termination_notice_period_01') //license property Licensee termination notice period
+                                LicenseTextLink(href: 'lp_licensee_termination_right_01') //license property Licensee termination right
+                            }
+                            GeneralTerm {
+                                //license properties Licensor termination condition, Licensor termination notice period, Licensor termination right
+                                GeneralTermType('onixPL:LicensorTerminationRight')
+                                TermStatus('onixPL:Yes') //refdata value of Licenor termination right
+                                Annotation {
+                                    AnnotationType('onixPL:Interpretation')
+                                    AnnotationText('Sollte Preselect eine grobe Missnutzungen der Inhalte feststellen, wird die Hochschule innerhalb von 4 Wochen versuchen diese zubeheben. Sollte dies nicht möglich sein, behält sich Preselect ein außerordentliches Kündigungsrecht und/oder das Abschalten der Hochschule vor.') //license property Licensor termination condition
+                                }
+                                LicenseTextLink(href: 'lp_licensor_termination_notice_period_01') //license property Licensor termination notice period
+                                LicenseTextLink(href: 'lp_licensor_termination_right_01') //license property Licensor termination right
+                            }
+                            GeneralTerm {
+                                //license property Multi Year License Termination
+                                GeneralTermType('onixPL:MemberLeavingConsortium')
+                                Annotation {
+                                    AnnotationType('onixPL:Interpretation')
+                                    AnnotationText('monatlich in 2022') //we will map here the license property value
+                                }
+                                LicenseTextLink(href: 'lp_multi_year_license_termination_01')
+                            }
+                            GeneralTerm {
+                                //license property Termination requirement note
+                                GeneralTermType('onixPL:ActionOnTermination')
+                                Annotation {
+                                    AnnotationType('onixPL:ERMI:TerminationRequirementsNote')
+                                    AnnotationText('jede Kündigung bedarf der Schriftform')
+                                }
+                                LicenseTextLink(href: 'lp_termination_requirement_note_01')
+                            }
+                            GeneralTerm {
+                                //license property User information confidentiality
+                                GeneralTermType('onixPL:ConfidentialityOfUserData')
+                                TermStatus('onixPL:Uncertain')
+                                LicenseTextLink(href: 'lp_user_information_confidentiality_01')
+                            }
+                        }
+                        */
+                    }
                     //DocumentLabel: substituted by LicenseProperty paragraph, SortNumber: substituted by 0; may be removed completely if no productive use is possible, proposal character!
                     //general: create iff license.paragraph != null!
                     LicenseDocumentText {
@@ -2330,10 +2512,9 @@ class LicenseService {
         isValueSet
     }
 
-    boolean isValueOfAnySet(Map<Long, LicenseProperty> licPropertyMap, List<PropertyDefinition> propDefs) {
+    boolean isValueOfAnySet(Map<Long, LicenseProperty> licPropertyMap, Collection<PropertyDefinition> propDefs) {
         boolean isValueSet = false
         int i = 0
-        //check if not stuck in infinite loop
         while(!isValueSet && i < propDefs.size()) {
             PropertyDefinition pd = propDefs[i]
             if(licPropertyMap.containsKey(pd.id)) {
@@ -2344,46 +2525,7 @@ class LicenseService {
         isValueSet
     }
 
-    boolean existsAnyOf(Map<Long, LicenseProperty> licPropertyMap, String termSet) {
-        List<PropertyDefinition> checkList
-        switch(termSet) {
-            case 'SupplyTerms': checkList = [
-                    PropertyStore.LIC_ACCESSIBILITY_COMPLIANCE,
-                    PropertyStore.LIC_CHANGE_TO_LICENSED_MATERIAL,
-                    PropertyStore.LIC_COMPLETENESS_OF_CONTENT_CLAUSE,
-                    PropertyStore.LIC_CONCURRENCY_WITH_PRINT_VERSION,
-                    PropertyStore.LIC_CONTENT_WARRANTY,
-                    PropertyStore.LIC_CONT_ACCESS_TITLE_TRANSFER,
-                    PropertyStore.LIC_MAINTENANCE_WINDOW,
-                    PropertyStore.LIC_PERFORMANCE_WARRANTY,
-                    PropertyStore.LIC_UPTIME_GUARANTEE,
-                    PropertyStore.LIC_METADATA_DELIVERY,
-                    PropertyStore.LIC_METADATA_RELATED_CONTRACTUAL_TERMS,
-                    PropertyStore.LIC_OA_NOTE,
-                    PropertyStore.LIC_OPEN_ACCESS,
-                    PropertyStore.LIC_OA_FIRST_DATE,
-                    PropertyStore.LIC_OA_LAST_DATE,
-                    PropertyStore.LIC_USAGE_STATISTICS_AVAILABILITY_INDICATOR,
-                    PropertyStore.LIC_USAGE_STATISTICS_ADDRESSEE
-            ]
-                break
-            case 'ContinuingAccessTerms': checkList = [
-                    PropertyStore.LIC_ARCHIVAL_COPY_CONTENT,
-                    PropertyStore.LIC_ARCHIVAL_COPY_COST,
-                    PropertyStore.LIC_ARCHIVAL_COPY_PERMISSION,
-                    PropertyStore.LIC_ARCHIVAL_COPY_TIME,
-                    PropertyStore.LIC_CONT_ACCESS_PAYMENT_NOTE,
-                    PropertyStore.LIC_CONT_ACCESS_RESTRICTIONS,
-                    PropertyStore.LIC_PERPETUAL_COVERAGE_FROM,
-                    PropertyStore.LIC_PERPETUAL_COVERAGE_NOTE,
-                    PropertyStore.LIC_PERPETUAL_COVERAGE_TO,
-                    PropertyStore.LIC_POST_CANCELLATION_ONLINE_ACCESS,
-                    PropertyStore.LIC_REPOSITORY
-            ]
-                break
-            default: checkList = []
-                break
-        }
+    boolean existsAnyOf(Map<Long, LicenseProperty> licPropertyMap, Set<PropertyDefinition> checkList) {
         isValueOfAnySet(licPropertyMap, checkList)
     }
 
@@ -2393,6 +2535,19 @@ class LicenseService {
             isValueSet = licPropertyMap.get(pd.id).paragraph != null
         }
         isValueSet
+    }
+
+    boolean isParagraphOfAnySet(Map<Long, LicenseProperty> licPropertyMap, Collection<PropertyDefinition> propDefs) {
+        boolean isParagraphSet = false
+        int i = 0
+        while(!isParagraphSet && i < propDefs.size()) {
+            PropertyDefinition pd = propDefs[i]
+            if(licPropertyMap.containsKey(pd.id)) {
+                isParagraphSet = licPropertyMap.get(pd.id).paragraph != null
+            }
+            i++
+        }
+        isParagraphSet
     }
 
     boolean checkValueAndPermissionStatus(Map<Long, LicenseProperty> licPropertyMap, PropertyDefinition pd, String onixPLPermissionStatus) {
