@@ -1365,15 +1365,17 @@ class LicenseService {
                                       PropertyStore.LIC_SINGLE_USER_ACCESS, PropertyStore.LIC_WALK_IN_ACCESS, PropertyStore.LIC_WIFI_ACCESS],
         coursePackUsageStatementProps = [PropertyStore.LIC_COURSE_PACK_ELECTRONIC, PropertyStore.LIC_COURSE_PACK_PRINT, PropertyStore.LIC_COURSE_RESERVE_ELECTRONIC, PropertyStore.LIC_COURSE_RESERVE_PRINT],
         interlibraryLoanUsageStatementProps = [PropertyStore.LIC_ILL_ELECTRONIC, PropertyStore.LIC_ILL_PRINT_OR_FAX, PropertyStore.LIC_ILL_RECORD_KEEPING_REQUIRED, PropertyStore.LIC_ILL_SECURE_ELECTRONIC_TRANSMISSION],
-        paragraphableProps = [PropertyStore.LIC_ACCESSIBILITY_COMPLIANCE, PropertyStore.LIC_CHANGE_TO_LICENSED_MATERIAL, PropertyStore.LIC_CITATION_REQUIREMENT_DETAIL, PropertyStore.LIC_COMPLETENESS_OF_CONTENT_CLAUSE,
-                              PropertyStore.LIC_CONCURRENCY_WITH_PRINT_VERSION, PropertyStore.LIC_CONTENT_WARRANTY, PropertyStore.LIC_CONT_ACCESS_TITLE_TRANSFER,
-                              PropertyStore.LIC_COURSE_PACK_ELECTRONIC, PropertyStore.LIC_COURSE_PACK_PRINT, PropertyStore.LIC_COURSE_PACK_TERM_NOTE,
+        paragraphableProps = [PropertyStore.LIC_ACCESSIBILITY_COMPLIANCE, PropertyStore.LIC_ARCHIVAL_COPY_CONTENT, PropertyStore.LIC_ARCHIVAL_COPY_COST, PropertyStore.LIC_ARCHIVAL_COPY_PERMISSION, PropertyStore.LIC_ARCHIVAL_COPY_TIME,
+                              PropertyStore.LIC_CHANGE_TO_LICENSED_MATERIAL, PropertyStore.LIC_CITATION_REQUIREMENT_DETAIL, PropertyStore.LIC_COMPLETENESS_OF_CONTENT_CLAUSE,
+                              PropertyStore.LIC_CONCURRENCY_WITH_PRINT_VERSION, PropertyStore.LIC_CONTENT_WARRANTY, PropertyStore.LIC_CONT_ACCESS_PAYMENT_NOTE,
+                              PropertyStore.LIC_CONT_ACCESS_RESTRICTIONS, PropertyStore.LIC_CONT_ACCESS_TITLE_TRANSFER, PropertyStore.LIC_COURSE_PACK_ELECTRONIC, PropertyStore.LIC_COURSE_PACK_PRINT, PropertyStore.LIC_COURSE_PACK_TERM_NOTE,
                               PropertyStore.LIC_COURSE_RESERVE_ELECTRONIC , PropertyStore.LIC_COURSE_RESERVE_PRINT, PropertyStore.LIC_COURSE_RESERVE_TERM_NOTE,
                               PropertyStore.LIC_DIGITAL_COPY, PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE, PropertyStore.LIC_DOCUMENT_DELIVERY_SERVICE, PropertyStore.LIC_ELECTRONIC_LINK_TERM_NOTE, PropertyStore.LIC_ELECTRONIC_LINK,
                               PropertyStore.LIC_ILL_ELECTRONIC, PropertyStore.LIC_ILL_PRINT_OR_FAX, PropertyStore.LIC_ILL_RECORD_KEEPING_REQUIRED, PropertyStore.LIC_ILL_SECURE_ELECTRONIC_TRANSMISSION, PropertyStore.LIC_ILL_TERM_NOTE,
                               PropertyStore.LIC_OA_FIRST_DATE, PropertyStore.LIC_OA_LAST_DATE, PropertyStore.LIC_OA_NOTE, PropertyStore.LIC_OPEN_ACCESS,
                               PropertyStore.LIC_OTHER_USE_RESTRICTION_NOTE, PropertyStore.LIC_MAINTENANCE_WINDOW, PropertyStore.LIC_METADATA_DELIVERY, PropertyStore.LIC_METADATA_RELATED_CONTRACTUAL_TERMS,
-                              PropertyStore.LIC_PERFORMANCE_WARRANTY, PropertyStore.LIC_PRINT_COPY_TERM_NOTE, PropertyStore.LIC_REMOTE_ACCESS,
+                              PropertyStore.LIC_POST_CANCELLATION_ONLINE_ACCESS, PropertyStore.LIC_PERFORMANCE_WARRANTY, PropertyStore.LIC_PERPETUAL_COVERAGE_FROM, PropertyStore.LIC_PERPETUAL_COVERAGE_NOTE, PropertyStore.LIC_PERPETUAL_COVERAGE_TO,
+                              PropertyStore.LIC_PRINT_COPY_TERM_NOTE, PropertyStore.LIC_REMOTE_ACCESS, PropertyStore.LIC_REPOSITORY,
                               PropertyStore.LIC_SCHOLARLY_SHARING, PropertyStore.LIC_SCHOLARLY_SHARING_TERM_NOTE,
                               PropertyStore.LIC_TDM, PropertyStore.LIC_TDM_CHAR_COUNT, PropertyStore.LIC_TDM_RESTRICTIONS,
                               PropertyStore.LIC_USAGE_STATISTICS_ADDRESSEE, PropertyStore.LIC_USAGE_STATISTICS_AVAILABILITY_INDICATOR, PropertyStore.LIC_UPTIME_GUARANTEE,
@@ -2136,66 +2138,108 @@ class LicenseService {
                             }
                         }
                     }
-                    ContinuingAccessTerms {
-                        ContinuingAccessTerm {
-                            //any of Archival Copy Content and Archival Copy: X
-                            ContinuingAccessTermType('onixPL:PostCancellationFileSupply')
-                            //license property Archival Copy: Permission
-                            TermStatus('onixPL:Yes')
-                            //license property Archival Copy Content
-                            Annotation {
-                                AnnotationType('onixPL:PostCancellationFileSupplyNote')
-                                AnnotationText('With Metadata') //reference paragraph here
+                    if(existsAnyOf(licPropertyMap, 'ContinuingAccessTerms')) {
+                        ContinuingAccessTerms {
+                            if(isValueOfAnySet(licPropertyMap, [PropertyStore.LIC_ARCHIVAL_COPY_CONTENT, PropertyStore.LIC_ARCHIVAL_COPY_COST, PropertyStore.LIC_ARCHIVAL_COPY_PERMISSION, PropertyStore.LIC_ARCHIVAL_COPY_TIME])) {
+                                //any of Archival Copy Content and Archival Copy: X
+                                ContinuingAccessTerm {
+                                    ContinuingAccessTermType('onixPL:PostCancellationFileSupply')
+                                    //license property Archival Copy: Permission
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_ARCHIVAL_COPY_PERMISSION))
+                                        TermStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_ARCHIVAL_COPY_PERMISSION.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.TERM_STATUS_CODE))
+                                    //license property Archival Copy Content
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_ARCHIVAL_COPY_PERMISSION)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:PostCancellationFileSupplyNote')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_ARCHIVAL_COPY_CONTENT.id).getValue())
+                                        }
+                                    }
+                                    //license property Archival Copy: Cost
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_ARCHIVAL_COPY_COST)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:PaymentNote')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_ARCHIVAL_COPY_COST.id).getValue())
+                                        }
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ARCHIVAL_COPY_CONTENT))
+                                        LicenseTextLink(href: 'lp_archival_copy_content_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ARCHIVAL_COPY_COST))
+                                        LicenseTextLink(href: 'lp_archival_copy_cost_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ARCHIVAL_COPY_PERMISSION))
+                                        LicenseTextLink(href: 'lp_archival_copy_permission_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ARCHIVAL_COPY_TIME))
+                                        LicenseTextLink(href: 'lp_archival_copy_time_01')
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_ARCHIVAL_COPY_TIME)) {
+                                        ContinuingAccessTermRelatedTimePoint {
+                                            ContinuingAccessTermTimePointRelator('Archival Copy Permission')
+                                            RelatedTimePoint('ArchivalCopyTimePoint')
+                                        }
+                                    }
+                                }
                             }
-                            //license property Archival Copy: Cost
-                            Annotation {
-                                AnnotationType('onixPL:PaymentNote')
-                                AnnotationText('With Charge')
+                            if(isValueOfAnySet(licPropertyMap, [PropertyStore.LIC_CONT_ACCESS_PAYMENT_NOTE, PropertyStore.LIC_CONT_ACCESS_RESTRICTIONS, PropertyStore.LIC_POST_CANCELLATION_ONLINE_ACCESS, PropertyStore.LIC_REPOSITORY])) {
+                                ContinuingAccessTerm {
+                                    //license property Post Cancellation Online Access
+                                    ContinuingAccessTermType('onixPL:PostCancellationOnlineAccess')
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_POST_CANCELLATION_ONLINE_ACCESS))
+                                        TermStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_POST_CANCELLATION_ONLINE_ACCESS.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.TERM_STATUS_CODE))
+                                    //license property Continuing Access: Payment Note
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_CONT_ACCESS_PAYMENT_NOTE)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:PaymentNote')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_CONT_ACCESS_PAYMENT_NOTE.id).getValue())
+                                        }
+                                    }
+                                    //license property Continuing Access: Restrictions
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_CONT_ACCESS_RESTRICTIONS)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:PostCancellationOnlineAccessHoldingsNote')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_CONT_ACCESS_RESTRICTIONS.id).getValue())
+                                        }
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_CONT_ACCESS_PAYMENT_NOTE))
+                                        LicenseTextLink(href: 'lp_continuing_access_payment_note_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_CONT_ACCESS_RESTRICTIONS))
+                                        LicenseTextLink(href: 'lp_continuing_access_restrictions_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_POST_CANCELLATION_ONLINE_ACCESS))
+                                        LicenseTextLink(href: 'lp_post_cancellation_online_access_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_REPOSITORY))
+                                        LicenseTextLink(href: 'lp_repository_01')
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_REPOSITORY)) {
+                                        ContinuingAccessTermRelatedPlace {
+                                            ContinuingAccessTermPlaceRelator('Repository')
+                                            RelatedPlace('Repository')
+                                        }
+                                    }
+                                }
                             }
-                            LicenseTextLink(href: 'lp_archival_copy_content_01')
-                            LicenseTextLink(href: 'lp_archival_copy_cost_01')
-                            LicenseTextLink(href: 'lp_archival_copy_permission_01')
-                            ContinuingAccessTermRelatedTimePoint {
-                                ContinuingAccessTermTimePointRelator('Archival Copy Permission')
-                                RelatedTimePoint('ArchivalCopyTimePoint')
-                            }
-                        }
-                        ContinuingAccessTerm {
-                            //license property Post Cancellation Online Access
-                            ContinuingAccessTermType('onixPL:PostCancellationOnlineAccess')
-                            TermStatus('onixPL:Yes') //maps reference values; implement helper; TermStatusCode is base for RefdataCategory RDConstants.PERMISSIONS
-                            //license property Continuing Access: Payment Note
-                            Annotation {
-                                AnnotationType('onixPL:PaymentNote')
-                                AnnotationText('Hosting Fee')
-                            }
-                            //license property Continuing Access: Restrictions
-                            Annotation {
-                                AnnotationType('onixPL:PostCancellationOnlineAccessHoldingsNote')
-                                AnnotationText('Continued Access to Content (term 12 is not applicable to IOP ebooks, IOP Archive and Article Packs) 12.1 Upon termination of this Licence, where the Member: 12.1.1 is not in breach of any of the terms and conditions of this Licence; and 12.1.2 has paid all its fees in full, a Member(s) will be entitled to have continued access to the issues of the Publications dated with the calendar year in which this Licence commenced. 12.2 Where this Licence remains in force for subsequent full calendar years, and the conditions in term 12.1 apply, the Member will have continued access to the issues of the Publications under this Licence which were dated with those full calendar years (the “Available Content”). All other access shall terminate. 12.3 The Available Content will be made available via a website on payment of an annual maintenance fee and for so long as IOP provides electronic access to that content via that website. If access via a website is no longer available at any time, the Available Content will be made available on disk or some other form of electronic media. 12.4 If, at any time, IOP ceases to publish or distribute any of the Available Content then it will use its reasonable endeavours to negotiate the right for the Member(s) to continue to access it in accordance with these terms and conditions.')
-                            }
-                            LicenseTextLink(href: 'lp_post_cancellation_online_access_01')
-                            LicenseTextLink(href: 'lp_repository_01')
-                            ContinuingAccessTermRelatedPlace {
-                                ContinuingAccessTermPlaceRelator('Repository')
-                                RelatedPlace('Repository')
-                            }
-                        }
-                        ContinuingAccessTerm {
                             //license properties Perpetual coverage from, Perpetual coverage note, Perpetual coverage to
-                            ContinuingAccessTermType('onixPL:PostCancellationOnlineAccess')
-                            TermStatus('onixPL:Uncertain') //refdata value from Perpetual coverage note
-                            LicenseTextLink(href: 'lp_perpetual_coverage_from_01') //license property Perpetual coverage from
-                            LicenseTextLink(href: 'lp_perpetual_coverage_to_01') //license property Perpetual coverage to
-                            //license property Perpetual coverage from
-                            ContinuingAccessTermRelatedTimePoint {
-                                ContinuingAccessTermTimePointRelator('Perpetual coverage from')
-                                RelatedTimePoint('PerpetualCoverageFrom')
-                            }
-                            //license property Perpetual coverage to
-                            ContinuingAccessTermRelatedTimePoint {
-                                ContinuingAccessTermTimePointRelator('Perpetual coverage to')
-                                RelatedTimePoint('PerpetualCoverageTo')
+                            if(isValueOfAnySet(licPropertyMap, [PropertyStore.LIC_PERPETUAL_COVERAGE_FROM, PropertyStore.LIC_PERPETUAL_COVERAGE_NOTE, PropertyStore.LIC_PERPETUAL_COVERAGE_TO])) {
+                                ContinuingAccessTerm {
+                                    ContinuingAccessTermType('onixPL:PostCancellationOnlineAccess')
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_PERPETUAL_COVERAGE_NOTE))
+                                        TermStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_PERPETUAL_COVERAGE_NOTE.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.TERM_STATUS_CODE)) //refdata value from Perpetual coverage note
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_PERPETUAL_COVERAGE_FROM))
+                                        LicenseTextLink(href: 'lp_perpetual_coverage_from_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_PERPETUAL_COVERAGE_NOTE))
+                                        LicenseTextLink(href: 'lp_perpetual_coverage_note_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_PERPETUAL_COVERAGE_TO))
+                                        LicenseTextLink(href: 'lp_perpetual_coverage_to_01')
+                                    //license property Perpetual coverage from
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_PERPETUAL_COVERAGE_FROM)) {
+                                        ContinuingAccessTermRelatedTimePoint {
+                                            ContinuingAccessTermTimePointRelator('Perpetual coverage from')
+                                            RelatedTimePoint('PerpetualCoverageFrom')
+                                        }
+                                    }
+                                    //license property Perpetual coverage to
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_PERPETUAL_COVERAGE_TO)) {
+                                        ContinuingAccessTermRelatedTimePoint {
+                                            ContinuingAccessTermTimePointRelator('Perpetual coverage to')
+                                            RelatedTimePoint('PerpetualCoverageTo')
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -2301,37 +2345,46 @@ class LicenseService {
     }
 
     boolean existsAnyOf(Map<Long, LicenseProperty> licPropertyMap, String termSet) {
-        boolean exists = false
-        Set<Long> checkList
+        List<PropertyDefinition> checkList
         switch(termSet) {
             case 'SupplyTerms': checkList = [
-                    PropertyStore.LIC_ACCESSIBILITY_COMPLIANCE.id,
-                    PropertyStore.LIC_CHANGE_TO_LICENSED_MATERIAL.id,
-                    PropertyStore.LIC_COMPLETENESS_OF_CONTENT_CLAUSE.id,
-                    PropertyStore.LIC_CONCURRENCY_WITH_PRINT_VERSION.id,
-                    PropertyStore.LIC_CONTENT_WARRANTY.id,
-                    PropertyStore.LIC_CONT_ACCESS_TITLE_TRANSFER.id,
-                    PropertyStore.LIC_MAINTENANCE_WINDOW.id,
-                    PropertyStore.LIC_PERFORMANCE_WARRANTY.id,
-                    PropertyStore.LIC_UPTIME_GUARANTEE.id,
-                    PropertyStore.LIC_METADATA_DELIVERY.id,
-                    PropertyStore.LIC_METADATA_RELATED_CONTRACTUAL_TERMS.id,
-                    PropertyStore.LIC_OA_NOTE.id,
-                    PropertyStore.LIC_OPEN_ACCESS.id,
-                    PropertyStore.LIC_OA_FIRST_DATE.id,
-                    PropertyStore.LIC_OA_LAST_DATE.id,
-                    PropertyStore.LIC_USAGE_STATISTICS_AVAILABILITY_INDICATOR.id,
+                    PropertyStore.LIC_ACCESSIBILITY_COMPLIANCE,
+                    PropertyStore.LIC_CHANGE_TO_LICENSED_MATERIAL,
+                    PropertyStore.LIC_COMPLETENESS_OF_CONTENT_CLAUSE,
+                    PropertyStore.LIC_CONCURRENCY_WITH_PRINT_VERSION,
+                    PropertyStore.LIC_CONTENT_WARRANTY,
+                    PropertyStore.LIC_CONT_ACCESS_TITLE_TRANSFER,
+                    PropertyStore.LIC_MAINTENANCE_WINDOW,
+                    PropertyStore.LIC_PERFORMANCE_WARRANTY,
+                    PropertyStore.LIC_UPTIME_GUARANTEE,
+                    PropertyStore.LIC_METADATA_DELIVERY,
+                    PropertyStore.LIC_METADATA_RELATED_CONTRACTUAL_TERMS,
+                    PropertyStore.LIC_OA_NOTE,
+                    PropertyStore.LIC_OPEN_ACCESS,
+                    PropertyStore.LIC_OA_FIRST_DATE,
+                    PropertyStore.LIC_OA_LAST_DATE,
+                    PropertyStore.LIC_USAGE_STATISTICS_AVAILABILITY_INDICATOR,
                     PropertyStore.LIC_USAGE_STATISTICS_ADDRESSEE
             ]
                 break
             case 'ContinuingAccessTerms': checkList = [
-
+                    PropertyStore.LIC_ARCHIVAL_COPY_CONTENT,
+                    PropertyStore.LIC_ARCHIVAL_COPY_COST,
+                    PropertyStore.LIC_ARCHIVAL_COPY_PERMISSION,
+                    PropertyStore.LIC_ARCHIVAL_COPY_TIME,
+                    PropertyStore.LIC_CONT_ACCESS_PAYMENT_NOTE,
+                    PropertyStore.LIC_CONT_ACCESS_RESTRICTIONS,
+                    PropertyStore.LIC_PERPETUAL_COVERAGE_FROM,
+                    PropertyStore.LIC_PERPETUAL_COVERAGE_NOTE,
+                    PropertyStore.LIC_PERPETUAL_COVERAGE_TO,
+                    PropertyStore.LIC_POST_CANCELLATION_ONLINE_ACCESS,
+                    PropertyStore.LIC_REPOSITORY
             ]
                 break
             default: checkList = []
                 break
         }
-        exists
+        isValueOfAnySet(licPropertyMap, checkList)
     }
 
     boolean isParagraphSet(Map<Long, LicenseProperty> licPropertyMap, PropertyDefinition pd) {
