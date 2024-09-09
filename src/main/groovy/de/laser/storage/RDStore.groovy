@@ -2,15 +2,17 @@ package de.laser.storage
 
 import de.laser.RefdataValue
 import groovy.transform.CompileStatic
-import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
  * Container class for frequently used controlled list values, so called {@link RefdataValue}s
  */
 @CompileStatic
-@Slf4j
 class RDStore {
+
+//    public final static RefdataValue $TEST                          = getRefdataValue('failure_test','failure_test')
 
     public final static RefdataValue GENERIC_NULL_VALUE             = getRefdataValue('generic.null.value','filter.fake.values')
 
@@ -340,6 +342,7 @@ class RDStore {
         RefdataValue result = RefdataValue.getByValueAndCategory(value, category)
 
         if (! result) {
+            Logger log = LoggerFactory.getLogger(RDStore.name)
             log.warn "No RefdataValue found for value:'${value}', category:'${category}'"
         }
         (RefdataValue) GrailsHibernateUtil.unwrapIfProxy( result)
