@@ -1229,14 +1229,13 @@ class SurveyService {
                     new DocContext(
                             owner: clonedContents,
                             surveyConfig: newSurveyConfig,
-                            domain: dctx.domain,
                             status: dctx.status
                     ).save()
                 }
             }
             //Copy Announcements
             if (params.copySurvey.copyAnnouncements) {
-                if (dctx.isDocANote() && !(dctx.domain) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
+                if (dctx.isDocANote() && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
                     Doc clonedContents = new Doc(
                             type: dctx.getDocType(),
                             confidentiality: dctx.getDocConfid(),
@@ -1251,7 +1250,6 @@ class SurveyService {
                     new DocContext(
                             owner: clonedContents,
                             surveyConfig: newSurveyConfig,
-                            domain: dctx.domain,
                             status: dctx.status
                     ).save()
                 }
