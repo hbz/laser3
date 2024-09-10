@@ -366,6 +366,8 @@
                     displayType: 'block'
                 })
 
+                tooltip.initDynamicPopups('.la-cb-action-ext')
+
                 $('.la-context-org, .la-advanced-view').fadeIn(150);
             }, 100);
 
