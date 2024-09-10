@@ -2,6 +2,7 @@
 <laser:htmlStart message="menu.institutions.prop_groups" serviceInjection="true"/>
 
         <ui:breadcrumbs>
+            <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
             <ui:crumb message="menu.institutions.manage_props" class="active"/>
         </ui:breadcrumbs>
 
@@ -27,7 +28,7 @@
                 <g:message code="propertyDefinition.${typeEntry.key}.label"/> (${typeEntry.value.size()})
             </div>
             <div class="content ${params.ownerType == typeEntry.key ? 'active' : ''}">
-                <table class="ui celled sortable table la-js-responsive-table la-table compact">
+                <table class="ui sortable table la-js-responsive-table la-table compact">
                     <thead>
                     <tr>
                         <th><g:message code="default.order.label"/></th>

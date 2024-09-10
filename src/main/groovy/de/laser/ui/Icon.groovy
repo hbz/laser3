@@ -154,16 +154,18 @@ class Icon {
         @UIDoc(usage = 'Only for Properties: formalOrg is tenant = private')
         public static String IS_PRIVATE = 'shield alternate icon'
         @UIDoc(usage = 'Only for Properties: currently in use (COLORED)')
-        public static String IN_USE     = 'info circle icon blue'   // todo: duplicate: Icon.UI.INFO
+        public static String IN_USE     = 'check circle icon olive'
 
         @UIDoc(usage = 'Only for Property attribute: isHardData (COLORED)')
-        public static String HARDDATA   = 'check circle icon green'
+        public static String HARDDATA   = 'database icon green'
+        @UIDoc(usage = 'Only for Property attribute: !isHardData (COLORED)')
+        public static String HARDDATA_NOT   = 'database icon grey'
         @UIDoc(usage = 'Only for Property attribute: isUsedForLogic (COLORED)')
         public static String LOGIC      = 'cube icon red'
         @UIDoc(usage = 'Only for Property attribute: mandatory (Default color: yellow)')
         public static String MANDATORY  = 'star icon'               // todo: duplicate: survey/renew? > Icon.SIG.MY_OBJECT
         @UIDoc(usage = 'Only for Property attribute: multipleOccurrence (COLORED)')
-        public static String MULTIPLE   = 'redo icon orange'        // todo: duplicate: currentSubscriptionsTransfer
+        public static String MULTIPLE   = 'check double icon orange'
     }
 
     class FNC {

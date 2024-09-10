@@ -1,8 +1,5 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.I10nTranslation" %>
-
+<%@ page import="de.laser.utils.LocaleUtils; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.I10nTranslation" %>
 <laser:htmlStart message="menu.institutions.private_props" serviceInjection="true"/>
-
-    <g:set var="entityName" value="${message(code: 'org.label')}" />
 
     <ui:breadcrumbs>
         <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
@@ -55,9 +52,14 @@
                                 <g:each in="${entry.value}" var="pd">
                                     <tr>
                                         <td>
-                                            <g:if test="${pd.isHardData}">
-                                                <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.tooltip')}">
-                                                    <i class="${Icon.PROP.HARDDATA}"></i>
+                                            <g:if test="${!pd.isHardData}">
+                                                <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.not.tooltip')}">
+                                                    <i class="${Icon.PROP.HARDDATA_NOT}"></i>
+                                                </span>
+                                            </g:if>
+                                            <g:if test="${pd.mandatory}">
+                                                <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.mandatory.tooltip')}">
+                                                    <i class="${Icon.PROP.MANDATORY} yellow"></i>
                                                 </span>
                                             </g:if>
                                             <g:if test="${pd.multipleOccurrence}">
@@ -65,7 +67,6 @@
                                                     <i class="${Icon.PROP.MULTIPLE}"></i>
                                                 </span>
                                             </g:if>
-
                                             <g:if test="${pd.isUsedForLogic}">
                                                 <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
                                                     <i class="${Icon.PROP.LOGIC}"></i>
@@ -246,27 +247,24 @@
 
                     <div class="ui grid" style="margin-top:1em">
                         <div class="ten wide column">
-                            <g:each in="${propertyService.getRefdataCategoryUsage()}" var="cat">
+%{--                            ${RefdataCategory.executeQuery('from RefdataCategory order by desc_' + de.laser.utils.LocaleUtils.getCurrentLang())}--}%
+%{--                            <g:each in="${propertyService.getRefdataCategoryUsage()}" var="cat">--}%
 
-                                <p class="hidden" data-prop-def-desc="${cat.key}">
-                                    Häufig verwendete Kategorien: <br />
+%{--                                <p class="hidden" data-prop-def-desc="${cat.key}">--}%
+%{--                                    Häufig verwendete Kategorien: <br />--}%
 
-                                    <%
-                                        List catList =  cat.value?.take(3)
-                                        catList = catList.collect { entry ->
-                                            '&nbsp; - ' + (RefdataCategory.getByDesc(entry[0]))?.getI10n('desc')
-                                        }
-                                        println catList.join('<br />')
-                                    %>
+%{--                                    <%--}%
+%{--                                        List catList =  cat.value?.take(3)--}%
+%{--                                        catList = catList.collect { entry ->--}%
+%{--                                            '&nbsp; - ' + (RefdataCategory.getByDesc(entry[0]))?.getI10n('desc')--}%
+%{--                                        }--}%
+%{--                                        println catList.join('<br />')--}%
+%{--                                    %>--}%
 
-                                </p>
-                            </g:each>
+%{--                                </p>--}%
+%{--                            </g:each>--}%
                         </div>
                         <div class="six wide column">
-                            <br />
-                            <a href="<g:createLink controller="profile" action="properties" />" target="_blank">
-                                <i class="icon window maximize outline"></i> Alle Kategorien und Referenzwerte<br />als Übersicht öffnen
-                            </a>
                         </div>
                     </div><!-- .grid -->
                 </div>
@@ -299,7 +297,7 @@
 
     $('#pd_type').trigger('change');
 
-        c3po.remoteRefdataSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#remoteRefdataSearchWrapper');
+    c3po.remoteRefdataSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#remoteRefdataSearchWrapper');
 
     </laser:script>
 

@@ -4545,6 +4545,17 @@ join sub.orgRelations or_sub where
         }
     }
 
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+    })
+    def manageRefdatas() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+        result.rdCategories = RefdataCategory.executeQuery('from RefdataCategory order by desc_' + LocaleUtils.getCurrentLang())
+
+        result
+    }
+
     /**
      * Call to remove the given property definition from the given objects
      * @param propDef the property definition to remove
