@@ -52,8 +52,8 @@ class LoginController {
    * Show the login page.
    */
     def auth = {
-//        log.debug 'Attempting login ~ ' + request.getRemoteAddr() + ', ' + request.session.id
-        log.debug '+ Attempting login >>> ' + request.session.id
+//        log.debug 'Attempting login ..... ' + request.getRemoteAddr() + ', ' + request.session.id
+        log.debug '+ Attempting login ..... ' + request.session.id
 
         ConfigObject config = SpringSecurityUtils.securityConfig
 
@@ -65,12 +65,12 @@ class LoginController {
 
         DefaultSavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response) as DefaultSavedRequest
         if (savedRequest) {
-            log.debug '+ Saved original request >>> ' + savedRequest.getRequestURL()
+            log.debug '+ Saved original request ..... ' + savedRequest.getRequestURL()
 
             boolean fuzzyCheck = _fuzzyCheck(savedRequest)
             if (!fuzzyCheck) {
                 String url = savedRequest.getRequestURL() + (savedRequest.getQueryString() ? '?' + savedRequest.getQueryString() : '')
-                log.warn '+ Login failed; invalid url; noted in system events >>> ' + request.getRemoteAddr() + ' - ' + url
+                log.warn '+ Login failed; invalid url; noted in system events ..... ' + request.getRemoteAddr() + ' - ' + url
 
                 SystemEvent.createEvent('LOGIN_WARNING', [
                         url: url,
@@ -143,7 +143,7 @@ class LoginController {
         msg = g.message(code: "springSecurity.errors.login.fail")
       }
     }
-    log.warn '+ Login failed >>> ' + request.getRemoteAddr() + ' - ' + msg
+    log.warn '+ Login failed ..... ' + request.getRemoteAddr() + ' - ' + msg
 
     if (springSecurityService.isAjax(request)) {
       render([error: msg] as JSON)

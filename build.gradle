@@ -122,7 +122,7 @@ dependencies {
     implementation 'commons-io:commons-io:2.14.0'                           // 2023
     implementation 'com.github.albfernandez:juniversalchardet:2.5.0'        // 2024
     implementation 'io.github.gpc:asynchronous-mail:3.1.2'                  // 2023
-    implementation 'org.apache.commons:commons-lang3:3.16.0'                // 2024
+    implementation 'org.apache.commons:commons-lang3:3.17.0'                // 2024
     implementation 'org.apache.poi:poi-ooxml:3.17'                          // 2017 : [freeze] : 5.x available
     implementation 'org.codehaus.gpars:gpars:1.2.1'                         // 2014
     implementation 'org.codehaus.janino:janino:3.1.12'                      // 2024 : logback
@@ -133,7 +133,7 @@ dependencies {
 
     runtimeOnly 'org.apache.tomcat:tomcat-jdbc'
     runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1'                             // 2018 : [?]
-    runtimeOnly 'org.postgresql:postgresql:42.7.3'                          // 2024
+    runtimeOnly 'org.postgresql:postgresql:42.7.4'                          // 2024
 }
 
 java {

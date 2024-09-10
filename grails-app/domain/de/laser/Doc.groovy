@@ -46,7 +46,7 @@ class Doc {
           migrated column:'doc_migrated'
            content column:'doc_content', type:'text'
           mimeType column:'doc_mime_type'
-             owner column:'doc_owner_fk' // todo,       index:'doc_owner_idx'
+             owner column:'doc_owner_fk',       index:'doc_owner_idx'
             server column:'doc_server'
        dateCreated column:'doc_date_created'
        lastUpdated column:'doc_last_updated'

@@ -602,5 +602,6 @@ class TitleInstancePackagePlatform extends AbstractBase implements MarkerSupport
             Marker.findByTippAndUserAndType(this, user, type).delete(flush:true)
         }
     }
+
 }
 

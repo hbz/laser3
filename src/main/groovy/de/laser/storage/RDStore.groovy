@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
 @CompileStatic
 class RDStore {
 
-//    public final static RefdataValue $TEST                          = getRefdataValue('failure_test','failure_test')
+//    public final static RefdataValue $TEST                          = getRefdataValue('failure_test', 'failure_test')
 
     public final static RefdataValue GENERIC_NULL_VALUE             = getRefdataValue('generic.null.value','filter.fake.values')
 
