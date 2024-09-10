@@ -2,6 +2,15 @@
 <laser:serviceInjection />
 <g:if test="${actionName == 'show'}">
     <ui:exportDropdown>
+        <g:set var="validationPrecheckErrors" value="${licenseService.precheckValidation(license, institution)}"/>
+        <g:if test="${validationPrecheckErrors}">
+            <ui:actionsDropdownItemDisabled tooltip="${validationPrecheckErrors}" message="Export ONIX-PL"/>
+        </g:if>
+        <g:else>
+            <ui:exportDropdownItem>
+                <g:link class="item" action="show" target="_blank" params="[id: license.id, export: 'onix']">Export ONIX-PL</g:link>
+            </ui:exportDropdownItem>
+        </g:else>
         <ui:exportDropdownItem>
             <g:link class="item" action="show" target="_blank" params="[id: license.id, export: 'pdf']">Export PDF</g:link>
         </ui:exportDropdownItem>
