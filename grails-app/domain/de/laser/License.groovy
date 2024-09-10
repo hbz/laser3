@@ -50,6 +50,8 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         public String code
     }
 
+
+
     License instanceOf
 
     /**
