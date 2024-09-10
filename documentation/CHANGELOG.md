@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5921    10.09.2024  dev     3.5         David   Feature     Merkmale/Referenzwerte .. dies und das
+
 5907    09.09.2024  dev     3.5         David   Bug         PropertyStore/RDStore: Slf4j-Logger wird nicht richtig initialisiert
 
 --      06.09.2024  rc-3.4  3.4.8       Andreas Bug         Kaskadierungsfehler bei Paket-Lieferant-Verknüpfungen behoben
