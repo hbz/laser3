@@ -45,6 +45,11 @@ class RDStore {
     public final static RefdataValue COMBO_STATUS_ACTIVE        = getRefdataValue('Active', RDConstants.COMBO_STATUS)
     public final static RefdataValue COMBO_STATUS_INACTIVE      = getRefdataValue('Inactive', RDConstants.COMBO_STATUS)
 
+    public final static RefdataValue CONCURRENT_ACCESS_OTHER         = getRefdataValue('Other', RDConstants.CONCURRENT_ACCESS)
+    public final static RefdataValue CONCURRENT_ACCESS_NO_LIMIT      = getRefdataValue('No limit', RDConstants.CONCURRENT_ACCESS)
+    public final static RefdataValue CONCURRENT_ACCESS_NOT_SPECIFIED = getRefdataValue('Not Specified', RDConstants.CONCURRENT_ACCESS)
+    public final static RefdataValue CONCURRENT_ACCESS_SPECIFIED     = getRefdataValue('Specified', RDConstants.CONCURRENT_ACCESS)
+
     public final static RefdataValue CONTACT_TYPE_JOBRELATED    = getRefdataValue('Job-related', RDConstants.CONTACT_TYPE)
     public final static RefdataValue CONTACT_TYPE_PERSONAL      = getRefdataValue('Personal', RDConstants.CONTACT_TYPE)
 
