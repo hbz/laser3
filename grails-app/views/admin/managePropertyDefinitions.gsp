@@ -48,9 +48,14 @@
                             <g:each in="${entry.value}" var="pd">
                                 <tr>
                                     <td>
-                                        <g:if test="${pd.isHardData}">
-                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="${Icon.PROP.HARDDATA}"></i>
+                                        <g:if test="${!pd.isHardData}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.not.tooltip')}">
+                                                <i class="${Icon.PROP.HARDDATA_NOT}"></i>
+                                            </span>
+                                        </g:if>
+                                        <g:if test="${pd.mandatory}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.mandatory.tooltip')}">
+                                                <i class="${Icon.PROP.MANDATORY} yellow"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.multipleOccurrence}">

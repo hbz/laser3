@@ -26,15 +26,6 @@
     </p>
 </div>
 
-<div class="ui segment">
-    <p class="ui header">
-        <g:message code="help.contentHelp.properties.title"/>
-    </p>
-    <p>
-        <g:link class="item" controller="profile" action="properties">${message(code: 'menu.user.properties')}</g:link>
-    </p>
-</div>
-
 <br />
 <br />
 

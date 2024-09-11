@@ -137,14 +137,14 @@
                                 <g:if test="${Identifier.countByNs(idNs) == 0}">
                                     <td>
                                         ${idNs.ns}
+                                        <g:if test="${!idNs.isHardData}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.not.tooltip')}">
+                                                <i class="${Icon.PROP.HARDDATA_NOT}"></i>
+                                            </span>
+                                        </g:if>
                                         <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.dataId.tooltip', args:[idNs.id])}">
                                             <i class="${Icon.PROP.IN_USE}"></i>
                                         </span>
-                                        <g:if test="${idNs.isHardData}">
-                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="${Icon.PROP.HARDDATA}"></i>
-                                            </span>
-                                        </g:if>
                                     </td>
                                     <td></td>
                                     <td>
@@ -205,14 +205,14 @@
                                 <g:else>
                                     <td>
                                         ${idNs.ns}
+                                        <g:if test="${!idNs.isHardData}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.not.tooltip')}">
+                                                <i class="${Icon.PROP.HARDDATA_NOT}"></i>
+                                            </span>
+                                        </g:if>
                                         <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.dataId.tooltip', args:[idNs.id])}">
                                             <i class="${Icon.PROP.IN_USE}"></i>
                                         </span>
-                                        <g:if test="${idNs.isHardData}">
-                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="${Icon.PROP.HARDDATA}"></i>
-                                            </span>
-                                        </g:if>
                                     </td>
                                     <td>
                                         ${Identifier.countByNs(idNs)}
@@ -267,8 +267,8 @@
                                         <g:if test="${tooltip}">
                                             <span data-content="Verwendet für ${tooltip.join(', ')}" data-position="left center"
                                                   class="la-long-tooltip la-popup-tooltip">
-                                                <g:link class="${Btn.ICON.SIMPLE}" controller="admin" action="manageNamespaces"
-                                                        params="${[cmd: 'details', oid: IdentifierNamespace.class.name + ':' + idNs.id]}"><i class="${Icon.TOOLTIP.HELP}"></i></g:link>
+                                                <g:link class="${Btn.MODERN.SIMPLE}" controller="admin" action="manageNamespaces"
+                                                        params="${[cmd: 'details', oid: IdentifierNamespace.class.name + ':' + idNs.id]}"><i class="${Icon.UI.INFO}"></i></g:link>
                                             </span>
                                         </g:if>
                                     </td>

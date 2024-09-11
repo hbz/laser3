@@ -1,8 +1,5 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.I10nTranslation" %>
-
+<%@ page import="de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.utils.LocaleUtils; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.I10nTranslation" %>
 <laser:htmlStart message="menu.institutions.private_props" serviceInjection="true"/>
-
-    <g:set var="entityName" value="${message(code: 'org.label')}" />
 
     <ui:breadcrumbs>
         <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
@@ -55,9 +52,14 @@
                                 <g:each in="${entry.value}" var="pd">
                                     <tr>
                                         <td>
-                                            <g:if test="${pd.isHardData}">
-                                                <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.tooltip')}">
-                                                    <i class="${Icon.PROP.HARDDATA}"></i>
+                                            <g:if test="${!pd.isHardData}">
+                                                <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.not.tooltip')}">
+                                                    <i class="${Icon.PROP.HARDDATA_NOT}"></i>
+                                                </span>
+                                            </g:if>
+                                            <g:if test="${pd.mandatory}">
+                                                <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.mandatory.tooltip')}">
+                                                    <i class="${Icon.PROP.MANDATORY} yellow"></i>
                                                 </span>
                                             </g:if>
                                             <g:if test="${pd.multipleOccurrence}">
@@ -65,7 +67,6 @@
                                                     <i class="${Icon.PROP.MULTIPLE}"></i>
                                                 </span>
                                             </g:if>
-
                                             <g:if test="${pd.isUsedForLogic}">
                                                 <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
                                                     <i class="${Icon.PROP.LOGIC}"></i>
@@ -192,19 +193,19 @@
             <g:field type="hidden" name="cmd" value="add" />
 
             <div class="field required">
-                <label class="property-label" for="pd_name">Name <g:message code="messageRequiredField" /></label>
+                <label for="pd_name">Name <g:message code="messageRequiredField" /></label>
                 <input type="text" name="pd_name" id="pd_name" />
             </div>
 
             <div class="field">
-                <label class="property-label" for="pd_expl">${message(code:'propertyDefinition.expl.label')}</label>
+                <label for="pd_expl">${message(code:'propertyDefinition.expl.label')}</label>
                 <textarea name="pd_expl" id="pd_expl" class="ui textarea" rows="2"></textarea>
             </div>
 
             <div class="fields">
 
                 <div class="field six wide required">
-                    <label class="property-label" for="pd_descr">${message(code:'propertyDefinition.descr.label')} <g:message code="messageRequiredField" /></label>
+                    <label for="pd_descr">${message(code:'propertyDefinition.descr.label')} <g:message code="messageRequiredField" /></label>
                     <%
                         Map<String,Object> availablePrivateDescr = [:]
                         Set<String> availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR
@@ -220,7 +221,7 @@
                 </div>
 
                 <div class="field five wide required">
-                    <label class="property-label" for="pd_type"><g:message code="propertyDefinition.type.label" /> <g:message code="messageRequiredField" /></label>
+                    <label for="pd_type"><g:message code="propertyDefinition.type.label" /> <g:message code="messageRequiredField" /></label>
                     <g:select class="ui dropdown"
                         from="${PropertyDefinition.validTypes.entrySet()}"
                         optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"
@@ -230,7 +231,7 @@
                 </div>
 
                 <div class="field four wide">
-                    <label class="property-label">Optionen</label>
+                    <label>Optionen</label>
 
                     <g:checkBox type="text" name="pd_mandatory" /> ${message(code:'default.mandatory.tooltip')}
                     <br />
@@ -239,36 +240,23 @@
 
             </div>
 
-            <div class="fields">
-                <div class="field hide" id="remoteRefdataSearchWrapper" style="width: 100%">
-                    <label class="property-label"><g:message code="refdataCategory.label" /></label>
-                    <select class="ui search selection dropdown remoteRefdataSearch" name="refdatacategory"></select>
-
-                    <div class="ui grid" style="margin-top:1em">
-                        <div class="ten wide column">
-                            <g:each in="${propertyService.getRefdataCategoryUsage()}" var="cat">
-
-                                <p class="hidden" data-prop-def-desc="${cat.key}">
-                                    Häufig verwendete Kategorien: <br />
-
-                                    <%
-                                        List catList =  cat.value?.take(3)
-                                        catList = catList.collect { entry ->
-                                            '&nbsp; - ' + (RefdataCategory.getByDesc(entry[0]))?.getI10n('desc')
-                                        }
-                                        println catList.join('<br />')
-                                    %>
-
-                                </p>
-                            </g:each>
-                        </div>
-                        <div class="six wide column">
-                            <br />
-                            <a href="<g:createLink controller="profile" action="properties" />" target="_blank">
-                                <i class="icon window maximize outline"></i> Alle Kategorien und Referenzwerte<br />als Übersicht öffnen
-                            </a>
-                        </div>
-                    </div><!-- .grid -->
+            <div id="refdataFormWrapper">
+                <div class="field">
+                    <label for="rdCatSelector"><g:message code="refdataCategory.label" /></label>
+                    <select class="ui search selection dropdown la-not-clearable" id="rdCatSelector" name="refdatacategory">
+                        <g:each in="${RefdataCategory.executeQuery('from RefdataCategory order by desc_' + LocaleUtils.getCurrentLang())}" var="rdc">
+%{--                            <option value="">${message(code:'default.select.choose.label')}</option>--}%
+                            <option value="${rdc.id}"${rdc.desc == RDConstants.Y_N_U ? ' selected' : ''}>${rdc.getI10n('desc')}</option>
+                        </g:each>
+                    </select>
+                </div>
+                <div class="field">
+                    %{-- TODO: AJAX --}%
+                    <label><g:message code="refdataValue.plural" /></label>
+                    <g:each in="${RefdataCategory.executeQuery('from RefdataCategory order by desc_' + LocaleUtils.getCurrentLang())}" var="rdc">
+                        <g:set var="h1ag352df" value="${RefdataValue.executeQuery('select value_' + LocaleUtils.getCurrentLang() + ' from RefdataValue where owner.id = ' + rdc.id + ' order by value_' + LocaleUtils.getCurrentLang())}"/>
+                        <textarea style="display: none" class="rdCatValues" id="rdCatValues_${rdc.id}">${h1ag352df.join(', ')}</textarea>
+                    </g:each>
                 </div>
             </div>
 
@@ -284,22 +272,22 @@
     $('#pd_type').change(function() {
         var selectedText = $( "#pd_type option:selected" ).val();
         if( selectedText == "${RefdataValue.name}") {
-            $("#remoteRefdataSearchWrapper").show();
-
-            var $pMatch = $( "p[data-prop-def-desc='" + $( "#pd_descr option:selected" ).val() + "']" )
-            if ($pMatch) {
-                $( "p[data-prop-def-desc]" ).addClass('hidden')
-                $pMatch.removeClass('hidden')
-            }
+            $("#refdataFormWrapper").show();
+            $('#rdCatSelector').trigger('change');
         }
         else {
-            $("#remoteRefdataSearchWrapper").hide();
+            $("#refdataFormWrapper").hide();
         }
     });
 
     $('#pd_type').trigger('change');
 
-        c3po.remoteRefdataSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#remoteRefdataSearchWrapper');
+    $('#rdCatSelector').on('change', function() {
+        let rdc = $('#rdCatSelector').dropdown('get value')
+        $('.rdCatValues').hide()
+        $('#rdCatValues_' + rdc).show()
+    });
+
 
     </laser:script>
 
