@@ -41,6 +41,7 @@ import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.transaction.TransactionStatus
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 
@@ -57,13 +58,13 @@ import java.time.Year
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxController {
 
-    GenericOIDService genericOIDService
     ContextService contextService
-    EscapeService escapeService
-    FormService formService
     DashboardDueDatesService dashboardDueDatesService
-    IdentifierService identifierService
+    EscapeService escapeService
     FilterService filterService
+    FormService formService
+    GenericOIDService genericOIDService
+    IdentifierService identifierService
     PropertyService propertyService
     SubscriptionControllerService subscriptionControllerService
     SubscriptionService subscriptionService
@@ -1453,59 +1454,64 @@ class AjaxController {
      * Removes the given custom property from the object
      */
     @Secured(['ROLE_USER'])
-    @Transactional
     def deleteCustomProperty() {
-        String className = params.propClass.split(" ")[1]
-        def propClass = Class.forName(className)
-        def owner     = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
-        def property  = propClass.get(params.id)
-        def prop_desc = property.getType().getDescr()
-        Org contextOrg = contextService.getOrg()
+        Subscription.withTransaction { TransactionStatus ts ->
+            String className = params.propClass.split(" ")[1]
+            def propClass = Class.forName(className)
+            def owner     = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
+            def property  = propClass.get(params.id)
+            def prop_desc = property.getType().getDescr()
+            Org contextOrg = contextService.getOrg()
 
-        AuditConfig.removeAllConfigs(property)
+            AuditConfig.removeAllConfigs(property)
 
-        owner.propertySet.remove(property)
+            owner.propertySet.remove(property)
 
-        try {
-            property.delete()
-        } catch (Exception e) {
-            log.error(" TODO: fix property.delete() when instanceOf ")
-        }
+            //try {
+            property.delete() //cf. ERMS-5889; execution of delete done only after template has been called - with wrong values!
+            ts.flush()
+            //} catch (Exception e) {
+            //log.error(" TODO: fix property.delete() when instanceOf ")
+            //}
 
 
-        if(property.hasErrors()) {
-            log.error(property.errors.toString())
-        }
-        else {
-            log.debug("Deleted custom property: " + property.type.name)
-        }
-        request.setAttribute("editable", params.editable == "true")
-        boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
-        if(params.propDefGroup) {
-          render(template: "/templates/properties/group", model: [
-                  ownobj          : owner,
-                  newProp         : property,
-                  showConsortiaFunctions: showConsortiaFunctions,
-                  contextOrg      : contextOrg,
-                  propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
-                  propDefGroupBinding : genericOIDService.resolveOID(params.propDefGroupBinding),
-                  custom_props_div: "${params.custom_props_div}", // JS markup id
-                  prop_desc       : prop_desc // form data
-          ])
-        }
-        else {
-            Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextOrg)
-            Map<String, Object> modelMap =  [
-                    ownobj                : owner,
-                    newProp               : property,
-                    showConsortiaFunctions: showConsortiaFunctions,
-                    contextOrg            : contextOrg,
-                    custom_props_div      : "${params.custom_props_div}", // JS markup id
-                    prop_desc             : prop_desc, // form data
-                    orphanedProperties    : allPropDefGroups.orphanedProperties
-            ]
+            if(property.hasErrors()) {
+                log.error(property.errors.toString())
+            }
+            else {
+                log.debug("Deleted custom property: " + property.type.name)
+            }
+            request.setAttribute("editable", params.editable == "true")
+            boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
+            if(params.propDefGroup) {
+                PropertyDefinitionGroup propDefGroup = genericOIDService.resolveOID(params.propDefGroup)
+                PropertyDefinitionGroupBinding propDefGroupBinding = genericOIDService.resolveOID(params.propDefGroupBinding)
+                Map<String, Object> modelMap = [
+                        ownobj          : owner,
+                        newProp         : property,
+                        showConsortiaFunctions: showConsortiaFunctions,
+                        contextOrg      : contextOrg,
+                        propDefGroup    : propDefGroup,
+                        propDefGroupBinding : propDefGroupBinding,
+                        custom_props_div: "${params.custom_props_div}", // JS markup id
+                        prop_desc       : prop_desc // form data
+                ]
+                render(template: "/templates/properties/group", model: modelMap)
+            }
+            else {
+                Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextOrg)
+                Map<String, Object> modelMap =  [
+                        ownobj                : owner,
+                        newProp               : property,
+                        showConsortiaFunctions: showConsortiaFunctions,
+                        contextOrg            : contextOrg,
+                        custom_props_div      : "${params.custom_props_div}", // JS markup id
+                        prop_desc             : prop_desc, // form data
+                        orphanedProperties    : allPropDefGroups.orphanedProperties
+                ]
 
-            render(template: "/templates/properties/custom", model: modelMap)
+                render(template: "/templates/properties/custom", model: modelMap)
+            }
         }
     }
 

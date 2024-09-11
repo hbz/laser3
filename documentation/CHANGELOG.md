@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5889    11.09.2024  rc-3.4  3.4.9       Andreas Bug         gruppierte Lizenzmerkmale konnten nicht entfernt werden
+
 5716    10.09.2024  dev     3.5         Andreas Feature     Verträge können im ONIX-PL-XML-Format exportiert werden
 
 5921    10.09.2024  dev     3.5         David   Feature     Merkmale/Referenzwerte .. dies und das
