@@ -273,6 +273,7 @@
   z-index: 999;
   padding:0.2em;
   font-size: 2.5rem;
+  width: 1.5vw;
 }
 
 /* Label for survey types */
