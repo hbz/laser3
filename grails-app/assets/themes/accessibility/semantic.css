@@ -6835,6 +6835,150 @@ i.icon.la-list-icon:before {
   color: #FFFFFF;
 }
 
+/*---------------
+    TEAL
+----------------*/
+
+.ui.teal.buttons .button.la-modern-button,
+.ui.teal.button.la-modern-button {
+  color: #00B5AD;
+  background-color: transparent;
+}
+
+.ui.teal.buttons .button.la-modern-button:hover,
+.ui.teal.button.la-modern-button:hover {
+  background-color: #00B5AD;
+  color: #FFFFFF;
+}
+
+/*---------------
+    OLIVE
+----------------*/
+
+.ui.olive.buttons .button.la-modern-button,
+.ui.olive.button.la-modern-button {
+  color: #B5CC18;
+  background-color: transparent;
+}
+
+.ui.olive.buttons .button.la-modern-button:hover,
+.ui.olive.button.la-modern-button:hover {
+  background-color: #B5CC18;
+  color: #FFFFFF;
+}
+
+/*---------------
+    GREEN
+----------------*/
+
+.ui.green.buttons .button.la-modern-button,
+.ui.green.button.la-modern-button {
+  color: #98B500;
+  background-color: transparent;
+}
+
+.ui.green.buttons .button.la-modern-button:hover,
+.ui.green.button.la-modern-button:hover {
+  background-color: #98B500;
+  color: #FFFFFF;
+}
+
+/*---------------
+    VIOLET
+----------------*/
+
+.ui.violet.buttons .button.la-modern-button,
+.ui.violet.button.la-modern-button {
+  color: #76007A;
+  background-color: transparent;
+}
+
+.ui.violet.buttons .button.la-modern-button:hover,
+.ui.violet.button.la-modern-button:hover {
+  background-color: #76007A;
+  color: #FFFFFF;
+}
+
+/*---------------
+    PURPLE
+----------------*/
+
+.ui.purple.buttons .button.la-modern-button,
+.ui.purple.button.la-modern-button {
+  color: #2185d0;
+  background-color: transparent;
+}
+
+.ui.purple.buttons .button.la-modern-button:hover,
+.ui.purple.button.la-modern-button:hover {
+  background-color: #2185d0;
+  color: #FFFFFF;
+}
+
+/*---------------
+    PINK
+----------------*/
+
+.ui.pink.buttons .button.la-modern-button,
+.ui.pink.button.la-modern-button {
+  color: #E03997;
+  background-color: transparent;
+}
+
+.ui.pink.buttons .button.la-modern-button:hover,
+.ui.pink.button.la-modern-button:hover {
+  background-color: #E03997;
+  color: #FFFFFF;
+}
+
+/*---------------
+    BROWN
+----------------*/
+
+.ui.brown.buttons .button.la-modern-button,
+.ui.brown.button.la-modern-button {
+  color: #6b1d1d;
+  background-color: transparent;
+}
+
+.ui.brown.buttons .button.la-modern-button:hover,
+.ui.brown.button.la-modern-button:hover {
+  background-color: #6b1d1d;
+  color: #FFFFFF;
+}
+
+/*---------------
+    GREY
+----------------*/
+
+.ui.grey.buttons .button.la-modern-button,
+.ui.grey.button.la-modern-button {
+  color: #767676;
+  background-color: transparent;
+}
+
+.ui.grey.buttons .button.la-modern-button:hover,
+.ui.grey.button.la-modern-button:hover {
+  background-color: #767676;
+  color: #FFFFFF;
+}
+
+/*---------------
+    BLACK
+----------------*/
+
+.ui.black.buttons .button.la-modern-button,
+.ui.black.button.la-modern-button {
+  color: #1B1C1D;
+  background-color: transparent;
+}
+
+.ui.black.buttons .button.la-modern-button:hover,
+.ui.black.button.la-modern-button:hover {
+  background-color: #1B1C1D;
+  color: #FFFFFF;
+}
+
 a i.circular.la-gokb:hover {
   color: #FFFFFF;
   text-decoration: none;
@@ -37882,6 +38026,10 @@ i.icon.la-survey {
   font-family: 'icomoon';
 }
 
+i.icon.la-check-double {
+  font-family: 'icomoon';
+}
+
 i.icon.hand.pointer.outline.slash:before {
   content: "\e901";
 }
@@ -38051,6 +38199,10 @@ i.icon.la-sparkles:before {
 
 i.icon.la-survey:before {
   content: "\e922";
+}
+
+i.icon.la-check-double.slash:before {
+  content: "\e923";
 }
 
 /*******************************

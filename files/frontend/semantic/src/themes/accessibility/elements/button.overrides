@@ -164,6 +164,115 @@
     color: @white;
   }
 }
+/*---------------
+    TEAL
+----------------*/
+.ui.teal.buttons .button.la-modern-button,
+.ui.teal.button.la-modern-button {
+  color: @teal;
+  background-color: transparent;
+  &:hover {
+    background-color: @teal;
+    color: @white;
+  }
+}
+/*---------------
+    OLIVE
+----------------*/
+.ui.olive.buttons .button.la-modern-button,
+.ui.olive.button.la-modern-button {
+  color: @olive;
+  background-color: transparent;
+  &:hover {
+    background-color: @olive;
+    color: @white;
+  }
+}
+/*---------------
+    GREEN
+----------------*/
+.ui.green.buttons .button.la-modern-button,
+.ui.green.button.la-modern-button {
+  color: @green;
+  background-color: transparent;
+  &:hover {
+    background-color: @green;
+    color: @white;
+  }
+}
+/*---------------
+    VIOLET
+----------------*/
+.ui.violet.buttons .button.la-modern-button,
+.ui.violet.button.la-modern-button {
+  color: @violet;
+  background-color: transparent;
+  &:hover {
+    background-color: @violet;
+    color: @white;
+  }
+}
+/*---------------
+    PURPLE
+----------------*/
+.ui.purple.buttons .button.la-modern-button,
+.ui.purple.button.la-modern-button {
+  color: @purple;
+  background-color: transparent;
+  &:hover {
+    background-color: @purple;
+    color: @white;
+  }
+}
+/*---------------
+    PINK
+----------------*/
+.ui.pink.buttons .button.la-modern-button,
+.ui.pink.button.la-modern-button {
+  color: @pink;
+  background-color: transparent;
+  &:hover {
+    background-color: @pink;
+    color: @white;
+  }
+}
+/*---------------
+    BROWN
+----------------*/
+.ui.brown.buttons .button.la-modern-button,
+.ui.brown.button.la-modern-button {
+  color: @brown;
+  background-color: transparent;
+  &:hover {
+    background-color: @brown;
+    color: @white;
+  }
+}
+/*---------------
+    GREY
+----------------*/
+.ui.grey.buttons .button.la-modern-button,
+.ui.grey.button.la-modern-button {
+  color: @grey;
+  background-color: transparent;
+  &:hover {
+    background-color: @grey;
+    color: @white;
+  }
+}
+/*---------------
+    BLACK
+----------------*/
+.ui.black.buttons .button.la-modern-button,
+.ui.black.button.la-modern-button {
+  color: @black;
+  background-color: transparent;
+  &:hover {
+    background-color: @black;
+    color: @white;
+  }
+}
+
 
 a i.circular.la-gokb:hover {
   color: @white;

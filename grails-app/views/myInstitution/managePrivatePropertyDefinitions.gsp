@@ -130,14 +130,14 @@
                                                 <g:if test="${!multiplePdList?.contains(pd.id)}">
                                                     <g:if test="${pd.multipleOccurrence}">
                                                         <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="left center"
-                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP} orange">
-                                                            <i class="redo slash icon"></i>
+                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
+                                                            <i class="${Icon.PROP.MULTIPLE_NOT}"></i>
                                                         </g:link>
                                                     </g:if>
                                                     <g:else>
                                                         <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}" data-position="left center"
                                                                 params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
-                                                            <i class="la-redo slash icon"></i>
+                                                            <i class="${Icon.PROP.MULTIPLE}"></i>
                                                         </g:link>
                                                     </g:else>
                                                 </g:if>
