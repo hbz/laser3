@@ -10,3 +10,7 @@
 <g:if test="${currentServer == AppUtils.QA}">
     <div class="ui red label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.qa')}"></div>
 </g:if>
+<g:if test="${currentServer == AppUtils.TEST}">
+    <div class="ui blue label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.test')}"></div>
+</g:if>
+
