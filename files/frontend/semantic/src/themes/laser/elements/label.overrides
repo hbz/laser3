@@ -276,6 +276,11 @@
   width: 1.5vw;
 }
 
+@media only screen and (min-width: @widescreenMonitorBreakpoint) {
+    .ui.label.la-server-label {
+        width: 5vw;
+    }
+}
 /* Label for survey types */
 
 .ui.label.survey-renewal,

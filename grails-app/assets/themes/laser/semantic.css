@@ -43019,6 +43019,12 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
   width: 1.5vw;
 }
 
+@media only screen and (min-width: 1920px) {
+  .ui.label.la-server-label {
+    width: 5vw;
+  }
+}
+
 /* Label for survey types */
 
 .ui.label.survey-renewal,
