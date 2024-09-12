@@ -123,7 +123,7 @@ class Icon {
         @UIDoc(usage = 'Only for Buttons/Links with command: Remove element (see also ADD)')
         public static String REMOVE     = 'minus icon'
         @UIDoc(usage = 'Only for Buttons/Links with command: Replace element')
-        public static String REPLACE    = 'retweet icon'
+        public static String REPLACE    = 'sync icon'
         @UIDoc(usage = 'Only for Buttons/Links with command: Show more / Open accordion')
         public static String SHOW_MORE  = 'angle double down icon'
         @UIDoc(usage = 'Only for Buttons/Links with command: Unlink element / Do not delete (see also LINKIFY)')
