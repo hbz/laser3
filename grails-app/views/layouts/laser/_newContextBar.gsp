@@ -63,7 +63,7 @@
 
             %{-- help panel --}%
 
-            <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='myInstitution' && actionName=='financeImport') || (controllerName=='myInstitution' && actionName=='subscriptionImport') || (controllerName=='dev' && actionName=='frontend')}">
+            <g:if test="${helpService.isActiveMapped(controllerName, actionName)}">
                 <div class="item la-cb-action">
                     <button class="${Btn.ICON.SIMPLE} la-toggle-ui" id="help-toggle"><i class="${Icon.UI.HELP}"></i></button>
                 </div>
@@ -299,6 +299,12 @@
     </div>%{-- container --}%
 
 </nav>%{-- contextBar --}%
+
+%{-- help flyout --}%
+
+<g:if test="${helpService.isActiveMapped(controllerName, actionName)}">
+    <g:render template="${'/help/content/' + helpService.getMapping(controllerName, actionName)}" />
+</g:if>
 
 <style>
     #contextBar .la-advanced-view .item.la-cb-action-ext .item.la-flexbox {

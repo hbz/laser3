@@ -29,6 +29,7 @@ class SystemTagLib {
         g.set( var:'formService',                   bean:'formService' )
         g.set( var:'genericOIDService',             bean:'genericOIDService' )
         g.set( var:'gokbService',                   bean:'gokbService' )
+        g.set( var:'helpService',                   bean:'helpService' )
         g.set( var:'identifierService',             bean:'identifierService' )
         g.set( var:'licenseService',                bean:'licenseService' )
         g.set( var:'linksGenerationService',        bean:'linksGenerationService' )
