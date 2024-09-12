@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.IdentifierNamespace; de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
 <laser:htmlStart message="myinst.subscriptionImport.pageTitle" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -83,6 +83,8 @@
                                     case 'isAutomaticRenewAnnually': args.addAll(RDStore.YN_YES.getI10n('value'), RDStore.YN_NO.getI10n('value'))
                                         break
                                     case 'isPublicForApi': args.addAll(RDStore.YN_YES.getI10n('value'), RDStore.YN_NO.getI10n('value'))
+                                        break
+                                    case 'identifiers': args.addAll(IdentifierNamespace.findAllByNsType(IdentifierNamespace.NS_SUBSCRIPTION).collect { IdentifierNamespace idns -> idns.getI10n('name') ? idns.getI10n('name') : idns.ns }.sort{ String val -> val.toLowerCase() })
                                         break
                                 }
                             %>

@@ -2441,7 +2441,7 @@ class MyInstitutionController  {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
         List<String> mappingCols = ["name", "owner", "status", "type", "form", "resource", "provider", "vendor", "startDate", "endDate",
                               "manualCancellationDate", "referenceYear", "hasPerpetualAccess", "hasPublishComponent", "isPublicForApi",
-                              "customProperties", "privateProperties", "notes"]
+                              "customProperties", "privateProperties", "identifiers", "notes"]
         if(result.institution.isCustomerType_Inst_Pro()) {
             mappingCols.add(mappingCols.indexOf("manualCancellationDate"), "isAutomaticRenewAnnually")
         }
