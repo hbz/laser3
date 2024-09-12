@@ -303,7 +303,7 @@
 %{-- help flyout --}%
 
 <g:if test="${helpService.isActiveMapped(controllerName, actionName)}">
-    <g:render template="${'/help/content/' + helpService.getMapping(controllerName, actionName)}" />
+    <g:render template="${'/help/flyouts/' + helpService.getMapping(controllerName, actionName)}" />
 </g:if>
 
 <style>

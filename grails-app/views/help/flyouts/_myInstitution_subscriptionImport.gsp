@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.IdentifierNamespace" %>
 
 <div class="ui flyout" id="help-content" style="padding:50px 0 10px 0;overflow:scroll">
     <h1 class="ui header">
@@ -33,6 +33,8 @@
                         case 'isAutomaticRenewAnnually': args.addAll(RDStore.YN_YES.getI10n('value'), RDStore.YN_NO.getI10n('value'))
                             break
                         case 'isPublicForApi': args.addAll(RDStore.YN_YES.getI10n('value'), RDStore.YN_NO.getI10n('value'))
+                            break
+                        case 'identifiers': args.addAll(IdentifierNamespace.findAllByNsType(IdentifierNamespace.NS_SUBSCRIPTION).collect { IdentifierNamespace idns -> idns.getI10n('name') ? idns.getI10n('name') : idns.ns }.sort{ String val -> val.toLowerCase() })
                             break
                     }
                 %>
