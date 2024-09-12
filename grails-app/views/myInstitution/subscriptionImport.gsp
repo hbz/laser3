@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.IdentifierNamespace; de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
 <laser:htmlStart message="myinst.subscriptionImport.pageTitle" serviceInjection="true"/>
 
 <ui:breadcrumbs>

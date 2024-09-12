@@ -70,6 +70,19 @@
                                         </ul>
                                     </li>
                                     <li>
+                                        <g:message code="identifier"/>:
+                                        <ul>
+                                            <g:each in="${sub.ids?.entrySet()}" var="id">
+                                                <g:if test="${id.getValue().idValue}">
+                                                    <%
+                                                        String idValue = id.getValue().idValue
+                                                    %>
+                                                    <li>${genericOIDService.resolveOID(id.getKey()).getI10n("name")}: ${idValue}</li>
+                                                </g:if>
+                                            </g:each>
+                                        </ul>
+                                    </li>
+                                    <li>
                                         <g:message code="myinst.subscriptionImport.notes"/>: ${sub.notes}
                                     </li>
                                 </ul>

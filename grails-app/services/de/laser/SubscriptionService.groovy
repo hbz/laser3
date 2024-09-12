@@ -46,6 +46,7 @@ import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.time.Year
 import java.util.concurrent.ExecutorService
+import java.util.regex.Pattern
 
 @Transactional
 class SubscriptionService {
@@ -1867,11 +1868,11 @@ class SubscriptionService {
             parentSubType = [RDStore.SUBSCRIPTION_KIND_CONSORTIAL.getI10n('value')]
         }
         Map colMap = [:]
-        Map<String, Map> propMap = [:]
+        Map<String, Map> propMap = [:], idMap = [:]
         Map candidates = [:]
         InputStream fileContent = tsvFile.getInputStream()
         List<String> rows = fileContent.getText(encoding).split('\n')
-        List<String> ignoredColHeads = [], multiplePropDefs = []
+        List<String> ignoredColHeads = [], multiplePropDefs = [], multipleIdentifierNamespaces = []
         List<String> headerRow = rows.remove(0).split('\t')
         int colCount = headerRow.size()
         headerRow.eachWithIndex { String s, int c ->
@@ -1924,14 +1925,14 @@ class SubscriptionService {
                 case ["holding selection", "paketzuschnitt"]: colMap.holdingSelection = c
                     break
                 default:
-                    //check if property definition
+                    //check if property definition or identifier
                     boolean isNotesCol = false
-                    String propDefString = headerCol.toLowerCase()
+                    String nameKeyString = headerCol.toLowerCase()
                     if(headerCol.contains('$$notes')) {
                         isNotesCol = true
-                        propDefString = headerCol.split('\\$\\$')[0].toLowerCase()
+                        nameKeyString = headerCol.split('\\$\\$')[0].toLowerCase()
                     }
-                    Map queryParams = [propDef:propDefString,contextOrg:contextOrg,subProp:PropertyDefinition.SUB_PROP]
+                    Map queryParams = [propDef:nameKeyString,contextOrg:contextOrg,subProp:PropertyDefinition.SUB_PROP]
                     List<PropertyDefinition> possiblePropDefs = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr = :subProp and (lower(pd.name_de) = :propDef or lower(pd.name_en) = :propDef) and (pd.tenant = :contextOrg or pd.tenant = null)",queryParams)
                     if(possiblePropDefs.size() == 1) {
                         PropertyDefinition propDef = possiblePropDefs[0]
@@ -1948,8 +1949,19 @@ class SubscriptionService {
                     }
                     else if(possiblePropDefs.size() > 1)
                         multiplePropDefs << headerCol
-                    else
-                        ignoredColHeads << headerCol
+                    else {
+                        //next attempt: identifier
+                        List<IdentifierNamespace> possibleIdentifierNamespaces = IdentifierNamespace.executeQuery("select ns from IdentifierNamespace ns where ns.nsType = :subType and (lower(ns.ns) = :idns or lower(ns.name_de) = :idns or lower(ns.name_en) = :idns)", [subType: IdentifierNamespace.NS_SUBSCRIPTION, idns: nameKeyString])
+                        if(possibleIdentifierNamespaces.size() == 1) {
+                            IdentifierNamespace idns = possibleIdentifierNamespaces[0]
+                            Map<String,Integer> defPair = [colno:c]
+                            idMap.put(genericOIDService.getOID(idns), [definition:defPair, namespace: idns])
+                        }
+                        else if(possibleIdentifierNamespaces.size() > 1)
+                            multipleIdentifierNamespaces << headerCol
+                        else
+                            ignoredColHeads << headerCol
+                    }
                     break
             }
         }
@@ -1959,7 +1971,7 @@ class SubscriptionService {
         if(multiplePropDefs)
             globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.multiplePropDefs',[multiplePropDefs.join('</li><li>')].toArray(),locale)
         rows.eachWithIndex { String row, int rowno ->
-            Map mappingErrorBag = [:], candidate = [properties: [:]]
+            Map mappingErrorBag = [:], candidate = [properties: [:], ids: [:]]
             List<String> cols = row.split('\t', -1)
             if(cols.size() == colCount) {
                 //check if we have some mandatory properties ...
@@ -2246,7 +2258,7 @@ class SubscriptionService {
                 propMap.each { String k, Map propInput ->
                     Map defPair = propInput.definition
                     Map propData = [:]
-                    if(cols[defPair.colno]) {
+                    if(cols[defPair.colno].trim()) {
                         def v
                         if(defPair.refCategory) {
                             v = refdataService.retrieveRefdataValueOID(cols[defPair.colno].trim(),defPair.refCategory)
@@ -2260,6 +2272,24 @@ class SubscriptionService {
                     if(propInput.notesColno)
                         propData.propNote = cols[propInput.notesColno].trim()
                     candidate.properties[k] = propData
+                }
+                //ids -> idMap
+                idMap.each { String k, Map idInput ->
+                    Map defPair = idInput.definition
+                    IdentifierNamespace idns = idInput.namespace
+                    Map idData = [:]
+                    if(cols[defPair.colno].trim()) {
+                        String v = cols[defPair.colno]
+                        if(idns.validationRegex) {
+                            Pattern pattern = ~/${idns.validationRegex}/
+                            if(pattern.matcher(v).matches())
+                                idData.idValue = v
+                            else mappingErrorBag.identifierNamespaceRegexMismatch = [cols[defPair.colno].trim(), messageSource.getMessage("validation.${idns.ns}Match", null, locale)]
+                        }
+                        else
+                            idData.idValue = v
+                    }
+                    candidate.ids[k] = idData
                 }
                 //notes
                 if(colMap.notes != null && cols[colMap.notes]?.trim()) {
@@ -2363,6 +2393,31 @@ class SubscriptionService {
                             valueList.each { value ->
                                 try {
                                     createProperty(propDef,sub,contextOrg,value.trim(),v.propNote)
+                                }
+                                catch (Exception e) {
+                                    errors << e.getMessage()
+                                }
+                            }
+                        }
+                    }
+                    //process subscription identifiers
+                    entry.ids.each { k, v ->
+                        if(v.idValue?.trim()) {
+                            log.debug("${k}:${v.idValue}")
+                            IdentifierNamespace idns = (IdentifierNamespace) genericOIDService.resolveOID(k)
+                            List<String> valueList
+                            if(!idns.isUnique) {
+                                valueList = v?.idValue?.split(',')
+                            }
+                            else valueList = [v.idValue]
+                            //in most cases, valueList is a list with one entry
+                            valueList.each { value ->
+                                try {
+                                    FactoryResult result = Identifier.constructWithFactoryResult([namespace: idns, value: value, reference: sub])
+                                    result.status.each { String status ->
+                                        if(status != FactoryResult.STATUS_OK)
+                                            errors.add << status
+                                    }
                                 }
                                 catch (Exception e) {
                                     errors << e.getMessage()
