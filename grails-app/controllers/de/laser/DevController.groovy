@@ -41,6 +41,12 @@ class DevController  {
         render view: 'klodav/buttons', model: result
     }
 
+    @Secured(['ROLE_ADMIN'])
+    def markdown() {
+        Map<String, Object> result = [user: contextService.getUser(), institution: contextService.getOrg()]
+        render view: 'klodav/markdown', model: result
+    }
+
     /**
      * JavaScript call area
      */
