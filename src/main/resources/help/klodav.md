@@ -15,7 +15,7 @@ Alt-H1
 
 Alt-H2
 ------
-```	
+```
 
 # h1 Heading
 ## h2 Heading

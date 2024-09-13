@@ -10,18 +10,10 @@ import org.grails.io.support.GrailsResourceUtils
 @Transactional
 class HelpService {
 
+    public static final String GSP = 'GSP'
+    public static final String MD  = 'MD'
+
     ContextService contextService
-
-    List<String> getAllMappings() {
-
-        [
-            'dev_frontend',
-            'finance_subFinancialData',
-            'myInstitution_financeImport',
-            'myInstitution_subscriptionImport',
-            'subscription_show'
-        ]
-    }
 
     String getMapping(String controllerName, String actionName) {
         controllerName + '_' + actionName
@@ -35,18 +27,29 @@ class HelpService {
         url
     }
 
-    boolean isActive(String controllerName, String actionName) {
-        String mapping = getMapping(controllerName, actionName)
-        //        getAllMappings().contains(mapping) // webapp
+    String getFlag(String controllerName, String actionName) {
+        String flag
 
-        String file = 'help/_' + mapping + '.gsp'
-        getResource( file )
+        String mapping  = getMapping(controllerName, actionName)
+        String file     = 'help/_' + mapping + '.gsp'
+        URL resource    = getResource( file )
+
+        if (resource) {
+            flag = GSP
+        }
+        else {
+            file = 'help/' + mapping + '.md'
+            resource = getResource( file )
+
+            if (resource) {
+                flag = MD
+            }
+        }
+        flag
     }
 
     String parseMarkdown(String file) {
         try {
-//            String md = Holders.grailsApplication.mainContext.getResource( file ).file.text // webapp
-
             URL url = getResource( file ) // resources
             String md = new File(url.file).text
             Parser parser = Parser.builder().build()
@@ -58,25 +61,4 @@ class HelpService {
             e.getMessage()
         }
     }
-
-//    def testMarkdown() {
-//        PageRenderer gpr = BeanStore.getGroovyPageRenderer()
-//        String md =  gpr.render(view: '/help/test.md')
-//        String md = Holders.grailsApplication.mainContext.getResource('./help/test.md').file.text
-//        Parser parser = Parser.builder().build()
-//        Node document = parser.parse( md )
-//        HtmlRenderer renderer = HtmlRenderer.builder().build()
-//        renderer.render(document)
-//    }
-
-//    String getFlyoutContent(String controllerName, String actionName) {
-//        try {
-//            String pattern = getMapping(controllerName, actionName)
-//            PageRenderer gpr = BeanStore.getGroovyPageRenderer()
-//            gpr.render(template: '/help/' + pattern)
-//        }
-//        catch (Exception e) {
-//            e.getMessage()
-//        }
-//    }
 }
