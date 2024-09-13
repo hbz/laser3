@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5933    13.09.2024  rc-3.4  3.4.9       Andreas Bug         Aufruf von Statista-Nutzungsstatistiken war nicht möglich
+
 5801    12.09.2024  dev     3.5         Andreas Feature     Lizenzimport unterstützt jetzt auch Identifikatoren
 
 5889    11.09.2024  rc-3.4  3.4.9       Andreas Bug         gruppierte Lizenzmerkmale konnten nicht entfernt werden
