@@ -165,7 +165,7 @@ class Icon {
         @UIDoc(usage = 'Only for Property attribute: mandatory (Default color: yellow)')
         public static String MANDATORY  = 'star icon'               // todo: duplicate: survey/renew? > Icon.SIG.MY_OBJECT
         @UIDoc(usage = 'Only for Property attribute: multipleOccurrence (COLORED)')
-        public static String MULTIPLE   = 'check double icon orange'
+        public static String MULTIPLE   = 'check double icon teal'
     }
 
     class FNC {
