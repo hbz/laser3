@@ -133,9 +133,7 @@
                                     <ui:link addItemAttributes="true" controller="profile" action="help">${message(code:'menu.user.help')}</ui:link>
                                     <ui:link addItemAttributes="true" controller="profile" action="dsgvo">${message(code:'privacyNotice')}</ui:link>
 
-                                    <g:if test="${helpService.getResource('releases/' + AppUtils.getMeta('info.app.version').take(3) + '.md' )}">
-                                        <ui:link addItemAttributes="true" controller="public" action="currentVersion">${message(code:'releaseNotes')}</ui:link>
-                                    </g:if>
+                                    <ui:link addItemAttributes="true" controller="public" action="currentVersion">${message(code:'releaseNotes')}</ui:link>
 
                                     <div class="divider"></div>
                                     <ui:link class="la-highlightedMenueItem" addItemAttributes="true" controller="public" action="licensingModel"><i class="smile outline icon"></i>${message(code:'menu.user.licensingModel')}</ui:link>

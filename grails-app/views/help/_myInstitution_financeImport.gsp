@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue" %>
 
-<div class="ui flyout" id="help-content" style="padding:50px 0 10px 0;overflow:scroll">
+<div class="ui wide flyout" id="help-content" style="padding:50px 0 10px 0;overflow:scroll">
     <h1 class="ui header">
         <g:message code="myinst.financeImport.headline"/>
     </h1>
