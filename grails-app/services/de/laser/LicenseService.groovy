@@ -43,7 +43,7 @@ class LicenseService {
     Set<PropertyDefinition> ILL_USAGE_STATEMENT_PROPS = [PropertyStore.LIC_ILL_ELECTRONIC, PropertyStore.LIC_ILL_PRINT_OR_FAX, PropertyStore.LIC_ILL_RECORD_KEEPING_REQUIRED, PropertyStore.LIC_ILL_SECURE_ELECTRONIC_TRANSMISSION]
     Set<PropertyDefinition> CORE_USAGE_TERMS = [PropertyStore.LIC_DIGITAL_COPY, PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE, /*PropertyStore.LIC_DOCUMENT_DELIVERY_SERVICE,*/ PropertyStore.LIC_ELECTRONIC_LINK,
                                                   PropertyStore.LIC_SCHOLARLY_SHARING, PropertyStore.LIC_SCHOLARLY_SHARING_TERM_NOTE, PropertyStore.LIC_PRINT_COPY, PropertyStore.LIC_PRINT_COPY_TERM_NOTE, PropertyStore.LIC_TDM,
-                                                  PropertyStore.LIC_TDM_RESTRICTIONS, PropertyStore.LIC_TDM_CHAR_COUNT]
+                                                  PropertyStore.LIC_TDM_RESTRICTIONS, PropertyStore.LIC_TDM_CHAR_COUNT]+GENERAL_USAGE_STATEMENT_PROPS
     Set<PropertyDefinition> USAGE_TERMS = CORE_USAGE_TERMS+AGENT_DEFINITION_PROPS+GENERAL_USAGE_STATEMENT_PROPS+COURSE_PACK_USAGE_STATEMENT_PROPS+ILL_USAGE_STATEMENT_PROPS
     Set<PropertyDefinition> SUPPLY_TERMS = [PropertyStore.LIC_ACCESSIBILITY_COMPLIANCE, PropertyStore.LIC_CHANGE_TO_LICENSED_MATERIAL, PropertyStore.LIC_COMPLETENESS_OF_CONTENT_CLAUSE,
                                                    PropertyStore.LIC_CONCURRENCY_WITH_PRINT_VERSION, PropertyStore.LIC_CONTENT_WARRANTY, PropertyStore.LIC_CONT_ACCESS_TITLE_TRANSFER,
@@ -2539,7 +2539,7 @@ class LicenseService {
         Locale locale = LocaleUtils.getCurrentLocale()
         Map<Long, LicenseProperty> licPropertyMap = LicenseProperty.executeQuery('select lp.type.id, lp from LicenseProperty lp where lp.owner = :lic and (lp.isPublic = true or lp.tenant = :ctx)', [lic: lic, ctx: institution]).collectEntries { row -> [row[0], row[1]] }
         Set<RefdataValue> matchingStatus = [RDStore.LICENSE_CURRENT, RDStore.LICENSE_EXPIRED, RDStore.LICENSE_INTENDED]
-        if(!(lic.status in matchingStatus)) {
+        if(!(lic.status.id in matchingStatus.collect { RefdataValue rdv -> rdv.id })) {
             List<Object> errArgs = [matchingStatus.collect { RefdataValue rdv -> rdv.getI10n('value') }.join(', ')]
             errors << messageSource.getMessage("onix.validation.error.noMatchingStatus", errArgs.toArray(), locale)
         }

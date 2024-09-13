@@ -1,6 +1,6 @@
 package de.laser
 
- 
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
 /**
@@ -10,6 +10,7 @@ import grails.plugin.springsecurity.annotation.Secured
 class DevController  {
 
     ContextService contextService
+    LicenseService licenseService
 
     /**
      * @return the frontend view with sample area for frontend developing and showcase
@@ -61,5 +62,17 @@ class DevController  {
         else {
             render view: 'jse'
         }
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def onixValidationPrecheck() {
+        Org institution = contextService.getOrg()
+        License license = License.get(params.id)
+        Map<String, Object> result = [validationErrors: licenseService.precheckValidation(license, institution)]
+        if(result.validationErrors == null) {
+            redirect controller: 'license', action: 'show', params: [export: 'onix', id: params.id]
+        }
+        else
+            render result as JSON
     }
 }

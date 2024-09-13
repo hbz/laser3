@@ -2449,7 +2449,10 @@ class ExportService {
 		if(configMap.revision == AbstractReport.COUNTER_5) {
 			String apiKey = platformRecord.centralApiKey ?: ci.requestorKey
 			queryArguments = "?customer_id=${ci.value}"
-			switch(configMap.sushiApiAuthenticationMethod) {
+			String sushiApiAuthenticationMethod = configMap.sushiApiAuthenticationMethod
+			if(!sushiApiAuthenticationMethod)
+				sushiApiAuthenticationMethod = platformRecord.sushiApiAuthenticationMethod
+			switch(sushiApiAuthenticationMethod) {
 				case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR:
 					if(ci.requestorKey) {
 						queryArguments += "&requestor_id=${ci.requestorKey}"
