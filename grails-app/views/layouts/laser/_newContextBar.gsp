@@ -308,7 +308,7 @@
     <g:render template="${'/help/' + helpService.getMapping(controllerName, actionName)}" />
 </g:if>
 <g:elseif test="${helpFlag == HelpService.MD}">
-    <g:render template="/help/helpServiceMarkdownWrapper" />
+    <g:render template="/templates/helpServiceMarkdownWrapper" />
 </g:elseif>
 
 <style>
