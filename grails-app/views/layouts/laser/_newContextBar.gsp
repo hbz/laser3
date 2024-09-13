@@ -63,7 +63,7 @@
 
             %{-- help panel --}%
 
-            <g:if test="${helpService.isActiveMapped(controllerName, actionName)}">
+            <g:if test="${helpService.isActive(controllerName, actionName)}">
                 <div class="item la-cb-action">
                     <button class="${Btn.ICON.SIMPLE} la-toggle-ui" id="help-toggle"><i class="${Icon.UI.HELP}"></i></button>
                 </div>
@@ -302,8 +302,8 @@
 
 %{-- help flyout --}%
 
-<g:if test="${helpService.isActiveMapped(controllerName, actionName)}">
-    <g:render template="${'/help/flyouts/' + helpService.getMapping(controllerName, actionName)}" />
+<g:if test="${helpService.isActive(controllerName, actionName)}">
+    <g:render template="${'/help/' + helpService.getMapping(controllerName, actionName)}" />
 </g:if>
 
 <style>
