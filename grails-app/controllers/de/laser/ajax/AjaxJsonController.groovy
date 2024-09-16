@@ -56,6 +56,7 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+import javax.transaction.Transactional
 import java.text.SimpleDateFormat
 
 /**
@@ -1026,7 +1027,9 @@ class AjaxJsonController {
         int removed = 0
         Map<String, Object> objId = [id: params.long("objId")]
         switch(params.object) {
-            case "altname": removed = AlternativeName.executeUpdate('delete from AlternativeName altname where altname.id = :id', objId)
+            case "altname": AlternativeName delAltName = AlternativeName.get(params.objId)
+                removed = AlternativeName.executeUpdate('delete from AlternativeName altname where altname.id = :id', objId)
+                delAltName.afterDelete()
                 break
             case "frontend": removed = DiscoverySystemFrontend.executeUpdate('delete from DiscoverySystemFrontend dsf where dsf.id = :id', objId)
                 break

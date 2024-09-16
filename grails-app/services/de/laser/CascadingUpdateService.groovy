@@ -89,9 +89,11 @@ class CascadingUpdateService {
                 luc: luc, obj: obj
         ])
 
-        if (obj.pkg)      { update(obj.pkg, luc) }
-        if (obj.platform) { update(obj.platform, luc) }
-        if (obj.org)      { update(obj.org, luc) }
+        if (obj.license)       { update(obj.license, luc) }
+        if (obj.pkg)           { update(obj.pkg, luc) }
+        if (obj.platform)      { update(obj.platform, luc) }
+        if (obj.org)           { update(obj.org, luc) }
+        if (obj.subscription)  { update(obj.subscription, luc) }
     }
 
     /**
