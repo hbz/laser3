@@ -638,6 +638,15 @@
                             <ui:xEditableBoolean owner="${s}" field="renewalSent"/>
                             <br/>
                             <ui:xEditable owner="${s}" field="renewalSentDate" type="date"/>
+                            <br/>
+                            <g:if test="${surveyConfig}">
+                                <g:set var="notfinish"
+                                       value="${SurveyOrg.findAllBySurveyConfigAndFinishDateIsNull(surveyConfig).size()}"/>
+                                        <g:link controller="survey" action="surveyEvaluation"
+                                                id="${surveyConfig.surveyInfo.id}" params="[tab: 'participantsViewAllNotFinish']">
+                                            ${notfinish}
+                                        </g:link>
+                            </g:if>
                         </td>
                         <td>
                             <g:if test="${editable}">
