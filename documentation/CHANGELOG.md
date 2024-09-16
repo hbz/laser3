@@ -7,11 +7,20 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
+--      16.09.2024  dev     3.5         Ingrid Bug          Merkmale verwalten: Korrektur des durchgestrichenen Icons für Mehrfachsetzung; Vereinheitlichung der Anzeige (current state  vs go-to state)
+
 5936    16.09.2024  dev     3.5         Andreas Bug         Kosten ohne Lizenzbezug tauchten bei Konsortialstellen nicht auf
 
 5919    16.09.2024  dev     3.5         Andreas Bug         ES-Index wurde bei Änderungen von Alternativnamen nicht angestoßen
 
+5932    13.09.2024  rc-3.4  3.4         Ingrid Bug          Auswahl von eigenen Merkmalen bei Adresskontakten nicht möglich
+
 5933    13.09.2024  rc-3.4  3.4.9       Andreas Bug         Aufruf von Statista-Nutzungsstatistiken war nicht möglich
+
+5930    12.09.2024  dev     3.5         Ingrid Feature      Deutlichere Markierung der Systeme und zusätzliches System 
+
+--      12.09.2024  dev     3.5         Ingrid Feature      Anderes Icon für Umfragen
 
 5801    12.09.2024  dev     3.5         Andreas Feature     Lizenzimport unterstützt jetzt auch Identifikatoren
 
