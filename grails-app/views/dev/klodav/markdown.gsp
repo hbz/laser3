@@ -16,8 +16,7 @@
 </nav>
 
 <div class="ui segment">
-    <% print helpService.parseMarkdown('help/klodav.md') %>
-
+    <md:render file="help/klodav.md" />
     <hr />
     Source (modified) : <a href="https://gist.github.com/allysonsilva/85fff14a22bbdf55485be947566cc09e" target="_blank">allysonsilva/Full-Markdown.md @ GitHub</a>
 </div>
