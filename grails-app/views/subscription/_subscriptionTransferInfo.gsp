@@ -295,18 +295,18 @@
                         </g:each>
                     </td>
 
-                    <g:set var="countModificationToCostInformationAfterRenewalDoc" value="${surveyConfig ? surveyService.countModificationToCostInformationAfterRenewalDoc(s) : 0}"/>
+                    <g:set var="countModificationToContactInformationAfterRenewalDoc" value="${surveyConfig ? surveyService.countModificationToContactInformationAfterRenewalDoc(s) : 0}"/>
 
-                    <td class="${surveyConfig ? countModificationToCostInformationAfterRenewalDoc == 0 ? 'positive' : 'negative' : ''}">
-                        <g:if test="${countModificationToCostInformationAfterRenewalDoc > 0}">
+                    <td class="${surveyConfig ? countModificationToContactInformationAfterRenewalDoc == 0 ? 'positive' : 'negative' : ''}">
+                        <g:if test="${countModificationToContactInformationAfterRenewalDoc > 0}">
                             <g:link class="ui label triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
                                     params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]">
-                                <i class="download icon"></i> ${countModificationToCostInformationAfterRenewalDoc}
+                                <i class="download icon"></i> ${countModificationToContactInformationAfterRenewalDoc}
                             </g:link>
                         </g:if>
                         <g:else>
                             <g:if test="${surveyConfig}">
-                                ${countModificationToCostInformationAfterRenewalDoc}
+                                ${countModificationToContactInformationAfterRenewalDoc}
                             </g:if>
                         </g:else>
                     </td>
