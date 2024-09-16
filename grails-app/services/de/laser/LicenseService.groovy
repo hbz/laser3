@@ -43,7 +43,7 @@ class LicenseService {
     Set<PropertyDefinition> ILL_USAGE_STATEMENT_PROPS = [PropertyStore.LIC_ILL_ELECTRONIC, PropertyStore.LIC_ILL_PRINT_OR_FAX, PropertyStore.LIC_ILL_RECORD_KEEPING_REQUIRED, PropertyStore.LIC_ILL_SECURE_ELECTRONIC_TRANSMISSION]
     Set<PropertyDefinition> CORE_USAGE_TERMS = [PropertyStore.LIC_DIGITAL_COPY, PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE, /*PropertyStore.LIC_DOCUMENT_DELIVERY_SERVICE,*/ PropertyStore.LIC_ELECTRONIC_LINK,
                                                   PropertyStore.LIC_SCHOLARLY_SHARING, PropertyStore.LIC_SCHOLARLY_SHARING_TERM_NOTE, PropertyStore.LIC_PRINT_COPY, PropertyStore.LIC_PRINT_COPY_TERM_NOTE, PropertyStore.LIC_TDM,
-                                                  PropertyStore.LIC_TDM_RESTRICTIONS, PropertyStore.LIC_TDM_CHAR_COUNT]
+                                                  PropertyStore.LIC_TDM_RESTRICTIONS, PropertyStore.LIC_TDM_CHAR_COUNT]+GENERAL_USAGE_STATEMENT_PROPS
     Set<PropertyDefinition> USAGE_TERMS = CORE_USAGE_TERMS+AGENT_DEFINITION_PROPS+GENERAL_USAGE_STATEMENT_PROPS+COURSE_PACK_USAGE_STATEMENT_PROPS+ILL_USAGE_STATEMENT_PROPS
     Set<PropertyDefinition> SUPPLY_TERMS = [PropertyStore.LIC_ACCESSIBILITY_COMPLIANCE, PropertyStore.LIC_CHANGE_TO_LICENSED_MATERIAL, PropertyStore.LIC_COMPLETENESS_OF_CONTENT_CLAUSE,
                                                    PropertyStore.LIC_CONCURRENCY_WITH_PRINT_VERSION, PropertyStore.LIC_CONTENT_WARRANTY, PropertyStore.LIC_CONT_ACCESS_TITLE_TRANSFER,
@@ -1357,6 +1357,7 @@ class LicenseService {
         Set<RefdataValue> relevantDocTypes = RefdataValue.findAllByValueInListAndOwner(['Addendum', 'License', 'ONIX-PL License'], RefdataCategory.findByDesc(RDConstants.DOCUMENT_TYPE))
         Map<Long, LicenseProperty> licPropertyMap = LicenseProperty.executeQuery('select lp.type.id, lp from LicenseProperty lp where lp.owner = :lic and (lp.isPublic = true or lp.tenant = :ctx)', [lic: lic, ctx: institution]).collectEntries { row -> [row[0], row[1]] }
         Set<PropertyDefinition> paragraphableProps = USAGE_TERMS+SUPPLY_TERMS+CONTINUING_ACCESS_TERMS+PAYMENT_TERMS+GENERAL_TERMS
+        paragraphableProps << PropertyStore.LIC_ILL_TERM_NOTE
         Set<String> possibleUsageStatus = ['onixPL:InterpretedAsPermitted', 'onixPL:InterpretedAsProhibited', 'onixPL:Permitted', 'onixPL:Prohibited', 'onixPL:SilentUninterpreted', 'onixPL:NotApplicable'],
         usedGeneralUsageStatus = [], usedCoursePackUsageStatus = [], usedILLUsageStatus = []
         possibleUsageStatus.each { String usageStatus ->
@@ -1484,12 +1485,12 @@ class LicenseService {
                                 AgentIdentifier {
                                     AgentIDType('onixPL:CompanyRegistrationNumber')
                                     IDTypeName('ISIL')
-                                    IDValue(Identifier.findByNsAndOrg(IdentifierNamespace.findByNs(IdentifierNamespace.ISIL), oo.org))
+                                    IDValue(Identifier.findByNsAndOrg(IdentifierNamespace.findByNs(IdentifierNamespace.ISIL), oo.org).value)
                                 }
                                 AgentIdentifier {
                                     AgentIDType('onixPL:CompanyRegistrationNumber')
                                     IDTypeName('WIBID')
-                                    IDValue(Identifier.findByNsAndOrg(IdentifierNamespace.findByNs(IdentifierNamespace.WIBID), oo.org))
+                                    IDValue(Identifier.findByNsAndOrg(IdentifierNamespace.findByNs(IdentifierNamespace.WIBID), oo.org).value)
                                 }
                                 AgentIdentifier {
                                     AgentIDType('onixPL:Proprietary')
@@ -1759,16 +1760,16 @@ class LicenseService {
                                 UsageStatus('onixPL:Permitted')
                                 //license property Digital copy term note
                                 //value xor paragraph
-                                 if(isParagraphSet(licPropertyMap, PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE)) {
-                                    Annotation {
-                                        AnnotationType('onixPL:SpecialConditions')
-                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE.id).getParagraph())
-                                    }
-                                }
-                                else {
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE)) {
                                     Annotation {
                                         AnnotationType('onixPL:Interpretation')
                                         AnnotationText(licPropertyMap.get(PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE.id).getValue())
+                                    }
+                                }
+                                else if(isParagraphSet(licPropertyMap, PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:SpecialConditions')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE.id).getParagraph())
                                     }
                                 }
                                 if(isParagraphSet(licPropertyMap, PropertyStore.LIC_DIGITAL_COPY))
@@ -1798,16 +1799,16 @@ class LicenseService {
                                 UsageStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_ELECTRONIC_LINK.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.USAGE_STATUS_CODE))
                                 //license property Electronic link term note
                                 //value xor paragraph
-                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ELECTRONIC_LINK_TERM_NOTE)) {
-                                    Annotation {
-                                        AnnotationType('onixPL:SpecialConditions')
-                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_ELECTRONIC_LINK_TERM_NOTE.id).getParagraph())
-                                    }
-                                }
-                                else {
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_ELECTRONIC_LINK_TERM_NOTE)){
                                     Annotation {
                                         AnnotationType('onixPL:Interpretation')
                                         AnnotationText(licPropertyMap.get(PropertyStore.LIC_ELECTRONIC_LINK_TERM_NOTE.id).getValue())
+                                    }
+                                }
+                                else if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ELECTRONIC_LINK_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:SpecialConditions')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_ELECTRONIC_LINK_TERM_NOTE.id).getParagraph())
                                     }
                                 }
                                 if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ELECTRONIC_LINK))
@@ -2539,7 +2540,7 @@ class LicenseService {
         Locale locale = LocaleUtils.getCurrentLocale()
         Map<Long, LicenseProperty> licPropertyMap = LicenseProperty.executeQuery('select lp.type.id, lp from LicenseProperty lp where lp.owner = :lic and (lp.isPublic = true or lp.tenant = :ctx)', [lic: lic, ctx: institution]).collectEntries { row -> [row[0], row[1]] }
         Set<RefdataValue> matchingStatus = [RDStore.LICENSE_CURRENT, RDStore.LICENSE_EXPIRED, RDStore.LICENSE_INTENDED]
-        if(!(lic.status in matchingStatus)) {
+        if(!(lic.status.id in matchingStatus.collect { RefdataValue rdv -> rdv.id })) {
             List<Object> errArgs = [matchingStatus.collect { RefdataValue rdv -> rdv.getI10n('value') }.join(', ')]
             errors << messageSource.getMessage("onix.validation.error.noMatchingStatus", errArgs.toArray(), locale)
         }

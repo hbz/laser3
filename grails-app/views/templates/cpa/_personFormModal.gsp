@@ -620,7 +620,7 @@
 
 %{--  Change icon when contact dropdown is changed          --}%
     JSPC.app.changeIconRegardingDropdown = function() {
-        $('.dropdown').dropdown();
+        //$('.dropdown').dropdown();
         $(".dropdown.contentType select").on("change", function () {
 
           let icon = $(this).parents('.contactField').find('.la-js-contactIcon');
