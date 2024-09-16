@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5933    13.09.2024  rc-3.4  3.4.9       Andreas Bug         Aufruf von Statista-Nutzungsstatistiken war nicht möglich
+
+5889    11.09.2024  rc-3.4  3.4.9       Andreas Bug         gruppierte Lizenzmerkmale konnten nicht entfernt werden
+
 --      06.09.2024  rc-3.4  3.4.8       Andreas Bug         Kaskadierungsfehler bei Paket-Lieferant-Verknüpfungen behoben
 
 5910    04.09.2024  rc-3.4  3.4.8       Andreas Bug         Abfragefehler bei Merkmalsverwaltung behoben
