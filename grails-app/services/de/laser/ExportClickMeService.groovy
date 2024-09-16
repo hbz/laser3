@@ -5624,12 +5624,12 @@ class ExportClickMeService {
                 }
                 else if (fieldKey == 'subscription.renewalChanges') {
                     SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)
-                    int countModificationToCostInformationAfterRenewalDoc = surveyConfig ? surveyService.countModificationToCostInformationAfterRenewalDoc(subscription) : 0
+                    int countModificationToContactInformationAfterRenewalDoc = surveyConfig ? surveyService.countModificationToContactInformationAfterRenewalDoc(subscription) : 0
                     String style = ''
                     if(surveyConfig) {
-                        style = countModificationToCostInformationAfterRenewalDoc == 0 ? 'positive' : 'negative'
+                        style = countModificationToContactInformationAfterRenewalDoc == 0 ? 'positive' : 'negative'
                     }
-                    row.add(createTableCell(format, surveyConfig ? countModificationToCostInformationAfterRenewalDoc  : ' ', style))
+                    row.add(createTableCell(format, surveyConfig ? countModificationToContactInformationAfterRenewalDoc  : ' ', style))
                 }
                 else if ((fieldKey == 'participantSubCostItem' || fieldKey == 'subCostItem')) {
                     if(costItemSums) {
