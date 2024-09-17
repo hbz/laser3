@@ -116,6 +116,23 @@
                                         <g:if test="${editable}">
                                             <g:if test="${subscriptionLicenseLink}">
                                                 <div class="ui buttons">
+                                                    <div class="ui simple dropdown negative icon button la-modern-button" data-content="${message(code: 'license.details.unlink')}">
+                                                        <i aria-hidden="true" class="${Icon.CMD.UNLINK}"></i>
+                                                        <div class="menu">
+                                                            <g:link controller="subscription" action="unlinkLicense" class="item js-open-confirm-modal" params="${[license: link.sourceLicense.id, id: subscription.id]}"
+                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.license")}"
+                                                                    data-confirm-term-how="unlink" role="button" aria-label="${message(code: "ariaLabel.unlink.universal")}">
+                                                                <g:message code="license.details.unlink"/>
+                                                            </g:link>
+                                                            <g:link controller="subscription" action="unlinkLicense" class="item js-open-confirm-modal" params="${[license: link.sourceLicense.id, id: subscription.id, unlinkWithChildren: true]}"
+                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.child.license")}"
+                                                                    data-confirm-term-how="unlink" role="button" aria-label="${message(code: "ariaLabel.unlink.universal")}">
+                                                                <g:message code="license.details.unlink.child"/>
+                                                            </g:link>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <%--
                                                     <span class="la-popup-tooltip"
                                                           data-content="${message(code: 'license.details.unlink')}">
                                                         <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
@@ -143,7 +160,7 @@
                                                             </g:link>
                                                         </span>
                                                     </g:if>
-                                                </div>
+                                                --%>
                                             </g:if>
                                             <g:else>
                                                 <span class="la-popup-tooltip"

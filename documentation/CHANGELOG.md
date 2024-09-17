@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5941    17.09.2024  dev     3.5         Andreas Feature     Umbau der Vertragsentknüpfung
+
 5944    17.09.2024  rc-3.4  3.4.9       Andreas Feature     Anpassungen des Einrichtungsexports
 
 5942    17.09.2024  rc-3.4  3.4.9       Andreas Bug         spezielle Lizenzkontakte wurden nicht übertragen
