@@ -144,23 +144,22 @@
                                             <g:if test="${pd.multipleOccurrence}">
                                                 <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="top left"
                                                         params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP} teal">
-                                                    <i class="${Icon.PROP.MULTIPLE_NOT}"></i>
+                                                    <i class="${Icon.PROP.MULTIPLE}"></i>
                                                 </g:link>
                                             </g:if>
                                             <g:else>
                                                 <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}" data-position="top left"
-                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP} teal">
-                                                    <i class="${Icon.PROP.MULTIPLE}"></i>
+                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP} ">
+                                                    <i class="${Icon.PROP.MULTIPLE_NOT}"></i>
                                                 </g:link>
                                             </g:else>
                                         </g:if>
 
                                         <g:if test="${(pd.descr == PropertyDefinition.SUB_PROP) && !PropertyDefinition.findByNameAndDescrAndTenant(pd.name, PropertyDefinition.SVY_PROP, null)}">
-                                            <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}">
-                                                <g:link class="${Btn.MODERN.SIMPLE}" action="transferSubPropToSurProp" params="[propertyDefinition: pd.id]">
+                                                <g:link action="transferSubPropToSurProp" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}" data-position="top left"
+                                                        params="[propertyDefinition: pd.id]" class="${Btn.MODERN.SIMPLE_TOOLTIP}" >
                                                     <i class="${Icon.CMD.COPY}"></i>
                                                 </g:link>
-                                            </span>
                                         </g:if>
 
                                         <sec:ifAnyGranted roles="ROLE_YODA">

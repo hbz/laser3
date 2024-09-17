@@ -64,7 +64,7 @@
                                             </g:if>
                                             <g:if test="${pd.multipleOccurrence}">
                                                 <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                                    <i class="${Icon.PROP.MULTIPLE} orange"></i>
+                                                    <i class="${Icon.PROP.MULTIPLE} teal"></i>
                                                 </span>
                                             </g:if>
                                             <g:if test="${pd.isUsedForLogic}">
@@ -130,7 +130,7 @@
                                                 <g:if test="${!multiplePdList?.contains(pd.id)}">
                                                     <g:if test="${pd.multipleOccurrence}">
                                                         <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="left center"
-                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP} orange">
+                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP} teal">
                                                             <i class="${Icon.PROP.MULTIPLE}"></i>
                                                         </g:link>
                                                     </g:if>
