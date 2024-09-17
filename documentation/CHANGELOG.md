@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5944    17.09.2024  rc-3.4  3.4.9       Andreas Feature     Anpassungen des Einrichtungsexports
+
+5942    17.09.2024  rc-3.4  3.4.9       Andreas Bug         spezielle Lizenzkontakte wurden nicht übertragen
+
 5936    16.09.2024  dev     3.5         Andreas Bug         Kosten ohne Lizenzbezug tauchten bei Konsortialstellen nicht auf
 
 5919    16.09.2024  dev     3.5         Andreas Bug         ES-Index wurde bei Änderungen von Alternativnamen nicht angestoßen

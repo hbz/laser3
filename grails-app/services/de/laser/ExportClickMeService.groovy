@@ -4087,8 +4087,6 @@ class ExportClickMeService {
             case FORMAT.XLS:
                 return exportService.generateXLSXWorkbook(sheetData)
             case FORMAT.CSV:
-                return exportService.generateSeparatorTableString(titles, exportData, '|')
-            case FORMAT.TSV:
                 return exportService.generateSeparatorTableString(titles, exportData, '\t')
             case FORMAT.PDF:
                 //structure: list of maps (each map is the content of a page)
@@ -7549,7 +7547,8 @@ class ExportClickMeService {
                         label += ' (Meine Merkmale)'
                     else if(fields.privateProperty == false)
                         label += ' (Allgemeine Merkmale)'
-                    titles.add(createTableCell(format,  label))
+                    if(label)
+                        titles.add(createTableCell(format,  label))
                     if (fieldKey.startsWith('surveyProperty.')) {
                         titles.add(createTableCell(format,  (messageSource.getMessage('surveyResult.participantComment', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label))))
                         titles.add(createTableCell(format,  (messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label))))
