@@ -7,12 +7,19 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5941    17.09.2024  dev     3.5         Andreas Feature     Umbau der Vertragsentknüpfung
+
+5944    17.09.2024  rc-3.4  3.4.9       Andreas Feature     Anpassungen des Einrichtungsexports
+
+5942    17.09.2024  rc-3.4  3.4.9       Andreas Bug         spezielle Lizenzkontakte wurden nicht übertragen
 
 --      16.09.2024  dev     3.5         Ingrid Bug          Merkmale verwalten: Korrektur des durchgestrichenen Icons für Mehrfachsetzung; Vereinheitlichung der Anzeige (current state  vs go-to state)
 
 5936    16.09.2024  dev     3.5         Andreas Bug         Kosten ohne Lizenzbezug tauchten bei Konsortialstellen nicht auf
 
 5919    16.09.2024  dev     3.5         Andreas Bug         ES-Index wurde bei Änderungen von Alternativnamen nicht angestoßen
+
+5779    16.09.2024  dev     3.5         Andreas Feature     Abräumen von öffentlichen Adressen von Anbietern und Lieferanten
 
 5932    13.09.2024  rc-3.4  3.4         Ingrid Bug          Auswahl von eigenen Merkmalen bei Adresskontakten nicht möglich
 
