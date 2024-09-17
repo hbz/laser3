@@ -6892,6 +6892,40 @@ a i.circular.la-gokb:hover {
 .ui.button.la-js-addListValue {
   margin-bottom: 1em;
 }
+
+/* debug info */
+
+#showSystemInfo {
+  bottom: 45px;
+  right: 1.5vw;
+}
+
+#showDebugInfo {
+  bottom: 45px;
+  right: 1.5vw;
+  margin-right: 55px;
+}
+
+#system-profiler {
+  bottom: 10px;
+  right: 1.5vw;
+}
+
+@media only screen and (min-width: 1920px) {
+  #system-profiler,
+  #showSystemInfo,
+  #showDebugInfo {
+    right: 5vw;
+  }
+}
+
+@media only screen and (min-width: 2600px) {
+  #system-profiler,
+  #showSystemInfo,
+  #showDebugInfo {
+    right: 9vw;
+  }
+}
 /*!
  * # Fomantic-UI 2.9.3 - Container
  * https://github.com/fomantic/Fomantic-UI/
@@ -43161,7 +43195,7 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
 .ui.label.la-server-label {
   position: fixed;
   bottom: 0;
-  left: 0;
+  right: 0;
   top: 0;
   margin: 0 !important;
   border-radius: 0 !important;
@@ -43174,6 +43208,12 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
 @media only screen and (min-width: 1920px) {
   .ui.label.la-server-label {
     width: 5vw;
+  }
+}
+
+@media only screen and (min-width: 2600px) {
+  .ui.label.la-server-label {
+    width: 9vw;
   }
 }
 
