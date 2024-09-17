@@ -202,24 +202,29 @@
                             </g:link>
                         </g:if>
                     </td>
-
                     <g:if test="${surveyConfig}">
                         <g:set var="finish"
                                value="${SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).size()}"/>
-                        <g:set var="total" value="${SurveyOrg.findAllBySurveyConfig(surveyConfig).size()}"/>
+                        <g:set var="total"
+                               value="${SurveyOrg.findAllBySurveyConfig(surveyConfig).size()}"/>
 
-                        <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
+                        <g:set var="finishProcess"
+                               value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
                         <td class="${finish == total ? 'positive' : ''}">
                             <g:if test="${finishProcess >= 0}">
-                                <g:link controller="survey" action="surveyEvaluation" id="${surveyConfig.surveyInfo.id}" target="_blank">
-                                    <g:formatNumber number="${finishProcess}" type="number" maxFractionDigits="2" minFractionDigits="2"/>%
+                                <g:link controller="survey" action="surveyEvaluation"
+                                        id="${surveyConfig.surveyInfo.id}">
+                                    ${finish}/${total}
+                                    (<g:formatNumber number="${finishProcess}"
+                                                     type="number"
+                                                     maxFractionDigits="2"
+                                                     minFractionDigits="2"/>%)
                                 </g:link>
                             </g:if>
                         </td>
-                    </g:if>
-                    <g:else>
-                        <td></td>
-                    </g:else>
+                    </g:if><g:else>
+                    <td></td>
+                </g:else>
 
                     <g:set var="countOrgsWithTermination" value="${0}"/>
                     <g:if test="${surveyConfig && surveyConfig.surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED, RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED]}">
