@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5944    17.09.2024  rc-3.4  3.4.9       Andreas Feature     Anpassungen des Einrichtungsexports
+
+5942    17.09.2024  rc-3.4  3.4.9       Andreas Bug         spezielle Lizenzkontakte wurden nicht übertragen
+
 5933    13.09.2024  rc-3.4  3.4.9       Andreas Bug         Aufruf von Statista-Nutzungsstatistiken war nicht möglich
 
 5889    11.09.2024  rc-3.4  3.4.9       Andreas Bug         gruppierte Lizenzmerkmale konnten nicht entfernt werden
