@@ -502,7 +502,7 @@
                                                     <i class="${Icon.ACP_PUBLIC}"></i>
                                                 </span>
                                                 ${resp}
-                                                (<strong><i class="${Icon.PROVIDER}"></i>&nbsp;${source_role.roleType.getI10n("value")}:
+                                                (<strong><i class="${Icon.PROVIDER} icon"></i>:
                                             </strong>
                                                 <g:link controller="provider" action="show" target="_blank"
                                                         id="${source_role.provider.id}">${source_role.provider.name}</g:link>)
@@ -593,7 +593,7 @@
                                                         <i class="${Icon.ACP_PUBLIC}"></i>
                                                     </span>
                                                     ${resp}
-                                                    (<strong><i class="${Icon.PROVIDER}"></i>&nbsp;${target_role.roleType.getI10n("value")}:
+                                                    (<strong><i class="${Icon.PROVIDER}"></i>:
                                                 </strong>
                                                     <g:link controller="provider" action="show" target="_blank"
                                                             id="${target_role.provider.id}">${target_role.provider.name}</g:link>)
