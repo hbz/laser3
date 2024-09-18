@@ -380,7 +380,7 @@ a i.circular.la-gokb:hover {
 }
 @media only screen and (min-width: @widescreenMonitorBreakpoint) {
     #system-profiler, #showSystemInfo, #showDebugInfo {
-        right: 5vw;
+        right: 2vw;
     }
 }
 @media only screen and (min-width: @extraWidescreenMonitorBreakpoint) {

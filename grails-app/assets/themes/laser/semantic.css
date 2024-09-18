@@ -6915,7 +6915,7 @@ a i.circular.la-gokb:hover {
   #system-profiler,
   #showSystemInfo,
   #showDebugInfo {
-    right: 5vw;
+    right: 2vw;
   }
 }
 
@@ -43207,7 +43207,7 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
 
 @media only screen and (min-width: 1920px) {
   .ui.label.la-server-label {
-    width: 5vw;
+    right: 2vw;
   }
 }
 
