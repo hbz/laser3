@@ -521,7 +521,7 @@
                                                     <i class="${Icon.ACP_PRIVATE}"></i>
                                                 </span>
                                                 ${resp}
-                                                (<strong><i class="${Icon.ORG}"></i>&nbsp;${source_role.roleType.getI10n("value")}:
+                                                (<strong><i class="${Icon.PROVIDER}"></i>:
                                             </strong>
                                                 <g:link controller="provider" action="show" target="_blank"
                                                         id="${source_role.provider.id}">${source_role.provider.name}</g:link>)
