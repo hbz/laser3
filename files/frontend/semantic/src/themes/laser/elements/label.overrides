@@ -278,7 +278,7 @@
 
 @media only screen and (min-width: @widescreenMonitorBreakpoint) {
     .ui.label.la-server-label {
-        right: 2vw;
+        width: 2vw;
     }
 }
 @media only screen and (min-width: @extraWidescreenMonitorBreakpoint) {
