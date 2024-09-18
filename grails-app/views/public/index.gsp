@@ -42,7 +42,7 @@
             </div>
         </nav>
 
-        <main>
+        <main >
            <!-- HERO -->
             <div class="ui masthead center aligned segment">
                 <div class="ui container">
@@ -96,6 +96,9 @@
                 <g:link controller="home" action="index" class="ui huge blue button">
                     ${message(code: 'landingpage.login')} <icon:arrow />
                 </g:link>
+            </div>
+            <div class="ui container">
+                <laser:render template="faq" />
             </div>
         </main>
 

@@ -1317,7 +1317,14 @@ aside.ui.accordion .title:not(.ui) {
   display: flex;
   min-height: 100vh;
   flex-direction: column;
+}
+
+.landingpage main {
   background-color: #f1ebe5;
+}
+
+.landingpage .ui.styled.accordion {
+  background-color: #f3f1ef;
 }
 
 .landingpage .hidden.menu {
