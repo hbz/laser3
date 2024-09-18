@@ -185,7 +185,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields : [
                                 'subscription.name'                  : [field: 'sub.name', label: 'Name', message: 'subscription.name.label'],
-                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true'],
+                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label'],
                                 'subscription.startDate'             : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
                                 'subscription.endDate'               : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label'],
                                 'subscription.manualCancellationDate': [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -5229,7 +5229,12 @@ class ExportClickMeService {
                 else if (fieldKey == 'survey.person') {
                     String person = ""
                     if (surveyOrg && surveyOrg.person && surveyOrg.person.contacts) {
-                        person = surveyOrg.person.contacts.collect {it.content}.join('; ')
+                        List emails = []
+                        surveyOrg.person.contacts.each {
+                            if(it.contentType == RDStore.CCT_EMAIL)
+                                emails << it.content
+                        }
+                        person = emails.join('; ')
                     }
                     row.add(createTableCell(format, person, surveyOrg && surveyService.modificationToContacInformation(surveyOrg) ? 'negative' : ''))
                 }
