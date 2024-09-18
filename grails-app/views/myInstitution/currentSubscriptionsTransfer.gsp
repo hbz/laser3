@@ -737,7 +737,7 @@
                         <td class="${surveyConfig ? countModificationToContactInformationAfterRenewalDoc == 0 ? 'positive' : 'negative' : ''}">
                             <g:if test="${countModificationToContactInformationAfterRenewalDoc > 0}">
                                 <g:link class="ui label triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
-                                        params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]">
+                                        params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id, modalText: message(code: 'renewalEvaluation.exportRenewal')]">
                                     <i class="download icon"></i> ${countModificationToContactInformationAfterRenewalDoc}
                                 </g:link>
                             </g:if>
