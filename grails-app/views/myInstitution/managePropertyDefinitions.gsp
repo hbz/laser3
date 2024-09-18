@@ -55,7 +55,7 @@
                                         </g:if>
                                         <g:if test="${pd.multipleOccurrence}">
                                             <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                                <i class="${Icon.PROP.MULTIPLE}"></i>
+                                                <i class="${Icon.PROP.MULTIPLE} teal"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.isUsedForLogic}">

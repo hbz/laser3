@@ -164,8 +164,10 @@ class Icon {
         public static String LOGIC      = 'cube icon red'
         @UIDoc(usage = 'Only for Property attribute: mandatory (Default color: yellow)')
         public static String MANDATORY  = 'star icon'               // todo: duplicate: survey/renew? > Icon.SIG.MY_OBJECT
-        @UIDoc(usage = 'Only for Property attribute: multipleOccurrence (COLORED)')
-        public static String MULTIPLE   = 'check double icon orange'
+        @UIDoc(usage = 'Only for Property attribute: multipleOccurrence')
+        public static String MULTIPLE   = 'check double icon'
+        @UIDoc(usage = 'Only for Property attribute: not multipleOccurrence')
+        public static String MULTIPLE_NOT   = 'la-check-double slash icon'
     }
 
     class FNC {
