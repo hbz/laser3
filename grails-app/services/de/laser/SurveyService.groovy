@@ -2274,7 +2274,7 @@ class SurveyService {
         return modification
     }
 
-    int countModificationToCostInformationAfterRenewalDoc(Subscription subscription){
+    int countModificationToContactInformationAfterRenewalDoc(Subscription subscription){
         int countModification = 0
         SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)
         if(surveyConfig){
