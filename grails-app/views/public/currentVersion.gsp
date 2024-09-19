@@ -6,11 +6,9 @@
 
 <ui:h1HeaderWithIcon text="Version: ${AppUtils.getMeta('info.app.version')} – ${AppUtils.getMeta('info.app.build.date')}" type="help"/>
 
-<g:set var="currentRelease" value="releases/${AppUtils.getMeta('info.app.version').take(3)}.md" />
-
 <div class="ui segment">
-    <g:if test="${helpService.getResource( currentRelease )}">
-        <md:render file="${currentRelease}" />
+    <g:if test="${helpService.getResource( currentVersionMarkdownFile )}">
+        <md:render file="${currentVersionMarkdownFile}" />
     </g:if>
 </div>
 

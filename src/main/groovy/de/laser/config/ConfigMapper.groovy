@@ -66,6 +66,7 @@ class ConfigMapper {
 
     static final List WEKB_API_USERNAME     = ['wekbApiUsername', String]
     static final List WEKB_API_PASSWORD     = ['wekbApiPassword', String]
+    static final List WEKB_SERVER_URL       = ['wekbServerURL', String]
 
     static final List<List> CONTROLLED_CONFIGURATION_LIST = [
 
@@ -81,7 +82,7 @@ class ConfigMapper {
             QUARTZ_HEARTBEAT,
             REPORTING,
             SHOW_DEBUG_INFO, SHOW_SYSTEM_INFO, SHOW_STATS_INFO, STATS_API_URL, STATS_REPORT_SAVE_LOCATION, STATS_SYNC_JOB_ACTIVE, SUSHI_COUNTER_REGISTRY_URL, SUSHI_COUNTER_REGISTRY_DATA_SUFFIX, SYSTEM_EMAIL, SYSTEM_INSIGHT_EMAILS,
-            WEKB_API_USERNAME, WEKB_API_PASSWORD
+            WEKB_API_USERNAME, WEKB_API_PASSWORD, WEKB_SERVER_URL
     ]
 
     /**
@@ -249,6 +250,9 @@ class ConfigMapper {
     }
     static String getWekbApiPassword(int output = LOGGER) {
         readConfig( WEKB_API_PASSWORD, output )
+    }
+    static String getWekbServerURL(int output = LOGGER) {
+        readConfig( WEKB_SERVER_URL, output )
     }
 
     // -- raw --

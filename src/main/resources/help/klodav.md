@@ -614,20 +614,36 @@ Underscores
 
 ------
 
-# YouTube Videos
+# Various
 
-```
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=YOUTUBE_VIDEO_ID_HERE" target="_blank">
-<img src="http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg" alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10">
-</a>
-```
+![Image not found]({{current_server_webapp}}/help/reporting/global.packages.png "{{current_server_webapp}}")
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=YOUTUBE_VIDEO_ID_HERE" target="_blank">
-<img src="http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg" alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10">
-</a>
+| Option | Description |
+|--------|-------------|
+| this   | ...         |
+| that   | ...         |
 
-```
-[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](http://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)
-```
+![File not found](/assets/laser.svg "Relative Path")
 
-[![IMAGE ALT TEXT HERE](https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/YouTube_logo_2015.svg/1200px-YouTube_logo_2015.svg.png)](https://www.youtube.com/watch?v=xyz)
+<table style="background-color: red">
+    <tr>
+        <td>Foo</td>
+        <td>Foo</td>
+        <td>Foo</td>
+    </tr>
+    <tr>
+        <td>Foo</td>
+        <td>Foo</td>
+        <td>Foo</td>
+    </tr>
+</table>
+
+<script type="text/javascript"> alert('markdown javascript'); </script>
+
+[More Javascript](javascript:alert(1))
+
+[Laser Dashboard](https://laser.hbz-nrw.de/myInstitution/dashboard)
+
+[Laser Dashboard @ current_server_laser]({{current_server_laser}}/myInstitution/dashboard)
+
+[Wekb @ current_server_wekb]({{current_server_wekb}})

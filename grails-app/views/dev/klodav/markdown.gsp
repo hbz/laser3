@@ -16,6 +16,41 @@
 </nav>
 
 <div class="ui segment">
+    <p class="ui header small">Parser</p>
+    <ul>
+        <g:each in="${helpService.getMarkdownParser().getOptions().getAll()}" var="opt">
+            <li>${opt}</li>
+        </g:each>
+    </ul>
+    <ul>
+        <g:each in="${helpService.getMarkdownParser().EXTENSIONS}" var="ext">
+            <li>${ext}</li>
+        </g:each>
+    </ul>
+
+    <p class="ui header small">Renderer</p>
+    <ul>
+        <g:each in="${helpService.getMarkdownHtmlRenderer().getOptions().getAll()}" var="opt">
+            <li>${opt}</li>
+        </g:each>
+    </ul>
+
+    <p class="ui header small">Token</p>
+    <ul>
+        <g:each in="${helpService.getTokenMap()}" var="tk">
+            <li>{{${tk.key}}} -> ${tk.value}</li>
+        </g:each>
+    </ul>
+
+%{--    <p class="ui header small">Formatter</p>--}%
+%{--    <ul>--}%
+%{--        <g:each in="${helpService.getMarkdownFormatter().getOptions().getAll()}" var="opt">--}%
+%{--            <li>${opt}</li>--}%
+%{--        </g:each>--}%
+%{--    </ul>--}%
+</div>
+
+<div class="ui segment">
     <md:render file="help/klodav.md" />
     <hr />
     Source (modified) : <a href="https://gist.github.com/allysonsilva/85fff14a22bbdf55485be947566cc09e" target="_blank">allysonsilva/Full-Markdown.md @ GitHub</a>
