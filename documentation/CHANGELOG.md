@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5956    19.09.2024  rc-3.4  3.4.9       Andreas Feature     Anzeige der Statistik-Abrufinformationen
+
+5950    19.09.2024  rc-3.4  3.4.9       Andreas Feature     Trennung der Adress- und Postfachdaten
+
 5941    17.09.2024  dev     3.5         Andreas Feature     Umbau der Vertragsentknüpfung
 
 5944    17.09.2024  rc-3.4  3.4.9       Andreas Feature     Anpassungen des Einrichtungsexports
