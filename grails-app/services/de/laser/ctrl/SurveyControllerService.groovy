@@ -2580,9 +2580,9 @@ class SurveyControllerService {
                                             surveyService.emailsToSurveyUsersOfOrg(result.surveyInfo, org, false)
                                         }
 
-                                        if(result.surveyConfig.invoicingInformation){
+                                        /*if(result.surveyConfig.invoicingInformation){
                                             surveyService.setDefaultInvoiceInformation(result.surveyConfig, org)
-                                        }
+                                        }*/
                                     }
                                 }
                             }
@@ -2772,9 +2772,9 @@ class SurveyControllerService {
                                     }
                                 }
 
-                                if(config.invoicingInformation){
+                               /* if(config.invoicingInformation){
                                     surveyService.setDefaultInvoiceInformation(config, org)
-                                }
+                                }*/
                             }
                         }
                     }

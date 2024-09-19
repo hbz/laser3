@@ -2256,19 +2256,21 @@ class SurveyService {
         return [orgList: orgList, processCount: processCount, processRow: processRow, wrongOrgs: wrongOrgs.join(', '), truncatedRows: truncatedRows.join(', ')]
     }
 
-    boolean modificationToCostInformation(SurveyOrg surveyOrg) {
+    boolean modificationToContactInformation(SurveyOrg surveyOrg) {
         boolean modification = false
         Subscription subscription = surveyOrg.surveyConfig.subscription
         SurveyConfig surveyConfig = subscription ? SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(surveyOrg.surveyConfig.subscription, true) : null
-        if(surveyConfig){
+        Subscription prevSub = subscription ? subscription._getCalculatedPreviousForSurvey() : null
+        if(surveyConfig && surveyConfig.invoicingInformation && prevSub){
             int countModification = 0
-            Date renewalDate = DocContext.executeQuery('select dateCreated from DocContext as dc where dc.subscription = :subscription and dc.owner.type = :docType and dc.owner.owner = :owner and dc.status is null order by dc.dateCreated desc', [subscription: subscription, docType: RDStore.DOC_TYPE_RENEWAL, owner: surveyConfig.surveyInfo.owner])[0]
-            if(renewalDate)
+            Date renewalDate = DocContext.executeQuery('select dateCreated from DocContext as dc where dc.subscription = :subscription and dc.owner.type = :docType and dc.owner.owner = :owner and dc.status is null order by dc.dateCreated desc', [subscription: prevSub, docType: RDStore.DOC_TYPE_RENEWAL, owner: surveyConfig.surveyInfo.owner])[0]
+            if(renewalDate) {
                 countModification = SurveyOrg.executeQuery('select count(*) from SurveyOrg as surOrg where surOrg = :surOrg ' +
                         'and (exists(select addr from Address as addr where addr = surOrg.address and addr.lastUpdated > :renewalDate) ' +
                         'or exists(select ct from Contact as ct where ct.prs = surOrg.person and ct.lastUpdated > :renewalDate) ' +
                         'or exists(select pr from Person as pr where pr = surOrg.person and pr.lastUpdated > :renewalDate))', [renewalDate: renewalDate, surOrg: surveyOrg])[0]
-            modification = countModification > 0 ? true : false
+                modification = countModification > 0 ? true : false
+            }
         }
 
         return modification
@@ -2277,13 +2279,15 @@ class SurveyService {
     int countModificationToContactInformationAfterRenewalDoc(Subscription subscription){
         int countModification = 0
         SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)
-        if(surveyConfig){
-            Date renewalDate = DocContext.executeQuery('select dateCreated from DocContext as dc where dc.subscription = :subscription and dc.owner.type = :docType and dc.owner.owner = :owner and dc.status is null order by dc.dateCreated desc', [subscription: subscription, docType: RDStore.DOC_TYPE_RENEWAL, owner: surveyConfig.surveyInfo.owner])[0]
-            if(renewalDate)
-            countModification = SurveyOrg.executeQuery('select count(*) from SurveyOrg as surOrg where surveyConfig = :surveyConfig ' +
-                    'and (exists(select addr from Address as addr where addr = surOrg.address and addr.lastUpdated > :renewalDate) ' +
-                    'or exists(select ct from Contact as ct where ct.prs = surOrg.person and ct.lastUpdated > :renewalDate) ' +
-                    'or exists(select pr from Person as pr where pr = surOrg.person and pr.lastUpdated > :renewalDate))', [renewalDate: renewalDate, surveyConfig: surveyConfig])[0]
+        Subscription prevSub = subscription._getCalculatedPreviousForSurvey()
+        if(surveyConfig && surveyConfig.invoicingInformation && prevSub){
+            Date renewalDate = DocContext.executeQuery('select dateCreated from DocContext as dc where dc.subscription = :subscription and dc.owner.type = :docType and dc.owner.owner = :owner and dc.status is null order by dc.dateCreated desc', [subscription: prevSub, docType: RDStore.DOC_TYPE_RENEWAL, owner: surveyConfig.surveyInfo.owner])[0]
+            if(renewalDate) {
+                countModification = SurveyOrg.executeQuery('select count(*) from SurveyOrg as surOrg where surveyConfig = :surveyConfig ' +
+                        'and (exists(select addr from Address as addr where addr = surOrg.address and addr.lastUpdated > :renewalDate) ' +
+                        'or exists(select ct from Contact as ct where ct.prs = surOrg.person and ct.lastUpdated > :renewalDate) ' +
+                        'or exists(select pr from Person as pr where pr = surOrg.person and pr.lastUpdated > :renewalDate))', [renewalDate: renewalDate, surveyConfig: surveyConfig])[0]
+            }
 
         }
 

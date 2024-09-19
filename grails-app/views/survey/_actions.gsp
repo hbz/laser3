@@ -6,7 +6,7 @@
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
     <g:if test="${subscription}">
         <g:set var="previous" value="${subscription._getCalculatedPrevious()}"/>
-        <g:set var="successor" value="${subscription._getCalculatedSuccessor()}"/>dfddfd
+        <g:set var="successor" value="${subscription._getCalculatedSuccessor()}"/>
         <laser:render template="/subscription/subscriptionTransferInfo" model="${[calculatedSubList: successor + [subscription] + previous]}"/>
     </g:if>
 
