@@ -185,7 +185,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields : [
                                 'subscription.name'                  : [field: 'sub.name', label: 'Name', message: 'subscription.name.label'],
-                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true'],
+                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label'],
                                 'subscription.startDate'             : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
                                 'subscription.endDate'               : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label'],
                                 'subscription.manualCancellationDate': [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -5263,16 +5263,21 @@ class ExportClickMeService {
                 else if (fieldKey == 'survey.person') {
                     String person = ""
                     if (surveyOrg && surveyOrg.person && surveyOrg.person.contacts) {
-                        person = surveyOrg.person.contacts.collect {it.content}.join('; ')
+                        List emails = []
+                        surveyOrg.person.contacts.each {
+                            if(it.contentType == RDStore.CCT_EMAIL)
+                                emails << it.content
+                        }
+                        person = emails.join('; ')
                     }
-                    row.add(createTableCell(format, person, surveyOrg && surveyService.modificationToCostInformation(surveyOrg) ? 'negative' : ''))
+                    row.add(createTableCell(format, person, surveyOrg && surveyService.modificationToContactInformation(surveyOrg) ? 'negative' : ''))
                 }
                 else if (fieldKey == 'survey.address') {
                     String address = ""
                     if (surveyOrg && surveyOrg.address) {
                         address = _getAddress(surveyOrg.address, surveyOrg.org)
                     }
-                    row.add(createTableCell(format, address, surveyOrg && surveyService.modificationToCostInformation(surveyOrg) ? 'negative' : ''))
+                    row.add(createTableCell(format, address, surveyOrg && surveyService.modificationToContactInformation(surveyOrg) ? 'negative' : ''))
                 }
                 else if (fieldKey == 'survey.eInvoicePortal') {
                     String eInvoicePortal = ""
@@ -6361,14 +6366,14 @@ class ExportClickMeService {
                     if (participantResult.surveyOrg.person && participantResult.surveyOrg.person.contacts) {
                         person = participantResult.surveyOrg.person.contacts.collect {it.content}.join('; ')
                     }
-                    row.add(createTableCell(format, person, participantResult.surveyOrg && surveyService.modificationToCostInformation(participantResult.surveyOrg) ? 'negative' : ''))
+                    row.add(createTableCell(format, person, participantResult.surveyOrg && surveyService.modificationToContactInformation(participantResult.surveyOrg) ? 'negative' : ''))
                 }
                 else if (fieldKey == 'survey.address') {
                     String address = ""
                     if (participantResult.surveyOrg && participantResult.surveyOrg.address) {
                         address = _getAddress(participantResult.surveyOrg.address, participantResult.surveyOrg.org)
                     }
-                    row.add(createTableCell(format, address, participantResult.surveyOrg && surveyService.modificationToCostInformation(participantResult.surveyOrg) ? 'negative' : ''))
+                    row.add(createTableCell(format, address, participantResult.surveyOrg && surveyService.modificationToContactInformation(participantResult.surveyOrg) ? 'negative' : ''))
                 }
                 else if (fieldKey == 'survey.eInvoicePortal') {
                     String eInvoicePortal = ""
