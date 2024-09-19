@@ -2254,7 +2254,7 @@ class SurveyService {
         return [orgList: orgList, processCount: processCount, processRow: processRow, wrongOrgs: wrongOrgs.join(', '), truncatedRows: truncatedRows.join(', ')]
     }
 
-    boolean modificationToContacInformation(SurveyOrg surveyOrg) {
+    boolean modificationToContactInformation(SurveyOrg surveyOrg) {
         boolean modification = false
         Subscription subscription = surveyOrg.surveyConfig.subscription
         SurveyConfig surveyConfig = subscription ? SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(surveyOrg.surveyConfig.subscription, true) : null

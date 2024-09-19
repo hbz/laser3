@@ -5236,14 +5236,14 @@ class ExportClickMeService {
                         }
                         person = emails.join('; ')
                     }
-                    row.add(createTableCell(format, person, surveyOrg && surveyService.modificationToContacInformation(surveyOrg) ? 'negative' : ''))
+                    row.add(createTableCell(format, person, surveyOrg && surveyService.modificationToContactInformation(surveyOrg) ? 'negative' : ''))
                 }
                 else if (fieldKey == 'survey.address') {
                     String address = ""
                     if (surveyOrg && surveyOrg.address) {
                         address = _getAddress(surveyOrg.address, surveyOrg.org)
                     }
-                    row.add(createTableCell(format, address, surveyOrg && surveyService.modificationToContacInformation(surveyOrg) ? 'negative' : ''))
+                    row.add(createTableCell(format, address, surveyOrg && surveyService.modificationToContactInformation(surveyOrg) ? 'negative' : ''))
                 }
                 else if (fieldKey == 'survey.eInvoicePortal') {
                     String eInvoicePortal = ""
@@ -6332,14 +6332,14 @@ class ExportClickMeService {
                     if (participantResult.surveyOrg.person && participantResult.surveyOrg.person.contacts) {
                         person = participantResult.surveyOrg.person.contacts.collect {it.content}.join('; ')
                     }
-                    row.add(createTableCell(format, person, participantResult.surveyOrg && surveyService.modificationToContacInformation(participantResult.surveyOrg) ? 'negative' : ''))
+                    row.add(createTableCell(format, person, participantResult.surveyOrg && surveyService.modificationToContactInformation(participantResult.surveyOrg) ? 'negative' : ''))
                 }
                 else if (fieldKey == 'survey.address') {
                     String address = ""
                     if (participantResult.surveyOrg && participantResult.surveyOrg.address) {
                         address = _getAddress(participantResult.surveyOrg.address, participantResult.surveyOrg.org)
                     }
-                    row.add(createTableCell(format, address, participantResult.surveyOrg && surveyService.modificationToContacInformation(participantResult.surveyOrg) ? 'negative' : ''))
+                    row.add(createTableCell(format, address, participantResult.surveyOrg && surveyService.modificationToContactInformation(participantResult.surveyOrg) ? 'negative' : ''))
                 }
                 else if (fieldKey == 'survey.eInvoicePortal') {
                     String eInvoicePortal = ""
