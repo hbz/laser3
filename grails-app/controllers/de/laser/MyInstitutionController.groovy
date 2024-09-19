@@ -2692,6 +2692,10 @@ class MyInstitutionController  {
                         notProcessedMandatoryProperties << surre.type.getI10n('name')
                     }
                 }
+                if(surveyConfig.invoicingInformation){
+                    allResultHaveValue = false
+                    flash.error = g.message(code: 'surveyResult.finish.inputNecessary')
+                }
             }
 
 
@@ -2705,7 +2709,7 @@ class MyInstitutionController  {
 
             if (!noParticipation && notProcessedMandatoryProperties.size() > 0) {
                 flash.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')]) as String
-            } else if (noParticipation || allResultHaveValue) {
+            } else if ((noParticipation && !surveyConfig.invoicingInformation) || allResultHaveValue) {
                 surveyOrg.finishDate = new Date()
                 if (!surveyOrg.save()) {
                     flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
@@ -2837,9 +2841,9 @@ class MyInstitutionController  {
                                 surveyService.emailsToSurveyUsersOfOrg(surveyInfo, org, false)
                                 //flash.message = message(code: 'surveyLinks.participateToSurvey.success')
 
-                                if(surveyConfig.invoicingInformation){
+                                /*if(surveyConfig.invoicingInformation){
                                     surveyService.setDefaultInvoiceInformation(surveyConfig, org)
-                                }
+                                }*/
                             }
                         }
                     }
