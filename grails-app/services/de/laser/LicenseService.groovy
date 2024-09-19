@@ -1357,6 +1357,7 @@ class LicenseService {
         Set<RefdataValue> relevantDocTypes = RefdataValue.findAllByValueInListAndOwner(['Addendum', 'License', 'ONIX-PL License'], RefdataCategory.findByDesc(RDConstants.DOCUMENT_TYPE))
         Map<Long, LicenseProperty> licPropertyMap = LicenseProperty.executeQuery('select lp.type.id, lp from LicenseProperty lp where lp.owner = :lic and (lp.isPublic = true or lp.tenant = :ctx)', [lic: lic, ctx: institution]).collectEntries { row -> [row[0], row[1]] }
         Set<PropertyDefinition> paragraphableProps = USAGE_TERMS+SUPPLY_TERMS+CONTINUING_ACCESS_TERMS+PAYMENT_TERMS+GENERAL_TERMS
+        paragraphableProps << PropertyStore.LIC_ILL_TERM_NOTE
         Set<String> possibleUsageStatus = ['onixPL:InterpretedAsPermitted', 'onixPL:InterpretedAsProhibited', 'onixPL:Permitted', 'onixPL:Prohibited', 'onixPL:SilentUninterpreted', 'onixPL:NotApplicable'],
         usedGeneralUsageStatus = [], usedCoursePackUsageStatus = [], usedILLUsageStatus = []
         possibleUsageStatus.each { String usageStatus ->
@@ -1484,12 +1485,12 @@ class LicenseService {
                                 AgentIdentifier {
                                     AgentIDType('onixPL:CompanyRegistrationNumber')
                                     IDTypeName('ISIL')
-                                    IDValue(Identifier.findByNsAndOrg(IdentifierNamespace.findByNs(IdentifierNamespace.ISIL), oo.org))
+                                    IDValue(Identifier.findByNsAndOrg(IdentifierNamespace.findByNs(IdentifierNamespace.ISIL), oo.org).value)
                                 }
                                 AgentIdentifier {
                                     AgentIDType('onixPL:CompanyRegistrationNumber')
                                     IDTypeName('WIBID')
-                                    IDValue(Identifier.findByNsAndOrg(IdentifierNamespace.findByNs(IdentifierNamespace.WIBID), oo.org))
+                                    IDValue(Identifier.findByNsAndOrg(IdentifierNamespace.findByNs(IdentifierNamespace.WIBID), oo.org).value)
                                 }
                                 AgentIdentifier {
                                     AgentIDType('onixPL:Proprietary')
@@ -1759,16 +1760,16 @@ class LicenseService {
                                 UsageStatus('onixPL:Permitted')
                                 //license property Digital copy term note
                                 //value xor paragraph
-                                 if(isParagraphSet(licPropertyMap, PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE)) {
-                                    Annotation {
-                                        AnnotationType('onixPL:SpecialConditions')
-                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE.id).getParagraph())
-                                    }
-                                }
-                                else {
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE)) {
                                     Annotation {
                                         AnnotationType('onixPL:Interpretation')
                                         AnnotationText(licPropertyMap.get(PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE.id).getValue())
+                                    }
+                                }
+                                else if(isParagraphSet(licPropertyMap, PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:SpecialConditions')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE.id).getParagraph())
                                     }
                                 }
                                 if(isParagraphSet(licPropertyMap, PropertyStore.LIC_DIGITAL_COPY))
@@ -1798,16 +1799,16 @@ class LicenseService {
                                 UsageStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_ELECTRONIC_LINK.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.USAGE_STATUS_CODE))
                                 //license property Electronic link term note
                                 //value xor paragraph
-                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ELECTRONIC_LINK_TERM_NOTE)) {
-                                    Annotation {
-                                        AnnotationType('onixPL:SpecialConditions')
-                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_ELECTRONIC_LINK_TERM_NOTE.id).getParagraph())
-                                    }
-                                }
-                                else {
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_ELECTRONIC_LINK_TERM_NOTE)){
                                     Annotation {
                                         AnnotationType('onixPL:Interpretation')
                                         AnnotationText(licPropertyMap.get(PropertyStore.LIC_ELECTRONIC_LINK_TERM_NOTE.id).getValue())
+                                    }
+                                }
+                                else if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ELECTRONIC_LINK_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:SpecialConditions')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_ELECTRONIC_LINK_TERM_NOTE.id).getParagraph())
                                     }
                                 }
                                 if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ELECTRONIC_LINK))

@@ -344,7 +344,7 @@
                     </g:if>
                 </label>
                 <p>
-                    ${message(code: 'default.export.cfg.csv.fieldSeparator')}: <span class="ui circular label">${csvFieldSeparator}</span> <br />
+                    ${message(code: 'default.export.cfg.csv.fieldSeparator')}: <span class="ui circular label">${csvFieldSeparator == '\t' ? "TAB" : csvFieldSeparator}</span> <br />
                 </p>
             </div>
 

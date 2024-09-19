@@ -119,6 +119,7 @@ class PropertyStore {
     public final static PropertyDefinition SUB_PROP_GASCO_ENTRY             = getPropertyDefinition('GASCO Entry', PropertyDefinition.SUB_PROP)
     public final static PropertyDefinition SUB_PROP_GASCO_INFORMATION_LINK  = getPropertyDefinition('GASCO information link', PropertyDefinition.SUB_PROP)
     public final static PropertyDefinition SUB_PROP_GASCO_NEGOTIATOR_NAME   = getPropertyDefinition('GASCO negotiator name', PropertyDefinition.SUB_PROP)
+    public final static PropertyDefinition SUB_PROP_STATS_ACCESS            = getPropertyDefinition('Statistic access', PropertyDefinition.SUB_PROP)
 
     // --
 

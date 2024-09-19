@@ -2580,9 +2580,9 @@ class SurveyControllerService {
                                             surveyService.emailsToSurveyUsersOfOrg(result.surveyInfo, org, false)
                                         }
 
-                                        if(result.surveyConfig.invoicingInformation){
+                                        /*if(result.surveyConfig.invoicingInformation){
                                             surveyService.setDefaultInvoiceInformation(result.surveyConfig, org)
-                                        }
+                                        }*/
                                     }
                                 }
                             }
@@ -2772,9 +2772,9 @@ class SurveyControllerService {
                                     }
                                 }
 
-                                if(config.invoicingInformation){
+                               /* if(config.invoicingInformation){
                                     surveyService.setDefaultInvoiceInformation(config, org)
-                                }
+                                }*/
                             }
                         }
                     }
@@ -5101,8 +5101,7 @@ class SurveyControllerService {
                 if (property && value && field) {
 
                     if (field == "refValue") {
-                        def binding_properties = ["${field}": value]
-                        SurveyController.bindData(property, binding_properties)
+                        property["${field}"] = value
                         //property.save(flush:true)
                         if (!property.save(failOnError: true)) {
                             log.error("Error Property save: " + property.error)
@@ -5148,8 +5147,7 @@ class SurveyControllerService {
                             value = new BigDecimal(value)
                         }
 
-                        binding_properties["${field}"] = value
-                        SurveyController.bindData(property, binding_properties)
+                        property["${field}"] = value
 
                         property.save(failOnError: true)
 
