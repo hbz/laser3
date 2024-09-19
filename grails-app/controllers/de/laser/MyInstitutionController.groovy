@@ -2834,9 +2834,9 @@ class MyInstitutionController  {
                                 surveyService.emailsToSurveyUsersOfOrg(surveyInfo, org, false)
                                 //flash.message = message(code: 'surveyLinks.participateToSurvey.success')
 
-                                if(surveyConfig.invoicingInformation){
+                                /*if(surveyConfig.invoicingInformation){
                                     surveyService.setDefaultInvoiceInformation(surveyConfig, org)
-                                }
+                                }*/
                             }
                         }
                     }
