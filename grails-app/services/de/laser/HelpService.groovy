@@ -1,5 +1,7 @@
 package de.laser
 
+import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension
+import com.vladsch.flexmark.ext.tables.TablesExtension
 import com.vladsch.flexmark.parser.ParserEmulationProfile
 import com.vladsch.flexmark.util.ast.Node
 import com.vladsch.flexmark.formatter.Formatter
@@ -7,7 +9,9 @@ import com.vladsch.flexmark.html.HtmlRenderer
 import com.vladsch.flexmark.parser.Parser
 import com.vladsch.flexmark.util.data.MutableDataHolder
 import com.vladsch.flexmark.util.data.MutableDataSet
+import com.vladsch.flexmark.util.misc.Extension
 import de.laser.config.ConfigMapper
+import de.laser.flexmark.BaseExtension
 import de.laser.remote.ApiSource
 import grails.gorm.transactions.Transactional
 import org.grails.io.support.GrailsResourceUtils
@@ -26,9 +30,9 @@ class HelpService {
 
     URL getResource(String file) {
         URL url = GrailsResourceUtils.getClassLoader().getResource( file ) // resources
-        if (url) {
-            println file + ' >> ' + url
-        }
+//        if (url) {
+//            println file + ' >> ' + url
+//        }
         url
     }
 
@@ -76,6 +80,7 @@ class HelpService {
         [
             'current_server_laser'  : ConfigMapper.getGrailsServerURL(),
             'current_server_wekb'   : ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)?.baseUrl, // ConfigMapper.getWekbServerURL(), // TODO
+            'current_server_assets' : ConfigMapper.getGrailsServerURL() + '/assets',
             'current_server_webapp' : ConfigMapper.getGrailsServerURL() + '/static',
         ]
     }
@@ -90,16 +95,22 @@ class HelpService {
     Parser getMarkdownParser() {
         MutableDataHolder options = new MutableDataSet()
         options.set(Parser.PARSER_EMULATION_PROFILE, ParserEmulationProfile.COMMONMARK)
+        options.set(Parser.EXTENSIONS, Arrays.asList(
+                new Extension[] { BaseExtension.create(), StrikethroughExtension.create(), TablesExtension.create() }
+        ))
 
         Parser.builder(options).build()
     }
 
     HtmlRenderer getMarkdownHtmlRenderer() {
-        MutableDataHolder optionsRenderer = new MutableDataSet()
-        optionsRenderer.set(HtmlRenderer.AUTOLINK_WWW_PREFIX, 'https://')
-        optionsRenderer.set(HtmlRenderer.ESCAPE_HTML, true)
+        MutableDataHolder options = new MutableDataSet()
+        options.set(HtmlRenderer.AUTOLINK_WWW_PREFIX, 'https://')
+        options.set(HtmlRenderer.ESCAPE_HTML, true)
+        options.set(Parser.EXTENSIONS, Arrays.asList(
+                new Extension[] { BaseExtension.create(), StrikethroughExtension.create(), TablesExtension.create() }
+        ))
 
-        HtmlRenderer.builder(optionsRenderer).build()
+        HtmlRenderer.builder(options).build()
     }
 
     Formatter getMarkdownFormatter() {

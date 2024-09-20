@@ -308,7 +308,11 @@
     <g:render template="${'/help/' + helpService.getMapping(controllerName, actionName)}" />
 </g:if>
 <g:elseif test="${helpFlag == HelpService.MD}">
-    <g:render template="/help/wrapper" model="${[currentMapping: helpService.getMapping(controllerName, actionName)]}" />
+    <div class="ui wide flyout" id="help-content" style="padding:50px 0 10px 0;overflow:scroll">
+        <div class="content">
+            <ui:renderMarkdown help="${helpService.getMapping(controllerName, actionName)}" />
+        </div>
+    </div>
 </g:elseif>
 
 <style>

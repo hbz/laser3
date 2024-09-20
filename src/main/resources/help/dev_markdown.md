@@ -5,8 +5,6 @@
 ##### h5 Heading
 ###### h6 Heading
 
-![alt text](/assets/laser.svg "Relative Path")
-
 Emphasis, aka italics, with *asterisks* or _underscores_.
 
 Strong emphasis, aka bold, with **asterisks** or __underscores__.
@@ -20,3 +18,10 @@ __This is bold text__
 *This is italic text*
 
 _This is italic text_
+
+~~Strikethrough~~ with two tildes.
+
+![ASSETS]({{current_server_assets}}/gasco-logo.jpg "Source: {{current_server_assets}}")
+
+![WEBAPP]({{current_server_webapp}}/help/dev/test.jpg "Source: {{current_server_webapp}}")
+

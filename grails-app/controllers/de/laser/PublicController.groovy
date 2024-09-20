@@ -328,9 +328,7 @@ class PublicController {
         Map<String, Object> result = [:]
 
         String[] iap = AppUtils.getMeta('info.app.version').split('\\.')
-        String cv = (iap.length >= 2) ? (iap[0] + '.' + iap[1] + '.md') : 'default.md'
-
-        result.currentVersionMarkdownFile = 'releases/' + cv
+        result.currentVersion = (iap.length >= 2) ? (iap[0] + '.' + iap[1]) : 'failed'
         result
     }
 }

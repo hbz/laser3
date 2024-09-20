@@ -7,9 +7,7 @@
 <ui:h1HeaderWithIcon text="Version: ${AppUtils.getMeta('info.app.version')} – ${AppUtils.getMeta('info.app.build.date')}" type="help"/>
 
 <div class="ui segment">
-    <g:if test="${helpService.getResource( currentVersionMarkdownFile )}">
-        <md:render file="${currentVersionMarkdownFile}" />
-    </g:if>
+    <ui:renderMarkdown releaseNotes="${currentVersion}" />
 </div>
 
 <laser:htmlEnd />

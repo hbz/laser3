@@ -22,11 +22,6 @@
             <li>${opt}</li>
         </g:each>
     </ul>
-    <ul>
-        <g:each in="${helpService.getMarkdownParser().EXTENSIONS}" var="ext">
-            <li>${ext}</li>
-        </g:each>
-    </ul>
 
     <p class="ui header small">Renderer</p>
     <ul>
@@ -51,7 +46,7 @@
 </div>
 
 <div class="ui segment">
-    <md:render file="help/klodav.md" />
+    <ui:renderMarkdown file="test.md" />
     <hr />
     Source (modified) : <a href="https://gist.github.com/allysonsilva/85fff14a22bbdf55485be947566cc09e" target="_blank">allysonsilva/Full-Markdown.md @ GitHub</a>
 </div>
