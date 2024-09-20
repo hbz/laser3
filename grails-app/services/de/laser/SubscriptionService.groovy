@@ -3497,7 +3497,7 @@ class SubscriptionService {
         return [orgList: orgList, processCount: processCount, processRow: processRow, wrongOrgs: wrongOrgs.join(', '), truncatedRows: truncatedRows.join(', ')]
     }
 
-    Map uploadRequestorIDs(Subscription subscription, Platform platform, InputStream stream) {
+    Map uploadRequestorIDs(Platform platform, InputStream stream) {
         Integer processCount = 0
         Integer processRow = 0
         List orgList = []
