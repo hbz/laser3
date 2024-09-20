@@ -324,11 +324,16 @@ class PublicController {
     }
 
     @Secured(['permitAll'])
-    def currentVersion() {
-        Map<String, Object> result = [:]
+    def releaseNotes() {
+        Map<String, Object> result = [
+                history : ['3.2', '3.3', '3.4'] // todo
+        ]
 
         String[] iap = AppUtils.getMeta('info.app.version').split('\\.')
-        result.currentVersion = (iap.length >= 2) ? (iap[0] + '.' + iap[1]) : 'failed'
+        if (params.id) {
+            iap = params.id.toString().split('\\.')
+        }
+        result.version = (iap.length >= 2) ? (iap[0] + '.' + iap[1]) : 'failed'
         result
     }
 }

@@ -234,6 +234,14 @@ Some text to show that the reference links can follow later.
 [1]: http://slashdot.org
 [link text itself]: http://www.reddit.com
 
+```
+* [LAS:eR]({{ current_server_laser }} "current_server_laser: {{ current_server_laser }}")
+* [we:kb]({{ current_server_wekb }} "current_server_wekb: {{ current_server_wekb }}")
+```
+
+* [LAS:eR]({{current_server_laser}} "current_server_laser: {{current_server_laser}}")
+* [we:kb]({{current_server_wekb}} "current_server_wekb: {{current_server_wekb}}")
+
 ------
 
 # Images
@@ -625,7 +633,7 @@ Underscores
 
 ![File not found](/assets/laser.svg "Relative Path")
 
-<table style="background-color: red">
+<table style="background-color: green">
     <tr>
         <td>Foo</td>
         <td>Foo</td>
