@@ -77,3 +77,4 @@ systemInsightEmails = admin1@localhost,admin2@localhost,admin3@localhost
 
 wekbApiUsername = 'user'
 wekbApiPassword = 'password'
+wekbServerURL   = 'http://localhost2:8080'

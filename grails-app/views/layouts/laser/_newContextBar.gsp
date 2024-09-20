@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.convenience.Marker; de.laser.Subscription; de.laser.GenericOIDService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.UserSetting; de.laser.auth.User; de.laser.auth.Role; de.laser.Org" %>
+<%@ page import="de.laser.HelpService; de.laser.ui.Btn; de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.convenience.Marker; de.laser.Subscription; de.laser.GenericOIDService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.UserSetting; de.laser.auth.User; de.laser.auth.Role; de.laser.Org" %>
 <laser:serviceInjection />
 
 <nav id="contextBar" class="ui fixed menu" aria-label="${message(code:'wcag.label.modeNavigation')}">
@@ -63,7 +63,9 @@
 
             %{-- help panel --}%
 
-            <g:if test="${helpService.isActiveMapped(controllerName, actionName)}">
+            <g:set var="helpFlag" value="${helpService.getFlag(controllerName, actionName)}" />
+
+            <g:if test="${helpFlag}">
                 <div class="item la-cb-action">
                     <button class="${Btn.ICON.SIMPLE} la-toggle-ui" id="help-toggle"><i class="${Icon.UI.HELP}"></i></button>
                 </div>
@@ -302,9 +304,16 @@
 
 %{-- help flyout --}%
 
-<g:if test="${helpService.isActiveMapped(controllerName, actionName)}">
-    <g:render template="${'/help/flyouts/' + helpService.getMapping(controllerName, actionName)}" />
+<g:if test="${helpFlag == HelpService.GSP}">
+    <g:render template="${'/help/' + helpService.getMapping(controllerName, actionName)}" />
 </g:if>
+<g:elseif test="${helpFlag == HelpService.MD}">
+    <div class="ui wide flyout" id="help-content" style="padding:50px 0 10px 0;overflow:scroll">
+        <div class="content">
+            <ui:renderMarkdown help="${helpService.getMapping(controllerName, actionName)}" />
+        </div>
+    </div>
+</g:elseif>
 
 <style>
     #contextBar .la-advanced-view .item.la-cb-action-ext .item.la-flexbox {

@@ -21,9 +21,6 @@ class ConfigMapper {
     static final List AGGR_ES_CLUSTER               = ['aggr_es_cluster',   String]
     static final List AGGR_ES_HOSTNAME              = ['aggr_es_hostname',  String]
     static final List AGGR_ES_INDICES               = ['aggr_es_indices',   Map]
-    static final List AGGR_ES_GOKB_CLUSTER          = ['aggr_es_gokb_cluster',  String]
-    static final List AGGR_ES_GOKB_HOSTNAME         = ['aggr_es_gokb_hostname', String]
-    static final List AGGR_ES_GOKB_INDEX            = ['aggr_es_gokb_index',    String]
 
     static final List DEPLOY_BACKUP_LOCATION        = ['deployBackupLocation',      String]
     static final List DOCUMENT_STORAGE_LOCATION     = ['documentStorageLocation',   String]
@@ -66,10 +63,11 @@ class ConfigMapper {
 
     static final List WEKB_API_USERNAME     = ['wekbApiUsername', String]
     static final List WEKB_API_PASSWORD     = ['wekbApiPassword', String]
+    static final List WEKB_SERVER_URL       = ['wekbServerURL', String]
 
     static final List<List> CONTROLLED_CONFIGURATION_LIST = [
 
-            AGGR_ES_CLUSTER, AGGR_ES_HOSTNAME, AGGR_ES_INDICES, AGGR_ES_GOKB_CLUSTER, AGGR_ES_GOKB_HOSTNAME, AGGR_ES_GOKB_INDEX,
+            AGGR_ES_CLUSTER, AGGR_ES_HOSTNAME, AGGR_ES_INDICES,
             DEPLOY_BACKUP_LOCATION, DOCUMENT_STORAGE_LOCATION,
             FINANCIALS_CURRENCY,
             GLOBAL_DATA_SYNC_JOB_ACTIVE, GRAILS_MAIL_DISABLED, GRAILS_PLUGIN_WKHTMLTOPDF_BINARY, GRAILS_PLUGIN_WKHTMLTOPDF_XVFBRUNNER, GRAILS_SERVER_URL,
@@ -81,7 +79,7 @@ class ConfigMapper {
             QUARTZ_HEARTBEAT,
             REPORTING,
             SHOW_DEBUG_INFO, SHOW_SYSTEM_INFO, SHOW_STATS_INFO, STATS_API_URL, STATS_REPORT_SAVE_LOCATION, STATS_SYNC_JOB_ACTIVE, SUSHI_COUNTER_REGISTRY_URL, SUSHI_COUNTER_REGISTRY_DATA_SUFFIX, SYSTEM_EMAIL, SYSTEM_INSIGHT_EMAILS,
-            WEKB_API_USERNAME, WEKB_API_PASSWORD
+            WEKB_API_USERNAME, WEKB_API_PASSWORD, WEKB_SERVER_URL
     ]
 
     /**
@@ -144,15 +142,6 @@ class ConfigMapper {
     }
     static Map getAggrEsIndices(int output = LOGGER) {
         readConfig( AGGR_ES_INDICES, output ) as Map
-    }
-    static String getAggrEsGOKBCluster(int output = LOGGER) {
-        readConfig( AGGR_ES_GOKB_CLUSTER, output )
-    }
-    static String getAggrEsGOKBHostname(int output = LOGGER) {
-        readConfig( AGGR_ES_GOKB_HOSTNAME, output )
-    }
-    static String getAggrEsGOKBIndex(int output = LOGGER) {
-        readConfig( AGGR_ES_GOKB_INDEX, output )
     }
     static String getDeployBackupLocation(int output = LOGGER) {
         readConfig( DEPLOY_BACKUP_LOCATION, output )
@@ -249,6 +238,9 @@ class ConfigMapper {
     }
     static String getWekbApiPassword(int output = LOGGER) {
         readConfig( WEKB_API_PASSWORD, output )
+    }
+    static String getWekbServerURL(int output = LOGGER) {
+        readConfig( WEKB_SERVER_URL, output )
     }
 
     // -- raw --

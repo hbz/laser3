@@ -121,6 +121,10 @@ dependencies {
 
     implementation 'commons-io:commons-io:2.14.0'                           // 2023
     implementation 'com.github.albfernandez:juniversalchardet:2.5.0'        // 2024
+    implementation 'com.vladsch.flexmark:flexmark:0.64.8'                           // 2023
+    implementation 'com.vladsch.flexmark:flexmark-ext-gfm-strikethrough:0.64.8'     // 2023
+//    implementation 'com.vladsch.flexmark:flexmark-ext-gfm-tasklist:0.64.8'          // 2023
+    implementation 'com.vladsch.flexmark:flexmark-ext-tables:0.64.8'                // 2023
     implementation 'io.github.gpc:asynchronous-mail:3.1.2'                  // 2023
     implementation 'org.apache.commons:commons-lang3:3.17.0'                // 2024
     implementation 'org.apache.poi:poi-ooxml:3.17'                          // 2017 : [freeze] : 5.x available

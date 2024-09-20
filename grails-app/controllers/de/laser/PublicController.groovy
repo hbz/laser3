@@ -322,4 +322,13 @@ class PublicController {
         result.mappingColsPro = ["management", "organisation", "reporting", "api"]
         result
     }
+
+    @Secured(['permitAll'])
+    def currentVersion() {
+        Map<String, Object> result = [:]
+
+        String[] iap = AppUtils.getMeta('info.app.version').split('\\.')
+        result.currentVersion = (iap.length >= 2) ? (iap[0] + '.' + iap[1]) : 'failed'
+        result
+    }
 }

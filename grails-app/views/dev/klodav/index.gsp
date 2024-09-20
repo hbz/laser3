@@ -11,12 +11,9 @@
 <nav class="ui secondary menu">
     <g:link controller="dev" action="klodav" class="item active">Various</g:link>
     <g:link controller="dev" action="icons" class="item"><i class="${Icon.SIG.NEW_OBJECT} yellow"></i> New Icons</g:link>
-    <g:link controller="dev" action="buttons" class="item"><i class="${Icon.SIG.NEW_OBJECT} orange"></i> New Buttons</g:link>
+    <g:link controller="dev" action="buttons" class="item"><i class="${Icon.SIG.NEW_OBJECT} yellow"></i> New Buttons</g:link>
+    <g:link controller="dev" action="markdown" class="item"><i class="${Icon.SIG.NEW_OBJECT} orange"></i> Markdown</g:link>
 </nav>
-
-<hr>
-
-<hr>
 
 <div class="ui four column grid">
     <div class="column">
