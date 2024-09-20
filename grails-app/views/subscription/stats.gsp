@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.PropertyStore; de.laser.properties.SubscriptionProperty; de.laser.ui.Btn; de.laser.ui.Icon; java.text.SimpleDateFormat; grails.converters.JSON; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.wekb.Platform; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report; de.laser.interfaces.CalculatedType; de.laser.base.AbstractReport; de.laser.finance.CostItem; de.laser.base.AbstractReport; de.laser.finance.CostItem" %>
+<%@ page import="de.laser.FormService; de.laser.storage.PropertyStore; de.laser.properties.SubscriptionProperty; de.laser.ui.Btn; de.laser.ui.Icon; java.text.SimpleDateFormat; grails.converters.JSON; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.wekb.Platform; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report; de.laser.interfaces.CalculatedType; de.laser.base.AbstractReport; de.laser.finance.CostItem; de.laser.base.AbstractReport; de.laser.finance.CostItem" %>
 <laser:htmlStart message="subscription.details.stats.label" serviceInjection="true"/>
     <laser:javascript src="echarts.js"/>
         <ui:debugInfo>
@@ -27,11 +27,41 @@
                     <laser:render template="/platform/platformStatsDetails" model="[wekbServerUnavailable: wekbServerUnavailable, platformInstanceRecord: platform]"/>
                     <g:set var="statsInfo" value="${SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where sp.owner = :subscription and sp.type = :statsAccess', [statsAccess: PropertyStore.SUB_PROP_STATS_ACCESS, subscription: subscription])}"/>
                     <g:if test="${statsInfo}">
-                        <ui:msg icon="ui info icon" class="info" noClose="true"><%-- on remerge to DEV: header="${message(code: 'default.stats.info.header')}" --%>
+                        <ui:msg showIcon="true" class="info" noClose="true" header="${message(code: 'default.stats.info.header')}">
                             ${statsInfo[0]}
                         </ui:msg>
                     </g:if>
                     <g:if test="${platform.statisticsFormat.contains('COUNTER')}">
+                        <g:form action="uploadRequestorIDs" params="${[id: params.id, platform: platform.id]}" controller="subscription" method="post" enctype="multipart/form-data" class="ui form">
+                            <div class="ui message">
+                                <div class="header">${message(code: 'default.usage.addRequestorIDs.info', args: [platform.name])}</div>
+
+                                <br>
+                                ${message(code: 'default.usage.addRequestorIDs.text')}
+
+                                <br>
+                                <g:link class="item" controller="profile" action="importManuel" target="_blank">${message(code: 'help.technicalHelp.uploadFile.manuel')}</g:link>
+                                <br>
+
+                                <g:link controller="subscription" action="templateForRequestorIDUpload" params="[id: params.id, platform: platform.id]">
+                                    <p>${message(code:'myinst.financeImport.template')}</p>
+                                </g:link>
+
+                                <div class="ui action input">
+                                    <input type="text" readonly="readonly"
+                                           placeholder="${message(code: 'template.addDocument.selectFile')}">
+                                    <input type="file" name="requestorIDFile" accept="text/tab-separated-values,.txt,.csv"
+                                           style="display: none;">
+                                    <div class="${Btn.ICON.SIMPLE}">
+                                        <i class="${Icon.CMD.ATTACHMENT}"></i>
+                                    </div>
+                                </div>
+                            </div><!-- .message -->
+                            <div class="field la-field-right-aligned">
+                                <input type="submit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${message(code: 'default.button.add.label')}"/>
+                            </div>
+                            <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
+                        </g:form>
                         <%
                             Map<String, Object> platformSushiConfig = exportService.prepareSushiCall(platform, 'stats')
                         %>
@@ -70,5 +100,15 @@
         <g:else>
             <g:render template="/templates/stats/stats"/>
         </g:else>
+    <laser:script file="${this.getGroovyPageFileName()}">
+    $('.action .icon.button').click(function () {
+         $(this).parent('.action').find('input:file').click();
+     });
+
+     $('input:file', '.ui.action.input').on('change', function (e) {
+         var name = e.target.files[0].name;
+         $('input:text', $(e.target).parent()).val(name);
+     });
+    </laser:script>
 
 <laser:htmlEnd />

@@ -641,7 +641,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     List<Org> getDerivedNonHiddenSubscribers() {
         List<Subscription> subs = Subscription.findAllByInstanceOf(this)
         //OR_SUBSCRIBER is legacy; the org role types are distinct!
-        subs.isEmpty() ? [] : OrgRole.findAllBySubInListAndRoleTypeInList(subs, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], [sort: 'org.name']).collect{it.org}
+        subs.isEmpty() ? [] : OrgRole.findAllBySubInListAndRoleTypeInList(subs, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], [sort: 'org.sortname']).collect{it.org}
     }
 
     /**
