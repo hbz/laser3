@@ -3497,4 +3497,51 @@ class SubscriptionService {
         return [orgList: orgList, processCount: processCount, processRow: processRow, wrongOrgs: wrongOrgs.join(', '), truncatedRows: truncatedRows.join(', ')]
     }
 
+    Map uploadRequestorIDs(Platform platform, InputStream stream) {
+        Integer processCount = 0
+        Integer processRow = 0
+        List orgList = []
+        ArrayList<String> rows = stream.getText().split('\n')
+        Map<String, Integer> colMap = [customerIdCol: -1, requestorIdCol: -1]
+        //read off first line of KBART file
+        List titleRow = rows.remove(0).split('\t'), wrongOrgs = [], truncatedRows = []
+        titleRow.eachWithIndex { headerCol, int c ->
+            switch (headerCol.toLowerCase().trim()) {
+                case "customer id": colMap.customerIdCol = c
+                    break
+                case ["requestor id", "api-key"]: colMap.requestorIdCol = c
+                    break
+            }
+        }
+        rows.eachWithIndex { row, int i ->
+            processRow++
+            log.debug("now processing row ${i}")
+            ArrayList<String> cols = row.split('\t', -1)
+            if(cols.size() == titleRow.size()) {
+                CustomerIdentifier match = null
+                if (colMap.customerIdCol >= 0 && cols[colMap.customerIdCol] != null && !cols[colMap.customerIdCol].trim().isEmpty()) {
+                    List matchList = CustomerIdentifier.executeQuery('select ci from CustomerIdentifier ci where ci.value = :value and ci.platform = :platform', [value: cols[colMap.customerIdCol].trim(), platform: platform])
+                    if (matchList.size() == 1)
+                        match = matchList[0] as CustomerIdentifier
+                }
+
+                if (match) {
+                    processCount++
+                    Map orgMap = [orgId: match.customer.id]
+                    if(colMap.requestorIdCol > -1 && cols[colMap.requestorIdCol] && cols[colMap.requestorIdCol].trim()) {
+                        match.requestorKey = cols[colMap.requestorIdCol].trim()
+                        match.save()
+                    }
+                    orgList << orgMap
+
+                } else {
+                    wrongOrgs << i+2
+                }
+            }else{
+                truncatedRows << i+2
+            }
+        }
+        return [orgList: orgList, processCount: processCount, processRow: processRow, wrongOrgs: wrongOrgs.join(', '), truncatedRows: truncatedRows.join(', ')]
+    }
+
 }

@@ -27,6 +27,7 @@ import org.apache.commons.lang3.RandomStringUtils
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.transaction.TransactionStatus
+import org.springframework.web.multipart.MultipartFile
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
@@ -302,6 +303,33 @@ class SubscriptionController {
             }
         }
         result
+    }
+
+    /**
+     * Call to process the given input data and create member subscription instances for the given consortial subscription
+     * @return a redirect to the subscription members view in case of success or details view or to the member adding form otherwise
+     */
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
+    def uploadRequestorIDs() {
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
+        if(!result) {
+            response.sendError(401)
+            return
+        }
+        MultipartFile importFile = params.requestorIDFile
+        InputStream stream = importFile.getInputStream()
+        result.putAll(subscriptionService.uploadRequestorIDs(Platform.get(params.platform), stream))
+        if(result.truncatedRows){
+            flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess.truncatedRows', args: [result.processCount, result.processRow, result.wrongOrgs, result.truncatedRows])
+        }else if(result.wrongOrgs){
+            flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess.wrongOrgs', args: [result.processCount, result.processRow, result.wrongOrgs])
+        }else {
+            flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess', args: [result.processCount, result.processRow])
+        }
+        redirect(url: request.getHeader('referer'))
     }
 
     /**
@@ -749,6 +777,40 @@ class SubscriptionController {
             }
 
             rowData.add(row)
+        }
+
+        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.tsv\"")
+        response.contentType = "text/csv"
+        ServletOutputStream out = response.outputStream
+        out.withWriter { writer ->
+            writer.write(exportService.generateSeparatorTableString(titles, rowData, '\t'))
+        }
+        out.close()
+        return
+
+    }
+
+    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN()
+    })
+    def templateForRequestorIDUpload() {
+        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+
+        String filename = "template_upload_requestor_ids"
+        List<Org> consortiaMembers = result.subscription.getDerivedNonHiddenSubscribers()
+        Platform platform = Platform.get(params.platform)
+
+        ArrayList titles = [message(code: 'org.sortname.label'), 'Customer ID', 'Requestor ID']
+
+        ArrayList rowData = []
+        ArrayList row
+        consortiaMembers.each { Org org ->
+            CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(org, platform)
+            if(ci?.value) {
+                row = [org.sortname, ci.value]
+                rowData.add(row)
+            }
         }
 
         response.setHeader("Content-disposition", "attachment; filename=\"${filename}.tsv\"")
