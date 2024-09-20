@@ -321,7 +321,7 @@ class SubscriptionController {
         }
         MultipartFile importFile = params.requestorIDFile
         InputStream stream = importFile.getInputStream()
-        result.putAll(subscriptionService.uploadRequestorIDs(result.subscription, Platform.get(params.platform), stream))
+        result.putAll(subscriptionService.uploadRequestorIDs(Platform.get(params.platform), stream))
         if(result.truncatedRows){
             flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess.truncatedRows', args: [result.processCount, result.processRow, result.wrongOrgs, result.truncatedRows])
         }else if(result.wrongOrgs){
