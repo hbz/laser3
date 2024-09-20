@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5958    20.09.2024  rc-3.4  3.4.9       Andreas Bug         500er beim Aufruf von Lizenzen mit NatStat-Statistiken behoben
+
 5956    19.09.2024  rc-3.4  3.4.9       Andreas Feature     Anzeige der Statistik-Abrufinformationen
 
 5950    19.09.2024  rc-3.4  3.4.9       Andreas Feature     Trennung der Adress- und Postfachdaten
