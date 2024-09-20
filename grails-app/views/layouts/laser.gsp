@@ -133,7 +133,7 @@
                                     <ui:link addItemAttributes="true" controller="profile" action="help">${message(code:'menu.user.help')}</ui:link>
                                     <ui:link addItemAttributes="true" controller="profile" action="dsgvo">${message(code:'privacyNotice')}</ui:link>
 
-                                    <ui:link addItemAttributes="true" controller="public" action="currentVersion">
+                                    <ui:link addItemAttributes="true" controller="public" action="releaseNotes">
                                         ${message(code:'releaseNotes')} (${AppUtils.getMeta('info.app.version')})
                                     </ui:link>
 
