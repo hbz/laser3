@@ -1660,6 +1660,183 @@ class FilterService {
         result
     }
 
+    Map<String,Object> getTippSubsetQuery(Map params) {
+        log.debug 'getTippSubsetQuery'
+        Map<String, Object> result = [:]
+
+
+        /*
+        List<String> qry_parts = []
+        Map<String,Object> qry_params = [:]
+
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+
+        if(pkgs){
+            qry_parts << " tipp.pkg in (:pkgs) "
+            qry_params.pkgs = pkgs
+        }
+
+        boolean filterSet = false
+        Date date_filter
+        if (params.asAt && params.asAt.length() > 0) {
+            date_filter = sdf.parse(params.asAt)
+            result.as_at_date = date_filter
+            filterSet = true
+        }
+
+        if (params.filter) {
+           if (date_filter) {
+                base_qry += "and ( ( :startDate >= tipp.accessStartDate or tipp.accessStartDate is null ) and ( :endDate <= tipp.accessEndDate or tipp.accessEndDate is null) ) "
+                qry_params.startDate = date_filter
+                qry_params.endDate = date_filter
+            }
+            qry_parts << " ( lower(tipp.name) like lower(:nameFilter) or lower(tipp.firstAuthor) like lower(:nameFilter) or lower(tipp.firstEditor) like lower(:nameFilter) or ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like lower(:nameFilter) ) ) ) "
+            qry_params.nameFilter = "%${params.filter.trim()}%"
+            filterSet = true
+        }
+
+        if (date_filter) {
+            qry_parts << " ( ( :startDate >= tipp.accessStartDate or tipp.accessStartDate is null ) and ( :endDate <= tipp.accessEndDate or tipp.accessEndDate is null) ) "
+            qry_params.startDate = new Timestamp(date_filter.getTime())
+            qry_params.endDate = new Timestamp(date_filter.getTime())
+        }
+
+        if(params.addEntitlements && params.subscription && params.issueEntitlementStatus) {
+            String q = " tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = :subscription ) and " +
+                    "( not exists ( select ie from IssueEntitlement ie where ie.subscription = :subscription and ie.tipp.id = tipp.id and ie.status = :issueEntitlementStatus ) )"
+            qry_parts << q
+            qry_params.subscription = params.subscription instanceof Subscription ? params.subscription : Subscription.get(params.subscription)
+            qry_params.issueEntitlementStatus = params.issueEntitlementStatus
+        }
+
+        if (params.status) {
+            qry_parts << " tipp.status.id in (:status) "
+            qry_params.status = Params.getLongList(params, 'status')
+
+        } else if (params.notStatus != '' && params.notStatus != null){
+            qry_parts << " tipp.status.id != :notStatus "
+            qry_params.notStatus = params.notStatus
+        }
+        else {
+            qry_parts << " tipp.status = :current "
+            qry_params.current = RDStore.TIPP_STATUS_CURRENT
+        }
+
+        if (params.ddcs) {
+            qry_parts << " exists ( select ddc.id from DeweyDecimalClassification ddc where ddc.tipp = tipp and ddc.ddc.id in (:ddcs) ) "
+            qry_params.ddcs = Params.getLongList_forCommaSeparatedString(params, 'ddcs') // ?
+            filterSet = true
+        }
+
+        if (params.languages) {
+            qry_parts << " exists ( select lang.id from Language lang where lang.tipp = tipp and lang.language.id in (:languages) ) "
+            qry_params.languages = Params.getLongList_forCommaSeparatedString(params, 'languages') // ?
+            filterSet = true
+        }
+
+        if (params.subject_references && params.subject_references != "" && listReaderWrapper(params, 'subject_references')) {
+            String q = ' ( '
+            listReaderWrapper(params, 'subject_references').eachWithIndex { String subRef, int i ->
+                q += " genfunc_filter_matcher(tipp.subjectReference,'"+subRef.trim().toLowerCase()+"') = true "
+                if(i < listReaderWrapper(params, 'subject_references').size()-1)
+                    q += 'or'
+            }
+            q += ' ) '
+            qry_parts << q
+            filterSet = true
+        }
+        if (params.series_names && params.series_names != "" && listReaderWrapper(params, 'series_names')) {
+            qry_parts << " lower(tipp.seriesName) in (:series_names) "
+            qry_params.series_names = listReaderWrapper(params, 'series_names').collect { ""+it.toLowerCase()+"" }
+            filterSet = true
+        }
+
+        if(params.summaryOfContent) {
+            qry_parts << " lower(tipp.summaryOfContent) like :summaryOfContent "
+            qry_params.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
+            filterSet = true
+        }
+
+        if(params.ebookFirstAutorOrFirstEditor) {
+            qry_parts << " (lower(tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(tipp.firstEditor) like :ebookFirstAutorOrFirstEditor) "
+            qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
+            filterSet = true
+        }
+
+        if(params.dateFirstOnlineFrom) {
+            qry_parts << " (tipp.dateFirstOnline is not null AND tipp.dateFirstOnline >= :dateFirstOnlineFrom) "
+            qry_params.dateFirstOnlineFrom = sdf.parse(params.dateFirstOnlineFrom)
+            filterSet = true
+
+        }
+        if(params.dateFirstOnlineTo) {
+            qry_parts << " (tipp.dateFirstOnline is not null AND tipp.dateFirstOnline <= :dateFirstOnlineTo) "
+            qry_params.dateFirstOnlineTo = sdf.parse(params.dateFirstOnlineTo)
+            filterSet = true
+        }
+
+        if(params.yearsFirstOnline) {
+            qry_parts << " (Year(tipp.dateFirstOnline) in (:yearsFirstOnline)) "
+            qry_params.yearsFirstOnline = Params.getLongList_forCommaSeparatedString(params, 'yearsFirstOnline').collect { Integer.valueOf(it.toString()) }
+            filterSet = true
+        }
+
+        if (params.identifier) {
+            qry_parts << " ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) "
+            qry_params.identifier = "${params.identifier}"
+            filterSet = true
+        }
+
+        if (params.publishers) {
+            //(exists (select orgRole from OrgRole orgRole where orgRole.tipp = tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers))
+            qry_parts << " lower(tipp.publisherName) in (:publishers) "
+            qry_params.publishers = listReaderWrapper(params, 'publishers').collect { it.toLowerCase().replaceAll('&quot;', '"') }
+            filterSet = true
+        }
+
+        if (params.coverageDepth) {
+            qry_parts << " exists (select tc.id from tipp.coverages tc where lower(tc.coverageDepth) in (:coverageDepth)) "
+            qry_params.coverageDepth = listReaderWrapper(params, 'coverageDepth').collect { it.toLowerCase() }
+            filterSet = true
+        }
+
+        if (params.title_types && params.title_types != "" && listReaderWrapper(params, 'title_types')) {
+            qry_parts << " lower(tipp.titleType) in (:title_types) "
+            qry_params.title_types = listReaderWrapper(params, 'title_types').collect { ""+it.toLowerCase()+"" }
+            filterSet = true
+        }
+
+        if (params.medium) {
+            qry_parts << " tipp.medium.id in (:medium) "
+            qry_params.medium = Params.getLongList_forCommaSeparatedString(params, 'medium') // ?
+            filterSet = true
+        }
+
+        if (params.gokbIds && params.gokbIds != "" && listReaderWrapper(params, 'gokbIds')) {
+            qry_parts << " gokbId in (:gokbIds) "
+            qry_params.gokbIds = listReaderWrapper(params, 'gokbIds')
+        }
+
+        String base_qry = "select tipp.id from TitleInstancePackagePlatform as tipp "
+        if (qry_parts.size() > 0) {
+            base_qry += 'where ' + qry_parts.join(' and ')
+        }
+
+        if ((params.sort != null) && (params.sort.length() > 0)) {
+                base_qry += "order by ${params.sort} ${params.order}, tipp.sortname "
+        }
+        else {
+            base_qry += "order by tipp.sortname"
+        }
+
+        result.query = base_qry
+        result.queryParams = qry_params
+        result.filterSet = filterSet
+
+        result
+        */
+    }
+
     /**
      * Prepares the SQL query for title retrieval, assembling the columns necessary, departing from the given type of entitlement (= which table and set of columns to fetch)
      * currently existing config parameters:
