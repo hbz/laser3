@@ -1389,7 +1389,7 @@ class LicenseService {
                         AddresseeIdentifier {
                             AddresseeIDType('Institutional identifier')
                             IDTypeName('ISIL')
-                            IDValue(institution.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISIL }?.value)
+                            IDValue(Identifier.findByOrgAndNs(institution, IdentifierNamespace.findByNs(IdentifierNamespace.ISIL))?.value)
                         }
                     }
                     SentDateTime(onixTimestampFormat.format(now))
@@ -2445,7 +2445,7 @@ class LicenseService {
                                     if(isValueSet(licPropertyMap, PropertyStore.LIC_LICENSEE_TERMINATION_CONDITION)) {
                                         Annotation {
                                             AnnotationType('onixPL:Interpretation')
-                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_LICENSEE_TERMINATION_RIGHT.id).getRefValue().value)
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_LICENSEE_TERMINATION_CONDITION.id).getRefValue().value)
                                         }
                                     }
                                     if(isParagraphSet(licPropertyMap, PropertyStore.LIC_LICENSEE_TERMINATION_CONDITION))
