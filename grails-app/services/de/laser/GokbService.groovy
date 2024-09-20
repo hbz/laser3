@@ -5,7 +5,11 @@ import de.laser.http.BasicHttpClient
 import de.laser.remote.ApiSource
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
+import io.micronaut.http.client.DefaultHttpClientConfiguration
+import io.micronaut.http.client.HttpClientConfiguration
 import org.springframework.context.MessageSource
+
+import java.time.Duration
 
 /**
  * Is actually a we:kb service. It contains methods to communicate with the we:kb ElasticSearch index
@@ -82,7 +86,9 @@ class GokbService {
             //url = url.contains('?') ? url.replaceAll(" ", "+")+"&username=${ConfigMapper.getWekbApiUsername()}&password=${ConfigMapper.getWekbApiPassword()}" : url.replaceAll(" ", "+")+"?username=${ConfigMapper.getWekbApiUsername()}&password=${ConfigMapper.getWekbApiPassword()}"
             queryParams.username = ConfigMapper.getWekbApiUsername()
             queryParams.password = ConfigMapper.getWekbApiPassword()
-            http = new BasicHttpClient( baseUrl )
+            HttpClientConfiguration config = new DefaultHttpClientConfiguration()
+            config.readTimeout = Duration.ofMinutes(5)
+            http = new BasicHttpClient( baseUrl, config )
 
             Closure success = { resp, json ->
                 log.debug ("server response: ${resp.getStatus().getReason()}, server: ${resp.getHeaders().get('Server')}, content length: ${resp.getHeaders().get('Content-Length')}")

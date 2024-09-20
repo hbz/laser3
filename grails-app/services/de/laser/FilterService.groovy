@@ -1660,11 +1660,37 @@ class FilterService {
         result
     }
 
+    /**
+     * Note: this query includes NO sorting because sorting should be done in subsequent queries in order to save performance!
+     * @param params
+     * @return
+     */
     Map<String,Object> getTippSubsetQuery(Map params) {
         log.debug 'getTippSubsetQuery'
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [:], queryParams = [:]
+        Set<String> queryArgs = []
+        String query = 'select tipp.id from TitleInstancePackagePlatform tipp where'
 
-
+        if(params.packages) {
+            queryArgs << 'tipp.pkg in (:packages)'
+            queryParams.packages = params.packages
+        }
+        if(params.platform) {
+            queryArgs << 'tipp.platform in (:platforms)'
+            queryParams.platforms = params.platforms
+        }
+        if(params.ieStatus) {
+            queryArgs << 'tipp.status in (:ieStatus)'
+            queryParams.ieStatus = Params.getRefdataList(params, 'ieStatus')
+        }
+        else {
+            queryArgs << 'tipp.status = :ieStatus'
+            queryParams.ieStatus = RDStore.TIPP_STATUS_CURRENT
+        }
+        String arguments = queryArgs.join(' and ')
+        result.queryParams = queryParams
+        result.query = query+" ${arguments}"
+        result
         /*
         List<String> qry_parts = []
         Map<String,Object> qry_params = [:]
