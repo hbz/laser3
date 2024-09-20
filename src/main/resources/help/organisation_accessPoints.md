@@ -1,0 +1,2 @@
+Der Zugriff auf elektronische Produkte wird über diverse **Zugangskonfigurationen** verwaltet.
+Die Vermittlung dieser dient dazu den Anbietern schnell die verhandelten Zugriffe auf entsprechende Lizenzen/Plattformen/Pakete mitzuteilen.
