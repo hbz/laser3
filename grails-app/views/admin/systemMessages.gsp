@@ -33,25 +33,25 @@
         </tr>
     </thead>
     <tbody>
-        <g:each in="${systemMessages}" var="msg">
+        <g:each in="${systemMessages}" var="msg" status="mi">
         <tr style="vertical-align: top">
             <td>
                 <div class="ui top attached segment">
-                    <span class="ui top right attached label">DE</span>
+                    <span class="ui mini top right attached label">DE</span>
                     <ui:xEditable owner="${msg}" field="content_de" type="textarea"/>
                 </div>
                 <div class="ui attached segment">
-                    <span class="ui top right attached label">EN</span>
+                    <span class="ui mini top right attached label">EN</span>
                     <ui:xEditable owner="${msg}" field="content_en" type="textarea"/>
                 </div>
                 <div class="ui top attached segment">
-                    <span class="ui top attached label">${message(code: 'default.preview.label')}</span>
-                    <div id="preview_de">
+%{--                    <span class="ui top attached label">${message(code: 'default.preview.label')}</span>--}%
+                    <div id="preview_de_${mi}">
                         <ui:renderContentAsMarkdown>${msg.content_de}</ui:renderContentAsMarkdown>
                     </div>
                 </div>
                 <div class="ui attached segment">
-                    <div id="preview_en">
+                    <div id="preview_en_${mi}">
                         <ui:renderContentAsMarkdown>${msg.content_en}</ui:renderContentAsMarkdown>
                     </div>
                 </div>

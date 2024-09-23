@@ -179,14 +179,7 @@
 
                 %{-- system messages --}%
 
-                <g:if test="${SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)}">
-                    <div id="systemMessages" class="ui message large warning">
-                        <laser:render template="/templates/system/messages" model="${[systemMessages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)]}" />
-                    </div>
-                </g:if>
-                <g:else>
-                    <div id="systemMessages" class="ui message large warning hidden"></div>
-                </g:else>
+                <laser:render template="/templates/system/messages" />
 
                 %{-- content --}%
 

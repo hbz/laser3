@@ -1,17 +1,44 @@
+<%@ page import="de.laser.system.SystemMessage" %>
 %{-- model: systemMessages --}%
 
-<g:if test="${systemMessages}">
-    <i class="icon exclamation large circular inverted red"></i>
-    <g:if test="${systemMessages.size() > 1}">
-        <strong style="font-size:1.2em">Systemmeldungen:&nbsp; ${systemMessages.size()}</strong>
-    </g:if>
-    <g:else>
-        <strong style="font-size:1.2em">Systemmeldung</strong>
-    </g:else>
+<g:set var="activeSystemMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)}" />
+<g:if test="${activeSystemMessages}">
 
-    <g:each in="${systemMessages}" var="message" status="i">
-        <div style="padding-top:0.5em;text-align:center">
-            <ui:renderContentAsMarkdown>${message.getLocalizedContent()}</ui:renderContentAsMarkdown>
+    <div id="systemMessages" class="ui message warning">
+        <div class="ui top attached label">
+            <i class="icon exclamation circular inverted red"></i>
+            <g:if test="${activeSystemMessages.size() > 1}">
+                <strong>Systemmeldungen: ${activeSystemMessages.size()}</strong>
+            </g:if>
+            <g:else>
+                <strong>Systemmeldung</strong>
+            </g:else>
         </div>
-    </g:each>
+
+        <g:each in="${activeSystemMessages}" var="message" status="i">
+            <div class="sysMessage">
+                <ui:renderContentAsMarkdown>${message.getLocalizedContent()}</ui:renderContentAsMarkdown>
+            </div>
+        </g:each>
+    </div>
+
+    <style>
+        #systemMessages {
+            padding: 2em 3em;
+            font-size: 1.1em;
+        }
+        #systemMessages .top.label {
+            background-color: #c9ba9b;
+        }
+        #systemMessages .top.label strong {
+            font-size:1.2em;
+        }
+        #systemMessages .sysMessage {
+            padding-top: 1em;
+            text-align: center;
+        }
+    </style>
 </g:if>
+
+
+
