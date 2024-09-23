@@ -3,11 +3,14 @@ package de.laser.ctrl
 
 import de.laser.*
 import de.laser.auth.User
+import de.laser.oap.OrgAccessPoint
 import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Platform
 import grails.gorm.transactions.Transactional
+import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
@@ -22,6 +25,7 @@ class OrganisationControllerService {
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
+    AccessPointService accessPointService
     ContextService contextService
     DocstoreService docstoreService
     FormService formService
@@ -30,6 +34,175 @@ class OrganisationControllerService {
     MessageSource messageSource
     TaskService taskService
     WorkflowService workflowService
+
+    PageRenderer groovyPageRenderer
+
+    Map<String,Object> mailInfos(OrganisationController controller, GrailsParameterMap params) {
+        Map<String, Object> result = getResultGenericsAndCheckAccess(controller, params)
+
+        if (result && result.editable) {
+
+            result.sub = Subscription.get(params.subscription)
+
+            List contactListProvider = result.sub.providerRelations ? Contact.executeQuery("select c.content from PersonRole pr " +
+                    "join pr.prs p join p.contacts c where pr.provider in :providers and " +
+                    "pr.responsibilityType = :responsibilityType and c.contentType = :type and p.isPublic = false and p.tenant = :ctx and pr.sub = :obj",
+                    [providers: result.sub.providerRelations.provider,
+                     responsibilityType: RDStore.PRS_RESP_SPEC_SUB_EDITOR,
+                     type: RDStore.CCT_EMAIL,
+                     ctx: result.contextOrg,
+                     obj: result.sub]) : null
+
+            result.mailAddressOfProvider = contactListProvider ? contactListProvider.join("; ") : ''
+            result.mailText = ""
+
+            List<Platform> platformList = Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription)', [subscription: result.sub])
+            String customerIdentifier = ''
+
+            List<CustomerIdentifier> customerIdentifiers = CustomerIdentifier.findAllByCustomerAndPlatformInList(result.orgInstance, platformList)
+            if (customerIdentifiers) {
+                customerIdentifier = customerIdentifiers.value.join('; ')
+            }
+
+            ReaderNumber readerNumberStudents
+            ReaderNumber readerNumberStaff
+            ReaderNumber readerNumberFTE
+            RefdataValue currentSemester = RefdataValue.getCurrentSemester()
+
+            readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS, result.orgInstance, currentSemester)
+            readerNumberStaff = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_SCIENTIFIC_STAFF, result.orgInstance, currentSemester)
+            readerNumberFTE = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_FTE, result.orgInstance, currentSemester)
+
+            if (!readerNumberStudents && !readerNumberStaff && !readerNumberFTE) {
+                boolean nextSemester = false
+
+                List<RefdataValue> refdataValueList = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SEMESTER).reverse()
+                for (int count = 0; count < refdataValueList.size(); count = count + 1) {
+                    if (refdataValueList[count] == currentSemester) {
+                        nextSemester = true
+                    }
+                    if (nextSemester) {
+                        readerNumberStaff = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_SCIENTIFIC_STAFF, result.orgInstance, refdataValueList[count])
+                        readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS, result.orgInstance, refdataValueList[count])
+                        readerNumberFTE = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_FTE, result.orgInstance, refdataValueList[count])
+                        if (readerNumberStudents || readerNumberStaff || readerNumberFTE) {
+                            currentSemester = refdataValueList[count]
+                            break
+                        }
+                    }
+                }
+            }
+
+            List orgAccessPointList = accessPointService.getOapListWithLinkCounts(result.orgInstance)
+            LinkedHashMap orgAccessPointMap = orgAccessPointList.groupBy {it.oap.accessMethod.value}.sort {it.key}
+
+            RefdataValue generalContact     = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
+            RefdataValue responsibleAdmin   = RDStore.PRS_FUNC_RESPONSIBLE_ADMIN
+            RefdataValue billingContact     = RDStore.PRS_FUNC_INVOICING_CONTACT
+
+            List contactList = Contact.executeQuery("select c.content, pr.functionType from PersonRole pr " +
+                    "join pr.prs p join p.contacts c where pr.org = :org and " +
+                    "pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = true",
+                    [org: result.orgInstance,
+                     functionTypes: [generalContact, responsibleAdmin, billingContact],
+                     type: RDStore.CCT_EMAIL])
+
+            List generalContacts = []
+            List responsibleAdmins = []
+            List billingContacts = []
+
+            contactList.each { row ->
+                String c = row[0]
+                if(generalContact == row[1]){
+                    generalContacts << c
+                }
+                else if(responsibleAdmin == row[1]){
+                    responsibleAdmins << c
+                }
+                else if(billingContact == row[1]){
+                    billingContacts << c
+                }
+            }
+
+            List accessPoints = []
+
+            OrgAccessPoint.findAllByOrgAndAccessMethod(result.orgInstance, RDStore.ACCESS_POINT_TYPE_IP, [sort: ["name": 'asc']]).each { OrgAccessPoint accessPoint ->
+                Map<String, Object> accessPointData = accessPoint.getAccessPointIpRanges()
+                List ipv4Ranges = accessPointData.ipv4Ranges
+                List ipv6Ranges = accessPointData.ipv6Ranges
+                if (ipv4Ranges || ipv6Ranges) {
+                    accessPoints << [name: "IPv4/IPv6 (${accessPoint.name})", ipv4Ranges: ipv4Ranges ? ipv4Ranges.ipRange : null, ipv6Ranges: ipv6Ranges ? ipv6Ranges.ipRange : null]
+                }
+            }
+
+            OrgAccessPoint.findAllByOrgAndAccessMethod(result.orgInstance, RDStore.ACCESS_POINT_TYPE_PROXY, [sort: ["name": 'asc']]).each { OrgAccessPoint accessPoint ->
+                Map<String, Object> accessPointData = accessPoint.getAccessPointIpRanges()
+                List ipv4Ranges = accessPointData.ipv4Ranges
+                List ipv6Ranges = accessPointData.ipv6Ranges
+                if (ipv4Ranges || ipv6Ranges) {
+                    accessPoints << [name: "Proxy IPv4/IPv6 (${accessPoint.name})", ipv4Ranges: ipv4Ranges ? ipv4Ranges.ipRange : null, ipv6Ranges: ipv6Ranges ? ipv6Ranges.ipRange : null]
+                }
+            }
+
+            OrgAccessPoint.findAllByOrgAndAccessMethod(result.orgInstance, RDStore.ACCESS_POINT_TYPE_EZPROXY, [sort: ["name": 'asc']]).each { OrgAccessPoint accessPoint ->
+                Map<String, Object> accessPointData = accessPoint.getAccessPointIpRanges()
+                List ipv4Ranges = accessPointData.ipv4Ranges
+                List ipv6Ranges = accessPointData.ipv6Ranges
+                if (ipv4Ranges || ipv6Ranges) {
+                    accessPoints << [name: "EZProxy IPv4/IPv6 (${accessPoint.name})", ipv4Ranges: ipv4Ranges ? ipv4Ranges.ipRange : null, ipv6Ranges: ipv6Ranges ? ipv6Ranges.ipRange : null, url: accessPoint.hasProperty('url') ? accessPoint.url : null]
+                }
+            }
+
+            OrgAccessPoint.findAllByOrgAndAccessMethod(result.orgInstance, RDStore.ACCESS_POINT_TYPE_MAIL_DOMAIN, [sort: ["name": 'asc']]).each { OrgAccessPoint accessPoint ->
+                def accessPointDataList = accessPoint.accessPointData
+                if (accessPointDataList) {
+                    accessPoints << [name: "MailDomain (${accessPoint.name})", mailDomains: accessPointDataList.data]
+                }
+            }
+
+            OrgAccessPoint.findAllByOrgAndAccessMethod(result.orgInstance, RDStore.ACCESS_POINT_TYPE_SHIBBOLETH, [sort: ["name": 'asc']]).each { OrgAccessPoint accessPoint ->
+                if (accessPoint.hasProperty('entityId')) {
+                    accessPoints << [name: "Shibboleth (${accessPoint.name})", entityId: accessPoint.entityId]
+                }
+            }
+
+            OrgAccessPoint.findAllByOrgAndAccessMethod(result.orgInstance, RDStore.ACCESS_POINT_TYPE_OA, [sort: ["name": 'asc']]).each { OrgAccessPoint accessPoint ->
+                if (accessPoint.hasProperty('entityId')) {
+                    accessPoints << [name: "OpenAthens (${accessPoint.name})", entityId: accessPoint.entityId]
+                }
+            }
+
+            String adressFilter = ' and a.pob = null and a.pobZipcode = null and a.pobCity = null'
+            String postBoxFilter = ' and (a.pob is not null or a.pobZipcode is not null or a.pobCity is not null)'
+            Set<Address> addressList = Address.executeQuery("select a from Address a join a.type type where type = :type and a.org = :org and a.tenant = null "+adressFilter, [org: result.orgInstance, type: RDStore.ADDRESS_TYPE_BILLING])
+            Set<Address> postBoxList = Address.executeQuery("select a from Address a join a.type type where type = :type and a.org = :org and a.tenant = null "+postBoxFilter, [org: result.orgInstance, type: RDStore.ADDRESS_TYPE_BILLING])
+
+            String billingAddress = addressList.collect { Address address -> address.getAddressForExport()}.join(";")
+            String billingPostBox = postBoxList.collect { Address address -> address.getAddressForExport()}.join(";")
+
+            result.language = params.newLanguage && params.newLanguage in [RDStore.LANGUAGE_DE.value, RDStore.LANGUAGE_EN.value] ? params.newLanguage : 'de'
+            Locale language = new Locale(result.language)
+            result.mailText = groovyPageRenderer.render view: '/mailTemplates/text/orgInfos', contentType: "text", encoding: "UTF-8", model: [language            : language,
+                                                                                                                                              org                 : result.orgInstance,
+                                                                                                                                              customerIdentifier  : customerIdentifier,
+                                                                                                                                              sub                 : result.sub,
+                                                                                                                                              readerNumberStudents: readerNumberStudents,
+                                                                                                                                              readerNumberStaff   : readerNumberStaff,
+                                                                                                                                              readerNumberFTE     : readerNumberFTE,
+                                                                                                                                              currentSemester     : currentSemester,
+                                                                                                                                              orgAccessPointMap   : orgAccessPointMap,
+                                                                                                                                              generalContacts     : generalContacts.join('; '),
+                                                                                                                                              responsibleAdmins   : responsibleAdmins.join('; '),
+                                                                                                                                              billingContacts     : billingContacts.join('; '),
+                                                                                                                                              accessPoints        : accessPoints,
+                                                                                                                                              billingAddress       : billingAddress,
+                                                                                                                                              billingPostBox: billingPostBox]
+
+        } else {
+            return null
+        }
+        result
+    }
 
 
     //--------------------------------------------- member section -------------------------------------------------
