@@ -969,6 +969,8 @@ class SurveyControllerService {
                                 break
                             case ["anmerkung", "description"]: colMap.description = c
                                 break
+                            case ["sortiername", "sortname"]: colMap.sortname = c
+                                break
                             default: log.info("unhandled parameter type ${headerCol}, ignoring ...")
                                 break
                         }
@@ -1013,6 +1015,12 @@ class SurveyControllerService {
                             if (matchList.size() == 1)
                                 match = matchList[0] as Org
                         }
+                         if (colMap.sortname >= 0 && cols[colMap.sortname] != null && !cols[colMap.sortname].trim().isEmpty()) {
+                            List matchList = Org.executeQuery('select org from Org org where org.sortname = :sortname and org.status != :removed', [sortname: cols[colMap.sortname].trim(), removed: RDStore.TIPP_STATUS_REMOVED])
+                            if (matchList.size() == 1)
+                                 match = matchList[0] as Org
+                        }
+
 
                         processCount++
                         if (match) {
