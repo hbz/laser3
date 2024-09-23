@@ -44,8 +44,17 @@
                             <g:if test="${taskInstance.org}">
                                 <br /> <g:link controller="organisation" action="show" id="${taskInstance.org.id}">${fieldValue(bean: taskInstance, field: "org")}</g:link> <br />
                             </g:if>
+                            <g:if test="${taskInstance.provider}">
+                                <br /> <g:link controller="provider" action="show" id="${taskInstance.provider.id}">${fieldValue(bean: taskInstance, field: "provider")}</g:link>
+                            </g:if>
                             <g:if test="${taskInstance.subscription}">
                                 <br /> <g:link controller="subscription" action="show" id="${taskInstance.subscription.id}">${fieldValue(bean: taskInstance, field: "subscription")}</g:link>
+                            </g:if>
+                            <g:if test="${taskInstance.tipp}">
+                                <br /> <g:link controller="tipp" action="show" id="${taskInstance.tipp.id}">${fieldValue(bean: taskInstance, field: "tipp")}</g:link>
+                            </g:if>
+                            <g:if test="${taskInstance.vendor}">
+                                <br /> <g:link controller="vendor" action="show" id="${taskInstance.vendor.id}">${fieldValue(bean: taskInstance, field: "vendor")}</g:link>
                             </g:if>
                         </g:if>
                     </td>
