@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.config.ConfigMapper; de.laser.properties.PropertyDefinition; de.laser.UserSetting; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
+<%@ page import="de.laser.survey.SurveyResult; de.laser.survey.SurveyConfigProperties; de.laser.storage.PropertyStore; de.laser.storage.RDStore; de.laser.config.ConfigMapper; de.laser.properties.PropertyDefinition; de.laser.UserSetting; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -74,6 +74,7 @@ ${message(code: 'surveyconfig.orgs.label', locale: language)}: ${orgName}
             <th>
                 ${message(code: 'surveyResult.commentOnlyForOwner')}
             </th>
+            <th></th>
         </tr>
         </thead>
         <g:each in="${surveyResults}" var="surveyResult" status="i">
@@ -106,6 +107,15 @@ ${message(code: 'surveyconfig.orgs.label', locale: language)}: ${orgName}
                 </td>
                 <td>
                     ${surveyResult.ownerComment}
+                </td>
+                <td>
+                    <g:if test="${SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(survey.surveyConfigs[0], PropertyStore.SURVEY_PROPERTY_TEST)}">
+                        <g:set var="participantTestProperty" value="${SurveyResult.findBySurveyConfigAndParticipantAndType(survey.surveyConfigs[0], org, PropertyStore.SURVEY_PROPERTY_TEST)}"/>
+                        <g:if test="${participantTestProperty && participantTestProperty.refValue == RDStore.YN_YES }">
+                            <g:set var="mailInfos" value="${"/organisation/mailInfos/${org.id}?subscription=${survey.surveyConfigs[0].subscription?.id}"}"/>
+                            ${ConfigMapper.getConfig('grails.serverURL', String) + mailInfos}
+                        </g:if>
+                    </g:if>
                 </td>
             </tr>
         </g:each>
