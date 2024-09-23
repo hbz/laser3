@@ -119,11 +119,10 @@ dependencies {
 //    implementation 'org.hibernate:hibernate-jcache:5.6.15.Final'            //        replacement for hibernate-ehcache:5.6.14.Final
 //    implementation 'org.ehcache:ehcache:3.10.8'                             //        replacement for net.sf.ehcache:ehcache:2.10.9.2
 
-    implementation 'commons-io:commons-io:2.14.0'                           // 2023
+    implementation 'commons-io:commons-io:2.17.0'                           // 2024
     implementation 'com.github.albfernandez:juniversalchardet:2.5.0'        // 2024
     implementation 'com.vladsch.flexmark:flexmark:0.64.8'                           // 2023
     implementation 'com.vladsch.flexmark:flexmark-ext-gfm-strikethrough:0.64.8'     // 2023
-//    implementation 'com.vladsch.flexmark:flexmark-ext-gfm-tasklist:0.64.8'          // 2023
     implementation 'com.vladsch.flexmark:flexmark-ext-tables:0.64.8'                // 2023
     implementation 'io.github.gpc:asynchronous-mail:3.1.2'                  // 2023
     implementation 'org.apache.commons:commons-lang3:3.17.0'                // 2024
