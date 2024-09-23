@@ -4,6 +4,7 @@ import de.laser.annotations.DebugInfo
 import de.laser.helper.Params
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyOrg
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -517,6 +518,11 @@ class PersonController  {
             }
 
             try {
+                List changeList = SurveyOrg.findAllByPerson(personInstance)
+                changeList.each { tmp2 ->
+                    tmp2.person = null
+                    tmp2.save()
+                }
                 personInstance.delete()
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'person.label'), params.id]) as String
                 String referer = request.getHeader('referer')
