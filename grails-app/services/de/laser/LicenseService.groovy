@@ -1389,7 +1389,7 @@ class LicenseService {
                         AddresseeIdentifier {
                             AddresseeIDType('Institutional identifier')
                             IDTypeName('ISIL')
-                            IDValue(institution.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISIL }?.value)
+                            IDValue(Identifier.findByOrgAndNs(institution, IdentifierNamespace.findByNs(IdentifierNamespace.ISIL))?.value)
                         }
                     }
                     SentDateTime(onixTimestampFormat.format(now))
@@ -1408,7 +1408,7 @@ class LicenseService {
                     LicenseDetail {
                         Description(lic.reference)
                         LicenseStatus(refdataToOnixControlledList(lic.status, License.ONIXPL_CONTROLLED_LIST.LICENSE_STATUS_CODE)) //current => ActiveLicense, expired => NoLongerActive, expected => ProposedLicense?
-                        Set<DocContext> relevantDocuments = lic.documents.findAll { DocContext dc -> dc.owner.type in relevantDocTypes }
+                        Set<DocContext> relevantDocuments = lic.documents.findAll { DocContext dc -> dc.owner.type in relevantDocTypes && dc.status != RDStore.DOC_CTX_STATUS_DELETED }
                         relevantDocuments.each { DocContext dc ->
                             LicenseDocument {
                                 LicenseDocumentType(refdataToOnixControlledList(dc.owner.type, License.ONIXPL_CONTROLLED_LIST.LICENSE_DOCUMENT_TYPE_CODE))
@@ -1586,6 +1586,24 @@ class LicenseService {
                             TimePointDefinition {
                                 TimePointLabel('ArchivalCopyTimePoint')
                                 Description(licPropertyMap.get(PropertyStore.LIC_ARCHIVAL_COPY_TIME.id).getValue()) //maps refdata value of license property Archival Copy: Time
+                            }
+                        }
+                        if(lic.startDate) {
+                            TimePointDefinition {
+                                TimePointLabel('LicenseStartDate')
+                                TimePointIdentifier {
+                                    TimePointIDType('onixPL:YYYYMMDD')
+                                    IDValue(onixDateFormat.format(lic.startDate)) //format YYYYmmdd
+                                }
+                            }
+                        }
+                        if(lic.endDate) {
+                            TimePointDefinition {
+                                TimePointLabel('LicenseEndDate')
+                                TimePointIdentifier {
+                                    TimePointIDType('onixPL:YYYYMMDD')
+                                    IDValue(onixDateFormat.format(lic.endDate)) //format YYYYmmdd
+                                }
                             }
                         }
                         //mapping license properties OA First Date, OA Last Date, Perpetual coverage from, Perpetual coverage to
@@ -2445,7 +2463,7 @@ class LicenseService {
                                     if(isValueSet(licPropertyMap, PropertyStore.LIC_LICENSEE_TERMINATION_CONDITION)) {
                                         Annotation {
                                             AnnotationType('onixPL:Interpretation')
-                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_LICENSEE_TERMINATION_RIGHT.id).getRefValue().value)
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_LICENSEE_TERMINATION_CONDITION.id).getRefValue().value)
                                         }
                                     }
                                     if(isParagraphSet(licPropertyMap, PropertyStore.LIC_LICENSEE_TERMINATION_CONDITION))
