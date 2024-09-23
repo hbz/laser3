@@ -19,6 +19,9 @@
 <ui:msg class="info" hideClose="true">
     <icon:pointingHand /> ${message(code: 'admin.systemMessage.info.TMP', args: [HeartbeatJob.HEARTBEAT_IN_SECONDS])}
 </ui:msg>
+<ui:msg class="info" hideClose="true">
+    <icon:pointingHand /> ${message(code: 'admin.help.markdown')}
+</ui:msg>
 
 <ui:messages data="${flash}" />
 
@@ -38,20 +41,20 @@
             <td>
                 <div class="ui top attached segment">
                     <span class="ui mini top right attached label">DE</span>
-                    <ui:xEditable owner="${msg}" field="content_de" type="textarea"/>
+                    <ui:xEditable owner="${msg}" field="content_de" id="sm_content_de_${mi}" type="textarea"/>
                 </div>
                 <div class="ui attached segment">
                     <span class="ui mini top right attached label">EN</span>
-                    <ui:xEditable owner="${msg}" field="content_en" type="textarea"/>
+                    <ui:xEditable owner="${msg}" field="content_en" id="sm_content_en_${mi}" type="textarea"/>
                 </div>
                 <div class="ui top attached segment">
 %{--                    <span class="ui top attached label">${message(code: 'default.preview.label')}</span>--}%
-                    <div id="preview_de_${mi}">
+                    <div id="sm_preview_de_${mi}">
                         <ui:renderContentAsMarkdown>${msg.content_de}</ui:renderContentAsMarkdown>
                     </div>
                 </div>
                 <div class="ui attached segment">
-                    <div id="preview_en_${mi}">
+                    <div id="sm_preview_en_${mi}">
                         <ui:renderContentAsMarkdown>${msg.content_en}</ui:renderContentAsMarkdown>
                     </div>
                 </div>
@@ -81,6 +84,24 @@
         </g:each>
     </tbody>
 </table>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.app.updateSysMsgPreview = function (elem, newValue) {
+        $.ajax({
+            url: '<g:createLink controller="ajaxHtml" action="renderMarkdown"/>',
+            method: 'POST',
+            data: {
+                text: newValue
+            },
+            success: function(data) {
+                let pp = $(elem).attr('id').split('_')
+                $('#sm_preview_' + pp[2] + '_' + pp[3]).html(data)
+            }
+        });
+    }
+
+    $('a[id^=sm_content_]').on('save', function(e, params) { JSPC.app.updateSysMsgPreview(this, params.newValue) });
+</laser:script>
 
 <ui:modal id="modalCreateSystemMessage" message="admin.systemMessage.create">
     <g:form class="ui form" url="[controller: 'admin', action: 'systemMessages', params: [create: true]]" method="post">

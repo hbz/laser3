@@ -37,6 +37,9 @@
             padding-top: 1em;
             text-align: center;
         }
+        #systemMessages .sysMessage ul, #systemMessages .sysMessage ol {
+            text-align: left;
+        }
     </style>
 </g:if>
 
