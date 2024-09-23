@@ -76,9 +76,9 @@
                             <g:each in="${RefdataCategory.getAllRefdataValuesWithOrder(rdc.desc)}" var="rdv">
                                 <tr>
                                     <td>
-                                        <g:if test="${rdv.isHardData}">
-                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="${Icon.PROP.HARDDATA}"></i>
+                                        <g:if test="${!rdv.isHardData}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.not.tooltip')}">
+                                                <i class="${Icon.PROP.HARDDATA_NOT}"></i>
                                             </span>
                                         </g:if>
 

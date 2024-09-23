@@ -8,7 +8,9 @@ import de.laser.auth.*
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.properties.PropertyDefinition
+import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import de.laser.system.SystemEvent
 import de.laser.system.SystemSetting
 import de.laser.utils.AppUtils
@@ -470,6 +472,8 @@ class BootStrapService {
         rdvList.each { map ->
             RefdataValue.construct(map)
         }
+
+        RDStore.getDeclaredFields() // init
     }
 
     /**
@@ -482,6 +486,8 @@ class BootStrapService {
         pdList.each { map ->
             PropertyDefinition.construct(map)
         }
+
+        PropertyStore.getDeclaredFields() // init
     }
 
     /**

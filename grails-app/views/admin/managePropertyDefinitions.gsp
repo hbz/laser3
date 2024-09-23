@@ -48,14 +48,19 @@
                             <g:each in="${entry.value}" var="pd">
                                 <tr>
                                     <td>
-                                        <g:if test="${pd.isHardData}">
-                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="${Icon.PROP.HARDDATA}"></i>
+                                        <g:if test="${!pd.isHardData}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.not.tooltip')}">
+                                                <i class="${Icon.PROP.HARDDATA_NOT}"></i>
+                                            </span>
+                                        </g:if>
+                                        <g:if test="${pd.mandatory}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.mandatory.tooltip')}">
+                                                <i class="${Icon.PROP.MANDATORY} yellow"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.multipleOccurrence}">
                                             <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                                <i class="${Icon.PROP.MULTIPLE}"></i>
+                                                <i class="${Icon.PROP.MULTIPLE} teal"></i>
                                             </span>
                                         </g:if>
 
@@ -138,24 +143,23 @@
                                         <g:if test="${!multiplePdList?.contains(pd.id)}">
                                             <g:if test="${pd.multipleOccurrence}">
                                                 <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="top left"
-                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP} orange">
-                                                    <i class="redo slash icon"></i>
+                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP} teal">
+                                                    <i class="${Icon.PROP.MULTIPLE}"></i>
                                                 </g:link>
                                             </g:if>
                                             <g:else>
                                                 <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}" data-position="top left"
-                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
-                                                    <i class="la-redo slash icon"></i>
+                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP} ">
+                                                    <i class="${Icon.PROP.MULTIPLE_NOT}"></i>
                                                 </g:link>
                                             </g:else>
                                         </g:if>
 
                                         <g:if test="${(pd.descr == PropertyDefinition.SUB_PROP) && !PropertyDefinition.findByNameAndDescrAndTenant(pd.name, PropertyDefinition.SVY_PROP, null)}">
-                                            <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}">
-                                                <g:link class="${Btn.MODERN.SIMPLE}" action="transferSubPropToSurProp" params="[propertyDefinition: pd.id]">
+                                                <g:link action="transferSubPropToSurProp" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}" data-position="top left"
+                                                        params="[propertyDefinition: pd.id]" class="${Btn.MODERN.SIMPLE_TOOLTIP}" >
                                                     <i class="${Icon.CMD.COPY}"></i>
                                                 </g:link>
-                                            </span>
                                         </g:if>
 
                                         <sec:ifAnyGranted roles="ROLE_YODA">

@@ -19,6 +19,7 @@ import java.nio.file.Paths
 class AppUtils {
 
     public static final String PROD    = 'PROD'
+    public static final String TEST    = 'TEST'
     public static final String QA      = 'QA'
     public static final String DEV     = 'DEV'
     public static final String LOCAL   = 'LOCAL'
@@ -48,6 +49,9 @@ class AppUtils {
                     break
                 case { it.startsWithIgnoreCase('LAS:eR-QA') }:
                     return QA
+                    break
+                case { it.startsWithIgnoreCase('LAS:eR-TEST') }: // TODO
+                    return TEST
                     break
                 case { it.equalsIgnoreCase('LAS:eR-Productive') }:
                     return PROD

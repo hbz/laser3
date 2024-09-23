@@ -77,17 +77,17 @@
                             <dt class="control-label">Renewal ${message(code: 'default.change.label')}</dt>
                             <dd>
                                 <g:set var="surveyUseForTransfer" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)}"/>
-                                <g:set var="countModificationToCostInformationAfterRenewalDoc" value="${surveyUseForTransfer ? surveyService.countModificationToCostInformationAfterRenewalDoc(subscription) : 0}"/>
+                                <g:set var="countModificationToContactInformationAfterRenewalDoc" value="${surveyUseForTransfer ? surveyService.countModificationToContactInformationAfterRenewalDoc(subscription) : 0}"/>
 
-                                    <g:if test="${countModificationToCostInformationAfterRenewalDoc > 0}">
+                                    <g:if test="${countModificationToContactInformationAfterRenewalDoc > 0}">
                                         <g:link class="ui label triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
                                                 params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyUseForTransfer.surveyInfo.id, surveyConfigID: surveyUseForTransfer.id]">
-                                            <i class="${Icon.CMD.DOWNLOAD}"></i> ${countModificationToCostInformationAfterRenewalDoc}
+                                            <i class="${Icon.CMD.DOWNLOAD}"></i> ${countModificationToContactInformationAfterRenewalDoc}
                                         </g:link>
                                     </g:if>
                                     <g:else>
                                         <g:if test="${surveyUseForTransfer}">
-                                            ${countModificationToCostInformationAfterRenewalDoc}
+                                            ${countModificationToContactInformationAfterRenewalDoc}
                                         </g:if>
                                     </g:else>
                             </dd>

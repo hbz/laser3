@@ -514,7 +514,7 @@ class ExportService {
 	 * @param format the format to use for the export (Excel or CSV)
 	 * @param visiblePersons the list of {@link Person}s to export
 	 * @return either an Excel workbook or a character-separated list containing the export
-	 * @deprecated all exports should be made configurable by modal; move this export to {@link ExportClickMeService#exportAddresses(java.util.List, java.util.List, java.util.Map, java.lang.Object, java.lang.Object, java.lang.String, de.laser.ExportClickMeService.FORMAT)}
+	 * @deprecated all exports should be made configurable by modal; move this export to {@link ExportClickMeService#exportAddresses(java.util.List, java.util.List, java.util.Map, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.String, de.laser.ExportClickMeService.FORMAT)}
 	 */
 	@Deprecated
 	def exportAddressbook(String format, List visiblePersons) {
@@ -1669,111 +1669,229 @@ class ExportService {
 					String issn = identifierMap.printIdentifier
 					String eissn = identifierMap.onlineIdentifier
 					String doi = identifierMap.doi
-					for(Map performance : reportItem.Performance) {
-						Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
-						for(Map instance : performance.Instance) {
-							int periodTotal = 0
-							String yopKey = reportItem.containsKey('YOP') && reportItem.get('YOP') != 'null' && reportItem.get('YOP') != null ? reportItem.get('YOP') : 'empty'
-							Map<String, Map<String, Object>> titleMetrics = titleRows.get(tipp.id)
-							if(!titleMetrics)
-								titleMetrics = [:]
-							Map<String, Map<String, Object>> titlesByAccessType = titleMetrics.get(instance.Metric_Type)
-							if(!titlesByAccessType)
-								titlesByAccessType = [:]
-							Map<String, Map<String, Object>> titlesByYop = titlesByAccessType.get(reportItem.Access_Type)
-							if(!titlesByYop)
-								titlesByYop = [:]
-							Map<String, Object> titleRow = titlesByYop.get(yopKey)
-							if(!titleRow) {
-								titleRow = [:]
+					//counter 5.0 structure
+					if(reportItem.containsKey('Performance')) {
+						for(Map performance : reportItem.Performance) {
+							Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
+							for(Map instance : performance.Instance) {
+								int periodTotal = 0
+								String yopKey = reportItem.containsKey('YOP') && reportItem.get('YOP') != 'null' && reportItem.get('YOP') != null ? reportItem.get('YOP') : 'empty'
+								Map<String, Map<String, Object>> titleMetrics = titleRows.get(tipp.id)
+								if(!titleMetrics)
+									titleMetrics = [:]
+								Map<String, Map<String, Object>> titlesByAccessType = titleMetrics.get(instance.Metric_Type)
+								if(!titlesByAccessType)
+									titlesByAccessType = [:]
+								Map<String, Map<String, Object>> titlesByYop = titlesByAccessType.get(reportItem.Access_Type)
+								if(!titlesByYop)
+									titlesByYop = [:]
+								Map<String, Object> titleRow = titlesByYop.get(yopKey)
+								if(!titleRow) {
+									titleRow = [:]
+								}
+								else {
+									periodTotal = titleRow.get("Reporting_Period_Total") as int
+								}
+								int reportCount = instance.Count as int
+								Integer countPerMonth = countsPerMonth.get(reportFrom)
+								if(!countPerMonth) {
+									countPerMonth = 0
+								}
+								countPerMonth += reportCount
+								countsPerMonth.put(reportFrom, countPerMonth)
+								//key naming identical to column headers
+								titleRow.put("Publisher", reportItem.Publisher)
+								//publisher ID is usually not available
+								titleRow.put("Platform", tipp.platform.name)
+								titleRow.put("Proprietary_ID", titleIDs.find { Identifier id -> id.ns == propIdNamespace }?.value)
+								titleRow.put("Metric_Type", instance.Metric_Type)
+								switch(reportType.toLowerCase()) {
+									case Counter5Report.TITLE_MASTER_REPORT:
+										titleRow.put("DOI", doi)
+										titleRow.put("Print_ISSN", issn)
+										titleRow.put("Online_ISSN", eissn)
+										titleRow.put("URI", tipp.hostPlatformURL)
+										break
+									case Counter5Report.BOOK_REQUESTS:
+									case Counter5Report.BOOK_ACCESS_DENIED: titleRow.put("DOI", doi)
+										titleRow.put("Print_ISSN", issn)
+										titleRow.put("Online_ISSN", eissn)
+										titleRow.put("URI", tipp.hostPlatformURL)
+										titleRow.put("YOP", reportItem.containsKey('YOP') && reportItem.get('YOP') != 'null' && reportItem.get('YOP') != null ? reportItem.get('YOP') : '')
+										titleRow.put("ISBN", isbn)
+										titleRow.put("Access_Type", reportItem.Access_Type)
+										break
+									case Counter5Report.BOOK_USAGE_BY_ACCESS_TYPE: titleRow.put("DOI", doi)
+										titleRow.put("ISBN", isbn)
+										titleRow.put("Print_ISSN", issn)
+										titleRow.put("Online_ISSN", eissn)
+										titleRow.put("URI", tipp.hostPlatformURL)
+										titleRow.put("YOP", reportItem.containsKey('YOP') && reportItem.get('YOP') != 'null' && reportItem.get('YOP') != null ? reportItem.get('YOP') : '')
+										titleRow.put("Access_Type", reportItem.Access_Type)
+										break
+									case Counter5Report.JOURNAL_REQUESTS:
+									case Counter5Report.JOURNAL_ACCESS_DENIED:
+									case Counter5Report.JOURNAL_USAGE_BY_ACCESS_TYPE: titleRow.put("DOI", doi)
+										titleRow.put("Print_ISSN", issn)
+										titleRow.put("Online_ISSN", eissn)
+										titleRow.put("URI", tipp.hostPlatformURL)
+										titleRow.put("YOP", reportItem.containsKey('YOP') && reportItem.get('YOP') != 'null' && reportItem.get('YOP') != null ? reportItem.get('YOP') : '')
+										titleRow.put("Access_Type", reportItem.Access_Type)
+										break
+									case Counter5Report.JOURNAL_REQUESTS_BY_YOP: titleRow.put("DOI", doi)
+										titleRow.put("Print_ISSN", issn)
+										titleRow.put("Online_ISSN", eissn)
+										titleRow.put("URI", tipp.hostPlatformURL)
+										titleRow.put("YOP", reportItem.containsKey('YOP') && reportItem.get('YOP') != 'null' && reportItem.get('YOP') != null ? reportItem.get('YOP') : '')
+										break
+									case Counter5Report.ITEM_MASTER_REPORT:
+									case Counter5Report.DATABASE_SEARCH_AND_ITEM_USAGE:
+									case Counter5Report.MULTIMEDIA_ITEM_REQUESTS:
+										titleRow.put("DOI", doi)
+										titleRow.put("ISBN", isbn)
+										titleRow.put("Print_ISSN", issn)
+										titleRow.put("Online_ISSN", eissn)
+										titleRow.put("URI", tipp.hostPlatformURL)
+										break
+								}
+								if (showPriceDate && priceItems) {
+									//listprice_eur
+									titleRow.put("List Price EUR", priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }?.listPrice ?: ' ')
+									//listprice_gbp
+									titleRow.put("List Price GBP", priceItems.find { it.listCurrency == RDStore.CURRENCY_GBP }?.listPrice ?: ' ')
+									//listprice_usd
+									titleRow.put("List Price USD", priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }?.listPrice ?: ' ')
+								}
+								if (showOtherData) {
+									titleRow.put("Year First Online", tipp.dateFirstOnline ? DateUtils.getSDF_yyyy().format( tipp.dateFirstOnline ): ' ')
+									titleRow.put("Date First Online", tipp.dateFirstOnline ? DateUtils.getSDF_yyyyMMdd().format( tipp.dateFirstOnline ): ' ')
+								}
+								periodTotal += reportCount
+								titleRow.put("Reporting_Period_Total", periodTotal)
+								//temp solution for journal reports, especially for DUZ, where issues of a journal are currently counted as individual title instances
+								String reportMonth = DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom)
+								int currentMonthCount = titleRow.containsKey(reportMonth) ? titleRow.get(reportMonth) : 0
+								titleRow.put(reportMonth, reportCount+currentMonthCount)
+								titlesByYop.put(yopKey, titleRow)
+								titlesByAccessType.put(reportItem.Access_Type, titlesByYop)
+								titleMetrics.put(instance.Metric_Type, titlesByAccessType)
+								titleRows.put(tipp.id, titleMetrics)
 							}
-							else {
-								periodTotal = titleRow.get("Reporting_Period_Total") as int
+						}
+					}
+					//counter 5.1 structure
+					else if(reportItem.containsKey('Attribute_Performance')) {
+						for (Map struct : reportItem.Attribute_Performance) {
+							String dataType = struct.Data_Type, accessType = struct.Access_Type,
+							yopKey = struct.containsKey('YOP') && reportItem.get('YOP') != 'null' && reportItem.get('YOP') != null ? reportItem.get('YOP') : 'empty'
+							for (Map.Entry performance : struct.Performance) {
+								for (Map.Entry instance : performance) {
+									String metricType = instance.getKey()
+									int periodTotal = 0
+									for (Map.Entry reportRow : instance.getValue()) {
+										int reportCount = reportRow.getValue() as int
+										Date reportMonth = DateUtils.getSDF_yyyyMM().parse(reportRow.getKey())
+										Map<String, Map<String, Object>> titleMetrics = titleRows.get(tipp.id)
+										if (!titleMetrics)
+											titleMetrics = [:]
+										Map<String, Map<String, Object>> titlesByAccessType = titleMetrics.get(metricType)
+										if (!titlesByAccessType)
+											titlesByAccessType = [:]
+										Map<String, Map<String, Object>> titlesByYop = titlesByAccessType.get(accessType)
+										if (!titlesByYop)
+											titlesByYop = [:]
+										Map<String, Object> titleRow = titlesByYop.get(yopKey)
+										if (!titleRow) {
+											titleRow = [:]
+										} else {
+											periodTotal = titleRow.get("Reporting_Period_Total") as int
+										}
+										Integer countPerMonth = countsPerMonth.get(reportMonth)
+										if (!countPerMonth) {
+											countPerMonth = 0
+										}
+										countPerMonth += reportCount
+										countsPerMonth.put(reportMonth, countPerMonth)
+										//key naming identical to column headers
+										titleRow.put("Publisher", reportItem.Publisher)
+										//publisher ID is usually not available
+										titleRow.put("Platform", tipp.platform.name)
+										titleRow.put("Proprietary_ID", titleIDs.find { Identifier id -> id.ns == propIdNamespace }?.value)
+										titleRow.put("Metric_Type", metricType)
+										switch (reportType.toLowerCase()) {
+											case Counter5Report.TITLE_MASTER_REPORT:
+												titleRow.put("DOI", doi)
+												titleRow.put("Print_ISSN", issn)
+												titleRow.put("Online_ISSN", eissn)
+												titleRow.put("URI", tipp.hostPlatformURL)
+												break
+											case Counter5Report.BOOK_REQUESTS:
+											case Counter5Report.BOOK_ACCESS_DENIED: titleRow.put("DOI", doi)
+												titleRow.put("Print_ISSN", issn)
+												titleRow.put("Online_ISSN", eissn)
+												titleRow.put("URI", tipp.hostPlatformURL)
+												titleRow.put("YOP", reportItem.containsKey('YOP') && reportItem.get('YOP') != 'null' && reportItem.get('YOP') != null ? reportItem.get('YOP') : '')
+												titleRow.put("ISBN", isbn)
+												titleRow.put("Access_Type", accessType)
+												break
+											case Counter5Report.BOOK_USAGE_BY_ACCESS_TYPE: titleRow.put("DOI", doi)
+												titleRow.put("ISBN", isbn)
+												titleRow.put("Print_ISSN", issn)
+												titleRow.put("Online_ISSN", eissn)
+												titleRow.put("URI", tipp.hostPlatformURL)
+												titleRow.put("YOP", reportItem.containsKey('YOP') && reportItem.get('YOP') != 'null' && reportItem.get('YOP') != null ? reportItem.get('YOP') : '')
+												titleRow.put("Access_Type", accessType)
+												break
+											case Counter5Report.JOURNAL_REQUESTS:
+											case Counter5Report.JOURNAL_ACCESS_DENIED:
+											case Counter5Report.JOURNAL_USAGE_BY_ACCESS_TYPE: titleRow.put("DOI", doi)
+												titleRow.put("Print_ISSN", issn)
+												titleRow.put("Online_ISSN", eissn)
+												titleRow.put("URI", tipp.hostPlatformURL)
+												titleRow.put("YOP", reportItem.containsKey('YOP') && reportItem.get('YOP') != 'null' && reportItem.get('YOP') != null ? reportItem.get('YOP') : '')
+												titleRow.put("Access_Type", accessType)
+												break
+											case Counter5Report.JOURNAL_REQUESTS_BY_YOP: titleRow.put("DOI", doi)
+												titleRow.put("Print_ISSN", issn)
+												titleRow.put("Online_ISSN", eissn)
+												titleRow.put("URI", tipp.hostPlatformURL)
+												titleRow.put("YOP", reportItem.containsKey('YOP') && reportItem.get('YOP') != 'null' && reportItem.get('YOP') != null ? reportItem.get('YOP') : '')
+												break
+											case Counter5Report.ITEM_MASTER_REPORT:
+											case Counter5Report.DATABASE_SEARCH_AND_ITEM_USAGE:
+											case Counter5Report.MULTIMEDIA_ITEM_REQUESTS:
+												titleRow.put("DOI", doi)
+												titleRow.put("ISBN", isbn)
+												titleRow.put("Print_ISSN", issn)
+												titleRow.put("Online_ISSN", eissn)
+												titleRow.put("URI", tipp.hostPlatformURL)
+												break
+										}
+										if (showPriceDate && priceItems) {
+											//listprice_eur
+											titleRow.put("List Price EUR", priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }?.listPrice ?: ' ')
+											//listprice_gbp
+											titleRow.put("List Price GBP", priceItems.find { it.listCurrency == RDStore.CURRENCY_GBP }?.listPrice ?: ' ')
+											//listprice_usd
+											titleRow.put("List Price USD", priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }?.listPrice ?: ' ')
+										}
+										if (showOtherData) {
+											titleRow.put("Year First Online", tipp.dateFirstOnline ? DateUtils.getSDF_yyyy().format(tipp.dateFirstOnline) : ' ')
+											titleRow.put("Date First Online", tipp.dateFirstOnline ? DateUtils.getSDF_yyyyMMdd().format(tipp.dateFirstOnline) : ' ')
+										}
+										periodTotal += reportCount
+										titleRow.put("Reporting_Period_Total", periodTotal)
+										//temp solution for journal reports, especially for DUZ, where issues of a journal are currently counted as individual title instances
+										String reportMonthKey = DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportMonth)
+										int currentMonthCount = titleRow.containsKey(reportMonthKey) ? titleRow.get(reportMonthKey) : 0
+										titleRow.put(reportMonthKey, reportCount + currentMonthCount)
+										titlesByYop.put(yopKey, titleRow)
+										titlesByAccessType.put(accessType, titlesByYop)
+										titleMetrics.put(metricType, titlesByAccessType)
+										titleRows.put(tipp.id, titleMetrics)
+									}
+								}
 							}
-							int reportCount = instance.Count as int
-							Integer countPerMonth = countsPerMonth.get(reportFrom)
-							if(!countPerMonth) {
-								countPerMonth = 0
-							}
-							countPerMonth += reportCount
-							countsPerMonth.put(reportFrom, countPerMonth)
-							//key naming identical to column headers
-							titleRow.put("Publisher", reportItem.Publisher)
-							//publisher ID is usually not available
-							titleRow.put("Platform", tipp.platform.name)
-							titleRow.put("Proprietary_ID", titleIDs.find { Identifier id -> id.ns == propIdNamespace }?.value)
-							titleRow.put("Metric_Type", instance.Metric_Type)
-							switch(reportType.toLowerCase()) {
-								case Counter5Report.TITLE_MASTER_REPORT:
-									titleRow.put("DOI", doi)
-									titleRow.put("Print_ISSN", issn)
-									titleRow.put("Online_ISSN", eissn)
-									titleRow.put("URI", tipp.hostPlatformURL)
-									break
-								case Counter5Report.BOOK_REQUESTS:
-								case Counter5Report.BOOK_ACCESS_DENIED: titleRow.put("DOI", doi)
-									titleRow.put("Print_ISSN", issn)
-									titleRow.put("Online_ISSN", eissn)
-									titleRow.put("URI", tipp.hostPlatformURL)
-									titleRow.put("YOP", reportItem.containsKey('YOP') && reportItem.get('YOP') != 'null' && reportItem.get('YOP') != null ? reportItem.get('YOP') : '')
-									titleRow.put("ISBN", isbn)
-									titleRow.put("Access_Type", reportItem.Access_Type)
-									break
-								case Counter5Report.BOOK_USAGE_BY_ACCESS_TYPE: titleRow.put("DOI", doi)
-									titleRow.put("ISBN", isbn)
-									titleRow.put("Print_ISSN", issn)
-									titleRow.put("Online_ISSN", eissn)
-									titleRow.put("URI", tipp.hostPlatformURL)
-									titleRow.put("YOP", reportItem.containsKey('YOP') && reportItem.get('YOP') != 'null' && reportItem.get('YOP') != null ? reportItem.get('YOP') : '')
-									titleRow.put("Access_Type", reportItem.Access_Type)
-									break
-								case Counter5Report.JOURNAL_REQUESTS:
-								case Counter5Report.JOURNAL_ACCESS_DENIED:
-								case Counter5Report.JOURNAL_USAGE_BY_ACCESS_TYPE: titleRow.put("DOI", doi)
-									titleRow.put("Print_ISSN", issn)
-									titleRow.put("Online_ISSN", eissn)
-									titleRow.put("URI", tipp.hostPlatformURL)
-									titleRow.put("YOP", reportItem.containsKey('YOP') && reportItem.get('YOP') != 'null' && reportItem.get('YOP') != null ? reportItem.get('YOP') : '')
-									titleRow.put("Access_Type", reportItem.Access_Type)
-									break
-								case Counter5Report.JOURNAL_REQUESTS_BY_YOP: titleRow.put("DOI", doi)
-									titleRow.put("Print_ISSN", issn)
-									titleRow.put("Online_ISSN", eissn)
-									titleRow.put("URI", tipp.hostPlatformURL)
-									titleRow.put("YOP", reportItem.containsKey('YOP') && reportItem.get('YOP') != 'null' && reportItem.get('YOP') != null ? reportItem.get('YOP') : '')
-									break
-								case Counter5Report.ITEM_MASTER_REPORT:
-								case Counter5Report.DATABASE_SEARCH_AND_ITEM_USAGE:
-								case Counter5Report.MULTIMEDIA_ITEM_REQUESTS:
-									titleRow.put("DOI", doi)
-									titleRow.put("ISBN", isbn)
-									titleRow.put("Print_ISSN", issn)
-									titleRow.put("Online_ISSN", eissn)
-									titleRow.put("URI", tipp.hostPlatformURL)
-									break
-							}
-							if (showPriceDate && priceItems) {
-								//listprice_eur
-								titleRow.put("List Price EUR", priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }?.listPrice ?: ' ')
-								//listprice_gbp
-								titleRow.put("List Price GBP", priceItems.find { it.listCurrency == RDStore.CURRENCY_GBP }?.listPrice ?: ' ')
-								//listprice_usd
-								titleRow.put("List Price USD", priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }?.listPrice ?: ' ')
-							}
-							if (showOtherData) {
-								titleRow.put("Year First Online", tipp.dateFirstOnline ? DateUtils.getSDF_yyyy().format( tipp.dateFirstOnline ): ' ')
-								titleRow.put("Date First Online", tipp.dateFirstOnline ? DateUtils.getSDF_yyyyMMdd().format( tipp.dateFirstOnline ): ' ')
-							}
-							periodTotal += reportCount
-							titleRow.put("Reporting_Period_Total", periodTotal)
-							//temp solution for journal reports, especially for DUZ, where issues of a journal are currently couted as individual title instances
-							String reportMonth = DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom)
-							int currentMonthCount = titleRow.containsKey(reportMonth) ? titleRow.get(reportMonth) : 0
-							titleRow.put(reportMonth, reportCount+currentMonthCount)
-							titlesByYop.put(yopKey, titleRow)
-							titlesByAccessType.put(reportItem.Access_Type, titlesByYop)
-							titleMetrics.put(instance.Metric_Type, titlesByAccessType)
-							titleRows.put(tipp.id, titleMetrics)
 						}
 					}
 				}
@@ -2032,52 +2150,114 @@ class ExportService {
 			pointsPerIteration = 40/requestResponse.items.size()
 			for(def reportItem: requestResponse.items) {
 				String propID = reportItem.Item_ID.find { Map itemId -> itemId.Type == 'Proprietary' }?.Value
-				for(Map performance: reportItem.Performance) {
-					Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
-					for(Map instance: performance.Instance) {
-						int periodTotal = 0, reportCount = instance.Count as int
-						if(reportType == Counter5Report.DATABASE_MASTER_REPORT) {
-							Map<String, Object> databaseRow = databaseRows.get(reportItem.Database) as Map<String, Object>
-							if(!databaseRow)
-								databaseRow = [:]
-							Map<String, Object> platformRow = databaseRow.get(reportItem.Platform) as Map<String, Object>
-							if(!platformRow)
-								platformRow = [:]
-							Map<String, Object> metricRow = platformRow.get(instance.Metric_Type) as Map<String, Object>
-							if(!metricRow) {
-								metricRow = [:]
+				//counter 5.0 structure
+				if(reportItem.containsKey('Performance')) {
+					for(Map performance: reportItem.Performance) {
+						Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
+						for(Map instance: performance.Instance) {
+							int periodTotal = 0, reportCount = instance.Count as int
+							if(reportType == Counter5Report.DATABASE_MASTER_REPORT) {
+								Map<String, Object> databaseRow = databaseRows.get(reportItem.Database) as Map<String, Object>
+								if(!databaseRow)
+									databaseRow = [:]
+								Map<String, Object> platformRow = databaseRow.get(reportItem.Platform) as Map<String, Object>
+								if(!platformRow)
+									platformRow = [:]
+								Map<String, Object> metricRow = platformRow.get(instance.Metric_Type) as Map<String, Object>
+								if(!metricRow) {
+									metricRow = [:]
+								}
+								Map<String, Object> dataTypeRow = metricRow.get(reportItem.Data_Type) as Map<String, Object>
+								if(!dataTypeRow) {
+									dataTypeRow = ['Database': reportItem.Database, 'Publisher': reportItem.Publisher, 'Platform': reportItem.Platform, 'Data_Type': reportItem.Data_Type, 'Metric_Type': instance.Metric_Type, 'Proprietary_ID': propID]
+								}
+								else periodTotal = dataTypeRow.get('Reporting_Period_Total')
+								periodTotal += reportCount
+								dataTypeRow.put('Reporting_Period_Total', periodTotal)
+								dataTypeRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
+								metricRow.put(reportItem.Data_Type, dataTypeRow)
+								platformRow.put(instance.Metric_Type, metricRow)
+								databaseRow.put(reportItem.Platform, platformRow)
+								databaseRows.put(reportItem.Database, databaseRow)
 							}
-							Map<String, Object> dataTypeRow = metricRow.get(reportItem.Data_Type) as Map<String, Object>
-							if(!dataTypeRow) {
-								dataTypeRow = ['Database': reportItem.Database, 'Publisher': reportItem.Publisher, 'Platform': reportItem.Platform, 'Data_Type': reportItem.Data_Type, 'Metric_Type': instance.Metric_Type, 'Proprietary_ID': propID]
+							else {
+								Map<String, Object> databaseRow = databaseRows.get(reportItem.Database) as Map<String, Object>
+								if(!databaseRow)
+									databaseRow = [:]
+								Map<String, Object> platformRow = databaseRow.get(reportItem.Platform) as Map<String, Object>
+								if(!platformRow)
+									platformRow = [:]
+								Map<String, Object> metricRow = platformRow.get(instance.Metric_Type) as Map<String, Object>
+								if(!metricRow) {
+									metricRow = ['Database': reportItem.Database, 'Publisher': reportItem.Publisher, 'Platform': reportItem.Platform, 'Metric_Type': instance.Metric_Type, 'Proprietary_ID': propID]
+								}
+								else periodTotal = metricRow.get('Reporting_Period_Total')
+								periodTotal += reportCount
+								metricRow.put('Reporting_Period_Total', periodTotal)
+								metricRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
+								platformRow.put(instance.Metric_Type, metricRow)
+								databaseRow.put(reportItem.Platform, platformRow)
+								databaseRows.put(reportItem.Database, databaseRow)
 							}
-							else periodTotal = dataTypeRow.get('Reporting_Period_Total')
-							periodTotal += reportCount
-							dataTypeRow.put('Reporting_Period_Total', periodTotal)
-							dataTypeRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
-							metricRow.put(reportItem.Data_Type, dataTypeRow)
-							platformRow.put(instance.Metric_Type, metricRow)
-							databaseRow.put(reportItem.Platform, platformRow)
-							databaseRows.put(reportItem.Database, databaseRow)
 						}
-						else {
-							Map<String, Object> databaseRow = databaseRows.get(reportItem.Database) as Map<String, Object>
-							if(!databaseRow)
-								databaseRow = [:]
-							Map<String, Object> platformRow = databaseRow.get(reportItem.Platform) as Map<String, Object>
-							if(!platformRow)
-								platformRow = [:]
-							Map<String, Object> metricRow = platformRow.get(instance.Metric_Type) as Map<String, Object>
-							if(!metricRow) {
-								metricRow = ['Database': reportItem.Database, 'Publisher': reportItem.Publisher, 'Platform': reportItem.Platform, 'Metric_Type': instance.Metric_Type, 'Proprietary_ID': propID]
+					}
+				}
+				//counter 5.1 structure
+				else if(reportItem.containsKey('Attribute_Performance')) {
+					for(Map struct : reportItem.Attribute_Performance) {
+						String dataType = struct.Data_Type
+						for (Map.Entry performance : struct.Performance) {
+							for (Map.Entry instance : performance) {
+								String metricType = instance.getKey()
+								int periodTotal = 0
+								for (Map.Entry reportRow : instance.getValue()) {
+									int reportCount = reportRow.getValue() as int
+									Date reportMonth = DateUtils.getSDF_yyyyMM().parse(reportRow.getKey())
+									if(reportType == Counter5Report.DATABASE_MASTER_REPORT) {
+										Map<String, Object> databaseRow = databaseRows.get(reportItem.Database) as Map<String, Object>
+										if(!databaseRow)
+											databaseRow = [:]
+										Map<String, Object> platformRow = databaseRow.get(reportItem.Platform) as Map<String, Object>
+										if(!platformRow)
+											platformRow = [:]
+										Map<String, Object> metricRow = platformRow.get(metricType) as Map<String, Object>
+										if(!metricRow) {
+											metricRow = [:]
+										}
+										Map<String, Object> dataTypeRow = metricRow.get(dataType) as Map<String, Object>
+										if(!dataTypeRow) {
+											dataTypeRow = ['Database': reportItem.Database, 'Publisher': reportItem.Publisher, 'Platform': reportItem.Platform, 'Data_Type': dataType, 'Metric_Type': metricType, 'Proprietary_ID': propID]
+										}
+										else periodTotal = dataTypeRow.get('Reporting_Period_Total')
+										periodTotal += reportCount
+										dataTypeRow.put('Reporting_Period_Total', periodTotal)
+										dataTypeRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportMonth), reportCount)
+										metricRow.put(dataType, dataTypeRow)
+										platformRow.put(metricType, metricRow)
+										databaseRow.put(reportItem.Platform, platformRow)
+										databaseRows.put(reportItem.Database, databaseRow)
+									}
+									else {
+										Map<String, Object> databaseRow = databaseRows.get(reportItem.Database) as Map<String, Object>
+										if(!databaseRow)
+											databaseRow = [:]
+										Map<String, Object> platformRow = databaseRow.get(reportItem.Platform) as Map<String, Object>
+										if(!platformRow)
+											platformRow = [:]
+										Map<String, Object> metricRow = platformRow.get(metricType) as Map<String, Object>
+										if(!metricRow) {
+											metricRow = ['Database': reportItem.Database, 'Publisher': reportItem.Publisher, 'Platform': reportItem.Platform, 'Metric_Type': metricType, 'Proprietary_ID': propID]
+										}
+										else periodTotal = metricRow.get('Reporting_Period_Total')
+										periodTotal += reportCount
+										metricRow.put('Reporting_Period_Total', periodTotal)
+										metricRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportMonth), reportCount)
+										platformRow.put(metricType, metricRow)
+										databaseRow.put(reportItem.Platform, platformRow)
+										databaseRows.put(reportItem.Database, databaseRow)
+									}
+								}
 							}
-							else periodTotal = metricRow.get('Reporting_Period_Total')
-							periodTotal += reportCount
-							metricRow.put('Reporting_Period_Total', periodTotal)
-							metricRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
-							platformRow.put(instance.Metric_Type, metricRow)
-							databaseRow.put(reportItem.Platform, platformRow)
-							databaseRows.put(reportItem.Database, databaseRow)
 						}
 					}
 				}
@@ -2269,7 +2449,10 @@ class ExportService {
 		if(configMap.revision == AbstractReport.COUNTER_5) {
 			String apiKey = platformRecord.centralApiKey ?: ci.requestorKey
 			queryArguments = "?customer_id=${ci.value}"
-			switch(configMap.sushiApiAuthenticationMethod) {
+			String sushiApiAuthenticationMethod = configMap.sushiApiAuthenticationMethod
+			if(!sushiApiAuthenticationMethod)
+				sushiApiAuthenticationMethod = platformRecord.sushiApiAuthenticationMethod
+			switch(sushiApiAuthenticationMethod) {
 				case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR:
 					if(ci.requestorKey) {
 						queryArguments += "&requestor_id=${ci.requestorKey}"
@@ -3796,10 +3979,25 @@ class ExportService {
 					}
 					if(titleMatch) {
 						Map<String, Integer> reports = allReports.containsKey(titleMatch) ? allReports.get(titleMatch) : [:]
-						for(Map performance: reportItem.Performance) {
-							Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
-							for(Map instance: performance.Instance) {
-								reports.put(DateUtils.getSDF_yyyyMM().format(reportFrom), instance.Count)
+						//counter 5.0
+						if(reportItem.containsKey('Performance')) {
+							for(Map performance: reportItem.Performance) {
+								Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
+								for(Map instance: performance.Instance) {
+									reports.put(DateUtils.getSDF_yyyyMM().format(reportFrom), instance.Count)
+								}
+							}
+						}
+						//counter 5.1
+						else if(reportItem.containsKey('Attribute_Performance')) {
+							for (Map struct : reportItem.Attribute_Performance) {
+								for (Map.Entry performance : struct.Performance) {
+									for (Map.Entry instance : performance) {
+										for (Map.Entry reportRow : instance.getValue()) {
+											reports.put(reportRow.getKey(), reportRow.getValue())
+										}
+									}
+								}
 							}
 						}
 						allReports.put(titleMatch, reports)

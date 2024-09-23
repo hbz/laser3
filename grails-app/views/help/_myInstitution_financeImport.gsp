@@ -1,0 +1,51 @@
+<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue" %>
+
+<div class="ui wide flyout" id="help-content" style="padding:50px 0 10px 0;overflow:scroll">
+    <h1 class="ui header">
+        <g:message code="myinst.financeImport.headline"/>
+    </h1>
+    <div class="content">
+        <table class="ui la-ignore-fixed compact table">
+            <thead>
+                <tr>
+                    <%-- <th>tsv column name</th>
+                    <th>Description</th>
+                    <th>maps to</th> --%>
+                    <th>${message(code:'myinst.financeImport.tsvColumnName')}</th>
+                    <%--<th>${message(code:'myinst.financeImport.descriptionColumnName')}</th>--%>
+                    <th>${message(code:'myinst.financeImport.necessaryFormat')}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <g:each in="${mappingCols}" var="mpg">
+                    <%
+                        List args = []
+                        boolean mandatory = false
+                        switch(mpg) {
+                            case 'status': List<RefdataValue> costItemStatus = RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS)
+                                costItemStatus.remove(RDStore.COST_ITEM_DELETED)
+                                args.addAll(costItemStatus.collect { it -> it.getI10n('value') })
+                                break
+                            case 'currency': mandatory = true
+                                break
+                            case 'element': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT).collect { it -> it.getI10n('value') })
+                                break
+                            case 'elementSign': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION).collect { it -> it.getI10n('value') })
+                                break
+                            case 'taxType': List<RefdataValue> taxTypes = RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE)
+                                args.addAll(taxTypes.collect { it -> it.getI10n('value') })
+                                break
+                            case 'taxRate': args.addAll([0,5,7,16,19])
+                                break
+                        }
+                    %>
+                    <tr <g:if test="${mandatory}">class="negative"</g:if>>
+                        <td>${message(code:"myinst.financeImport.${mpg}")}<g:if test="${mandatory}"><span style="color: #BB1600">*</span></g:if></td>
+                        <%--<td>${message(code:"myinst.financeImport.description.${mpg}") ?: ''}</td>--%>
+                        <td>${message(code:"myinst.financeImport.format.${mpg}",args:[raw("<ul><li>${args.join('</li><li>')}</li></ul>")]) ?: ''}</td>
+                    </tr>
+                </g:each>
+            </tbody>
+        </table>
+    </div>
+</div>

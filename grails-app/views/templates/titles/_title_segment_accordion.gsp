@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
+<%@ page import="de.laser.convenience.Marker; de.laser.ui.Btn; de.laser.ui.Icon" %>
 <div class="ui fluid segment title" data-ajaxTippId="${tipp.id}" data-ajaxIeId="${ie ? ie.id : null}">
     <div class="ui stackable equal width grid">
 
@@ -75,9 +75,10 @@
         </div>
 
         <div class="one wide column">
-            <div class="ui right floated buttons">
-                <div class="right aligned wide column">
-                </div>
+            <div class="ui right aligned">
+                <g:if test="${!isPublic_gascoDetails && tipp.isMarked(contextService.getUser(), Marker.TYPE.TIPP_CHANGES)}">
+                    <ui:cbItemMarkerAction tipp="${tipp}" type="${Marker.TYPE.TIPP_CHANGES}" simple="true"/>
+                </g:if>
                 <div class="${Btn.MODERN.SIMPLE}">
                     <i class="${Icon.CMD.SHOW_MORE}"></i>
                 </div>

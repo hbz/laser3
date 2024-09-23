@@ -1119,7 +1119,7 @@ class CopyElementsService {
     boolean copyAnnouncements(Object sourceObject, def toCopyAnnouncements, Object targetObject, def flash, def toShare = []) {
         sourceObject.documents?.each { dctx ->
             if (dctx.id in toCopyAnnouncements) {
-                if (dctx.isDocANote() && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
+                if (dctx.isDocANote() && (dctx.status?.value != 'Deleted')) {
                     Doc newDoc = new Doc()
                     InvokerHelper.setProperties(newDoc, dctx.owner.properties)
                     _save(newDoc, flash)
@@ -1144,7 +1144,7 @@ class CopyElementsService {
      */
     def deleteAnnouncements(List<Long> toDeleteAnnouncements, Object targetObject, def flash) {
         targetObject.documents.each {
-            if (toDeleteAnnouncements.contains(it.id) && it.isDocANote() && !(it.domain)) {
+            if (toDeleteAnnouncements.contains(it.id) && it.isDocANote()) {
                 Map params = [deleteId: it.id]
                 log.debug("deleteDocuments ${params}");
                 docstoreService.unifiedDeleteDocuments(params)
@@ -1672,22 +1672,42 @@ class CopyElementsService {
      */
     boolean copySpecificSubscriptionEditors(List<PersonRole> toCopyPersonRoles, Object sourceObject, Object targetObject, def flash) {
 
-        toCopyPersonRoles.each { prRole ->
-            if (!(prRole.org in targetObject.orgRelations.org) && (prRole.org in sourceObject.orgRelations.org)) {
-                OrgRole or = OrgRole.findByOrgAndSub(prRole.org, sourceObject)
-                def newProperties = or.properties
+        toCopyPersonRoles.each { PersonRole prRole ->
+            if(prRole.provider) {
+                if (!(prRole.provider in targetObject.providerRelations.provider) && (prRole.provider in sourceObject.providerRelations.provider)) {
+                    ProviderRole pvr = ProviderRole.findByProviderAndSubscription(prRole.provider, sourceObject)
+                    def newProperties = pvr.properties
 
-                OrgRole newOrgRole = new OrgRole()
-                InvokerHelper.setProperties(newOrgRole, newProperties)
-                //Vererbung ausschalten
-                newOrgRole.sharedFrom = null
-                newOrgRole.isShared = false
-                newOrgRole.sub = targetObject
+                    ProviderRole newProviderRole = new ProviderRole()
+                    InvokerHelper.setProperties(newProviderRole, newProperties)
+                    //Vererbung ausschalten
+                    newProviderRole.sharedFrom = null
+                    newProviderRole.isShared = false
+                    newProviderRole.subscription = targetObject
+                }
+
+                if ((prRole.provider in targetObject.providerRelations.provider) && !PersonRole.findWhere(prs: prRole.prs, provider: prRole.provider, responsibilityType: prRole.responsibilityType, sub: targetObject)) {
+                    PersonRole newPrsRole = new PersonRole(prs: prRole.prs, provider: prRole.provider, sub: targetObject, responsibilityType: prRole.responsibilityType)
+                    _save(newPrsRole, flash)
+                }
             }
+            else if(prRole.vendor) {
+                if (!(prRole.vendor in targetObject.vendorRelations.vendor) && (prRole.vendor in sourceObject.vendorRelations.vendor)) {
+                    VendorRole vr = VendorRole.findByVendorAndSubscription(prRole.vendor, sourceObject)
+                    def newProperties = vr.properties
 
-            if ((prRole.org in targetObject.orgRelations.org) && !PersonRole.findWhere(prs: prRole.prs, org: prRole.org, responsibilityType: prRole.responsibilityType, sub: targetObject)) {
-                PersonRole newPrsRole = new PersonRole(prs: prRole.prs, org: prRole.org, sub: targetObject, responsibilityType: prRole.responsibilityType)
-                _save(newPrsRole, flash)
+                    VendorRole newVendorRole = new VendorRole()
+                    InvokerHelper.setProperties(newVendorRole, newProperties)
+                    //Vererbung ausschalten
+                    newVendorRole.sharedFrom = null
+                    newVendorRole.isShared = false
+                    newVendorRole.subscription = targetObject
+                }
+
+                if ((prRole.vendor in targetObject.vendorRelations.vendor) && !PersonRole.findWhere(prs: prRole.prs, vendor: prRole.vendor, responsibilityType: prRole.responsibilityType, sub: targetObject)) {
+                    PersonRole newPrsRole = new PersonRole(prs: prRole.prs, vendor: prRole.vendor, sub: targetObject, responsibilityType: prRole.responsibilityType)
+                    _save(newPrsRole, flash)
+                }
             }
         }
 

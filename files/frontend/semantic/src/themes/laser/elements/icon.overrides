@@ -151,6 +151,9 @@ i.icon.la-sparkles {
 i.icon.la-survey {
   font-family: 'icomoon';
 }
+i.icon.la-check-double {
+  font-family: 'icomoon';
+}
 
 // to turn off all the buttons on a side
 // the other part of the button is the SEMANTIC UI Icon: 'hand pointer outline'
@@ -208,6 +211,7 @@ i.icon.la-bookmark.slash:before { content: "\e921"; }
 i.icon.la-sparkles:before { content: "\e920"; }
 
 i.icon.la-survey:before { content: "\e922"; }
+i.icon.la-check-double.slash:before { content: "\e923"; }
 /*******************************
            Laser Icons
 *******************************/

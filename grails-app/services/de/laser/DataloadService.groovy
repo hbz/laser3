@@ -406,8 +406,6 @@ class DataloadService {
                 result.visible = 'Public'
                 result.rectype = pkg.getClass().getSimpleName()
 
-                //result.consortiaID = pkg.getConsortia()?.id
-                //result.consortiaName = pkg.getConsortia()?.name
                 result.providerId = pkg.provider?.id
                 result.providerName = pkg.provider?.name
 

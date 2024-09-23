@@ -125,9 +125,9 @@
                 <div class="ui inverted link list">
                     <g:set var="gitUrl" value="${AppUtils.getMeta('git.remote.origin.url')?.replace('.git', '')}" />
 
-                    <a target="_blank" class="item" href="${gitUrl}/releases">
+                    <g:link target="_blank" class="item" controller="public" action="releaseNotes">
                         Version: ${AppUtils.getMeta('info.app.version')}
-                    </a>
+                    </g:link>
 
                     <g:if test="${AppUtils.getMeta('git.branch')}">
                         <a target="_blank" class="item" href="${gitUrl}/tree/${AppUtils.getMeta('git.branch')}">

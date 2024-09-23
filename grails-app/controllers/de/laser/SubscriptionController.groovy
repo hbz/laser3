@@ -7,6 +7,7 @@ import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.EntitlementCreationException
+import de.laser.helper.Params
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -27,6 +28,7 @@ import org.apache.commons.lang3.RandomStringUtils
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.transaction.TransactionStatus
+import org.springframework.web.multipart.MultipartFile
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
@@ -55,8 +57,8 @@ class SubscriptionController {
     GenericOIDService genericOIDService
     GlobalService globalService
     GokbService gokbService
+    IssueEntitlementService issueEntitlementService
     LinksGenerationService linksGenerationService
-    PackageService packageService
     SubscriptionControllerService subscriptionControllerService
     SubscriptionService subscriptionService
     SurveyService surveyService
@@ -302,6 +304,33 @@ class SubscriptionController {
             }
         }
         result
+    }
+
+    /**
+     * Call to process the given input data and create member subscription instances for the given consortial subscription
+     * @return a redirect to the subscription members view in case of success or details view or to the member adding form otherwise
+     */
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
+    def uploadRequestorIDs() {
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
+        if(!result) {
+            response.sendError(401)
+            return
+        }
+        MultipartFile importFile = params.requestorIDFile
+        InputStream stream = importFile.getInputStream()
+        result.putAll(subscriptionService.uploadRequestorIDs(Platform.get(params.platform), stream))
+        if(result.truncatedRows){
+            flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess.truncatedRows', args: [result.processCount, result.processRow, result.wrongOrgs, result.truncatedRows])
+        }else if(result.wrongOrgs){
+            flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess.wrongOrgs', args: [result.processCount, result.processRow, result.wrongOrgs])
+        }else {
+            flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess', args: [result.processCount, result.processRow])
+        }
+        redirect(url: request.getHeader('referer'))
     }
 
     /**
@@ -762,6 +791,40 @@ class SubscriptionController {
 
     }
 
+    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN()
+    })
+    def templateForRequestorIDUpload() {
+        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+
+        String filename = "template_upload_requestor_ids"
+        List<Org> consortiaMembers = result.subscription.getDerivedNonHiddenSubscribers()
+        Platform platform = Platform.get(params.platform)
+
+        ArrayList titles = [message(code: 'org.sortname.label'), 'Customer ID', 'Requestor ID']
+
+        ArrayList rowData = []
+        ArrayList row
+        consortiaMembers.each { Org org ->
+            CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(org, platform)
+            if(ci?.value) {
+                row = [org.sortname, ci.value]
+                rowData.add(row)
+            }
+        }
+
+        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.tsv\"")
+        response.contentType = "text/csv"
+        ServletOutputStream out = response.outputStream
+        out.withWriter { writer ->
+            writer.write(exportService.generateSeparatorTableString(titles, rowData, '\t'))
+        }
+        out.close()
+        return
+
+    }
+
     /**
      * Call to process the given input data and create member subscription instances for the given consortial subscription
      * @return a redirect to the subscription members view in case of success or details view or to the member adding form otherwise
@@ -1116,6 +1179,92 @@ class SubscriptionController {
             }
         }
     }
+    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN()
+    })
+    @Check404()
+    def index_new() {
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+
+        if (result.status == SubscriptionControllerService.STATUS_ERROR) {
+            if(!result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = result.error
+                result
+            }
+        }
+        else {
+            Subscription targetSub = issueEntitlementService.getTargetSubscription(result.subscription)
+            Set<Package> targetPkg = targetSub.packages.pkg
+            Map<String, Object> configMap = [subscription: targetSub, packages: targetPkg]
+            configMap.putAll(params)
+            result.issueEntitlements = issueEntitlementService.getIssueEntitlements(configMap)
+            result
+        }
+
+        /*
+        String filename = "${escapeSring(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
+        //ArrayList<IssueEntitlement> issueEntitlements = []
+        Map<String, Object> selectedFields = [:]
+        if(params.fileformat) {
+            if (params.filename) {
+                filename = params.filename
+            }
+            //issueEntitlements.addAll(IssueEntitlement.findAllByIdInList(ctrlResult.result.entitlementIDs.id,[sort:'tipp.sortname']))
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+        }
+        if (params.exportKBart) {
+            String dir = GlobalService.obtainFileStorageLocation()
+            File f = new File(dir+'/'+filename)
+            if(!f.exists()) {
+                FileOutputStream fos = new FileOutputStream(f)
+                Map<String, Object> configMap = [:]
+                configMap.putAll(params)
+                configMap.sub = ctrlResult.result.subscription
+                configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
+                Map<String, Collection> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
+                fos.withWriter { writer ->
+                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+                }
+                fos.flush()
+                fos.close()
+            }
+            Map fileResult = [token: filename, filenameDisplay: filename, fileformat: 'kbart']
+            render template: '/templates/bulkItemDownload', model: fileResult
+            return
+        }
+        else if(params.fileformat == 'xlsx') {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportIssueEntitlements(ctrlResult.result.entitlementIDs.id, selectedFields, ExportClickMeService.FORMAT.XLS)
+            response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) exportClickMeService.exportIssueEntitlements(ctrlResult.result.entitlementIDs.id, selectedFields, ExportClickMeService.FORMAT.CSV))
+            }
+            out.close()
+        }
+        else {
+            flash.message = ctrlResult.result.message
+            ctrlResult.result
+        }
+        */
+    }
+
+
 
     /**
      * Call to load the applied or pending changes to the given subscription

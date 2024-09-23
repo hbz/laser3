@@ -7,6 +7,56 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5959    23.09.2024  dev     3.5         David   Feature     Systemmeldungen auf Markdown umstellen
+
+5876    23.09.2024  dev     3.5         David   Feature     Kontextabhängige Hilfe -> technische Umsetzung
+
+5958    20.09.2024  rc-3.4  3.4.9       Andreas Bug         500er beim Aufruf von Lizenzen mit NatStat-Statistiken behoben
+
+5955    20.09.2024  dev     3.5         Andreas Feature     Upload von Requestor-IDs
+
+5956    19.09.2024  rc-3.4  3.4.9       Andreas Feature     Anzeige der Statistik-Abrufinformationen
+
+5950    19.09.2024  rc-3.4  3.4.9       Andreas Feature     Trennung der Adress- und Postfachdaten
+
+5941    17.09.2024  dev     3.5         Andreas Feature     Umbau der Vertragsentknüpfung
+
+5944    17.09.2024  rc-3.4  3.4.9       Andreas Feature     Anpassungen des Einrichtungsexports
+
+5942    17.09.2024  rc-3.4  3.4.9       Andreas Bug         spezielle Lizenzkontakte wurden nicht übertragen
+
+--      16.09.2024  dev     3.5         Ingrid Bug          Merkmale verwalten: Korrektur des durchgestrichenen Icons für Mehrfachsetzung; Vereinheitlichung der Anzeige (current state  vs go-to state)
+
+5936    16.09.2024  dev     3.5         Andreas Bug         Kosten ohne Lizenzbezug tauchten bei Konsortialstellen nicht auf
+
+5919    16.09.2024  dev     3.5         Andreas Bug         ES-Index wurde bei Änderungen von Alternativnamen nicht angestoßen
+
+5779    16.09.2024  dev     3.5         Andreas Feature     Abräumen von öffentlichen Adressen von Anbietern und Lieferanten
+
+5932    13.09.2024  rc-3.4  3.4         Ingrid Bug          Auswahl von eigenen Merkmalen bei Adresskontakten nicht möglich
+
+5933    13.09.2024  rc-3.4  3.4.9       Andreas Bug         Aufruf von Statista-Nutzungsstatistiken war nicht möglich
+
+5930    12.09.2024  dev     3.5         Ingrid Feature      Deutlichere Markierung der Systeme und zusätzliches System 
+
+--      12.09.2024  dev     3.5         Ingrid Feature      Anderes Icon für Umfragen
+
+5801    12.09.2024  dev     3.5         Andreas Feature     Lizenzimport unterstützt jetzt auch Identifikatoren
+
+5889    11.09.2024  rc-3.4  3.4.9       Andreas Bug         gruppierte Lizenzmerkmale konnten nicht entfernt werden
+
+5716    10.09.2024  dev     3.5         Andreas Feature     Verträge können im ONIX-PL-XML-Format exportiert werden
+
+5921    10.09.2024  dev     3.5         David   Feature     Merkmale/Referenzwerte .. dies und das
+
+5907    09.09.2024  dev     3.5         David   Bug         PropertyStore/RDStore: Slf4j-Logger wird nicht richtig initialisiert
+
+--      06.09.2024  rc-3.4  3.4.8       Andreas Bug         Kaskadierungsfehler bei Paket-Lieferant-Verknüpfungen behoben
+
+5911    05.09.2024  dev     3.5         Andreas Bug         Methodenaufruf korrigiert
+
+5910    04.09.2024  rc-3.4  3.4.8       Andreas Bug         Abfragefehler bei Merkmalsverwaltung behoben
+
 5904    02.09.2024  rc-3.4  3.4.8       Andreas Bug         Pfad im Erklärungstext angepasst
 
 5895    02.09.2024  rc-3.4  3.4.8       Andreas Bug         500er bei der Ausgabe von Anbietern behoben

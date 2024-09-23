@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
+<%@ page import="de.laser.FormService; de.laser.ui.Btn; de.laser.ui.Icon" %>
 <div class="ui segment">
     <h3 class="ui header">
         <g:if test="${controllerName == "subscription"}">
@@ -13,6 +13,38 @@
         </g:each>
     </ui:tabs>
     <div class="ui bottom attached tab active segment">
+        <g:each in="${platforms}" var="platform">
+            <g:form action="uploadRequestorIDs" params="${[id: params.id, platform: platform.id]}" controller="subscription" method="post" enctype="multipart/form-data" class="ui form">
+                <div class="ui message">
+                    <div class="header">${message(code: 'default.usage.addRequestorIDs.info', args: [platform.name])}</div>
+
+                    <br>
+                    ${message(code: 'default.usage.addRequestorIDs.text')}
+
+                    <br>
+                    <g:link class="item" controller="profile" action="importManuel" target="_blank">${message(code: 'help.technicalHelp.uploadFile.manuel')}</g:link>
+                    <br>
+
+                    <g:link controller="subscription" action="templateForRequestorIDUpload" params="[id: params.id, platform: platform.id]">
+                        <p>${message(code:'myinst.financeImport.template')}</p>
+                    </g:link>
+
+                    <div class="ui action input">
+                        <input type="text" readonly="readonly"
+                               placeholder="${message(code: 'template.addDocument.selectFile')}">
+                        <input type="file" name="requestorIDFile" accept="text/tab-separated-values,.txt,.csv"
+                               style="display: none;">
+                        <div class="${Btn.ICON.SIMPLE}">
+                            <i class="${Icon.CMD.ATTACHMENT}"></i>
+                        </div>
+                    </div>
+                </div><!-- .message -->
+                <div class="field la-field-right-aligned">
+                    <input type="submit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${message(code: 'default.button.add.label')}"/>
+                </div>
+                <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
+            </g:form>
+        </g:each>
         <table class="ui la-js-responsive-table la-table table">
             <thead>
             <tr>
@@ -44,7 +76,8 @@
                     <td>
                         <g:if test="${overwriteEditable_ci}">
                             <g:link controller="subscription"
-                                    action="unsetCustomerIdentifier"
+
+                        action="unsetCustomerIdentifier"
                                     id="${subscription.id}"
                                     params="${[deleteCI: pair.id]}"
                                     class="${Btn.MODERN.NEGATIVE_CONFIRM}"
@@ -62,4 +95,14 @@
         </table>
     </div>
 </div>
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('.action .icon.button').click(function () {
+         $(this).parent('.action').find('input:file').click();
+     });
+
+     $('input:file', '.ui.action.input').on('change', function (e) {
+         var name = e.target.files[0].name;
+         $('input:text', $(e.target).parent()).val(name);
+     });
+</laser:script>
 

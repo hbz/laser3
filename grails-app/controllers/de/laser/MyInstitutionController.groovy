@@ -2441,7 +2441,7 @@ class MyInstitutionController  {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
         List<String> mappingCols = ["name", "owner", "status", "type", "form", "resource", "provider", "vendor", "startDate", "endDate",
                               "manualCancellationDate", "referenceYear", "hasPerpetualAccess", "hasPublishComponent", "isPublicForApi",
-                              "customProperties", "privateProperties", "notes"]
+                              "customProperties", "privateProperties", "identifiers", "notes"]
         if(result.institution.isCustomerType_Inst_Pro()) {
             mappingCols.add(mappingCols.indexOf("manualCancellationDate"), "isAutomaticRenewAnnually")
         }
@@ -2692,6 +2692,10 @@ class MyInstitutionController  {
                         notProcessedMandatoryProperties << surre.type.getI10n('name')
                     }
                 }
+                if(surveyConfig.invoicingInformation){
+                    allResultHaveValue = false
+                    flash.error = g.message(code: 'surveyResult.finish.inputNecessary')
+                }
             }
 
 
@@ -2705,7 +2709,7 @@ class MyInstitutionController  {
 
             if (!noParticipation && notProcessedMandatoryProperties.size() > 0) {
                 flash.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')]) as String
-            } else if (noParticipation || allResultHaveValue) {
+            } else if ((noParticipation && !surveyConfig.invoicingInformation) || allResultHaveValue) {
                 surveyOrg.finishDate = new Date()
                 if (!surveyOrg.save()) {
                     flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
@@ -2837,9 +2841,9 @@ class MyInstitutionController  {
                                 surveyService.emailsToSurveyUsersOfOrg(surveyInfo, org, false)
                                 //flash.message = message(code: 'surveyLinks.participateToSurvey.success')
 
-                                if(surveyConfig.invoicingInformation){
+                                /*if(surveyConfig.invoicingInformation){
                                     surveyService.setDefaultInvoiceInformation(surveyConfig, org)
-                                }
+                                }*/
                             }
                         }
                     }
@@ -4543,6 +4547,17 @@ join sub.orgRelations or_sub where
             redirect action: 'manageProperties', params: [descr: pd.descr, filterPropDef: params.filterPropDef]
             return
         }
+    }
+
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+    })
+    def manageRefdatas() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+        result.rdCategories = RefdataCategory.executeQuery('from RefdataCategory order by desc_' + LocaleUtils.getCurrentLang())
+
+        result
     }
 
     /**

@@ -121,6 +121,7 @@ class ClickMeController {
             case ExportClickMeService.SUBSCRIPTIONS_MEMBERS:
                 result.subscription = Subscription.get(params.id)
                 result.formFields = exportClickMeService.getExportSubscriptionMembersFieldsForUI(result.subscription)
+                result.csvFieldSeparator = '\t'
                 result.exportController = 'subscription'
                 result.exportAction = 'members'
                 result.contactSwitch = true

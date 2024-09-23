@@ -61,7 +61,7 @@
                     <td>
                         ${message(code: 'copySurvey.copyDates.startDate')}:&nbsp;<g:if
                                 test="${!surveyInfo.startDate}">-</g:if><g:formatDate date="${surveyInfo.startDate}"
-                                                                                      format="${message(code: 'default.date.format.notime')}"/> &nbsp
+                                                                                      format="${message(code: 'default.date.format.notime')}"/> &nbsp;
                         ${message(code: 'copySurvey.copyDates.endDate')}:&nbsp;<g:if
                                 test="${!surveyInfo.endDate}">-</g:if><g:formatDate date="${surveyInfo.endDate}"
                                                                                     format="${message(code: 'default.date.format.notime')}"/>
@@ -314,7 +314,7 @@
                     <td>${message(code: 'copySurvey.copyAnnouncements')}</td>
                     <td>
                         <g:each in="${surveyConfig.documents.sort { it.owner.title }}" var="docctx">
-                            <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted')}">
+                            <g:if test="${docctx.isDocANote() && (docctx.status?.value != 'Deleted')}">
                                 <g:if test="${docctx.owner.title}">
                                     <strong>${docctx.owner.title}</strong>
                                 </g:if>

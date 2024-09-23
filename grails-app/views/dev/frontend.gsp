@@ -52,9 +52,6 @@
 
 </laser:htmlStart> %{-- </head><body>--}%
 
-
-%{-- help sidebar --}%
-<laser:render template="/templates/flyouts/help/subscription_show"/>
 <section id="example">
 
     %{-- COLORS  --}%

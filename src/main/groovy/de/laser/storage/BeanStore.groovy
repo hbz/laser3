@@ -5,6 +5,7 @@ import de.laser.ESWrapperService
 import de.laser.GenericOIDService
 import de.laser.GlobalSourceSyncService
 import de.laser.GokbService
+import de.laser.HelpService
 import de.laser.MailSendService
 import de.laser.PendingChangeService
 import de.laser.AccessService
@@ -226,6 +227,10 @@ class BeanStore {
      */
     static GokbService getGokbService() {
         Holders.grailsApplication.mainContext.getBean('gokbService') as GokbService
+    }
+
+    static HelpService getHelpService() {
+        Holders.grailsApplication.mainContext.getBean('helpService') as HelpService
     }
 
     /**
