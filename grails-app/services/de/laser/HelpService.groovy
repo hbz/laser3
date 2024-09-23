@@ -76,6 +76,23 @@ class HelpService {
         }
     }
 
+    String parseMarkdown2(String text) {
+        try {
+            String md = replaceTokens( text )
+
+            Parser parser = getMarkdownParser()
+            Node document = parser.parse( md )
+            HtmlRenderer renderer = getMarkdownHtmlRenderer()
+            renderer.render( document )
+
+//            Formatter renderer = getMarkdownFormatter()
+//            renderer.render( document )
+        }
+        catch (Exception e) {
+            e.getMessage()
+        }
+    }
+
     Map<String, String> getTokenMap() {
         [
             'current_server_laser'  : ConfigMapper.getGrailsServerURL(),
