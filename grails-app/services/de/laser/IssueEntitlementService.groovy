@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.helper.Params
 import de.laser.storage.RDStore
 import de.laser.wekb.Package
 import de.laser.wekb.TitleInstancePackagePlatform
@@ -10,28 +11,37 @@ class IssueEntitlementService {
 
     FilterService filterService
 
-    Subscription getTargetSubscription(Long subscriptionId) {
-        Subscription s = Subscription.get(subscriptionId)
+    Subscription getTargetSubscription(Subscription s) {
         if(s.instanceOf && s.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
             s.instanceOf
         s
     }
 
-    Set<IssueEntitlement> getIssueEntitlements(Map params) {
-        Subscription targetSub = getTargetSubscription(params.long('id'))
-        Set<Package> targetPkg = targetSub.packages.pkg
-        Map<String, Object> configMap = [subscription: targetSub, packages: targetPkg, ieStatus: params.ieStatus]
-        Map<String, Object> queryPart1 = filterService.getTippSubsetQuery(configMap)
+    Set<IssueEntitlement> getIssueEntitlements(Map configMap) {
+        Map<String, Object> titleConfigMap = [packages: configMap.packages, filter: configMap.filter],
+                identifierConfigMap = [filter: configMap.filter],
+                issueEntitlementConfigMap = [subscription: configMap.subscription]
+        if(!configMap.containsKey('status')) {
+            //titleConfigMap.tippStatus = RDStore.TIPP_STATUS_CURRENT //activate if needed
+            issueEntitlementConfigMap.ieStatus = RDStore.TIPP_STATUS_CURRENT
+        }
+        else {
+            issueEntitlementConfigMap.ieStatus = Params.getRefdataList(configMap, 'status')
+        }
+        //process here the title-related parameters
+        Map<String, Object> queryPart1 = filterService.getTippSubsetQuery(titleConfigMap)
         Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(queryPart1.query, queryPart1.queryParams), ieIds = []
+        //process here the issue entitlement-related parameters
+        Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetQuery(issueEntitlementConfigMap)
+
         tippIds.collate(65000).each { List<Long> subset ->
-            ieIds.addAll(IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie join ie.tipp tipp where tipp.id in (:subset) and ie.subscription = :subscription order by tipp.sortname', [subset: subset, subscription: targetSub]))
+            queryPart2.queryParams.subset = subset
+            ieIds.addAll(IssueEntitlement.executeQuery(queryPart2.query, queryPart2.queryParams))
         }
         //test A
         SortedSet<IssueEntitlement> result = new TreeSet<IssueEntitlement>()
-        /*
         Set<Long> ieSubset = ieIds.drop(0).take(10)
         result.addAll(IssueEntitlement.findAllByIdInList(ieSubset))
-        */
         //test B: test for export
         /*
         Set<IssueEntitlement> result = []
