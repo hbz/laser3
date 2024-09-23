@@ -11,7 +11,7 @@
 
     <g:each in="${systemMessages}" var="message" status="i">
         <div style="padding-top:0.5em;text-align:center">
-            <% println message.getLocalizedContent() %>
+            <ui:renderContentAsMarkdown>${message.getLocalizedContent()}</ui:renderContentAsMarkdown>
         </div>
     </g:each>
 </g:if>

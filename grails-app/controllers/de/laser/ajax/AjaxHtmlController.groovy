@@ -8,6 +8,7 @@ import de.laser.DiscoverySystemFrontend
 import de.laser.DiscoverySystemIndex
 import de.laser.DocContext
 import de.laser.GenericOIDService
+import de.laser.HelpService
 import de.laser.PendingChangeService
 import de.laser.AddressbookService
 import de.laser.WekbNewsService
@@ -94,6 +95,7 @@ class AjaxHtmlController {
     CustomWkhtmltoxService wkhtmltoxService // custom
     GenericOIDService genericOIDService
     GokbService gokbService
+    HelpService helpService
     LicenseControllerService licenseControllerService
     LinksGenerationService linksGenerationService
     MyInstitutionControllerService myInstitutionControllerService
@@ -421,6 +423,11 @@ class AjaxHtmlController {
         result.noteInstance = Doc.get(params.id)
 
         render template: "/templates/notes/modal_read", model: result
+    }
+
+    def renderMarkdown() {
+        String text = params.text ?: ''
+        render helpService.parseMarkdown2(text)
     }
 
     /**

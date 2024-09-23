@@ -1,6 +1,6 @@
 package de.laser
 
-class HelpTagLib {
+class MarkdownTagLib {
 
     static namespace = 'ui'
 
@@ -17,5 +17,10 @@ class HelpTagLib {
         else if (attrs.releaseNotes) {
             out <<  helpService.parseMarkdown( 'release/' + attrs.releaseNotes + '.md' )
         }
+    }
+
+    def renderContentAsMarkdown = { attrs, body ->
+
+        out <<  helpService.parseMarkdown2( body().toString() )
     }
 }

@@ -36,13 +36,24 @@
         <g:each in="${systemMessages}" var="msg">
         <tr style="vertical-align: top">
             <td>
-                <div class="ui attached segment">
-                    <strong>${message(code: 'default.german.label')}</strong><br />
+                <div class="ui top attached segment">
+                    <span class="ui top right attached label">DE</span>
                     <ui:xEditable owner="${msg}" field="content_de" type="textarea"/>
                 </div>
                 <div class="ui attached segment">
-                    <strong>${message(code: 'default.english.label')}</strong><br />
+                    <span class="ui top right attached label">EN</span>
                     <ui:xEditable owner="${msg}" field="content_en" type="textarea"/>
+                </div>
+                <div class="ui top attached segment">
+                    <span class="ui top attached label">${message(code: 'default.preview.label')}</span>
+                    <div id="preview_de">
+                        <ui:renderContentAsMarkdown>${msg.content_de}</ui:renderContentAsMarkdown>
+                    </div>
+                </div>
+                <div class="ui attached segment">
+                    <div id="preview_en">
+                        <ui:renderContentAsMarkdown>${msg.content_en}</ui:renderContentAsMarkdown>
+                    </div>
                 </div>
             </td>
             <td>
