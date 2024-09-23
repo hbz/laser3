@@ -1032,6 +1032,10 @@ class SurveyControllerService {
                                     }
                                 }
 
+                                if(!cost_item_element){
+                                    cost_item_element = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE
+                                }
+
                                 if (cost_item_element) {
                                     if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
                                         createCostItem = true
