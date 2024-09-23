@@ -149,6 +149,7 @@ class PropertyStore {
     public final static PropertyDefinition SURVEY_PROPERTY_MULTI_YEAR_2    = getSurveyProperty('Multi-year term 2 years')
     public final static PropertyDefinition SURVEY_PROPERTY_SUBSCRIPTION_FORM    = getSurveyProperty('Subscription Form')
     public final static PropertyDefinition SURVEY_PROPERTY_PUBLISHING_COMPONENT    = getSurveyProperty('Publishing Component')
+    public final static PropertyDefinition SURVEY_PROPERTY_TEST   = getSurveyProperty('Global Consumer Survey Test')
 
     /**
      * Preloads the given survey property definition by name and object type (description)

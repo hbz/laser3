@@ -142,4 +142,66 @@ class Address {
 
         url
     }
+
+    String getAddressForExport(){
+        String addr= ""
+
+        if(name){
+            addr = name
+        }else {
+            addr = org.name
+        }
+
+        if(additionFirst || additionSecond) {
+            addr += ', '
+            if (additionFirst) {
+                addr += additionFirst + ' '
+            }
+            if (additionSecond) {
+                addr += additionSecond + ' '
+            }
+        }
+
+        if(street_1 || street_2) {
+            addr += ', '
+            if (street_1) {
+                addr += street_1 + ' '
+            }
+            if (street_2) {
+                addr += street_2 + ' '
+            }
+        }
+
+        if(zipcode || city) {
+            addr += ', '
+            if (zipcode) {
+                addr += zipcode + ' '
+            }
+            if (city) {
+                addr += city + ' '
+            }
+        }
+
+        if (region) {
+            addr += ', ' + region.getI10n('value') + ' '
+        }
+
+        if (country) {
+            addr += ', ' + country.getI10n('value') + ' '
+        }
+
+        if(pob){
+            addr += ', ' + pob + ' '
+        }
+
+        if(pobZipcode){
+            addr += ', ' + pobZipcode + ' '
+        }
+
+        if(pobCity){
+            addr += ', ' + pobCity + ' '
+        }
+
+        return addr
+    }
 }
