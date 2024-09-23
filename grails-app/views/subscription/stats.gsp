@@ -1,4 +1,4 @@
-<%@ page import="java.text.SimpleDateFormat; grails.converters.JSON; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.Platform; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report; de.laser.interfaces.CalculatedType; de.laser.base.AbstractReport; de.laser.finance.CostItem" %>
+<%@ page import="de.laser.properties.SubscriptionProperty; de.laser.storage.PropertyStore; java.text.SimpleDateFormat; grails.converters.JSON; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.Platform; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report; de.laser.interfaces.CalculatedType; de.laser.base.AbstractReport; de.laser.finance.CostItem" %>
 <laser:htmlStart message="subscription.details.stats.label" serviceInjection="true"/>
     <laser:javascript src="echarts.js"/>
         <ui:debugInfo>
@@ -25,6 +25,12 @@
             <g:each in="${platformInstanceRecords.values()}" var="platform">
                 <div class="ui segment">
                     <laser:render template="/platform/platformStatsDetails" model="[wekbServerUnavailable: wekbServerUnavailable, platformInstanceRecord: platform]"/>
+                    <g:set var="statsInfo" value="${SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where sp.owner = :subscription and sp.type = :statsAccess', [statsAccess: PropertyStore.SUB_PROP_STATS_ACCESS, subscription: subscription])}"/>
+                    <g:if test="${statsInfo}">
+                        <ui:msg icon="ui info icon" class="info" noClose="true"><%-- on remerge to DEV: header="${message(code: 'default.stats.info.header')}" --%>
+                            ${statsInfo[0]}
+                        </ui:msg>
+                    </g:if>
                     <g:if test="${platform.statisticsFormat.contains('COUNTER')}">
                         <%
                             Map<String, Object> platformSushiConfig = exportService.prepareSushiCall(platform, 'stats')
@@ -62,7 +68,7 @@
             </g:each>
         </g:if>
         <g:else>
-                <g:render template="/templates/stats/stats"/>
+            <g:render template="/templates/stats/stats"/>
         </g:else>
 
 <laser:htmlEnd />

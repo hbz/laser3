@@ -1928,6 +1928,7 @@ class ExportClickMeService {
 
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         getDefaultExportSurveyRenewalConfig().keySet().each {
             getDefaultExportSurveyRenewalConfig().get(it).fields.each {
@@ -1951,7 +1952,8 @@ class ExportClickMeService {
             exportFields.put("participantContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
         }
         addressTypes.each { RefdataValue addressType ->
-            exportFields.put("participantAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
+            exportFields.put("participantAddress."+addressType.value+".address", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+            exportFields.put("participantAddress."+addressType.value+".pob", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
         }
 
         def removeSurveyProperties = exportFields.keySet().findAll { it.startsWith('surveyProperty.') }
@@ -2036,7 +2038,8 @@ class ExportClickMeService {
             fields.participantContacts.fields.put("participantContact.${contactType.owner.desc}.${contactType.value}", [field: null, label: contactType.getI10n('value')])
         }
         addressTypes.each { RefdataValue addressType ->
-            fields.participantAddresses.fields.put("participantAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
+            fields.participantAddresses.fields.put("participantAddress.${addressType.value}.address", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+            fields.participantAddresses.fields.put("participantAddress.${addressType.value}.pob", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
         }
 
         def removeSurveyProperties = fields.survey.fields.keySet().findAll { it.startsWith('surveyProperty.') }
@@ -2121,6 +2124,7 @@ class ExportClickMeService {
         Org contextOrg = contextService.getOrg()
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         getDefaultExportSubscriptionMembersConfig().keySet().each {
             getDefaultExportSubscriptionMembersConfig().get(it).fields.each {
@@ -2144,7 +2148,8 @@ class ExportClickMeService {
             exportFields.put("participantContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
         }
         addressTypes.each { RefdataValue addressType ->
-            exportFields.put("participantAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
+            exportFields.put("participantAddress."+addressType.value+".address", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+            exportFields.put("participantAddress."+addressType.value+".pob", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
         }
         if(subscription)
             childSubs.addAll(subscription.getNonDeletedDerivedSubscriptions())
@@ -2188,6 +2193,7 @@ class ExportClickMeService {
         Map<String, Object> fields = [:]
         fields.putAll(getDefaultExportSubscriptionMembersConfig())
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         fields.participantIdentifiers.fields.clear()
         fields.participantCustomerIdentifiers.fields.clear()
@@ -2249,7 +2255,8 @@ class ExportClickMeService {
             fields.participantContacts.fields.put("participantContact.${contactType.owner.desc}.${contactType.value}", [field: null, label: contactType.getI10n('value')])
         }
         addressTypes.each { RefdataValue addressType ->
-            fields.participantAddresses.fields.put("participantAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
+            fields.participantAddresses.fields.put("participantAddress.${addressType.value}.address", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+            fields.participantAddresses.fields.put("participantAddress.${addressType.value}.pob", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
         }
 
         fields
@@ -2500,7 +2507,8 @@ class ExportClickMeService {
             exportFields.put("participantContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
         }
         addressTypes.each { RefdataValue addressType ->
-            exportFields.put("participantAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
+            exportFields.put("participantAddress."+addressType.value+".address", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+            exportFields.put("participantAddress."+addressType.value+".pob", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
         }
 
         Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
@@ -2577,7 +2585,8 @@ class ExportClickMeService {
             fields.participantContacts.fields.put("participantContact.${contactType.owner.desc}.${contactType.value}", [field: null, label: contactType.getI10n('value')])
         }
         addressTypes.each { RefdataValue addressType ->
-            fields.participantAddresses.fields.put("participantAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
+            fields.participantAddresses.fields.put("participantAddress.${addressType.value}.address", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+            fields.participantAddresses.fields.put("participantAddress.${addressType.value}.pob", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
         }
 
         Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc", [ctx:contextOrg,availableTypes:[PropertyDefinition.SUB_PROP]])
@@ -2718,6 +2727,7 @@ class ExportClickMeService {
         Org contextOrg = contextService.getOrg()
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         getDefaultExportCostItemConfig().keySet().each {
             getDefaultExportCostItemConfig().get(it).fields.each {
@@ -2734,7 +2744,8 @@ class ExportClickMeService {
             exportFields.put("participantContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
         }
         addressTypes.each { RefdataValue addressType ->
-            exportFields.put("participantAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
+            exportFields.put("participantAddress."+addressType.value+".address", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+            exportFields.put("participantAddress."+addressType.value+".pob", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
         }
 
         if(contextOrg.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
@@ -2776,6 +2787,7 @@ class ExportClickMeService {
         Map<String, Object> fields = [:]
         fields.putAll(getDefaultExportCostItemConfig())
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         if(contextOrg.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
             if(contextOrg.getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
@@ -2806,7 +2818,8 @@ class ExportClickMeService {
             fields.participantContacts.fields.put("participantContact.${contactType.owner.desc}.${contactType.value}", [field: null, label: contactType.getI10n('value')])
         }
         addressTypes.each { RefdataValue addressType ->
-            fields.participantAddresses.fields.put("participantAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
+            fields.participantAddresses.fields.put("participantAddress.${addressType.value}.address", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+            fields.participantAddresses.fields.put("participantAddress.${addressType.value}.pob", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
         }
 
         String subquery
@@ -2836,6 +2849,7 @@ class ExportClickMeService {
         Org contextOrg = contextService.getOrg()
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         getDefaultExportSurveyCostItemConfig().keySet().each {
             getDefaultExportSurveyCostItemConfig().get(it).fields.each {
@@ -2852,7 +2866,8 @@ class ExportClickMeService {
             exportFields.put("participantContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
         }
         addressTypes.each { RefdataValue addressType ->
-            exportFields.put("participantAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
+            exportFields.put("participantAddress."+addressType.value+".address", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+            exportFields.put("participantAddress."+addressType.value+".pob", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
         }
 
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
@@ -2873,6 +2888,7 @@ class ExportClickMeService {
         Map<String, Object> fields = [:]
         fields.putAll(getDefaultExportSurveyCostItemConfig())
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         fields.participantIdentifiers.fields.clear()
 
@@ -2895,7 +2911,8 @@ class ExportClickMeService {
             fields.participantContacts.fields.put("participantContact.${contactType.owner.desc}.${contactType.value}", [field: null, label: contactType.getI10n('value')])
         }
         addressTypes.each { RefdataValue addressType ->
-            fields.participantAddresses.fields.put("participantAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
+            fields.participantAddresses.fields.put("participantAddress.${addressType.value}.address", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+            fields.participantAddresses.fields.put("participantAddress.${addressType.value}.pob", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
         }
 
 
@@ -2916,6 +2933,7 @@ class ExportClickMeService {
         Org contextOrg = contextService.getOrg()
         Map<String, Object> exportFields = [:], contextParams = [ctx: contextOrg]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Locale locale = LocaleUtils.getCurrentLocale()
         SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
         contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
         contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
@@ -2941,7 +2959,8 @@ class ExportClickMeService {
                     exportFields.put("consortiumContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
                 }
                 addressTypes.each { RefdataValue addressType ->
-                    exportFields.put("consortiumAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
+                    exportFields.put("consortiumAddress."+addressType.value+".address", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+                    exportFields.put("consortiumAddress."+addressType.value+".pob", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
                 }
                 break
             case 'institution':
@@ -2969,7 +2988,8 @@ class ExportClickMeService {
                     exportFields.put("participantContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
                 }
                 addressTypes.each { RefdataValue addressType ->
-                    exportFields.put("participantAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
+                    exportFields.put("participantAddress."+addressType.value+".address", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+                    exportFields.put("participantAddress."+addressType.value+".pob", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
                 }
                 break
             case 'member':
@@ -2995,7 +3015,8 @@ class ExportClickMeService {
                     exportFields.put("participantContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
                 }
                 addressTypes.each { RefdataValue addressType ->
-                    exportFields.put("participantAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
+                    exportFields.put("participantAddress."+addressType.value+".address", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+                    exportFields.put("participantAddress."+addressType.value+".pob", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
                 }
                 break
         }
@@ -3017,6 +3038,7 @@ class ExportClickMeService {
         Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:], contextParams = [ctx: contextOrg]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Locale locale = LocaleUtils.getCurrentLocale()
         Set<RefdataValue> contactTypes = []
         SortedSet<RefdataValue> addressTypes = new TreeSet<RefdataValue>()
         contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.functionType.'+ LocaleUtils.getLocalizedAttributeName('value'), [ctx: contextOrg]))
@@ -3049,7 +3071,8 @@ class ExportClickMeService {
                     fields.consortiumContacts.fields.put("consortiumContact.${contactType.owner.desc}.${contactType.value}", [field: null, label: contactType.getI10n('value')])
                 }
                 addressTypes.each { RefdataValue addressType ->
-                    fields.consortiumAddresses.fields.put("consortiumAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
+                    fields.consortiumAddresses.fields.put("consortiumAddress.${addressType.value}.address", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+                    fields.consortiumAddresses.fields.put("consortiumAddress.${addressType.value}.pob", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
                 }
                 break
             case 'institution':
@@ -3081,7 +3104,8 @@ class ExportClickMeService {
                     fields.participantContacts.fields.put("participantContact.${contactType.owner.desc}.${contactType.value}", [field: null, label: contactType.getI10n('value')])
                 }
                 addressTypes.each { RefdataValue addressType ->
-                    fields.participantAddresses.fields.put("participantAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
+                    fields.participantAddresses.fields.put("participantAddress.${addressType.value}.address", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+                    fields.participantAddresses.fields.put("participantAddress.${addressType.value}.pob", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
                 }
                 break
             default: fields = [:]
@@ -3097,6 +3121,7 @@ class ExportClickMeService {
         Org contextOrg = contextService.getOrg()
         Map<String, Object> exportFields = [:], contextParams = [ctx: contextOrg]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Locale locale = LocaleUtils.getCurrentLocale()
         SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
         contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
         contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
@@ -3126,7 +3151,8 @@ class ExportClickMeService {
             exportFields.put("vendorContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
         }
         addressTypes.each { RefdataValue addressType ->
-            exportFields.put("vendorAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
+            exportFields.put("vendorAddress."+addressType.value+".address", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+            exportFields.put("vendorAddress."+addressType.value+".pob", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
         }
 
         exportFields
@@ -3136,6 +3162,7 @@ class ExportClickMeService {
         Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:], contextParams = [ctx: contextOrg]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Locale locale = LocaleUtils.getCurrentLocale()
         Set<RefdataValue> contactTypes = []
         SortedSet<RefdataValue> addressTypes = new TreeSet<RefdataValue>()
         contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.functionType.'+ LocaleUtils.getLocalizedAttributeName('value'), [ctx: contextOrg]))
@@ -3169,7 +3196,8 @@ class ExportClickMeService {
         }
         fields.vendorAddresses.fields.clear()
         addressTypes.each { RefdataValue addressType ->
-            fields.vendorAddresses.fields.put("vendorAddress.${addressType.value}",[field: null, label: addressType.getI10n('value')])
+            fields.vendorAddresses.fields.put("vendorAddress.${addressType.value}.address",[field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+            fields.vendorAddresses.fields.put("vendorAddress.${addressType.value}.pob",[field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
         }
 
 
@@ -3181,6 +3209,7 @@ class ExportClickMeService {
         Org contextOrg = contextService.getOrg()
         Map<String, Object> exportFields = [:], contextParams = [ctx: contextOrg]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Locale locale = LocaleUtils.getCurrentLocale()
         SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
         contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
         contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
@@ -3211,7 +3240,8 @@ class ExportClickMeService {
             exportFields.put("providerContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
         }
         addressTypes.each { RefdataValue addressType ->
-            exportFields.put("providerAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
+            exportFields.put("providerAddress."+addressType.value+".address", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+            exportFields.put("providerAddress."+addressType.value+".pob", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
         }
 
         exportFields
@@ -3221,6 +3251,7 @@ class ExportClickMeService {
         Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:], contextParams = [ctx: contextOrg]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Locale locale = LocaleUtils.getCurrentLocale()
         Set<RefdataValue> contactTypes = []
         SortedSet<RefdataValue> addressTypes = new TreeSet<RefdataValue>()
         contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true) order by pr.functionType.'+ LocaleUtils.getLocalizedAttributeName('value'), [ctx: contextOrg]))
@@ -3254,7 +3285,8 @@ class ExportClickMeService {
         }
         fields.providerAddresses.fields.clear()
         addressTypes.each { RefdataValue addressType ->
-            fields.providerAddresses.fields.put("providerAddress.${addressType.value}",[field: null, label: addressType.getI10n('value')])
+            fields.providerAddresses.fields.put("providerAddress.${addressType.value}.address",[field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+            fields.providerAddresses.fields.put("providerAddress.${addressType.value}.pob",[field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
         }
 
 
@@ -3429,7 +3461,8 @@ class ExportClickMeService {
             exportFields.put("participantContact."+contactType.owner.desc+"."+contactType.value, [field: null, label: contactType.getI10n('value')])
         }
         addressTypes.each { RefdataValue addressType ->
-            exportFields.put("participantAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
+            exportFields.put("participantAddress."+addressType.value+".address", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+            exportFields.put("participantAddress."+addressType.value+".pob", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
         }
 
         def removeSurveyProperties = exportFields.keySet().findAll { it.startsWith('surveyProperty.') }
@@ -3513,7 +3546,8 @@ class ExportClickMeService {
             fields.participantContacts.fields.put("participantContact.${contactType.owner.desc}.${contactType.value}", [field: null, label: contactType.getI10n('value')])
         }
         addressTypes.each { RefdataValue addressType ->
-            fields.participantAddresses.fields.put("participantAddress.${addressType.value}", [field: null, label: addressType.getI10n('value')])
+            fields.participantAddresses.fields.put("participantAddress.${addressType.value}.address", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.address.export.addition', null, locale)])
+            fields.participantAddresses.fields.put("participantAddress.${addressType.value}.pob", [field: null, label: addressType.getI10n('value')+' '+messageSource.getMessage('default.pob.export.addition', null, locale)])
         }
 
         def removeSurveyProperties = fields.survey.fields.keySet().findAll { it.startsWith('surveyProperty.') }
@@ -6839,7 +6873,7 @@ class ExportClickMeService {
     private void _setOrgFurtherInformation(Org org, List row, String fieldKey, FORMAT format, Subscription subscription = null, String contactSwitch = 'publicContact'){
 
         boolean isPublic = contactSwitch == 'publicContact'
-        String tenantFilter = '', addressTenantFilter = '', contactTypeFilter = ''
+        String tenantFilter = '', addressTenantFilter = '', contactTypeFilter = '', postBoxFilter = ''
         if (fieldKey.contains('Contact.')) {
             if (org) {
                 Map<String, Object> queryParams = [org: org, type: RDStore.CCT_EMAIL, isPublic: isPublic]
@@ -6879,7 +6913,13 @@ class ExportClickMeService {
                     queryParams.ctx = contextService.getOrg()
                 }
                 else addressTenantFilter = ' and a.tenant = null'
-                Set<Address> addressList = Address.executeQuery("select a from Address a join a.type type where type = :type and a.org = :org"+addressTenantFilter, queryParams)
+                if(fieldKey.contains('.address')) {
+                    postBoxFilter = ' and a.pob = null and a.pobZipcode = null and a.pobCity = null'
+                }
+                else if(fieldKey.contains('.pob')) {
+                    postBoxFilter = ' and (a.pob is not null or a.pobZipcode is not null or a.pobCity is not null)'
+                }
+                Set<Address> addressList = Address.executeQuery("select a from Address a join a.type type where type = :type and a.org = :org"+addressTenantFilter+postBoxFilter, queryParams)
 
                 if (addressList) {
                     row.add(createTableCell(format, addressList.collect { Address address -> _getAddress(address, org)}.join(";")))
@@ -7162,7 +7202,7 @@ class ExportClickMeService {
 
     private void _setVendorFurtherInformation(Vendor vendor, List row, String fieldKey, FORMAT format, String contactSwitch = 'publicContact'){
         boolean isPublic = contactSwitch == 'publicContact'
-        String tenantFilter = '', addressTenantFilter, contactTypeFilter = ''
+        String tenantFilter = '', addressTenantFilter, contactTypeFilter = '', postBoxFilter = ''
         Org contextOrg = contextService.getOrg()
         if (fieldKey.contains('Contact.')) {
             if (vendor) {
@@ -7203,7 +7243,13 @@ class ExportClickMeService {
                     queryParams.ctx = contextService.getOrg()
                 }
                 else addressTenantFilter = ' and a.tenant = null'
-                Set<Address> addressList = Address.executeQuery("select a from Address a join a.type type where type = :type and a.vendor = :vendor"+addressTenantFilter, queryParams)
+                if(fieldKey.contains('.address')) {
+                    postBoxFilter = ' and a.pob = null and a.pobZipcode = null and a.pobCity = null'
+                }
+                else if(fieldKey.contains('.pob')) {
+                    postBoxFilter = ' and (a.pob is not null or a.pobZipcode is not null or a.pobCity is not null)'
+                }
+                Set<Address> addressList = Address.executeQuery("select a from Address a join a.type type where type = :type and a.vendor = :vendor"+addressTenantFilter+postBoxFilter, queryParams)
 
                 if (addressList) {
                     row.add(createTableCell(format, addressList.collect { Address address -> _getAddress(address, vendor)}.join(";")))
@@ -7285,7 +7331,7 @@ class ExportClickMeService {
 
     private void _setProviderFurtherInformation(Provider provider, List row, String fieldKey, FORMAT format, String contactSwitch = 'publicContact'){
         boolean isPublic = contactSwitch == 'publicContact'
-        String tenantFilter = '', addressTenantFilter, contactTypeFilter = ''
+        String tenantFilter = '', addressTenantFilter, contactTypeFilter = '', postBoxFilter = ''
         Org contextOrg = contextService.getOrg()
         if (fieldKey.contains('Contact.')) {
             if (provider) {
@@ -7326,7 +7372,13 @@ class ExportClickMeService {
                     queryParams.ctx = contextService.getOrg()
                 }
                 else addressTenantFilter = ' and a.tenant = null'
-                Set<Address> addressList = Address.executeQuery("select a from Address a join a.type type where type = :type and a.provider = :provider"+addressTenantFilter, queryParams)
+                if(fieldKey.contains('.address')) {
+                    postBoxFilter = ' and a.pob = null and a.pobZipcode = null and a.pobCity = null'
+                }
+                else if(fieldKey.contains('.pob')) {
+                    postBoxFilter = ' and (a.pob is not null or a.pobZipcode is not null or a.pobCity is not null)'
+                }
+                Set<Address> addressList = Address.executeQuery("select a from Address a join a.type type where type = :type and a.provider = :provider"+addressTenantFilter+postBoxFilter, queryParams)
 
                 if (addressList) {
                     row.add(createTableCell(format, addressList.collect { Address address -> _getAddress(address, provider)}.join(";")))
@@ -7441,12 +7493,20 @@ class ExportClickMeService {
                     RefdataValue addressType = RefdataValue.findByValue(fieldKey.split('\\.')[1])
                     if(contactSources) {
                         contactSources.findAll{ String source -> source.contains('Address') }.each { String contactSwitch ->
-                            if(contactSwitch.contains('Address'))
-                                titles.add(createTableCell(format,  "${addressType.getI10n('value')} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"))
+                            if(contactSwitch.contains('Address')) {
+                                if(fieldKey.contains('.address'))
+                                    titles.add(createTableCell(format, "${addressType.getI10n('value')} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)} ${messageSource.getMessage('default.address.export.addition', null, locale)}"))
+                                else if(fieldKey.contains('.pob'))
+                                    titles.add(createTableCell(format, "${addressType.getI10n('value')} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)} ${messageSource.getMessage('default.pob.export.addition', null, locale)}"))
+                            }
                         }
                     }
-                    else
-                        titles.add(createTableCell(format,  addressType.getI10n('value')))
+                    else {
+                        if(fieldKey.contains('.address'))
+                            titles.add(createTableCell(format, "${addressType.getI10n('value')} ${messageSource.getMessage('default.address.export.addition', null, locale)}"))
+                        else if(fieldKey.contains('.pob'))
+                            titles.add(createTableCell(format, "${addressType.getI10n('value')} ${messageSource.getMessage('default.pob.export.addition', null, locale)}"))
+                    }
                 }
                 /*else if (fieldKey.endsWith('.billingContact')) {
                     if(contactSources) {
