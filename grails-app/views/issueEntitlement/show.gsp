@@ -25,6 +25,10 @@
                  text="${issueEntitlementInstance.tipp.name}"/>
 </ui:breadcrumbs>
 
+<ui:controlButtons>
+    <laser:render template="actions" />
+</ui:controlButtons>
+
 <ui:h1HeaderWithIcon message="issueEntitlement.for_title.label" args="[issueEntitlementInstance.tipp.name, issueEntitlementInstance.subscription.name]"
                         type="${issueEntitlementInstance.tipp.titleType}" />
 

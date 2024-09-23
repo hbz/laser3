@@ -36,9 +36,6 @@
                         <g:if test="${tskObj.controller.contains('subscription')}">
                             <i class="${Icon.SUBSCRIPTION}"></i>
                         </g:if>
-                        <g:if test="${tskObj.controller.contains('package')}">
-                            <i class="${Icon.PACKAGE}"></i>
-                        </g:if>
                         <g:if test="${tskObj.controller.contains('license')}">
                             <i class="${Icon.LICENSE}"></i>
                         </g:if>

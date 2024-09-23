@@ -14,6 +14,10 @@
     <ui:crumb text="${tipp.name} [${message(code: 'title.label')}]" class="active"/>
 </ui:breadcrumbs>
 
+<ui:controlButtons>
+    <laser:render template="actions" />
+</ui:controlButtons>
+
 <ui:h1HeaderWithIcon message="tipp.show.label" args="${[tipp.name, tipp.pkg.name, tipp.platform.name]}" type="${tipp.titleType}" />
 
 <laser:render template="/templates/meta/identifier" model="${[object: tipp, editable: editable]}"/>

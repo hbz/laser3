@@ -7,6 +7,7 @@ import de.laser.utils.DateUtils
 import de.laser.annotations.DebugInfo
 import de.laser.survey.SurveyConfig
 import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
@@ -80,6 +81,9 @@ class TaskController  {
 				}
 				else if (params.linkto == "surveyConfig" && params.surveyConfig && params.surveyConfig != 'null') {
 					taskInstance.surveyConfig = SurveyConfig.get(params.surveyConfig) ?: null
+				}
+				else if (params.linkto == "tipp" && params.tipp && params.tipp != 'null') {
+					taskInstance.tipp = TitleInstancePackagePlatform.get(params.tipp) ?: null
 				}
 
 				if (!taskInstance.save()) {

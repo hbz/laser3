@@ -4,7 +4,7 @@
 
     <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'create']" method="post">
         <g:if test="${controllerName != 'myInstitution' && controllerName != 'ajaxHtml'}">
-            <g:hiddenField name="${owntp}" value="${(owntp == 'surveyConfig') ? ownobj?.id : params.id}"/>
+            <g:hiddenField name="${owntp}" value="${(owntp in ['surveyConfig', 'tipp']) ? ownobj?.id : params.id}"/>
             <g:hiddenField name="linkto" value="${owntp}"/>
         </g:if>
 
@@ -67,11 +67,17 @@
                             <g:message code="task.vendor.label" />
                         </label>
                     </div>
+                    &nbsp; &nbsp;
+                    <div class="ui radio checkbox disabled">
+                        <input id="tippradio" type="radio" value="tipp" name="linkto" tabindex="0" class="hidden">
+                        <label for="tippradio">
+                            <g:message code="task.tipp.label" />
+                        </label>
+                    </div>
                 </fieldset>
             </div>
 
-            <div id="licensediv"
-                 class="field ${hasErrors(bean: taskInstance, field: 'license', 'error')} required">
+            <div id="licensediv" class="field ${hasErrors(bean: taskInstance, field: 'license', 'error')} required">
                 <label for="license">
                     <g:message code="task.linkto" /><g:message code="license.label" /> <g:message code="messageRequiredField" />
                 </label>
@@ -131,8 +137,7 @@
                 />
             </div>
 
-            <div id="subscriptiondiv"
-                 class="field ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} required">
+            <div id="subscriptiondiv" class="field ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} required">
                 <label for="subscription">
                     <g:message code="task.linkto" /><g:message code="default.subscription.label" /> <g:message code="messageRequiredField" />
                 </label>
@@ -140,6 +145,21 @@
                           id="subscription"
                           name="subscription"
                           from="${validSubscriptionsDropdown}"
+                          optionKey="${{it.optionKey}}"
+                          optionValue="${{it.optionValue}}"
+                          value="${ownobj?.id}"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                />
+            </div>
+
+            <div id="tippdiv" class="field ${hasErrors(bean: taskInstance, field: 'tipp', 'error')} required">
+                <label for="tipp">
+                    <g:message code="task.linkto" /><g:message code="task.tipp.label" /> <g:message code="messageRequiredField" />
+                </label>
+                <g:select class="ui dropdown search many-to-one disabled"
+                          id="tipp"
+                          name="tipp"
+                          from="${[]}"
                           optionKey="${{it.optionKey}}"
                           optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
@@ -215,10 +235,10 @@
     <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajaxHtml'}">
         <laser:script file="${this.getGroovyPageFileName()}">
             $("#generalradio").prop( "checked", true );
-            $("#licensediv, #orgdiv, #subscriptiondiv").hide();
+            $("#licensediv, #orgdiv, #subscriptiondiv, #tippdiv").hide();
 
             JSPC.app.showHideRequire = function (taskType) {
-                var arr = [ 'license', 'org', 'provider', 'vendor', 'subscription' ];
+                var arr = [ 'license', 'org', 'provider', 'vendor', 'subscription', 'tipp' ];
                 $('#'+ taskType +'radio').change(function () {
 
                     var hideArray = arr.filter(function(val, index, arr) {
@@ -240,6 +260,7 @@
             JSPC.app.showHideRequire ( 'org' );
             JSPC.app.showHideRequire ( 'provider' );
             JSPC.app.showHideRequire ( 'vendor' );
+            JSPC.app.showHideRequire ( 'tipp' );
         </laser:script>
     </g:if>
 
