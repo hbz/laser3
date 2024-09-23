@@ -8,6 +8,7 @@ import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Platform
 import grails.gorm.transactions.Transactional
 import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.SpringSecurityUtils
