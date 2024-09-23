@@ -103,27 +103,37 @@
                         </g:else>
                     </td>
                     <g:if test="${accessPointType.value in ['ip', 'proxy']}">
+                        <g:set var="ipRanges" value="${accessPoint.getAccessPointIpRanges()}"/>
                         <td>
-                            <g:each in="${accessPoint.getIpRangeStrings('ipv4', 'ranges')}" var="ipv4Range">
-                                <div>${ipv4Range}</div>
-                            </g:each>
+                            <g:if test="${ipRanges.ipv4Ranges}">
+                                <g:each in="${ipRanges.ipv4Ranges.ipRange}" var="ipv4Range">
+                                    <div>${ipv4Range}</div>
+                                </g:each>
+                            </g:if>
                         </td>
                         <td>
-                            <g:each in="${accessPoint.getIpRangeStrings('ipv6', 'ranges')}" var="ipv6Range">
-                                <div>${ipv6Range}</div>
-                            </g:each>
+                            <g:if test="${ipRanges.ipv6Ranges}">
+                                <g:each in="${ipRanges.ipv6Ranges.ipRange}" var="ipv6Range">
+                                    <div>${ipv6Range}</div>
+                                </g:each>
+                            </g:if>
                         </td>
                     </g:if>
                     <g:elseif test="${accessPointType.value == 'ezproxy'}">
+                        <g:set var="ipRanges" value="${accessPoint.getAccessPointIpRanges()}"/>
                         <td>
-                            <g:each in="${accessPoint.getIpRangeStrings('ipv4', 'ranges')}" var="ipv4Range">
-                                <div>${ipv4Range}</div>
-                            </g:each>
+                            <g:if test="${ipRanges.ipv4Ranges}">
+                                <g:each in="${ipRanges.ipv4Ranges.ipRange}" var="ipv4Range">
+                                    <div>${ipv4Range}</div>
+                                </g:each>
+                            </g:if>
                         </td>
                         <td>
-                            <g:each in="${accessPoint.getIpRangeStrings('ipv6', 'ranges')}" var="ipv6Range">
-                                <div>${ipv6Range}</div>
-                            </g:each>
+                            <g:if test="${ipRanges.ipv6Ranges}">
+                                <g:each in="${ipRanges.ipv6Ranges.ipRange}" var="ipv6Range">
+                                    <div>${ipv6Range}</div>
+                                </g:each>
+                            </g:if>
                         </td>
                         <td>
                             <g:if test="${accessPoint.hasProperty('url')}">

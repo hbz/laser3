@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyPackageResult; de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.survey.SurveyConfigProperties; de.laser.storage.PropertyStore; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyPackageResult; de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
 <laser:serviceInjection/>
 
 <g:if test="${showOpenParticipantsAgainButtons}">
@@ -597,12 +597,21 @@
                         <i class="${Icon.SURVEY}"></i>
                     </g:link>
 
+                    <g:if test="${SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, PropertyStore.SURVEY_PROPERTY_TEST)}">
+                        <g:set var="participantTestProperty" value="${SurveyResult.findBySurveyConfigAndParticipantAndType(surveyConfig, participant, PropertyStore.SURVEY_PROPERTY_TEST)}"/>
+                        <g:if test="${participantTestProperty && participantTestProperty.refValue == RDStore.YN_YES }">
+                            <g:link controller="organisation" action="mailInfos" id="${participant.id}" params="[subscription: surveyConfig.subscription?.id]"
+                                    class="ui button icon la-modern-button"><i class="mail icon"></i></g:link>
+                        </g:if>
+                    </g:if>
+
+
                     <g:if test="${surveyConfig.subscription}">
                         <g:set var="participantSub" value="${surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(participant)}"/>
                             <g:if test="${participantSub}">
                                 <br/>
                                 <g:link controller="subscription" action="show" id="${participantSub.id}"
-                                        class="${Btn.ICON.SIMPLE} orange"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
+                                        class="${Btn.ICON.SIMPLE} orange la-modern-button"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                             </g:if>
                     </g:if>
                 </td>
@@ -1181,12 +1190,20 @@
                         <i class="${Icon.SURVEY}"></i>
                     </g:link>
 
+                    <g:if test="${SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, PropertyStore.SURVEY_PROPERTY_TEST)}">
+                        <g:set var="participantTestProperty" value="${SurveyResult.findBySurveyConfigAndParticipantAndType(surveyConfig, participant, PropertyStore.SURVEY_PROPERTY_TEST)}"/>
+                        <g:if test="${participantTestProperty && participantTestProperty.refValue == RDStore.YN_YES }">
+                            <g:link controller="organisation" action="mailInfos" id="${participant.id}"
+                                    class="ui button icon la-modern-button"><i class="mail icon"></i></g:link>
+                        </g:if>
+                    </g:if>
+
                     <g:if test="${surveyConfig.subscription}">
                         <g:set var="participantSub" value="${surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(participant)}"/>
                         <g:if test="${participantSub}">
                             <br/>
                             <g:link controller="subscription" action="show" id="${participantSub.id}"
-                                    class="${Btn.ICON.SIMPLE} orange"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
+                                    class="${Btn.ICON.SIMPLE} orange la-modern-button"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                         </g:if>
                     </g:if>
                 </td>

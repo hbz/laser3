@@ -1945,6 +1945,26 @@ class OrganisationController  {
     }
 
     /**
+     * Shows the details of the organisation to display
+     * @return the details view of the given orgainsation
+     */
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN()
+    })
+    @Check404(domain=Org)
+    def mailInfos() {
+        Map<String, Object> result = organisationControllerService.mailInfos(this, params)
+        if (! result) {
+            response.sendError(401)
+            return
+        }
+
+        result
+    }
+
+
+    /**
      * Helper method to determine the edit rights the given user has for the given organisation in the given view
      * @param user the user whose rights should be checked
      * @param org the target organisation
