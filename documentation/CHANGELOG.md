@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5959    23.09.2024  dev     3.5         David   Feature     Systemmeldungen auf Markdown umstellen
+
+5876    23.09.2024  dev     3.5         David   Feature     Kontextabhängige Hilfe -> technische Umsetzung
+
 5958    20.09.2024  rc-3.4  3.4.9       Andreas Bug         500er beim Aufruf von Lizenzen mit NatStat-Statistiken behoben
 
 5955    20.09.2024  dev     3.5         Andreas Feature     Upload von Requestor-IDs
