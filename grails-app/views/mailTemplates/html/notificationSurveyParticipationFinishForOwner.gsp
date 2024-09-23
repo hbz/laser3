@@ -74,7 +74,6 @@ ${message(code: 'surveyconfig.orgs.label', locale: language)}: ${orgName}
             <th>
                 ${message(code: 'surveyResult.commentOnlyForOwner')}
             </th>
-            <th></th>
         </tr>
         </thead>
         <g:each in="${surveyResults}" var="surveyResult" status="i">
@@ -108,15 +107,6 @@ ${message(code: 'surveyconfig.orgs.label', locale: language)}: ${orgName}
                 <td>
                     ${surveyResult.ownerComment}
                 </td>
-                <td>
-                    <g:if test="${SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(survey.surveyConfigs[0], PropertyStore.SURVEY_PROPERTY_TEST)}">
-                        <g:set var="participantTestProperty" value="${SurveyResult.findBySurveyConfigAndParticipantAndType(survey.surveyConfigs[0], org, PropertyStore.SURVEY_PROPERTY_TEST)}"/>
-                        <g:if test="${participantTestProperty && participantTestProperty.refValue == RDStore.YN_YES }">
-                            <g:set var="mailInfos" value="${"/organisation/mailInfos/${org.id}?subscription=${survey.surveyConfigs[0].subscription?.id}"}"/>
-                            ${ConfigMapper.getConfig('grails.serverURL', String) + mailInfos}
-                        </g:if>
-                    </g:if>
-                </td>
             </tr>
         </g:each>
     </table>
@@ -127,6 +117,13 @@ ${message(code: 'email.survey.finish.url', locale: language)}
 <br />
 ${ConfigMapper.getConfig('grails.serverURL', String) + surveyUrl}
 <br />
+<g:if test="${SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(survey.surveyConfigs[0], PropertyStore.SURVEY_PROPERTY_TEST)}">
+    <g:set var="participantTestProperty" value="${SurveyResult.findBySurveyConfigAndParticipantAndType(survey.surveyConfigs[0], org, PropertyStore.SURVEY_PROPERTY_TEST)}"/>
+    <g:if test="${participantTestProperty && participantTestProperty.refValue == RDStore.YN_YES }">
+        <g:set var="mailInfos" value="${"organisation/mailInfos/${org.id}?subscription=${survey.surveyConfigs[0].subscription?.id}"}"/>
+        ${ConfigMapper.getConfig('grails.serverURL', String) + mailInfos}
+    </g:if>
+</g:if>
 <br />
 ${message(code: 'email.profile.settings', locale: language)}
 <g:render template="/mailTemplates/html/signature" />
