@@ -1,6 +1,7 @@
-<%@ page import="de.laser.CustomerTypeService" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService" %>
 <laser:serviceInjection />
 
+<g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}">
     <ui:actionsDropdown>
         <ui:actionsDropdownItem data-ui="modal" href="#modalCreateTask" message="task.create.reportTitleToProvider"/>
@@ -8,5 +9,6 @@
 
 %{--    modal @ /templates/tasks/_reportTitleToProvider.gsp --}%
 %{--    <laser:render template="/templates/tasks/modal_create" model="${[ownobj: issueEntitlementInstance.tipp, owntp: 'tipp']}"/>--}%
+</g:if>
 </g:if>
 

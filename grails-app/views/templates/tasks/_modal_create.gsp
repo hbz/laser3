@@ -4,7 +4,7 @@
 
     <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'create']" method="post">
         <g:if test="${controllerName != 'myInstitution' && controllerName != 'ajaxHtml'}">
-            <g:hiddenField name="${owntp}" value="${(owntp in ['surveyConfig', 'tipp']) ? ownobj?.id : params.id}"/>
+            <g:hiddenField name="${owntp}" value="${(owntp in ['surveyConfig']) ? ownobj?.id : params.id}"/>
             <g:hiddenField name="linkto" value="${owntp}"/>
         </g:if>
 
@@ -65,13 +65,6 @@
                         <input id="vendorradio" type="radio" value="vendor" name="linkto" tabindex="0" class="hidden">
                         <label for="vendorradio">
                             <g:message code="task.vendor.label" />
-                        </label>
-                    </div>
-                    &nbsp; &nbsp;
-                    <div class="ui radio checkbox disabled">
-                        <input id="tippradio" type="radio" value="tipp" name="linkto" tabindex="0" class="hidden">
-                        <label for="tippradio">
-                            <g:message code="task.tipp.label" />
                         </label>
                     </div>
                 </fieldset>
@@ -151,21 +144,6 @@
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                 />
             </div>
-
-            <div id="tippdiv" class="field ${hasErrors(bean: taskInstance, field: 'tipp', 'error')} required">
-                <label for="tipp">
-                    <g:message code="task.linkto" /><g:message code="task.tipp.label" /> <g:message code="messageRequiredField" />
-                </label>
-                <g:select class="ui dropdown search many-to-one disabled"
-                          id="tipp"
-                          name="tipp"
-                          from="${[]}"
-                          optionKey="${{it.optionKey}}"
-                          optionValue="${{it.optionValue}}"
-                          value="${ownobj?.id}"
-                          noSelection="${['' : message(code:'default.select.choose.label')]}"
-                />
-            </div>
         </g:if>
 
         <div class="field">
@@ -235,10 +213,10 @@
     <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajaxHtml'}">
         <laser:script file="${this.getGroovyPageFileName()}">
             $("#generalradio").prop( "checked", true );
-            $("#licensediv, #orgdiv, #subscriptiondiv, #tippdiv").hide();
+            $("#licensediv, #orgdiv, #subscriptiondiv").hide();
 
             JSPC.app.showHideRequire = function (taskType) {
-                var arr = [ 'license', 'org', 'provider', 'vendor', 'subscription', 'tipp' ];
+                var arr = [ 'license', 'org', 'provider', 'vendor', 'subscription' ];
                 $('#'+ taskType +'radio').change(function () {
 
                     var hideArray = arr.filter(function(val, index, arr) {
@@ -260,7 +238,6 @@
             JSPC.app.showHideRequire ( 'org' );
             JSPC.app.showHideRequire ( 'provider' );
             JSPC.app.showHideRequire ( 'vendor' );
-            JSPC.app.showHideRequire ( 'tipp' );
         </laser:script>
     </g:if>
 

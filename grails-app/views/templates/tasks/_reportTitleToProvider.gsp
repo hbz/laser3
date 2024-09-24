@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.storage.BeanStore; de.laser.remote.ApiSource; de.laser.Person; de.laser.Contact; grails.plugin.springsecurity.SpringSecurityUtils;" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.storage.BeanStore; de.laser.Task; de.laser.remote.ApiSource; de.laser.Person; de.laser.Contact; grails.plugin.springsecurity.SpringSecurityUtils;" %>
 <laser:serviceInjection />
 
 <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
@@ -34,6 +34,8 @@ ${apiSource.baseUrl + '/resource/show/' + tipp.gokbId}
 Vielen Dank
 """
     ]
+
+    List<Task> myTasks = Task.findAllByCreatorAndTipp(BeanStore.getContextService().getUser(), tipp).sort{ it.dateCreated }.reverse()
 %>
 
         <ui:msg class="info" showIcon="true">
@@ -41,8 +43,18 @@ Vielen Dank
             <br />
             <a href="${'mailto:' + ttm_mailStruct['mailto'] + '?subject=' + ttm_mailStruct['subject'] + '&cc=' + ttm_mailStruct['mailcc'] + '&body=' +  ttm_mailStruct['body']}">Kontaktieren Sie den Anbieter</a>
             und <a href="#modalCreateTask" data-ui="modal">erstellen Sie sich ggf. eine Aufgabe</a> zur Erinnerung.
-%{--            <br />--}%
-%{--            Dabei wird der Titel direkt in Ihre Beobachtungsliste aufgenommen.--}%
+            <br />
+
+            <g:if test="${myTasks}">
+                <br />
+                Sie haben bereits folgende Aufgaben erstellt: <br />
+                <g:each in="${myTasks}" var="mt">
+                    <g:formatDate format="${message(code:'default.date.format.notime')}" date="${mt.dateCreated}"/> ${mt.title}  <br />
+                </g:each>
+            </g:if>
+
+            <br />
+            <strong>TODO: Beobachtungsliste</strong>
         </ui:msg>
     </g:if>
 
