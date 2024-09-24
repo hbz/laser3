@@ -7,7 +7,7 @@
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
 </g:else>
 
-<laser:htmlStart message="${'menu.institutions.org.show'}" serviceInjection="true"/>
+<laser:htmlStart text="Mail-Infos" serviceInjection="true"/>
 
 <laser:render template="breadcrumb"
               model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView, consortialView: consortialView]}"/>
