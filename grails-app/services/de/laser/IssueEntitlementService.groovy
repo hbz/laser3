@@ -18,9 +18,13 @@ class IssueEntitlementService {
     }
 
     Set<IssueEntitlement> getIssueEntitlements(Map configMap) {
-        Map<String, Object> titleConfigMap = [packages: configMap.packages, filter: configMap.filter],
-                identifierConfigMap = [filter: configMap.filter],
+        Map<String, Object> titleConfigMap = [packages: configMap.packages],
+                       identifierConfigMap = [packages: configMap.packages],
                 issueEntitlementConfigMap = [subscription: configMap.subscription]
+        if(configMap.filter) {
+            titleConfigMap.filter = configMap.filter.toLowerCase()
+            identifierConfigMap.filter = configMap.filter
+        }
         if(!configMap.containsKey('status')) {
             //titleConfigMap.tippStatus = RDStore.TIPP_STATUS_CURRENT //activate if needed
             issueEntitlementConfigMap.ieStatus = RDStore.TIPP_STATUS_CURRENT
@@ -31,12 +35,14 @@ class IssueEntitlementService {
         //process here the title-related parameters
         Map<String, Object> queryPart1 = filterService.getTippSubsetQuery(titleConfigMap)
         Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(queryPart1.query, queryPart1.queryParams), ieIds = []
+        if(configMap.containsKey('filter'))
+            tippIds.addAll(TitleInstancePackagePlatform.executeQuery('select tipp.id from Identifier id join id.tipp tipp where tipp.pkg in (:packages) and lower(id.value) like :filter', identifierConfigMap))
         //process here the issue entitlement-related parameters
-        Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetQuery(issueEntitlementConfigMap)
+        Map<String, Object> queryPart3 = filterService.getIssueEntitlementSubsetQuery(issueEntitlementConfigMap)
 
         tippIds.collate(65000).each { List<Long> subset ->
-            queryPart2.queryParams.subset = subset
-            ieIds.addAll(IssueEntitlement.executeQuery(queryPart2.query, queryPart2.queryParams))
+            queryPart3.queryParams.subset = subset
+            ieIds.addAll(IssueEntitlement.executeQuery(queryPart3.query, queryPart3.queryParams))
         }
         //test A
         SortedSet<IssueEntitlement> result = new TreeSet<IssueEntitlement>()

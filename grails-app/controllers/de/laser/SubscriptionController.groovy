@@ -17,6 +17,7 @@ import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.utils.DateUtils
 import de.laser.utils.PdfUtils
+import de.laser.utils.SwissKnife
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.TitleInstancePackagePlatform
@@ -1093,7 +1094,7 @@ class SubscriptionController {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404()
-    def index() {
+    def index_old() {
         Map<String,Object> ctrlResult = subscriptionControllerService.index(this,params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if(!ctrlResult.result) {
@@ -1179,14 +1180,14 @@ class SubscriptionController {
             }
         }
     }
+
     @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404()
-    def index_new() {
+    def index() {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-
         if (result.status == SubscriptionControllerService.STATUS_ERROR) {
             if(!result) {
                 response.sendError(401)
@@ -1198,11 +1199,12 @@ class SubscriptionController {
             }
         }
         else {
+            SwissKnife.setPaginationParams(result, params, (User) result.user)
             Subscription targetSub = issueEntitlementService.getTargetSubscription(result.subscription)
             Set<Package> targetPkg = targetSub.packages.pkg
             Map<String, Object> configMap = [subscription: targetSub, packages: targetPkg]
             configMap.putAll(params)
-            result.issueEntitlements = issueEntitlementService.getIssueEntitlements(configMap)
+            result.entitlements = issueEntitlementService.getIssueEntitlements(configMap)
             result
         }
 
