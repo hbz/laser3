@@ -969,6 +969,8 @@ class SurveyControllerService {
                                 break
                             case ["anmerkung", "description"]: colMap.description = c
                                 break
+                            case ["sortiername", "sortname"]: colMap.sortname = c
+                                break
                             default: log.info("unhandled parameter type ${headerCol}, ignoring ...")
                                 break
                         }
@@ -1013,6 +1015,12 @@ class SurveyControllerService {
                             if (matchList.size() == 1)
                                 match = matchList[0] as Org
                         }
+                         if (colMap.sortname >= 0 && cols[colMap.sortname] != null && !cols[colMap.sortname].trim().isEmpty()) {
+                            List matchList = Org.executeQuery('select org from Org org where org.sortname = :sortname and org.status != :removed', [sortname: cols[colMap.sortname].trim(), removed: RDStore.TIPP_STATUS_REMOVED])
+                            if (matchList.size() == 1)
+                                 match = matchList[0] as Org
+                        }
+
 
                         processCount++
                         if (match) {
@@ -1030,6 +1038,10 @@ class SurveyControllerService {
                                         if (!cost_item_element)
                                             cost_item_element = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.COST_ITEM_ELEMENT, elementKey)
                                     }
+                                }
+
+                                if(!cost_item_element){
+                                    cost_item_element = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE
                                 }
 
                                 if (cost_item_element) {
@@ -2589,9 +2601,9 @@ class SurveyControllerService {
                                             surveyService.emailsToSurveyUsersOfOrg(result.surveyInfo, org, false)
                                         }
 
-                                        if(result.surveyConfig.invoicingInformation){
+                                        /*if(result.surveyConfig.invoicingInformation){
                                             surveyService.setDefaultInvoiceInformation(result.surveyConfig, org)
-                                        }
+                                        }*/
                                     }
                                 }
                             }
@@ -2781,9 +2793,9 @@ class SurveyControllerService {
                                     }
                                 }
 
-                                if(config.invoicingInformation){
+                               /* if(config.invoicingInformation){
                                     surveyService.setDefaultInvoiceInformation(config, org)
-                                }
+                                }*/
                             }
                         }
                     }
@@ -5110,8 +5122,7 @@ class SurveyControllerService {
                 if (property && value && field) {
 
                     if (field == "refValue") {
-                        def binding_properties = ["${field}": value]
-                        SurveyController.bindData(property, binding_properties)
+                        property["${field}"] = value
                         //property.save(flush:true)
                         if (!property.save(failOnError: true)) {
                             log.error("Error Property save: " + property.error)
@@ -5157,8 +5168,7 @@ class SurveyControllerService {
                             value = new BigDecimal(value)
                         }
 
-                        binding_properties["${field}"] = value
-                        SurveyController.bindData(property, binding_properties)
+                        property["${field}"] = value
 
                         property.save(failOnError: true)
 

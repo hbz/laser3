@@ -73,7 +73,7 @@
 
             <g:set var="isSubscriptionViewValid" value="${!(actionName.startsWith('copy') || actionName in ['renewEntitlementsWithSurvey', 'renewSubscription', 'emptySubscription'])}" />
 
-            <g:if test="${controllerName in ['finance', 'subscription'] && subscription && isSubscriptionViewValid}">
+            <g:if test="${controllerName in ['finance', 'subscription', 'survey'] && subscription && isSubscriptionViewValid}">
                 <g:if test="${editable && contextService.getOrg().isCustomerType_Consortium() && subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL]}">
                     <div class="item la-cb-action">
                         <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionTransfer-toggle"

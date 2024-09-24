@@ -38,7 +38,7 @@
                                     <div>
                                         <i aria-hidden="true" class="${Icons.VENDOR} grey icon la-popup-tooltip la-delay" data-content="${message(code: 'vendor.label')}"></i>
                                         <g:link controller="vendor" action="show" id="${pv.vendor.id}">${pv.vendor.name}</g:link>
-                                        <g:if test="${vendorRecord.homepage}"><ui:linkWithIcon href="${vendorRecord.homepage.startsWith('http') ? vendorRecord.homepage : 'http://' + vendorRecord.homepage}"/></g:if>
+                                        <g:if test="${vendorRecord && vendorRecord.homepage}"><ui:linkWithIcon href="${vendorRecord.homepage.startsWith('http') ? vendorRecord.homepage : 'http://' + vendorRecord.homepage}"/></g:if>
                                         <g:if test="${pv.vendor.gokbId}"><ui:wekbIconLink type="vendor" gokbId="${pv.vendor.gokbId}"/></g:if>
                                     </div>
                                 </g:each>

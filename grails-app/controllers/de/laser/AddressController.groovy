@@ -2,6 +2,7 @@ package de.laser
  
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyOrg
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -217,6 +218,12 @@ class AddressController  {
             }
 
             try {
+                List changeList = SurveyOrg.findAllByAddress(addressInstance)
+                changeList.each { tmp2 ->
+                    tmp2.address = null
+                    tmp2.save()
+                }
+
                 addressInstance.delete()
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'address.label'), params.id]) as String
                 redirect(url: request.getHeader('referer'))

@@ -19,7 +19,7 @@
 
     <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
         <ui:actionsDropdownItem class="triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
-                                params="${params + [exportController: 'survey', exportAction: 'exportSurCostItems', clickMeType: ExportClickMeService.SURVEY_COST_ITEMS, id: params.id, surveyConfigID: surveyConfig.id, exportFileName: exportFileName]}"
+                                params="${params + [exportController: 'survey', exportAction: 'exportSurCostItems', clickMeType: ExportClickMeService.SURVEY_COST_ITEMS, id: params.id, surveyConfigID: surveyConfig.id, exportFileName: exportFileName, modalText: "${message(code: 'survey.exportSurveyCostItems')}"]}"
                                 message="survey.exportSurveyCostItems"/>
 
 
@@ -40,7 +40,7 @@
 
     <g:if test="${surveyConfig.subSurveyUseForTransfer}">
         <ui:actionsDropdownItem class="triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
-                                params="${params + [exportController: 'survey', exportAction: 'renewalEvaluation', clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: params.id, surveyConfigID: surveyConfig.id, exportFileName: exportFileName]}"
+                                params="${params + [exportController: 'survey', exportAction: 'renewalEvaluation', clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: params.id, surveyConfigID: surveyConfig.id, exportFileName: exportFileName, modalText: "${message(code: 'renewalEvaluation.exportRenewal')}"]}"
                                 message="renewalEvaluation.exportRenewal"/>
 
         <g:set var="clickMeConfigsRenewal"

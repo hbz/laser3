@@ -43,6 +43,7 @@ class PropertyStore {
     public final static PropertyDefinition SUB_PROP_GASCO_ENTRY             = getPropertyDefinition('GASCO Entry', PropertyDefinition.SUB_PROP)
     public final static PropertyDefinition SUB_PROP_GASCO_INFORMATION_LINK  = getPropertyDefinition('GASCO information link', PropertyDefinition.SUB_PROP)
     public final static PropertyDefinition SUB_PROP_GASCO_NEGOTIATOR_NAME   = getPropertyDefinition('GASCO negotiator name', PropertyDefinition.SUB_PROP)
+    public final static PropertyDefinition SUB_PROP_STATS_ACCESS            = getPropertyDefinition('Statistic access', PropertyDefinition.SUB_PROP)
 
     // --
 
@@ -71,6 +72,7 @@ class PropertyStore {
     public final static PropertyDefinition SURVEY_PROPERTY_MULTI_YEAR_2    = getSurveyProperty('Multi-year term 2 years')
     public final static PropertyDefinition SURVEY_PROPERTY_SUBSCRIPTION_FORM    = getSurveyProperty('Subscription Form')
     public final static PropertyDefinition SURVEY_PROPERTY_PUBLISHING_COMPONENT    = getSurveyProperty('Publishing Component')
+    public final static PropertyDefinition SURVEY_PROPERTY_TEST   = getSurveyProperty('Global Consumer Survey Test')
 
     /**
      * Preloads the given survey property definition by name and object type (description)

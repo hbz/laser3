@@ -38,6 +38,38 @@
 
     <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscription" method="post" enctype="multipart/form-data" class="ui form addMembers">
 
+
+        <div class="ui divider"></div>
+
+        <ui:msg header="${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.info')}" noClose="true">
+
+            ${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.text')}
+
+            <br>
+            <g:link class="item" controller="profile" action="importManuel" target="_blank">${message(code: 'help.technicalHelp.uploadFile.manuel')}</g:link>
+            <br>
+
+            <g:link controller="subscription" action="templateForMembersBulkWithUpload" params="[id: params.id]">
+                <p>${message(code:'myinst.financeImport.template')}</p>
+            </g:link>
+
+            <div class="ui action input">
+                <input type="text" readonly="readonly"
+                       placeholder="${message(code: 'template.addDocument.selectFile')}">
+                <input type="file" name="selectSubMembersWithImport" accept="text/tab-separated-values,.txt,.csv"
+                       style="display: none;">
+                <div class="ui icon button">
+                    <i class="attach icon"></i>
+                </div>
+            </div>
+            <g:if test="${members}">
+                <div class="field la-field-right-aligned">
+                    <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
+                </div>
+            </g:if>
+        </ui:msg>
+
+
         <laser:render template="/templates/filter/orgFilterTable"
                   model="[propList         : propList,
                           orgList          : members,
@@ -352,33 +384,6 @@
         </g:if>
 
         <br />
-
-        <div class="ui divider"></div>
-
-        <ui:msg header="${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.info')}" noClose="true">
-
-            ${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.text')}
-
-            <br>
-            <g:link class="item" controller="profile" action="importManuel" target="_blank">${message(code: 'help.technicalHelp.uploadFile.manuel')}</g:link>
-            <br>
-
-            <g:link controller="subscription" action="templateForMembersBulkWithUpload" params="[id: params.id]">
-                <p>${message(code:'myinst.financeImport.template')}</p>
-            </g:link>
-
-            <div class="ui action input">
-                <input type="text" readonly="readonly"
-                       placeholder="${message(code: 'template.addDocument.selectFile')}">
-                <input type="file" name="selectSubMembersWithImport" accept="text/tab-separated-values,.txt,.csv"
-                       style="display: none;">
-                <div class="ui icon button">
-                    <i class="attach icon"></i>
-                </div>
-            </div>
-        </ui:msg>
-
-
         <g:if test="${members}">
             <div class="field la-field-right-aligned">
                 <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
