@@ -36,7 +36,7 @@
 
 <ui:messages data="${flash}"/>
 
-<laser:render template="/templates/tipps/reportTitleToProvider" model="${[tipp: issueEntitlementInstance.tipp]}"/>
+<laser:render template="/templates/tasks/reportTitleToProvider" model="${[tipp: issueEntitlementInstance.tipp]}"/>
 
 <div class="la-inline-lists">
 
