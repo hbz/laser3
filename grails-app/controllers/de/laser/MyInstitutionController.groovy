@@ -2689,9 +2689,9 @@ class MyInstitutionController  {
                         notProcessedMandatoryProperties << surre.type.getI10n('name')
                     }
                 }
-                if(surveyConfig.invoicingInformation){
+                if(surveyConfig.invoicingInformation && !surveyOrg.address && !surveyOrg.person){
                     allResultHaveValue = false
-                    flash.error = g.message(code: 'surveyResult.finish.inputNecessary')
+                    flash.error = g.message(code: 'surveyResult.finish.invoicingInformation')
                 }
             }
 
