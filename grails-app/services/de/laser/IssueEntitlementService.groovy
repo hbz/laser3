@@ -22,8 +22,10 @@ class IssueEntitlementService {
                        identifierConfigMap = [packages: configMap.packages],
                 issueEntitlementConfigMap = [subscription: configMap.subscription]
         if(configMap.filter) {
-            titleConfigMap.filter = configMap.filter.toLowerCase()
-            identifierConfigMap.filter = configMap.filter
+            titleConfigMap.filter = configMap.filter
+        }
+        if(configMap.identifier) {
+            identifierConfigMap.identifier = configMap.identifier
         }
         if(!configMap.containsKey('status')) {
             //titleConfigMap.tippStatus = RDStore.TIPP_STATUS_CURRENT //activate if needed
@@ -35,8 +37,8 @@ class IssueEntitlementService {
         //process here the title-related parameters
         Map<String, Object> queryPart1 = filterService.getTippSubsetQuery(titleConfigMap)
         Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(queryPart1.query, queryPart1.queryParams), ieIds = []
-        if(configMap.containsKey('filter'))
-            tippIds.addAll(TitleInstancePackagePlatform.executeQuery('select tipp.id from Identifier id join id.tipp tipp where tipp.pkg in (:packages) and lower(id.value) like :filter', identifierConfigMap))
+        if(configMap.identifier)
+            tippIds.addAll(TitleInstancePackagePlatform.executeQuery('select tipp.id from Identifier id join id.tipp tipp where tipp.pkg in (:packages) and lower(id.value) like :identifier', identifierConfigMap))
         //process here the issue entitlement-related parameters
         Map<String, Object> queryPart3 = filterService.getIssueEntitlementSubsetQuery(issueEntitlementConfigMap)
 

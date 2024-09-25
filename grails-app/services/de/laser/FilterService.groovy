@@ -1845,8 +1845,9 @@ class FilterService {
             queryParams.tippStatus = RDStore.TIPP_STATUS_REMOVED
         }
         if(params.filter) {
-            queryArgs << " ( genfunc_filter_matcher(tipp.name, :filter) = true or genfunc_filter_matcher(tipp.firstAuthor, :filter) = true or genfunc_filter_matcher(tipp.firstEditor, :filter) = true )"
-            queryParams.filter = params.filter
+            //queryArgs << " ( genfunc_filter_matcher(tipp.name, :filter) = true or genfunc_filter_matcher(tipp.firstAuthor, :filter) = true or genfunc_filter_matcher(tipp.firstEditor, :filter) = true )"
+            queryArgs << " ( lower(tipp.name) like :filter or lower(tipp.firstAuthor) like :filter or lower(tipp.firstEditor) like :filter )"
+            queryParams.filter = "%${params.filter.toLowerCase()}%"
         }
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         if (params.asAt) {
@@ -1899,11 +1900,6 @@ class FilterService {
         if(params.yearsFirstOnline) {
             queryArgs << " (Year(tipp.dateFirstOnline) in (:yearsFirstOnline)) "
             queryParams.yearsFirstOnline = Params.getLongList_forCommaSeparatedString(params, 'yearsFirstOnline').collect { Integer.valueOf(it.toString()) }
-        }
-
-        if (params.identifier) {
-            queryArgs << " ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) "
-            queryParams.identifier = "${params.identifier}"
         }
 
         if (params.publishers) {

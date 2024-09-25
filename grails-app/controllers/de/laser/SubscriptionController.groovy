@@ -7,7 +7,7 @@ import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.EntitlementCreationException
-import de.laser.helper.Params
+import de.laser.helper.FilterLogic
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -1199,6 +1199,24 @@ class SubscriptionController {
             }
         }
         else {
+            Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+            Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+            threadArray.each {
+                if (it.name == 'PackageTransfer_'+result.subscription.id) {
+                    result.message = message(code: 'subscription.details.linkPackage.thread.running.withPackage',args: [subscriptionService.getCachedPackageName(it.name)] as Object[])
+                }
+                else if (it.name == 'EntitlementEnrichment_'+result.subscription.id) {
+                    result.message = message(code: 'subscription.details.addEntitlements.thread.running')
+                }
+            }
+            result.issueEntitlementEnrichment = params.issueEntitlementEnrichment
+            SwissKnife.setPaginationParams(result, params, (User) result.user)
+
+            //params.status = params.status ?: (result.subscription.hasPerpetualAccess ? [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_RETIRED.id] : [RDStore.TIPP_STATUS_CURRENT.id])
+
+            Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'IEs')
+            if (ttParams.status) { params.status = ttParams.status }
+            if (ttParams.tab)    { params.tab = ttParams.tab }
             SwissKnife.setPaginationParams(result, params, (User) result.user)
             Subscription targetSub = issueEntitlementService.getTargetSubscription(result.subscription)
             Set<Package> targetPkg = targetSub.packages.pkg

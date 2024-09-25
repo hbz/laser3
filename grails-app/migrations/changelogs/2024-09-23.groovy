@@ -2,48 +2,33 @@ package changelogs
 
 databaseChangeLog = {
 
-    changeSet(author: "galffy (modified)", id: "1727102531671-1") {
-        grailsChange {
-            change {
-                sql.execute('CREATE INDEX tipp_first_author_idx ON public.title_instance_package_platform (lower(tipp_first_author));')
-            }
-            rollback {}
+    changeSet(author: "galffy (generated)", id: "1727102531671-1") {
+        createIndex(indexName: "id_value_idx", tableName: "identifier") {
+            column(name: "id_value")
         }
     }
 
-    changeSet(author: "galffy (modified)", id: "1727102531671-2") {
-        grailsChange {
-            change {
-                sql.execute('CREATE INDEX tipp_first_editor_idx ON public.title_instance_package_platform (lower(tipp_first_editor));')
-            }
-            rollback {}
+    changeSet(author: "galffy (generated)", id: "1727102531671-2") {
+        createIndex(indexName: "tipp_first_author_idx", tableName: "title_instance_package_platform") {
+            column(name: "tipp_first_author")
         }
     }
 
-    changeSet(author: "galffy (modified)", id: "1727102531671-3") {
-        grailsChange {
-            change {
-                sql.execute('CREATE INDEX tipp_name_idx ON public.title_instance_package_platform (lower(tipp_name));')
-            }
-            rollback {}
+    changeSet(author: "galffy (generated)", id: "1727102531671-3") {
+        createIndex(indexName: "tipp_first_editor_idx", tableName: "title_instance_package_platform") {
+            column(name: "tipp_first_editor")
         }
     }
 
-    changeSet(author: "galffy (modified)", id: "1727102531671-4") {
-        grailsChange {
-            change {
-                sql.execute('CREATE INDEX tipp_sort_name_idx ON public.title_instance_package_platform (lower(tipp_sort_name));')
-            }
-            rollback {}
+    changeSet(author: "galffy (generated)", id: "1727102531671-4") {
+        createIndex(indexName: "tipp_name_idx", tableName: "title_instance_package_platform") {
+            column(name: "tipp_name")
         }
     }
 
-    changeSet(author: "galffy (modified)", id: "1727102531671-5") {
-        grailsChange {
-            change {
-                sql.execute('CREATE INDEX id_value_idx ON public.identifier (lower(id_value));')
-            }
-            rollback {}
+    changeSet(author: "galffy (generated)", id: "1727102531671-5") {
+        createIndex(indexName: "tipp_sort_name_idx", tableName: "title_instance_package_platform") {
+            column(name: "tipp_sort_name")
         }
     }
 
