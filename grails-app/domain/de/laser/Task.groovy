@@ -6,6 +6,7 @@ import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.survey.SurveyConfig
 import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 
 /**
@@ -30,6 +31,7 @@ class Task {
     Vendor          vendor
     Subscription    subscription
     SurveyConfig    surveyConfig
+    TitleInstancePackagePlatform tipp
 
     String          title
     String          description
@@ -55,6 +57,7 @@ class Task {
         vendor          (nullable:true)
         subscription    (nullable:true)
         surveyConfig    (nullable:true)
+        tipp            (nullable:true)
         title           (blank:false)
         description     (nullable:true, blank:true)
         responsibleUser (nullable:true)
@@ -74,6 +77,7 @@ class Task {
         vendor          column:'tsk_ven_fk',        index: 'tsk_ven_idx'
         subscription    column:'tsk_sub_fk',        index: 'tsk_sub_idx'
         surveyConfig    column:'tsk_sur_config_fk', index: 'tsk_sur_config_idx'
+        tipp            column:'tsk_tipp_fk',       index: 'tsk_tipp_idx'
 
         title           column:'tsk_title'
         description     column:'tsk_description', type: 'text'
@@ -115,6 +119,8 @@ class Task {
             result << [controller: 'subscription', object: subscription]
         if (surveyConfig)
             result << [controller: 'survey', object: surveyConfig]
+        if (tipp)
+            result << [controller: 'tipp', object: tipp]
 
         result
     }
@@ -125,6 +131,7 @@ class Task {
      */
     Map getDisplayArgs() {
         Map<String, Object> displayArgs = [action: 'show', absolute: true]
+
         if (license) {
             displayArgs.controller = 'license'
             displayArgs.id = license.id
@@ -149,6 +156,10 @@ class Task {
             displayArgs.controller = 'survey'
             displayArgs.id = surveyConfig.surveyInfo.id
             displayArgs.surveyConfigID = surveyConfig.id
+        }
+        else if (tipp) {
+            displayArgs.controller = 'tipp'
+            displayArgs.id = tipp.id
         }
         else {
             displayArgs.controller = 'myInstitution'
@@ -189,6 +200,9 @@ class Task {
         }
         else if (surveyConfig) {
             name = surveyConfig.surveyInfo.name
+        }
+        else if (tipp) {
+            name = tipp.name
         }
         name
     }

@@ -6,13 +6,13 @@
 
 <br />
 
-<div class="ui menu">
+<div class="ui top attached menu">
     <g:each in="${history.reverse()}" var="h">
         <g:link controller="public" action="releaseNotes" id="${h}" class="item ${h == version ? 'active' : ''}">Version: ${h}</g:link>
     </g:each>
 </div>
 
-<div class="ui segment">
+<div class="ui bottom attached segment">
     <ui:renderMarkdown releaseNotes="${version}" />
 </div>
 

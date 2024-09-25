@@ -76,9 +76,9 @@
 
         <div class="one wide column">
             <div class="ui right aligned">
-                <g:if test="${!isPublic_gascoDetails && tipp.isMarked(contextService.getUser(), Marker.TYPE.TIPP_CHANGES)}">
-                    <ui:cbItemMarkerAction tipp="${tipp}" type="${Marker.TYPE.TIPP_CHANGES}" simple="true"/>
-                </g:if>
+%{--                <g:if test="${!isPublic_gascoDetails && tipp.isMarked(contextService.getUser(), Marker.TYPE.TIPP_CHANGES)}">--}%
+%{--                    <ui:cbItemMarkerAction tipp="${tipp}" type="${Marker.TYPE.TIPP_CHANGES}" simple="true"/>--}%
+%{--                </g:if>--}%
                 <div class="${Btn.MODERN.SIMPLE}">
                     <i class="${Icon.CMD.SHOW_MORE}"></i>
                 </div>

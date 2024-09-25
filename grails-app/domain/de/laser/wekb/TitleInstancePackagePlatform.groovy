@@ -326,6 +326,11 @@ class TitleInstancePackagePlatform extends AbstractBase implements MarkerSupport
     accessEndDate ? accessEndDate : null
   }
 
+    @Override
+    String toString() {
+        name
+    }
+
     /**
      * Compares the controlled properties of two title records.
      * The controlled properties are defined at {@link #controlledProperties}
