@@ -4,7 +4,7 @@
 
     <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'create']" method="post">
         <g:if test="${controllerName != 'myInstitution' && controllerName != 'ajaxHtml'}">
-            <g:hiddenField name="${owntp}" value="${(owntp == 'surveyConfig') ? ownobj?.id : params.id}"/>
+            <g:hiddenField name="${owntp}" value="${(owntp in ['surveyConfig']) ? ownobj?.id : params.id}"/>
             <g:hiddenField name="linkto" value="${owntp}"/>
         </g:if>
 
@@ -70,8 +70,7 @@
                 </fieldset>
             </div>
 
-            <div id="licensediv"
-                 class="field ${hasErrors(bean: taskInstance, field: 'license', 'error')} required">
+            <div id="licensediv" class="field ${hasErrors(bean: taskInstance, field: 'license', 'error')} required">
                 <label for="license">
                     <g:message code="task.linkto" /><g:message code="license.label" /> <g:message code="messageRequiredField" />
                 </label>
@@ -131,8 +130,7 @@
                 />
             </div>
 
-            <div id="subscriptiondiv"
-                 class="field ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} required">
+            <div id="subscriptiondiv" class="field ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} required">
                 <label for="subscription">
                     <g:message code="task.linkto" /><g:message code="default.subscription.label" /> <g:message code="messageRequiredField" />
                 </label>

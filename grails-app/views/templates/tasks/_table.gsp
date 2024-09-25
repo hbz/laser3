@@ -35,17 +35,26 @@
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance.endDate}"/>
                     </td>
                     <td>
-                        ${fieldValue(bean: taskInstance, field: "title")}
+                        ${fieldValue(bean: taskInstance, field: "title")} <br />
 
                         <g:if test="${controllerName == 'myInstitution'}">
                             <g:if test="${taskInstance.license}">
-                                <br /> <g:link controller="license" action="show" id="${taskInstance.license.id}">${fieldValue(bean: taskInstance, field: "license")}</g:link> <br />
+                                <i class="${Icon.LICENSE} la-list-icon"></i> <g:link controller="license" action="show" id="${taskInstance.license.id}">${fieldValue(bean: taskInstance, field: "license")}</g:link>
                             </g:if>
                             <g:if test="${taskInstance.org}">
-                                <br /> <g:link controller="organisation" action="show" id="${taskInstance.org.id}">${fieldValue(bean: taskInstance, field: "org")}</g:link> <br />
+                                <i class="${Icon.ORG} la-list-icon"></i> <g:link controller="organisation" action="show" id="${taskInstance.org.id}">${fieldValue(bean: taskInstance, field: "org")}</g:link>
+                            </g:if>
+                            <g:if test="${taskInstance.provider}">
+                                <i class="${Icon.PROVIDER} la-list-icon"></i> <g:link controller="provider" action="show" id="${taskInstance.provider.id}">${fieldValue(bean: taskInstance, field: "provider")}</g:link>
                             </g:if>
                             <g:if test="${taskInstance.subscription}">
-                                <br /> <g:link controller="subscription" action="show" id="${taskInstance.subscription.id}">${fieldValue(bean: taskInstance, field: "subscription")}</g:link>
+                                <i class="${Icon.SUBSCRIPTION} la-list-icon"></i> <g:link controller="subscription" action="show" id="${taskInstance.subscription.id}">${fieldValue(bean: taskInstance, field: "subscription")}</g:link>
+                            </g:if>
+                            <g:if test="${taskInstance.tipp}">
+                                <i class="${Icon.TIPP} la-list-icon"></i> <g:link controller="tipp" action="show" id="${taskInstance.tipp.id}">${fieldValue(bean: taskInstance, field: "tipp")}</g:link>
+                            </g:if>
+                            <g:if test="${taskInstance.vendor}">
+                                <i class="${Icon.VENDOR} la-list-icon"></i> <g:link controller="vendor" action="show" id="${taskInstance.vendor.id}">${fieldValue(bean: taskInstance, field: "vendor")}</g:link>
                             </g:if>
                         </g:if>
                     </td>

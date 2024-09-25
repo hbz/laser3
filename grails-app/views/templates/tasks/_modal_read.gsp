@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.Task;de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Task;de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
 
 <ui:modal id="modalReadTask" message="task.label" hideSubmitButton="true">
@@ -19,17 +19,38 @@
         </div>
 
         <div class="field">
-            <strong>Betrifft:</strong>
+            <label>Bezieht sich auf</label>
             <g:if test="${taskInstance.getObjects()}">
                 <g:each in="${taskInstance.getObjects()}" var="tskObj">
-                    <br />
-                    - ${message(code: 'task.' + tskObj.controller)}:
-                    <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
+                    <div class="la-flexbox">
+                        <g:if test="${tskObj.controller == 'organisation'}">
+                            <i class="${Icon.ORG} la-list-icon"></i>
+                        </g:if>
+                        <g:if test="${tskObj.controller == 'provider'}">
+                            <i class="${Icon.PROVIDER} la-list-icon"></i>
+                        </g:if>
+                        <g:if test="${tskObj.controller == 'vendor'}">
+                            <i class="${Icon.VENDOR} la-list-icon"></i>
+                        </g:if>
+                        <g:if test="${tskObj.controller.contains('subscription')}">
+                            <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
+                        </g:if>
+                        <g:if test="${tskObj.controller.contains('license')}">
+                            <i class="${Icon.LICENSE} la-list-icon"></i>
+                        </g:if>
+                        <g:if test="${tskObj.controller.contains('survey')}">
+                            <i class="${Icon.SURVEY} la-list-icon"></i>
+                        </g:if>
+                        <g:if test="${tskObj.controller.contains('tipp')}">
+                            <i class="${Icon.TIPP} la-list-icon"></i>
+                        </g:if>
+
+                        <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
+                    </div>
                 </g:each>
             </g:if>
             <g:else>
-                <br />
-                - ${message(code: 'task.general')}
+                <div class="la-flexbox">${message(code: 'task.general')}</div>
             </g:else>
         </div>
 

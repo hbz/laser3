@@ -25,6 +25,10 @@
                  text="${issueEntitlementInstance.tipp.name}"/>
 </ui:breadcrumbs>
 
+<ui:controlButtons>
+    <laser:render template="actions" />
+</ui:controlButtons>
+
 <ui:h1HeaderWithIcon message="issueEntitlement.for_title.label" args="[issueEntitlementInstance.tipp.name, issueEntitlementInstance.subscription.name]"
                         type="${issueEntitlementInstance.tipp.titleType}" />
 
@@ -32,7 +36,7 @@
 
 <ui:messages data="${flash}"/>
 
-<laser:render template="/templates/tipps/reportTitleToProvider" model="${[tipp: issueEntitlementInstance.tipp]}"/>
+<laser:render template="/templates/tasks/reportTitleToProvider" model="${[tipp: issueEntitlementInstance.tipp]}"/>
 
 <div class="la-inline-lists">
 
