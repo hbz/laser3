@@ -24,28 +24,7 @@
             <g:if test="${taskInstance.getObjects()}">
                 <g:each in="${taskInstance.getObjects()}" var="tskObj">
                     <div class="la-flexbox">
-                        <g:if test="${tskObj.controller == 'organisation'}">
-                            <i class="${Icon.ORG} la-list-icon"></i>
-                        </g:if>
-                        <g:if test="${tskObj.controller == 'provider'}">
-                            <i class="${Icon.PROVIDER} la-list-icon"></i>
-                        </g:if>
-                        <g:if test="${tskObj.controller == 'vendor'}">
-                            <i class="${Icon.VENDOR} la-list-icon"></i>
-                        </g:if>
-                        <g:if test="${tskObj.controller.contains('subscription')}">
-                            <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
-                        </g:if>
-                        <g:if test="${tskObj.controller.contains('license')}">
-                            <i class="${Icon.LICENSE} la-list-icon"></i>
-                        </g:if>
-                        <g:if test="${tskObj.controller.contains('survey')}">
-                            <i class="${Icon.SURVEY} la-list-icon"></i>
-                        </g:if>
-                        <g:if test="${tskObj.controller.contains('tipp')}">
-                            <i class="${Icon.TIPP} la-list-icon"></i>
-                        </g:if>
-
+                        <i class="${tskObj.icon} la-list-icon"></i>
                         <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
                     </div>
                 </g:each>

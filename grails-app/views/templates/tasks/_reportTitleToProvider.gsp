@@ -39,8 +39,7 @@ Vielen Dank
 %>
 
         <ui:msg class="info" showIcon="true">
-            Bei den angezeigten Informationen ist Ihnen ein Fehler aufgefallen?
-            <br />
+            ${message(code:'tipp.reportTitleToProvider.info1')} <br />
             <a href="${'mailto:' + ttm_mailStruct['mailto'] + '?subject=' + ttm_mailStruct['subject'] + '&cc=' + ttm_mailStruct['mailcc'] + '&body=' +  ttm_mailStruct['body']}" class="js-no-wait-wheel">Kontaktieren Sie den Anbieter</a>
             und <a href="#modalCreateTask" data-ui="modal">erstellen Sie sich ggf. eine Aufgabe</a> zur Erinnerung.
             <br />
@@ -48,13 +47,11 @@ Vielen Dank
             <g:if test="${currentTasks.cmbTaskInstanceList}">
                 <g:if test="${currentTasks.cmbTaskInstanceList}">
                     <br />
-                    Füt diesen Titel haben Sie bereits folgende Aufgaben erstellt, <br />
-                    oder diese wurden Ihnen zugewiesen: <br />
-                    <br />
+                    ${message(code:'tipp.reportTitleToProvider.info2')} <br />
 
                     <g:each in="${currentTasks.myTaskInstanceList.sort{ it.dateCreated }.reverse()}" var="tt">
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tt.dateCreated}"/>
-                        &nbsp; ${tt.title}  <br />
+                        <a href="#" onclick="JSPC.app.editTask(${tt.id});">${tt.title}</a> <br />
                     </g:each>
                 </g:if>
 %{--                <g:if test="${currentTasks.myTaskInstanceList}">--}%
@@ -159,6 +156,16 @@ Vielen Dank
         </g:form>
 
         <laser:script file="${this.getGroovyPageFileName()}">
+
+
+            JSPC.app.editTask = function (id) {
+                var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
+                func();
+            }
+%{--            JSPC.app.readTask = function (id) {--}%
+%{--                var func = bb8.ajax4SimpleModalFunction("#modalReadTask", "<g:createLink controller="ajaxHtml" action="readTask"/>?id=" + id);--}%
+%{--                func();--}%
+%{--            }--}%
 
             JSPC.callbacks.modal.onShow.modalCreateTask = function (trigger) {
                 /* r2d2.helper.resetModalForm ('#modalCreateTask'); */

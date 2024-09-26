@@ -26,8 +26,6 @@ class TaskService {
     ContextService contextService
     MessageSource messageSource
 
-    static final String SELECT_WITH_JOIN = 'select t from Task t LEFT JOIN t.responsibleUser ru ' // TODO
-
     /**
      * Called from view for edit override
      * Checks if the given task may be edited by the given user
@@ -106,7 +104,7 @@ class TaskService {
     List<Task> getTasksByCreator(User user, Map queryMap) {
         List<Task> tasks = []
         if (user) {
-            String query = SELECT_WITH_JOIN + 'where t.creator = :user'
+            String query = 'select t from Task t where t.creator = :user'
 
             Map<String, Object> params = [user : user]
             if (queryMap){
@@ -197,20 +195,23 @@ class TaskService {
         Map<String, Object> params = [:]
 
         if (user && org) {
-            query  = SELECT_WITH_JOIN + 'where ( ru = :user or t.responsibleOrg = :org ) ' + queryMap.query
-            params = [user: user, org: org] << queryMap.queryParams
+            query  = '( t.responsibleUser = :user or t.responsibleOrg = :org )'
+            params = [user: user, org: org]
         }
         else if (user) {
-            query  = SELECT_WITH_JOIN + 'where ru = :user' + queryMap.query
-            params = [user: user] << queryMap.queryParams
+            query  = 't.responsibleUser = :user'
+            params = [user: user]
         }
         else if (org) {
-            query  = SELECT_WITH_JOIN + 'where t.responsibleOrg = :org' + queryMap.query
-            params = [org: org] << queryMap.queryParams
+            query  = 't.responsibleOrg = :org'
+            params = [org: org]
         }
 
-        if (query && params) {
+        if (query) {
+            query = 'select distinct(t) from Task t where ' + query + ' ' + queryMap.query
             query = _addDefaultOrder("t", query)
+
+            params = params << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
         }
         tasks
@@ -226,7 +227,7 @@ class TaskService {
     List<Task> getTasksByResponsibilityAndObject(User user, Object obj) {
         List<Task> tasks = []
         String tableName = ''
-        if (user && org && obj) {
+        if (user && obj) {
             switch (GrailsHibernateUtil.unwrapIfProxy(obj).getClass().getSimpleName()) {
                 case 'License':
                     tableName = 'license'
@@ -250,6 +251,7 @@ class TaskService {
                     tableName = 'vendor'
                     break
             }
+
             String query = "select distinct(t) from Task t where ${tableName}=:obj and (responsibleUser=:user or responsibleOrg=:org) order by endDate"
             tasks = Task.executeQuery( query, [user: user, org: user.formalOrg, obj: obj] )
         }

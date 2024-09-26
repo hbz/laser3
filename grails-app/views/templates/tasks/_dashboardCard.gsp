@@ -24,27 +24,7 @@
             <g:each in="${tsk.getObjects()}" var="tskObj">
                 <div class="item">
                     <span class="la-popup-tooltip" data-content="${message(code: 'task.' + tskObj.controller)}" data-position="left center" data-variation="tiny">
-                        <g:if test="${tskObj.controller == 'organisation'}">
-                            <i class="${Icon.ORG}"></i>
-                        </g:if>
-                        <g:if test="${tskObj.controller == 'provider'}">
-                            <i class="${Icon.PROVIDER}"></i>
-                        </g:if>
-                        <g:if test="${tskObj.controller == 'vendor'}">
-                            <i class="${Icon.VENDOR}"></i>
-                        </g:if>
-                        <g:if test="${tskObj.controller.contains('subscription')}">
-                            <i class="${Icon.SUBSCRIPTION}"></i>
-                        </g:if>
-                        <g:if test="${tskObj.controller.contains('license')}">
-                            <i class="${Icon.LICENSE}"></i>
-                        </g:if>
-                        <g:if test="${tskObj.controller.contains('survey')}">
-                            <i class="${Icon.SURVEY}"></i>
-                        </g:if>
-                        <g:if test="${tskObj.controller.contains('tipp')}">
-                            <i class="${Icon.TIPP}"></i>
-                        </g:if>
+                        <i class="${tskObj.icon}"></i>
                     </span>
                     <g:if test="${tskObj.controller.contains('survey')}">
                         <g:link controller="${tskObj.controller}" action="show" params="${[id: tskObj.object?.surveyInfo.id, surveyConfigID:tskObj.object?.id]}">${tskObj.object.getSurveyName()}</g:link>
