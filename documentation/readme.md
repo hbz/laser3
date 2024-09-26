@@ -7,7 +7,7 @@
 - Spring Boot 2.7.18
 - Micronaut 3.10.3 / for Spring 4.5.1
 - Hibernate 5.6.15.Final / GORM 8.0.3
-- Elasticsearch 7.17.23
+- Elasticsearch 7.17.24
 - Logback 1.2.12
 - Gradle 7.6.4
 - Groovy 3.0.11
