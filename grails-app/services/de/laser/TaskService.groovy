@@ -7,9 +7,11 @@ import de.laser.survey.SurveyConfig
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.grails.web.util.WebUtils
 import org.springframework.context.MessageSource
 
@@ -91,6 +93,9 @@ class TaskService {
             case 'SurveyConfig':
                 tasks.addAll(Task.findAllBySurveyConfig(obj as SurveyConfig, pparams))
                 break
+            case 'TitleInstancePackagePlatform':
+                tasks.addAll(Task.findAllByTipp(obj as TitleInstancePackagePlatform, pparams))
+                break
         }
         tasks
     }
@@ -149,16 +154,6 @@ class TaskService {
     }
 
     /**
-     * Retrieves all tasks the given user created for the given organisation
-     * @param user the user whose tasks should be retrieved
-     * @param obj the organisation to which the tasks are attached
-     * @return a complete list of tasks
-     */
-    List<Task> getTasksByCreatorAndObject(User user, Vendor obj) {
-        (user && obj) ?  Task.findAllByCreatorAndVendor(user, obj) : []
-    }
-
-    /**
      * Retrieves all tasks the given user created for the given subscription
      * @param user the user whose tasks should be retrieved
      * @param obj the subscription to which the tasks are attached
@@ -176,6 +171,20 @@ class TaskService {
      */
     List<Task> getTasksByCreatorAndObject(User user, SurveyConfig obj) {
         (user && obj) ?  Task.findAllByCreatorAndSurveyConfig(user, obj) : []
+    }
+
+    List<Task> getTasksByCreatorAndObject(User user, TitleInstancePackagePlatform obj) {
+        (user && obj) ?  Task.findAllByCreatorAndTipp(user, obj) : []
+    }
+
+    /**
+     * Retrieves all tasks the given user created for the given organisation
+     * @param user the user whose tasks should be retrieved
+     * @param obj the organisation to which the tasks are attached
+     * @return a complete list of tasks
+     */
+    List<Task> getTasksByCreatorAndObject(User user, Vendor obj) {
+        (user && obj) ?  Task.findAllByCreatorAndVendor(user, obj) : []
     }
 
     /**
@@ -249,12 +258,15 @@ class TaskService {
         List<Task> tasks = []
         String tableName = ''
         if (user && org && obj) {
-            switch (obj.getClass().getSimpleName()) {
+            switch (GrailsHibernateUtil.unwrapIfProxy(obj).getClass().getSimpleName()) {
                 case 'License':
                     tableName = 'license'
                     break
                 case 'Org':
                     tableName = 'org'
+                    break
+                case 'Provider':
+                    tableName = 'provider'
                     break
                 case 'Subscription':
                     tableName = 'subscription'
@@ -262,8 +274,8 @@ class TaskService {
                 case 'SurveyConfig':
                     tableName = 'surveyConfig'
                     break
-                case 'Provider':
-                    tableName = 'provider'
+                case 'TitleInstancePackagePlatform':
+                    tableName = 'tipp'
                     break
                 case 'Vendor':
                     tableName = 'vendor'
