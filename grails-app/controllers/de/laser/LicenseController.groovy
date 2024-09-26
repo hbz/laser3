@@ -78,7 +78,7 @@ class LicenseController {
         prf.setBenchmark('tasks')
 
             // tasks
-            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.license)
+            result.tasks = taskService.getTasksByResponsibilityAndObject(result.user, result.license)
 
 
         prf.setBenchmark('properties')

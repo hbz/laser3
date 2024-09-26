@@ -184,7 +184,7 @@ class SurveyControllerService {
                 }
 
             }
-            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.surveyConfig)
+            result.tasks = taskService.getTasksByResponsibilityAndObject(result.user, result.surveyConfig)
             result.showSurveyPropertiesForOwer = true
 
             [result: result, status: STATUS_OK]
@@ -4825,7 +4825,7 @@ class SurveyControllerService {
             result.transferWorkflow = result.surveyConfig.transferWorkflow ? JSON.parse(result.surveyConfig.transferWorkflow) : null
         }
 
-        int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.surveyConfig).size()
+        int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.surveyConfig).size()
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.surveyConfig).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 

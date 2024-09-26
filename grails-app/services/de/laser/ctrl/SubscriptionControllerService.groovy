@@ -130,7 +130,7 @@ class SubscriptionControllerService {
             // TODO: experimental asynchronous task
             //def task_tasks = task {
             // tasks
-            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.subscription)
+            result.tasks = taskService.getTasksByResponsibilityAndObject(result.user, result.subscription)
 
             prf.setBenchmark('properties')
             // TODO: experimental asynchronous task
@@ -4120,7 +4120,7 @@ class SubscriptionControllerService {
             }
             result.showConsortiaFunctions = subscriptionService.showConsortiaFunctions(result.contextOrg, result.subscription)
 
-            int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.subscription).size()
+            int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.subscription).size()
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.subscription).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 

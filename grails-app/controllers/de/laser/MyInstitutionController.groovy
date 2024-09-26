@@ -3266,7 +3266,7 @@ class MyInstitutionController  {
 
         SwissKnife.setPaginationParams(result, params, result.user as User)
 
-        List<Task> taskInstanceList     = taskService.getTasksByResponsibles(result.user as User, result.institution as Org, [query: fsr.query, queryParams: fsr.queryParams])
+        List<Task> taskInstanceList     = taskService.getTasksByResponsibility(result.user as User, result.institution as Org, [query: fsr.query, queryParams: fsr.queryParams])
         List<Task> myTaskInstanceList   = taskService.getTasksByCreator(result.user as User, [query: fsr.query, queryParams: fsr.queryParams])
 
         result.taskCount    = taskInstanceList.size()

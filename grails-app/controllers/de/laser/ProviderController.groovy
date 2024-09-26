@@ -256,7 +256,7 @@ class ProviderController {
                 subscriptionConsortiumFilter = 'and s.instanceOf = null'
                 licenseConsortiumFilter = 'and l.instanceOf = null'
             }
-            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, provider)
+            result.tasks = taskService.getTasksByResponsibilityAndObject(result.user, provider)
             Set<Package> allPackages = provider.packages
             result.allPackages = allPackages
             result.allPlatforms = allPackages.findAll { Package pkg -> pkg.nominalPlatform != null}.nominalPlatform.toSet()

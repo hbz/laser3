@@ -26,8 +26,7 @@ class TaskService {
     ContextService contextService
     MessageSource messageSource
 
-    static final String SELECT_WITH_JOIN = 'select t from Task t LEFT JOIN t.responsibleUser ru '
-    static final String WITHOUT_TENANT_ONLY = "WITHOUT_TENANT_ONLY"
+    static final String SELECT_WITH_JOIN = 'select t from Task t LEFT JOIN t.responsibleUser ru ' // TODO
 
     /**
      * Called from view for edit override
@@ -48,7 +47,7 @@ class TaskService {
      */
     Map<String, Object> getTasks(User user, Object object) {
         Map<String, Object> result = [:]
-        result.taskInstanceList   = getTasksByResponsiblesAndObject(user, object)
+        result.taskInstanceList   = getTasksByResponsibilityAndObject(user, object)
         result.myTaskInstanceList = getTasksByCreatorAndObject(user,  object)
         result.cmbTaskInstanceList = (result.taskInstanceList + result.myTaskInstanceList).unique()
         //println result
@@ -63,7 +62,7 @@ class TaskService {
      */
     Set<Task> getTasksForExport(User user, Object object) {
         Set<Task> result = []
-        result.addAll(getTasksByResponsiblesAndObject(user, object))
+        result.addAll(getTasksByResponsibilityAndObject(user, object))
         result.addAll(getTasksByCreatorAndObject(user,  object))
         result
     }
@@ -185,61 +184,34 @@ class TaskService {
     }
 
     /**
-     * Gets the tasks for which the given user is responsible, restricted by an optional query
-     * @param user the user responsible for those tasks which should be retrieved
-     * @param queryMap eventual filter parameters
-     * @return a (filtered) list of tasks
-     */
-    List<Task> getTasksByResponsible(User user, Map queryMap) {
-        List<Task> tasks = []
-        if (user) {
-            String query  = SELECT_WITH_JOIN + 'where t.responsibleUser = :user' + queryMap.query
-            query = _addDefaultOrder("t", query)
-
-            Map params = [user : user] << queryMap.queryParams
-            tasks = Task.executeQuery(query, params)
-        }
-        tasks
-    }
-
-    /**
-     * Gets the tasks for which the given institution is responsible, restricted by an optional query
-     * @param org the institution responsible for those tasks which should be retrieved
-     * @param queryMap eventual filter parameters
-     * @return a (filtered) list of tasks
-     */
-    List<Task> getTasksByResponsible(Org org, Map queryMap) {
-        List<Task> tasks = []
-        if (org) {
-            String query  = SELECT_WITH_JOIN + 'where t.responsibleOrg = :org' + queryMap.query
-            query = _addDefaultOrder("t", query)
-
-            Map params = [org : org] << queryMap.queryParams
-            tasks = Task.executeQuery(query, params)
-        }
-        tasks
-    }
-
-    /**
      * Gets the tasks for which the given user or institution is responsible, restricted by an optional query
      * @param user the user responsible for those tasks which should be retrieved
      * @param org the institution responsible for those tasks which should be retrieved
      * @param queryMap eventual filter parameters
      * @return a (filtered) list of tasks
      */
-    List<Task> getTasksByResponsibles(User user, Org org, Map queryMap) {
+    List<Task> getTasksByResponsibility(User user, Org org, Map queryMap) { // TODO
         List<Task> tasks = []
 
-        if (user && org) {
-            String query = SELECT_WITH_JOIN + 'where ( ru = :user or t.responsibleOrg = :org ) ' + queryMap.query
-            query = _addDefaultOrder("t", query)
+        String query
+        Map<String, Object> params = [:]
 
-            Map<String, Object>  params = [user : user, org: org] << queryMap.queryParams
+        if (user && org) {
+            query  = SELECT_WITH_JOIN + 'where ( ru = :user or t.responsibleOrg = :org ) ' + queryMap.query
+            params = [user: user, org: org] << queryMap.queryParams
+        }
+        else if (user) {
+            query  = SELECT_WITH_JOIN + 'where ru = :user' + queryMap.query
+            params = [user: user] << queryMap.queryParams
+        }
+        else if (org) {
+            query  = SELECT_WITH_JOIN + 'where t.responsibleOrg = :org' + queryMap.query
+            params = [org: org] << queryMap.queryParams
+        }
+
+        if (query && params) {
+            query = _addDefaultOrder("t", query)
             tasks = Task.executeQuery(query, params)
-        } else if (user) {
-            tasks = getTasksByResponsible(user, queryMap)
-        } else if (org) {
-            tasks = getTasksByResponsible(org, queryMap)
         }
         tasks
     }
@@ -251,7 +223,7 @@ class TaskService {
      * @param obj the object to which the tasks are related
      * @return a list of tasks
      */
-    List<Task> getTasksByResponsiblesAndObject(User user, Object obj) {
+    List<Task> getTasksByResponsibilityAndObject(User user, Object obj) {
         List<Task> tasks = []
         String tableName = ''
         if (user && org && obj) {

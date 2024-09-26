@@ -4,7 +4,6 @@ import de.laser.*
 import de.laser.auth.User
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
-import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.interfaces.CalculatedType
 import grails.gorm.transactions.Transactional
@@ -99,7 +98,7 @@ class LicenseControllerService {
 
         result.showConsortiaFunctions = showConsortiaFunctions(result.license)
 
-        int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.license).size()
+        int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.license).size()
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.license).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 

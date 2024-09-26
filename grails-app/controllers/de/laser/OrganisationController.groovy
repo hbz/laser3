@@ -897,7 +897,7 @@ class OrganisationController  {
                 result.missing.leitID = message(code: 'org.eInvoice.info.missing.leitID')
         }
 
-        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.orgInstance)
+        result.tasks = taskService.getTasksByResponsibilityAndObject(result.user, result.orgInstance)
 
         result.formalOrg = result.user.formalOrg as Org
 
