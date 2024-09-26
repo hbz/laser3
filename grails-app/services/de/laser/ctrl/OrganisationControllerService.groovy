@@ -402,7 +402,7 @@ class OrganisationControllerService {
             result.inContextOrg = true
         }
 
-        int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.orgInstance).size()
+        int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.orgInstance).size()
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.orgInstance).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
         result.docsCount        = docstoreService.getDocsCount(result.orgInstance, result.contextOrg)

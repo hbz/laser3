@@ -63,7 +63,7 @@ class LicenseControllerService {
         }
         else {
             SwissKnife.setPaginationParams(result, params, result.user as User)
-            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (License) result.license)['cmbTaskInstanceList']
+            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (License) result.license)['cmbTaskInstanceList']
             [result:result,status:STATUS_OK]
         }
     }
@@ -99,7 +99,7 @@ class LicenseControllerService {
 
         result.showConsortiaFunctions = showConsortiaFunctions(result.license)
 
-        int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.license).size()
+        int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.license).size()
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.license).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 

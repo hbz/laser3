@@ -101,7 +101,7 @@ class SubscriptionController {
                 ctrlResult.result.linkedLicenses = Subscription.executeQuery('select lic from Links li join li.sourceLicense lic join lic.orgRelations oo where li.destinationSubscription = :sub and li.linkType = :linkType and lic.status = :current and oo.org = :context', [sub: ctrlResult.result.subscription, linkType: RDStore.LINKTYPE_LICENSE, current: RDStore.LICENSE_CURRENT, context: ctrlResult.result.institution])
                 ctrlResult.result.links = linksGenerationService.getSourcesAndDestinations(ctrlResult.result.subscription, ctrlResult.result.user, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)-RDStore.LINKTYPE_LICENSE)
                 ctrlResult.result.entry = ctrlResult.result.subscription
-                ctrlResult.result.tasks = taskService.getTasksForExport((User) ctrlResult.result.user, (Org) ctrlResult.result.institution, (Subscription) ctrlResult.result.subscription)
+                ctrlResult.result.tasks = taskService.getTasksForExport((User) ctrlResult.result.user, (Subscription) ctrlResult.result.subscription)
                 ctrlResult.result.documents = docstoreService.getDocumentsForExport((Org) ctrlResult.result.institution, (Subscription) ctrlResult.result.subscription)
                 ctrlResult.result.notes = docstoreService.getNotesForExport((Org) ctrlResult.result.institution, (Subscription) ctrlResult.result.subscription)
 

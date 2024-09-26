@@ -35,7 +35,7 @@ Vielen Dank
 """
     ]
 
-    Map<String, Object> currentTasks = taskService.getTasks(BeanStore.getContextService().getUser(), BeanStore.getContextService().getOrg(), tipp)
+    Map<String, Object> currentTasks = taskService.getTasks(BeanStore.getContextService().getUser(), tipp)
 %>
 
         <ui:msg class="info" showIcon="true">

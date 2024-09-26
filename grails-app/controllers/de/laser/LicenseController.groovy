@@ -78,7 +78,7 @@ class LicenseController {
         prf.setBenchmark('tasks')
 
             // tasks
-            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.license)
+            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.license)
 
 
         prf.setBenchmark('properties')
@@ -164,7 +164,7 @@ class LicenseController {
                 result.memberLicenses = License.findAllByInstanceOf(result.license)
                 result.linkedSubscriptions = Subscription.executeQuery('select sub from Links li join li.destinationSubscription sub join sub.orgRelations oo where li.sourceLicense = :lic and li.linkType = :linkType and sub.status = :current and oo.org = :context', [lic: result.license, linkType: RDStore.LINKTYPE_LICENSE, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])
                 result.entry = result.license
-                result.tasks = taskService.getTasksForExport((User) result.user, (Org) result.institution, (License) result.license)
+                result.tasks = taskService.getTasksForExport((User) result.user, (License) result.license)
                 result.documents = docstoreService.getDocumentsForExport((Org) result.institution, (License) result.license)
                 result.notes = docstoreService.getNotesForExport((Org) result.institution, (License) result.license)
 

@@ -184,7 +184,7 @@ class SurveyControllerService {
                 }
 
             }
-            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.surveyConfig)
+            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.surveyConfig)
             result.showSurveyPropertiesForOwer = true
 
             [result: result, status: STATUS_OK]
@@ -1408,7 +1408,7 @@ class SurveyControllerService {
             [result: null, status: STATUS_ERROR]
         } else {
             SwissKnife.setPaginationParams(result, params, result.user as User)
-            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (SurveyConfig) result.surveyConfig)['cmbTaskInstanceList']
+            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (SurveyConfig) result.surveyConfig)['cmbTaskInstanceList']
             [result: result, status: STATUS_OK]
         }
     }
@@ -4825,7 +4825,7 @@ class SurveyControllerService {
             result.transferWorkflow = result.surveyConfig.transferWorkflow ? JSON.parse(result.surveyConfig.transferWorkflow) : null
         }
 
-        int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.surveyConfig).size()
+        int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.surveyConfig).size()
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.surveyConfig).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 

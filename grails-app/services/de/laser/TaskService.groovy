@@ -34,23 +34,21 @@ class TaskService {
      * Checks if the given task may be edited by the given user
      * @param task the task to be checked
      * @param user the user accessing the task
-     * @param org the context institution of the user
      * @return true if the user is creator or responsible of the task or the user belongs to the institution responsible for the task
      */
-    boolean isTaskEditableBy(Task task, User user, Org org) {
-        task.creator == user || task.responsibleUser?.id == user.id || task.responsibleOrg?.id == org.id
+    boolean isTaskEditableBy(Task task, User user) {
+        task.creator == user || task.responsibleUser?.id == user.id || task.responsibleOrg?.id == user.formalOrg.id
     }
 
     /**
      * Loads the user's tasks for the given object
      * @param user the user whose tasks should be retrieved
-     * @param contextOrg the user's context institution
      * @param object the object to which the tasks are attached
      * @return a list of accessible tasks
      */
-    Map<String, Object> getTasks(User user, Org contextOrg, Object object) {
+    Map<String, Object> getTasks(User user, Object object) {
         Map<String, Object> result = [:]
-        result.taskInstanceList = getTasksByResponsiblesAndObject(user, contextOrg, object)
+        result.taskInstanceList   = getTasksByResponsiblesAndObject(user, object)
         result.myTaskInstanceList = getTasksByCreatorAndObject(user,  object)
         result.cmbTaskInstanceList = (result.taskInstanceList + result.myTaskInstanceList).unique()
         //println result
@@ -60,13 +58,12 @@ class TaskService {
     /**
      * Loads the user's tasks for the given object; the output is for a PDF export
      * @param user the user whose tasks should be retrieved
-     * @param contextOrg the user's context institution
      * @param object the object to which the tasks are attached
      * @return a list of accessible tasks
      */
-    Set<Task> getTasksForExport(User user, Org contextOrg, Object object) {
+    Set<Task> getTasksForExport(User user, Object object) {
         Set<Task> result = []
-        result.addAll(getTasksByResponsiblesAndObject(user, contextOrg, object))
+        result.addAll(getTasksByResponsiblesAndObject(user, object))
         result.addAll(getTasksByCreatorAndObject(user,  object))
         result
     }
@@ -130,7 +127,7 @@ class TaskService {
      * @return a complete list of tasks
      */
     List<Task> getTasksByCreatorAndObject(User user, License obj) {
-        (user && obj)? Task.findAllByCreatorAndLicense(user, obj) : []
+        (user && obj) ? Task.findAllByCreatorAndLicense(user, obj) : []
     }
 
     /**
@@ -140,7 +137,7 @@ class TaskService {
      * @return a complete list of tasks
      */
     List<Task> getTasksByCreatorAndObject(User user, Org obj) {
-        (user && obj) ?  Task.findAllByCreatorAndOrg(user, obj) : []
+        (user && obj) ? Task.findAllByCreatorAndOrg(user, obj) : []
     }
 
     /**
@@ -150,7 +147,7 @@ class TaskService {
      * @return a complete list of tasks
      */
     List<Task> getTasksByCreatorAndObject(User user, Provider obj) {
-        (user && obj) ?  Task.findAllByCreatorAndProvider(user, obj) : []
+        (user && obj) ? Task.findAllByCreatorAndProvider(user, obj) : []
     }
 
     /**
@@ -160,7 +157,7 @@ class TaskService {
      * @return a complete list of tasks
      */
     List<Task> getTasksByCreatorAndObject(User user, Subscription obj) {
-        (user && obj) ?  Task.findAllByCreatorAndSubscription(user, obj) : []
+        (user && obj) ? Task.findAllByCreatorAndSubscription(user, obj) : []
     }
 
     /**
@@ -170,11 +167,11 @@ class TaskService {
      * @return a complete list of tasks
      */
     List<Task> getTasksByCreatorAndObject(User user, SurveyConfig obj) {
-        (user && obj) ?  Task.findAllByCreatorAndSurveyConfig(user, obj) : []
+        (user && obj) ? Task.findAllByCreatorAndSurveyConfig(user, obj) : []
     }
 
     List<Task> getTasksByCreatorAndObject(User user, TitleInstancePackagePlatform obj) {
-        (user && obj) ?  Task.findAllByCreatorAndTipp(user, obj) : []
+        (user && obj) ? Task.findAllByCreatorAndTipp(user, obj) : []
     }
 
     /**
@@ -254,7 +251,7 @@ class TaskService {
      * @param obj the object to which the tasks are related
      * @return a list of tasks
      */
-    List<Task> getTasksByResponsiblesAndObject(User user, Org org, Object obj) {
+    List<Task> getTasksByResponsiblesAndObject(User user, Object obj) {
         List<Task> tasks = []
         String tableName = ''
         if (user && org && obj) {
@@ -282,7 +279,7 @@ class TaskService {
                     break
             }
             String query = "select distinct(t) from Task t where ${tableName}=:obj and (responsibleUser=:user or responsibleOrg=:org) order by endDate"
-            tasks = Task.executeQuery( query, [user: user, org: org, obj: obj] )
+            tasks = Task.executeQuery( query, [user: user, org: user.formalOrg, obj: obj] )
         }
         tasks
     }

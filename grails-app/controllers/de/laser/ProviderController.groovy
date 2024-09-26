@@ -256,7 +256,7 @@ class ProviderController {
                 subscriptionConsortiumFilter = 'and s.instanceOf = null'
                 licenseConsortiumFilter = 'and l.instanceOf = null'
             }
-            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, provider)
+            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, provider)
             Set<Package> allPackages = provider.packages
             result.allPackages = allPackages
             result.allPlatforms = allPackages.findAll { Package pkg -> pkg.nominalPlatform != null}.nominalPlatform.toSet()
@@ -449,7 +449,7 @@ class ProviderController {
             response.sendError(401); return
         }
         SwissKnife.setPaginationParams(result, params, result.user as User)
-        result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (Provider) result.provider)['cmbTaskInstanceList']
+        result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Provider) result.provider)['cmbTaskInstanceList']
 
         result
     }

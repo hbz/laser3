@@ -237,7 +237,7 @@ class VendorController {
             result.providers = allPackages.provider.toSet()
             result.packages = Package.executeQuery('select pkg from PackageVendor pv join pv.pkg pkg, VendorRole vr, OrgRole oo join oo.sub s where pv.vendor = vr.vendor and vr.subscription = s and vr.vendor = :vendor and s.status = :current and oo.org = :context ', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Package>
             result.platforms = Platform.executeQuery('select pkg.nominalPlatform from PackageVendor pv join pv.pkg pkg, VendorRole vr, OrgRole oo join oo.sub s where pkg.provider = :vendor and vr.subscription = s and s.status = :current and oo.org = :context ', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Platform>
-            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, vendor)
+            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, vendor)
             result.currentSubscriptionsCount = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])[0]
             result.currentLicensesCount  = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and l.status = :current and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, current: RDStore.LICENSE_CURRENT, context: result.institution])[0]
             result.subLinks = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, context: result.institution])[0]
@@ -422,7 +422,7 @@ class VendorController {
             response.sendError(401); return
         }
         SwissKnife.setPaginationParams(result, params, result.user as User)
-        result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (Vendor) result.vendor)['cmbTaskInstanceList']
+        result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Vendor) result.vendor)['cmbTaskInstanceList']
 
         result
     }
