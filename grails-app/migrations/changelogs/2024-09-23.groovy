@@ -85,4 +85,16 @@ databaseChangeLog = {
             column(name: "pp_tenant_fk")
         }
     }
+
+    changeSet(author: "klober (modified)", id: "1727092155564-17") {
+        grailsChange {
+            change {
+                sql.execute("update marker set mkr_type_enum = 'UNKOWN' where mkr_type_enum = 'TIPP_CHANGES'")
+                String info = "update marker set mkr_type_enum = 'UNKOWN': ${sql.getUpdateCount()}"
+                confirm(info)
+                changeSet.setComments(info)
+            }
+            rollback {}
+        }
+    }
 }
