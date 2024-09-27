@@ -33,7 +33,6 @@ class DocContext implements ShareableTrait, Comparable {
     RefdataValue shareConf
     Org targetOrg
 
-    Boolean globannounce = false
     DocContext sharedFrom
     Boolean isShared = false
 
@@ -50,7 +49,6 @@ class DocContext implements ShareableTrait, Comparable {
          provider column:'dc_prov_fk',             index: 'dc_prov_idx'
            vendor column:'dc_ven_fk',              index: 'dc_ven_idx'
              link column:'dc_link_fk',             index: 'dc_link_idx'
-     globannounce column:'dc_is_global'
            status column:'dc_status_fk',           index: 'dc_status_idx'
        sharedFrom column:'dc_shared_from_fk',      index: 'dc_shared_from_idx'
          isShared column:'dc_is_shared'

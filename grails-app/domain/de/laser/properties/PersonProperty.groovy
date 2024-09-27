@@ -41,7 +41,7 @@ class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
         dateValue            column: 'pp_date_value'
         type                 column: 'pp_type_fk', index: 'pp_type_idx'
         owner                column: 'pp_owner_fk', index:'pp_owner_idx'
-        tenant               column: 'pp_tenant_fk', index: 'pp_tenant_fk'
+        tenant               column: 'pp_tenant_fk', index: 'pp_tenant_idx'
         isPublic             column: 'pp_is_public'
         dateCreated          column: 'pp_date_created'
         lastUpdated          column: 'pp_last_updated'

@@ -202,7 +202,6 @@ class DocstoreService {
             return []
         }
 
-
         Doc.executeQuery("select dc from DocContext dc, Doc d where " + query, queryParams)
     }
 
