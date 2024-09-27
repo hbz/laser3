@@ -80,49 +80,50 @@
                                 </g:if>
                             </g:elseif>
                             <g:elseif test="${propValue.type.isRefdataValueType()}">
-                                <span data-position="top left" class="la-popup-tooltip"
-                                      data-content="${propValue.refValue?.getI10n("value")}">
+                                <span data-position="top left" class="la-popup-tooltip" data-content="${propValue.refValue?.getI10n("value")}">
                                     <g:if test="${object instanceof License}">
                                         <%
-                                            String value
+                                            String icon
                                             switch (propValue.refValue.owner) {
                                                 case [ RefdataCategory.getByDesc(RDConstants.Y_N), RefdataCategory.getByDesc(RDConstants.Y_N_O) ]:
                                                     switch (propValue.refValue) {
                                                         case [ RDStore.YN_YES, RDStore.YNO_YES ]:
-                                                            value = raw('<i class="green thumbs up icon large"></i>')
+                                                            icon = 'green thumbs up'
                                                             break
                                                         case [ RDStore.YN_NO, RDStore.YNO_NO ]:
-                                                            value = raw('<i class="red thumbs down icon large"></i>')
+                                                            icon = 'red thumbs down'
                                                             break
                                                         case RDStore.YNO_OTHER:
-                                                            value = raw('<i class="yellow dot circle icon large"></i>')
+                                                            icon = 'yellow dot circle'
                                                             break
                                                     }
                                                     break
                                                 case RefdataCategory.getByDesc(RDConstants.PERMISSIONS):
                                                     switch (propValue.refValue) {
-                                                        case RDStore.PERM_PERM_EXPL: value = raw('<i class="green check circle icon large"></i>')
+                                                        case RDStore.PERM_PERM_EXPL: icon = 'green check circle'
                                                             break
-                                                        case RDStore.PERM_PERM_INTERP: value = raw('<i class="green check circle outline icon large"></i>')
+                                                        case RDStore.PERM_PERM_INTERP: icon = 'green check circle outline'
                                                             break
-                                                        case RDStore.PERM_PROH_EXPL: value = raw('<i class="red times circle icon large"></i>')
+                                                        case RDStore.PERM_PROH_EXPL: icon = 'red times circle'
                                                             break
-                                                        case RDStore.PERM_PROH_INTERP: value = raw('<i class="red times circle outline icon large"></i>')
+                                                        case RDStore.PERM_PROH_INTERP: icon = 'red times circle outline'
                                                             break
-                                                        case RDStore.PERM_SILENT: value = raw('<i class="hand point up icon large"></i>')
+                                                        case RDStore.PERM_SILENT: icon = 'hand point up'
                                                             break
-                                                        case RDStore.PERM_NOT_APPLICABLE: value = raw('<i class="exclamation icon large"></i>')
+                                                        case RDStore.PERM_NOT_APPLICABLE: icon = 'exclamation'
                                                             break
-                                                        case RDStore.PERM_UNKNOWN: value = raw('<i class="question circle icon large"></i>')
+                                                        case RDStore.PERM_UNKNOWN: icon = 'question circle'
                                                             break
                                                     }
                                                     break
-                                                default: value = propValue.refValue?.getI10n("value")
-                                                    break
                                             }
-
                                         %>
-                                        ${value ?: propValue.refValue?.getI10n("value")}
+                                        <g:if test="${icon}">
+                                            <i class="${icon} icon large"></i>
+                                        </g:if>
+                                        <g:else>
+                                            ${propValue.refValue?.getI10n("value")}
+                                        </g:else>
                                     </g:if>
                                     <g:else>
                                         ${propValue.refValue?.getI10n("value")}
@@ -165,8 +166,7 @@
                                 </g:if>
                                 <g:elseif test="${object instanceof Subscription}">
                                     <g:set var="consortium" value="${object.getConsortium()}"/>
-                                    <g:set var="atSubscr"
-                                           value="${object._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}"/>
+                                    <g:set var="atSubscr" value="${object._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}"/>
                                 </g:elseif>
                                 <g:if test="${(propValue.hasProperty('instanceOf') && propValue.instanceOf && AuditConfig.getConfig(propValue.instanceOf)) || AuditConfig.getConfig(propValue)}">
                                     <g:if test="${object.isSlaved}">

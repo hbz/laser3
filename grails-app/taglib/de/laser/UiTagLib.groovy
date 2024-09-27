@@ -1035,4 +1035,23 @@ class UiTagLib {
             out << '</span>'
         }
     }
+
+    // moved from SubscriptionPackage.getIEandPackageSize() // TODO: icons
+    def ieAndPkgSize = { attrs, body ->
+
+        if (attrs.sp) {
+            SubscriptionPackage sp = attrs.sp as SubscriptionPackage
+            def c1 = SubscriptionPackage.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.tipp.pkg = :pkg and ie.status = :current', [sub: sp.subscription, pkg: sp.pkg, current: RDStore.TIPP_STATUS_CURRENT])[0]
+            def c2 = SubscriptionPackage.executeQuery('select count(*) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current', [ctx: sp.pkg, current:RDStore.TIPP_STATUS_CURRENT])[0]
+
+            out << '('
+            out << '<span data-tooltip="Titel in der Lizenz"><i class="icon archive"></i> ' + c1 + '</span>'
+            out << ' / '
+            out << '<span data-tooltip="Titel im Paket"><i class="' + Icon.TIPP + '"></i> ' + c2 + '</span>'
+            out << ')'
+        }
+        else {
+            out << '[ ERROR @ ui:ieAndPkgSize ]'
+        }
+    }
 }
