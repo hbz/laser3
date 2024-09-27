@@ -1036,7 +1036,7 @@ class UiTagLib {
         }
     }
 
-    // moved from SubscriptionPackage.getIEandPackageSize() // TODO
+    // moved from SubscriptionPackage.getIEandPackageSize() // TODO: icons
     def ieAndPkgSize = { attrs, body ->
 
         if (attrs.sp) {
@@ -1045,9 +1045,9 @@ class UiTagLib {
             def c2 = SubscriptionPackage.executeQuery('select count(*) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current', [ctx: sp.pkg, current:RDStore.TIPP_STATUS_CURRENT])[0]
 
             out << '('
-            out << '<span data-tooltip="Titel in der Lizenz"><i class="icon archive"></i></span>' + c1
+            out << '<span data-tooltip="Titel in der Lizenz"><i class="icon archive"></i> ' + c1 + '</span>'
             out << ' / '
-            out << '<span data-tooltip="Titel im Paket"><i class="' + Icon.TIPP + '"></i></span>' + c2
+            out << '<span data-tooltip="Titel im Paket"><i class="' + Icon.TIPP + '"></i> ' + c2 + '</span>'
             out << ')'
         }
         else {
