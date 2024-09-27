@@ -17,6 +17,7 @@
 </nav>
 
 %{--<%@page expressionCodec="none" %>--}%
+%{--<%@page scriptletCodec="html" %>--}%
 
 <div class="ui segment">
     <table class="ui table celled striped very compact">
@@ -32,7 +33,8 @@
 </div>
 
 <div class="ui segment">
-    ${'<%@page expressionCodec="none" %>'}
+    ${'<%@page expressionCodec="html" %> // ${}'} <br />
+    ${'<%@page scriptletCodec="none" %> // <% %>'}
 </div>
 
 <div class="ui segment">
