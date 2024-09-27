@@ -27,6 +27,7 @@ class DocstoreController  {
     ContextService contextService
     DocstoreControllerService docstoreControllerService
     MessageSource messageSource
+    TmpRefactoringService tmpRefactoringService
 
     /**
      * Called by /documents/_table and /documents/_card
@@ -38,17 +39,19 @@ class DocstoreController  {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def index() {
-        Doc doc = Doc.findByUuid(params.id)
+        if (tmpRefactoringService.hasAccessToDoc()) {
+            Doc doc = Doc.findByUuid(params.id)
 
-        if (doc) {
-            String filename = doc.filename ?: messageSource.getMessage('template.documents.missing', null, LocaleUtils.getCurrentLocale())
+            if (doc) {
+                String filename = doc.filename ?: messageSource.getMessage('template.documents.missing', null, LocaleUtils.getCurrentLocale())
 
-            switch (doc.contentType) {
-                case Doc.CONTENT_TYPE_STRING:
-                    break
-                case Doc.CONTENT_TYPE_FILE:
-                    doc.render(response, filename)
-                    break
+                switch (doc.contentType) {
+                    case Doc.CONTENT_TYPE_STRING:
+                        break
+                    case Doc.CONTENT_TYPE_FILE:
+                        doc.render(response, filename)
+                        break
+                }
             }
         }
     }

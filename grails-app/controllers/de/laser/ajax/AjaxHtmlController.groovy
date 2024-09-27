@@ -11,6 +11,7 @@ import de.laser.GenericOIDService
 import de.laser.HelpService
 import de.laser.PendingChangeService
 import de.laser.AddressbookService
+import de.laser.TmpRefactoringService
 import de.laser.WekbNewsService
 import de.laser.WorkflowService
 import de.laser.cache.EhcacheWrapper
@@ -105,6 +106,7 @@ class AjaxHtmlController {
     SubscriptionService subscriptionService
     SubscriptionControllerService subscriptionControllerService
     TaskService taskService
+    TmpRefactoringService tmpRefactoringService
     WekbNewsService wekbNewsService
     WorkflowService workflowService
 
@@ -401,16 +403,24 @@ class AjaxHtmlController {
         render template: "/templates/filter/vendorFilterTable", model: model
     }
 
+    def renderMarkdown() {
+        String text = params.text ?: ''
+        render helpService.parseMarkdown2(text)
+    }
+
     /**
      * Opens the edit modal for the given note
      */
     @Secured(['ROLE_USER'])
     def editNote() {
-        Map<String, Object> result = [:]
-        result.params = params
-        result.noteInstance = Doc.get(params.id)
+        Map<String, Object> result = [ params: params ]
 
-        render template: "/templates/notes/modal_edit", model: result
+        if (tmpRefactoringService.hasAccessToDocNote()) {
+            result.noteInstance = Doc.get(params.id)
+        }
+        if (result.noteInstance) {
+            render template: "/templates/notes/modal_edit", model: result
+        }
     }
 
     /**
@@ -418,16 +428,14 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def readNote() {
-        Map<String, Object> result = [:]
-        result.params = params
-        result.noteInstance = Doc.get(params.id)
+        Map<String, Object> result = [ params: params ]
 
-        render template: "/templates/notes/modal_read", model: result
-    }
-
-    def renderMarkdown() {
-        String text = params.text ?: ''
-        render helpService.parseMarkdown2(text)
+        if (tmpRefactoringService.hasAccessToDocNote()) {
+            result.noteInstance = Doc.get(params.id)
+        }
+        if (result.noteInstance) {
+            render template: "/templates/notes/modal_read", model: result
+        }
     }
 
     /**
@@ -447,12 +455,13 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def editTask() {
-        Map<String, Object> result = [:]
-        result.params = params
-        result.taskInstance = Task.get(params.id)
-        result.contextOrg = contextService.getOrg()
+        Map<String, Object> result = [ params: params ]
 
-        if (result.taskInstance){
+        if (tmpRefactoringService.hasAccessToTask()) {
+            result.taskInstance = Task.get(params.id)
+            result.contextOrg = contextService.getOrg()
+        }
+        if (result.taskInstance) {
             render template: "/templates/tasks/modal_edit", model: result
         }
     }
@@ -462,11 +471,12 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def readTask() {
-        Map<String, Object> result = [:]
-        result.params = params
-        result.taskInstance = Task.get(params.id)
-        result.contextOrg = contextService.getOrg()
+        Map<String, Object> result = [ params: params ]
 
+        if (tmpRefactoringService.hasAccessToTask()) {
+            result.taskInstance = Task.get(params.id)
+            result.contextOrg = contextService.getOrg()
+        }
         if (result.taskInstance) {
             render template: "/templates/tasks/modal_read", model: result
         }
